@@ -12,7 +12,7 @@
 - Owner decision: `continue`
 - Exit gates: `board-check`, `install`, `boundaries`, `dev-setup`, `compose-config`, `tokens-codegen`, `design-check`, `language-check`, `changelog-entry`, `ci-local`, `polier-version`
 - Exit criteria: Every packages[] folder exists with a README and an ARCHITECTURE.md; package map and versions are filled in.; A fresh clone installs reproducibly with the committed lockfile; root lint, typecheck, test and build pass.; Two worktrees run install, lint, typecheck and tests side by side without port or database collision; tools/dev/setup and teardown create and remove the slot database and bucket and refuse slot 0.; design-check, language-check, changelog-entry and boundaries reject a violating change locally; every code change carries a .changes entry.; The CI workflow is authored and proven locally (actionlint + act) and local sessions use Polier at the board's generator_version; the real GitHub run, branch protection, hosting and releases are deferred to the remote stage after hardening (ADR-0003).; A runnable design preview page exists with desktop and mobile screenshots and a live two-note connection demo (P0-19, P0-20).
-- Tasks: P0-03, P0-04, P0-06, P0-07, P0-08, P0-09, P0-10, P0-11, P0-12, P0-13, P0-14, P0-18, P0-19, P0-20, P0-21
+- Tasks: P0-03, P0-04, P0-06, P0-07, P0-08, P0-09, P0-10, P0-11, P0-12, P0-13, P0-14, P0-18, P0-19, P0-20, P0-21, P0-22
 
 ### Stage 2 — `contract` Contract
 
@@ -117,7 +117,10 @@
 
 ## Ready now
 
-- none
+- `P0-22` Version and last change in the preview masthead
+  - P0-21: Closed P0-21: demo edge now uses --tone-d at 1.5 px like the static Connection component; screenshot refreshed.
+  - P0-21: apps/web/preview/README.md: demo is permanent and updated in the same task as every preview/design-system change.
+  - P0-21: All three gates pass; refresh the served preview to see the tone-d edge.
 
 ## Done
 
@@ -151,6 +154,7 @@
 - [ ] `P0-15` Release command and tag-based CI release — status: `pending` — owner: —
 - [ ] `P0-16` Dependency updates and Polier update check — status: `pending` — owner: —
 - [ ] `P0-17` RELEASING.md and release 0.0.1 — status: `pending` — owner: —
+- [ ] `P0-22` Version and last change in the preview masthead — status: `pending` — owner: —
 
 ## Decisions
 

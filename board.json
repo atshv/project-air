@@ -1428,6 +1428,56 @@
         "apps/web/preview/README.md: demo is permanent and updated in the same task as every preview/design-system change.",
         "All three gates pass; refresh the served preview to see the tone-d edge."
       ]
+    },
+    {
+      "id": "P0-22",
+      "title": "Version and last change in the preview masthead",
+      "goal": "The preview shows the changelog version and the latest change entry in a meta line at the top.",
+      "why": "The owner wants the preview to identify itself with version and last change.",
+      "satisfies": [
+        "D3"
+      ],
+      "status": "pending",
+      "depends_on": [
+        "P0-21"
+      ],
+      "complexity": 1,
+      "stage": "foundation",
+      "parallel_group": null,
+      "scope_write": [
+        "apps/web/preview/",
+        ".changes/"
+      ],
+      "scope_read": [
+        "ARCHITECTURE.md",
+        "AGENTS.md",
+        "STATUS.md",
+        "docs/module-map.md",
+        "docs/quality.md",
+        "docs/design-rules.md",
+        "apps/web/preview/",
+        "CHANGELOG.md",
+        ".changes/README.md",
+        "packages/ui-kit/tokens.css"
+      ],
+      "acceptance": [
+        "A1",
+        "A2",
+        "A3"
+      ],
+      "gates": [
+        "board-check",
+        "design-check",
+        "changelog-entry"
+      ],
+      "owner": null,
+      "branch": "task/P0-22",
+      "worktree": null,
+      "round": 0,
+      "evidence": [],
+      "scope_write_forbidden": [
+        "reference/"
+      ]
     }
   ],
   "decisions": [
