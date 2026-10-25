@@ -1,12 +1,12 @@
 export const PLACEHOLDER = {
-  headline: "Calm Canvas",
+  headline: "Project air",
   sentence:
     "Notizen auf einer ruhigen Leinwand – mit einem Coach, der Fragen stellt.",
   description: "Notizen auf einer ruhigen Leinwand.",
 } as const;
 
 export const AUTH = {
-  loginTitle: "Anmelden – Calm Canvas",
+  loginTitle: "Anmelden – Project air",
   signupTitle: "Konto erstellen",
   emailLabel: "E-Mail",
   passwordLabel: "Passwort",
@@ -115,7 +115,7 @@ export const BOARDS = {
 } as const;
 
 export const SHELL = {
-  brand: "Calm Canvas",
+  brand: "Project air",
   boards: "Boards",
   boardsEmpty: "Noch keine Boards",
   newBoard: "Board erstellen",
@@ -263,12 +263,12 @@ export const EXPORT = {
   export: "Exportieren",
   exportHint: "Alle Notizen als Markdown-ZIP herunterladen.",
   import: "Importieren",
-  importHint: "Eine Calm-Canvas-ZIP importieren.",
+  importHint: "Eine Project air-ZIP importieren.",
   pending: "Wird importiert …",
   success: "Import abgeschlossen.",
   errors: {
     unauthorized: "Bitte melde dich erneut an.",
-    invalid: "Die Datei ist keine gültige Calm-Canvas-ZIP.",
+    invalid: "Die Datei ist keine gültige Project air-ZIP.",
     too_large: "Die Datei ist zu groß (max. 20 MB).",
     failed: "Der Import ist fehlgeschlagen. Bitte erneut versuchen.",
   },
@@ -378,12 +378,12 @@ export const CARDS = {
 export const LANDING = {
   skipToContent: "Zum Inhalt springen",
   meta: {
-    title: "Calm Canvas – Notizen, Dateien und Ideen auf einer Leinwand",
+    title: "Project air – Notizen, Dateien und Ideen auf einer Leinwand",
     description:
-      "Calm Canvas sammelt Notizen, Dateien und Ideen auf einer ruhigen Leinwand. Claude hilft beim Ordnen, wenn du es willst.",
+      "Project air sammelt Notizen, Dateien und Ideen auf einer ruhigen Leinwand. Claude hilft beim Ordnen, wenn du es willst.",
   },
   nav: {
-    logo: "Calm Canvas",
+    logo: "Project air",
     links: [
       { label: "Funktionen", href: "#funktionen" },
       { label: "Vorlagen", href: "#vorlagen" },
@@ -587,7 +587,7 @@ export const LANDING = {
   },
   coach: {
     title: "Der Coach schreibt nicht für dich. Er bringt dich weiter.",
-    body: "Der Coach liest deine Notizen wie eine aufmerksame Lernpartnerin: Er fragt nach, was fehlt, und zeigt dir, wo zwei Gedanken zusammengehören. Den Text schreibst du selbst – der Coach bleibt bei Fragen, Hinweisen und Lerntipps.",
+    body: "Der Coach liest deine Notizen wie eine aufmerksame Lernpartnerin: Er fragt nach, was fehlt, und zeigt dir, wo zwei Gedanken zusammengehören. Den Text schreibst du selbst – der Coach bringt dich weiter.",
     bullets: [
       "Stellt Fragen, die Lücken sichtbar machen.",
       "Findet Verbindungen zwischen deinen Notizen.",
@@ -603,9 +603,9 @@ export const LANDING = {
   },
   comparison: {
     title: "Warum nicht einfach eine andere App?",
-    intro: "Ein ehrlicher Vergleich: Was Calm Canvas kann, und wo andere Werkzeuge ihre Stärken haben.",
+    intro: "Ein ehrlicher Vergleich: Was Project air kann, und wo andere Werkzeuge ihre Stärken haben.",
     featureLabel: "Funktion",
-    columns: ["Calm Canvas", "Notiz-Apps", "Whiteboards", "KI-Chats"],
+    columns: ["Project air", "Notiz-Apps", "Whiteboards", "KI-Chats"],
     rows: [
       { label: "Visuelle Leinwand für alle Inhalte", values: [true, false, true, false] },
       { label: "Wiki-Links mit Backlinks", values: [true, false, false, false] },
@@ -618,11 +618,11 @@ export const LANDING = {
     no: "Nein",
   },
   audience: {
-    title: "Für wen ist Calm Canvas?",
+    title: "Für wen ist Project air?",
     templatesLabel: "Passende Vorlagen",
     cards: [
-      { title: "Studierende", body: "Prüfungsvorbereitung, Vorlesungsnotizen und Literatur an einem Ort – Claude fragt ab, statt zusammenzufassen.", templates: ["Prüfungsvorbereitung", "Semesterplaner", "Abschlussarbeit"] },
-      { title: "Unternehmen und Technik", body: "Projektdossiers, Anleitungen und Störungssuche: Wissen bleibt auffindbar, auch wenn Kolleg:innen wechseln.", templates: ["Projektplan", "Störungssuche", "Team-Wiki"] },
+      { title: "Studierende", body: "Prüfungsvorbereitung, Vorlesungsnotizen und Literatur an einem Ort – Claude fragt ab, statt zusammenzufassen.", templates: ["Prüfungsvorbereitung", "Semesterplaner", "Karteikarten"] },
+      { title: "Unternehmen und Technik", body: "Projektdossiers, Anleitungen und Störungssuche: Wissen bleibt auffindbar, auch wenn Kolleg:innen wechseln.", templates: ["Projektplan", "Störungssuche", "Wiki-Startseite"] },
       { title: "Designer", body: "Briefing, Referenzen, Palette und Feedback-Runden, ohne dass der rote Faden verloren geht.", templates: ["Marken-Board", "Logo-Projekt", "Feedback-Runde"] },
       { title: "Architekten", body: "Projektbriefing, SIA-Phasen und Materiallisten – mit PDFs und Excel-Dateien direkt auf dem Board.", templates: ["Projektbriefing", "SIA-Phasen", "Baustellenprotokoll"] },
     ],
@@ -645,15 +645,15 @@ export const LANDING = {
   faq: {
     title: "Häufige Fragen",
     items: [
-      { question: "Was ist Calm Canvas?", answer: "Eine ruhige Browser-App, in der Notizen, Dateien und Ideen als Karten auf einer Leinwand liegen und jede Notiz zugleich eine durchsuchbare Wiki-Seite ist." },
+      { question: "Was ist Project air?", answer: "Eine ruhige Browser-App, in der Notizen, Dateien und Ideen als Karten auf einer Leinwand liegen und jede Notiz zugleich eine durchsuchbare Wiki-Seite ist." },
       { question: "Wie schnell kann ich starten?", answer: "Sofort: Konto erstellen, Vorlage wählen, loslegen. Die Vorlage zeigt dir, wo du anfängst." },
       { question: "Welche KI steckt dahinter?", answer: "Claude von Anthropic. Die KI ist ein Werkzeug unter vielen: Du rufst sie auf, wenn du willst, und entscheidest selbst, was du übernimmst." },
       { question: "Schreibt die KI meine Notizen?", answer: "Nein. Claude stellt Fragen, findet Verbindungen und schlägt Zusammenfassungen vor. Deinen Text ändert die KI nie ohne dich." },
-      { question: "Wo liegen meine Daten?", answer: "Deine Notizen und Dateien liegen auf Servern in Zürich. Nur wenn du Claude fragst, geht der betroffene Text an den KI-Anbieter Anthropic in den USA." },
+      { question: "Wo liegen meine Daten?", answer: "Deine Notizen und Dateien liegen auf Servern in Zürich. Nur wenn du Claude fragst, geht der betroffene Text an den KI-Anbieter Anthropic in den US." },
       { question: "Kann ich PDFs und Excel hochladen?", answer: "Ja, PDF- und Excel-Dateien bis 20 MB werden zu Karten mit Vorschau und durchsuchbarem Textauszug." },
       { question: "Welche Vorlagen gibt es?", answer: "42 Vorlagen aus Studium, Unternehmen, Design und Architektur – jede mit Zonen und einer kurzen Anleitung." },
       { question: "Kann ich meine Daten exportieren?", answer: "Ja, alle Notizen und Links als Markdown-ZIP." },
-      { question: "Kostet es etwas?", answer: "Während der Testphase ist Calm Canvas kostenlos." },
+      { question: "Kostet es etwas?", answer: "Während der Testphase ist Project air kostenlos." },
     ],
   },
   finalCta: {
@@ -691,7 +691,7 @@ export const LANDING = {
         ],
       },
     ],
-    copyright: "© 2026 Calm Canvas",
+    copyright: "© 2026 Project air",
     residency: "Daten gespeichert in Zürich",
   },
 } as const;
