@@ -109,8 +109,7 @@
 
 ## Ready now
 
-- `P0-03` Workspace folders, package READMEs and architectures
-- `P0-10` Adapt design rules to this project
+- none
 
 ## Done
 
@@ -118,7 +117,8 @@
 
 ## In progress
 
-- none
+- [ ] `P0-03` Workspace folders, package READMEs and architectures — status: `in_progress` — owner: —
+- [ ] `P0-10` Adapt design rules to this project — status: `in_progress` — owner: —
 
 ## Blocked / failed
 
@@ -126,13 +126,11 @@
 
 ## Open
 
-- [ ] `P0-03` Workspace folders, package READMEs and architectures — status: `pending` — owner: —
 - [ ] `P0-04` Workspaces, build orchestration and pinned versions — status: `pending` — owner: —
 - [ ] `P0-06` Per-slot dev setup and teardown — status: `pending` — owner: —
 - [ ] `P0-07` Local services compose — status: `pending` — owner: —
 - [ ] `P0-08` CI skeleton — status: `pending` — owner: —
 - [ ] `P0-09` Pinned Polier for agents and CI — status: `pending` — owner: —
-- [ ] `P0-10` Adapt design rules to this project — status: `pending` — owner: —
 - [ ] `P0-11` Canvas acceptance catalogue — status: `pending` — owner: —
 - [ ] `P0-12` Design tokens and icons in ui-kit — status: `pending` — owner: —
 - [ ] `P0-13` design-check gate — status: `pending` — owner: —
@@ -141,6 +139,14 @@
 - [ ] `P0-16` Dependency updates and Polier update check — status: `pending` — owner: —
 - [ ] `P0-17` RELEASING.md and release 0.0.1 — status: `pending` — owner: —
 - [ ] `P0-18` i18n scaffold and language-check gate — status: `pending` — owner: —
+
+<!-- polier:claims -->
+## Claims
+
+- `P0-03` in progress by dsh since 2026-10-25T08:09:51+00:00 — worktree: /Users/rasulatashev/Desktop/KI Projekte/Project air-P0-03 · slot 1
+- `P0-10` in progress by dsh since 2026-10-25T08:09:51+00:00 — worktree: /Users/rasulatashev/Desktop/KI Projekte/Project air-P0-10 · slot 2
+
+<!-- /polier:claims -->
 
 ## Decisions
 
