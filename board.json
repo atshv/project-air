@@ -2746,6 +2746,63 @@
       ],
       "branch": "task/P3-05",
       "worktree": null
+    },
+    {
+      "id": "P3-06",
+      "title": "Contract-valid account IDs (Kratos identity mapping)",
+      "goal": "The platform maps external Kratos identity ids to contract-valid UUIDv7 account ids, so real sessions produce v7 ownerId values; a migration adds the mapping, session resolution creates or reuses it, and api-tests cover the v4-identity path.",
+      "why": "Kratos identity ids are UUIDv4 while contract entities require UUIDv7; without mapping real users cannot create contract-valid workspaces (P3-04 review F2).",
+      "satisfies": [
+        "D9"
+      ],
+      "status": "pending",
+      "depends_on": [
+        "P3-05"
+      ],
+      "complexity": 4,
+      "stage": "backend-core",
+      "parallel_group": null,
+      "exclusive": [
+        "db"
+      ],
+      "scope_write": [
+        "services/platform/",
+        "infra/migrations/",
+        "docs/adr/",
+        ".changes/"
+      ],
+      "scope_read": [
+        "ARCHITECTURE.md",
+        "AGENTS.md",
+        "STATUS.md",
+        "docs/module-map.md",
+        "docs/quality.md",
+        "docs/contracts.md",
+        "packages/contracts/schemas/account.schema.json",
+        "packages/contracts/generated/types.ts",
+        "docs/adr/ADR-0008-api-session-model.md",
+        "infra/migrations/",
+        "services/platform/"
+      ],
+      "acceptance": [
+        "A1",
+        "A2",
+        "A3",
+        "A4"
+      ],
+      "gates": [
+        "board-check",
+        "unit",
+        "api-tests"
+      ],
+      "owner": null,
+      "branch": "task/P3-06",
+      "worktree": null,
+      "round": 0,
+      "evidence": [],
+      "scope_write_forbidden": [
+        "reference/"
+      ]
     }
   ],
   "decisions": [

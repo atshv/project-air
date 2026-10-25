@@ -36,7 +36,7 @@
 - Owner decision: `continue`
 - Exit gates: `api-tests`, `rls-tests` (missing record)
 - Exit criteria: API suite covers allow and deny for every route; RLS tests green.; A script creates account, workspace, board and note via the SDK; a second account sees nothing.
-- Tasks: P3-01, P3-02, P3-03, P3-04, P3-05
+- Tasks: P3-01, P3-02, P3-03, P3-04, P3-05, P3-06
 
 ### Stage 5 — `engine-core` Engine core
 
@@ -178,6 +178,7 @@
 - [ ] `P0-16` Dependency updates and Polier update check — status: `pending` — owner: —
 - [ ] `P0-17` RELEASING.md and release 0.0.1 — status: `pending` — owner: —
 - [ ] `P3-05` SDK, RLS tests and backend acceptance — status: `pending` — owner: —
+- [ ] `P3-06` Contract-valid account IDs (Kratos identity mapping) — status: `pending` — owner: —
 
 ## Decisions
 
