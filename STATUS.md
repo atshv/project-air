@@ -117,10 +117,7 @@
 
 ## Ready now
 
-- `P0-09` Pinned Polier for agents and CI
-  - P0-08: Closed P0-08: .github/workflows/ci.yml runs board-check before install, then install/lint/typecheck/test/boundaries/design-check/language-check/changelog-entry on PRs.
-  - P0-08: Locally proven with actionlint (Docker) and every run-step executed in order; act image unavailable, real run deferred to remote.
-  - P0-08: P0-09 pins Polier through tools/polier.sh and refines the CI; actions still use major tags and need exact pins + versions rows.
+- none
 
 ## Done
 
@@ -141,7 +138,7 @@
 
 ## In progress
 
-- none
+- [ ] `P0-09` Pinned Polier for agents and CI — status: `in_progress` — owner: —
 
 ## Blocked / failed
 
@@ -150,10 +147,16 @@
 ## Open
 
 - [ ] `P0-02` Protect main and document repository settings — status: `pending` — owner: —
-- [ ] `P0-09` Pinned Polier for agents and CI — status: `pending` — owner: —
 - [ ] `P0-15` Release command and tag-based CI release — status: `pending` — owner: —
 - [ ] `P0-16` Dependency updates and Polier update check — status: `pending` — owner: —
 - [ ] `P0-17` RELEASING.md and release 0.0.1 — status: `pending` — owner: —
+
+<!-- polier:claims -->
+## Claims
+
+- `P0-09` in progress by dsh since 2026-10-25T10:25:00+00:00 — worktree: /Users/rasulatashev/Desktop/KI Projekte/Project air-P0-09 · slot 1
+
+<!-- /polier:claims -->
 
 ## Decisions
 
