@@ -1,8 +1,9 @@
 # Project air — packages/engine.
 #
 # The toolchain is pinned in docs/versions.md: CMake 4.4.4 and Emscripten 6.0.13.
-# Native builds produce the `air_engine` library and the CTest suite
-# `engine_unit_tests`; `emcmake` builds the same sources into engine.js + engine.wasm.
+# Native builds produce the `air_engine` library and the CTest suites
+# `engine_unit_tests` and `engine_core_tests`; `emcmake` builds the same sources
+# into engine.js + engine.wasm.
 
 cmake_minimum_required(VERSION 4.4)
 
@@ -23,8 +24,15 @@ set(AIR_ENGINE_INCLUDE_DIRS
   "${CMAKE_CURRENT_SOURCE_DIR}/../ui-kit"
 )
 
-# One translation unit feeds both the native library and the WASM artifact.
-add_library(air_engine_objects OBJECT src/engine.cpp)
+# One set of translation units feeds the native library, the tests and the WASM
+# artifact.
+add_library(air_engine_objects OBJECT
+  src/camera.cpp
+  src/doc.cpp
+  src/engine.cpp
+  src/render.cpp
+  src/spatial.cpp
+)
 target_include_directories(air_engine_objects PUBLIC ${AIR_ENGINE_INCLUDE_DIRS})
 
 add_library(air_engine STATIC $<TARGET_OBJECTS:air_engine_objects>)
@@ -50,4 +58,8 @@ else()
   add_executable(engine_unit_tests test/engine_test.cpp)
   target_link_libraries(engine_unit_tests PRIVATE air_engine)
   add_test(NAME engine_unit_tests COMMAND engine_unit_tests)
+
+  add_executable(engine_core_tests test/engine_core_test.cpp)
+  target_link_libraries(engine_core_tests PRIVATE air_engine)
+  add_test(NAME engine_core_tests COMMAND engine_core_tests)
 endif()

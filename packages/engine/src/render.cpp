@@ -1,0 +1,103 @@
+#include "engine/render.h"
+
+#include <algorithm>
+#include <cmath>
+
+#include "tokens.h"
+
+namespace air::engine {
+
+const char* toneColor(Tone tone) {
+  switch (tone) {
+    case Tone::neutral:
+      // Provisional spike mapping (see doc.h): the contract carries no tone yet.
+      return tokens::card;
+    case Tone::toneA:
+      return tokens::tone_a;
+    case Tone::toneB:
+      return tokens::tone_b;
+    case Tone::toneC:
+      return tokens::tone_c;
+    case Tone::toneD:
+      return tokens::tone_d;
+    case Tone::toneE:
+      return tokens::tone_e;
+  }
+  return tokens::card;
+}
+
+CommandBuffer::CommandBuffer() { reserve(Document::kMaxRectangles); }
+
+void CommandBuffer::reserve(std::size_t maxInstances) {
+  instances_.reserve(maxInstances);
+  candidates_.reserve(maxInstances);
+}
+
+void CommandBuffer::clear() {
+  instances_.clear();
+  candidates_.clear();
+}
+
+const std::uint8_t* CommandBuffer::bytes() const {
+  if (instances_.empty()) {
+    return nullptr;
+  }
+  return reinterpret_cast<const std::uint8_t*>(instances_.data());
+}
+
+std::size_t CommandBuffer::byteSize() const { return instances_.size() * sizeof(Instance); }
+
+Status CommandBuffer::build(const Document& document, const Camera& camera,
+                            double viewportWidth, double viewportHeight,
+                            const SpatialIndex& spatial) {
+  if (!spatial.isCurrent(document)) {
+    return Status::failure(
+        "spatial index is stale or belongs to another document; rebuild it for this document");
+  }
+  if (!(std::isfinite(viewportWidth) && std::isfinite(viewportHeight) && viewportWidth > 0.0 &&
+        viewportHeight > 0.0)) {
+    return Status::failure("viewport size must be a positive finite number");
+  }
+
+  instances_.clear();
+  candidates_.clear();
+
+  const Bounds visible = camera.visibleWorldBounds(viewportWidth, viewportHeight);
+  spatial.query(visible, candidates_);
+
+  // Defence in depth: a foreign or corrupted index must never cause an
+  // out-of-bounds read while ranking; fail with a reason instead.
+  const std::vector<std::uint32_t>& rank = document.drawOrderRank();
+  for (const std::uint32_t candidate : candidates_) {
+    if (candidate >= rank.size()) {
+      candidates_.clear();
+      return Status::failure("spatial index returned an out-of-range rectangle index");
+    }
+  }
+
+  // Candidates arrive in cell order with duplicates; ordering them by the
+  // document's draw-order rank makes the buffer stable and dedupes exactly.
+  std::sort(candidates_.begin(), candidates_.end(), [&rank](std::uint32_t left, std::uint32_t right) {
+    return rank[left] < rank[right];
+  });
+  candidates_.erase(std::unique(candidates_.begin(), candidates_.end()), candidates_.end());
+
+  const std::vector<Rectangle>& rectangles = document.rectangles();
+  const double zoom = camera.zoom();
+  for (const std::uint32_t index : candidates_) {
+    const Rectangle& rectangle = rectangles[index];
+    if (!rectangle.bounds().intersects(visible)) {
+      continue;
+    }
+    const Point topLeft = camera.worldToScreen({rectangle.x, rectangle.y});
+    instances_.push_back(Instance{static_cast<float>(topLeft.x), static_cast<float>(topLeft.y),
+                                  static_cast<float>(rectangle.width * zoom),
+                                  static_cast<float>(rectangle.height * zoom),
+                                  static_cast<std::uint32_t>(rectangle.tone),
+                                  static_cast<std::uint32_t>(rectangle.layer)});
+  }
+
+  return Status::success();
+}
+
+}  // namespace air::engine

@@ -4,7 +4,8 @@
 //
 // The exported surface is a narrow C ABI so the TypeScript bridge can load the
 // module without a binding generator. The engine spike starts with the version
-// call; later tasks add the command buffer and the renderer.
+// call; the core modules (doc, camera, spatial, render) and the render command
+// buffer live next to it, and P2-03 adds the WebGL2 renderer and C API.
 
 extern "C" {
 

@@ -119,7 +119,10 @@
 
 ## Ready now
 
-- none
+- `P2-03` WebGL2 renderer, TS bridge and engine playground
+  - P2-02: Closed P2-02: C++20 core doc/camera/spatial/render with a flat 50k document, token layers, culling and a deterministic 24-byte command buffer; 2 CTest suites green (50k ~11 ms).
+  - P2-02: Round-1 review failed (stale cross-document index); fixed with document identity binding, atomic validation and regressions; round-2 pass. Minors: failed build keeps instances, panByScreen overflow.
+  - P2-02: Interface for P2-03: Document is non-copyable with instanceId; camera mutators return Status; instance layout is fixed by static_assert; docs/gates cpp-unit names both suites.
 
 ## Done
 
@@ -150,10 +153,11 @@
 - [x] `P1-06` Contract documentation, ADR and 0.1.0 metadata — status: `done` — owner: —
 - [x] `P1-07` Contract overview in the preview — status: `done` — owner: —
 - [x] `P2-01` Engine toolchain and native + WASM build scaffold — status: `done` — owner: —
+- [x] `P2-02` Engine core model and render command buffer — status: `done` — owner: —
 
 ## In progress
 
-- [ ] `P2-02` Engine core model and render command buffer — status: `in_progress` — owner: —
+- none
 
 ## Blocked / failed
 
@@ -168,13 +172,6 @@
 - [ ] `P2-03` WebGL2 renderer, TS bridge and engine playground — status: `pending` — owner: —
 - [ ] `P2-04` Performance baseline and measured report — status: `pending` — owner: —
 - [ ] `P2-05` Engine architecture ADR, module docs and stage showcase — status: `pending` — owner: —
-
-<!-- polier:claims -->
-## Claims
-
-- `P2-02` in progress by dsh since 2026-10-25T13:52:30+00:00 — worktree: /Users/rasulatashev/Desktop/KI Projekte/Project air-P2-02 · slot 1
-
-<!-- /polier:claims -->
 
 ## Decisions
 

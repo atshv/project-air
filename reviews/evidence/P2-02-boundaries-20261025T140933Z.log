@@ -1,0 +1,40 @@
+# P2-02 boundaries check (not a board gate of this task; brief: run as a check)
+# command: python3 "/Users/rasulatashev/Desktop/Polier-main/tools/boundaries.py" .
+# date: 2026-10-25T14:09:36Z
+
+WARN: packages/contracts/test/cpp/parity.cpp:10: cannot resolve include 'contract.h' to a package
+WARN: packages/engine/include/engine/camera.h:3: cannot resolve include 'engine/geometry.h' to a package
+WARN: packages/engine/include/engine/camera.h:4: cannot resolve include 'engine/status.h' to a package
+WARN: packages/engine/include/engine/doc.h:8: cannot resolve include 'contract.h' to a package
+WARN: packages/engine/include/engine/doc.h:9: cannot resolve include 'engine/geometry.h' to a package
+WARN: packages/engine/include/engine/doc.h:10: cannot resolve include 'engine/status.h' to a package
+WARN: packages/engine/include/engine/doc.h:11: cannot resolve include 'tokens.h' to a package
+WARN: packages/engine/include/engine/render.h:7: cannot resolve include 'engine/camera.h' to a package
+WARN: packages/engine/include/engine/render.h:8: cannot resolve include 'engine/doc.h' to a package
+WARN: packages/engine/include/engine/render.h:9: cannot resolve include 'engine/spatial.h' to a package
+WARN: packages/engine/include/engine/render.h:10: cannot resolve include 'engine/status.h' to a package
+WARN: packages/engine/include/engine/spatial.h:7: cannot resolve include 'engine/doc.h' to a package
+WARN: packages/engine/include/engine/spatial.h:8: cannot resolve include 'engine/geometry.h' to a package
+WARN: packages/engine/src/camera.cpp:1: cannot resolve include 'engine/camera.h' to a package
+WARN: packages/engine/src/camera.cpp:6: cannot resolve include 'tokens.h' to a package
+WARN: packages/engine/src/doc.cpp:1: cannot resolve include 'engine/doc.h' to a package
+WARN: packages/engine/src/engine.cpp:1: cannot resolve include 'engine/engine.h' to a package
+WARN: packages/engine/src/engine.cpp:5: cannot resolve include 'contract.h' to a package
+WARN: packages/engine/src/engine.cpp:6: cannot resolve include 'tokens.h' to a package
+WARN: packages/engine/src/render.cpp:1: cannot resolve include 'engine/render.h' to a package
+WARN: packages/engine/src/render.cpp:6: cannot resolve include 'tokens.h' to a package
+WARN: packages/engine/src/spatial.cpp:1: cannot resolve include 'engine/spatial.h' to a package
+WARN: packages/engine/test/engine_core_test.cpp:11: cannot resolve include 'contract.h' to a package
+WARN: packages/engine/test/engine_core_test.cpp:12: cannot resolve include 'engine/camera.h' to a package
+WARN: packages/engine/test/engine_core_test.cpp:13: cannot resolve include 'engine/doc.h' to a package
+WARN: packages/engine/test/engine_core_test.cpp:14: cannot resolve include 'engine/render.h' to a package
+WARN: packages/engine/test/engine_core_test.cpp:15: cannot resolve include 'engine/spatial.h' to a package
+WARN: packages/engine/test/engine_core_test.cpp:16: cannot resolve include 'engine/status.h' to a package
+WARN: packages/engine/test/engine_core_test.cpp:18: cannot resolve include 'tokens.h' to a package
+WARN: packages/engine/test/engine_test.cpp:4: cannot resolve include 'contract.h' to a package
+WARN: packages/engine/test/engine_test.cpp:5: cannot resolve include 'engine/engine.h' to a package
+WARN: packages/engine/test/engine_test.cpp:6: cannot resolve include 'tokens.h' to a package
+WARN: tools/design-check/test/fixtures/clean/packages/engine/src/render/clean.cc:2: cannot resolve include 'tokens.h' to a package
+OK: /Users/rasulatashev/Desktop/KI Projekte/Project air-P2-02: 21 package(s) respect the import boundaries (33 warning(s))
+
+exit_code=0

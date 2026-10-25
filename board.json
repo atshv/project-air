@@ -2172,12 +2172,15 @@
       ]
     },
     {
-      "status": "in_progress",
+      "status": "done",
       "stage": "engine-spike",
       "parallel_group": null,
       "owner": null,
       "round": 0,
-      "evidence": [],
+      "evidence": [
+        "reviews/evidence/P2-02-board-check-20261025T140925Z.json",
+        "reviews/evidence/P2-02-cpp-unit-20261025T140929Z.json"
+      ],
       "scope_write_forbidden": [
         "reference/"
       ],
@@ -2218,7 +2221,12 @@
         "cpp-unit"
       ],
       "branch": "task/P2-02",
-      "worktree": "../Project air-P2-02"
+      "worktree": null,
+      "handoff": [
+        "Closed P2-02: C++20 core doc/camera/spatial/render with a flat 50k document, token layers, culling and a deterministic 24-byte command buffer; 2 CTest suites green (50k ~11 ms).",
+        "Round-1 review failed (stale cross-document index); fixed with document identity binding, atomic validation and regressions; round-2 pass. Minors: failed build keeps instances, panByScreen overflow.",
+        "Interface for P2-03: Document is non-copyable with instanceId; camera mutators return Status; instance layout is fixed by static_assert; docs/gates cpp-unit names both suites."
+      ]
     },
     {
       "status": "pending",

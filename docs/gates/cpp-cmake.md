@@ -2,13 +2,14 @@
 
 > Project gates for the C++ engine. Toolchain: CMake 4.4.4 and Apple clang 21.0.0 with C++20, pinned
 > in [docs/versions.md](../versions.md). The build drives `packages/engine/CMakeLists.txt`, which
-> declares the library target `air_engine` and the test executable `engine_unit_tests`.
+> declares the library target `air_engine` and the test executables `engine_unit_tests` and
+> `engine_core_tests`.
 
 | Gate | Command | Expected |
 | --- | --- | --- |
 | `configure` | `cmake -S packages/engine -B packages/engine/build -DCMAKE_BUILD_TYPE=Debug` | exit 0, "Configuring done" |
-| `build` | `cmake --build packages/engine/build --parallel` | exit 0, "Built target air_engine" and "Built target engine_unit_tests" |
-| `cpp-unit` | `cmake -S packages/engine -B packages/engine/build -DCMAKE_BUILD_TYPE=Debug && cmake --build packages/engine/build --parallel && ctest --test-dir packages/engine/build --output-on-failure` | exit 0, "100% tests passed", test `engine_unit_tests` |
+| `build` | `cmake --build packages/engine/build --parallel` | exit 0, "Built target air_engine", "Built target engine_unit_tests" and "Built target engine_core_tests" |
+| `cpp-unit` | `cmake -S packages/engine -B packages/engine/build -DCMAKE_BUILD_TYPE=Debug && cmake --build packages/engine/build --parallel && ctest --test-dir packages/engine/build --output-on-failure` | exit 0, "100% tests passed", tests `engine_unit_tests` and `engine_core_tests` |
 
 - Target names, sources, include paths and the C++ standard come from
   `packages/engine/CMakeLists.txt`; do not rename a target inside a gate.
