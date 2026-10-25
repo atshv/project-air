@@ -120,10 +120,7 @@
 
 ## Ready now
 
-- `P3-06` Contract-valid account IDs (Kratos identity mapping)
-  - P3-05: Closed P3-05: dependency-free @project-air/sdk with createClient and typed workspaces/boards/notes/cards CRUD, envelopes, UUIDv7 requestIds, typed ApiError; 13 SDK tests; ADR-0008 API/session model.
-  - P3-05: rls-tests as app_user (7 tests: FORCE RLS, A/B isolation via selects/joins, foreign writes fail, no leak on reuse); tools/dev/acceptance-backend.mjs boots auth+platform and proves the stage exit.
-  - P3-05: Review pass; 3 minors: SDK dist/declaration layout for web imports + RLS helper coupling (follow-ups before the web stage), README wording fixed. P3-06 account mapping is next.
+- none
 
 ## Done
 
@@ -166,7 +163,7 @@
 
 ## In progress
 
-- none
+- [ ] `P3-06` Contract-valid account IDs (Kratos identity mapping) — status: `in_progress` — owner: —
 
 ## Blocked / failed
 
@@ -178,7 +175,13 @@
 - [ ] `P0-15` Release command and tag-based CI release — status: `pending` — owner: —
 - [ ] `P0-16` Dependency updates and Polier update check — status: `pending` — owner: —
 - [ ] `P0-17` RELEASING.md and release 0.0.1 — status: `pending` — owner: —
-- [ ] `P3-06` Contract-valid account IDs (Kratos identity mapping) — status: `pending` — owner: —
+
+<!-- polier:claims -->
+## Claims
+
+- `P3-06` in progress by dsh since 2026-10-25T19:25:48+00:00 — worktree: /Users/rasulatashev/Desktop/KI Projekte/Project air-P3-06 · slot 1
+
+<!-- /polier:claims -->
 
 ## Decisions
 

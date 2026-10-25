@@ -2765,7 +2765,7 @@
       "satisfies": [
         "D9"
       ],
-      "status": "pending",
+      "status": "in_progress",
       "depends_on": [
         "P3-05"
       ],
@@ -2807,7 +2807,7 @@
       ],
       "owner": null,
       "branch": "task/P3-06",
-      "worktree": null,
+      "worktree": "../Project air-P3-06",
       "round": 0,
       "evidence": [],
       "scope_write_forbidden": [
