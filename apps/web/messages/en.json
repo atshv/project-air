@@ -33,15 +33,22 @@
     }
   },
   "errors": {
+    "authRequired": "You need to sign in for this action.",
     "boardNotFound": "This board does not exist or does not belong to your account.",
+    "conflict": "This content changed in the meantime. Reload it.",
     "createFailed": "The card could not be created. Please try again.",
+    "forbidden": "You cannot change this.",
     "generic": "Something went wrong. Please try again.",
+    "internal": "Something went wrong. Please try again.",
     "invalidPosition": "The position is invalid.",
     "moveFailed": "The position could not be saved. Please try again.",
-    "noteNotFound": "The note was not found.",
     "notAuthorized": "Please sign in again.",
+    "noteNotFound": "The note was not found.",
+    "notFound": "This item was not found.",
+    "rateLimited": "Too many requests. Please wait a moment.",
     "removeFailed": "The card could not be removed. Please try again.",
-    "saveFailed": "Saving failed. Please try again."
+    "saveFailed": "Saving failed. Please try again.",
+    "validation": "Check your input."
   },
   "note": {
     "editorLabel": "Note content",

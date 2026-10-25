@@ -1,0 +1,10 @@
+{
+  "schema": "schemas/api/errors.schema.json",
+  "valid": true,
+  "reason": "RATE_LIMITED maps to the message key errors.rateLimited",
+  "data": {
+    "requestId": "0192f0d0-7000-7000-8000-0000000000d1",
+    "code": "RATE_LIMITED",
+    "messageKey": "errors.rateLimited"
+  }
+}

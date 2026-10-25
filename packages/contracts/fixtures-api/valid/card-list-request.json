@@ -1,0 +1,9 @@
+{
+  "schema": "schemas/api/card.schema.json",
+  "valid": true,
+  "reason": "list-request for the first page of cards",
+  "data": {
+    "requestId": "0192f0d0-7000-7000-8000-0000000000d1",
+    "limit": 50
+  }
+}

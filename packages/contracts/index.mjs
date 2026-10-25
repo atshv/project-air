@@ -2,9 +2,10 @@
 //
 // The contract is the single JSON Schema source for the board data model: one
 // schema per entity, one root board-content schema, and valid/invalid fixtures
-// for every schema. It also defines the WebSocket sync protocol as one versioned
-// schema with its own fixtures. This module exports the stable paths; it has no
-// runtime dependencies.
+// for every schema. It also defines the WebSocket sync protocol and the REST API
+// resource/error envelopes as versioned schemas with their own fixtures. This
+// module exports the stable paths and vocabularies; it has no runtime
+// dependencies.
 
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -46,8 +47,7 @@ export const SYNC_SCHEMA_ID = `${CONTRACT_BASE_URI}sync.schema.json`;
 
 /**
  * The 12 sync message types with their direction and their `$defs` key in
- * `schemas/sync/sync.schema.json`. The README and ARCHITECTURE message tables
- * list the same rows.
+ * `schemas/sync/sync.schema.json`. The README message table lists the same rows.
  */
 export const SYNC_MESSAGE_TYPES = Object.freeze(
   [
@@ -80,6 +80,50 @@ export const SYNC_FIXTURE_DIRS = Object.freeze({
 export const GATE_FIXTURE_DIRS = Object.freeze({
   valid: "fixtures-gate/valid",
   invalid: "fixtures-gate/invalid",
+});
+
+/** REST API resources with request/response envelopes. */
+export const API_RESOURCES = Object.freeze(["workspace", "board", "note", "card"]);
+
+/** REST API schema files, relative to the package directory. */
+export const API_SCHEMA_FILES = Object.freeze({
+  workspace: "schemas/api/workspace.schema.json",
+  board: "schemas/api/board.schema.json",
+  note: "schemas/api/note.schema.json",
+  card: "schemas/api/card.schema.json",
+  errors: "schemas/api/errors.schema.json",
+});
+
+/** Error codes of contract 0.1.0: stable UPPER_SNAKE wire codes, never translated. */
+export const ERROR_CODES = Object.freeze([
+  "AUTH_REQUIRED",
+  "FORBIDDEN",
+  "NOT_FOUND",
+  "VALIDATION",
+  "CONFLICT",
+  "RATE_LIMITED",
+  "INTERNAL",
+]);
+
+/**
+ * Translation key per wire error code: `errors.<camelCase(code)>`. The keys are
+ * English lowerCamelCase because `language-check` rejects uppercase and
+ * underscore segments; the values live in `apps/web/messages` (AD-8).
+ */
+export const ERROR_MESSAGE_KEYS = Object.freeze({
+  AUTH_REQUIRED: "errors.authRequired",
+  FORBIDDEN: "errors.forbidden",
+  NOT_FOUND: "errors.notFound",
+  VALIDATION: "errors.validation",
+  CONFLICT: "errors.conflict",
+  RATE_LIMITED: "errors.rateLimited",
+  INTERNAL: "errors.internal",
+});
+
+/** API fixture directories by validity, relative to the package directory. */
+export const API_FIXTURE_DIRS = Object.freeze({
+  valid: "fixtures-api/valid",
+  invalid: "fixtures-api/invalid",
 });
 
 /** Absolute package directory, used to resolve the exported relative paths. */
@@ -156,4 +200,28 @@ export function gateFixturePath(validity, file) {
     throw new Error(`unknown gate fixture validity "${validity}"`);
   }
   return join(PACKAGE_DIR, GATE_FIXTURE_DIRS[validity], file);
+}
+
+/** Absolute path of one REST API schema file. */
+export function apiSchemaPath(name) {
+  if (!Object.hasOwn(API_SCHEMA_FILES, name)) {
+    throw new Error(`unknown API schema "${name}"`);
+  }
+  return join(PACKAGE_DIR, API_SCHEMA_FILES[name]);
+}
+
+/** Versioned `$id` of one REST API schema. */
+export function apiSchemaId(name) {
+  if (!Object.hasOwn(API_SCHEMA_FILES, name)) {
+    throw new Error(`unknown API schema "${name}"`);
+  }
+  return `${CONTRACT_BASE_URI}api/${name}.schema.json`;
+}
+
+/** Absolute path of one REST API fixture file. */
+export function apiFixturePath(validity, file) {
+  if (!Object.hasOwn(API_FIXTURE_DIRS, validity)) {
+    throw new Error(`unknown API fixture validity "${validity}"`);
+  }
+  return join(PACKAGE_DIR, API_FIXTURE_DIRS[validity], file);
 }

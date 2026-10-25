@@ -1,0 +1,9 @@
+{
+  "schema": "schemas/api/workspace.schema.json",
+  "valid": false,
+  "reason": "a response must carry the workspace under the workspace property",
+  "data": {
+    "requestId": "0192f0d0-7000-7000-8000-0000000000d1",
+    "workspaces": []
+  }
+}

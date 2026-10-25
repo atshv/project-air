@@ -1,0 +1,9 @@
+{
+  "schema": "schemas/api/note.schema.json",
+  "valid": false,
+  "reason": "list-response must carry nextCursor (null at the end of the list)",
+  "data": {
+    "requestId": "0192f0d0-7000-7000-8000-0000000000d1",
+    "items": []
+  }
+}

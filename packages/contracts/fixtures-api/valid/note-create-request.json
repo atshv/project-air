@@ -1,0 +1,12 @@
+{
+  "schema": "schemas/api/note.schema.json",
+  "valid": true,
+  "reason": "create-request with the client-settable note fields",
+  "data": {
+    "requestId": "0192f0d0-7000-7000-8000-0000000000d1",
+    "note": {
+      "workspaceId": "0192f0a2-7000-7000-8000-000000000002",
+      "title": "Kickoff"
+    }
+  }
+}

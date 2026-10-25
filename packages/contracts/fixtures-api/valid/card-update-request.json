@@ -1,0 +1,14 @@
+{
+  "schema": "schemas/api/card.schema.json",
+  "valid": true,
+  "reason": "update-request with a non-empty changes object",
+  "data": {
+    "requestId": "0192f0d0-7000-7000-8000-0000000000d1",
+    "cardId": "0192f0a6-7000-7000-8000-000000000006",
+    "changes": {
+      "zoneId": "0192f0a5-7000-7000-8000-000000000005",
+      "x": 600,
+      "y": 320
+    }
+  }
+}

@@ -1,8 +1,8 @@
 // Shared helpers for the contract test suites: file access, the versioned
 // constants and a small structural JSON Schema validator for the keywords this
 // contract uses (type, required, properties, additionalProperties, enum, const,
-// pattern, minLength, maxLength, minimum, items, minItems, minProperties, not,
-// allOf, anyOf, oneOf, if/then and $ref).
+// pattern, minLength, maxLength, minimum, maximum, items, minItems, maxItems,
+// uniqueItems, minProperties, not, allOf, anyOf, oneOf, if/then and $ref).
 
 import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
@@ -95,6 +95,7 @@ export function validate(value, schema, document) {
     if (schema.pattern !== undefined && !new RegExp(schema.pattern).test(value)) return false;
   }
   if (typeof value === "number" && schema.minimum !== undefined && value < schema.minimum) return false;
+  if (typeof value === "number" && schema.maximum !== undefined && value > schema.maximum) return false;
   if (Array.isArray(value)) {
     if (schema.minItems !== undefined && value.length < schema.minItems) return false;
     if (schema.maxItems !== undefined && value.length > schema.maxItems) return false;

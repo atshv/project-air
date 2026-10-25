@@ -29,6 +29,26 @@ a German text is only ever a value.
 - Always `ss`, never the German sharp-s character; terms follow `docs/i18n/glossary.md`.
 - Placeholders are named and never translated (`{count}`, `{name}`).
 
+## Error keys
+
+The REST API error envelope (`packages/contracts/schemas/api/errors.schema.json`) names a stable,
+language-neutral UPPER_SNAKE wire `code` and a required `messageKey`. The key is exactly
+`errors.<camelCase(code)>`, because every key segment must be English `lowerCamelCase`:
+
+| Code | Message key |
+| --- | --- |
+| `AUTH_REQUIRED` | `errors.authRequired` |
+| `FORBIDDEN` | `errors.forbidden` |
+| `NOT_FOUND` | `errors.notFound` |
+| `VALIDATION` | `errors.validation` |
+| `CONFLICT` | `errors.conflict` |
+| `RATE_LIMITED` | `errors.rateLimited` |
+| `INTERNAL` | `errors.internal` |
+
+Never rename a code to fit a key: the code stays UPPER_SNAKE and the key stays lowerCamelCase. The
+seven keys live under `errors` here; `language-check` requires them in every locale, and
+`packages/contracts/test/api-errors.test.mjs` checks the mapping.
+
 ## The pseudo-locale `en-XA`
 
 `en-XA.json` is generated deterministically from `de.json`: every literal character gets an

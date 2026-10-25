@@ -1,0 +1,15 @@
+{
+  "schema": "schemas/api/board.schema.json",
+  "valid": false,
+  "reason": "a create-request must not carry server-assigned fields such as id",
+  "data": {
+    "requestId": "0192f0d0-7000-7000-8000-0000000000d1",
+    "board": {
+      "id": "0192f0a3-7000-7000-8000-000000000003",
+      "workspaceId": "0192f0a2-7000-7000-8000-000000000002",
+      "ownerId": "0192f0a1-7000-7000-8000-000000000001",
+      "title": "Q1 planning",
+      "visibility": "workspace"
+    }
+  }
+}

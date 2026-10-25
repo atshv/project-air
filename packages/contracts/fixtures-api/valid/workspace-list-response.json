@@ -1,0 +1,10 @@
+{
+  "schema": "schemas/api/workspace.schema.json",
+  "valid": true,
+  "reason": "an empty workspace list stays valid with items [] and nextCursor null",
+  "data": {
+    "requestId": "0192f0d0-7000-7000-8000-0000000000d1",
+    "items": [],
+    "nextCursor": null
+  }
+}

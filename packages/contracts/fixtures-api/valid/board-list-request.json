@@ -1,0 +1,9 @@
+{
+  "schema": "schemas/api/board.schema.json",
+  "valid": true,
+  "reason": "list-request for the first page of boards",
+  "data": {
+    "requestId": "0192f0d0-7000-7000-8000-0000000000d1",
+    "limit": 50
+  }
+}

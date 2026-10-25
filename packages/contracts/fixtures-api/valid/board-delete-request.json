@@ -1,0 +1,9 @@
+{
+  "schema": "schemas/api/board.schema.json",
+  "valid": true,
+  "reason": "delete-request naming the board by id",
+  "data": {
+    "requestId": "0192f0d0-7000-7000-8000-0000000000d1",
+    "boardId": "0192f0a3-7000-7000-8000-000000000003"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "schema": "schemas/api/workspace.schema.json",
+  "valid": false,
+  "reason": "a create-request must not carry server-assigned fields such as id",
+  "data": {
+    "requestId": "0192f0d0-7000-7000-8000-0000000000d1",
+    "workspace": {
+      "id": "0192f0a2-7000-7000-8000-000000000002",
+      "name": "Research lab",
+      "ownerId": "0192f0a1-7000-7000-8000-000000000001"
+    }
+  }
+}

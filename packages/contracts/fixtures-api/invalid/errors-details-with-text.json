@@ -1,0 +1,15 @@
+{
+  "schema": "schemas/api/errors.schema.json",
+  "valid": false,
+  "reason": "details must carry field paths, never user text",
+  "data": {
+    "requestId": "0192f0d0-7000-7000-8000-0000000000d1",
+    "code": "VALIDATION",
+    "messageKey": "errors.validation",
+    "details": {
+      "fields": [
+        "Board title is missing"
+      ]
+    }
+  }
+}

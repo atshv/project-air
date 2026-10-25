@@ -1909,7 +1909,7 @@
       "satisfies": [
         "D7"
       ],
-      "status": "in_progress",
+      "status": "done",
       "depends_on": [
         "P1-04"
       ],
@@ -1948,11 +1948,21 @@
       ],
       "owner": null,
       "branch": "task/P1-05",
-      "worktree": "../Project air-P1-05",
+      "worktree": null,
       "round": 0,
-      "evidence": [],
+      "evidence": [
+        "reviews/evidence/P1-05-board-check-20261025T123014Z.json",
+        "reviews/evidence/P1-05-unit-20261025T123018Z.json",
+        "reviews/evidence/P1-05-codegen-20261025T123023Z.json",
+        "reviews/evidence/P1-05-language-check-20261025T123023Z.json"
+      ],
       "scope_write_forbidden": [
         "reference/"
+      ],
+      "handoff": [
+        "Closed P1-05: REST envelopes for workspace/board/note/card (list/get/create/update/delete, requestId, cursor+limit 1-100, items/nextCursor) with refs to the P1-01 entities; 55 API fixtures.",
+        "errors.schema.json maps the 7 UPPER_SNAKE codes by oneOf to lowerCamelCase keys errors.authRequired..; all seven keys exist in de/en/en-XA; language-check green; 88 contract tests.",
+        "Review pass with 2 minors: no get-request envelope (GET requestId transport noted in docs/contracts.md by P1-06) and a stale comment already fixed. API fixtures live in fixtures-api/."
       ]
     },
     {

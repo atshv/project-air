@@ -1,0 +1,13 @@
+{
+  "schema": "schemas/api/note.schema.json",
+  "valid": false,
+  "reason": "a create-request must not carry server-assigned fields such as id",
+  "data": {
+    "requestId": "0192f0d0-7000-7000-8000-0000000000d1",
+    "note": {
+      "id": "0192f0a4-7000-7000-8000-000000000004",
+      "workspaceId": "0192f0a2-7000-7000-8000-000000000002",
+      "title": "Kickoff"
+    }
+  }
+}

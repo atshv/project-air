@@ -1,0 +1,10 @@
+{
+  "schema": "schemas/api/errors.schema.json",
+  "valid": true,
+  "reason": "NOT_FOUND maps to the message key errors.notFound",
+  "data": {
+    "requestId": "0192f0d0-7000-7000-8000-0000000000d1",
+    "code": "NOT_FOUND",
+    "messageKey": "errors.notFound"
+  }
+}

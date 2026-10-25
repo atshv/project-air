@@ -1,0 +1,9 @@
+{
+  "schema": "schemas/api/workspace.schema.json",
+  "valid": true,
+  "reason": "delete-request naming the workspace by id",
+  "data": {
+    "requestId": "0192f0d0-7000-7000-8000-0000000000d1",
+    "workspaceId": "0192f0a2-7000-7000-8000-000000000002"
+  }
+}

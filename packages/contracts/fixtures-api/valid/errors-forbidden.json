@@ -1,0 +1,10 @@
+{
+  "schema": "schemas/api/errors.schema.json",
+  "valid": true,
+  "reason": "FORBIDDEN maps to the message key errors.forbidden",
+  "data": {
+    "requestId": "0192f0d0-7000-7000-8000-0000000000d1",
+    "code": "FORBIDDEN",
+    "messageKey": "errors.forbidden"
+  }
+}

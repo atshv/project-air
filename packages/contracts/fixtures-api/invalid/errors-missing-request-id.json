@@ -1,0 +1,9 @@
+{
+  "schema": "schemas/api/errors.schema.json",
+  "valid": false,
+  "reason": "an error envelope must echo the requestId",
+  "data": {
+    "code": "INTERNAL",
+    "messageKey": "errors.internal"
+  }
+}

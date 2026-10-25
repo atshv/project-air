@@ -1,0 +1,21 @@
+{
+  "schema": "schemas/api/board.schema.json",
+  "valid": true,
+  "reason": "list-response with one board and the cursor of the next page",
+  "data": {
+    "requestId": "0192f0d0-7000-7000-8000-0000000000d1",
+    "items": [
+      {
+        "id": "0192f0a3-7000-7000-8000-000000000003",
+        "workspaceId": "0192f0a2-7000-7000-8000-000000000002",
+        "ownerId": "0192f0a1-7000-7000-8000-000000000001",
+        "title": "Weekly review",
+        "visibility": "private",
+        "archived": false,
+        "createdAt": "2027-01-10T09:00:00.000Z",
+        "updatedAt": "2027-01-10T09:30:00.000Z"
+      }
+    ],
+    "nextCursor": "cursor-0002"
+  }
+}

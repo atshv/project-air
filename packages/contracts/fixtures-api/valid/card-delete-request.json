@@ -1,0 +1,9 @@
+{
+  "schema": "schemas/api/card.schema.json",
+  "valid": true,
+  "reason": "delete-request naming the card by id",
+  "data": {
+    "requestId": "0192f0d0-7000-7000-8000-0000000000d1",
+    "cardId": "0192f0a6-7000-7000-8000-000000000006"
+  }
+}

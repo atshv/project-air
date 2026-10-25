@@ -1,9 +1,9 @@
 # packages/contracts
 
-The common language of Project air: the board-content data model, its operations and the
-WebSocket sync protocol as JSON Schema 2020-12, version `0.1.0`, with valid and invalid fixtures
-for every schema, generated TypeScript and C++ types, and a fixture parity harness that proves
-both sides read the same contract.
+The common language of Project air: the board-content data model, its operations, the WebSocket
+sync protocol and the REST API resources with their error codes as JSON Schema 2020-12, version
+`0.1.0`, with valid and invalid fixtures for every schema, generated TypeScript and C++ types, and a
+fixture parity harness that proves both sides read the same contract.
 
 - **Kind:** `package`
 - **Created in stage:** `contract`
@@ -11,8 +11,9 @@ both sides read the same contract.
 - **Package map:** [docs/module-map.md](../../docs/module-map.md)
 - **Contract version:** `0.1.0`
 
-Every schema `$id` is `https://project-air.dev/contracts/0.1.0/<entity>.schema.json`. The base URI
-is the versioned contract namespace; it is not fetched by any tool.
+Every schema `$id` is `https://project-air.dev/contracts/0.1.0/<entity>.schema.json`; the sync
+protocol is `.../0.1.0/sync.schema.json` and the REST API schemas are `.../0.1.0/api/<name>.schema.json`.
+The base URI is the versioned contract namespace; it is not fetched by any tool.
 
 ## Schema map
 
@@ -69,11 +70,51 @@ Two sequence fixtures cover the cross-field rules that JSON Schema cannot expres
 checked by the unit suite, including a future `resyncRequest`, a duplicate batch and an uncovered
 `ack`.
 
+## REST API (resources and errors)
+
+The REST contract is a set of closed envelopes for the four resources. Schema files live under
+`schemas/api/` (outside the codegen input) and fixtures under `fixtures-api/{valid,invalid}/`.
+
+| Resource | Entity | Envelopes | Create fields | Update fields |
+| --- | --- | --- | --- | --- |
+| workspace | `schemas/workspace.schema.json` | `list-request`, `list-response`, `response`, `create-request`, `update-request`, `delete-request`, `delete-response` | `name`, `ownerId` | `name` |
+| board | `schemas/board.schema.json` | same seven | `workspaceId`, `ownerId`, `title`, `visibility` | `title`, `visibility`, `archived` |
+| note | `schemas/note.schema.json` | same seven | `workspaceId`, `title` | `title` |
+| card | `schemas/card.schema.json` | same seven | `boardId`, `noteId`, optional `zoneId`, `x`, `y`, `width`, `height`, `z` | `zoneId`, `x`, `y`, `width`, `height`, `z` |
+
+Every envelope carries a UUIDv7 `requestId`, echoed in the response. `list-request` has optional
+`cursor` and `limit` (1–100); `list-response` has `items` and `nextCursor` (null at the end, so an
+empty list is `items: []` and `nextCursor: null`). A `create-request` carries only client-settable
+fields; the server assigns `id`, `createdAt` and `updatedAt`. An `update-request` needs a non-empty
+`changes` object; a `delete-response` names the `deletedId`. Resource responses `$ref` the P1-01
+entity schema instead of restating it.
+
+The error envelope is `schemas/api/errors.schema.json`. The wire code stays a stable,
+language-neutral UPPER_SNAKE code; `messageKey` is required and must be exactly
+`errors.<camelCase(code)>`, which keeps the key an English lowerCamelCase segment for
+`language-check` (AD-8). A `oneOf` in the schema ties every code to exactly one key.
+
+| Code | Message key |
+| --- | --- |
+| `AUTH_REQUIRED` | `errors.authRequired` |
+| `FORBIDDEN` | `errors.forbidden` |
+| `NOT_FOUND` | `errors.notFound` |
+| `VALIDATION` | `errors.validation` |
+| `CONFLICT` | `errors.conflict` |
+| `RATE_LIMITED` | `errors.rateLimited` |
+| `INTERNAL` | `errors.internal` |
+
+The seven messages live under `errors` in `apps/web/messages/de.json`, `en.json` and `en-XA.json`
+(the pseudo locale is regenerated with `--write-pseudo`); `language-check` requires the same keys in
+every locale. `details` carries dotted field paths for validation errors, never user text.
+`index.mjs` exports `ERROR_CODES` and `ERROR_MESSAGE_KEYS` as the single source for code and key.
+Adding a code means updating the schema, the fixtures and all three locales in one change.
+
 ## Generated files (committed, never edit by hand)
 
 `node codegen.mjs` (Node builtins only) reads the top-level `schemas/*.schema.json` and writes two
-committed files. The sync protocol schema lives in `schemas/sync/`, so it is not part of the
-generated model and the generated files stay unchanged. Ordering is
+committed files. The sync protocol schema in `schemas/sync/` and the REST API schemas in
+`schemas/api/` are not part of the generated model, so the generated files stay unchanged. Ordering is
 stable (schemas, properties, enum values, union members sorted), the output uses LF, a generated-file
 banner and the contract version, and it carries no timestamps or absolute paths — two runs produce
 identical bytes.
@@ -90,8 +131,9 @@ fails.
 ## Fixture parity (AD-3)
 
 The unit suite runs a two-sided harness over **every** fixture (77: 32 valid, 45 invalid). The
-corpus lives in `fixtures/`; the sync protocol fixtures in `fixtures-sync/` and the gate specimens
-in `fixtures-gate/` are deliberately outside it, so both counts stay stable:
+corpus lives in `fixtures/`; the sync protocol fixtures in `fixtures-sync/`, the REST API fixtures
+in `fixtures-api/` and the gate specimens in `fixtures-gate/` are deliberately outside it, so the
+counts stay stable:
 
 - TypeScript: `test/parity/canonical.ts` reduces each fixture wrapper to one canonical line
   `fixture|schema|valid|type|inverse|ids|fields|reason` (normalized reason, sorted UUID ids and
@@ -116,8 +158,10 @@ pnpm --filter ./packages/contracts typecheck      # tsc --noEmit over the genera
 pnpm --filter ./packages/contracts lint
 ```
 
-Without an install, `node --test packages/contracts/test/*.test.mjs` runs the same suite. The
-package has no dependencies; the tests use Node builtins and the local C++ compiler only.
+From the repository root, `node tools/language-check/index.mjs .` runs the translation gate that
+keeps the error message keys in parity across the locales. Without an install,
+`node --test packages/contracts/test/*.test.mjs` runs the same suite. The package has no
+dependencies; the tests use Node builtins and the local C++ compiler only.
 
 ## Fixtures
 
@@ -130,6 +174,10 @@ the 77-fixture parity corpus and stays unchanged.
 `fixtures-sync/{valid,invalid}/` holds the sync protocol fixtures: one valid and one invalid example
 per message type plus the reconnect and session sequence logs, all in the same wrapper.
 
+`fixtures-api/{valid,invalid}/` holds the REST API fixtures: one valid example per resource
+envelope, one error example per error code, and invalid examples for closed bodies, pagination and
+the code/messageKey mapping.
+
 `fixtures-gate/{valid,invalid}/` holds the direct `board-content.json` specimens for the Polier
 `contracts` gate (P1-06), because Polier 1.0 requires `fixtures_dir/valid/*.json` and
 `fixtures_dir/invalid/*.json` as direct files. The specimens are byte-identical copies of
@@ -138,6 +186,5 @@ test enforces the copies.
 
 ## Not in 0.1.0
 
-The API errors (P1-05); runtime validation and CMake/Emscripten packaging belong to the engine
-stage. Block content, images, files, comments, templates and workspace members are later contract
-growth.
+Runtime validation and CMake/Emscripten packaging belong to the engine stage. Block content,
+images, files, comments, templates and workspace members are later contract growth.

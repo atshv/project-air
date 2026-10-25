@@ -118,7 +118,10 @@
 
 ## Ready now
 
-- none
+- `P1-06` Contract documentation, ADR and 0.1.0 metadata
+  - P1-05: Closed P1-05: REST envelopes for workspace/board/note/card (list/get/create/update/delete, requestId, cursor+limit 1-100, items/nextCursor) with refs to the P1-01 entities; 55 API fixtures.
+  - P1-05: errors.schema.json maps the 7 UPPER_SNAKE codes by oneOf to lowerCamelCase keys errors.authRequired..; all seven keys exist in de/en/en-XA; language-check green; 88 contract tests.
+  - P1-05: Review pass with 2 minors: no get-request envelope (GET requestId transport noted in docs/contracts.md by P1-06) and a stale comment already fixed. API fixtures live in fixtures-api/.
 
 ## Done
 
@@ -145,10 +148,11 @@
 - [x] `P1-02` Operations, inverse operations and group — status: `done` — owner: —
 - [x] `P1-03` Codegen TS + C++ with identical fixtures — status: `done` — owner: —
 - [x] `P1-04` Sync protocol messages — status: `done` — owner: —
+- [x] `P1-05` API resources and error codes — status: `done` — owner: —
 
 ## In progress
 
-- [ ] `P1-05` API resources and error codes — status: `in_progress` — owner: —
+- none
 
 ## Blocked / failed
 
@@ -162,13 +166,6 @@
 - [ ] `P0-17` RELEASING.md and release 0.0.1 — status: `pending` — owner: —
 - [ ] `P1-06` Contract documentation, ADR and 0.1.0 metadata — status: `pending` — owner: —
 - [ ] `P1-07` Contract overview in the preview — status: `pending` — owner: —
-
-<!-- polier:claims -->
-## Claims
-
-- `P1-05` in progress by dsh since 2026-10-25T12:24:09+00:00 — worktree: /Users/rasulatashev/Desktop/KI Projekte/Project air-P1-05 · slot 1
-
-<!-- /polier:claims -->
 
 ## Decisions
 

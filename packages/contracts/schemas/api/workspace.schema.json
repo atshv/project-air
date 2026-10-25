@@ -1,0 +1,246 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://project-air.dev/contracts/0.1.0/api/workspace.schema.json",
+  "title": "Workspace REST envelopes",
+  "description": "Request and response envelopes of the workspace resource of contract 0.1.0. Every envelope carries a requestId; the entity is the P1-01 workspace schema, so a resource response can be validated without restating the model. Bodies are closed (additionalProperties false).",
+  "$ref": "#/$defs/envelopes",
+  "$defs": {
+    "uuid": {
+      "type": "string",
+      "description": "UUIDv7 identifier, time-sortable.",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+    },
+    "requestId": {
+      "type": "string",
+      "description": "UUIDv7 request id, echoed in the matching response.",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+    },
+    "cursor": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256,
+      "pattern": "^[0-9A-Za-z._~-]{1,256}$",
+      "description": "Opaque pagination cursor taken from the previous nextCursor."
+    },
+    "nextCursor": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 256,
+      "pattern": "^[0-9A-Za-z._~-]{1,256}$",
+      "description": "Cursor of the next page; null at the end of the list."
+    },
+    "limit": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 100,
+      "default": 50,
+      "description": "Maximum items per page."
+    },
+    "entity": {
+      "$ref": "../workspace.schema.json",
+      "description": "The P1-01 workspace entity."
+    },
+    "create": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Client-settable fields of a new workspace; the server assigns id and timestamps.",
+      "required": [
+        "name",
+        "ownerId"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "ownerId": {
+          "$ref": "#/$defs/uuid"
+        }
+      }
+    },
+    "changes": {
+      "type": "object",
+      "additionalProperties": false,
+      "minProperties": 1,
+      "description": "Only the changed fields; at least one is required.",
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        }
+      }
+    },
+    "list-request": {
+      "title": "list-request",
+      "description": "Query envelope for listing workspaces; the requestId is echoed in the response.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "requestId"
+      ],
+      "properties": {
+        "requestId": {
+          "$ref": "#/$defs/requestId"
+        },
+        "cursor": {
+          "$ref": "#/$defs/cursor"
+        },
+        "limit": {
+          "$ref": "#/$defs/limit"
+        }
+      }
+    },
+    "list-response": {
+      "title": "list-response",
+      "description": "List response with one page of workspaces and the cursor of the next page.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "requestId",
+        "items",
+        "nextCursor"
+      ],
+      "properties": {
+        "requestId": {
+          "$ref": "#/$defs/requestId"
+        },
+        "items": {
+          "type": "array",
+          "description": "The workspaces on this page; empty when the list is empty.",
+          "items": {
+            "$ref": "#/$defs/entity"
+          }
+        },
+        "nextCursor": {
+          "$ref": "#/$defs/nextCursor"
+        }
+      }
+    },
+    "response": {
+      "title": "response",
+      "description": "Single-workspace response for get, create and update; the server assigns id and timestamps.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "requestId",
+        "workspace"
+      ],
+      "properties": {
+        "requestId": {
+          "$ref": "#/$defs/requestId"
+        },
+        "workspace": {
+          "$ref": "#/$defs/entity"
+        }
+      }
+    },
+    "create-request": {
+      "title": "create-request",
+      "description": "Create body for one workspace; the response is the single-resource response.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "requestId",
+        "workspace"
+      ],
+      "properties": {
+        "requestId": {
+          "$ref": "#/$defs/requestId"
+        },
+        "workspace": {
+          "$ref": "#/$defs/create"
+        }
+      }
+    },
+    "update-request": {
+      "title": "update-request",
+      "description": "Update body for one workspace; changes must not be empty.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "requestId",
+        "workspaceId",
+        "changes"
+      ],
+      "properties": {
+        "requestId": {
+          "$ref": "#/$defs/requestId"
+        },
+        "workspaceId": {
+          "$ref": "#/$defs/uuid"
+        },
+        "changes": {
+          "$ref": "#/$defs/changes"
+        }
+      }
+    },
+    "delete-request": {
+      "title": "delete-request",
+      "description": "Delete body for one workspace.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "requestId",
+        "workspaceId"
+      ],
+      "properties": {
+        "requestId": {
+          "$ref": "#/$defs/requestId"
+        },
+        "workspaceId": {
+          "$ref": "#/$defs/uuid"
+        }
+      }
+    },
+    "delete-response": {
+      "title": "delete-response",
+      "description": "Delete confirmation naming the deleted workspace.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "requestId",
+        "deletedId"
+      ],
+      "properties": {
+        "requestId": {
+          "$ref": "#/$defs/requestId"
+        },
+        "deletedId": {
+          "$ref": "#/$defs/uuid"
+        }
+      }
+    },
+    "envelopes": {
+      "title": "Workspace resource envelopes",
+      "description": "One closed request or response envelope of the workspace resource.",
+      "oneOf": [
+        {
+          "$ref": "#/$defs/list-request"
+        },
+        {
+          "$ref": "#/$defs/list-response"
+        },
+        {
+          "$ref": "#/$defs/response"
+        },
+        {
+          "$ref": "#/$defs/create-request"
+        },
+        {
+          "$ref": "#/$defs/update-request"
+        },
+        {
+          "$ref": "#/$defs/delete-request"
+        },
+        {
+          "$ref": "#/$defs/delete-response"
+        }
+      ]
+    }
+  }
+}

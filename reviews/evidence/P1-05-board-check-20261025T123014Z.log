@@ -1,0 +1,10 @@
+$ python3 /Users/rasulatashev/Desktop/Polier-main/tools/check.py .
+[exit 0]
+
+WARN: budgets.status overridden to 1900 words (reason: Eleven stages with exit criteria, the remote stage and eighteen owner questions are listed in STATUS.md during foundation; shrinks as questions are answered and tasks finish.)
+WARN: STATUS.md: 1916 words (target max. 1900); it is read in every session
+WARN: P0-02: context pack is about 30742 tokens (warning at 15000); trim scope_read, split the task or shorten the base files
+WARN: P1-05: context pack is about 112742 tokens (warning at 15000); trim scope_read, split the task or shorten the base files
+WARN: P1-06: context pack is about 106567 tokens (warning at 15000); trim scope_read, split the task or shorten the base files
+WARN: P1-07: context pack is about 109077 tokens (warning at 15000); trim scope_read, split the task or shorten the base files
+OK: /Users/rasulatashev/Desktop/KI Projekte/Project air-P1-05 passes the mandatory checks. (6 warning(s))

@@ -1,0 +1,12 @@
+{
+  "schema": "schemas/api/workspace.schema.json",
+  "valid": true,
+  "reason": "create-request with the client-settable workspace fields",
+  "data": {
+    "requestId": "0192f0d0-7000-7000-8000-0000000000d1",
+    "workspace": {
+      "name": "Research lab",
+      "ownerId": "0192f0a1-7000-7000-8000-000000000001"
+    }
+  }
+}

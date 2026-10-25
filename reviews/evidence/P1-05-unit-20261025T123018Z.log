@@ -1,0 +1,113 @@
+$ pnpm --filter ./packages/contracts test
+[exit 0]
+
+✔ the error schema is versioned JSON Schema 2020-12 with the fixed code enum (2.976125ms)
+✔ the wire codes stay UPPER_SNAKE and the message keys are lowerCamelCase (0.552042ms)
+✔ the oneOf ties every code to exactly one message key (0.561958ms)
+✔ every error code has a valid fixture and the invalid ones are rejected (1.4155ms)
+✔ details carry field paths, never user text (0.282083ms)
+✔ every error code has exactly one message key in de, en and en-XA (0.673084ms)
+✔ the German error messages follow the style rules and the English ones differ (0.19025ms)
+✔ the pseudo locale carries the generated values for the error keys (0.1945ms)
+✔ the index exports the error code table and the API schema path (0.237916ms)
+✔ the four API resource schemas are versioned JSON Schema 2020-12 with closed envelopes (0.992375ms)
+✔ the envelopes cover list, get, create, update and delete (0.781125ms)
+✔ the envelopes reference the P1-01 entity schemas instead of restating them (1.006625ms)
+✔ card create and changes mirror the P1-01 minimum sizes and the nullable zone parent (0.211167ms)
+✔ every resource envelope has a valid fixture that satisfies it (5.961ms)
+✔ the invalid fixtures violate their envelope and name the rule (1.870459ms)
+✔ every API fixture has the wrapper and maps to an API schema (1.451208ms)
+✔ valid API fixtures use UUIDv7 ids and ISO-8601 timestamps (1.2145ms)
+✔ an empty list is valid with items [] and nextCursor null (0.133791ms)
+✔ pagination bounds are encoded in the schema (0.829375ms)
+✔ update requests need a non-empty changes object (0.7355ms)
+✔ delete envelopes name the resource id (0.691708ms)
+✔ the index exports the API resources, schema paths and fixture paths (0.581ms)
+✔ the generated directory holds exactly the two committed files (2.000209ms)
+✔ the committed generated files equal the generator output (5.051459ms)
+✔ codegen is deterministic and free of timestamps and absolute paths (0.572125ms)
+✔ the TypeScript output exposes the entities, enums, union and inverse pair (0.225959ms)
+✔ the generated operation vocabulary matches the contract index (0.752792ms)
+✔ the C++ output exposes the model, enums and the operation envelope (0.753542ms)
+✔ index exports the versioned schema and fixture paths (1.161917ms)
+✔ every schema is JSON Schema 2020-12 with a versioned $id and required fields (1.73075ms)
+✔ every schema has at least one valid and one invalid fixture with the wrapper (10.674041ms)
+✔ every fixture schema path resolves to a schema (4.346334ms)
+✔ valid fixtures satisfy their schema (3.960167ms)
+✔ invalid fixtures violate their schema and name the broken rule (4.443875ms)
+✔ valid fixtures carry every required top-level field (0.925917ms)
+✔ valid ids are UUIDv7 and valid timestamps are ISO-8601 with timezone (1.0845ms)
+✔ minimum sizes are encoded in the schemas (0.211416ms)
+✔ valid fixtures sit exactly on the minimum sizes (0.264708ms)
+✔ invalid minimum-size fixtures are below their type minimum (0.200875ms)
+✔ fixed enums are part of the schemas (0.210042ms)
+✔ the fractional index is a string (0.178958ms)
+✔ timestamps are ISO-8601 strings with timezone (0.389208ms)
+✔ AD-4: a note exists once and cards only reference it (0.1425ms)
+✔ the parent relation is board to zone to card, without nested zones (0.161458ms)
+✔ edges connect cards only (0.106333ms)
+✔ the root schema references every board-content entity (0.257375ms)
+✔ the package has no runtime dependencies and defines the test command (0.073833ms)
+✔ the gate specimens are byte-identical copies of canonical fixtures (1.549125ms)
+✔ the gate fixture directories hold direct JSON files for Polier (0.483333ms)
+✔ the gate specimens keep the fixture wrapper (0.586958ms)
+✔ the operation schema is versioned JSON Schema 2020-12 with the operation vocabulary (2.00925ms)
+✔ index exports the operation schema path, id and type vocabulary (0.124791ms)
+✔ every operation type has a valid and at least one invalid fixture (0.842209ms)
+✔ every operation fixture maps to the operation schema with the fixture wrapper (1.616541ms)
+✔ valid operation fixtures satisfy the schema and the inverse model (11.639625ms)
+✔ invalid operation fixtures break the schema or the inverse model and name the rule (2.631417ms)
+✔ every operation carries exactly one inverse with board, type and payload (0.7185ms)
+✔ operation ids are UUIDv7 and timestamps are ISO-8601 (0.696041ms)
+✔ each operation type pairs with its documented inverse type (0.608541ms)
+✔ groups have ordered children and the inverse reverses the child inverses (0.209584ms)
+✔ groups do not nest and need at least one child (0.17675ms)
+✔ updates store only changed fields and the inverse stores the previous values (0.153791ms)
+✔ deletes store the object and creates have the matching delete as inverse (0.463333ms)
+✔ resize operations respect the P1-01 minimum sizes (0.393083ms)
+✔ move payloads carry a position and an optional zone parent (0.063375ms)
+✔ the group inverse is checked against the reversed child inverses (0.242583ms)
+✔ an inverse with a mismatching board or target is invalid (0.15925ms)
+✔ every valid operation payload object still satisfies the P1-01 entity schemas (2.052917ms)
+✔ every fixture has a canonical TypeScript result (0.513208ms)
+✔ the canonical TypeScript description is deterministic (1.059333ms)
+✔ the parity program compiles with the local C++ compiler (1016.375958ms)
+✔ TypeScript and C++ canonical results match for every fixture (214.386667ms)
+✔ a tampered canonical line is detected as a parity difference (0.292209ms)
+✔ invalid fixtures keep their validity verdict and model fields in the canonical form (0.556792ms)
+✔ the sync schema is versioned JSON Schema 2020-12 with one message union (0.83925ms)
+✔ every message type is documented with its direction and the required metadata (0.677583ms)
+✔ the index exports the sync schema, message table and fixture paths (0.274583ms)
+✔ every message type has a valid and an invalid fixture in the wrapper (3.665875ms)
+✔ every sync fixture names the sync schema and its validity (1.00375ms)
+✔ valid message fixtures use UUIDv7 ids and ISO-8601 timestamps (1.158208ms)
+✔ operation batches carry P1-02 operations through the operation schema reference (1.221625ms)
+✔ presence messages carry presence only, never operation data (0.256792ms)
+✔ message ids and sequence rules live in the envelope (0.554416ms)
+✔ no unknown message type matches the envelope (0.528ms)
+✔ the reconnect sequence starts from a known serverSeq and ends with the snapshot (0.431625ms)
+✔ the session sequence keeps join order, sequences, duplicate batches and ack coverage (0.948291ms)
+✔ every acknowledged batch is durable before the client sees the ack (0.138166ms)
+✔ the board content in a snapshot is the root board-content document (0.202458ms)
+ℹ tests 88
+ℹ suites 0
+ℹ pass 88
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1437.556875
+✓ Lockfile passes supply-chain policies (verified 3h ago)
+Lockfile is up to date, resolution step is skipped
+Packages: +97
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Progress: resolved 97, reused 97, downloaded 0, added 97, done
+
+devDependencies:
++ eslint 10.13.0
++ turbo 2.11.10
++ typescript 5.9.3
++ typescript-eslint 8.72.0
+
+Done in 276ms using pnpm v12.14.0
+$ node --test test/*.test.mjs

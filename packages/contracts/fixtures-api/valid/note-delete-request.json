@@ -1,0 +1,9 @@
+{
+  "schema": "schemas/api/note.schema.json",
+  "valid": true,
+  "reason": "delete-request naming the note by id",
+  "data": {
+    "requestId": "0192f0d0-7000-7000-8000-0000000000d1",
+    "noteId": "0192f0a4-7000-7000-8000-000000000004"
+  }
+}

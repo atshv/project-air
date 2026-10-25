@@ -33,15 +33,22 @@
     }
   },
   "errors": {
+    "authRequired": "Für diese Aktion musst du angemeldet sein.",
     "boardNotFound": "Dieses Board gibt es nicht oder es gehört nicht zu deinem Konto.",
+    "conflict": "Der Inhalt wurde zwischenzeitlich geändert. Bitte lade ihn neu.",
     "createFailed": "Die Karte konnte nicht erstellt werden. Bitte erneut versuchen.",
+    "forbidden": "Du darfst das nicht ändern.",
     "generic": "Etwas ist schiefgelaufen. Bitte erneut versuchen.",
+    "internal": "Das hat nicht funktioniert. Bitte erneut versuchen.",
     "invalidPosition": "Die Position ist ungültig.",
     "moveFailed": "Die Position konnte nicht gespeichert werden. Bitte erneut versuchen.",
-    "noteNotFound": "Die Notiz wurde nicht gefunden.",
     "notAuthorized": "Bitte melde dich erneut an.",
+    "noteNotFound": "Die Notiz wurde nicht gefunden.",
+    "notFound": "Dieser Inhalt wurde nicht gefunden.",
+    "rateLimited": "Zu viele Anfragen. Bitte warte kurz.",
     "removeFailed": "Die Karte konnte nicht entfernt werden. Bitte erneut versuchen.",
-    "saveFailed": "Speichern fehlgeschlagen. Bitte erneut versuchen."
+    "saveFailed": "Speichern fehlgeschlagen. Bitte erneut versuchen.",
+    "validation": "Bitte prüfe deine Eingaben."
   },
   "note": {
     "editorLabel": "Notizinhalt",

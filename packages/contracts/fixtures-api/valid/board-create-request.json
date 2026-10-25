@@ -1,0 +1,14 @@
+{
+  "schema": "schemas/api/board.schema.json",
+  "valid": true,
+  "reason": "create-request with the client-settable board fields",
+  "data": {
+    "requestId": "0192f0d0-7000-7000-8000-0000000000d1",
+    "board": {
+      "workspaceId": "0192f0a2-7000-7000-8000-000000000002",
+      "ownerId": "0192f0a1-7000-7000-8000-000000000001",
+      "title": "Q1 planning",
+      "visibility": "workspace"
+    }
+  }
+}

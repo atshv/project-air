@@ -1,0 +1,16 @@
+{
+  "schema": "schemas/api/errors.schema.json",
+  "valid": true,
+  "reason": "VALIDATION maps to the message key errors.validation",
+  "data": {
+    "requestId": "0192f0d0-7000-7000-8000-0000000000d1",
+    "code": "VALIDATION",
+    "messageKey": "errors.validation",
+    "details": {
+      "fields": [
+        "board.title",
+        "card.width"
+      ]
+    }
+  }
+}

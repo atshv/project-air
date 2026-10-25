@@ -1,0 +1,10 @@
+{
+  "schema": "schemas/api/errors.schema.json",
+  "valid": false,
+  "reason": "an unknown error code is invalid because the code enum is fixed",
+  "data": {
+    "requestId": "0192f0d0-7000-7000-8000-0000000000d1",
+    "code": "TEAPOT",
+    "messageKey": "errors.internal"
+  }
+}

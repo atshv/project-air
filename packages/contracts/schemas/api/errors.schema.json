@@ -1,0 +1,157 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://project-air.dev/contracts/0.1.0/api/errors.schema.json",
+  "title": "API error",
+  "description": "One REST error envelope of contract 0.1.0. The wire code is language-neutral; the required messageKey names the translation key errors.<camelCase(code)> in apps/web/messages and the client renders it (AD-8). The oneOf below ties every code to exactly one key.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "requestId",
+    "code",
+    "messageKey"
+  ],
+  "properties": {
+    "requestId": {
+      "type": "string",
+      "description": "UUIDv7 request id of the failed request.",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+    },
+    "code": {
+      "$ref": "#/$defs/errorCode"
+    },
+    "messageKey": {
+      "$ref": "#/$defs/messageKey"
+    },
+    "details": {
+      "$ref": "#/$defs/errorDetails"
+    }
+  },
+  "oneOf": [
+    {
+      "description": "AUTH_REQUIRED maps to errors.authRequired.",
+      "properties": {
+        "code": {
+          "const": "AUTH_REQUIRED"
+        },
+        "messageKey": {
+          "const": "errors.authRequired"
+        }
+      }
+    },
+    {
+      "description": "FORBIDDEN maps to errors.forbidden.",
+      "properties": {
+        "code": {
+          "const": "FORBIDDEN"
+        },
+        "messageKey": {
+          "const": "errors.forbidden"
+        }
+      }
+    },
+    {
+      "description": "NOT_FOUND maps to errors.notFound.",
+      "properties": {
+        "code": {
+          "const": "NOT_FOUND"
+        },
+        "messageKey": {
+          "const": "errors.notFound"
+        }
+      }
+    },
+    {
+      "description": "VALIDATION maps to errors.validation.",
+      "properties": {
+        "code": {
+          "const": "VALIDATION"
+        },
+        "messageKey": {
+          "const": "errors.validation"
+        }
+      }
+    },
+    {
+      "description": "CONFLICT maps to errors.conflict.",
+      "properties": {
+        "code": {
+          "const": "CONFLICT"
+        },
+        "messageKey": {
+          "const": "errors.conflict"
+        }
+      }
+    },
+    {
+      "description": "RATE_LIMITED maps to errors.rateLimited.",
+      "properties": {
+        "code": {
+          "const": "RATE_LIMITED"
+        },
+        "messageKey": {
+          "const": "errors.rateLimited"
+        }
+      }
+    },
+    {
+      "description": "INTERNAL maps to errors.internal.",
+      "properties": {
+        "code": {
+          "const": "INTERNAL"
+        },
+        "messageKey": {
+          "const": "errors.internal"
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "errorCode": {
+      "enum": [
+        "AUTH_REQUIRED",
+        "FORBIDDEN",
+        "NOT_FOUND",
+        "VALIDATION",
+        "CONFLICT",
+        "RATE_LIMITED",
+        "INTERNAL"
+      ],
+      "description": "Stable UPPER_SNAKE wire code. Codes are never translated or renamed."
+    },
+    "messageKey": {
+      "enum": [
+        "errors.authRequired",
+        "errors.forbidden",
+        "errors.notFound",
+        "errors.validation",
+        "errors.conflict",
+        "errors.rateLimited",
+        "errors.internal"
+      ],
+      "description": "English lowerCamelCase translation key errors.<camelCase(code)>."
+    },
+    "errorDetails": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Machine-readable details only: field paths, never user text.",
+      "required": [
+        "fields"
+      ],
+      "properties": {
+        "fields": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 100,
+          "uniqueItems": true,
+          "description": "Dotted paths of the invalid input fields, for example board.title.",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "pattern": "^[a-z][A-Za-z0-9]*(?:\\.[a-z][A-Za-z0-9]*)*$"
+          }
+        }
+      }
+    }
+  }
+}
