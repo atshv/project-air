@@ -1607,6 +1607,58 @@
         "Meta line shows P0-24 with date/time; controls keep drag/keyboard correct under zoom and mobile has no overflow.",
         "Product zoom control will use ui-kit icons in the engine stage; this demo stays in sync with every preview change."
       ]
+    },
+    {
+      "id": "P0-25",
+      "title": "Grouped zoom control and invisible anchors",
+      "goal": "The demo zoom control is one vertical grouped pill and the connection anchors are invisible geometry.",
+      "why": "The owner wants the grouped zoom control and no visible white anchor dots.",
+      "satisfies": [
+        "D3"
+      ],
+      "status": "pending",
+      "depends_on": [
+        "P0-24"
+      ],
+      "complexity": 2,
+      "stage": "foundation",
+      "parallel_group": null,
+      "scope_write": [
+        "apps/web/preview/",
+        ".changes/"
+      ],
+      "scope_read": [
+        "ARCHITECTURE.md",
+        "AGENTS.md",
+        "STATUS.md",
+        "docs/quality.md",
+        "docs/design-rules.md",
+        "docs/canvas-acceptance.md",
+        "apps/web/preview/",
+        "packages/ui-kit/tokens.css",
+        "packages/ui-kit/tokens.json",
+        "packages/ui-kit/layers.ts",
+        "CHANGELOG.md",
+        ".changes/README.md"
+      ],
+      "acceptance": [
+        "A1",
+        "A2",
+        "A3"
+      ],
+      "gates": [
+        "board-check",
+        "design-check",
+        "changelog-entry"
+      ],
+      "owner": null,
+      "branch": "task/P0-25",
+      "worktree": null,
+      "round": 0,
+      "evidence": [],
+      "scope_write_forbidden": [
+        "reference/"
+      ]
     }
   ],
   "decisions": [
