@@ -544,7 +544,7 @@
       "satisfies": [
         "D2"
       ],
-      "status": "pending",
+      "status": "in_progress",
       "depends_on": [
         "P0-04",
         "P0-07"
@@ -575,7 +575,7 @@
       ],
       "owner": null,
       "branch": "task/P0-06",
-      "worktree": null,
+      "worktree": "../Project air-P0-06",
       "round": 0,
       "evidence": [],
       "package": "tools/dev",
@@ -837,7 +837,7 @@
       "satisfies": [
         "D3"
       ],
-      "status": "pending",
+      "status": "in_progress",
       "depends_on": [
         "P0-04",
         "P0-10"
@@ -871,7 +871,7 @@
       ],
       "owner": null,
       "branch": "task/P0-12",
-      "worktree": null,
+      "worktree": "../Project air-P0-12",
       "round": 0,
       "evidence": [],
       "scope_write_forbidden": [
