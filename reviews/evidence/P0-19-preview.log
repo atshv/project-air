@@ -1,0 +1,112 @@
+# P0-19 — design preview: manual evidence
+
+- Date: 2026-10-25 (Europe/Zurich)
+- Worktree: `/Users/rasulatashev/Desktop/KI Projekte/Project air-P0-19` (branch `task/P0-19`, slot 1)
+- Page: `apps/web/preview/index.html`, styles `apps/web/preview/preview.css`, notes `apps/web/preview/README.md`
+- Server: `python3 -m http.server`, port read from the worktree's `.polier-slot` (never hard-coded)
+
+## Port and server
+
+Slot values (`python3 "$POLIER/tools/slot.py" show`):
+
+```
+slot 1: ai=4150 auth=4120 media=4140 platform=4110 playground=4160 sync=4130 web=4100 web-e2e=4101 · db project-air_slot_1 · bucket project-air-slot-1
+```
+
+Served the **repository root** (so `../../../packages/ui-kit/tokens.css` and the icon paths resolve) from
+the worktree:
+
+```sh
+cd "/Users/rasulatashev/Desktop/KI Projekte/Project air-P0-19"
+PORT=$(python3 -c "import json;print(json.load(open('.polier-slot'))['ports']['web'])")
+python3 -m http.server "$PORT" --bind 127.0.0.1
+```
+
+The server was started and stopped by this task only; no other process was touched. It is not left
+running.
+
+## HTTP status
+
+```
+$ curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:4100/apps/web/preview/
+200
+```
+
+Supporting requests (server log, no `404`):
+
+```
+$ curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:4100/packages/ui-kit/tokens.css
+200
+$ curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:4100/packages/ui-kit/icons/note.svg
+200
+```
+
+## Screenshots
+
+Chromium used (the cached headless shell):
+
+```
+/Users/rasulatashev/Library/Caches/ms-playwright/chromium_headless_shell-1248/chrome-headless-shell-mac-arm64/chrome-headless-shell
+```
+
+Desktop, 1440 × 900:
+
+```sh
+/Users/rasulatashev/Library/Caches/ms-playwright/chromium_headless_shell-1248/chrome-headless-shell-mac-arm64/chrome-headless-shell \
+  --headless --disable-gpu --hide-scrollbars --window-size=1440,900 \
+  --screenshot=reviews/evidence/P0-19-desktop.png \
+  "http://127.0.0.1:4100/apps/web/preview/"
+```
+
+Mobile, 390 × 844:
+
+```sh
+/Users/rasulatashev/Library/Caches/ms-playwright/chromium_headless_shell-1248/chrome-headless-shell-mac-arm64/chrome-headless-shell \
+  --headless --disable-gpu --hide-scrollbars --window-size=390,844 \
+  --screenshot=reviews/evidence/P0-19-mobile.png \
+  "http://127.0.0.1:4100/apps/web/preview/"
+```
+
+Resulting files (both are real renders of the served page):
+
+```
+reviews/evidence/P0-19-desktop.png: PNG image data, 1440 x 900, 8-bit/color RGB, 106992 bytes
+reviews/evidence/P0-19-mobile.png:  PNG image data,  390 x 844, 8-bit/color RGB,  60505 bytes
+```
+
+## No horizontal overflow
+
+Checked in the same Chromium with a temporary same-origin iframe probe (width 390 and 1440) that read
+`document.documentElement.scrollWidth` and `clientWidth`; the probe file was removed before the commit
+and is not part of the deliverable.
+
+```
+mobile 390x844   scrollWidth=390   clientWidth=390   overflow=false
+desktop 1440x900 scrollWidth=1440  clientWidth=1440  overflow=false
+```
+
+## Gate
+
+```
+cd "/Users/rasulatashev/Desktop/KI Projekte/Project air-P0-19"
+export POLIER=/Users/rasulatashev/Desktop/Polier-main
+python3 "$POLIER/tools/gate.py" --task P0-19 --name board-check -- python3 "$POLIER/tools/check.py" .
+```
+
+```
+GATE board-check: PASS (exit 0)
+record: reviews/evidence/P0-19-board-check-20261025T093611Z.json
+```
+
+The gate log (`reviews/evidence/P0-19-board-check-20261025T093611Z.log`) contains
+`OK: ... passes the mandatory checks. (3 warning(s))`; the warnings are pre-existing board budgets and
+the P0-19 context-pack size, not this change.
+
+## Content check
+
+- Preview files (`index.html`, `preview.css`, `README.md`) contain no raw hex, rgb, rgba or hsl
+  colour values; all visual values are `var(--…)` tokens from
+  `packages/ui-kit/tokens.css`.
+- No external fonts, CDNs or images; the ten icons are loaded from `packages/ui-kit/icons/`.
+- The ten icons, all six component states, the note card, block, zone, connection, side-panel header,
+  toolbar and the labelled "static design preview" sample board are visible in the rendered page.

@@ -1208,7 +1208,7 @@
       "satisfies": [
         "D3"
       ],
-      "status": "in_progress",
+      "status": "done",
       "depends_on": [
         "P0-12"
       ],
@@ -1241,12 +1241,19 @@
       ],
       "owner": null,
       "branch": "task/P0-19",
-      "worktree": "../Project air-P0-19",
+      "worktree": null,
       "round": 0,
-      "evidence": [],
+      "evidence": [
+        "reviews/evidence/P0-19-board-check-20261025T093611Z.json"
+      ],
       "package": "apps/web",
       "scope_write_forbidden": [
         "reference/"
+      ],
+      "handoff": [
+        "Closed P0-19: apps/web/preview/ is a static, dependency-free design system showcase (tokens, type, icons, states, sample board).",
+        "Serve it from the repo root on the slot web port and open /apps/web/preview/; desktop and mobile screenshots are committed.",
+        "Demo cadence is in docs/quality.md: after larger milestones build, serve, screenshot and show; no demo per small task."
       ]
     }
   ],

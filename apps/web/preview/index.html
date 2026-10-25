@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Project air design preview — static design preview</title>
+    <link rel="stylesheet" href="../../../packages/ui-kit/tokens.css" />
+    <link rel="stylesheet" href="preview.css" />
+  </head>
+  <body>
+    <main class="page">
+      <header class="masthead">
+        <span class="badge">static design preview</span>
+        <h1>Project air design system</h1>
+        <p class="lead">
+          A static design preview of the Project air canvas design system: tokens, type, icons,
+          component states and a sample board. This page is not the product — there is no engine,
+          no data, no routing and no interaction beyond native browser states.
+        </p>
+        <div class="masthead__meta">
+          <span>Tokens: <code>packages/ui-kit/tokens.css</code></span>
+          <span>Icons: <code>packages/ui-kit/icons/</code></span>
+          <span>Task: P0-19</span>
+        </div>
+      </header>
+
+      <section class="section" aria-labelledby="colours">
+        <div class="section__head">
+          <span class="eyebrow">01 — Colour</span>
+          <h2 id="colours">Colour tokens</h2>
+          <p class="section__intro">
+            Every swatch reads a generated custom property from the design tokens. Translucent
+            tokens are shown over <code>--card</code> so their effect is visible. No raw colour
+            values appear in this preview.
+          </p>
+        </div>
+        <ul class="swatches">
+          <li class="swatch">
+            <span class="swatch__chip swatch--bg" aria-hidden="true"></span>
+            <code class="swatch__name">--bg</code>
+            <span class="swatch__use">Page background</span>
+          </li>
+          <li class="swatch">
+            <span class="swatch__chip swatch--canvas" aria-hidden="true"></span>
+            <code class="swatch__name">--canvas</code>
+            <span class="swatch__use">Canvas surface</span>
+          </li>
+          <li class="swatch">
+            <span class="swatch__chip swatch--surface" aria-hidden="true"></span>
+            <code class="swatch__name">--surface</code>
+            <span class="swatch__use">Panels, bars, menus</span>
+          </li>
+          <li class="swatch">
+            <span class="swatch__chip swatch--card" aria-hidden="true"></span>
+            <code class="swatch__name">--card</code>
+            <span class="swatch__use">Cards and blocks</span>
+          </li>
+          <li class="swatch">
+            <span class="swatch__chip swatch--fg" aria-hidden="true"></span>
+            <code class="swatch__name">--fg</code>
+            <span class="swatch__use">Main text</span>
+          </li>
+          <li class="swatch">
+            <span class="swatch__chip swatch--muted" aria-hidden="true"></span>
+            <code class="swatch__name">--muted</code>
+            <span class="swatch__use">Secondary text</span>
+          </li>
+          <li class="swatch">
+            <span class="swatch__chip swatch--faint" aria-hidden="true"></span>
+            <code class="swatch__name">--faint</code>
+            <span class="swatch__use">Hover surface</span>
+          </li>
+          <li class="swatch">
+            <span class="swatch__chip swatch--border" aria-hidden="true"></span>
+            <code class="swatch__name">--border</code>
+            <span class="swatch__use">Dividers, resting borders</span>
+          </li>
+          <li class="swatch">
+            <span class="swatch__chip swatch--border-strong" aria-hidden="true"></span>
+            <code class="swatch__name">--border-strong</code>
+            <span class="swatch__use">Hover borders, fields</span>
+          </li>
+          <li class="swatch">
+            <span class="swatch__chip swatch--accent" aria-hidden="true"></span>
+            <code class="swatch__name">--accent</code>
+            <span class="swatch__use">Selection, focus, active tool</span>
+          </li>
+          <li class="swatch">
+            <span class="swatch__chip swatch--accent-soft" aria-hidden="true"></span>
+            <code class="swatch__name">--accent-soft</code>
+            <span class="swatch__use">Selection ring</span>
+          </li>
+          <li class="swatch">
+            <span class="swatch__chip swatch--accent-line" aria-hidden="true"></span>
+            <code class="swatch__name">--accent-line</code>
+            <span class="swatch__use">Accent line</span>
+          </li>
+          <li class="swatch">
+            <span class="swatch__chip swatch--danger" aria-hidden="true"></span>
+            <code class="swatch__name">--danger</code>
+            <span class="swatch__use">Errors</span>
+          </li>
+          <li class="swatch">
+            <span class="swatch__chip swatch--tone-a" aria-hidden="true"></span>
+            <code class="swatch__name">--tone-a</code>
+            <span class="swatch__use">Zone and palette tone</span>
+          </li>
+          <li class="swatch">
+            <span class="swatch__chip swatch--tone-b" aria-hidden="true"></span>
+            <code class="swatch__name">--tone-b</code>
+            <span class="swatch__use">Zone and palette tone</span>
+          </li>
+          <li class="swatch">
+            <span class="swatch__chip swatch--tone-c" aria-hidden="true"></span>
+            <code class="swatch__name">--tone-c</code>
+            <span class="swatch__use">Zone and palette tone</span>
+          </li>
+          <li class="swatch">
+            <span class="swatch__chip swatch--tone-d" aria-hidden="true"></span>
+            <code class="swatch__name">--tone-d</code>
+            <span class="swatch__use">Zone and palette tone</span>
+          </li>
+          <li class="swatch">
+            <span class="swatch__chip swatch--tone-e" aria-hidden="true"></span>
+            <code class="swatch__name">--tone-e</code>
+            <span class="swatch__use">Zone and palette tone</span>
+          </li>
+        </ul>
+      </section>
+
+      <section class="section" aria-labelledby="type">
+        <div class="section__head">
+          <span class="eyebrow">02 — Typography</span>
+          <h2 id="type">Typography scale</h2>
+          <p class="section__intro">
+            Serif for board, panel and empty-state titles, sans for everything else. Sizes come from
+            <code>--text-28</code> to <code>--text-11</code>; weights are regular, medium and
+            semibold. No font files are loaded — the token stacks fall back to locally installed
+            fonts.
+          </p>
+        </div>
+        <div class="type-list">
+          <div class="type-row">
+            <p class="type-serif-28">Board title</p>
+            <code class="token-caption">--font-serif · --text-28 · --weight-regular</code>
+          </div>
+          <div class="type-row">
+            <p class="type-serif-24">Panel title</p>
+            <code class="token-caption">--font-serif · --text-24 · --weight-regular</code>
+          </div>
+          <div class="type-row">
+            <p class="type-serif-22">Empty state</p>
+            <code class="token-caption">--font-serif · --text-22 · --weight-regular</code>
+          </div>
+          <div class="type-row">
+            <p class="type-sans-15">Card title</p>
+            <code class="token-caption">--font-sans · --text-15 · --weight-semibold</code>
+          </div>
+          <div class="type-row">
+            <p class="type-sans-13">
+              Body text in cards and blocks. Content is the brightest thing on screen; bars and
+              buttons step back.
+            </p>
+            <code class="token-caption">--font-sans · --text-13 · line-height --line-height</code>
+          </div>
+          <div class="type-row">
+            <span class="type-label">Note</span>
+            <code class="token-caption">--font-sans · --text-11 · --tracking-label</code>
+          </div>
+          <div class="type-row">
+            <p class="type-sans-12">Status and hints, for example “Saved” or “Saving …”.</p>
+            <code class="token-caption">--font-sans · --text-12 · --muted</code>
+          </div>
+          <div class="type-row">
+            <span class="type-tooltip-sample">Move card</span>
+            <code class="token-caption">Tooltip · --text-12 · --weight-medium</code>
+          </div>
+          <div class="type-row">
+            <div class="weights">
+              <span class="weight-regular">Regular 400</span>
+              <span class="weight-medium">Medium 500</span>
+              <span class="weight-semibold">Semibold 600</span>
+            </div>
+            <code class="token-caption">--weight-regular · --weight-medium · --weight-semibold</code>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" aria-labelledby="space">
+        <div class="section__head">
+          <span class="eyebrow">03 — Space, radii, shadows, borders</span>
+          <h2 id="space">Spacing and surfaces</h2>
+          <p class="section__intro">
+            A 4 px grid: 4, 8, 12, 16, 24, 32 and 48. Radii are 10, 14, 20, a 6 px tooltip radius
+            and a pill; surfaces use the two token shadows only.
+          </p>
+        </div>
+        <div class="spacing">
+          <div class="space-row">
+            <code>--space-4</code>
+            <span class="space-bar space-bar--4" aria-hidden="true"></span>
+            <span class="space-row__value">4px</span>
+          </div>
+          <div class="space-row">
+            <code>--space-8</code>
+            <span class="space-bar space-bar--8" aria-hidden="true"></span>
+            <span class="space-row__value">8px</span>
+          </div>
+          <div class="space-row">
+            <code>--space-12</code>
+            <span class="space-bar space-bar--12" aria-hidden="true"></span>
+            <span class="space-row__value">12px</span>
+          </div>
+          <div class="space-row">
+            <code>--space-16</code>
+            <span class="space-bar space-bar--16" aria-hidden="true"></span>
+            <span class="space-row__value">16px</span>
+          </div>
+          <div class="space-row">
+            <code>--space-24</code>
+            <span class="space-bar space-bar--24" aria-hidden="true"></span>
+            <span class="space-row__value">24px</span>
+          </div>
+          <div class="space-row">
+            <code>--space-32</code>
+            <span class="space-bar space-bar--32" aria-hidden="true"></span>
+            <span class="space-row__value">32px</span>
+          </div>
+          <div class="space-row">
+            <code>--space-48</code>
+            <span class="space-bar space-bar--48" aria-hidden="true"></span>
+            <span class="space-row__value">48px</span>
+          </div>
+        </div>
+        <div class="detail-grid">
+          <div class="detail-card">
+            <h3>Radii</h3>
+            <div class="radii">
+              <span class="radius-tile radius-tile--sm">sm</span>
+              <span class="radius-tile radius-tile--md">md</span>
+              <span class="radius-tile radius-tile--lg">lg</span>
+              <span class="radius-tile radius-tile--tooltip">6</span>
+              <span class="radius-tile radius-tile--pill">pill</span>
+            </div>
+            <code class="token-caption">--radius-sm / -md / -lg / -tooltip / -pill</code>
+          </div>
+          <div class="detail-card">
+            <h3>Shadows</h3>
+            <div class="shadow-tiles">
+              <span class="shadow-tile shadow-tile--card">--card-shadow</span>
+              <span class="shadow-tile shadow-tile--shadow">--shadow</span>
+            </div>
+          </div>
+          <div class="detail-card">
+            <h3>Border widths</h3>
+            <div class="border-tiles">
+              <span class="border-tile border-tile--thin">--border-width 1 px</span>
+              <span class="border-tile border-tile--strong">--border-width-strong 1.5 px</span>
+              <span class="border-tile border-tile--focus">--outline-width 2 px + offset</span>
+            </div>
+          </div>
+          <div class="detail-card">
+            <h3>Sizes</h3>
+            <p class="type-sans-12">
+              Header <code>--header-height</code> 40 px · click target
+              <code>--click-target</code> 32 px · bar button <code>--button-bar</code> 36 px ·
+              toolbar icon <code>--icon-bar</code> 20 px · card action
+              <code>--button-card</code> 28 px · card icon <code>--icon-card</code> 16 px · canvas
+              grid <code>--canvas-grid</code> 16 px.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" aria-labelledby="icons">
+        <div class="section__head">
+          <span class="eyebrow">04 — Icons</span>
+          <h2 id="icons">Toolbar icons</h2>
+          <p class="section__intro">
+            The ten icons ship as SVG files in <code>packages/ui-kit/icons/</code>, drawn on a 24
+            grid with a 1.6 stroke and <code>currentColor</code>. Each tile shows the 20 px icon in
+            a 36 px bar button and the 16 px icon in a 28 px card button; the file is loaded
+            directly by this page.
+          </p>
+        </div>
+        <ul class="icon-grid">
+          <li class="icon-tile">
+            <div class="icon-tile__row">
+              <button class="tool-btn" type="button" aria-label="Checklist" data-label="Checklist">
+                <span class="icon icon--checklist" aria-hidden="true"></span>
+              </button>
+              <button class="tool-btn tool-btn--card" type="button" aria-label="Checklist" data-label="Checklist">
+                <span class="icon icon--checklist icon--card" aria-hidden="true"></span>
+              </button>
+            </div>
+            <code class="icon-name">checklist.svg</code>
+          </li>
+          <li class="icon-tile">
+            <div class="icon-tile__row">
+              <button class="tool-btn" type="button" aria-label="Columns" data-label="Columns">
+                <span class="icon icon--columns" aria-hidden="true"></span>
+              </button>
+              <button class="tool-btn tool-btn--card" type="button" aria-label="Columns" data-label="Columns">
+                <span class="icon icon--columns icon--card" aria-hidden="true"></span>
+              </button>
+            </div>
+            <code class="icon-name">columns.svg</code>
+          </li>
+          <li class="icon-tile">
+            <div class="icon-tile__row">
+              <button class="tool-btn" type="button" aria-label="File" data-label="File">
+                <span class="icon icon--file" aria-hidden="true"></span>
+              </button>
+              <button class="tool-btn tool-btn--card" type="button" aria-label="File" data-label="File">
+                <span class="icon icon--file icon--card" aria-hidden="true"></span>
+              </button>
+            </div>
+            <code class="icon-name">file.svg</code>
+          </li>
+          <li class="icon-tile">
+            <div class="icon-tile__row">
+              <button class="tool-btn" type="button" aria-label="Image" data-label="Image">
+                <span class="icon icon--image" aria-hidden="true"></span>
+              </button>
+              <button class="tool-btn tool-btn--card" type="button" aria-label="Image" data-label="Image">
+                <span class="icon icon--image icon--card" aria-hidden="true"></span>
+              </button>
+            </div>
+            <code class="icon-name">image.svg</code>
+          </li>
+          <li class="icon-tile">
+            <div class="icon-tile__row">
+              <button class="tool-btn" type="button" aria-label="Note" data-label="Note">
+                <span class="icon icon--note" aria-hidden="true"></span>
+              </button>
+              <button class="tool-btn tool-btn--card" type="button" aria-label="Note" data-label="Note">
+                <span class="icon icon--note icon--card" aria-hidden="true"></span>
+              </button>
+            </div>
+            <code class="icon-name">note.svg</code>
+          </li>
+          <li class="icon-tile">
+            <div class="icon-tile__row">
+              <button class="tool-btn" type="button" aria-label="Palette" data-label="Palette">
+                <span class="icon icon--palette" aria-hidden="true"></span>
+              </button>
+              <button class="tool-btn tool-btn--card" type="button" aria-label="Palette" data-label="Palette">
+                <span class="icon icon--palette icon--card" aria-hidden="true"></span>
+              </button>
+            </div>
+            <code class="icon-name">palette.svg</code>
+          </li>
+          <li class="icon-tile">
+            <div class="icon-tile__row">
+              <button class="tool-btn" type="button" aria-label="Source" data-label="Source">
+                <span class="icon icon--source" aria-hidden="true"></span>
+              </button>
+              <button class="tool-btn tool-btn--card" type="button" aria-label="Source" data-label="Source">
+                <span class="icon icon--source icon--card" aria-hidden="true"></span>
+              </button>
+            </div>
+            <code class="icon-name">source.svg</code>
+          </li>
+          <li class="icon-tile">
+            <div class="icon-tile__row">
+              <button class="tool-btn" type="button" aria-label="Table" data-label="Table">
+                <span class="icon icon--table" aria-hidden="true"></span>
+              </button>
+              <button class="tool-btn tool-btn--card" type="button" aria-label="Table" data-label="Table">
+                <span class="icon icon--table icon--card" aria-hidden="true"></span>
+              </button>
+            </div>
+            <code class="icon-name">table.svg</code>
+          </li>
+          <li class="icon-tile">
+            <div class="icon-tile__row">
+              <button class="tool-btn" type="button" aria-label="Timeline" data-label="Timeline">
+                <span class="icon icon--timeline" aria-hidden="true"></span>
+              </button>
+              <button class="tool-btn tool-btn--card" type="button" aria-label="Timeline" data-label="Timeline">
+                <span class="icon icon--timeline icon--card" aria-hidden="true"></span>
+              </button>
+            </div>
+            <code class="icon-name">timeline.svg</code>
+          </li>
+          <li class="icon-tile">
+            <div class="icon-tile__row">
+              <button class="tool-btn" type="button" aria-label="Zone" data-label="Zone">
+                <span class="icon icon--zone" aria-hidden="true"></span>
+              </button>
+              <button class="tool-btn tool-btn--card" type="button" aria-label="Zone" data-label="Zone">
+                <span class="icon icon--zone icon--card" aria-hidden="true"></span>
+              </button>
+            </div>
+            <code class="icon-name">zone.svg</code>
+          </li>
+        </ul>
+      </section>
+
+      <section class="section" aria-labelledby="states">
+        <div class="section__head">
+          <span class="eyebrow">05 — States</span>
+          <h2 id="states">Component states</h2>
+          <p class="section__intro">
+            Every interactive element has rest, hover, pressed, keyboard focus and disabled; cards
+            and blocks also have selected. The samples below show each state side by side; the
+            buttons are real buttons, so native hover, press and focus work too.
+          </p>
+        </div>
+        <div class="state-grid">
+          <figure class="state">
+            <button class="tool-btn" type="button" aria-label="Rest state" data-label="Rest">
+              <span class="icon icon--note" aria-hidden="true"></span>
+            </button>
+            <figcaption>rest</figcaption>
+          </figure>
+          <figure class="state">
+            <button class="tool-btn is-hover" type="button" aria-label="Hover state" data-label="Hover">
+              <span class="icon icon--note" aria-hidden="true"></span>
+            </button>
+            <figcaption>hover</figcaption>
+          </figure>
+          <figure class="state">
+            <button class="tool-btn is-focus" type="button" aria-label="Focus state" data-label="Focus">
+              <span class="icon icon--note" aria-hidden="true"></span>
+            </button>
+            <figcaption>focus</figcaption>
+          </figure>
+          <figure class="state">
+            <button class="tool-btn is-pressed" type="button" aria-label="Pressed state" data-label="Pressed">
+              <span class="icon icon--note" aria-hidden="true"></span>
+            </button>
+            <figcaption>pressed</figcaption>
+          </figure>
+          <figure class="state">
+            <button class="tool-btn is-active" type="button" aria-label="Active tool" data-label="Active">
+              <span class="icon icon--palette" aria-hidden="true"></span>
+            </button>
+            <figcaption>active tool</figcaption>
+          </figure>
+          <figure class="state">
+            <button class="tool-btn is-disabled" type="button" aria-label="Disabled state" data-label="Disabled">
+              <span class="icon icon--note" aria-hidden="true"></span>
+            </button>
+            <figcaption>disabled</figcaption>
+          </figure>
+        </div>
+        <p class="state-note">
+          Focus is a 2 px <code>--accent</code> outline with 2 px offset; pressed adds
+          <code>scale(0.97)</code>; disabled is opacity 0.4 without hover.
+        </p>
+        <div class="detail-grid">
+          <div class="detail-card">
+            <h3>Selected note card</h3>
+            <article class="note-card is-selected">
+              <div class="note-card__head">
+                <span class="type-label">Note</span>
+                <button class="tool-btn tool-btn--card card-action" type="button" aria-label="Open note" data-label="Open note">
+                  <span class="icon icon--file icon--card" aria-hidden="true"></span>
+                </button>
+              </div>
+              <h3 class="note-card__title">Selected state</h3>
+              <p class="note-card__body">
+                1.5 px <code>--accent</code> border with a 3 px <code>--accent-soft</code> ring.
+              </p>
+            </article>
+          </div>
+          <div class="detail-card">
+            <h3>Rest note card</h3>
+            <article class="note-card">
+              <div class="note-card__head">
+                <span class="type-label">Note</span>
+                <button class="tool-btn tool-btn--card card-action" type="button" aria-label="Open note" data-label="Open note">
+                  <span class="icon icon--file icon--card" aria-hidden="true"></span>
+                </button>
+              </div>
+              <h3 class="note-card__title">Rest state</h3>
+              <p class="note-card__body">
+                1 px <code>--border-strong</code> border with <code>--card-shadow</code>; the card
+                action is invisible until hover or focus.
+              </p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" aria-labelledby="components">
+        <div class="section__head">
+          <span class="eyebrow">06 — Components</span>
+          <h2 id="components">Canvas components</h2>
+          <p class="section__intro">
+            One example each of a note card, a block, a zone, a connection, a side-panel header and
+            the toolbar arrangement. These are static markup, not engine objects.
+          </p>
+        </div>
+        <div class="component-grid">
+          <div class="component">
+            <div class="component__label">
+              <h3>Note card</h3>
+              <code class="token-caption">--radius-md · --card · --card-shadow</code>
+            </div>
+            <article class="note-card">
+              <div class="note-card__head">
+                <span class="type-label">Note</span>
+                <button class="tool-btn tool-btn--card card-action" type="button" aria-label="Open note" data-label="Open note">
+                  <span class="icon icon--file icon--card" aria-hidden="true"></span>
+                </button>
+              </div>
+              <h3 class="note-card__title">Calm surface, quiet chrome</h3>
+              <p class="note-card__body">
+                The person’s content is the brightest thing on screen; bars, frames and buttons step
+                back.
+              </p>
+              <p class="note-card__body note-card__body--muted">Body text can also be muted.</p>
+            </article>
+          </div>
+
+          <div class="component">
+            <div class="component__label">
+              <h3>Block</h3>
+              <code class="token-caption">--radius-lg · --card · grows in height</code>
+            </div>
+            <section class="block" aria-label="Checklist block example">
+              <header class="block__head">
+                <span class="icon icon--checklist icon--card" aria-hidden="true"></span>
+                <h3>Checklist</h3>
+                <span class="type-label">Block</span>
+              </header>
+              <ul class="block__list">
+                <li>Tokens regenerated from one source</li>
+                <li>Icons drawn on a 24 grid</li>
+                <li>States defined before components</li>
+                <li>No inner scrollbar — the block grows</li>
+              </ul>
+            </section>
+          </div>
+
+          <div class="component">
+            <div class="component__label">
+              <h3>Zone</h3>
+              <code class="token-caption">--radius-lg · tone colour · dashed border</code>
+            </div>
+            <section class="zone" aria-label="Zone example">
+              <header class="zone__head">
+                <span class="zone__dot" aria-hidden="true"></span>
+                <h3>Research</h3>
+              </header>
+              <p class="zone__hint">
+                The zone header names the group; content starts below the header.
+              </p>
+            </section>
+          </div>
+
+          <div class="component">
+            <div class="component__label">
+              <h3>Connection</h3>
+              <code class="token-caption">edge · --tone-d · 1.5 px</code>
+            </div>
+            <figure class="connection">
+              <svg viewBox="0 0 480 120" role="img" aria-label="Connection between two items">
+                <path class="connection__line" d="M 32 60 C 160 60, 200 24, 344 24" />
+                <circle class="connection__dot" cx="32" cy="60" r="5" />
+                <circle class="connection__dot" cx="344" cy="24" r="5" />
+              </svg>
+              <figcaption class="token-caption">
+                Connections join related notes across zones.
+              </figcaption>
+            </figure>
+          </div>
+
+          <div class="component">
+            <div class="component__label">
+              <h3>Side-panel header</h3>
+              <code class="token-caption">400 px · --header-height · serif title</code>
+            </div>
+            <aside class="panel" aria-label="Side panel example">
+              <header class="panel__head">
+                <h3 class="panel__title">Note</h3>
+                <span class="panel__status">Saved</span>
+              </header>
+              <div class="panel__body">
+                <p>Panel title uses the serif stack at 22 px; the status slot keeps a fixed height.</p>
+                <p class="panel__meta">Updated just now</p>
+              </div>
+            </aside>
+          </div>
+
+          <div class="component">
+            <div class="component__label">
+              <h3>Toolbar</h3>
+              <code class="token-caption">48 px bar · 36 px buttons · 20 px icons</code>
+            </div>
+            <div class="toolbar-wrap">
+              <div class="toolbar" role="toolbar" aria-label="Canvas toolbar example">
+                <button class="tool-btn" type="button" aria-label="Note" data-label="Note">
+                  <span class="icon icon--note" aria-hidden="true"></span>
+                </button>
+                <button class="tool-btn" type="button" aria-label="Checklist" data-label="Checklist">
+                  <span class="icon icon--checklist" aria-hidden="true"></span>
+                </button>
+                <button class="tool-btn" type="button" aria-label="Table" data-label="Table">
+                  <span class="icon icon--table" aria-hidden="true"></span>
+                </button>
+                <button class="tool-btn" type="button" aria-label="Timeline" data-label="Timeline">
+                  <span class="icon icon--timeline" aria-hidden="true"></span>
+                </button>
+                <span class="toolbar__divider" aria-hidden="true"></span>
+                <button class="tool-btn is-active" type="button" aria-label="Palette" data-label="Palette">
+                  <span class="icon icon--palette" aria-hidden="true"></span>
+                </button>
+                <button class="tool-btn" type="button" aria-label="Columns" data-label="Columns">
+                  <span class="icon icon--columns" aria-hidden="true"></span>
+                </button>
+                <span class="toolbar__divider" aria-hidden="true"></span>
+                <button class="tool-btn" type="button" aria-label="Zone" data-label="Zone">
+                  <span class="icon icon--zone" aria-hidden="true"></span>
+                </button>
+                <button class="tool-btn" type="button" aria-label="Source" data-label="Source">
+                  <span class="icon icon--source" aria-hidden="true"></span>
+                </button>
+                <button class="tool-btn" type="button" aria-label="File" data-label="File">
+                  <span class="icon icon--file" aria-hidden="true"></span>
+                </button>
+                <button class="tool-btn" type="button" aria-label="Image" data-label="Image">
+                  <span class="icon icon--image" aria-hidden="true"></span>
+                </button>
+              </div>
+              <p class="token-caption">
+                Groups are separated by a divider; only one filled accent tool appears at a time.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" aria-labelledby="board">
+        <div class="section__head">
+          <span class="eyebrow">07 — Sample board</span>
+          <h2 id="board">Sample board composition</h2>
+          <div class="board-label">
+            <span class="badge">static design preview</span>
+            <span class="board-note">
+              Zones, note cards, a block and a connection, arranged to show the intended look. No
+              engine, no data, nothing is draggable or saved.
+            </span>
+          </div>
+        </div>
+        <div class="board" aria-label="Sample board composition, static preview">
+          <section class="board__zone" aria-label="Zone Research, static preview">
+            <header class="zone__head">
+              <span class="zone__dot" aria-hidden="true"></span>
+              <h3>Research</h3>
+            </header>
+            <div class="board__cards">
+              <article class="note-card note-card--compact">
+                <div class="note-card__head">
+                  <span class="type-label">Note</span>
+                  <button class="tool-btn tool-btn--card card-action" type="button" aria-label="Open note" data-label="Open note">
+                    <span class="icon icon--file icon--card" aria-hidden="true"></span>
+                  </button>
+                </div>
+                <h3 class="note-card__title">Design law</h3>
+                <p class="note-card__body">One accent, quiet chrome, content first.</p>
+              </article>
+              <article class="note-card note-card--compact is-selected">
+                <div class="note-card__head">
+                  <span class="type-label">Note</span>
+                  <button class="tool-btn tool-btn--card card-action" type="button" aria-label="Open note" data-label="Open note">
+                    <span class="icon icon--file icon--card" aria-hidden="true"></span>
+                  </button>
+                </div>
+                <h3 class="note-card__title">Token source</h3>
+                <p class="note-card__body">CSS custom properties and a C++ header from one file.</p>
+              </article>
+            </div>
+            <section class="block" aria-label="Checklist block, static preview">
+              <header class="block__head">
+                <span class="icon icon--checklist icon--card" aria-hidden="true"></span>
+                <h3>Open points</h3>
+                <span class="type-label">Block</span>
+              </header>
+              <ul class="block__list">
+                <li>Review the type scale</li>
+                <li>Approve the tone colours</li>
+              </ul>
+            </section>
+          </section>
+
+          <figure class="board__link" aria-label="Connection between the two zones, static preview">
+            <svg viewBox="0 0 48 400" preserveAspectRatio="none" role="img" aria-label="Connection line between the Research and Ideas zones">
+              <path class="connection__line" d="M 0 150 C 24 150, 24 268, 48 268" />
+              <circle class="connection__dot" cx="3" cy="150" r="3" />
+              <circle class="connection__dot" cx="45" cy="268" r="3" />
+            </svg>
+          </figure>
+
+          <section class="board__zone board__zone--b" aria-label="Zone Ideas, static preview">
+            <header class="zone__head">
+              <span class="zone__dot zone__dot--b" aria-hidden="true"></span>
+              <h3>Ideas</h3>
+            </header>
+            <div class="board__cards">
+              <article class="note-card note-card--compact">
+                <div class="note-card__head">
+                  <span class="type-label">Note</span>
+                  <button class="tool-btn tool-btn--card card-action" type="button" aria-label="Open note" data-label="Open note">
+                    <span class="icon icon--file icon--card" aria-hidden="true"></span>
+                  </button>
+                </div>
+                <h3 class="note-card__title">Weekly review</h3>
+                <p class="note-card__body">Notes become reusable knowledge with backlinks.</p>
+              </article>
+              <article class="note-card note-card--compact">
+                <div class="note-card__head">
+                  <span class="type-label">Note</span>
+                  <button class="tool-btn tool-btn--card card-action" type="button" aria-label="Open note" data-label="Open note">
+                    <span class="icon icon--file icon--card" aria-hidden="true"></span>
+                  </button>
+                </div>
+                <h3 class="note-card__title">Small demo</h3>
+                <p class="note-card__body">A static sample board, not a product feature.</p>
+              </article>
+            </div>
+          </section>
+        </div>
+      </section>
+
+      <footer class="footer">
+        <p>
+          <strong>This is a static design preview, not the product.</strong> It has no engine, no
+          data, no routing and no build step; it exists so the design system can be reviewed between
+          milestones.
+        </p>
+        <p>
+          Colour, spacing, radius, typography, motion, shadow and layer values come only from
+          <code>packages/ui-kit/tokens.css</code>; icons come from
+          <code>packages/ui-kit/icons/</code>. Both are linked relatively and served from the
+          repository root.
+        </p>
+      </footer>
+    </main>
+  </body>
+</html>

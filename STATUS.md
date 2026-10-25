@@ -139,10 +139,11 @@
 - [x] `P0-10` Adapt design rules to this project — status: `done` — owner: —
 - [x] `P0-11` Canvas acceptance catalogue — status: `done` — owner: —
 - [x] `P0-12` Design tokens and icons in ui-kit — status: `done` — owner: —
+- [x] `P0-19` Design preview page — status: `done` — owner: —
 
 ## In progress
 
-- [ ] `P0-19` Design preview page — status: `in_progress` — owner: —
+- none
 
 ## Blocked / failed
 
