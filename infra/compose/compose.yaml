@@ -1,8 +1,9 @@
-# Local development services for Project air (P0-07): PostgreSQL, SeaweedFS (S3) and Mailpit.
+# Local development services for Project air: PostgreSQL, SeaweedFS (S3) and Mailpit
+# (P0-07), plus the pinned Ory Kratos identity service (P3-01; configured in P3-03).
 #
 # Shared by every worktree: one stack per machine, fixed host ports outside the slot range
 # 4000-4999. Slot databases and buckets are not created here; they come from `.polier-slot`
-# and are created by `tools/dev/setup` (P0-06). See README.md in this folder.
+# and are created by `tools/dev/setup` (P0-06, extended by P3-01). See README.md in this folder.
 #
 # Images are pinned by tag and digest. Values are local development defaults only; override
 # them in `infra/compose/.env` (gitignored). No default is a production secret.
@@ -66,6 +67,33 @@ services:
       timeout: 5s
       retries: 12
       start_period: 5s
+
+  # Ory Kratos owns identities, credentials and sessions (ADR-0007). Its own
+  # database `projectair_kratos` lives on the existing PostgreSQL server and is
+  # created by `tools/dev/setup`; it is shared by every local slot and is a
+  # local-development limitation only (tests never depend on it).
+  #
+  # The identity configuration (kratos.yml, identity schemas, courier/SMTP and
+  # the `serve` command) arrives in P3-03. Until then the service is behind the
+  # `identity` profile, so the default `up -d --wait` starts the same three
+  # services as before and stays green.
+  kratos:
+    profiles: ["identity"]
+    image: oryd/kratos:v26.2.0@sha256:2a13bb8d362c7a7ae33bd7c0f5168aee46921f15c916a06346db91c06dc76643
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DSN: postgres://${POSTGRES_USER:-projectair}:${POSTGRES_PASSWORD:-projectair_local_only}@postgres:5432/${KRATOS_DB_NAME:-projectair_kratos}?sslmode=disable
+    ports:
+      - "127.0.0.1:${KRATOS_PUBLIC_HOST_PORT:-8433}:4433"
+      - "127.0.0.1:${KRATOS_ADMIN_HOST_PORT:-8434}:4434"
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:4434/health/ready"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+      start_period: 15s
 
 volumes:
   postgres-data:

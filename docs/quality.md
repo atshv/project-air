@@ -48,7 +48,7 @@ task from the project's manifests; until then the gate cannot pass.
 | `branch-protection` | `gh api repos/atshv/project-air/branches/main/protection` | exit 0, required checks and reviews listed |
 | `install` | `pnpm install --frozen-lockfile` | exit 0, lockfile unchanged |
 | `unit` | `pnpm test` (root, affected packages) | exit 0, all tests pass |
-| `compose-config` | `docker compose -f infra/compose/compose.yaml config --quiet` | exit 0, exactly the three services with health checks |
+| `compose-config` | `docker compose -f infra/compose/compose.yaml config --quiet` | exit 0, four services with health checks; Kratos runs behind the `identity` profile |
 | `dev-setup` | `python3 $POLIER/tools/slot.py acquire && bash tools/dev/setup` | exit 0, slot database and bucket created |
 | `ci-local` | `docker run --rm -v "$PWD":/repo -w /repo rhysd/actionlint:latest` | exit 0, no workflow findings |
 | `ci-green` | `gh run list --workflow ci.yml --limit 1 --json conclusion --jq '.[0].conclusion'` | `success` |

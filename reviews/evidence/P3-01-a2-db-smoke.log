@@ -1,0 +1,73 @@
+P3-01 A2 — slot bootstrap and migration idempotency
+date: 2026-10-25T17:13:21Z
+slot database from .polier-slot: project-air_slot_1
+
+== 1. bash tools/dev/setup (second, idempotent run) ==
+setup: slot 1 from /Users/rasulatashev/Desktop/KI Projekte/Project air-P3-01/.polier-slot
+setup: database project-air_slot_1, bucket project-air-slot-1
+setup: ports from .polier-slot: ai=4150 auth=4120 media=4140 platform=4110 playground=4160 sync=4130 web=4100 web-e2e=4101
+setup: ensuring the shared compose stack is running (infra/compose)
+ Container project-air-local-mailpit-1 Running 
+ Container project-air-local-postgres-1 Running 
+ Container project-air-local-seaweedfs-1 Running 
+ Container project-air-local-seaweedfs-1 Waiting 
+ Container project-air-local-mailpit-1 Waiting 
+ Container project-air-local-postgres-1 Waiting 
+ Container project-air-local-seaweedfs-1 Healthy 
+ Container project-air-local-mailpit-1 Healthy 
+ Container project-air-local-postgres-1 Healthy 
+setup: database project-air_slot_1 already exists
+setup: database role app_user already exists, enforcing the restricted attributes
+setup: app_user has CONNECT and USAGE on project-air_slot_1 and owns no tables
+setup: identity database projectair_kratos already exists
+setup: bucket project-air-slot-1 already exists
+setup: databases on the shared server:
+  postgres
+  project-air_slot_1
+  projectair
+  projectair_kratos
+setup: buckets in the shared SeaweedFS:
+    project-air-slot-1	size:0	logical:0	chunk:0
+setup: slot 1 ready (database project-air_slot_1, bucket project-air-slot-1)
+setup: role app_user ready; its password comes from the environment or /Users/rasulatashev/Desktop/KI Projekte/Project air-P3-01/infra/compose/.env and is never printed
+PASS: tools/dev/setup exits 0 and keeps existing resources
+
+== 2. node services/platform/src/db/migrate.ts (second run must be a no-op) ==
+{"time":"2026-10-25T17:13:24.060Z","level":"info","message":"migrations complete","applied":0,"skipped":1}
+{"time":"2026-10-25T17:13:24.063Z","level":"info","message":"migrate: done","applied":0,"skipped":1}
+PASS: migration runner exits 0 on an already migrated database
+
+== 3. state on the shared server ==
+database: postgres
+database: project-air_slot_1
+database: projectair
+database: projectair_kratos
+PASS: slot database project-air_slot_1 exists
+PASS: shared identity database projectair_kratos exists
+schema_migrations: 0001_app_schema | 0001_app_schema.sql | 110896fd63183642355fe432361e821c1b967a1805ae20b42e74999210aed1f8
+PASS: migration 0001_app_schema is recorded
+PASS: migration 0001 created the app schema
+
+== 4. app_user role attributes and ownership ==
+app_user canlogin=true super=false bypassrls=false createdb=false createrole=false replication=false
+PASS: app_user is LOGIN only, no SUPERUSER, no BYPASSRLS, no CREATEDB/CREATEROLE/REPLICATION
+PASS: app_user owns no tables
+PASS: app_user has CONNECT on the slot database and USAGE on public
+
+== 5. app_user can authenticate over TCP with the gitignored password (value not printed) ==
+PASS: app_user logs in to project-air_slot_1
+login: app_user@project-air_slot_1
+
+== 6. the generated password lives only in the gitignored env file ==
+ignored: .gitignore:23:.env	infra/compose/.env
+PASS: infra/compose/.env is gitignored
+PASS: APP_USER_PASSWORD is stored once in the env file
+
+== 7. reset-db deliverable runs (destructive, this slot only) ==
+PASS: tools/dev/reset-db exits 0
+reset-db: {"time":"2026-10-25T17:13:29.067Z","level":"info","message":"migrations complete","applied":1,"skipped":0}
+reset-db: {"time":"2026-10-25T17:13:29.070Z","level":"info","message":"migrate: done","applied":1,"skipped":0}
+reset-db: reset-db: slot 1 database project-air_slot_1 reset and migrated
+PASS: reset-db reapplies migration 0001
+
+A2 RESULT: PASS (all checks green)

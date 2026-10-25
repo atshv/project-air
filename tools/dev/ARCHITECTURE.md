@@ -4,7 +4,7 @@
 
 ## Purpose
 
-Per-slot setup and teardown: it creates and removes the slot database and bucket from `.polier-slot`, seeds data and starts or stops the local services with one command each.
+Per-slot setup and teardown: it creates and removes the slot database, the restricted `app_user` role, the slot bucket and the shared local identity database from `.polier-slot`, seeds data and starts or stops the local services with one command each.
 
 ## Inputs
 
@@ -13,12 +13,13 @@ Per-slot setup and teardown: it creates and removes the slot database and bucket
 
 ## Outputs
 
-- A per-slot database and bucket, created or removed; seed data.
+- A per-slot database, role and bucket (or the shared `projectair_kratos` identity database), created or removed.
 - The one-command local service start and teardown used as the `dev-setup` gate.
 
 ## Invariants
 
 - `AD-3` — Cross-package interfaces are JSON Schema contracts with fixtures and SemVer; a change updates every dependant in the same task.
+- `AD-5` — Authorisation is checked twice: in the API and by PostgreSQL row-level security. `app_user` never has `SUPERUSER` or `BYPASSRLS` and never owns tables.
 - `AD-9` — Ports, databases and buckets come only from `.polier-slot`; shared resources run through exclusive gates.
 
 ## Allowed imports
@@ -27,14 +28,13 @@ None. `board.json` -> `packages[]` -> `may_import` is empty, so this package imp
 
 ## Commands
 
-The scripts need bash, Docker with Compose and the Python 3 standard library; there is no install
-step and no lint/build/test command for this tool. Runtime values come only from `.polier-slot`
-(AD-9); slot 0 is refused and the shared stack is started but never stopped.
+The scripts need bash, Docker with Compose, Node from `.nvmrc` and the Python 3 standard library; there is no install, lint, build or test step. Runtime values come only from `.polier-slot` (AD-9); slot 0 is refused and the shared stack is started but never stopped. Role passwords are generated or read from the gitignored env file and never printed.
 
 | Command | What it does |
 | --- | --- |
 | `python3 $POLIER/tools/slot.py acquire` | take (or reuse) this worktree's slot; writes `.polier-slot` |
-| `bash tools/dev/setup` | start the shared compose stack if needed, then create and verify the slot database and bucket |
+| `bash tools/dev/setup` | start the shared compose stack if needed, then create and verify the slot database, the restricted `app_user` role with its grants, the shared `projectair_kratos` database and the slot bucket |
+| `bash tools/dev/reset-db` | drop and recreate the slot database, re-run the bootstrap and migrate it (destructive; this slot only) |
 | `bash tools/dev/teardown` | drop the slot database and bucket idempotently; refuses slot 0 |
 | `docker compose -f infra/compose/compose.yaml down` | stop the shared stack manually; volumes are kept and the scripts never run this |
 

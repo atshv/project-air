@@ -1,0 +1,196 @@
+#!/usr/bin/env bash
+# P3-01: reset this worktree's slot database and reapply the migrations.
+#
+# Drops and recreates the per-slot PostgreSQL database, reruns
+# `tools/dev/setup` (which restores the app_user grants, the shared identity
+# database and the slot bucket) and then applies the migrations. The shared
+# compose stack, the shared Kratos database and every other slot are left
+# alone; slot 0 is refused.
+#
+# Every runtime value comes from `.polier-slot` (AD-9). The slot owner
+# connection string is assembled inside this process and is never printed. The
+# repository must be installed (`pnpm install`) because the migration runner
+# imports `pg`; Node runs the TypeScript source directly (type stripping).
+#
+# Usage: bash tools/dev/reset-db
+set -euo pipefail
+
+PROG="$(basename -- "${BASH_SOURCE[0]}")"
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)"
+ROOT="$(cd -- "$SCRIPT_DIR/../.." && pwd -P)"
+SLOT_FILE="$ROOT/.polier-slot"
+COMPOSE_FILE="$ROOT/infra/compose/compose.yaml"
+ENV_FILE="$ROOT/infra/compose/.env"
+
+die() {
+  printf '%s: %s\n' "$PROG" "$*" >&2
+  exit 1
+}
+
+compose() {
+  docker compose -f "$COMPOSE_FILE" "$@"
+}
+
+# Parses `.polier-slot` and prints shell assignments for SLOT, DB_NAME and
+# BUCKET. Refuses a missing file, slot 0, a foreign worktree and values that do
+# not belong to the slot — the same safety rules as `tools/dev/setup`.
+read_slot() {
+  python3 - "$SLOT_FILE" "$PROG" "$ROOT" <<'PY'
+import json
+import os
+import re
+import sys
+
+path, label, root = sys.argv[1], sys.argv[2], sys.argv[3]
+
+
+def fail(message):
+    sys.exit(f"{label}: {message}")
+
+
+try:
+    with open(path, encoding="utf-8") as handle:
+        data = json.load(handle)
+except FileNotFoundError:
+    fail(f"no .polier-slot in {os.path.dirname(path)} — run: python3 $POLIER/tools/slot.py acquire")
+except (OSError, ValueError) as exc:
+    fail(f"cannot read .polier-slot: {exc}")
+
+token = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_.-]*$")
+slot = data.get("slot")
+if isinstance(slot, bool) or not isinstance(slot, int) or slot < 0:
+    fail(".polier-slot has no valid non-negative integer 'slot'")
+if slot == 0:
+    fail("refusing slot 0 — it belongs to the owner's main checkout; nothing was changed")
+
+worktree = data.get("worktree")
+if isinstance(worktree, str) and worktree:
+    if os.path.realpath(worktree) != os.path.realpath(root):
+        fail(f".polier-slot belongs to worktree {worktree!r}, not {root!r}; "
+             f"refusing to touch another worktree's slot")
+
+db_name = data.get("db_name")
+bucket = data.get("bucket")
+if not isinstance(db_name, str) or not token.match(db_name):
+    fail(".polier-slot has no valid 'db_name'")
+if not isinstance(bucket, str) or not token.match(bucket):
+    fail(".polier-slot has no valid 'bucket'")
+if not db_name.endswith(f"_slot_{slot}"):
+    fail(f"db_name {db_name!r} does not belong to slot {slot} (expected suffix _slot_{slot})")
+if not bucket.endswith(f"-slot-{slot}"):
+    fail(f"bucket {bucket!r} does not belong to slot {slot} (expected suffix -slot-{slot})")
+
+print(f"SLOT={slot}")
+print(f"DB_NAME={db_name}")
+print(f"BUCKET={bucket}")
+PY
+}
+
+psql_value() {
+  local database="$1" sql="$2"
+  compose exec -T postgres sh -c 'psql -U "$POSTGRES_USER" -d "$1" -v ON_ERROR_STOP=1 -tAc "$2"' sh "$database" "$sql"
+}
+
+database_exists() {
+  local name="$1" found
+  found="$(psql_value postgres "SELECT 1 FROM pg_database WHERE datname = '$name'")" || return 1
+  [ "$found" = "1" ]
+}
+
+ensure_stack() {
+  command -v docker >/dev/null 2>&1 || die "docker is not on PATH"
+  docker compose version >/dev/null 2>&1 || die "docker compose is not available"
+  [ -f "$COMPOSE_FILE" ] || die "compose file not found: $COMPOSE_FILE"
+  printf '%s: ensuring the shared compose stack is running (infra/compose)\n' "$PROG"
+  if ! compose up -d --wait; then
+    die "the shared compose stack did not become healthy (infra problem, not a slot problem)"
+  fi
+}
+
+# Assembles the slot owner connection string from `.polier-slot` and the local
+# compose defaults (or the environment / gitignored env file). Printed only
+# into the child process environment, never to a terminal or a log.
+slot_database_url() {
+  python3 - "$SLOT_FILE" "$ENV_FILE" <<'PY'
+import json
+import os
+import sys
+import urllib.parse
+
+slot_path, env_path = sys.argv[1], sys.argv[2]
+with open(slot_path, encoding="utf-8") as handle:
+    slot = json.load(handle)
+
+env = {}
+if os.path.exists(env_path):
+    with open(env_path, encoding="utf-8") as handle:
+        for raw in handle:
+            line = raw.strip()
+            if not line or line.startswith("#") or "=" not in line:
+                continue
+            key, value = line.split("=", 1)
+            env[key.strip()] = value.strip().strip('"').strip("'")
+
+host = os.environ.get("PGHOST") or env.get("POSTGRES_HOST") or "127.0.0.1"
+port = os.environ.get("PGPORT") or env.get("POSTGRES_HOST_PORT") or "5433"
+user = os.environ.get("PGUSER") or env.get("POSTGRES_USER") or "projectair"
+password = os.environ.get("PGPASSWORD") or env.get("POSTGRES_PASSWORD") or "projectair_local_only"
+database = slot["db_name"]
+
+print(
+    "postgresql://%s:%s@%s:%s/%s"
+    % (
+        urllib.parse.quote(user, safe=""),
+        urllib.parse.quote(password, safe=""),
+        host,
+        port,
+        database,
+    )
+)
+PY
+}
+
+run_migrations() {
+  local connection
+  [ -f "$ROOT/services/platform/src/db/migrate.ts" ] || die "migration runner not found"
+  connection="$(slot_database_url)"
+  [ -n "$connection" ] || die "could not assemble the slot database connection"
+  printf '%s: applying migrations to %s\n' "$PROG" "$DB_NAME"
+  DATABASE_URL="$connection" node "$ROOT/services/platform/src/db/migrate.ts"
+}
+
+drop_and_create_database() {
+  ensure_stack
+  if database_exists "$DB_NAME"; then
+    local output
+    if ! output="$(psql_value postgres "DROP DATABASE IF EXISTS \"$DB_NAME\" WITH (FORCE)" 2>&1)"; then
+      die "could not drop database $DB_NAME: $output"
+    fi
+    printf '%s: database %s dropped\n' "$PROG" "$DB_NAME"
+  else
+    printf '%s: database %s does not exist\n' "$PROG" "$DB_NAME"
+  fi
+  local output
+  if ! output="$(psql_value postgres "CREATE DATABASE \"$DB_NAME\"" 2>&1)"; then
+    die "could not create database $DB_NAME: $output"
+  fi
+  database_exists "$DB_NAME" || die "database $DB_NAME was not created"
+  printf '%s: database %s recreated\n' "$PROG" "$DB_NAME"
+}
+
+main() {
+  local SLOT DB_NAME BUCKET values
+  values="$(read_slot)" || exit 1
+  eval "$values"
+
+  printf '%s: slot %s from %s\n' "$PROG" "$SLOT" "$SLOT_FILE"
+  printf '%s: resetting database %s\n' "$PROG" "$DB_NAME"
+
+  drop_and_create_database
+  printf '%s: re-applying the slot bootstrap (role, grants, identity database, bucket)\n' "$PROG"
+  bash "$SCRIPT_DIR/setup"
+  run_migrations
+  printf '%s: slot %s database %s reset and migrated\n' "$PROG" "$SLOT" "$DB_NAME"
+}
+
+main "$@"

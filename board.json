@@ -2426,12 +2426,17 @@
       ]
     },
     {
-      "status": "in_progress",
+      "status": "done",
       "stage": "backend-core",
       "parallel_group": null,
       "owner": null,
       "round": 0,
-      "evidence": [],
+      "evidence": [
+        "reviews/evidence/P3-01-board-check-20261025T171009Z.json",
+        "reviews/evidence/P3-01-boundaries-20261025T171337Z.json",
+        "reviews/evidence/P3-01-unit-20261025T171337Z.json",
+        "reviews/evidence/P3-01-compose-config-20261025T171338Z.json"
+      ],
       "scope_write_forbidden": [
         "reference/"
       ],
@@ -2482,7 +2487,12 @@
         "compose-config"
       ],
       "branch": "task/P3-01",
-      "worktree": "../Project air-P3-01"
+      "worktree": null,
+      "handoff": [
+        "Closed P3-01: @project-air/platform + auth ESM TS services (fail-fast config, node:http router/health, pg pool, checksum migrations); pinned pg 8.23.1, @types/pg, @types/node, Kratos v26.2.0@digest.",
+        "Compose gains Kratos behind the identity profile with its own DB; tools/dev/setup creates the slot DB, restricted app_user (no SUPERUSER/BYPASSRLS/ownership) and projectair_kratos; reset-db added.",
+        "Review pass; lead fixes: quality 'three services' wording + one shared app_user per machine (sequential tasks, db-exclusive) documented. @types/node accepted as type-only dev dependency."
+      ]
     },
     {
       "status": "pending",

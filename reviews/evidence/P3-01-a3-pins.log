@@ -1,0 +1,25 @@
+P3-01 A3 — compose configuration and pinned versions
+date: 2026-10-25T17:12:29Z
+
+== 1. docker compose -f infra/compose/compose.yaml config --quiet ==
+exit code: 0
+
+== 2. services, images, profiles and health checks in the rendered configuration ==
+kratos     image=oryd/kratos:v26.2.0@sha256:2a13bb8d362c7a7ae33bd7c0f5168aee46921f15c916a06346db91c06dc76643
+           profiles=identity healthcheck=['CMD', 'wget', '-q', '-O', '/dev/null', 'http://127.0.0.1:4434/health/ready']
+mailpit    image=axllent/mailpit:v1.32.0@sha256:0790692be935ea4420d085694f7985b1f692ca6a8771ab0e0bd8ba75ac180498
+           profiles=default healthcheck=['CMD', '/mailpit', 'readyz']
+postgres   image=postgres:17.11-alpine3.23@sha256:01ea903aa65deb58eb49d6e09d859ecff63a6bb7d61feca55f2abad71d08f72a
+           profiles=default healthcheck=['CMD-SHELL', 'pg_isready -h 127.0.0.1 -p 5432 -U "$$POSTGRES_USER" -d "$$POSTGRES_DB"']
+seaweedfs  image=chrislusf/seaweedfs:4.50@sha256:c2658820e763294a9e9de7b36c81e59b879e3459148351aee4e31a126ca64860
+           profiles=default healthcheck=['CMD', 'wget', '-q', '-O', '/dev/null', 'http://127.0.0.1:9333/cluster/healthz']
+
+== 3. docs/versions.md rows for the backend dependencies and the Kratos image ==
+| PostgreSQL client (`pg`, backend runtime) | `8.23.1` | https://www.npmjs.com/package/pg/v/8.23.1 — MIT | 2026-10-25 | owner (2026-10-25) |
+| `@types/pg` (dev, backend) | `8.23.1` | https://www.npmjs.com/package/@types/pg/v/8.23.1 — MIT | 2026-10-25 | owner (2026-10-25) |
+| `@types/node` (dev, backend) | `24.19.2` | https://www.npmjs.com/package/@types/node/v/24.19.2 — MIT | 2026-10-25 | lead (P3-01, type declarations for the Node builtins) |
+| Ory Kratos (identity service, local compose) | `v26.2.0@sha256:2a13bb8d362c7a7ae33bd7c0f5168aee46921f15c916a06346db91c06dc76643` | https://github.com/ory/kratos/releases/tag/v26.2.0 — Apache-2.0 | 2026-10-25 | owner (2026-10-25) |
+
+== 4. the image digests in compose.yaml match the pinned rows ==
+PASS: Kratos digest 2a13bb8d362c7a7ae33bd7c0f5168aee46921f15c916a06346db91c06dc76643 is pinned in compose.yaml and docs/versions.md
+A3 RESULT: PASS

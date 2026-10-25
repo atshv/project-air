@@ -1,10 +1,12 @@
 # Local services compose
 
-Local development stack for Project air (task P0-07, satisfies D2): PostgreSQL, an S3-compatible
-object store (SeaweedFS) and a mail catcher (Mailpit). One command starts all three with health
-checks. The stack is **shared by every worktree** of this repository; it is started once per
-machine and used from any checkout. Ports follow `AD-9`: only machine-wide services live here,
-per-worktree values come from `.polier-slot`.
+Local development stack for Project air (task P0-07, extended by P3-01; satisfies D2): PostgreSQL,
+an S3-compatible object store (SeaweedFS), a mail catcher (Mailpit) and the pinned Ory Kratos
+identity service. One command starts the three default services with health checks; Kratos sits
+behind the `identity` profile until its configuration arrives in P3-03. The stack is **shared by
+every worktree** of this repository; it is started once per machine and used from any checkout.
+Ports follow `AD-9`: only machine-wide services live here, per-worktree values come from
+`.polier-slot`.
 
 ## Runtime
 
@@ -21,17 +23,19 @@ credentials).
 
 | Compose service | Image (tag and digest pinned in [compose.yaml](compose.yaml)) | Version | Licence | Host port (default) | Purpose |
 | --- | --- | --- | --- | --- | --- |
-| `postgres` | `postgres:17.11-alpine3.23` | PostgreSQL 17.11 | PostgreSQL licence (permissive exception: PostgreSQL is mandated by the blueprint) | `5433` | database server for every slot database |
+| `postgres` | `postgres:17.11-alpine3.23` | PostgreSQL 17.11 | PostgreSQL licence (permissive exception: PostgreSQL is mandated by the blueprint) | `5433` | database server for every slot database and the shared identity database |
 | `seaweedfs` | `chrislusf/seaweedfs:4.50` | SeaweedFS 4.50 | Apache-2.0 | `8333` | S3 API; master (`9333`) and filer (`8888`) stay inside the compose network |
 | `mailpit` | `axllent/mailpit:v1.32.0` | Mailpit 1.32.0 | MIT | `1025` (SMTP), `8025` (web inbox) | catches development e-mail and shows it in a web inbox |
+| `kratos` | `oryd/kratos:v26.2.0` | Ory Kratos 26.2.0 | Apache-2.0 | `8433` (public), `8434` (admin) | identity service from [ADR-0007](../../docs/adr/ADR-0007-auth.md); `identity` profile, configured in P3-03 |
 
 Upstream sources: <https://hub.docker.com/_/postgres>, <https://github.com/seaweedfs/seaweedfs>,
-<https://github.com/axllent/mailpit>. The lead adds these rows to `docs/versions.md`.
+<https://github.com/axllent/mailpit>, <https://github.com/ory/kratos>. The lead adds these rows to
+`docs/versions.md`.
 
 Every published port binds to `127.0.0.1` only. All host ports are **outside the slot range
 4000-4999**, so two worktrees never collide with these shared services. Every service has a
-health check: `pg_isready` for PostgreSQL, `GET /cluster/healthz` for SeaweedFS and `mailpit readyz`
-for Mailpit.
+health check: `pg_isready` for PostgreSQL, `GET /cluster/healthz` for SeaweedFS, `mailpit readyz`
+for Mailpit and Kratos' admin `GET /health/ready`.
 
 ## Start
 
@@ -41,9 +45,20 @@ From the repository root, one command:
 docker compose -f infra/compose/compose.yaml up -d --wait
 ```
 
-`--wait` blocks until all three services are `healthy` (well under 60 seconds on a warm image
+`--wait` blocks until all started services are `healthy` (well under 60 seconds on a warm image
 cache) and exits 0. From another worktree the same command controls the same stack, because the
 compose project name (`project-air-local`) is fixed in the file.
+
+The command starts the three default services (PostgreSQL, SeaweedFS, Mailpit). Kratos is part of
+the file but behind the `identity` profile, so it starts only when it is asked for:
+
+```bash
+docker compose -f infra/compose/compose.yaml --profile identity up -d kratos
+```
+
+Until P3-03 adds the identity configuration (`kratos.yml`, identity schemas, courier settings) the
+Kratos container has nothing to serve, which is why it is not started by default — a plain
+`up -d --wait` stays green for every worktree.
 
 Check the state:
 
@@ -63,7 +78,7 @@ docker compose -f infra/compose/compose.yaml logs -f postgres
 docker compose -f infra/compose/compose.yaml down
 ```
 
-Stops and removes the three containers and the network. The named volumes (all local data) are
+Stops and removes the started containers and the network. The named volumes (all local data) are
 kept, so the next start resumes with the same databases, buckets and mails.
 
 ## Reset local data
@@ -74,21 +89,35 @@ docker compose -f infra/compose/compose.yaml up -d --wait
 ```
 
 `down -v` deletes the named volumes `postgres-data`, `seaweedfs-data` and `mailpit-data` — that is
-**every local database, bucket and mail of every slot**, including slot 0. Run it only when all
-local data may be lost, then start the stack again and rerun `tools/dev/setup` (P0-06) to recreate
-the per-slot database and bucket.
+**every local database, bucket and mail of every slot**, including slot 0 and the shared
+`projectair_kratos` identity database. Run it only when all local data may be lost, then start the
+stack again and rerun `tools/dev/setup` to recreate the per-slot database, the app role, the
+identity database and the bucket.
+
+For one slot only, use the script instead of the volumes:
+
+```bash
+bash tools/dev/reset-db
+```
+
+It drops and recreates **this worktree's** slot database, restores the `app_user` grants and the
+shared identity database, and reapplies the migrations. It never touches the shared stack, the
+shared Kratos database or another slot's data.
 
 **No script resets slot 0 data.** Slot 0 is the owner's main checkout; the tooling reads its
 `.polier-slot` but never drops or recreates slot 0's database or bucket. The reset above is a
 manual, explicit command a person runs against the shared stack, not a script, and it removes
 slot 0 data together with every other slot's data.
 
-## Per-slot databases and buckets
+## Per-slot databases, role and bucket
 
 This compose file creates only the base role and base database from the variables below. The
-per-worktree database `project-air_slot_<N>` and bucket `project-air-slot-<N>` are **not** defined
-here: they come from the `.polier-slot` of the worktree and are created by `tools/dev/setup`
-(P0-06). Never hard-code a slot number, database name or bucket name in this folder.
+per-worktree database `project-air_slot_<N>`, the restricted `app_user` role (with its grants) and
+the bucket `project-air-slot-<N>` are **not** defined here: they come from the `.polier-slot` of the
+worktree and are created by `tools/dev/setup` (P0-06, extended by P3-01). The shared local identity
+database `projectair_kratos` is also created there; one Kratos database serves every local slot — a
+local-development limitation, and tests never depend on it. Never hard-code a slot number,
+database name or bucket name in this folder.
 
 ## Host ports and variables
 
@@ -98,6 +127,8 @@ here: they come from the `.polier-slot` of the worktree and are created by `tool
 | `SEAWEEDFS_S3_HOST_PORT` | `8333` | `8333` (S3 API) | SeaweedFS |
 | `MAILPIT_SMTP_HOST_PORT` | `1025` | `1025` (SMTP) | Mailpit |
 | `MAILPIT_HTTP_HOST_PORT` | `8025` | `8025` (web inbox) | Mailpit |
+| `KRATOS_PUBLIC_HOST_PORT` | `8433` | `4433` (public API) | Kratos (`identity` profile) |
+| `KRATOS_ADMIN_HOST_PORT` | `8434` | `4434` (admin API) | Kratos (`identity` profile) |
 
 All of these defaults also work without any `.env` file. To override them, copy
 [.env.example](.env.example) to `infra/compose/.env` and fill in local values. That `.env` file is
@@ -121,12 +152,15 @@ machine. Real values go into the gitignored `infra/compose/.env`.
 | `POSTGRES_DB` | base database created on first start |
 | `SEAWEEDFS_S3_ACCESS_KEY` | S3 access key ID |
 | `SEAWEEDFS_S3_SECRET_KEY` | S3 secret access key |
+| `KRATOS_DB_NAME` | shared local identity database name, default `projectair_kratos` |
+| `APP_USER_PASSWORD` | password of the per-slot restricted `app_user` role; generated by `tools/dev/setup` when absent, never printed |
 
 Connections from the host:
 
 - PostgreSQL: `postgresql://127.0.0.1:5433/<database>` with the role above.
 - S3: endpoint `http://127.0.0.1:8333`, path-style addressing, the access key pair above.
 - Mailpit: SMTP `127.0.0.1:1025`, web inbox <http://127.0.0.1:8025>.
+- Kratos (once configured in P3-03): public `http://127.0.0.1:8433`, admin `http://127.0.0.1:8434`.
 
 Example queries:
 
@@ -141,7 +175,7 @@ All state is stored in Docker named volumes, never inside the repository:
 
 | Volume | Mounted in | Contents |
 | --- | --- | --- |
-| `postgres-data` | `postgres` at `/var/lib/postgresql/data` | PostgreSQL data directory |
+| `postgres-data` | `postgres` at `/var/lib/postgresql/data` | PostgreSQL data directory, including the shared `projectair_kratos` database |
 | `seaweedfs-data` | `seaweedfs` at `/data` | object store volumes and filer metadata |
 | `mailpit-data` | `mailpit` at `/data` | captured mails |
 
@@ -154,7 +188,7 @@ validation:
 docker compose -f infra/compose/compose.yaml config --quiet
 ```
 
-It exits 0 and fails on unknown keys, unresolved variables or a malformed file. To list the three
+It exits 0 and fails on unknown keys, unresolved variables or a malformed file. To list the
 services with their images and health checks, run the same command without `--quiet`.
 
 ## References
@@ -162,3 +196,4 @@ services with their images and health checks, run the same command without `--qu
 - Architecture and invariant `AD-9`: [ARCHITECTURE.md](../../ARCHITECTURE.md)
 - Quality gates: [docs/quality.md](../../docs/quality.md)
 - PostgreSQL gate catalogue: [docs/gates/postgres.md](../../docs/gates/postgres.md)
+- Identity decision: [ADR-0007](../../docs/adr/ADR-0007-auth.md)

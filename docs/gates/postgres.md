@@ -2,7 +2,10 @@
 
 > Project gates for the backend core. Database names come from `.polier-slot`
 > (`<project>_slot_<N>`), never from a hard-coded string. The local server is the Compose
-> `postgres` service; one server per machine, one database and one app role per slot.
+> `postgres` service; one server per machine, one database per slot and one shared `app_user` role
+> whose password is rotated by each worktree's `tools/dev/setup` (the last setup wins). Backend
+> tasks run sequentially and are exclusive on `db`, so the shared role is safe; parallel worktrees
+> must not run DB tests at the same time.
 
 | Gate | Command | Expected |
 | --- | --- | --- |
@@ -25,11 +28,20 @@
 
 ```sh
 docker compose -f infra/compose/compose.yaml up -d --wait
-bash tools/dev/setup                       # creates the slot database, app role and buckets
+bash tools/dev/setup                       # creates the slot database, app role, identity database and bucket
 node services/platform/dist/db/migrate.js  # applies migrations to the slot database
+bash tools/dev/reset-db                    # drops/recreates the slot database, then migrates it
 ```
 
-- One database and one app role per slot; never touch slot 0's data.
+- The `unit` gate runs the migration test against the slot database. The test helper uses
+  `DATABASE_URL` when set, otherwise it derives the slot owner connection from `.polier-slot` and
+  the local Compose defaults; it refuses slot 0.
+- The migration runner also runs from source under the pinned Node
+  (`node services/platform/src/db/migrate.ts`, type stripping), which `tools/dev/reset-db` uses so
+  resetting does not need a build.
+
+- One database per slot and one shared `app_user` role (last `setup` wins); backend tasks are
+  exclusive on `db` and run sequentially. Never touch slot 0's data.
 - `db-reset` and the RLS tests are destructive/order-sensitive: mark tasks with
   `"exclusive": ["db"]` and run them only against your slot.
 - Close pools in `after()` hooks; set a statement timeout so a lock wait fails instead of hanging.

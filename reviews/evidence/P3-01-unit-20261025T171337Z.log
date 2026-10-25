@@ -1,0 +1,82 @@
+$ pnpm --filter ./services/platform --filter ./services/auth test
+[exit 0]
+
+Scope: 2 of 9 workspace projects
+services/platform test$ node --test test/*.test.mjs
+services/auth test$ node --test test/*.test.mjs
+services/platform test: ✔ parses a complete environment (1.873709ms)
+services/platform test: ✔ defaults NODE_ENV, LOG_LEVEL and HOST (0.283167ms)
+services/platform test: ✔ a missing DATABASE_URL fails fast (0.470458ms)
+services/platform test: ✔ an invalid DATABASE_URL is rejected without echoing the value (0.922333ms)
+services/platform test: ✔ a non-PostgreSQL DATABASE_URL is rejected (0.193292ms)
+services/platform test: ✔ PORT is required and must be a valid port number (0.146708ms)
+services/platform test: ✔ NODE_ENV and LOG_LEVEL reject unknown values (0.11675ms)
+services/platform test: ✔ HOST must not contain whitespace (0.083583ms)
+services/auth test: ✔ parses a complete environment (0.813667ms)
+services/auth test: ✔ defaults NODE_ENV, LOG_LEVEL and HOST (0.109833ms)
+services/auth test: ✔ AUTH_PORT is required and must be a valid port number (0.275125ms)
+services/auth test: ✔ a missing or short AUTH_SESSION_SECRET fails fast without echoing the secret (0.18625ms)
+services/auth test: ✔ a missing DATABASE_URL fails fast (0.079791ms)
+services/auth test: ✔ an invalid DATABASE_URL is rejected without echoing the value (0.0825ms)
+services/auth test: ✔ NODE_ENV and LOG_LEVEL reject unknown values (1.238833ms)
+services/platform test: ✔ liveness answers 200 while the database is down (22.182333ms)
+services/platform test: ✔ readiness answers 200 when the database ping succeeds (8.260542ms)
+services/platform test: ✔ readiness answers 503 when the database ping fails (2.023833ms)
+services/auth test: ✔ liveness answers 200 while the database is down (17.218ms)
+services/auth test: ✔ readiness answers 200 when the database ping succeeds (3.806625ms)
+services/auth test: ✔ readiness answers 503 when the database ping fails (1.736083ms)
+services/auth test: ✔ readiness answers 503 when the database is unreachable (4.245792ms)
+services/platform test: ✔ readiness pings the real slot database (24.823959ms)
+services/platform test: ✔ readiness answers 503 when the database is unreachable (5.692458ms)
+services/platform test: ▶ migration runner
+services/platform test:   ✔ loads the migrations in file-name order with SHA-256 checksums (25.733125ms)
+services/platform test: {"time":"2026-10-25T17:13:38.251Z","level":"info","message":"migrations complete","applied":0,"skipped":1}
+services/platform test:   ✔ applies the migrations once and records versions in schema_migrations (64.858375ms)
+services/platform test: {"time":"2026-10-25T17:13:38.278Z","level":"info","message":"migrations complete","applied":0,"skipped":1}
+services/auth test: ✔ loads the migrations in file-name order with SHA-256 checksums (3.956875ms)
+services/auth test: ✔ returns the success envelope and mirrors the request id in a header (19.653958ms)
+services/auth test: ✔ keeps a valid client request id and replaces an invalid one (4.497958ms)
+services/auth test: ✔ parses the query string (1.517708ms)
+services/auth test: ✔ returns a 404 envelope for an unknown path (1.9215ms)
+services/auth test: ✔ returns 405 with an Allow header for a known path and the wrong method (2.420792ms)
+services/auth test: ✔ reads a JSON body and wraps the result (2.630791ms)
+services/auth test: ✔ rejects invalid JSON with 400 (1.881875ms)
+services/auth test: ✔ rejects a non-JSON content type with 415 (4.560667ms)
+services/auth test: ✔ rejects a body above the limit with 413 (1.386542ms)
+services/auth test: ✔ a custom status and headers are preserved (4.084083ms)
+services/auth test: ✔ an empty handler result is a 204 without a body (2.311209ms)
+services/auth test: ✔ an unexpected error becomes a generic 500 envelope (1.961083ms)
+services/auth test: ℹ tests 24
+services/auth test: ℹ suites 0
+services/auth test: ℹ pass 24
+services/auth test: ℹ fail 0
+services/auth test: ℹ cancelled 0
+services/auth test: ℹ skipped 0
+services/auth test: ℹ todo 0
+services/auth test: ℹ duration_ms 336.250042
+services/platform test:   ✔ a second run is a no-op (10.112417ms)
+services/auth test: Done
+services/platform test:   ✔ fails when an applied migration changed (11.481625ms)
+services/platform test:   ✔ fails when an applied migration disappeared (8.143334ms)
+services/platform test: ✔ migration runner (124.881875ms)
+services/platform test: ✔ returns the success envelope and mirrors the request id in a header (17.290292ms)
+services/platform test: ✔ keeps a valid client request id and replaces an invalid one (2.767583ms)
+services/platform test: ✔ parses the query string (2.762959ms)
+services/platform test: ✔ returns a 404 envelope for an unknown path (3.085292ms)
+services/platform test: ✔ returns 405 with an Allow header for a known path and the wrong method (2.299708ms)
+services/platform test: ✔ reads a JSON body and wraps the result (3.355875ms)
+services/platform test: ✔ rejects invalid JSON with 400 (0.934084ms)
+services/platform test: ✔ rejects a non-JSON content type with 415 (0.897834ms)
+services/platform test: ✔ rejects a body above the limit with 413 (2.938583ms)
+services/platform test: ✔ a custom status and headers are preserved (2.302833ms)
+services/platform test: ✔ an empty handler result is a 204 without a body (3.908041ms)
+services/platform test: ✔ an unexpected error becomes a generic 500 envelope (0.866209ms)
+services/platform test: ℹ tests 31
+services/platform test: ℹ suites 0
+services/platform test: ℹ pass 31
+services/platform test: ℹ fail 0
+services/platform test: ℹ cancelled 0
+services/platform test: ℹ skipped 0
+services/platform test: ℹ todo 0
+services/platform test: ℹ duration_ms 362.0345
+services/platform test: Done

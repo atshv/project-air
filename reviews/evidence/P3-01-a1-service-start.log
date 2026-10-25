@@ -1,0 +1,82 @@
+P3-01 A1 — backend scaffold builds and starts on the slot ports
+date: 2026-10-25T17:13:31Z
+slot ports from .polier-slot: platform=4110 auth=4120
+
+== 1. build and typecheck ==
+$ tsc --project tsconfig.json
+$ tsc --noEmit --project tsconfig.json
+PASS: platform build and typecheck exit 0
+$ tsc --project tsconfig.json
+$ tsc --noEmit --project tsconfig.json
+PASS: auth build and typecheck exit 0
+
+== 2. start both services on their slot ports ==
+PASS: platform listens on its slot port 4110
+PASS: auth listens on its slot port 4120
+
+== 3. GET /health and GET /health/ready (platform) ==
+HTTP/1.1 200 OK
+x-request-id: 5e322671-6c76-484a-b7eb-0ef0f24783f9
+content-type: application/json; charset=utf-8
+content-length: 96
+Date: Sun, 25 Oct 2026 17:13:33 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+
+{"requestId":"5e322671-6c76-484a-b7eb-0ef0f24783f9","data":{"status":"ok","service":"platform"}}
+HTTP/1.1 200 OK
+x-request-id: b489f181-0b6f-456c-b8e9-3859cf66a34a
+content-type: application/json; charset=utf-8
+content-length: 99
+Date: Sun, 25 Oct 2026 17:13:33 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+
+{"requestId":"b489f181-0b6f-456c-b8e9-3859cf66a34a","data":{"status":"ready","service":"platform"}}
+== 4. GET /health and GET /health/ready (auth) ==
+HTTP/1.1 200 OK
+x-request-id: 90fefc95-8f8f-469e-9463-ef533eb8ea50
+content-type: application/json; charset=utf-8
+content-length: 92
+Date: Sun, 25 Oct 2026 17:13:33 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+
+{"requestId":"90fefc95-8f8f-469e-9463-ef533eb8ea50","data":{"status":"ok","service":"auth"}}
+HTTP/1.1 200 OK
+x-request-id: c6c8a046-8fd1-4c0e-a63a-9397c694a03c
+content-type: application/json; charset=utf-8
+content-length: 95
+Date: Sun, 25 Oct 2026 17:13:33 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+
+{"requestId":"c6c8a046-8fd1-4c0e-a63a-9397c694a03c","data":{"status":"ready","service":"auth"}}
+PASS: platform /health answers 200
+PASS: platform /health/ready answers 200 with the database up
+PASS: auth /health answers 200
+PASS: auth /health/ready answers 200 with the database up
+PASS: the request id is echoed in the JSON envelope
+
+== 5. service logs (no connection string and no secret in them) ==
+platform: {"time":"2026-10-25T17:13:33.653Z","level":"info","message":"http server listening","host":"127.0.0.1","port":4110}
+auth: {"time":"2026-10-25T17:13:33.653Z","level":"info","message":"http server listening","host":"127.0.0.1","port":4120}
+PASS: no service log contains a connection string
+
+== 6. missing configuration exits with code 2 and a clear message ==
+platform: configuration error: DATABASE_URL is required but is not set
+PASS: platform exits 2 when DATABASE_URL is missing
+platform: configuration error: PORT is required but is not set
+PASS: platform exits 2 when PORT is missing
+auth: configuration error: AUTH_PORT is required but is not set
+PASS: auth exits 2 when AUTH_PORT is missing
+auth: configuration error: AUTH_SESSION_SECRET is required but is not set
+PASS: auth exits 2 when AUTH_SESSION_SECRET is missing
+
+== 7. process-level imports resolve to the compiled dist files ==
+platform dist modules load
+PASS: compiled platform modules load
+auth dist modules load
+PASS: compiled auth modules load
+
+A1 RESULT: PASS (all checks green)

@@ -4,7 +4,7 @@ Every dependency in every manifest appears here. `[UNVERIFIED]` and `[VERIFY: �
 a release. P0-04 added the workspace rows from the root manifest and lockfile; P0-09 added the
 GitHub Actions rows from `.github/workflows/ci.yml`; P2-01 added the C++ engine toolchain rows from
 the Homebrew formulae; P2-04 added the Chrome for Testing row used by the local performance
-baseline.
+baseline; P3-01 added the backend rows (`pg`, `@types/pg`, `@types/node`) and the Ory Kratos image.
 
 | Tool / library | Exact version | Source URL | Date checked | Approved by |
 | --- | --- | --- | --- | --- |
@@ -21,6 +21,10 @@ baseline.
 | typescript-eslint | `8.72.0` | https://www.npmjs.com/package/typescript-eslint/v/8.72.0 — MIT | 2026-10-25 | owner (2026-10-25) |
 | Docker Desktop (local runtime) | `4.96.3` (Engine `29.9.2`, Compose `5.6.1`) | https://www.docker.com/products/docker-desktop/ — proprietary Docker Desktop licence (local development tool, owner decision) | 2026-10-25 | owner (2026-10-25) |
 | PostgreSQL (official image, local compose) | `17.11-alpine3.23@sha256:01ea903aa65deb58eb49d6e09d859ecff63a6bb7d61feca55f2abad71d08f72a` | https://hub.docker.com/_/postgres — PostgreSQL Licence (OSI permissive; blueprint-mandated server) | 2026-10-25 | lead (P0-07) |
+| PostgreSQL client (`pg`, backend runtime) | `8.23.1` | https://www.npmjs.com/package/pg/v/8.23.1 — MIT | 2026-10-25 | owner (2026-10-25) |
+| `@types/pg` (dev, backend) | `8.23.1` | https://www.npmjs.com/package/@types/pg/v/8.23.1 — MIT | 2026-10-25 | owner (2026-10-25) |
+| `@types/node` (dev, backend) | `24.19.2` | https://www.npmjs.com/package/@types/node/v/24.19.2 — MIT | 2026-10-25 | lead (P3-01, type declarations for the Node builtins) |
+| Ory Kratos (identity service, local compose) | `v26.2.0@sha256:2a13bb8d362c7a7ae33bd7c0f5168aee46921f15c916a06346db91c06dc76643` | https://github.com/ory/kratos/releases/tag/v26.2.0 — Apache-2.0 | 2026-10-25 | owner (2026-10-25) |
 | SeaweedFS (S3, local compose) | `4.50@sha256:c2658820e763294a9e9de7b36c81e59b879e3459148351aee4e31a126ca64860` | https://github.com/seaweedfs/seaweedfs — Apache-2.0 | 2026-10-25 | lead (P0-07) |
 | Mailpit (mail catcher, local compose) | `v1.32.0@sha256:0790692be935ea4420d085694f7985b1f692ca6a8771ab0e0bd8ba75ac180498` | https://github.com/axllent/mailpit — MIT | 2026-10-25 | lead (P0-07) |
 | CMake (C++ engine build) | `4.4.4` | https://formulae.brew.sh/formula/cmake — BSD-3-Clause | 2026-10-25 | owner (2026-10-25) |
@@ -34,6 +38,15 @@ typescript-eslint in the root `devDependencies`, and Node in `.nvmrc` (`24.22.1`
 PostgreSQL Licence (OSI-approved, permissive) is a recorded exception to the licence list below,
 alongside the two local-tool exceptions: Docker Desktop and the Chrome for Testing binary used by
 the local performance baseline (owner-approved, local only, never shipped).
+
+Backend rows (P3-01): `pg` is the only runtime dependency of `services/platform` and
+`services/auth`, pinned in their manifests and the lockfile; `@types/pg` is its type declaration
+package and `@types/node` supplies the Node built-in declarations that TypeScript needs to type
+`node:http`, `node:crypto`, `node:fs` and `process` (`@types/pg` also declares `@types/node`). Both
+type packages are development-only and never reach a bundle. The Ory Kratos image is pinned by tag
+and digest, like the other local service images; it sits behind the `identity` Compose profile until
+P3-03 configures it, and its local database `projectair_kratos` is shared by every slot (a
+local-development limitation, tests never depend on it).
 
 The engine toolchain is installed with `brew install cmake emscripten` (owner-approved 2026-10-25,
 no paid tier) and verified with `cmake --version` (`4.4.4`) and `emcc --version` (`6.0.13-git`). The

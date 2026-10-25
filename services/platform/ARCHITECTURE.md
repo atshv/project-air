@@ -1,6 +1,6 @@
 # Architecture: services/platform
 
-**Kind:** `service` · **Created in stage:** `later`
+**Kind:** `service` · **Created in stage:** `backend-core` (P3-01)
 
 ## Purpose
 
@@ -30,8 +30,20 @@ Exactly these workspace packages, copied from `board.json` -> `packages[]` -> `m
 
 ## Commands
 
-Install, build, lint, typecheck and test: **set by P0-04**, the workspace task. This package defines no command before the workspace exists; the task that adds code expands this section.
+Node comes from `.nvmrc`; ESM only, strict TypeScript, tests with `node:test`. Run from the
+repository root with `pnpm --filter ./services/platform <script>`.
 
+| Script | What it runs |
+| --- | --- |
+| `build` | `tsc --project tsconfig.json` into `dist/` |
+| `typecheck` | `tsc --noEmit --project tsconfig.json` |
+| `lint` | `eslint --max-warnings=0 .` |
+| `test` | `node --test test/*.test.mjs`, importing `src/*.ts` through Node type stripping |
+| `start` | `node dist/index.js` |
+
+P3-01 added the typed configuration (fail fast, no secrets in logs), the `node:http` router with
+JSON envelopes and request ids, `GET /health` and `GET /health/ready`, the `pg` pool and the
+migration runner over `infra/migrations/`.
 
 ## References
 

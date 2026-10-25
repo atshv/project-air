@@ -1,6 +1,6 @@
 # Architecture: services/auth
 
-**Kind:** `service` · **Created in stage:** `later`
+**Kind:** `service` · **Created in stage:** `backend-core` (P3-01)
 
 ## Purpose
 
@@ -10,6 +10,7 @@ Answers who this person is. It provides registration, login (email plus password
 
 - Registration, login, password-reset and invitation requests typed by `packages/contracts`.
 - Secrets and configuration from server-side environment only.
+- Session and identity data from the self-hosted Ory Kratos instance (ADR-0007).
 
 ## Outputs
 
@@ -29,10 +30,23 @@ Exactly these workspace packages, copied from `board.json` -> `packages[]` -> `m
 
 ## Commands
 
-Install, build, lint, typecheck and test: **set by P0-04**, the workspace task. This package defines no command before the workspace exists; the task that adds code expands this section.
+Node comes from `.nvmrc`; ESM only, strict TypeScript, tests with `node:test`. Run from the
+repository root with `pnpm --filter ./services/auth <script>`.
 
+| Script | What it runs |
+| --- | --- |
+| `build` | `tsc --project tsconfig.json` into `dist/` |
+| `typecheck` | `tsc --noEmit --project tsconfig.json` |
+| `lint` | `eslint --max-warnings=0 .` |
+| `test` | `node --test test/*.test.mjs`, importing `src/*.ts` through Node type stripping |
+| `start` | `node dist/index.js` |
+
+P3-01 added the typed configuration (fail fast, no secrets in logs), the `node:http` router with
+JSON envelopes and request ids, `GET /health` and `GET /health/ready`, and the `pg` pool. The Kratos
+integration and the auth routes arrive in P3-03.
 
 ## References
 
 - Root architecture and the `AD-1` … `AD-10` table: [ARCHITECTURE.md](../../ARCHITECTURE.md)
 - Package map: [docs/module-map.md](../../docs/module-map.md)
+- Identity decision: [ADR-0007](../../docs/adr/ADR-0007-auth.md)

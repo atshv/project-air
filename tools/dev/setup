@@ -1,10 +1,17 @@
 #!/usr/bin/env bash
-# P0-06: create this worktree's per-slot PostgreSQL database and S3 bucket.
+# P0-06, extended by P3-01: create this worktree's per-slot PostgreSQL database,
+# the restricted `app_user` role with its grants, the shared identity database
+# for Ory Kratos and the slot S3 bucket.
 #
 # Every runtime value (slot number, ports, db_name, bucket) is read from the
 # worktree's `.polier-slot`; the script hard-codes no port, database or bucket
 # name (AD-9). The shared compose stack from `infra/compose/` is started when it
 # is not healthy and is never stopped here.
+#
+# The `app_user` password is read from the environment or from the gitignored
+# `infra/compose/.env`; when neither has one, a random password is generated and
+# stored there. The password is never printed, logged or committed (the names
+# live in `infra/compose/.env.example`).
 #
 # Usage: bash tools/dev/setup
 set -euo pipefail
@@ -14,6 +21,9 @@ SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)"
 ROOT="$(cd -- "$SCRIPT_DIR/../.." && pwd -P)"
 SLOT_FILE="$ROOT/.polier-slot"
 COMPOSE_FILE="$ROOT/infra/compose/compose.yaml"
+ENV_FILE="$ROOT/infra/compose/.env"
+APP_USER_NAME="app_user"
+KRATOS_DB_NAME="${KRATOS_DB_NAME:-}"
 
 die() {
   printf '%s: %s\n' "$PROG" "$*" >&2
@@ -92,16 +102,63 @@ print(f"PORT_DESCRIPTION='{description}'")
 PY
 }
 
+# Reads one value from the gitignored local env file without printing it and
+# without executing the file. Returns non-zero when the key is absent.
+env_file_value() {
+  local key="$1" line value
+  [ -f "$ENV_FILE" ] || return 1
+  while IFS= read -r line || [ -n "$line" ]; do
+    case "$line" in
+      '' | '#'*) continue ;;
+    esac
+    [ "${line%%=*}" = "$key" ] || continue
+    value="${line#*=}"
+    value="${value%\"}"
+    value="${value#\"}"
+    value="${value%\'}"
+    value="${value#\'}"
+    printf '%s' "$value"
+    return 0
+  done < "$ENV_FILE"
+  return 1
+}
+
+# Creates or replaces one key in the gitignored env file (mode 600). Only
+# generated local values are written here; committed files keep names only.
+persist_env_value() {
+  local key="$1" value="$2" tmp
+  mkdir -p "$(dirname -- "$ENV_FILE")"
+  if [ ! -f "$ENV_FILE" ]; then
+    printf '# Local development values for infra/compose (gitignored; names in .env.example).\n' > "$ENV_FILE"
+  fi
+  if grep -q "^${key}=" "$ENV_FILE"; then
+    tmp="$(mktemp "${TMPDIR:-/tmp}/project-air-env.XXXXXX")"
+    sed "s|^${key}=.*$|${key}=${value}|" "$ENV_FILE" > "$tmp"
+    mv "$tmp" "$ENV_FILE"
+  else
+    printf '%s=%s\n' "$key" "$value" >> "$ENV_FILE"
+  fi
+  chmod 600 "$ENV_FILE"
+}
+
 # Reads one value with psql inside the postgres container. `$POSTGRES_USER`
 # comes from the compose environment, so no role, password or connection string
 # is ever written in the script or printed.
 psql_value() {
-  compose exec -T postgres sh -c 'psql -U "$POSTGRES_USER" -d postgres -v ON_ERROR_STOP=1 -tAc "$1"' sh "$1"
+  local database="$1" sql="$2"
+  compose exec -T postgres sh -c 'psql -U "$POSTGRES_USER" -d "$1" -v ON_ERROR_STOP=1 -tAc "$2"' sh "$database" "$sql"
+}
+
+# Runs SQL from stdin so a generated role password never appears in a process
+# argument list. Output is quiet; errors stay readable.
+psql_stdin() {
+  local database="$1"
+  compose exec -T postgres sh -c 'psql -U "$POSTGRES_USER" -d "$1" -v ON_ERROR_STOP=1 -q -t -A' sh "$database"
 }
 
 database_exists() {
-  local found
-  found="$(psql_value "SELECT 1 FROM pg_database WHERE datname = '$DB_NAME'")" || return 1
+  local name="$1" found
+  found="$(psql_value postgres "SELECT 1 FROM pg_database WHERE datname = '$name'")" || return 1
   [ "$found" = "1" ]
 }
 
@@ -132,16 +189,127 @@ ensure_stack() {
 }
 
 ensure_database() {
-  if database_exists; then
+  if database_exists "$DB_NAME"; then
     printf '%s: database %s already exists\n' "$PROG" "$DB_NAME"
     return 0
   fi
   local output
-  if ! output="$(psql_value "CREATE DATABASE \"$DB_NAME\"" 2>&1)"; then
+  if ! output="$(psql_value postgres "CREATE DATABASE \"$DB_NAME\"" 2>&1)"; then
     die "could not create database $DB_NAME: $output"
   fi
-  database_exists || die "database $DB_NAME was not created"
+  database_exists "$DB_NAME" || die "database $DB_NAME was not created"
   printf '%s: database %s created\n' "$PROG" "$DB_NAME"
+}
+
+# Resolves the app role password: environment first, then the gitignored env
+# file, then a freshly generated value stored in that file. Never printed.
+resolve_app_user_password() {
+  local existing
+  if [ -n "${APP_USER_PASSWORD:-}" ]; then
+    return 0
+  fi
+  if existing="$(env_file_value APP_USER_PASSWORD)" && [ -n "$existing" ]; then
+    APP_USER_PASSWORD="$existing"
+    return 0
+  fi
+  APP_USER_PASSWORD="$(python3 -c 'import secrets; print(secrets.token_urlsafe(32))')"
+  persist_env_value APP_USER_PASSWORD "$APP_USER_PASSWORD"
+  printf '%s: generated the %s password and stored it in %s (gitignored, not printed)\n' \
+    "$PROG" "$APP_USER_NAME" "$ENV_FILE"
+}
+
+# Creates or repairs the restricted application role: login only, no superuser,
+# no createdb/createrole/replication and, critically for AD-5, no BYPASSRLS.
+ensure_app_role() {
+  local exists escaped attributes
+  resolve_app_user_password
+  exists="$(psql_value postgres "SELECT 1 FROM pg_roles WHERE rolname = '$APP_USER_NAME'")"
+  escaped="${APP_USER_PASSWORD//\'/\'\'}"
+  if [ "$exists" = "1" ]; then
+    printf '%s: database role %s already exists, enforcing the restricted attributes\n' "$PROG" "$APP_USER_NAME"
+  else
+    printf '%s: creating database role %s\n' "$PROG" "$APP_USER_NAME"
+  fi
+  if ! {
+    if [ "$exists" != "1" ]; then
+      printf 'CREATE ROLE "%s";\n' "$APP_USER_NAME"
+    fi
+    printf 'ALTER ROLE "%s" WITH LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION NOBYPASSRLS PASSWORD %s;\n' \
+      "$APP_USER_NAME" "'$escaped'"
+  } | psql_stdin postgres; then
+    die "could not create or update database role $APP_USER_NAME"
+  fi
+  attributes="$(psql_value postgres "SELECT rolcanlogin AND NOT rolsuper AND NOT rolbypassrls AND NOT rolcreatedb AND NOT rolcreaterole AND NOT rolreplication FROM pg_roles WHERE rolname = '$APP_USER_NAME'")"
+  [ "$attributes" = "t" ] || die "role $APP_USER_NAME must be LOGIN without SUPERUSER, CREATEDB, CREATEROLE, REPLICATION or BYPASSRLS"
+}
+
+# Grants the slot database to the app role: connect, schema usage and CRUD on
+# current and future tables/sequences created by the slot owner. Grants never
+# make app_user a table owner, so row-level security applies to it (AD-5).
+grant_app_permissions() {
+  local check
+  if ! psql_stdin "$DB_NAME" <<SQL
+GRANT CONNECT ON DATABASE "$DB_NAME" TO $APP_USER_NAME;
+GRANT USAGE ON SCHEMA public TO $APP_USER_NAME;
+GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO $APP_USER_NAME;
+GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO $APP_USER_NAME;
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO $APP_USER_NAME;
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT USAGE, SELECT ON SEQUENCES TO $APP_USER_NAME;
+ALTER DEFAULT PRIVILEGES GRANT USAGE ON SCHEMAS TO $APP_USER_NAME;
+ALTER DEFAULT PRIVILEGES GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO $APP_USER_NAME;
+ALTER DEFAULT PRIVILEGES GRANT USAGE, SELECT ON SEQUENCES TO $APP_USER_NAME;
+DO \$\$
+BEGIN
+  IF EXISTS (SELECT 1 FROM pg_namespace WHERE nspname = 'app') THEN
+    EXECUTE 'GRANT USAGE ON SCHEMA app TO $APP_USER_NAME';
+    EXECUTE 'GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA app TO $APP_USER_NAME';
+    EXECUTE 'GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA app TO $APP_USER_NAME';
+  END IF;
+END
+\$\$;
+SQL
+  then
+    die "could not grant $APP_USER_NAME permissions on $DB_NAME"
+  fi
+  check="$(psql_value "$DB_NAME" "SELECT has_database_privilege('$APP_USER_NAME', current_database(), 'CONNECT') AND has_schema_privilege('$APP_USER_NAME', 'public', 'USAGE')")"
+  [ "$check" = "t" ] || die "$APP_USER_NAME lacks CONNECT or USAGE on $DB_NAME"
+  check="$(psql_value "$DB_NAME" "SELECT count(*) FROM pg_tables WHERE tableowner = '$APP_USER_NAME'")"
+  [ "$check" = "0" ] || die "$APP_USER_NAME must not own tables"
+  printf '%s: %s has CONNECT and USAGE on %s and owns no tables\n' "$PROG" "$APP_USER_NAME" "$DB_NAME"
+}
+
+# Resolves the shared Kratos database name from the environment or the
+# gitignored env file; falls back to the local compose default.
+resolve_kratos_database_name() {
+  if [ -z "$KRATOS_DB_NAME" ]; then
+    KRATOS_DB_NAME="$(env_file_value KRATOS_DB_NAME || true)"
+  fi
+  if [ -z "$KRATOS_DB_NAME" ]; then
+    KRATOS_DB_NAME="projectair_kratos"
+  fi
+  case "$KRATOS_DB_NAME" in
+    *[!A-Za-z0-9_.-]* | [!A-Za-z0-9]*)
+      die "KRATOS_DB_NAME is not a valid database name"
+      ;;
+  esac
+}
+
+# Creates the shared local identity database (P3-01). One Kratos database is
+# shared by every local slot — a local-development limitation documented in
+# infra/compose/README.md; tests never depend on it. It is never dropped by
+# teardown or reset-db.
+ensure_kratos_database() {
+  resolve_kratos_database_name
+  if database_exists "$KRATOS_DB_NAME"; then
+    printf '%s: identity database %s already exists\n' "$PROG" "$KRATOS_DB_NAME"
+    return 0
+  fi
+  local output
+  if ! output="$(psql_value postgres "CREATE DATABASE \"$KRATOS_DB_NAME\"" 2>&1)"; then
+    die "could not create database $KRATOS_DB_NAME: $output"
+  fi
+  database_exists "$KRATOS_DB_NAME" || die "database $KRATOS_DB_NAME was not created"
+  printf '%s: identity database %s created\n' "$PROG" "$KRATOS_DB_NAME"
 }
 
 ensure_bucket() {
@@ -168,13 +336,18 @@ main() {
 
   ensure_stack
   ensure_database
+  ensure_app_role
+  grant_app_permissions
+  ensure_kratos_database
   ensure_bucket
 
   printf '%s: databases on the shared server:\n' "$PROG"
-  psql_value 'SELECT datname FROM pg_database WHERE datistemplate = false ORDER BY datname' | sed 's/^/  /'
+  psql_value postgres 'SELECT datname FROM pg_database WHERE datistemplate = false ORDER BY datname' | sed 's/^/  /'
   printf '%s: buckets in the shared SeaweedFS:\n' "$PROG"
   bucket_listing | sed 's/^/  /'
   printf '%s: slot %s ready (database %s, bucket %s)\n' "$PROG" "$SLOT" "$DB_NAME" "$BUCKET"
+  printf '%s: role %s ready; its password comes from the environment or %s and is never printed\n' \
+    "$PROG" "$APP_USER_NAME" "$ENV_FILE"
 }
 
 main "$@"
