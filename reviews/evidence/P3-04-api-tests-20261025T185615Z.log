@@ -1,0 +1,47 @@
+$ node --test services/platform/test/api/*.test.mjs
+[exit 0]
+
+{"time":"2026-10-25T18:56:15.534Z","level":"info","message":"migration applied","version":"0001_app_schema","name":"0001_app_schema.sql"}
+{"time":"2026-10-25T18:56:15.554Z","level":"info","message":"migration applied","version":"0002_workspace_schema","name":"0002_workspace_schema.sql"}
+{"time":"2026-10-25T18:56:15.561Z","level":"info","message":"migration applied","version":"0003_rls_policies","name":"0003_rls_policies.sql"}
+{"time":"2026-10-25T18:56:15.561Z","level":"info","message":"migrations complete","applied":3,"skipped":0}
+✔ GET /v1/workspaces: member list with pagination envelope and no leak (423.485917ms)
+✔ POST /v1/workspaces: create with contract envelope; invalid or spoofed bodies denied (9.839041ms)
+✔ GET /v1/workspaces/:id: member read; foreign and malformed ids are NOT_FOUND (14.381125ms)
+✔ PATCH /v1/workspaces/:id: owner/editor may rename; reader and non-member are denied (16.260666ms)
+✔ DELETE /v1/workspaces/:id: owner deletes; editor and non-member are denied (18.569959ms)
+✔ GET /v1/workspaces/:id/boards: members list; non-member is NOT_FOUND (6.291041ms)
+✔ POST /v1/workspaces/:id/boards: editor creates; reader, non-member and invalid bodies denied (10.977916ms)
+✔ GET /v1/boards/:id: member read; foreign id is NOT_FOUND (8.547625ms)
+✔ PATCH /v1/boards/:id: editor updates; reader, non-member and invalid changes denied (12.190959ms)
+✔ DELETE /v1/boards/:id: editor deletes; reader and non-member are denied (12.64ms)
+✔ GET /v1/workspaces/:id/notes: members list; non-member is NOT_FOUND (5.705166ms)
+✔ POST /v1/workspaces/:id/notes: editor creates; reader and oversize titles denied (7.502459ms)
+✔ GET /v1/notes/:id: member read; foreign id is NOT_FOUND (5.437625ms)
+✔ PATCH /v1/notes/:id: editor updates; reader and non-member are denied (9.274792ms)
+✔ DELETE /v1/notes/:id: editor deletes; note with cards is CONFLICT; reader denied (12.666792ms)
+✔ GET /v1/boards/:id/cards: members list; non-member is NOT_FOUND (5.52775ms)
+✔ POST /v1/boards/:id/cards: editor creates; reader, foreign and invalid cards denied (16.539125ms)
+✔ GET /v1/cards/:id: member read; foreign id is NOT_FOUND (7.3875ms)
+✔ PATCH /v1/cards/:id: editor updates geometry/z; reader, foreign and invalid values denied (10.986791ms)
+✔ DELETE /v1/cards/:id: editor deletes; reader and non-member are denied (15.345083ms)
+✔ cursor pagination: stable pages, limit 1-100 and malformed cursors (21.75325ms)
+✔ list requestId: the query envelope value is echoed in the response (3.016084ms)
+✔ session handling: missing/invalid sessions are 401 and an unreachable auth service is 503 (9.258292ms)
+✔ F1: the start-up guard refuses an APP_DATABASE_URL role with SUPERUSER or BYPASSRLS (6.146042ms)
+✔ F1: a mutation error envelope echoes the body requestId (4.629042ms)
+✔ F1/F7: a GET error envelope echoes the query requestId (4.708375ms)
+✔ F6: malformed cursors are VALIDATION with details.fields ['cursor'], never INTERNAL (4.360083ms)
+✔ F3: details.fields are deduplicated, capped and never echo user text (6.859917ms)
+{"time":"2026-10-25T18:56:16.192Z","level":"info","message":"migration applied","version":"0001_app_schema","name":"0001_app_schema.sql"}
+{"time":"2026-10-25T18:56:16.207Z","level":"info","message":"migration applied","version":"0002_workspace_schema","name":"0002_workspace_schema.sql"}
+{"time":"2026-10-25T18:56:16.212Z","level":"info","message":"migration applied","version":"0003_rls_policies","name":"0003_rls_policies.sql"}
+{"time":"2026-10-25T18:56:16.212Z","level":"info","message":"migrations complete","applied":3,"skipped":0}
+ℹ tests 28
+ℹ suites 0
+ℹ pass 28
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 876.352083

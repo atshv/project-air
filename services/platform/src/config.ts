@@ -19,7 +19,12 @@ export interface PlatformConfig {
   readonly logLevel: LogLevel;
   readonly host: string;
   readonly port: number;
+  /** Owner connection (`DATABASE_URL`): migrations and operations. */
   readonly databaseUrl: string;
+  /** Restricted `app_user` connection (`APP_DATABASE_URL`) used by the API (AD-5). */
+  readonly appDatabaseUrl: string;
+  /** Base URL of the auth service (`AUTH_SERVICE_URL`), e.g. `http://127.0.0.1:4120`. */
+  readonly authServiceUrl: string;
 }
 
 export class ConfigError extends Error {
@@ -90,25 +95,42 @@ function parseHost(environment: Environment): string {
   return value;
 }
 
-function parseDatabaseUrl(environment: Environment): string {
-  const raw = required(environment, "DATABASE_URL");
+function parsePostgresUrl(environment: Environment, name: string): string {
+  const raw = required(environment, name);
   let url: URL;
   try {
     url = new URL(raw);
   } catch {
     // Deliberately no value in the message: it usually contains a password.
-    throw new ConfigError("DATABASE_URL must be a valid PostgreSQL URL such as postgresql://user:password@host:5432/database");
+    throw new ConfigError(`${name} must be a valid PostgreSQL URL such as postgresql://user:password@host:5432/database`);
   }
   if (url.protocol !== "postgres:" && url.protocol !== "postgresql:") {
-    throw new ConfigError("DATABASE_URL must use the postgres:// or postgresql:// scheme");
+    throw new ConfigError(`${name} must use the postgres:// or postgresql:// scheme`);
   }
   if (url.hostname === "") {
-    throw new ConfigError("DATABASE_URL must name a database host");
+    throw new ConfigError(`${name} must name a database host`);
   }
   if (url.pathname.replaceAll("/", "") === "") {
-    throw new ConfigError("DATABASE_URL must name a database");
+    throw new ConfigError(`${name} must name a database`);
   }
   return raw;
+}
+
+function parseHttpUrl(environment: Environment, name: string): string {
+  const raw = required(environment, name);
+  let url: URL;
+  try {
+    url = new URL(raw);
+  } catch {
+    throw new ConfigError(`${name} must be a valid http(s) URL`);
+  }
+  if (url.protocol !== "http:" && url.protocol !== "https:") {
+    throw new ConfigError(`${name} must use the http:// or https:// scheme`);
+  }
+  if (url.hostname === "") {
+    throw new ConfigError(`${name} must name a host`);
+  }
+  return raw.replace(/\/+$/, "");
 }
 
 /**
@@ -123,6 +145,8 @@ export function parseConfig(environment: Environment = process.env): PlatformCon
     logLevel: parseLogLevel(environment),
     host: parseHost(environment),
     port: parsePort(environment, "PORT"),
-    databaseUrl: parseDatabaseUrl(environment),
+    databaseUrl: parsePostgresUrl(environment, "DATABASE_URL"),
+    appDatabaseUrl: parsePostgresUrl(environment, "APP_DATABASE_URL"),
+    authServiceUrl: parseHttpUrl(environment, "AUTH_SERVICE_URL"),
   };
 }

@@ -1,0 +1,19 @@
+{
+  "task": "P3-04",
+  "gate": "api-tests",
+  "command": "node --test services/platform/test/api/*.test.mjs",
+  "exit_code": 0,
+  "result": "pass",
+  "slot": null,
+  "exclusive": [
+    "db"
+  ],
+  "lock_wait_s": 0.0,
+  "lock_warning": null,
+  "started": "2026-10-25T18:56:15+00:00",
+  "finished": "2026-10-25T18:56:16+00:00",
+  "commit": "adefe92f14df8aebe330804c0ee9098a0d5c56fe",
+  "dirty": true,
+  "log": "P3-04-api-tests-20261025T185615Z.log",
+  "log_sha256": "f5ea484a4c95cad2bacf05341d022ee8db7fb7a991d336bc058b7416413af8f1"
+}

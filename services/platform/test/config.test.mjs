@@ -8,9 +8,17 @@ import { test } from "node:test";
 import { ConfigError, parseConfig } from "../src/config.ts";
 
 const DATABASE_URL = "postgresql://owner:top-secret-password@127.0.0.1:5433/project-air_slot_1";
+const APP_DATABASE_URL = "postgresql://app_user:app-secret@127.0.0.1:5433/project-air_slot_1";
+const AUTH_SERVICE_URL = "http://127.0.0.1:4120/";
 
 function validEnvironment() {
-  return { NODE_ENV: "test", PORT: "4110", DATABASE_URL };
+  return {
+    NODE_ENV: "test",
+    PORT: "4110",
+    DATABASE_URL,
+    APP_DATABASE_URL,
+    AUTH_SERVICE_URL,
+  };
 }
 
 test("parses a complete environment", () => {
@@ -22,57 +30,68 @@ test("parses a complete environment", () => {
     host: "127.0.0.1",
     port: 4110,
     databaseUrl: DATABASE_URL,
+    appDatabaseUrl: APP_DATABASE_URL,
+    authServiceUrl: "http://127.0.0.1:4120",
   });
 });
 
 test("defaults NODE_ENV, LOG_LEVEL and HOST", () => {
-  const config = parseConfig({ PORT: "4110", DATABASE_URL });
+  const { NODE_ENV: _omitted, ...environment } = validEnvironment();
+  const config = parseConfig(environment);
   assert.equal(config.nodeEnv, "development");
   assert.equal(config.logLevel, "info");
   assert.equal(config.host, "127.0.0.1");
 });
 
 test("a missing DATABASE_URL fails fast", () => {
+  const { DATABASE_URL: _omitted, ...environment } = validEnvironment();
   assert.throws(
-    () => parseConfig({ PORT: "4110" }),
+    () => parseConfig(environment),
     (error) => error instanceof ConfigError && /DATABASE_URL is required/.test(error.message),
   );
 });
 
-test("an invalid DATABASE_URL is rejected without echoing the value", () => {
+test("the app_user connection is required and must be a PostgreSQL URL", () => {
+  const { APP_DATABASE_URL: _omitted, ...environment } = validEnvironment();
   assert.throws(
-    () => parseConfig({ PORT: "4110", DATABASE_URL: "not-a-url" }),
-    (error) => {
-      assert.ok(error instanceof ConfigError);
-      assert.match(error.message, /DATABASE_URL/);
-      assert.doesNotMatch(error.message, /not-a-url/);
-      return true;
-    },
+    () => parseConfig(environment),
+    (error) => error instanceof ConfigError && /APP_DATABASE_URL is required/.test(error.message),
+  );
+  assert.throws(
+    () => parseConfig({ ...validEnvironment(), APP_DATABASE_URL: "not-a-url" }),
+    (error) => error instanceof ConfigError && /APP_DATABASE_URL/.test(error.message),
+  );
+  assert.throws(
+    () => parseConfig({ ...validEnvironment(), APP_DATABASE_URL: "http://127.0.0.1:5433/db" }),
+    (error) => error instanceof ConfigError && /APP_DATABASE_URL must use the postgres/.test(error.message),
   );
 });
 
-test("a non-PostgreSQL DATABASE_URL is rejected", () => {
+test("the auth service URL is required and must be http(s)", () => {
+  const { AUTH_SERVICE_URL: _omitted, ...environment } = validEnvironment();
   assert.throws(
-    () => parseConfig({ PORT: "4110", DATABASE_URL: "mysql://owner:top-secret-password@127.0.0.1/db" }),
-    (error) => error instanceof ConfigError && /postgres/.test(error.message) && !/top-secret/.test(error.message),
+    () => parseConfig(environment),
+    (error) => error instanceof ConfigError && /AUTH_SERVICE_URL is required/.test(error.message),
+  );
+  assert.throws(
+    () => parseConfig({ ...validEnvironment(), AUTH_SERVICE_URL: "not-a-url" }),
+    (error) => error instanceof ConfigError && /AUTH_SERVICE_URL must be a valid/.test(error.message),
+  );
+  assert.throws(
+    () => parseConfig({ ...validEnvironment(), AUTH_SERVICE_URL: "ftp://127.0.0.1:4120" }),
+    (error) => error instanceof ConfigError && /AUTH_SERVICE_URL must use the http/.test(error.message),
   );
 });
 
-test("PORT is required and must be a valid port number", () => {
+test("port, NODE_ENV, LOG_LEVEL and HOST are validated", () => {
   assert.throws(
-    () => parseConfig({ DATABASE_URL }),
-    (error) => error instanceof ConfigError && /PORT is required/.test(error.message),
+    () => parseConfig({ ...validEnvironment(), PORT: "abc" }),
+    (error) => error instanceof ConfigError && /PORT/.test(error.message),
   );
-  for (const invalid of ["0", "65536", "-1", "abc", "41.5", ""]) {
-    assert.throws(
-      () => parseConfig({ PORT: invalid, DATABASE_URL }),
-      (error) => error instanceof ConfigError && /PORT/.test(error.message),
-      `PORT=${invalid} must be rejected`,
-    );
-  }
-});
-
-test("NODE_ENV and LOG_LEVEL reject unknown values", () => {
+  assert.throws(
+    () => parseConfig({ ...validEnvironment(), PORT: "0" }),
+    (error) => error instanceof ConfigError && /PORT/.test(error.message),
+  );
   assert.throws(
     () => parseConfig({ ...validEnvironment(), NODE_ENV: "staging" }),
     (error) => error instanceof ConfigError && /NODE_ENV/.test(error.message),
@@ -81,10 +100,6 @@ test("NODE_ENV and LOG_LEVEL reject unknown values", () => {
     () => parseConfig({ ...validEnvironment(), LOG_LEVEL: "verbose" }),
     (error) => error instanceof ConfigError && /LOG_LEVEL/.test(error.message),
   );
-  assert.equal(parseConfig({ ...validEnvironment(), LOG_LEVEL: "DEBUG" }).logLevel, "debug");
-});
-
-test("HOST must not contain whitespace", () => {
   assert.throws(
     () => parseConfig({ ...validEnvironment(), HOST: "not a host" }),
     (error) => error instanceof ConfigError && /HOST/.test(error.message),

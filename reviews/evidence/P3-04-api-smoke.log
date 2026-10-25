@@ -1,0 +1,60 @@
+P3-04 evidence — platform API allow/deny smoke
+date: 2026-10-25T18:55:46Z
+
+== 1. bash tools/dev/reset-db (fresh slot database + migrations) ==
+PASS: reset-db exits 0
+reset-db: {"time":"2026-10-25T18:55:49.974Z","level":"info","message":"migration applied","version":"0001_app_schema","name":"0001_app_schema.sql"}
+reset-db: {"time":"2026-10-25T18:55:49.999Z","level":"info","message":"migration applied","version":"0002_workspace_schema","name":"0002_workspace_schema.sql"}
+reset-db: {"time":"2026-10-25T18:55:50.006Z","level":"info","message":"migration applied","version":"0003_rls_policies","name":"0003_rls_policies.sql"}
+reset-db: {"time":"2026-10-25T18:55:50.006Z","level":"info","message":"migrations complete","applied":3,"skipped":0}
+
+== 2. start auth (test mode) and platform from source ==
+PASS: both services answer /health
+PASS: platform readiness is 200 (app_user pool)
+
+== 3. sessions (auth test mode) ==
+PASS: test sessions minted for two accounts
+
+== 4. deny: no session ==
+GET /v1/workspaces without session: {"requestId":"01a1746b-485f-7450-8549-bc97718b7311","code":"AUTH_REQUIRED","messageKey":"errors.authRequired"}|401
+PASS: missing session is 401
+PASS: error envelope is AUTH_REQUIRED/errors.authRequired
+
+== 5. allow: alice creates workspace, board, note and card ==
+POST /v1/workspaces: {"requestId":"01a1746b-4889-7165-96f0-d8fe22ff0f25","workspace":{"id":"01a1746b-48a1-7bbd-bbbc-4c9b29a64c71","name":"Smoke workspace","ownerId":"0192f0a1-7000-7000-8000-0000000000a1","createdAt":"2026-10-25T18:55:50.425Z","updatedAt":"2026-10-25T18:55:50.425Z"}}
+PASS: workspace create returns 201
+PASS: the response echoes the request requestId
+workspace id: 01a1746b-48a1-7bbd-bbbc-4c9b29a64c71
+PASS: board create returns 201
+PASS: note create returns 201
+PASS: card create returns 201
+
+== 6. allow: member read paths (list/get) ==
+alice workspace list: {"requestId":"01a1746b-499e-798e-9855-6d7cfd9f2c2b","items":[{"id":"01a1746b-48a1-7bbd-bbbc-4c9b29a64c71","name":"Smoke workspace","ownerId":"0192f0a1-7000-7000-8000-0000000000a1","createdAt":"2026-10-25T18:55:50.425Z","updatedAt":"2026-10-25T18:55:50.425Z"}],"nextCursor":null}
+PASS: alice lists her workspace with the pagination envelope
+PASS: the card appears in the board card list
+
+== 7. deny: foreign workspace is NOT_FOUND, no existence leak ==
+bob GET alice workspace: {"requestId":"01a1746b-49eb-75a0-9a9b-64c9754e397b","code":"NOT_FOUND","messageKey":"errors.notFound"}|404
+PASS: non-member gets 404 NOT_FOUND
+PASS: no existence leak in the error code
+PASS: non-member board read is 404
+
+== 8. deny: invalid payload is VALIDATION with field details ==
+empty workspace name: {"requestId":"01a1746b-4a2b-766a-a68e-03529aa149e8","code":"VALIDATION","messageKey":"errors.validation","details":{"fields":["workspace.name"]}}|400
+PASS: invalid name is 400 VALIDATION
+PASS: details carry the field path only
+
+== 9. allow: owner update + delete ==
+PASS: owner may update the workspace
+delete workspace: {"requestId":"01a1746b-4a85-7d9c-9974-34573bc61c5e","deletedId":"01a1746b-48a1-7bbd-bbbc-4c9b29a64c71"}|200
+PASS: owner may delete the workspace
+PASS: the delete envelope names the deleted id
+PASS: the deleted workspace is gone
+
+== 10. clean up the slot database ==
+PASS: final reset-db exits 0 (slot left migrated and empty)
+== service logs (no cookie, session token or DSN) ==
+PASS: no service log contains a cookie, session token or connection string
+
+P3-04 RESULT: PASS (all checks green)

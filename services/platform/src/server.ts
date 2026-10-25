@@ -6,6 +6,7 @@
 
 import type { Server } from "node:http";
 
+import { AuthSessionClient } from "./auth/session.ts";
 import type { PlatformConfig } from "./config.ts";
 import { closePool, createPool, ping } from "./db/pool.ts";
 import { createApp } from "./http/app.ts";
@@ -18,14 +19,39 @@ export interface RunningService {
 }
 
 export async function startService(config: PlatformConfig, logger: Logger): Promise<RunningService> {
-  const pool = createPool(config.databaseUrl, {
+  // The API runs as the restricted app_user role; the owner connection is only
+  // used by migrations and operations (db-migrate, reset-db).
+  const pool = createPool(config.appDatabaseUrl, {
     application_name: config.serviceName,
     connectionTimeoutMillis: 3_000,
   });
+
+  // AD-5 defence in depth: the API pool must be the restricted application
+  // role. A superuser or BYPASSRLS role would silently bypass row-level
+  // security, so the service refuses to start (clear message, no secret).
+  try {
+    const role = await pool.query<{ rolsuper: boolean; bypassrls: boolean }>(
+      `SELECT r.rolsuper AS rolsuper, r.rolbypassrls AS bypassrls
+       FROM pg_roles AS r
+       WHERE r.rolname = current_user`,
+    );
+    const row = role.rows[0];
+    if (row === undefined || row.rolsuper || row.bypassrls) {
+      throw new Error(
+        "APP_DATABASE_URL must use a restricted role without SUPERUSER or BYPASSRLS (the app_user role); refusing to start",
+      );
+    }
+  } catch (error) {
+    await closePool(pool).catch(() => undefined);
+    throw error;
+  }
+
+  const auth = new AuthSessionClient({ baseUrl: config.authServiceUrl });
   const server = createApp({
     serviceName: config.serviceName,
     checkDatabase: () => ping(pool),
     logger,
+    api: { pool, auth },
   });
 
   await new Promise<void>((resolve, reject) => {

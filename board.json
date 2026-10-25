@@ -2623,12 +2623,17 @@
       ]
     },
     {
-      "status": "in_progress",
+      "status": "done",
       "stage": "backend-core",
       "parallel_group": null,
       "owner": null,
       "round": 0,
-      "evidence": [],
+      "evidence": [
+        "reviews/evidence/P3-04-board-check-20261025T182651Z.json",
+        "reviews/evidence/P3-04-boundaries-20261025T185613Z.json",
+        "reviews/evidence/P3-04-unit-20261025T185613Z.json",
+        "reviews/evidence/P3-04-api-tests-20261025T185615Z.json"
+      ],
       "scope_write_forbidden": [
         "reference/"
       ],
@@ -2675,7 +2680,12 @@
         "api-tests"
       ],
       "branch": "task/P3-04",
-      "worktree": "../Project air-P3-04"
+      "worktree": null,
+      "handoff": [
+        "Closed P3-04: 20 /v1 contract routes (workspaces/boards/notes/cards) with contract envelopes, UUIDv7 requestIds, cursor pagination; permission matrix with 404 non-leak; app_user + SET LOCAL.",
+        "Defence in depth (AD-5): explicit membership checks on GETs + startup guard refusing SUPERUSER/BYPASSRLS pools; 28 api-tests (allow+deny per route), 72 unit; errors echo requestId; bad cursors 400.",
+        "Review pass; F1 fixed (GET checks + role guard). Open F2: Kratos v4 identity ids vs contract-v7 account ids -> P3-06 mapping task; member routes not in this stage."
+      ]
     },
     {
       "status": "pending",

@@ -1,6 +1,6 @@
 # Architecture: services/platform
 
-**Kind:** `service` · **Created in stage:** `backend-core` (P3-01)
+**Kind:** `service` · **Created in stage:** `backend-core` (P3-01; API routes P3-04)
 
 ## Purpose
 
@@ -8,13 +8,13 @@ Durable data and rights. It serves the HTTP API for workspaces, members, boards,
 
 ## Inputs
 
-- HTTP requests typed by `packages/contracts`.
-- Session and identity evidence from `services/auth` and workspace permissions.
+- HTTP requests typed by `packages/contracts` (REST envelopes of contract 0.1.0).
+- Session and identity evidence from `services/auth`; workspace permissions from PostgreSQL.
 - SQL migrations from `infra/migrations/` and a PostgreSQL connection.
 
 ## Outputs
 
-- The HTTP API for workspaces, members, boards, notes and links, plus templates and file metadata.
+- The HTTP API for workspaces, boards, notes and cards, plus templates and file metadata.
 - Durable rows under row-level security, an audit log for permission changes and 30-day trash.
 
 ## Invariants
@@ -28,6 +28,10 @@ Durable data and rights. It serves the HTTP API for workspaces, members, boards,
 
 Exactly these workspace packages, copied from `board.json` -> `packages[]` -> `may_import`: `packages/contracts`.
 
+## Layers
+
+`src/http/` is the transport layer (router with `:param` paths, contract error envelope, UUIDv7 request ids, health); `src/auth/` is the HTTP adapter to `services/auth` for the single session check (AD-5); `src/db/` holds the pools, the migration runner and the per-request `app_user` transaction; `src/api/` holds the resource routes, entity mapping, explicit validation, cursor pagination and the permission checks.
+
 ## Commands
 
 Node comes from `.nvmrc`; ESM only, strict TypeScript, tests with `node:test`. Run from the
@@ -38,12 +42,11 @@ repository root with `pnpm --filter ./services/platform <script>`.
 | `build` | `tsc --project tsconfig.json` into `dist/` |
 | `typecheck` | `tsc --noEmit --project tsconfig.json` |
 | `lint` | `eslint --max-warnings=0 .` |
-| `test` | `node --test test/*.test.mjs`, importing `src/*.ts` through Node type stripping |
+| `test` | `node --test --test-concurrency=1 test/*.test.mjs test/migrations/*.test.mjs` |
 | `start` | `node dist/index.js` |
 
-P3-01 added the typed configuration (fail fast, no secrets in logs), the `node:http` router with
-JSON envelopes and request ids, `GET /health` and `GET /health/ready`, the `pg` pool and the
-migration runner over `infra/migrations/`.
+The `api-tests` gate runs `node --test services/platform/test/api/*.test.mjs` against the slot
+database and both in-process services.
 
 ## References
 
