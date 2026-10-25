@@ -117,10 +117,7 @@
 
 ## Ready now
 
-- `P0-22` Version and last change in the preview masthead
-  - P0-21: Closed P0-21: demo edge now uses --tone-d at 1.5 px like the static Connection component; screenshot refreshed.
-  - P0-21: apps/web/preview/README.md: demo is permanent and updated in the same task as every preview/design-system change.
-  - P0-21: All three gates pass; refresh the served preview to see the tone-d edge.
+- none
 
 ## Done
 
@@ -142,7 +139,7 @@
 
 ## In progress
 
-- none
+- [ ] `P0-22` Version and last change in the preview masthead — status: `in_progress` — owner: —
 
 ## Blocked / failed
 
@@ -154,7 +151,13 @@
 - [ ] `P0-15` Release command and tag-based CI release — status: `pending` — owner: —
 - [ ] `P0-16` Dependency updates and Polier update check — status: `pending` — owner: —
 - [ ] `P0-17` RELEASING.md and release 0.0.1 — status: `pending` — owner: —
-- [ ] `P0-22` Version and last change in the preview masthead — status: `pending` — owner: —
+
+<!-- polier:claims -->
+## Claims
+
+- `P0-22` in progress by dsh since 2026-10-25T10:35:30+00:00 — worktree: /Users/rasulatashev/Desktop/KI Projekte/Project air-P0-22 · slot 1
+
+<!-- /polier:claims -->
 
 ## Decisions
 
