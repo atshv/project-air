@@ -120,10 +120,7 @@
 
 ## Ready now
 
-- `P3-02` PostgreSQL schema, migrations and RLS policies
-  - P3-01: Closed P3-01: @project-air/platform + auth ESM TS services (fail-fast config, node:http router/health, pg pool, checksum migrations); pinned pg 8.23.1, @types/pg, @types/node, Kratos v26.2.0@digest.
-  - P3-01: Compose gains Kratos behind the identity profile with its own DB; tools/dev/setup creates the slot DB, restricted app_user (no SUPERUSER/BYPASSRLS/ownership) and projectair_kratos; reset-db added.
-  - P3-01: Review pass; lead fixes: quality 'three services' wording + one shared app_user per machine (sequential tasks, db-exclusive) documented. @types/node accepted as type-only dev dependency.
+- none
 
 ## Done
 
@@ -162,7 +159,7 @@
 
 ## In progress
 
-- none
+- [ ] `P3-02` PostgreSQL schema, migrations and RLS policies — status: `in_progress` — owner: —
 
 ## Blocked / failed
 
@@ -174,10 +171,16 @@
 - [ ] `P0-15` Release command and tag-based CI release — status: `pending` — owner: —
 - [ ] `P0-16` Dependency updates and Polier update check — status: `pending` — owner: —
 - [ ] `P0-17` RELEASING.md and release 0.0.1 — status: `pending` — owner: —
-- [ ] `P3-02` PostgreSQL schema, migrations and RLS policies — status: `pending` — owner: —
 - [ ] `P3-03` Auth service with self-hosted Ory Kratos — status: `pending` — owner: —
 - [ ] `P3-04` Platform API routes and api-tests — status: `pending` — owner: —
 - [ ] `P3-05` SDK, RLS tests and backend acceptance — status: `pending` — owner: —
+
+<!-- polier:claims -->
+## Claims
+
+- `P3-02` in progress by dsh since 2026-10-25T17:25:44+00:00 — worktree: /Users/rasulatashev/Desktop/KI Projekte/Project air-P3-02 · slot 1
+
+<!-- /polier:claims -->
 
 ## Decisions
 

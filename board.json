@@ -2495,7 +2495,7 @@
       ]
     },
     {
-      "status": "pending",
+      "status": "in_progress",
       "stage": "backend-core",
       "parallel_group": null,
       "owner": null,
@@ -2543,7 +2543,7 @@
         "unit"
       ],
       "branch": "task/P3-02",
-      "worktree": null
+      "worktree": "../Project air-P3-02"
     },
     {
       "status": "pending",
