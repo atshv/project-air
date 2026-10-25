@@ -2110,7 +2110,7 @@
       ]
     },
     {
-      "status": "pending",
+      "status": "in_progress",
       "stage": "engine-spike",
       "parallel_group": null,
       "owner": null,
@@ -2160,7 +2160,7 @@
         "wasm-build"
       ],
       "branch": "task/P2-01",
-      "worktree": null
+      "worktree": "../Project air-P2-01"
     },
     {
       "status": "pending",

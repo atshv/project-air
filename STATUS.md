@@ -119,7 +119,7 @@
 
 ## Ready now
 
-- `P2-01` Engine toolchain and native + WASM build scaffold
+- none
 
 ## Done
 
@@ -152,7 +152,7 @@
 
 ## In progress
 
-- none
+- [ ] `P2-01` Engine toolchain and native + WASM build scaffold — status: `in_progress` — owner: —
 
 ## Blocked / failed
 
@@ -164,11 +164,17 @@
 - [ ] `P0-15` Release command and tag-based CI release — status: `pending` — owner: —
 - [ ] `P0-16` Dependency updates and Polier update check — status: `pending` — owner: —
 - [ ] `P0-17` RELEASING.md and release 0.0.1 — status: `pending` — owner: —
-- [ ] `P2-01` Engine toolchain and native + WASM build scaffold — status: `pending` — owner: —
 - [ ] `P2-02` Engine core model and render command buffer — status: `pending` — owner: —
 - [ ] `P2-03` WebGL2 renderer, TS bridge and engine playground — status: `pending` — owner: —
 - [ ] `P2-04` Performance baseline and measured report — status: `pending` — owner: —
 - [ ] `P2-05` Engine architecture ADR, module docs and stage showcase — status: `pending` — owner: —
+
+<!-- polier:claims -->
+## Claims
+
+- `P2-01` in progress by dsh since 2026-10-25T13:29:32+00:00 — worktree: /Users/rasulatashev/Desktop/KI Projekte/Project air-P2-01 · slot 1
+
+<!-- /polier:claims -->
 
 ## Decisions
 
