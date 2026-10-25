@@ -2297,7 +2297,7 @@
       ]
     },
     {
-      "status": "pending",
+      "status": "in_progress",
       "stage": "engine-spike",
       "parallel_group": null,
       "owner": null,
@@ -2352,7 +2352,7 @@
         "perf"
       ],
       "branch": "task/P2-04",
-      "worktree": null
+      "worktree": "../Project air-P2-04"
     },
     {
       "status": "pending",
