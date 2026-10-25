@@ -2229,7 +2229,7 @@
       ]
     },
     {
-      "status": "pending",
+      "status": "in_progress",
       "stage": "engine-spike",
       "parallel_group": null,
       "owner": null,
@@ -2282,7 +2282,7 @@
         "design-check"
       ],
       "branch": "task/P2-03",
-      "worktree": null
+      "worktree": "../Project air-P2-03"
     },
     {
       "status": "pending",
