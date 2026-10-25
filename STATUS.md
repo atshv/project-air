@@ -11,8 +11,8 @@
 - State: waiting for the owner decision
 - Owner decision: `pending`
 - Exit gates: `board-check`, `install`, `boundaries`, `dev-setup`, `compose-config`, `tokens-codegen`, `design-check`, `language-check`, `changelog-entry`
-- Exit criteria: Every packages[] folder exists with a README and an ARCHITECTURE.md; package map and versions are filled in.; A fresh clone installs reproducibly with the committed lockfile; root lint, typecheck, test and build pass.; Two worktrees run install, lint, typecheck and tests side by side without port or database collision; tools/dev/setup and teardown create and remove the slot database and bucket and refuse slot 0.; design-check, language-check, changelog-entry and boundaries reject a violating change locally; every code change carries a .changes entry.; CI, branch protection, hosting and releases are deferred to the remote stage after hardening (ADR-0003).; A runnable design preview page exists with desktop and mobile screenshots (P0-19).
-- Tasks: P0-03, P0-04, P0-06, P0-07, P0-10, P0-11, P0-12, P0-13, P0-14, P0-18, P0-19
+- Exit criteria: Every packages[] folder exists with a README and an ARCHITECTURE.md; package map and versions are filled in.; A fresh clone installs reproducibly with the committed lockfile; root lint, typecheck, test and build pass.; Two worktrees run install, lint, typecheck and tests side by side without port or database collision; tools/dev/setup and teardown create and remove the slot database and bucket and refuse slot 0.; design-check, language-check, changelog-entry and boundaries reject a violating change locally; every code change carries a .changes entry.; CI, branch protection, hosting and releases are deferred to the remote stage after hardening (ADR-0003).; A runnable design preview page exists with desktop and mobile screenshots and a live two-note connection demo (P0-19, P0-20).
+- Tasks: P0-03, P0-04, P0-06, P0-07, P0-10, P0-11, P0-12, P0-13, P0-14, P0-18, P0-19, P0-20
 
 ### Stage 2 — `contract` Contract
 
@@ -117,7 +117,10 @@
 
 ## Ready now
 
-- none
+- `P0-20` Live connection demo in the preview
+  - P0-19: Closed P0-19: apps/web/preview/ is a static, dependency-free design system showcase (tokens, type, icons, states, sample board).
+  - P0-19: Serve it from the repo root on the slot web port and open /apps/web/preview/; desktop and mobile screenshots are committed.
+  - P0-19: Demo cadence is in docs/quality.md: after larger milestones build, serve, screenshot and show; no demo per small task.
 
 ## Done
 
@@ -149,13 +152,7 @@
 - [ ] `P0-15` Release command and tag-based CI release — status: `pending` — owner: —
 - [ ] `P0-16` Dependency updates and Polier update check — status: `pending` — owner: —
 - [ ] `P0-17` RELEASING.md and release 0.0.1 — status: `pending` — owner: —
-
-<!-- polier:claims -->
-## Claims
-
-- `P0-14` in progress by dsh since 2026-10-25T09:57:08+00:00 — worktree: /Users/rasulatashev/Desktop/KI Projekte/Project air-P0-14 · slot 1
-
-<!-- /polier:claims -->
+- [ ] `P0-20` Live connection demo in the preview — status: `pending` — owner: —
 
 ## Decisions
 

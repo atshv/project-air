@@ -38,7 +38,7 @@
         "Two worktrees run install, lint, typecheck and tests side by side without port or database collision; tools/dev/setup and teardown create and remove the slot database and bucket and refuse slot 0.",
         "design-check, language-check, changelog-entry and boundaries reject a violating change locally; every code change carries a .changes entry.",
         "CI, branch protection, hosting and releases are deferred to the remote stage after hardening (ADR-0003).",
-        "A runnable design preview page exists with desktop and mobile screenshots (P0-19)."
+        "A runnable design preview page exists with desktop and mobile screenshots and a live two-note connection demo (P0-19, P0-20)."
       ],
       "exit_gates": [
         "board-check",
@@ -1285,6 +1285,58 @@
         "Closed P0-19: apps/web/preview/ is a static, dependency-free design system showcase (tokens, type, icons, states, sample board).",
         "Serve it from the repo root on the slot web port and open /apps/web/preview/; desktop and mobile screenshots are committed.",
         "Demo cadence is in docs/quality.md: after larger milestones build, serve, screenshot and show; no demo per small task."
+      ]
+    },
+    {
+      "id": "P0-20",
+      "title": "Live connection demo in the preview",
+      "goal": "The preview shows two draggable note cards connected by an edge that follows live, so the owner can feel the interaction.",
+      "why": "The owner wants to feel board interaction early; this is the live follow-up to the static design preview.",
+      "satisfies": [
+        "D3"
+      ],
+      "status": "pending",
+      "depends_on": [
+        "P0-19"
+      ],
+      "complexity": 2,
+      "stage": "foundation",
+      "parallel_group": null,
+      "scope_write": [
+        "apps/web/preview/",
+        ".changes/"
+      ],
+      "scope_read": [
+        "ARCHITECTURE.md",
+        "AGENTS.md",
+        "STATUS.md",
+        "docs/module-map.md",
+        "docs/quality.md",
+        "docs/design-rules.md",
+        "docs/canvas-acceptance.md",
+        "apps/web/preview/",
+        "packages/ui-kit/tokens.css",
+        "packages/ui-kit/tokens.json",
+        "packages/ui-kit/layers.ts",
+        ".changes/README.md"
+      ],
+      "acceptance": [
+        "A1",
+        "A2",
+        "A3"
+      ],
+      "gates": [
+        "board-check",
+        "changelog-entry",
+        "design-check"
+      ],
+      "owner": null,
+      "branch": "task/P0-20",
+      "worktree": null,
+      "round": 0,
+      "evidence": [],
+      "scope_write_forbidden": [
+        "reference/"
       ]
     }
   ],
