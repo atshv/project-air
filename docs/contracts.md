@@ -94,8 +94,9 @@ remote phase (ADR-0003); git release tags stay `v<semver>` per
 
 P1-04/P1-05 review points, settle before realtime/SDK:
 
-1. **GET request transport** — a GET has no body, so `requestId` is only in the response envelope;
-   decide header or query.
+1. ~~**GET request transport**~~ — resolved in P3-04/P3-05: a GET takes `?requestId=` (or the
+   `x-request-id` header) and echoes a valid UUIDv7 client value; mutations carry `requestId` in the
+   JSON body and echo it. Recorded in [ADR-0008](adr/ADR-0008-api-session-model.md).
 2. **Version negotiation** — `contractVersion` is set once per connection (`hello`/`welcome`);
    blueprint §5.1 wants one on every message; confirm before SDK.
 3. **`serverSeq` bootstrap** — `welcome` requires ≥1 and `snapshotRef` a positive sequence while

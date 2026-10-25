@@ -2688,12 +2688,17 @@
       ]
     },
     {
-      "status": "in_progress",
+      "status": "done",
       "stage": "backend-core",
       "parallel_group": null,
       "owner": null,
       "round": 0,
-      "evidence": [],
+      "evidence": [
+        "reviews/evidence/P3-05-board-check-20261025T190536Z.json",
+        "reviews/evidence/P3-05-boundaries-20261025T191615Z.json",
+        "reviews/evidence/P3-05-unit-20261025T191615Z.json",
+        "reviews/evidence/P3-05-rls-tests-20261025T191618Z.json"
+      ],
       "scope_write_forbidden": [
         "reference/"
       ],
@@ -2745,7 +2750,12 @@
         "rls-tests"
       ],
       "branch": "task/P3-05",
-      "worktree": "../Project air-P3-05"
+      "worktree": null,
+      "handoff": [
+        "Closed P3-05: dependency-free @project-air/sdk with createClient and typed workspaces/boards/notes/cards CRUD, envelopes, UUIDv7 requestIds, typed ApiError; 13 SDK tests; ADR-0008 API/session model.",
+        "rls-tests as app_user (7 tests: FORCE RLS, A/B isolation via selects/joins, foreign writes fail, no leak on reuse); tools/dev/acceptance-backend.mjs boots auth+platform and proves the stage exit.",
+        "Review pass; 3 minors: SDK dist/declaration layout for web imports + RLS helper coupling (follow-ups before the web stage), README wording fixed. P3-06 account mapping is next."
+      ]
     },
     {
       "id": "P3-06",

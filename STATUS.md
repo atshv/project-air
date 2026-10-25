@@ -32,9 +32,9 @@
 
 ### Stage 4 — `backend-core` Backend core
 
-- State: exit gates missing: rls-tests
+- State: complete
 - Owner decision: `continue`
-- Exit gates: `api-tests`, `rls-tests` (missing record)
+- Exit gates: `api-tests`, `rls-tests`
 - Exit criteria: API suite covers allow and deny for every route; RLS tests green.; A script creates account, workspace, board and note via the SDK; a second account sees nothing.
 - Tasks: P3-01, P3-02, P3-03, P3-04, P3-05, P3-06
 
@@ -120,7 +120,10 @@
 
 ## Ready now
 
-- none
+- `P3-06` Contract-valid account IDs (Kratos identity mapping)
+  - P3-05: Closed P3-05: dependency-free @project-air/sdk with createClient and typed workspaces/boards/notes/cards CRUD, envelopes, UUIDv7 requestIds, typed ApiError; 13 SDK tests; ADR-0008 API/session model.
+  - P3-05: rls-tests as app_user (7 tests: FORCE RLS, A/B isolation via selects/joins, foreign writes fail, no leak on reuse); tools/dev/acceptance-backend.mjs boots auth+platform and proves the stage exit.
+  - P3-05: Review pass; 3 minors: SDK dist/declaration layout for web imports + RLS helper coupling (follow-ups before the web stage), README wording fixed. P3-06 account mapping is next.
 
 ## Done
 
@@ -159,10 +162,11 @@
 - [x] `P3-02` PostgreSQL schema, migrations and RLS policies — status: `done` — owner: —
 - [x] `P3-03` Auth service with self-hosted Ory Kratos — status: `done` — owner: —
 - [x] `P3-04` Platform API routes and api-tests — status: `done` — owner: —
+- [x] `P3-05` SDK, RLS tests and backend acceptance — status: `done` — owner: —
 
 ## In progress
 
-- [ ] `P3-05` SDK, RLS tests and backend acceptance — status: `in_progress` — owner: —
+- none
 
 ## Blocked / failed
 
@@ -175,13 +179,6 @@
 - [ ] `P0-16` Dependency updates and Polier update check — status: `pending` — owner: —
 - [ ] `P0-17` RELEASING.md and release 0.0.1 — status: `pending` — owner: —
 - [ ] `P3-06` Contract-valid account IDs (Kratos identity mapping) — status: `pending` — owner: —
-
-<!-- polier:claims -->
-## Claims
-
-- `P3-05` in progress by dsh since 2026-10-25T19:01:00+00:00 — worktree: /Users/rasulatashev/Desktop/KI Projekte/Project air-P3-05 · slot 1
-
-<!-- /polier:claims -->
 
 ## Decisions
 

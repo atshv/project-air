@@ -1,0 +1,26 @@
+$ node --test services/platform/test/rls/*.test.mjs
+[exit 0]
+
+{"time":"2026-10-25T19:16:19.094Z","level":"info","message":"migration applied","version":"0001_app_schema","name":"0001_app_schema.sql"}
+{"time":"2026-10-25T19:16:19.116Z","level":"info","message":"migration applied","version":"0002_workspace_schema","name":"0002_workspace_schema.sql"}
+{"time":"2026-10-25T19:16:19.124Z","level":"info","message":"migration applied","version":"0003_rls_policies","name":"0003_rls_policies.sql"}
+{"time":"2026-10-25T19:16:19.125Z","level":"info","message":"migrations complete","applied":3,"skipped":0}
+✔ connects as the restricted app_user role with no bypass and no ownership (117.947833ms)
+✔ row-level security is enabled and forced on every application table (1.035625ms)
+✔ account A sees only its rows; account B sees only its rows (9.879542ms)
+✔ joins and pagination on a foreign table do not leak rows (4.646709ms)
+✔ cross-workspace writes fail for the app role (11.431041ms)
+✔ no app.account_id means zero rows, not all rows (10.965708ms)
+✔ a reused connection does not inherit the previous account (13.675208ms)
+{"time":"2026-10-25T19:16:19.240Z","level":"info","message":"migration applied","version":"0001_app_schema","name":"0001_app_schema.sql"}
+{"time":"2026-10-25T19:16:19.258Z","level":"info","message":"migration applied","version":"0002_workspace_schema","name":"0002_workspace_schema.sql"}
+{"time":"2026-10-25T19:16:19.263Z","level":"info","message":"migration applied","version":"0003_rls_policies","name":"0003_rls_policies.sql"}
+{"time":"2026-10-25T19:16:19.263Z","level":"info","message":"migrations complete","applied":3,"skipped":0}
+ℹ tests 7
+ℹ suites 0
+ℹ pass 7
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 395.436625

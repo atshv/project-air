@@ -1,0 +1,25 @@
+$ pnpm --filter ./packages/sdk test
+[exit 0]
+
+✔ workspaces.list sends the session and requestId and parses the list envelope (18.264833ms)
+✔ a cookie session is sent as the cookie header (1.930667ms)
+✔ a string session is shorthand for the test session header (1.414917ms)
+✔ workspace create/get/update/delete use the contract envelopes (6.496792ms)
+✔ boards list/create/get/update/delete (3.589875ms)
+✔ notes list/create/get/update/delete (2.857458ms)
+✔ cards list/create/get/update/delete (5.958375ms)
+✔ pagination nextCursor is passed back as the cursor query (2.208375ms)
+✔ no session maps to a typed AUTH_REQUIRED ApiError (0.568709ms)
+✔ a validation error exposes the field paths (0.66625ms)
+✔ a conflict maps to CONFLICT and unknown ids to NOT_FOUND (0.886083ms)
+✔ an unexpected success envelope becomes an INTERNAL ApiError (0.4535ms)
+✔ an invalid baseUrl is rejected by the client (0.090625ms)
+ℹ tests 13
+ℹ suites 0
+ℹ pass 13
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 168.650917
+$ node --test test/*.test.mjs

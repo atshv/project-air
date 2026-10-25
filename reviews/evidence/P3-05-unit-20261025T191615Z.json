@@ -1,0 +1,19 @@
+{
+  "task": "P3-05",
+  "gate": "unit",
+  "command": "pnpm --filter ./packages/sdk test",
+  "exit_code": 0,
+  "result": "pass",
+  "slot": null,
+  "exclusive": [
+    "db"
+  ],
+  "lock_wait_s": 0.0,
+  "lock_warning": null,
+  "started": "2026-10-25T19:16:15+00:00",
+  "finished": "2026-10-25T19:16:16+00:00",
+  "commit": "24409bb5ae47366f303ae4085ed2a577594c47d0",
+  "dirty": true,
+  "log": "P3-05-unit-20261025T191615Z.log",
+  "log_sha256": "9b7c20d4cf3481a506b79266aa5852efb9f140528f9ed4d640eb618931f53a66"
+}
