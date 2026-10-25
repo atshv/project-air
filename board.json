@@ -1546,6 +1546,58 @@
         "Masthead meta line now shows version, last change P0-23 and timestamp 2026-10-25 11:39 (Europe/Zurich).",
         "All three gates pass; demo, anchors and meta line are updated in the same task from now on."
       ]
+    },
+    {
+      "id": "P0-24",
+      "title": "Curved edge, visible anchors and zoom controls in the demo",
+      "goal": "The live demo has a smoothly curved connection, clearly visible anchors and working +/−/Alles-anzeigen controls.",
+      "why": "The owner wants the demo to feel like the intended canvas: curved edge, visible anchors, zoom controls.",
+      "satisfies": [
+        "D3"
+      ],
+      "status": "pending",
+      "depends_on": [
+        "P0-23"
+      ],
+      "complexity": 3,
+      "stage": "foundation",
+      "parallel_group": null,
+      "scope_write": [
+        "apps/web/preview/",
+        ".changes/"
+      ],
+      "scope_read": [
+        "ARCHITECTURE.md",
+        "AGENTS.md",
+        "STATUS.md",
+        "docs/quality.md",
+        "docs/design-rules.md",
+        "docs/canvas-acceptance.md",
+        "apps/web/preview/",
+        "packages/ui-kit/tokens.css",
+        "packages/ui-kit/tokens.json",
+        "packages/ui-kit/layers.ts",
+        "CHANGELOG.md",
+        ".changes/README.md"
+      ],
+      "acceptance": [
+        "A1",
+        "A2",
+        "A3"
+      ],
+      "gates": [
+        "board-check",
+        "design-check",
+        "changelog-entry"
+      ],
+      "owner": null,
+      "branch": "task/P0-24",
+      "worktree": null,
+      "round": 0,
+      "evidence": [],
+      "scope_write_forbidden": [
+        "reference/"
+      ]
     }
   ],
   "decisions": [
