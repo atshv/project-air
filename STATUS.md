@@ -205,13 +205,6 @@
 - [ ] `P4-27` Zones as containers II: engine membership and zone move (L08) — status: `pending` — owner: —
 - [ ] `P4-28` L01 final proof, two-backend reference images and stage showcase — status: `pending` — owner: —
 
-<!-- polier:claims -->
-## Claims
-
-- `P4-01` in progress by dsh since 2026-10-25T20:19:47+00:00 — worktree: /private/tmp/air-P4-01 · slot 1
-
-<!-- /polier:claims -->
-
 ## Decisions
 
 - 2026-10-25 `ADR-0001` Monorepo with packages, services, apps, tools and infra (`docs/adr/ADR-0001-monorepo.md`)

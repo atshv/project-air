@@ -2838,7 +2838,8 @@
       "parallel_group": null,
       "scope_write": [
         "packages/engine/",
-        ".changes/"
+        ".changes/",
+        "docs/engine.md"
       ],
       "scope_read": [
         "ARCHITECTURE.md",
