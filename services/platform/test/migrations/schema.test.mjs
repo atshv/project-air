@@ -25,7 +25,7 @@ import {
 const migrationsDir = path.join(repositoryRoot(), "infra", "migrations");
 
 const EXPECTED_COLUMNS = {
-  profiles: ["account_id", "display_name", "locale", "created_at", "updated_at"],
+  profiles: ["account_id", "display_name", "locale", "created_at", "updated_at", "kratos_identity_id"],
   workspaces: ["id", "name", "owner_account_id", "created_at", "updated_at"],
   workspace_members: ["workspace_id", "account_id", "role", "created_at", "updated_at"],
   boards: ["id", "workspace_id", "owner_account_id", "title", "visibility", "archived", "created_at", "updated_at"],
@@ -39,6 +39,7 @@ const EXPECTED_TYPES = {
   "profiles.locale": "text",
   "profiles.created_at": "timestamp with time zone",
   "profiles.updated_at": "timestamp with time zone",
+  "profiles.kratos_identity_id": "uuid",
   "workspaces.id": "uuid",
   "workspaces.name": "text",
   "workspaces.owner_account_id": "uuid",
@@ -113,6 +114,7 @@ const EXPECTED_INDEXES = [
   "cards_board_id_z_idx",
   "cards_note_id_idx",
   "cards_zone_id_idx",
+  "profiles_kratos_identity_id_key",
 ];
 
 let owner;
@@ -172,7 +174,7 @@ test("applies the migrations once and records every version with its checksum", 
   const files = await loadMigrations(migrationsDir);
   assert.deepEqual(
     files.map((file) => file.version),
-    ["0001_app_schema", "0002_workspace_schema", "0003_rls_policies"],
+    ["0001_app_schema", "0002_workspace_schema", "0003_rls_policies", "0004_account_mapping"],
   );
 
   const rows = (await owner.query("SELECT version, name, checksum FROM schema_migrations ORDER BY version")).rows;
@@ -584,4 +586,37 @@ test("rejects invalid rows", async (t) => {
       }
     });
   });
+});
+
+test("P3-06: migration 0004 backfills the mapping only for legacy non-v7 account ids", async () => {
+  const legacyV4 = "5f0c1a2b-3c4d-4e5f-8a6b-7c8d9e0f1a2b";
+  const modernV7 = "0192f0a1-7000-7000-8000-0000000000e1";
+  await owner.query(
+    "INSERT INTO app.profiles (account_id, display_name, locale) VALUES ($1, 'Legacy', 'de'), ($2, 'Modern', 'en')",
+    [legacyV4, modernV7],
+  );
+  try {
+    // Rewind only 0004: 0001-0003 stay applied, then let the runner apply 0004.
+    await owner.query("DELETE FROM schema_migrations WHERE version = '0004_account_mapping'");
+    await owner.query("DROP FUNCTION app.account_for_kratos_identity(uuid)");
+    await owner.query("DROP INDEX app.profiles_kratos_identity_id_key");
+    await owner.query("ALTER TABLE app.profiles DROP COLUMN kratos_identity_id");
+
+    const rerun = await applyMigrations();
+    assert.deepEqual(rerun.applied, ["0004_account_mapping"]);
+
+    const rows = (
+      await owner.query(
+        `SELECT account_id::text AS account_id, kratos_identity_id::text AS kratos_identity_id
+         FROM app.profiles WHERE account_id = ANY($1::uuid[])`,
+        [[legacyV4, modernV7]],
+      )
+    ).rows;
+    const legacy = rows.find((row) => row.account_id === legacyV4);
+    const modern = rows.find((row) => row.account_id === modernV7);
+    assert.equal(legacy.kratos_identity_id, legacyV4, "a legacy v4 account id records its identity");
+    assert.equal(modern.kratos_identity_id, null, "a v7 account id stays unmapped");
+  } finally {
+    await owner.query("DELETE FROM app.profiles WHERE account_id = ANY($1::uuid[])", [[legacyV4, modernV7]]);
+  }
 });

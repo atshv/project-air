@@ -11,6 +11,8 @@
 import assert from "node:assert/strict";
 import { after, before, test } from "node:test";
 
+import pg from "pg";
+
 import { createUuid } from "../../src/http/request-id.ts";
 import { silentLogger } from "../../src/log.ts";
 import { startService } from "../../src/server.ts";
@@ -26,6 +28,8 @@ import {
 } from "./helpers.mjs";
 
 const UUID_V7 = /^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/;
+
+const { Client } = pg;
 
 const ALICE = "0192f0a1-7000-7000-8000-000000000001";
 const BOB = "0192f0a1-7000-7000-8000-000000000002";
@@ -43,6 +47,16 @@ function newId() {
 
 function request(session, method, path, body) {
   return apiRequest(platform.baseUrl, { method, path, session, body });
+}
+
+async function ownerQuery(sql, parameters = []) {
+  const client = new Client({ connectionString: databaseUrl(), connectionTimeoutMillis: 5_000 });
+  await client.connect();
+  try {
+    return await client.query(sql, parameters);
+  } finally {
+    await client.end();
+  }
 }
 
 function expectKeys(body, expected) {
@@ -702,8 +716,115 @@ test("list requestId: the query envelope value is echoed in the response", async
   assert.equal(result.body.requestId, requestId);
 });
 
+test("P3-06: GET /v1/session returns the resolved UUIDv7 account id only", async () => {
+  const v7Identity = "0192f0a1-7000-7000-8000-0000000000d1";
+  const v7Session = await mintSession(authService.baseUrl, v7Identity);
+  const v7Result = await request(v7Session, "GET", "/v1/session");
+  assert.equal(v7Result.status, 200);
+  assert.deepEqual(Object.keys(v7Result.body).sort(), ["accountId", "requestId"]);
+  assert.match(v7Result.body.requestId, UUID_V7);
+  assert.equal(v7Result.body.accountId, v7Identity, "a v7 identity is the account id directly");
+
+  const v4Identity = "5f0c1a2b-3c4d-4e5f-ba6b-7c8d9e0f1a2b";
+  const v4Session = await mintSession(authService.baseUrl, v4Identity);
+  const requestedId = newId();
+  const v4Result = await request(v4Session, "GET", `/v1/session?requestId=${requestedId}`);
+  assert.equal(v4Result.status, 200);
+  assert.equal(v4Result.body.requestId, requestedId, "GET errors and successes echo the query requestId");
+  assert.match(v4Result.body.accountId, UUID_V7);
+  assert.notEqual(v4Result.body.accountId, v4Identity, "the Kratos identity id is not an account id");
+  assert.equal(JSON.stringify(v4Result.body).includes(v4Identity), false, "the identity id never leaves the API");
+
+  const anonymous = await request(undefined, "GET", "/v1/session");
+  expectError(anonymous, 401, "AUTH_REQUIRED", "errors.authRequired");
+});
+
+test("P3-06/F2: a UUIDv4 identity maps to one UUIDv7 account and contract-valid resources", async () => {
+  const identity = "5f0c1a2b-3c4d-4e5f-8a6b-7c8d9e0f1a2b";
+  const session = await mintSession(authService.baseUrl, identity);
+  // A real client learns its contract id only from GET /v1/session.
+  const sessionResponse = await request(session, "GET", "/v1/session");
+  assert.equal(sessionResponse.status, 200);
+  const accountId = sessionResponse.body.accountId;
+  assert.match(accountId, UUID_V7);
+
+  const profiles = await ownerQuery(
+    `SELECT account_id::text AS account_id, kratos_identity_id::text AS kratos_identity_id
+     FROM app.profiles WHERE kratos_identity_id = $1`,
+    [identity],
+  );
+  assert.equal(profiles.rows.length, 1, "one mapped profile after the first request");
+  assert.equal(profiles.rows[0].account_id, accountId, "the session route exposes the mapped account id");
+  assert.equal(profiles.rows[0].kratos_identity_id, identity);
+  const asAccount = await ownerQuery("SELECT count(*)::int AS count FROM app.profiles WHERE account_id::text = $1", [
+    identity,
+  ]);
+  assert.equal(asAccount.rows[0].count, 0, "the Kratos identity id never becomes an account id");
+
+  const workspace = await createWorkspace(session, "Mapped workspace", accountId);
+  const board = await createBoard(session, workspace.id, "Mapped board", accountId);
+  const note = await createNote(session, workspace.id, "Mapped note");
+  const card = await createCard(session, board.id, note.id);
+  for (const resource of [workspace, board, note, card]) {
+    assert.match(resource.id, UUID_V7, "every created id is UUIDv7");
+  }
+  assert.equal(workspace.ownerId, accountId, "the workspace ownerId is the mapped UUIDv7 account id");
+  assert.equal(board.ownerId, accountId, "the board ownerId is the mapped UUIDv7 account id");
+  const serialized = JSON.stringify({ workspace, board, note, card });
+  assert.equal(serialized.includes(identity), false, "the Kratos identity id never appears in a response");
+
+  const second = await request(session, "GET", "/v1/workspaces");
+  assert.equal(second.status, 200);
+  assert.ok(second.body.items.some((item) => item.id === workspace.id), "the next request sees the resources");
+  const count = await ownerQuery(
+    "SELECT count(*)::int AS count FROM app.profiles WHERE kratos_identity_id = $1",
+    [identity],
+  );
+  assert.equal(count.rows[0].count, 1, "no duplicate profile for the identity");
+});
+
+test("P3-06/F2: concurrent first requests for one v4 identity create a single profile", async () => {
+  const identity = "5f0c1a2b-3c4d-4e5f-9a6b-7c8d9e0f1a2b";
+  const session = await mintSession(authService.baseUrl, identity);
+  const responses = await Promise.all(
+    Array.from({ length: 4 }, () => request(session, "GET", "/v1/workspaces")),
+  );
+  for (const response of responses) {
+    assert.equal(response.status, 200);
+  }
+  const rows = await ownerQuery(
+    "SELECT account_id::text AS account_id FROM app.profiles WHERE kratos_identity_id = $1",
+    [identity],
+  );
+  assert.equal(rows.rows.length, 1, "the unique index converges the concurrent first requests");
+  const sessionResponse = await request(session, "GET", "/v1/session");
+  assert.equal(sessionResponse.status, 200);
+  const accountId = sessionResponse.body.accountId;
+  assert.match(accountId, UUID_V7);
+  assert.equal(accountId, rows.rows[0].account_id, "the session route exposes the converged account id");
+
+  const workspace = await createWorkspace(session, "Concurrent workspace", accountId);
+  const list = await request(session, "GET", "/v1/workspaces");
+  assert.ok(list.body.items.some((item) => item.id === workspace.id), "the resolved account owns the workspace");
+});
+
+test("P3-06/F2: a UUIDv7 session id is the account id directly (no mapping row)", async () => {
+  const identity = "0192f0a1-7000-7000-8000-0000000000c1";
+  const session = await mintSession(authService.baseUrl, identity);
+  const result = await request(session, "GET", "/v1/workspaces");
+  assert.equal(result.status, 200);
+  const profile = await ownerQuery(
+    `SELECT account_id::text AS account_id, kratos_identity_id::text AS kratos_identity_id
+     FROM app.profiles WHERE account_id::text = $1`,
+    [identity],
+  );
+  assert.equal(profile.rows.length, 1);
+  assert.equal(profile.rows[0].kratos_identity_id, null, "v7 identities need no mapping row");
+});
+
 test("session handling: missing/invalid sessions are 401 and an unreachable auth service is 503", async () => {
   const routes = [
+    ["GET", "/v1/session"],
     ["GET", "/v1/workspaces"],
     ["POST", "/v1/workspaces"],
     ["GET", `/v1/workspaces/${ids.workspace}`],

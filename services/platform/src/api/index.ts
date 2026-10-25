@@ -7,9 +7,11 @@ import { registerBoardRoutes } from "./boards.ts";
 import { registerCardRoutes } from "./cards.ts";
 import type { ApiDependencies } from "./context.ts";
 import { registerNoteRoutes } from "./notes.ts";
+import { registerSessionRoutes } from "./session.ts";
 import { registerWorkspaceRoutes } from "./workspaces.ts";
 
 export function registerApiRoutes(router: Router, dependencies: ApiDependencies): void {
+  registerSessionRoutes(router, dependencies);
   registerWorkspaceRoutes(router, dependencies);
   registerBoardRoutes(router, dependencies);
   registerNoteRoutes(router, dependencies);

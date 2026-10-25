@@ -39,17 +39,40 @@ German-first UI; authorization stays in the platform, never in the identity serv
   a member with the wrong role receives `FORBIDDEN`. The API checks this explicitly and PostgreSQL
   RLS enforces it again (AD-5).
 - **Session flow:** the browser holds a Kratos session cookie; `services/auth` validates it and
-  returns the account (`GET /session`). The platform forwards `cookie`/`x-test-session` to
+  returns the identity (`GET /session`). The platform forwards `cookie`/`x-test-session` to
   `services/auth`, trusts no client-sent account id, and opens one transaction per request on the
   `app_user` connection with `SELECT set_config('app.account_id', $1, true)`; the API-level check
   runs first, RLS is the second line. The API starts only when the `APP_DATABASE_URL` role is
   neither superuser nor `BYPASSRLS` (startup guard).
+- **Account id mapping (P3-06):** contract entities carry UUIDv7 account ids, while Ory Kratos
+  identity ids are UUIDv4. A UUIDv7 identity id is used as the account id directly (test sessions
+  and future Kratos versions). Any other identity id is resolved through
+  `app.profiles.kratos_identity_id` (unique partial index): on first sight the platform generates a
+  UUIDv7 account id and inserts the profile plus the mapping in the request transaction, with
+  `app.account_id` set to the new id so `profiles_insert_self` applies; `ON CONFLICT DO NOTHING`
+  plus a re-read of the SECURITY DEFINER helper `app.account_for_kratos_identity(uuid)` converge
+  concurrent first requests on one profile. The Kratos identity id is an external key only — it is
+  never a contract id, never an API value and never logged. The backfill and the SECURITY DEFINER
+  helper need a migration owner that bypasses row-level security (SUPERUSER or BYPASSRLS, the same
+  requirement 0003 documents for its helpers); with a non-bypassing owner the helper returns null
+  and the backfill updates 0 rows. A legacy profile written before this mapping keeps its non-v7
+  `account_id` after the backfill (the mapping is recorded, the value is not remapped); no such row
+  exists in the stage database, and a remap must update `workspaces.owner_account_id`,
+  `workspace_members.account_id` and `boards.owner_account_id` in one transaction before any
+  historical rows are imported.
+- **Account id discovery (`GET /v1/session`):** the resolved UUIDv7 account id is exposed only
+  through this session-authenticated route as `{requestId, accountId}`. A real Kratos session
+  receives its UUIDv4 identity id from `services/auth`, but contract create bodies need a UUIDv7
+  `ownerId`; `/v1/session` is the one public surface that hands the client the mapped id. It never
+  returns the Kratos identity id, and no other route exposes an account id that is not the resolved
+  one.
 - **Test mode:** `AUTH_TEST_MODE=1` (refused when `NODE_ENV=production`) adds `POST /test/session`
   minting a signed `x-test-session` for a given account id. Only development/test and the
   `api-tests`, `rls-tests` and acceptance scripts use it; production never enables it.
 - **Limits of this stage:** no member-management routes yet (memberships are DB fixtures in tests),
   no rate limiting, no `/v1` SDK codegen from OpenAPI (the SDK is hand-written against the generated
-  contract types), and the identity-id mapping is deliberately deferred.
+  contract types), and no identity-provider migration or account merge (one Kratos identity maps to
+  exactly one account; merging identities is out of scope).
 
 ## Consequences
 
@@ -66,9 +89,10 @@ German-first UI; authorization stays in the platform, never in the identity serv
 - **Prevents:** unversioned/path-style APIs, JWT-in-localStorage session handling, offset pagination
   for mutable lists, returning `FORBIDDEN` for foreign resources, trusting `account_id` from a
   client, running the API as a superuser role, and enabling test mode in production.
-- **Open:** Kratos identity ids are UUIDv4 while contract entities carry UUIDv7 account ids; P3-06
-  adds the account-mapping migration and updates this ADR. New member-management routes will extend
-  the permission matrix, not change it.
+- **Open:** none for the account-id path — P3-06 adds the mapping
+  (`app.profiles.kratos_identity_id`, `app.account_for_kratos_identity`) and `/v1/session`, and the
+  legacy non-v7 remap is documented above as a prerequisite for importing historical rows. New
+  member-management routes will extend the permission matrix, not change it.
 
 ## Alternatives
 

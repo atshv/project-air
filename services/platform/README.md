@@ -49,6 +49,7 @@ Contract: [packages/contracts](../../packages/contracts/README.md) `0.1.0`
 | --- | --- |
 | `GET /health` | 200 liveness `{requestId, data:{status, service}}` |
 | `GET /health/ready` | 200 when the database answers; 503 `INTERNAL` otherwise |
+| `GET /v1/session` | the resolved contract account id, `{requestId, accountId}` |
 | `GET /v1/workspaces` | member workspaces, `{requestId, items, nextCursor}` |
 | `POST /v1/workspaces` | create a workspace owned by the caller |
 | `GET/PATCH/DELETE /v1/workspaces/:id` | workspace; update = owner/editor, delete = owner |
@@ -62,8 +63,9 @@ Contract: [packages/contracts](../../packages/contracts/README.md) `0.1.0`
 - Reads are allowed for every workspace member (`owner`, `editor`, `reader`); a non-member receives
   `NOT_FOUND` (no existence leak).
 - Envelopes: list `{requestId, items, nextCursor}`, single `{requestId, workspace|board|note|card}`,
-  delete `{requestId, deletedId}`, error `{requestId, code, messageKey, details?}` with one of the
-  seven contract codes and a UUIDv7 request id. Mutations echo the body `requestId`; GETs accept an
+  session `{requestId, accountId}`, delete `{requestId, deletedId}`, error
+  `{requestId, code, messageKey, details?}` with one of the seven contract codes and a UUIDv7
+  request id. Mutations echo the body `requestId`; GETs accept an
   optional `?requestId=` (or the `x-request-id` header).
 - Validation is explicit (no library): ADR-0004 lengths, page size 1–100, opaque cursor over
   `(created_at, id)`, UUIDv7 ids, card geometry/z limits. `details.fields` names the invalid paths.

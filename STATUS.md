@@ -160,10 +160,11 @@
 - [x] `P3-03` Auth service with self-hosted Ory Kratos — status: `done` — owner: —
 - [x] `P3-04` Platform API routes and api-tests — status: `done` — owner: —
 - [x] `P3-05` SDK, RLS tests and backend acceptance — status: `done` — owner: —
+- [x] `P3-06` Contract-valid account IDs (Kratos identity mapping) — status: `done` — owner: —
 
 ## In progress
 
-- [ ] `P3-06` Contract-valid account IDs (Kratos identity mapping) — status: `in_progress` — owner: —
+- none
 
 ## Blocked / failed
 
@@ -175,13 +176,6 @@
 - [ ] `P0-15` Release command and tag-based CI release — status: `pending` — owner: —
 - [ ] `P0-16` Dependency updates and Polier update check — status: `pending` — owner: —
 - [ ] `P0-17` RELEASING.md and release 0.0.1 — status: `pending` — owner: —
-
-<!-- polier:claims -->
-## Claims
-
-- `P3-06` in progress by dsh since 2026-10-25T19:25:48+00:00 — worktree: /Users/rasulatashev/Desktop/KI Projekte/Project air-P3-06 · slot 1
-
-<!-- /polier:claims -->
 
 ## Decisions
 

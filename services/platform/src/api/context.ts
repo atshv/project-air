@@ -6,7 +6,7 @@
 import type { PoolClient } from "pg";
 
 import type { AuthSessionClient, AuthSessionUser } from "../auth/session.ts";
-import { ensureProfile, withAccountTransaction } from "../db/account.ts";
+import { withSessionTransaction } from "../db/account.ts";
 import { authRequired } from "../http/errors.ts";
 import type { RequestContext, RouteResponse } from "../http/router.ts";
 
@@ -48,9 +48,10 @@ export function withAuthenticatedRequest(
       ...(hasCookie ? { cookie } : {}),
       ...(hasTestSession ? { testSession } : {}),
     });
-    return withAccountTransaction(dependencies.pool, user.accountId, async (client) => {
-      await ensureProfile(client, user);
-      return work({ context, user, client });
+    // P3-06: resolve the Kratos identity to the contract account id inside the
+    // request transaction; the route only ever sees the UUIDv7 account id.
+    return withSessionTransaction(dependencies.pool, user, async (client, account) => {
+      return work({ context, user: account.user, client });
     });
   })();
 }

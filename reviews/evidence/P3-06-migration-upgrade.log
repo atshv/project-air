@@ -1,0 +1,23 @@
+P3-06 migration upgrade check on the existing slot database (rework: 0004 checksum changed)
+date: 2026-10-25T19:43:54Z
+
+== 1. rewind the mapping migration only (0001-0003 stay applied) ==
+DELETE 1
+DROP FUNCTION
+DROP INDEX
+ALTER TABLE
+
+== 2. state before the runner ==
+versions: 0001_app_schema,0002_workspace_schema,0003_rls_policies
+profiles columns: account_id,display_name,locale,created_at,updated_at
+
+== 3. migration runner on the existing database (0001-0003 already applied) ==
+{"time":"2026-10-25T19:43:55.243Z","level":"info","message":"migration applied","version":"0004_account_mapping","name":"0004_account_mapping.sql"}
+{"time":"2026-10-25T19:43:55.243Z","level":"info","message":"migrations complete","applied":1,"skipped":3}
+{"time":"2026-10-25T19:43:55.246Z","level":"info","message":"migrate: done","applied":1,"skipped":3}
+
+== 4. resulting state ==
+versions: 0001_app_schema,0002_workspace_schema,0003_rls_policies,0004_account_mapping
+profiles columns: account_id,display_name,locale,created_at,updated_at,kratos_identity_id
+index: profiles_kratos_identity_id_key
+helper secdef: true

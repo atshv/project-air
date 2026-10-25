@@ -30,7 +30,7 @@ Exactly these workspace packages, copied from `board.json` -> `packages[]` -> `m
 
 ## Layers
 
-`src/http/` is the transport layer (router with `:param` paths, contract error envelope, UUIDv7 request ids, health); `src/auth/` is the HTTP adapter to `services/auth` for the single session check (AD-5); `src/db/` holds the pools, the migration runner and the per-request `app_user` transaction; `src/api/` holds the resource routes, entity mapping, explicit validation, cursor pagination and the permission checks.
+`src/http/` is the transport layer (router with `:param` paths, contract error envelope, UUIDv7 request ids, health); `src/auth/` is the HTTP adapter to `services/auth` for the single session check (AD-5); `src/db/` holds the pools, the migration runner, the per-request `app_user` transaction and the Kratos-identity → UUIDv7 account mapping; `src/api/` holds the session route (`GET /v1/session`), the resource routes, entity mapping, explicit validation, cursor pagination and the permission checks.
 
 ## Commands
 

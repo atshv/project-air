@@ -1,0 +1,59 @@
+P3-05 backend-core acceptance
+date: 2026-10-25T19:43:43.588Z
+slot: 1 | database: project-air_slot_1 | platform: 4110 | auth: 4120
+
+== 1. reset and migrate the slot database ==
+reset: slot database reset and migrated
+
+== 2. boot auth (test mode) and platform from source ==
+auth healthy on http://127.0.0.1:4120
+platform healthy (app_user role guard passed) on http://127.0.0.1:4110
+
+== 3. SDK acceptance (accounts, resources, isolation) ==
+P3-05 backend-core acceptance (SDK against the real platform + auth)
+date: 2026-10-25T19:43:47.532Z
+platform: http://127.0.0.1:4110
+auth: http://127.0.0.1:4120
+
+== 1. two accounts created through the auth test-session mode ==
+PASS: accounts A and B have distinct UUIDv7 ids
+
+== 2. account A creates workspace, board, note and card through the SDK ==
+PASS: the workspace is owned by account A (got "01a17497-2f4d-7d87-989e-f5f645b3f128", want "01a17497-2f4d-7d87-989e-f5f645b3f128")
+PASS: the board belongs to the workspace (got "01a17497-2f7a-7897-897a-49dc39f75e3d", want "01a17497-2f7a-7897-897a-49dc39f75e3d")
+PASS: the note belongs to the workspace (got "01a17497-2f7a-7897-897a-49dc39f75e3d", want "01a17497-2f7a-7897-897a-49dc39f75e3d")
+PASS: the card references the note (got "01a17497-2f90-7103-9029-a352a0da5302", want "01a17497-2f90-7103-9029-a352a0da5302")
+
+== 3. account A lists and reads the resources back ==
+PASS: the workspace appears in account A's workspace list
+PASS: the board appears in the board list
+PASS: the note appears in the note list
+PASS: the card appears in the card list
+PASS: workspace get returns the workspace (got "01a17497-2f7a-7897-897a-49dc39f75e3d", want "01a17497-2f7a-7897-897a-49dc39f75e3d")
+PASS: board get returns the board (got "01a17497-2f8a-789d-89f1-86f8c00afa81", want "01a17497-2f8a-789d-89f1-86f8c00afa81")
+PASS: note get returns the note (got "01a17497-2f90-7103-9029-a352a0da5302", want "01a17497-2f90-7103-9029-a352a0da5302")
+PASS: card get returns the card (got "01a17497-2f98-7ca8-8a96-722b850900a6", want "01a17497-2f98-7ca8-8a96-722b850900a6")
+
+== 4. account B sees nothing of account A ==
+PASS: account B's workspace list is empty (got 0, want 0)
+PASS: workspace get is NOT_FOUND for the foreign account
+PASS: board get is NOT_FOUND for the foreign account
+PASS: note get is NOT_FOUND for the foreign account
+PASS: card get is NOT_FOUND for the foreign account
+PASS: board list under a foreign workspace is NOT_FOUND for the foreign account
+PASS: note list under a foreign workspace is NOT_FOUND for the foreign account
+PASS: card list under a foreign board is NOT_FOUND for the foreign account
+
+== 5. cleanup through the SDK (account A deletes its resources) ==
+PASS: card deleted (got "01a17497-2f98-7ca8-8a96-722b850900a6", want "01a17497-2f98-7ca8-8a96-722b850900a6")
+PASS: note deleted (got "01a17497-2f90-7103-9029-a352a0da5302", want "01a17497-2f90-7103-9029-a352a0da5302")
+PASS: board deleted (got "01a17497-2f8a-789d-89f1-86f8c00afa81", want "01a17497-2f8a-789d-89f1-86f8c00afa81")
+PASS: workspace deleted (got "01a17497-2f7a-7897-897a-49dc39f75e3d", want "01a17497-2f7a-7897-897a-49dc39f75e3d")
+PASS: account A's workspace list is empty again (got 0, want 0)
+
+PASS SDK acceptance
+
+== 4. leave the slot database migrated and empty ==
+cleanup: slot database reset and migrated
+
+PASS backend-core acceptance

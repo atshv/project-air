@@ -2765,7 +2765,7 @@
       "satisfies": [
         "D9"
       ],
-      "status": "in_progress",
+      "status": "done",
       "depends_on": [
         "P3-05"
       ],
@@ -2807,11 +2807,20 @@
       ],
       "owner": null,
       "branch": "task/P3-06",
-      "worktree": "../Project air-P3-06",
+      "worktree": null,
       "round": 0,
-      "evidence": [],
+      "evidence": [
+        "reviews/evidence/P3-06-board-check-20261025T194318Z.json",
+        "reviews/evidence/P3-06-unit-20261025T194401Z.json",
+        "reviews/evidence/P3-06-api-tests-20261025T194402Z.json"
+      ],
       "scope_write_forbidden": [
         "reference/"
+      ],
+      "handoff": [
+        "Closed P3-06: migration 0004 maps Kratos identity ids to contract UUIDv7 account ids (unique profiles.kratos_identity_id, SECURITY DEFINER lookup); session resolution v7-direct/v4-mapped.",
+        "New public GET /v1/session exposes the resolved accountId (never the Kratos id); v4 public flow proven; 32 api-tests, 74 unit, acceptance PASS.",
+        "Backend-core complete: api-tests + rls-tests records green; follow-ups: legacy v4 remap before historical import, SDK packaging declarations, member/invitation routes, production DB owner role."
       ]
     }
   ],

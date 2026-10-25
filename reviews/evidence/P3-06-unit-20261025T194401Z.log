@@ -1,0 +1,96 @@
+$ pnpm --filter ./services/platform test
+[exit 0]
+
+✔ parses a complete environment (0.776041ms)
+✔ defaults NODE_ENV, LOG_LEVEL and HOST (0.116875ms)
+✔ a missing DATABASE_URL fails fast (0.191625ms)
+✔ the app_user connection is required and must be a PostgreSQL URL (0.144833ms)
+✔ the auth service URL is required and must be http(s) (0.126ms)
+✔ port, NODE_ENV, LOG_LEVEL and HOST are validated (0.140375ms)
+✔ liveness answers 200 while the database is down (14.586083ms)
+✔ readiness answers 200 when the database ping succeeds (3.874041ms)
+✔ readiness answers 503 INTERNAL when the database ping fails (1.734958ms)
+✔ readiness answers 503 when the database is unreachable (2.803917ms)
+▶ migration runner
+  ✔ loads the migrations in file-name order with SHA-256 checksums (3.2615ms)
+{"time":"2026-10-25T19:44:01.655Z","level":"info","message":"migrations complete","applied":0,"skipped":4}
+  ✔ applies the migrations once and records versions in schema_migrations (43.012583ms)
+{"time":"2026-10-25T19:44:01.681Z","level":"info","message":"migrations complete","applied":0,"skipped":4}
+  ✔ a second run is a no-op (9.760584ms)
+  ✔ fails when an applied migration changed (12.147292ms)
+  ✔ fails when an applied migration disappeared (8.809208ms)
+✔ migration runner (77.945542ms)
+{"time":"2026-10-25T19:44:01.837Z","level":"info","message":"migrations complete","applied":0,"skipped":4}
+✔ F1: a note cannot be moved to another workspace, even by a writer of both (58.925959ms)
+✔ F1: a board cannot be moved to another workspace, even by a writer of both (2.908125ms)
+✔ F2: a member cannot be promoted to the owner role (2.743875ms)
+✔ F2: an owner membership row cannot be inserted directly (2.895125ms)
+✔ F5: as app_user, creating a workspace creates exactly one owner row (3.692958ms)
+✔ F2: the owner of a workspace cannot be deleted, a member can (3.305875ms)
+✔ F4: a malformed app.account_id yields no rows instead of an error (12.253958ms)
+✔ F6: the contract minimum lengths are enforced (3.234792ms)
+✔ F3: the helpers are executable by app_user only (3.376334ms)
+✔ P3-06: the identity mapping helper returns one account id and the index is unique (2.52525ms)
+✔ F3: the note/board helper does not answer for a foreign workspace (2.084625ms)
+{"time":"2026-10-25T19:44:02.049Z","level":"info","message":"migrations complete","applied":0,"skipped":4}
+✔ returns null and no rows when app.account_id is unset (54.192ms)
+✔ does not leak app.account_id into the next transaction (4.443083ms)
+✔ a member sees only rows of their own workspaces (6.612875ms)
+✔ the owner sees the membership list of their workspace only (3.346125ms)
+✔ an account cannot insert rows into a foreign workspace (4.919833ms)
+✔ an account cannot create a workspace for somebody else (1.981916ms)
+✔ an owner can write, delete and manage membership (5.344542ms)
+✔ an editor can write but cannot manage the workspace (5.00925ms)
+✔ an editor cannot claim board ownership for somebody else (1.405666ms)
+✔ a reader can only read (4.965459ms)
+✔ a card cannot attach a note from a foreign workspace (1.729542ms)
+✔ the owner membership row cannot be changed or removed (2.93275ms)
+✔ profiles are visible and writable only for the owning account (2.22975ms)
+{"time":"2026-10-25T19:44:02.263Z","level":"info","message":"migrations complete","applied":0,"skipped":4}
+{"time":"2026-10-25T19:44:02.289Z","level":"info","message":"migrations complete","applied":0,"skipped":4}
+✔ applies the migrations once and records every version with its checksum (45.76525ms)
+✔ creates the six application tables with the expected columns and types (4.107667ms)
+✔ uses the contract enums for roles and board visibility (1.173375ms)
+✔ has the primary keys, check constraints, foreign-key delete rules and indexes (3.421667ms)
+✔ enables and forces row-level security on every table (0.716417ms)
+✔ has a policy for every operation of the permission matrix, bound to app_user (1.857417ms)
+✔ gives app_user CRUD grants but no superuser, bypass or table ownership (9.057042ms)
+✔ creating a workspace creates the owner membership atomically (1.633542ms)
+▶ rejects invalid rows
+  ✔ an orphan board (0.6965ms)
+  ✔ a workspace with a missing owner profile (0.494292ms)
+  ✔ a card without a note (0.507542ms)
+  ✔ a card with a note from another workspace (2.249375ms)
+  ✔ a card below the minimum size (0.471417ms)
+  ✔ a card with an invalid fractional z (0.477375ms)
+  ✔ a note title above the contract limit (0.41425ms)
+  ✔ a workspace name above the contract limit (0.459625ms)
+  ✔ a display name above the contract limit (0.964459ms)
+  ✔ an unknown locale (0.703167ms)
+  ✔ a duplicate membership (0.738834ms)
+  ✔ removing or demoting the owner membership (1.042417ms)
+  ✔ transferring workspace ownership (0.616542ms)
+  ✔ deleting a note that still has cards (0.565041ms)
+  ✔ deleting a board cascades its cards and keeps the note (2.952375ms)
+  ✔ deleting a workspace cascades every child row (3.743ms)
+✔ rejects invalid rows (18.179084ms)
+{"time":"2026-10-25T19:44:02.349Z","level":"info","message":"migration applied","version":"0004_account_mapping","name":"0004_account_mapping.sql"}
+{"time":"2026-10-25T19:44:02.349Z","level":"info","message":"migrations complete","applied":1,"skipped":3}
+✔ P3-06: migration 0004 backfills the mapping only for legacy non-v7 account ids (19.666292ms)
+✔ wraps `data` in {requestId, data} and mirrors the UUIDv7 id in the header (13.937458ms)
+✔ sends a `body` envelope unchanged and matches path parameters (2.138833ms)
+✔ keeps a valid UUIDv7 client request id and replaces anything else (3.028042ms)
+✔ returns 404 for an unknown path and 405 for a known path with a wrong method (1.772791ms)
+✔ reads a JSON body and wraps the result (1.978958ms)
+✔ rejects invalid JSON, non-JSON content types and oversized bodies (2.52025ms)
+✔ a custom status and headers are preserved, and an empty result is 204 (1.031333ms)
+✔ an unexpected error becomes a generic INTERNAL envelope (0.643458ms)
+ℹ tests 74
+ℹ suites 0
+ℹ pass 74
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1272.839333
+$ node --test --test-concurrency=1 test/*.test.mjs test/migrations/*.test.mjs

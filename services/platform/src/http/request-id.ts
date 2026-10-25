@@ -27,3 +27,10 @@ export function createRequestId(now: number = Date.now()): string {
 export function isRequestId(value: unknown): value is string {
   return typeof value === "string" && REQUEST_ID_PATTERN.test(value);
 }
+
+/** The contract UUIDv7 pattern also applies to account ids (P3-06). */
+export const ACCOUNT_ID_PATTERN = REQUEST_ID_PATTERN;
+
+export function isAccountId(value: unknown): value is string {
+  return typeof value === "string" && ACCOUNT_ID_PATTERN.test(value);
+}

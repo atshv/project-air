@@ -280,6 +280,35 @@ test("F3: the helpers are executable by app_user only", async () => {
 
   const appUserAccess = await owner.query("SELECT has_function_privilege('app_user', 'app.current_account_id()', 'EXECUTE') AS granted");
   assert.equal(appUserAccess.rows[0].granted, true, "app_user may call the policy helpers");
+  const mappingAccess = await owner.query(
+    "SELECT has_function_privilege('app_user', 'app.account_for_kratos_identity(uuid)', 'EXECUTE') AS granted",
+  );
+  assert.equal(mappingAccess.rows[0].granted, true, "app_user may resolve the identity mapping");
+});
+
+test("P3-06: the identity mapping helper returns one account id and the index is unique", async () => {
+  const kratosIdentity = "5f0c1a2b-3c4d-4e5f-8a6b-7c8d9e0f1a2b";
+  await owner.query("UPDATE app.profiles SET kratos_identity_id = $1 WHERE account_id = $2", [
+    kratosIdentity,
+    fixtures.alice,
+  ]);
+
+  const mapped = await appUser.query("SELECT app.account_for_kratos_identity($1::uuid) AS account_id", [kratosIdentity]);
+  assert.equal(mapped.rows[0].account_id, fixtures.alice);
+
+  const unknown = await appUser.query("SELECT app.account_for_kratos_identity($1::uuid) AS account_id", [newId()]);
+  assert.equal(unknown.rows[0].account_id, null);
+
+  await inRollback(owner, async () => {
+    await assert.rejects(
+      owner.query("UPDATE app.profiles SET kratos_identity_id = $1 WHERE account_id = $2", [
+        kratosIdentity,
+        fixtures.bob,
+      ]),
+      (error) => error.code === "23505",
+      "one profile per Kratos identity",
+    );
+  });
 });
 
 test("F3: the note/board helper does not answer for a foreign workspace", async () => {
