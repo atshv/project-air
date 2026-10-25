@@ -117,10 +117,7 @@
 
 ## Ready now
 
-- `P0-20` Live connection demo in the preview
-  - P0-19: Closed P0-19: apps/web/preview/ is a static, dependency-free design system showcase (tokens, type, icons, states, sample board).
-  - P0-19: Serve it from the repo root on the slot web port and open /apps/web/preview/; desktop and mobile screenshots are committed.
-  - P0-19: Demo cadence is in docs/quality.md: after larger milestones build, serve, screenshot and show; no demo per small task.
+- none
 
 ## Done
 
@@ -138,7 +135,7 @@
 
 ## In progress
 
-- none
+- [ ] `P0-20` Live connection demo in the preview — status: `in_progress` — owner: —
 
 ## Blocked / failed
 
@@ -152,7 +149,13 @@
 - [ ] `P0-15` Release command and tag-based CI release — status: `pending` — owner: —
 - [ ] `P0-16` Dependency updates and Polier update check — status: `pending` — owner: —
 - [ ] `P0-17` RELEASING.md and release 0.0.1 — status: `pending` — owner: —
-- [ ] `P0-20` Live connection demo in the preview — status: `pending` — owner: —
+
+<!-- polier:claims -->
+## Claims
+
+- `P0-20` in progress by dsh since 2026-10-25T10:08:56+00:00 — worktree: /Users/rasulatashev/Desktop/KI Projekte/Project air-P0-20 · slot 1
+
+<!-- /polier:claims -->
 
 ## Decisions
 
