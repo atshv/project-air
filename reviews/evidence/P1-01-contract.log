@@ -1,0 +1,120 @@
+# P1-01 - board content data model as JSON Schema: manual evidence
+
+worktree: /Users/rasulatashev/Desktop/KI Projekte/Project air-P1-01 (branch task/P1-01, slot 1)
+date (UTC): 2026-10-25T11:04:43Z
+node: v26.11.1
+pnpm: 12.14.0
+POLIER: /Users/rasulatashev/Desktop/Polier-main (tag v1.0.0)
+HEAD at gate time: 55dd3c8f8658492ca548cc217653ffccdfb13b4c (parent of the P1-01 commit)
+pnpm-lock.yaml sha256 before and after: 1d0e75f75debff3cf9eb8a3891d6e26ffe5e81b77a4e28002439400bf67f45a9
+
+Deliverable: packages/contracts - contract 0.1.0, 9 JSON Schema 2020-12 files, 35 valid/invalid
+fixtures in the `{schema, valid, reason, data}` wrapper, `index.mjs`, 19 node:test tests,
+package.json, README/ARCHITECTURE and `.changes/P1-01-board-model.md`. No dependency was added and
+the lockfile is unchanged.
+
+## 1. board-check - run BEFORE any pnpm install
+
+Preparation: no node_modules/ existed when the gate ran (`.polier-slot` slot 1 worktree).
+
+command: python3 /Users/rasulatashev/Desktop/Polier-main/tools/gate.py --task P1-01 --name board-check -- python3 /Users/rasulatashev/Desktop/Polier-main/tools/check.py .
+result: PASS, exit 0
+record: reviews/evidence/P1-01-board-check-20261025T110414Z.json
+log:    reviews/evidence/P1-01-board-check-20261025T110414Z.log
+output:
+    WARN: budgets.status overridden to 1900 words (...)
+    WARN: P0-02: context pack is about 30411 tokens (warning at 15000); ...
+    WARN: P1-01: context pack is about 42737 tokens (warning at 15000); ...
+    OK: /Users/rasulatashev/Desktop/KI Projekte/Project air-P1-01 passes the mandatory checks. (3 warning(s))
+
+## 2. gate: unit (exit 0)
+
+command: python3 /Users/rasulatashev/Desktop/Polier-main/tools/gate.py --task P1-01 --name unit -- pnpm --filter ./packages/contracts test
+result: PASS, exit 0
+record: reviews/evidence/P1-01-unit-20261025T110419Z.json
+log:    reviews/evidence/P1-01-unit-20261025T110419Z.log
+output: 19 tests, 19 pass, 0 fail (`node --test test/*.test.mjs`)
+
+pnpm 12 verifies the workspace dependency state before running a script
+(`verify-deps-before-run`), so the unit run installed the already pinned root devDependencies into
+the gitignored node_modules/ after board-check. No dependency was added and pnpm-lock.yaml is
+byte-identical before and after (sha256 above).
+
+## 3. package lint (exit 0, supplementary)
+
+command: pnpm --filter ./packages/contracts lint
+    $ eslint --max-warnings=0 .
+    exit 0
+command: python3 $POLIER/tools/boundaries.py .
+    OK: 21 package(s) respect the import boundaries (1 warning, a pre-existing C++ include warning
+    from tools/design-check fixtures)
+    exit 0
+command: node tools/release/check-changes.mjs --task P1-01 --base main
+    changelog-entry: OK (.changes/P1-01-board-model.md)
+    exit 0
+
+## 4. The contract (A1)
+
+9 schemas under packages/contracts/schemas/, each JSON Schema 2020-12 with a versioned $id
+`https://project-air.dev/contracts/0.1.0/<entity>.schema.json`:
+
+    account.schema.json        Account (id, email, displayName, locale enum de/en, timestamps)
+    workspace.schema.json      Workspace (id, name, ownerId, timestamps)
+    board.schema.json          Board (id, workspaceId, ownerId, title, visibility enum, archived)
+    note.schema.json           Note (id, workspaceId, title, timestamps; AD-4, body later)
+    card.schema.json           Note card placement (boardId, noteId, zoneId?, x, y, w, h, z)
+    zone.schema.json           Zone (boardId, title, x, y, w, h, z; no nested zones)
+    block.schema.json          Block (type enum checklist/palette/columns/timeline/table,
+                               if/then minimum size per type)
+    edge.schema.json           Edge (boardId, from/to = {kind:"card", id}; cards only)
+    board-content.schema.json  Root document ($refs to every entity, contractVersion const 0.1.0)
+
+Encoded rules: UUIDv7 id pattern, ISO-8601 timestamps with timezone, fractional index `z` as a
+string, numeric minimum sizes (note card 176x80, zone 256x192, checklist/palette 224x128, columns
+368x192, timeline 320x160, table 288x160), required fields, fixed enums, `additionalProperties:
+false` everywhere. The tests assert each of these values and that every schema has a versioned
+$id and required fields.
+
+## 5. Fixtures (A2)
+
+35 fixtures under packages/contracts/fixtures/<entity>/ in the wrapper `{schema, valid, reason,
+data}`; every schema has at least one valid and one invalid example:
+account 4, workspace 2, board 3, note 2, card 4, zone 3, block 11 (one valid and one below-minimum
+invalid per block type plus an unknown type), edge 3, board-content 3. Every invalid fixture names
+the violated rule in `reason` (minimum size, required field, enum, nesting, edge endpoint, version).
+
+The test suite validates all fixtures against the schemas with a small built-in structural
+validator for the keywords used (type, required, properties, additionalProperties, enum, const,
+pattern, minLength, maxLength, minimum, items, allOf/if/then, $ref): all valid fixtures pass, all
+invalid fixtures fail. The root valid fixture is cross-checked for AD-4 (notes exist once and cards
+reference them), the parent relation (board -> zone -> card, zones not nested) and card-only edge
+endpoints.
+
+## 6. Tests (A3)
+
+19 node:test tests, 19 pass:
+index paths/version, schema 2020-12 + $id + required, fixture wrapper + valid/invalid coverage,
+fixture-to-schema mapping, valid fixtures satisfy schema, invalid fixtures violate schema and name
+the rule, required fields, UUIDv7 ids / ISO timestamps, minimum sizes encoded, valid fixtures at the
+minimum size, invalid minimum-size fixtures below it, fixed enums, fractional index string, ISO
+timestamps, AD-4, parent relation / no nested zones, card-only edges, root $refs, no dependencies.
+
+## 7. A4 - gates
+
+board-check (run with no node_modules/) exit 0 and unit exit 0 through gate.py; both records are
+committed with the single P1-01 commit. The supplementary lint, boundaries and changelog-entry
+checks are green as well.
+
+## 8. Known limits and open questions
+
+- The schema base URI `https://project-air.dev/contracts/0.1.0/` is a stable namespace, not a
+  hosted or fetched document; the final project domain is still an owner decision.
+- The fractional-index pattern accepts 1-64 alphanumeric characters; the exact alphabet/algorithm
+  (for example base-62 lexicographic ranks) is a codegen concern of P1-03 and may tighten it.
+- The note body shape (structured editor document) is deliberately not in 0.1.0; it arrives with
+  the editor stage. Images, files, comments, templates and workspace members are later contract
+  growth from blueprint 5.1.
+- Block content (checklist items, palette swatches, columns/timeline/table rows) is not modelled yet;
+  this contract covers identity, geometry, type and minimum sizes only.
+- The workspace package version stays 0.0.0 like the other workspace packages; the contract version
+  0.1.0 lives in the schema $ids, the root contractVersion const and index.mjs.

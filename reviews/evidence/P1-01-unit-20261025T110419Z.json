@@ -1,0 +1,17 @@
+{
+  "task": "P1-01",
+  "gate": "unit",
+  "command": "pnpm --filter ./packages/contracts test",
+  "exit_code": 0,
+  "result": "pass",
+  "slot": null,
+  "exclusive": [],
+  "lock_wait_s": 0.0,
+  "lock_warning": null,
+  "started": "2026-10-25T11:04:19+00:00",
+  "finished": "2026-10-25T11:04:19+00:00",
+  "commit": "55dd3c8f8658492ca548cc217653ffccdfb13b4c",
+  "dirty": true,
+  "log": "P1-01-unit-20261025T110419Z.log",
+  "log_sha256": "e244c010fb79c0201622985f0012e938e867e35f305adc6a04b5cf3f15b6246b"
+}

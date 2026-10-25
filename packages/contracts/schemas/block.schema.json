@@ -1,0 +1,106 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://project-air.dev/contracts/0.1.0/block.schema.json",
+  "title": "Block",
+  "description": "A block object on one board. The block type is fixed and each type has its own minimum size: checklist 224x128, palette 224x128, columns 368x192, timeline 320x160, table 288x160.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "boardId", "type", "x", "y", "width", "height", "z", "createdAt", "updatedAt"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "UUIDv7, time-sortable.",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+    },
+    "boardId": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+    },
+    "zoneId": {
+      "type": ["string", "null"],
+      "description": "Parent zone. Omitted or null means the block sits directly on the board.",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+    },
+    "type": {
+      "enum": ["checklist", "palette", "columns", "timeline", "table"]
+    },
+    "x": {
+      "type": "number",
+      "description": "World position in pixels (Float64)."
+    },
+    "y": {
+      "type": "number",
+      "description": "World position in pixels (Float64)."
+    },
+    "width": {
+      "type": "number",
+      "description": "Width in pixels; the minimum depends on the block type."
+    },
+    "height": {
+      "type": "number",
+      "description": "Height in pixels; the minimum depends on the block type."
+    },
+    "z": {
+      "type": "string",
+      "description": "Fractional index inside the block layer.",
+      "minLength": 1,
+      "maxLength": 64,
+      "pattern": "^[0-9A-Za-z]{1,64}$"
+    },
+    "createdAt": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\\.[0-9]+)?(?:Z|[+-][0-9]{2}:[0-9]{2})$"
+    },
+    "updatedAt": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\\.[0-9]+)?(?:Z|[+-][0-9]{2}:[0-9]{2})$"
+    }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "type": { "const": "checklist" } }, "required": ["type"] },
+      "then": {
+        "properties": {
+          "width": { "minimum": 224 },
+          "height": { "minimum": 128 }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "type": { "const": "palette" } }, "required": ["type"] },
+      "then": {
+        "properties": {
+          "width": { "minimum": 224 },
+          "height": { "minimum": 128 }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "type": { "const": "columns" } }, "required": ["type"] },
+      "then": {
+        "properties": {
+          "width": { "minimum": 368 },
+          "height": { "minimum": 192 }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "type": { "const": "timeline" } }, "required": ["type"] },
+      "then": {
+        "properties": {
+          "width": { "minimum": 320 },
+          "height": { "minimum": 160 }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "type": { "const": "table" } }, "required": ["type"] },
+      "then": {
+        "properties": {
+          "width": { "minimum": 288 },
+          "height": { "minimum": 160 }
+        }
+      }
+    }
+  ]
+}

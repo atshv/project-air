@@ -1,0 +1,13 @@
+{
+  "schema": "schemas/account.schema.json",
+  "valid": false,
+  "reason": "locale 'fr' is not one of the fixed locale enum values de, en",
+  "data": {
+    "id": "0192f0a1-7000-7000-8000-000000000001",
+    "email": "ada@example.com",
+    "displayName": "Ada",
+    "locale": "fr",
+    "createdAt": "2027-01-10T09:00:00.000Z",
+    "updatedAt": "2027-01-10T09:30:00.000Z"
+  }
+}

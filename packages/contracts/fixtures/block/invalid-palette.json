@@ -1,0 +1,18 @@
+{
+  "schema": "schemas/block.schema.json",
+  "valid": false,
+  "reason": "width 223 is below the palette minimum width 224",
+  "data": {
+    "id": "0192f0a7-7000-7000-8000-000000000007",
+    "boardId": "0192f0a3-7000-7000-8000-000000000003",
+    "zoneId": "0192f0a5-7000-7000-8000-000000000005",
+    "x": 160,
+    "y": 96,
+    "z": "a1",
+    "createdAt": "2027-01-10T09:00:00.000Z",
+    "updatedAt": "2027-01-10T09:30:00.000Z",
+    "type": "palette",
+    "width": 223,
+    "height": 1000
+  }
+}

@@ -1,0 +1,44 @@
+$ pnpm --filter ./packages/contracts test
+[exit 0]
+
+✔ index exports the versioned schema and fixture paths (3.507417ms)
+✔ every schema is JSON Schema 2020-12 with a versioned $id and required fields (0.631167ms)
+✔ every schema has at least one valid and one invalid fixture with the wrapper (5.284041ms)
+✔ every fixture schema path resolves to a schema (0.911417ms)
+✔ valid fixtures satisfy their schema (1.474791ms)
+✔ invalid fixtures violate their schema and name the broken rule (3.999167ms)
+✔ valid fixtures carry every required top-level field (0.69475ms)
+✔ valid ids are UUIDv7 and valid timestamps are ISO-8601 with timezone (0.778625ms)
+✔ minimum sizes are encoded in the schemas (0.224167ms)
+✔ valid fixtures sit exactly on the minimum sizes (0.437292ms)
+✔ invalid minimum-size fixtures are below their type minimum (0.198375ms)
+✔ fixed enums are part of the schemas (0.155208ms)
+✔ the fractional index is a string (0.142833ms)
+✔ timestamps are ISO-8601 strings with timezone (0.371459ms)
+✔ AD-4: a note exists once and cards only reference it (0.303625ms)
+✔ the parent relation is board to zone to card, without nested zones (0.157292ms)
+✔ edges connect cards only (0.106ms)
+✔ the root schema references every board-content entity (0.241833ms)
+✔ the package has no runtime dependencies and defines the test command (0.078083ms)
+ℹ tests 19
+ℹ suites 0
+ℹ pass 19
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 116.18625
+✓ Lockfile passes supply-chain policies (verified 2h ago)
+Lockfile is up to date, resolution step is skipped
+Packages: +97
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Progress: resolved 97, reused 97, downloaded 0, added 97, done
+
+devDependencies:
++ eslint 10.13.0
++ turbo 2.11.10
++ typescript 5.9.3
++ typescript-eslint 8.72.0
+
+Done in 334ms using pnpm v12.14.0
+$ node --test test/*.test.mjs

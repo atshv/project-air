@@ -1,0 +1,18 @@
+{
+  "schema": "schemas/zone.schema.json",
+  "valid": false,
+  "reason": "zones are not nested in v1; zoneId is not part of the zone schema",
+  "data": {
+    "id": "0192f0a5-7000-7000-8000-000000000005",
+    "boardId": "0192f0a3-7000-7000-8000-000000000003",
+    "title": "Research",
+    "x": 128,
+    "y": 64,
+    "width": 256,
+    "height": 192,
+    "z": "a0",
+    "createdAt": "2027-01-10T09:00:00.000Z",
+    "updatedAt": "2027-01-10T09:30:00.000Z",
+    "zoneId": "0192f0b0-7000-7000-8000-000000000010"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "schema": "schemas/edge.schema.json",
+  "valid": false,
+  "reason": "required field to is missing",
+  "data": {
+    "id": "0192f0a8-7000-7000-8000-000000000008",
+    "boardId": "0192f0a3-7000-7000-8000-000000000003",
+    "from": {
+      "kind": "card",
+      "id": "0192f0a6-7000-7000-8000-000000000006"
+    },
+    "createdAt": "2027-01-10T09:00:00.000Z",
+    "updatedAt": "2027-01-10T09:30:00.000Z"
+  }
+}

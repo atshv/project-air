@@ -141,10 +141,11 @@
 - [x] `P0-23` Visible connection anchors in the demo — status: `done` — owner: —
 - [x] `P0-24` Curved edge, visible anchors and zoom controls in the demo — status: `done` — owner: —
 - [x] `P0-25` Grouped zoom control and invisible anchors — status: `done` — owner: —
+- [x] `P1-01` Board content data model as JSON Schema — status: `done` — owner: —
 
 ## In progress
 
-- [ ] `P1-01` Board content data model as JSON Schema — status: `in_progress` — owner: —
+- none
 
 ## Blocked / failed
 

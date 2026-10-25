@@ -1,0 +1,11 @@
+{
+  "schema": "schemas/workspace.schema.json",
+  "valid": false,
+  "reason": "required field ownerId is missing",
+  "data": {
+    "id": "0192f0a2-7000-7000-8000-000000000002",
+    "name": "Research",
+    "createdAt": "2027-01-10T09:00:00.000Z",
+    "updatedAt": "2027-01-10T09:30:00.000Z"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "schema": "schemas/card.schema.json",
+  "valid": false,
+  "reason": "required field noteId is missing; a card must reference its note (AD-4)",
+  "data": {
+    "id": "0192f0a6-7000-7000-8000-000000000006",
+    "boardId": "0192f0a3-7000-7000-8000-000000000003",
+    "zoneId": "0192f0a5-7000-7000-8000-000000000005",
+    "x": 512,
+    "y": 256,
+    "width": 176,
+    "height": 80,
+    "z": "a0",
+    "createdAt": "2027-01-10T09:00:00.000Z",
+    "updatedAt": "2027-01-10T09:30:00.000Z"
+  }
+}

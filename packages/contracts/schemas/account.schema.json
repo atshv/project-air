@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://project-air.dev/contracts/0.1.0/account.schema.json",
+  "title": "Account",
+  "description": "A person's account. Accounts are workspace-independent; AD-4 concerns notes, not accounts.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "email", "displayName", "locale", "createdAt", "updatedAt"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "UUIDv7, time-sortable.",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+    },
+    "email": {
+      "type": "string",
+      "maxLength": 320,
+      "pattern": "^[^@ ]+@[^@ ]+[.][^@ ]+$"
+    },
+    "displayName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80
+    },
+    "locale": {
+      "enum": ["de", "en"]
+    },
+    "createdAt": {
+      "type": "string",
+      "description": "ISO-8601 timestamp with timezone.",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\\.[0-9]+)?(?:Z|[+-][0-9]{2}:[0-9]{2})$"
+    },
+    "updatedAt": {
+      "type": "string",
+      "description": "ISO-8601 timestamp with timezone.",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\\.[0-9]+)?(?:Z|[+-][0-9]{2}:[0-9]{2})$"
+    }
+  }
+}

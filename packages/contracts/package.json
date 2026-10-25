@@ -1,0 +1,11 @@
+{
+  "name": "@project-air/contracts",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Board-content data model as JSON Schema 2020-12 (contract 0.1.0) with valid and invalid fixtures.",
+  "scripts": {
+    "test": "node --test test/*.test.mjs",
+    "lint": "eslint --max-warnings=0 ."
+  }
+}

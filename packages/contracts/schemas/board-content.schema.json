@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://project-air.dev/contracts/0.1.0/board-content.schema.json",
+  "title": "Board content",
+  "description": "The root board-content document: one board and everything placed on it. Notes exist once and are referenced by cards (AD-4); cards may carry a zone parent, zones are never nested.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["contractVersion", "board", "notes", "zones", "cards", "blocks", "edges"],
+  "properties": {
+    "contractVersion": {
+      "const": "0.1.0",
+      "description": "The contract version this document was written against."
+    },
+    "board": {
+      "$ref": "board.schema.json"
+    },
+    "notes": {
+      "type": "array",
+      "description": "Every note referenced by a card, once per note (AD-4).",
+      "items": { "$ref": "note.schema.json" }
+    },
+    "zones": {
+      "type": "array",
+      "items": { "$ref": "zone.schema.json" }
+    },
+    "cards": {
+      "type": "array",
+      "items": { "$ref": "card.schema.json" }
+    },
+    "blocks": {
+      "type": "array",
+      "items": { "$ref": "block.schema.json" }
+    },
+    "edges": {
+      "type": "array",
+      "items": { "$ref": "edge.schema.json" }
+    }
+  }
+}

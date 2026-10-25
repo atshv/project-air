@@ -1677,7 +1677,7 @@
       "satisfies": [
         "D7"
       ],
-      "status": "in_progress",
+      "status": "done",
       "depends_on": [],
       "complexity": 6,
       "stage": "contract",
@@ -1711,11 +1711,19 @@
       ],
       "owner": null,
       "branch": "task/P1-01",
-      "worktree": "../Project air-P1-01",
+      "worktree": null,
       "round": 0,
-      "evidence": [],
+      "evidence": [
+        "reviews/evidence/P1-01-board-check-20261025T110414Z.json",
+        "reviews/evidence/P1-01-unit-20261025T110419Z.json"
+      ],
       "scope_write_forbidden": [
         "reference/"
+      ],
+      "handoff": [
+        "Closed P1-01: packages/contracts has 9 JSON-Schema-2020-12 files (v0.1.0) for account/workspace/board/note/card/zone/block/edge/root and 35 valid+invalid fixtures.",
+        "Model covers AD-4 (note exists once, cards reference notes), parent relation, fractional index string, minimum sizes and ISO timestamps; 19 unit tests.",
+        "P1-02 adds operations/undo; P1-03 codegen; P1-06 documents the contract and fills board.contracts[]."
       ]
     }
   ],
