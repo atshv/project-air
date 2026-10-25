@@ -20,7 +20,7 @@
 - Owner decision: `pending`
 - Exit gates: `contracts` (missing record), `codegen`
 - Exit criteria: contracts 0.1.0 tagged; every schema has a valid and an invalid fixture.; TS and C++ read the same fixtures identically.
-- Tasks: P1-01, P1-02, P1-03, P1-04, P1-05
+- Tasks: P1-01, P1-02, P1-03, P1-04, P1-05, P1-06, P1-07
 
 ### Stage 3 — `engine-spike` Engine spike
 
@@ -164,6 +164,8 @@
 - [ ] `P0-17` RELEASING.md and release 0.0.1 — status: `pending` — owner: —
 - [ ] `P1-04` Sync protocol messages — status: `pending` — owner: —
 - [ ] `P1-05` API resources and error codes — status: `pending` — owner: —
+- [ ] `P1-06` Contract documentation, ADR and 0.1.0 metadata — status: `pending` — owner: —
+- [ ] `P1-07` Contract overview in the preview — status: `pending` — owner: —
 
 ## Decisions
 

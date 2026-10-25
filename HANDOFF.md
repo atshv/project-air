@@ -23,8 +23,8 @@ Read `AGENTS.md`, `ARCHITECTURE.md`, `STATUS.md`, `docs/module-map.md` and the t
 
 1. Start `P1-04` (brief is ready in `tasks/P1-04.md`): create the worktree, set status, run gates (`board-check`, `codegen`, `unit`), review, squash-merge, mark done, finish the worktree.
 2. Then `P1-05` (depends on P1-04; brief ready): API resources/error codes plus `errors.<CODE>` keys in `apps/web/messages/`, with `language-check` green.
-3. Then `P1-06`: `docs/contracts.md`, ADR "Vertrag und Versionen", fill `board.contracts[]` with the contract metadata, tag `contracts@0.1.0` logically (no git tag until the remote phase).
-4. Add the **Contract overview** to `apps/web/preview/` (schemas/operations/fixtures as a visible page, kept in sync like the live demo).
+3. Then `P1-06` (task exists, **brief must be written**): `docs/contracts.md`, ADR "Vertrag und Versionen", fill `board.contracts[]` with the contract metadata (lead), run the `contracts` gate; tag `contracts@0.1.0` logically (no git tag until the remote phase).
+4. Then `P1-07` (task exists, **brief must be written**): add the **Contract overview** to `apps/web/preview/` (schemas/operations/fixtures as a visible page, kept in sync like the live demo).
 5. Start stage 3 (engine spike) locally afterwards; the remote GitHub/CI/release phase stays at the very end (ADR-0003).
 
 ## Standard task loop

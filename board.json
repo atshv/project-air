@@ -1945,6 +1945,106 @@
       "scope_write_forbidden": [
         "reference/"
       ]
+    },
+    {
+      "id": "P1-06",
+      "title": "Contract documentation, ADR and 0.1.0 metadata",
+      "goal": "docs/contracts.md and an ADR document the contract and its versioning; board.contracts[] carries the contract metadata for the contracts gate; the stage closes at contracts 0.1.0.",
+      "why": "The contract must be documented and discoverable before the engine and backend build on it (AD-3).",
+      "satisfies": [
+        "D7"
+      ],
+      "status": "pending",
+      "depends_on": [
+        "P1-05"
+      ],
+      "complexity": 4,
+      "stage": "contract",
+      "parallel_group": null,
+      "scope_write": [
+        "packages/contracts/",
+        "docs/contracts.md",
+        "docs/adr/",
+        "pnpm-lock.yaml",
+        ".changes/"
+      ],
+      "scope_read": [
+        "ARCHITECTURE.md",
+        "AGENTS.md",
+        "STATUS.md",
+        "docs/module-map.md",
+        "docs/quality.md",
+        "docs/owner/canvas-suite-blueprint.md",
+        "packages/contracts/",
+        "docs/adr/"
+      ],
+      "acceptance": [
+        "A1",
+        "A2",
+        "A3",
+        "A4"
+      ],
+      "gates": [
+        "board-check",
+        "contracts",
+        "unit"
+      ],
+      "owner": null,
+      "branch": "task/P1-06",
+      "worktree": null,
+      "round": 0,
+      "evidence": [],
+      "scope_write_forbidden": [
+        "reference/"
+      ]
+    },
+    {
+      "id": "P1-07",
+      "title": "Contract overview in the preview",
+      "goal": "A permanent preview page shows the contract schemas, operation types and fixture counts, updated with every contract or preview change.",
+      "why": "The owner wants a visible intermediate state during the contract stage (demo cadence).",
+      "satisfies": [
+        "D3"
+      ],
+      "status": "pending",
+      "depends_on": [
+        "P1-06"
+      ],
+      "complexity": 2,
+      "stage": "contract",
+      "parallel_group": null,
+      "scope_write": [
+        "apps/web/preview/",
+        ".changes/"
+      ],
+      "scope_read": [
+        "ARCHITECTURE.md",
+        "AGENTS.md",
+        "STATUS.md",
+        "docs/quality.md",
+        "docs/design-rules.md",
+        "apps/web/preview/",
+        "packages/contracts/",
+        "docs/contracts.md"
+      ],
+      "acceptance": [
+        "A1",
+        "A2",
+        "A3"
+      ],
+      "gates": [
+        "board-check",
+        "design-check",
+        "changelog-entry"
+      ],
+      "owner": null,
+      "branch": "task/P1-07",
+      "worktree": null,
+      "round": 0,
+      "evidence": [],
+      "scope_write_forbidden": [
+        "reference/"
+      ]
     }
   ],
   "decisions": [
