@@ -1,9 +1,9 @@
-# Design preview (P0-19, P0-20, P0-21, P0-22, P0-23, P0-24, P0-25)
+# Design preview (P0-19, P0-20, P0-21, P0-22, P0-23, P0-24, P0-25, P1-07)
 
 A design preview of the Project air design system. It is **not the product**: there is no engine,
 no data, no server and no build step. It exists so the owner can see the look and feel between
-milestones — the top section is a small live interaction demo, the rest is static token and
-component documentation.
+milestones — the top section is a small live interaction demo, the rest is static token, component
+and contract documentation.
 
 ## Version and last change
 
@@ -14,10 +14,10 @@ stable `data-preview-*` hooks — no runtime parsing and no fetch — and its tw
   `0.0.1 – unreleased`; the status word comes from the same heading. `CHANGELOG.md` is the display
   source and currently agrees with the root `package.json` version `0.0.1`.
 - **Last change** — the newest entry in `.changes/` by highest task id, currently
-  `.changes/P0-25-zoom-pill.md`; the line shows the task id and that task's title from `board.json` /
-  the task brief: `P0-25 — Grouped zoom control and invisible anchors`. If several files exist for the
-  highest task id, the most recent one is used; the `.changes/README.md` and `.changes/TEMPLATE.md`
-  files do not count as entries.
+  `.changes/P1-07-contract-overview.md`; the line shows the task id and that task's title from
+  `board.json` / the task brief: `P1-07 — Contract overview in the preview`. If several files exist
+  for the highest task id, the most recent one is used; the `.changes/README.md` and
+  `.changes/TEMPLATE.md` files do not count as entries.
 - **Date and time** — the file modification time of that newest `.changes` entry (the moment the task
   wrote it), formatted as `YYYY-MM-DD HH:MM` in `Europe/Zurich`; it is static text in `index.html`
   (`data-preview-last-change-time`) and is not parsed at runtime.
@@ -30,6 +30,9 @@ task.
 ## What it shows
 
 - A masthead meta line with the changelog version, the latest change entry and its date/time.
+- A **contract 0.1.0 overview**: version, schema families and files, the 19 operation types, the
+  6 + 6 sync message types, the seven error codes with their `errors.<camelCase>` message keys and
+  the 77-fixture parity proof (32 valid, 45 invalid) with generated TypeScript and C++.
 - An **interactive connection demo**: two note cards joined by one curved edge. Drag a card with
   mouse, pen or finger, or focus a card and use the arrow keys (16 px per step); `Home` resets both
   cards. Clearly labelled “interactive demo — not the engine; no data, no server”.
@@ -98,6 +101,36 @@ design system updates the demo and refreshes its screenshot in `reviews/evidence
   resets the demo. The dot grid is drawn from tokens (`--border`, `--canvas`, `--canvas-grid`).
   `prefers-reduced-motion: reduce` disables the remaining transitions.
 
+## The contract overview
+
+The **Contract 0.1.0 — the shared language** section (second section, after the demo) makes the
+contract stage visible. It is static markup in `index.html` with stable `data-contract-*` hooks — no
+fetch, no build step and no framework — so it also renders from `file://`. Every value matches
+[`packages/contracts`](../../../packages/contracts/README.md) at merge time:
+
+- **Version 0.1.0** — logical in this stage; the `contracts@0.1.0` tag is created by the owner/CI in
+  the remote phase (ADR-0002, ADR-0003). The `$id` base
+  `https://project-air.dev/contracts/0.1.0/` is a placeholder until the domain is decided (Q1).
+- **Schema families and files** — `schemas/*.schema.json` (the board-content codegen input plus the
+  root `board-content.schema.json`, corpus `fixtures/`), `schemas/sync/sync.schema.json` (corpus
+  `fixtures-sync/`) and the five REST API schemas (corpus `fixtures-api/`). `fixtures-gate/` holds
+  two direct specimens because the Polier `contracts` gate only reads `valid/*.json` and
+  `invalid/*.json`; a unit test enforces the copies.
+- **Operation types** — the 19 types under the AD-1 rule: one gesture is one operation with exactly
+  one inverse, and `group` is ordered and never nested.
+- **Sync message types** — 6 client to server and 6 server to client in one closed `oneOf` envelope;
+  a durable `ack` covers every operation id of its batch (AD-2).
+- **Error codes** — the seven fixed UPPER_SNAKE codes, each with the required `messageKey`
+  `errors.<camelCase>`, so the user text comes from the translation files (AD-8).
+- **Fixture proof** — the parity corpus has 77 fixtures (32 valid, 45 invalid); TypeScript
+  (`test/parity/canonical.ts`) and C++ (`test/cpp/parity.cpp`, including `generated/contract.h`)
+  reduce them to identical canonical lines. `codegen.mjs` generated the committed
+  `generated/types.ts` and `generated/contract.h`; hand edits fail the `codegen` gate on a diff.
+- **Links and cadence** — the section links to [docs/contracts.md](../../../docs/contracts.md) and
+  [ADR-0005 — Contract and versions](../../../docs/adr/ADR-0005-contract.md), and it is refreshed in
+  the same task as every contract or preview change (demo cadence); the live two-note demo above
+  stays permanent.
+
 ## Files
 
 | File | Purpose |
@@ -113,7 +146,7 @@ Serve the **repository root**, not this folder, so the relative token and icon p
 the slot's `web` port from `.polier-slot` (never hard-code it), then:
 
 ```sh
-cd "/Users/rasulatashev/Desktop/KI Projekte/Project air-P0-25"
+cd "/Users/rasulatashev/Desktop/KI Projekte/Project air-P1-07"
 PORT=$(python3 -c "import json; print(json.load(open('.polier-slot'))['ports']['web'])")
 python3 -m http.server "$PORT" --bind 127.0.0.1
 ```
@@ -135,7 +168,11 @@ Committed evidence lives in `reviews/evidence/`: `P0-19-desktop.png` (1440×900)
 `P0-22-demo.png` (1440×900, the masthead version and last-change line),
 `P0-23-demo.png` (1440×900, the four anchors and the snapped edge),
 `P0-24-demo.png` (1440×900, the curved edge, 8 px anchors and the zoom controls),
-`P0-25-demo.png` (1440×900, the grouped zoom pill and dot-free cards) and the
+`P0-25-demo.png` (1440×900, the grouped zoom pill and dot-free cards),
+`P1-07-desktop.png` (1440×900, top with the refreshed masthead and the demo),
+`P1-07-mobile.png` (390×844, top with the refreshed masthead),
+`P1-07-contract.png` (1440 wide, the contract overview section) and the
 `P0-19-preview.log` / `P0-20-preview.log` / `P0-21-preview.log` / `P0-22-preview.log` /
-`P0-23-preview.log` / `P0-24-preview.log` / `P0-25-preview.log` files with the exact serve, curl and
-screenshot commands. The page has no horizontal overflow at 1440×900 or 390×844.
+`P0-23-preview.log` / `P0-24-preview.log` / `P0-25-preview.log` / `P1-07-preview.log` files with the
+exact serve, curl and screenshot commands. The page has no horizontal overflow at 1440×900 or
+390×844.

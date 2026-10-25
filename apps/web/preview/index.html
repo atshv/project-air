@@ -15,21 +15,21 @@
         <h1>Project air design system</h1>
         <p class="lead">
           A static design preview of the Project air canvas design system: tokens, type, icons,
-          component states and a sample board, plus a small live connection demo. This page is not
-          the product — there is no engine, no data and no server; the demo at the top is
-          illustrative only.
+          component states, the contract 0.1.0 overview and a sample board, plus a small live
+          connection demo. This page is not the product — there is no engine, no data and no
+          server; the demo at the top is illustrative only.
         </p>
         <p class="masthead__version" data-preview-meta>
           <span data-preview-version>Version 0.0.1</span>
           <span data-preview-status>unreleased</span>
-          <span data-preview-last-change>Last change: P0-25 — Grouped zoom control and invisible anchors</span>
-          <span data-preview-last-change-time>2026-10-25 11:54 (Europe/Zurich)</span>
+          <span data-preview-last-change>Last change: P1-07 — Contract overview in the preview</span>
+          <span data-preview-last-change-time>2026-10-25 13:57 (Europe/Zurich)</span>
         </p>
         <div class="masthead__meta">
           <span>Tokens: <code>packages/ui-kit/tokens.css</code></span>
           <span>Icons: <code>packages/ui-kit/icons/</code></span>
           <span>Demo: <code>preview.js</code></span>
-          <span>Tasks: P0-19, P0-20, P0-21, P0-22, P0-23, P0-24, P0-25</span>
+          <span>Tasks: P0-19, P0-20, P0-21, P0-22, P0-23, P0-24, P0-25, P1-07</span>
         </div>
       </header>
 
@@ -107,9 +107,237 @@
         </div>
       </section>
 
+      <section
+        class="section contract"
+        aria-labelledby="contract"
+        data-contract-version="0.1.0"
+        data-contract-schema-files="16"
+        data-contract-operation-types="19"
+        data-contract-sync-message-types="6+6"
+        data-contract-error-codes="7"
+        data-contract-parity-fixtures="77"
+        data-contract-parity-valid="32"
+        data-contract-parity-invalid="45"
+      >
+        <div class="section__head">
+          <span class="eyebrow">02 — Contract</span>
+          <h2 id="contract">Contract 0.1.0 — the shared language</h2>
+          <p class="section__intro">
+            Everything the engine, the backend and the web exchange is versioned JSON Schema in
+            <code>packages/contracts</code>: board content, its operations with exactly one inverse
+            each, the WebSocket sync protocol and the REST API resources and errors, with valid and
+            invalid fixtures and generated TypeScript and C++. Version 0.1.0 is logical in this
+            stage: the <code>contracts@0.1.0</code> tag is created by the owner or CI in the remote
+            phase (ADR-0002, ADR-0003). The <code>$id</code> base
+            <code>https://project-air.dev/contracts/0.1.0/</code> is a placeholder until the domain
+            is decided (Q1).
+          </p>
+        </div>
+
+        <dl class="contract-facts">
+          <div class="contract-fact">
+            <dt class="contract-label">Version</dt>
+            <dd class="contract-fact__value">0.1.0</dd>
+            <dd class="contract-fact__note">logical; the tag waits for the remote phase</dd>
+          </div>
+          <div class="contract-fact">
+            <dt class="contract-label">Schema files</dt>
+            <dd class="contract-fact__value">16</dd>
+            <dd class="contract-fact__note">10 board content, 1 sync, 5 REST API</dd>
+          </div>
+          <div class="contract-fact">
+            <dt class="contract-label">Operation types</dt>
+            <dd class="contract-fact__value">19</dd>
+            <dd class="contract-fact__note">one gesture, one inverse (AD-1)</dd>
+          </div>
+          <div class="contract-fact">
+            <dt class="contract-label">Sync message types</dt>
+            <dd class="contract-fact__value">6 + 6</dd>
+            <dd class="contract-fact__note">client to server, server to client</dd>
+          </div>
+          <div class="contract-fact">
+            <dt class="contract-label">Error codes</dt>
+            <dd class="contract-fact__value">7</dd>
+            <dd class="contract-fact__note">stable wire codes with message keys</dd>
+          </div>
+          <div class="contract-fact">
+            <dt class="contract-label">Parity fixtures</dt>
+            <dd class="contract-fact__value">77</dd>
+            <dd class="contract-fact__note">32 valid, 45 invalid</dd>
+          </div>
+        </dl>
+
+        <div class="contract-blocks">
+          <div class="contract-block">
+            <h3 class="contract-block__title">Schema families and files</h3>
+            <ul class="contract-families">
+              <li class="contract-family">
+                <span class="contract-family__name">Board content</span>
+                <code class="contract-family__path">schemas/*.schema.json</code>
+                <span class="contract-family__note">
+                  The codegen input schemas and the root
+                  <code>board-content.schema.json</code>; corpus <code>fixtures/</code>.
+                </span>
+              </li>
+              <li class="contract-family">
+                <span class="contract-family__name">Sync protocol</span>
+                <code class="contract-family__path">schemas/sync/sync.schema.json</code>
+                <span class="contract-family__note">
+                  One closed <code>oneOf</code> envelope for the WebSocket messages; corpus
+                  <code>fixtures-sync/</code>.
+                </span>
+              </li>
+              <li class="contract-family">
+                <span class="contract-family__name">REST API</span>
+                <code class="contract-family__path">schemas/api/*.schema.json</code>
+                <span class="contract-family__note">
+                  Closed envelopes for the four resources (workspace, board, note, card) and one
+                  error envelope; corpus <code>fixtures-api/</code>.
+                </span>
+              </li>
+              <li class="contract-family">
+                <span class="contract-family__name">Gate specimens</span>
+                <code class="contract-family__path">fixtures-gate/</code>
+                <span class="contract-family__note">
+                  Two direct Polier specimens copy the canonical board-content fixtures, because the
+                  Polier <code>contracts</code> gate only reads <code>valid/*.json</code> and
+                  <code>invalid/*.json</code>; a unit test enforces the copies.
+                </span>
+              </li>
+            </ul>
+          </div>
+
+          <div class="contract-block">
+            <h3 class="contract-block__title">Operation types</h3>
+            <p class="contract-block__note">
+              AD-1: every change to board content is one operation with exactly one inverse, and
+              <code>group</code> is ordered and never nested.
+            </p>
+            <ul class="contract-chips" aria-label="Operation types of contract 0.1.0">
+              <li class="contract-chip">createNote</li>
+              <li class="contract-chip">updateNote</li>
+              <li class="contract-chip">deleteNote</li>
+              <li class="contract-chip">createCard</li>
+              <li class="contract-chip">moveCard</li>
+              <li class="contract-chip">resizeCard</li>
+              <li class="contract-chip">deleteCard</li>
+              <li class="contract-chip">createZone</li>
+              <li class="contract-chip">moveZone</li>
+              <li class="contract-chip">resizeZone</li>
+              <li class="contract-chip">deleteZone</li>
+              <li class="contract-chip">createBlock</li>
+              <li class="contract-chip">moveBlock</li>
+              <li class="contract-chip">resizeBlock</li>
+              <li class="contract-chip">updateBlock</li>
+              <li class="contract-chip">deleteBlock</li>
+              <li class="contract-chip">createEdge</li>
+              <li class="contract-chip">deleteEdge</li>
+              <li class="contract-chip">group</li>
+            </ul>
+          </div>
+
+          <div class="contract-block">
+            <h3 class="contract-block__title">Sync message types</h3>
+            <div class="contract-sync">
+              <div class="contract-sync__group">
+                <span class="contract-label">Client to server</span>
+                <ul class="contract-chips" aria-label="Client to server messages">
+                  <li class="contract-chip">hello</li>
+                  <li class="contract-chip">joinBoard</li>
+                  <li class="contract-chip">leaveBoard</li>
+                  <li class="contract-chip">operationBatch</li>
+                  <li class="contract-chip">resyncRequest</li>
+                  <li class="contract-chip">presence</li>
+                </ul>
+              </div>
+              <div class="contract-sync__group">
+                <span class="contract-label">Server to client</span>
+                <ul class="contract-chips" aria-label="Server to client messages">
+                  <li class="contract-chip">welcome</li>
+                  <li class="contract-chip">ack</li>
+                  <li class="contract-chip">operationBatch</li>
+                  <li class="contract-chip">presence</li>
+                  <li class="contract-chip">reject</li>
+                  <li class="contract-chip">snapshot</li>
+                </ul>
+              </div>
+            </div>
+            <p class="contract-block__note">
+              A durable <code>ack</code> covers every operation id of its batch (AD-2); presence is
+              ephemeral and carries no operations.
+            </p>
+          </div>
+
+          <div class="contract-block">
+            <h3 class="contract-block__title">Error codes and message keys</h3>
+            <p class="contract-block__note">
+              The wire code stays language-neutral; the required <code>messageKey</code> is
+              <code>errors.&lt;camelCase&gt;</code>, so the user text comes from the translation
+              files (AD-8).
+            </p>
+            <ul class="contract-errors">
+              <li class="contract-error">
+                <code class="contract-error__code">AUTH_REQUIRED</code>
+                <code class="contract-error__key">errors.authRequired</code>
+              </li>
+              <li class="contract-error">
+                <code class="contract-error__code">FORBIDDEN</code>
+                <code class="contract-error__key">errors.forbidden</code>
+              </li>
+              <li class="contract-error">
+                <code class="contract-error__code">NOT_FOUND</code>
+                <code class="contract-error__key">errors.notFound</code>
+              </li>
+              <li class="contract-error">
+                <code class="contract-error__code">VALIDATION</code>
+                <code class="contract-error__key">errors.validation</code>
+              </li>
+              <li class="contract-error">
+                <code class="contract-error__code">CONFLICT</code>
+                <code class="contract-error__key">errors.conflict</code>
+              </li>
+              <li class="contract-error">
+                <code class="contract-error__code">RATE_LIMITED</code>
+                <code class="contract-error__key">errors.rateLimited</code>
+              </li>
+              <li class="contract-error">
+                <code class="contract-error__code">INTERNAL</code>
+                <code class="contract-error__key">errors.internal</code>
+              </li>
+            </ul>
+          </div>
+
+          <div class="contract-block contract-block--proof">
+            <h3 class="contract-block__title">Fixture proof and codegen</h3>
+            <p class="contract-block__note">
+              Every fixture in the parity corpus is reduced to one canonical line by
+              <code>test/parity/canonical.ts</code>; <code>test/cpp/parity.cpp</code> reads the same
+              wrappers with <code>generated/contract.h</code>, and the unit suite asserts that the
+              TypeScript and C++ line sets are identical — a tampered line is detected.
+            </p>
+            <p class="contract-block__note">
+              <code>codegen.mjs</code> deterministically generated the committed
+              <code>generated/types.ts</code> and <code>generated/contract.h</code>; hand edits fail
+              the <code>codegen</code> gate on a diff, so the types cannot drift from the schemas.
+            </p>
+          </div>
+        </div>
+
+        <p class="contract-cadence">
+          Demo cadence: this overview is kept current in the same task as every contract or preview
+          change, and the live two-note demo above stays permanently
+          (<a href="../../../docs/quality.md">docs/quality.md</a>).
+        </p>
+        <p class="contract-cadence">
+          Read the full contract in <a href="../../../docs/contracts.md">docs/contracts.md</a> and
+          the decision in <a href="../../../docs/adr/ADR-0005-contract.md">ADR-0005 — Contract and
+          versions</a>.
+        </p>
+      </section>
+
       <section class="section" aria-labelledby="colours">
         <div class="section__head">
-          <span class="eyebrow">02 — Colour</span>
+          <span class="eyebrow">03 — Colour</span>
           <h2 id="colours">Colour tokens</h2>
           <p class="section__intro">
             Every swatch reads a generated custom property from the design tokens. Translucent
@@ -213,7 +441,7 @@
 
       <section class="section" aria-labelledby="type">
         <div class="section__head">
-          <span class="eyebrow">03 — Typography</span>
+          <span class="eyebrow">04 — Typography</span>
           <h2 id="type">Typography scale</h2>
           <p class="section__intro">
             Serif for board, panel and empty-state titles, sans for everything else. Sizes come from
@@ -271,7 +499,7 @@
 
       <section class="section" aria-labelledby="space">
         <div class="section__head">
-          <span class="eyebrow">04 — Space, radii, shadows, borders</span>
+          <span class="eyebrow">05 — Space, radii, shadows, borders</span>
           <h2 id="space">Spacing and surfaces</h2>
           <p class="section__intro">
             A 4 px grid: 4, 8, 12, 16, 24, 32 and 48. Radii are 10, 14, 20, a 6 px tooltip radius
@@ -357,7 +585,7 @@
 
       <section class="section" aria-labelledby="icons">
         <div class="section__head">
-          <span class="eyebrow">05 — Icons</span>
+          <span class="eyebrow">06 — Icons</span>
           <h2 id="icons">Toolbar icons</h2>
           <p class="section__intro">
             The ten icons ship as SVG files in <code>packages/ui-kit/icons/</code>, drawn on a 24
@@ -482,7 +710,7 @@
 
       <section class="section" aria-labelledby="states">
         <div class="section__head">
-          <span class="eyebrow">06 — States</span>
+          <span class="eyebrow">07 — States</span>
           <h2 id="states">Component states</h2>
           <p class="section__intro">
             Every interactive element has rest, hover, pressed, keyboard focus and disabled; cards
@@ -569,7 +797,7 @@
 
       <section class="section" aria-labelledby="components">
         <div class="section__head">
-          <span class="eyebrow">07 — Components</span>
+          <span class="eyebrow">08 — Components</span>
           <h2 id="components">Canvas components</h2>
           <p class="section__intro">
             One example each of a note card, a block, a zone, a connection, a side-panel header and
@@ -718,7 +946,7 @@
 
       <section class="section" aria-labelledby="board">
         <div class="section__head">
-          <span class="eyebrow">08 — Sample board</span>
+          <span class="eyebrow">09 — Sample board</span>
           <h2 id="board">Sample board composition</h2>
           <div class="board-label">
             <span class="badge">static design preview</span>

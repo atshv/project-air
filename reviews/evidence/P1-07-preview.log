@@ -1,0 +1,172 @@
+# P1-07 — contract overview in the preview: manual evidence
+
+- Date: 2026-10-25 (Europe/Zurich)
+- Worktree: `/Users/rasulatashev/Desktop/KI Projekte/Project air-P1-07` (branch `task/P1-07`, slot 1)
+- Changed: `apps/web/preview/index.html`, `apps/web/preview/preview.css`,
+  `apps/web/preview/README.md`; `.changes/P1-07-contract-overview.md`
+- New section: **“Contract 0.1.0 — the shared language”** (second section, directly after the live
+  two-note demo). The demo markup and `preview.js` are unchanged; the refreshed masthead points to
+  P1-07.
+
+## Port and server
+
+Slot values (`python3 "$POLIER/tools/slot.py" show`): `web=4100` for slot 1. The server was started
+and stopped by this task only; it is not left running afterwards and the port is free after the run.
+
+```sh
+cd "/Users/rasulatashev/Desktop/KI Projekte/Project air-P1-07"
+PORT=$(python3 -c "import json;print(json.load(open('.polier-slot'))['ports']['web'])")
+python3 -m http.server "$PORT" --bind 127.0.0.1
+```
+
+Served the **repository root** so the relative token, icon and documentation paths resolve.
+
+## HTTP status
+
+```
+$ curl -s -o /dev/null -w '%{http_code}' "http://127.0.0.1:4100/apps/web/preview/"
+200
+$ curl -s -o /dev/null -w '%{http_code}' "http://127.0.0.1:4100/packages/ui-kit/tokens.css"
+200
+$ curl -s -o /dev/null -w '%{http_code}' "http://127.0.0.1:4100/apps/web/preview/preview.css"
+200
+$ curl -s -o /dev/null -w '%{http_code}' "http://127.0.0.1:4100/docs/contracts.md"
+200
+$ curl -s -o /dev/null -w '%{http_code}' "http://127.0.0.1:4100/docs/adr/ADR-0005-contract.md"
+200
+```
+
+The server log for the run contains no `404`.
+
+## Section bounds, overflow and demo (temporary same-origin probe)
+
+A temporary probe page served from the worktree root (removed before the commit, not part of the
+deliverable) loaded the preview in same-origin iframes at 1440×900 and 390×844 and measured the page:
+
+```
+desktop viewport=1440x900 scrollWidth=1425 clientWidth=1425 bodyScrollWidth=1425 pageHeight=6732 contractTop=953 contractBottom=2555 contractHeight=1603 contractWidth=1136 chips=31 errors=7 links=3 demoCardMoved=true demoStatus=Zoom 110 percent. zoomScale=1.10 masthead=Last change: P1-07 — Contract overview in the preview | 2026-10-25 13:57 (Europe/Zurich) firstFact=0.1.0
+mobile viewport=390x844 scrollWidth=375 clientWidth=375 bodyScrollWidth=375 pageHeight=11634 contractTop=1195 contractBottom=4408 contractHeight=3213 contractWidth=343 chips=31 errors=7 links=3
+tall viewport=1440x3400 scrollWidth=1425 clientWidth=1425 bodyScrollWidth=1425 pageHeight=6732 contractTop=953 contractBottom=2555 contractHeight=1603 contractWidth=1136 chips=31 errors=7 links=3
+```
+
+What the probe proves:
+
+- **No horizontal overflow:** `scrollWidth` equals `clientWidth` at 1440 (1425) and 390 (375);
+  `bodyScrollWidth` matches too, so the page is readable at both sizes.
+- **The section counts are the contract's:** 31 chips = 19 operation chips + 6 client-to-server and
+  6 server-to-client sync chips, plus 7 error rows and 3 document links. The facts strip states
+  16 schema files (10 board content, 1 sync, 5 REST API), 19 operation types, 6 + 6 sync message
+  types, 7 error codes and 77 parity fixtures (32 valid, 45 invalid).
+- **The demo still works:** an `ArrowRight` press moves card A (`demoCardMoved=true`) and a click on
+  the zoom-in segment moves the world layer to scale 1.10. Demo markup and `preview.js` are unchanged.
+- **The masthead is refreshed:** last change `P1-07 — Contract overview in the preview`, date/time
+  `2026-10-25 13:57 (Europe/Zurich)` (the change entry's modification time).
+
+## Screenshots
+
+Chromium headless shell:
+`/Users/rasulatashev/Library/Caches/ms-playwright/chromium_headless_shell-1248/chrome-headless-shell-mac-arm64/chrome-headless-shell`
+
+```sh
+cd "/Users/rasulatashev/Desktop/KI Projekte/Project air-P1-07"
+CHROME="/Users/rasulatashev/Library/Caches/ms-playwright/chromium_headless_shell-1248/chrome-headless-shell-mac-arm64/chrome-headless-shell"
+PORT=$(python3 -c "import json;print(json.load(open('.polier-slot'))['ports']['web'])")
+URL="http://127.0.0.1:$PORT/apps/web/preview/"
+
+"$CHROME" --headless --disable-gpu --hide-scrollbars --window-size=1440,900 \
+  --screenshot=reviews/evidence/P1-07-desktop.png "$URL"
+
+"$CHROME" --headless --disable-gpu --hide-scrollbars --window-size=390,844 \
+  --screenshot=reviews/evidence/P1-07-mobile.png "$URL"
+
+"$CHROME" --headless --disable-gpu --hide-scrollbars --window-size=1440,2600 \
+  --screenshot=/tmp/P1-07-full.png "$URL"
+
+/Users/rasulatashev/.dsh/dsh-runtimes/dsh-primary-runtime/dependencies/python/bin/python3 \
+  -c "from PIL import Image; Image.open('/tmp/P1-07-full.png').crop((0, 953, 1440, 2555)).save('reviews/evidence/P1-07-contract.png')"
+```
+
+The last command crops the tall 1440-wide capture to the section's measured bounds (top 953,
+bottom 2555 from the probe above), so `P1-07-contract.png` is the real rendered section, not a
+re-composition. Result sizes (`sips -g pixelWidth -g pixelHeight`; plain chromium screenshots are
+1440 × 900, 390 × 844 and 1440 × 1602):
+
+- `reviews/evidence/P1-07-desktop.png` — PNG 1440 × 900, 122503 bytes
+- `reviews/evidence/P1-07-mobile.png` — PNG 390 × 844, 88081 bytes
+- `reviews/evidence/P1-07-contract.png` — PNG 1440 × 1602, 269098 bytes (re-shot after the review
+  fix below; the first shot was 268759 bytes at the same size)
+
+## Masthead meta line
+
+```
+Version 0.0.1 · unreleased · Last change: P1-07 — Contract overview in the preview · 2026-10-25 13:57 (Europe/Zurich)
+```
+
+- Version: first `##` heading of `CHANGELOG.md` (`## 0.0.1 – unreleased`), unchanged.
+- Last change: newest `.changes/` entry by highest task id — `.changes/P1-07-contract-overview.md`;
+  task title from `board.json` / `tasks/P1-07.md`.
+- Date/time: modification time of that entry in `Europe/Zurich` (`YYYY-MM-DD HH:MM`; `stat` →
+  2026-10-25 13:57), static text in `index.html`. The change entry was written **before** the stamp
+  and not modified afterwards.
+- `apps/web/preview/README.md` documents the section, its value sources, the cadence rule and the
+  same-task update rule.
+
+## Gates
+
+```sh
+cd "/Users/rasulatashev/Desktop/KI Projekte/Project air-P1-07"
+export POLIER=/Users/rasulatashev/Desktop/Polier-main
+python3 "$POLIER/tools/gate.py" --task P1-07 --name board-check --shell "python3 $POLIER/tools/check.py ."
+python3 "$POLIER/tools/gate.py" --task P1-07 --name design-check --shell "node tools/design-check/index.mjs ."
+python3 "$POLIER/tools/gate.py" --task P1-07 --name changelog-entry --shell "node tools/release/check-changes.mjs --task P1-07 --base main"
+```
+
+| Gate | Result | Record |
+| --- | --- | --- |
+| `board-check` | PASS (exit 0) | `reviews/evidence/P1-07-board-check-20261025T130100Z.json` |
+| `design-check` | PASS (exit 0, no findings) | `reviews/evidence/P1-07-design-check-20261025T130103Z.json` |
+| `changelog-entry` | PASS (exit 0, `.changes/P1-07-contract-overview.md`) | `reviews/evidence/P1-07-changelog-entry-20261025T130105Z.json` |
+
+`check.py` ran before any `pnpm` command; no install was needed for this task (the preview has no
+build step). `check.py` exits 0 with three pre-existing warnings from the board configuration: two
+context-pack budget warnings (`P0-02`, `P1-07`) and the `budgets.status` override — `board.json` is
+lead-owned and was not edited.
+
+No raw colour values in the preview files (`grep -nE '#[0-9a-fA-F]{3,8}|rgba?\(|hsla?\('
+apps/web/preview/*` returns nothing); all visual values are `var(--…)` tokens from
+`packages/ui-kit/tokens.css`, no new tokens and no numeric `z-index`. The preview files contain no
+German text.
+
+## Follow-up fix after review
+
+Review finding (minor, cosmetic): `.contract-blocks` stretched the two-column cards to equal row
+height, so the operation-types card and the sync-message-types card carried blank bordered space
+below their content. Fixed with `align-items: start` on `.contract-blocks` in `preview.css`; no other
+layout value changed and the section h2 stays at `var(--text-22)` per the brief.
+
+The preview was served again on the slot web port (`web=4100` from `.polier-slot`), the section was
+re-measured with the same temporary same-origin probe (removed again before the commit) and the
+section image was re-shot with the same commands and crop method as above:
+
+```
+desktop viewport=1440x900 scrollWidth=1425 clientWidth=1425 bodyScrollWidth=1425 pageHeight=6732 contractTop=953 contractBottom=2555 contractHeight=1603 contractWidth=1136 blockHeights=474,253,249,333,176 chips=31 errors=7 links=3 demoCardMoved=true demoStatus=Zoom 110 percent. zoomScale=1.10 masthead=Last change: P1-07 — Contract overview in the preview | 2026-10-25 13:57 (Europe/Zurich) firstFact=0.1.0
+mobile viewport=390x844 scrollWidth=375 clientWidth=375 bodyScrollWidth=375 pageHeight=11634 contractTop=1195 contractBottom=4408 contractHeight=3213 contractWidth=343 blockHeights=528,359,326,369,303 chips=31 errors=7 links=3
+tall viewport=1440x3400 scrollWidth=1425 clientWidth=1425 bodyScrollWidth=1425 pageHeight=6732 contractTop=953 contractBottom=2555 contractHeight=1603 contractWidth=1136 blockHeights=474,253,249,333,176 chips=31 errors=7 links=3
+```
+
+`blockHeights` lists the four block cards plus the full-width proof block in DOM order (schema
+families, operation types, sync message types, error codes, fixture proof). The operation-types card
+is now 253 px tall instead of stretching to the schema-families row height (474 px), and the
+sync-message-types card is 249 px instead of stretching to the error-codes height (333 px). No blank
+bordered space remains under either card's content. The section bounds are unchanged (top 953,
+bottom 2555), so the crop offset stayed `(0, 953, 1440, 2555)`; the new
+`reviews/evidence/P1-07-contract.png` is 1440 × 1602, 269098 bytes.
+
+Re-run gate after the fix (the earlier record is kept):
+
+| Gate | Result | Record |
+| --- | --- | --- |
+| `design-check` | PASS (exit 0, no findings) | `reviews/evidence/P1-07-design-check-20261025T131258Z.json` |
+
+`board-check` and `changelog-entry` were not re-run: the fix touches only `preview.css` and this log,
+so their records on the base commit stay valid.

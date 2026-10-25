@@ -1,0 +1,5 @@
+$ node tools/release/check-changes.mjs --task P1-07 --base main
+[exit 0]
+
+check-changes: task P1-07, base main, 11 changed path(s), 3 code path(s)
+changelog-entry: OK (.changes/P1-07-contract-overview.md)

@@ -2060,7 +2060,7 @@
       "satisfies": [
         "D3"
       ],
-      "status": "in_progress",
+      "status": "done",
       "depends_on": [
         "P1-06"
       ],
@@ -2093,11 +2093,20 @@
       ],
       "owner": null,
       "branch": "task/P1-07",
-      "worktree": "../Project air-P1-07",
+      "worktree": null,
       "round": 0,
-      "evidence": [],
+      "evidence": [
+        "reviews/evidence/P1-07-board-check-20261025T130100Z.json",
+        "reviews/evidence/P1-07-design-check-20261025T131258Z.json",
+        "reviews/evidence/P1-07-changelog-entry-20261025T130105Z.json"
+      ],
       "scope_write_forbidden": [
         "reference/"
+      ],
+      "handoff": [
+        "Closed P1-07: permanent Contract 0.1.0 overview in the preview (facts, schema families, 19 operations, 6+6 messages, 7 key rows, parity, cadence, doc/ADR links); masthead/README refreshed.",
+        "Evidence: P1-07-desktop.png 1440x900, P1-07-mobile.png 390x844, P1-07-contract.png 1440x1602, P1-07-preview.log with serve/curl/screenshot commands; no horizontal overflow, demo unchanged and live.",
+        "Review pass; one cosmetic fix (card stretch -> align-items start) re-shot and re-gated; board-check, design-check and changelog-entry green."
       ]
     }
   ],
