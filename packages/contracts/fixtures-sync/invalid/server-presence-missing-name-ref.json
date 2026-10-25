@@ -1,0 +1,20 @@
+{
+  "schema": "schemas/sync/sync.schema.json",
+  "valid": false,
+  "reason": "presence must reference the display name in payload.nameRef",
+  "data": {
+    "id": "0192f0c0-7000-7000-8000-0000000000db",
+    "clientId": "0192f0b0-7000-7000-8000-0000000000c1",
+    "boardId": "0192f0b1-7000-7000-8000-0000000000b1",
+    "type": "presence",
+    "sentAt": "2027-01-10T09:00:03.100Z",
+    "payload": {
+      "cursor": {
+        "x": 512,
+        "y": 256
+      },
+      "selection": [],
+      "colorRef": "surface-accent"
+    }
+  }
+}

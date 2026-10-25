@@ -1,0 +1,13 @@
+{
+  "schema": "schemas/sync/sync.schema.json",
+  "valid": false,
+  "reason": "an unknown message type is invalid because it matches no envelope",
+  "data": {
+    "id": "0192f0c0-7000-7000-8000-0000000000d7",
+    "clientId": "0192f0b0-7000-7000-8000-0000000000c1",
+    "type": "subscribe",
+    "sentAt": "2027-01-10T09:00:00.000Z",
+    "seq": 1,
+    "payload": {}
+  }
+}

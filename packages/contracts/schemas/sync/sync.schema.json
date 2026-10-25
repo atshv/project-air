@@ -1,0 +1,659 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://project-air.dev/contracts/0.1.0/sync.schema.json",
+  "title": "Sync protocol message",
+  "description": "One message of the WebSocket sync protocol of contract 0.1.0: either a client-to-server or a server-to-client message. Every message carries a UUIDv7 message id, the clientId of the connection, an ISO-8601 sentAt timestamp and a typed payload. Client messages carry a per-connection seq; durable server messages carry a board-wide serverSeq (AD-2). The protocol is a message language over the operations of operation.schema.json; it defines no server behaviour.",
+  "$ref": "#/$defs/sync-message",
+  "$defs": {
+    "uuid": {
+      "type": "string",
+      "description": "UUIDv7 identifier, time-sortable.",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+    },
+    "timestamp": {
+      "type": "string",
+      "description": "ISO-8601 timestamp with timezone.",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\\.[0-9]+)?(?:Z|[+-][0-9]{2}:[0-9]{2})$"
+    },
+    "clientSeq": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Per-connection client sequence. Strictly increasing; the first message of a connection is 1."
+    },
+    "serverSeq": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Board-wide durable server sequence. Strictly increasing; an acknowledged batch advances it."
+    },
+    "fromServerSeq": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "The last durable serverSeq the client holds. 0 means the client has no prior state."
+    },
+    "tokenRef": {
+      "type": "string",
+      "minLength": 8,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9._:-]{8,128}$",
+      "description": "Opaque reference to an access token. The token itself never travels in a sync message."
+    },
+    "snapshotRef": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^snapshot:[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}:[1-9][0-9]*$",
+      "description": "Reference to a board snapshot as snapshot:<boardId>:<serverSeq>; the snapshot itself is sent or stored behind this reference."
+    },
+    "contractVersion": {
+      "const": "0.1.0",
+      "description": "The contract version this message was written against."
+    },
+    "errorCode": {
+      "enum": [
+        "AUTH_REQUIRED",
+        "FORBIDDEN",
+        "NOT_FOUND",
+        "VALIDATION",
+        "CONFLICT",
+        "RATE_LIMITED",
+        "INTERNAL"
+      ],
+      "description": "Stable, language-neutral wire error code. The user-visible text comes from the translated message key errors.<lowerCamelCase> of the API errors (P1-05)."
+    },
+    "presence-payload": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Ephemeral presence of one client on one joined board: cursor, selection and name/colour references. It carries no operation data.",
+      "required": ["colorRef", "cursor", "nameRef", "selection"],
+      "properties": {
+        "cursor": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "World-pixel cursor position. It is presence, not an operation.",
+          "required": ["x", "y"],
+          "properties": {
+            "x": {
+              "type": "number"
+            },
+            "y": {
+              "type": "number"
+            }
+          }
+        },
+        "selection": {
+          "type": "array",
+          "description": "The ids of the objects the client has selected on this board.",
+          "maxItems": 500,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/uuid"
+          }
+        },
+        "nameRef": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z][A-Za-z0-9._:-]*$",
+          "description": "Reference to the account whose display name is shown, never the name text itself."
+        },
+        "colorRef": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64,
+          "pattern": "^[a-z][a-z0-9-]*$",
+          "description": "Reference to a palette colour token (AD-7), never a raw colour value."
+        }
+      }
+    },
+    "operation-batch-payload": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "An ordered batch of AD-1 operations of operation.schema.json. An empty batch and a batch with an unknown operation type are invalid.",
+      "required": ["batchId", "operations"],
+      "properties": {
+        "batchId": {
+          "$ref": "#/$defs/uuid",
+          "description": "Correlates the batch with its ack and its broadcast."
+        },
+        "operations": {
+          "type": "array",
+          "minItems": 1,
+          "description": "Ordered operations; every entry is a contract 0.1.0 operation with exactly one inverse.",
+          "items": {
+            "$ref": "operation.schema.json"
+          }
+        }
+      }
+    },
+    "join-board-payload": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Joining a board carries no operation data; the server answers with welcome and, when the client has no state, a snapshot.",
+      "required": [],
+      "properties": {}
+    },
+    "leave-board-payload": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Leaving a board carries no operation data.",
+      "required": [],
+      "properties": {}
+    },
+    "hello": {
+      "title": "hello (client to server)",
+      "description": "Client-to-server: opens a sync session by referencing an access token. It names no board; the client joins a board afterwards. The server answers with reject when authentication fails.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "clientId", "type", "sentAt", "seq", "payload"],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/uuid"
+        },
+        "clientId": {
+          "$ref": "#/$defs/uuid"
+        },
+        "type": {
+          "const": "hello"
+        },
+        "sentAt": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "seq": {
+          "$ref": "#/$defs/clientSeq"
+        },
+        "payload": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["tokenRef"],
+          "properties": {
+            "tokenRef": {
+              "$ref": "#/$defs/tokenRef"
+            }
+          }
+        }
+      }
+    },
+    "join-board": {
+      "title": "joinBoard (client to server)",
+      "description": "Client-to-server: subscribes the connection to one board. The client must have sent hello first. The server answers with welcome and, for a new client, a snapshot.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "clientId", "boardId", "type", "sentAt", "seq", "payload"],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/uuid"
+        },
+        "clientId": {
+          "$ref": "#/$defs/uuid"
+        },
+        "boardId": {
+          "$ref": "#/$defs/uuid"
+        },
+        "type": {
+          "const": "joinBoard"
+        },
+        "sentAt": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "seq": {
+          "$ref": "#/$defs/clientSeq"
+        },
+        "payload": {
+          "$ref": "#/$defs/join-board-payload"
+        }
+      }
+    },
+    "leave-board": {
+      "title": "leaveBoard (client to server)",
+      "description": "Client-to-server: unsubscribes the connection from one board. Presence for that board is no longer sent after it.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "clientId", "boardId", "type", "sentAt", "seq", "payload"],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/uuid"
+        },
+        "clientId": {
+          "$ref": "#/$defs/uuid"
+        },
+        "boardId": {
+          "$ref": "#/$defs/uuid"
+        },
+        "type": {
+          "const": "leaveBoard"
+        },
+        "sentAt": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "seq": {
+          "$ref": "#/$defs/clientSeq"
+        },
+        "payload": {
+          "$ref": "#/$defs/leave-board-payload"
+        }
+      }
+    },
+    "operation-batch": {
+      "title": "operationBatch (client to server)",
+      "description": "Client-to-server: one ordered batch of contract operations. The server answers with ack once the batch is durable (AD-2) and broadcasts the same batch to the other clients.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "clientId", "boardId", "type", "sentAt", "seq", "payload"],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/uuid"
+        },
+        "clientId": {
+          "$ref": "#/$defs/uuid"
+        },
+        "boardId": {
+          "$ref": "#/$defs/uuid"
+        },
+        "type": {
+          "const": "operationBatch"
+        },
+        "sentAt": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "seq": {
+          "$ref": "#/$defs/clientSeq"
+        },
+        "payload": {
+          "$ref": "#/$defs/operation-batch-payload"
+        }
+      }
+    },
+    "resync-request": {
+      "title": "resyncRequest (client to server)",
+      "description": "Client-to-server: asks for catch-up after a reconnect, starting after the last durable serverSeq the client holds. A fromServerSeq ahead of the server's current serverSeq is invalid. The server answers with welcome and snapshot.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "clientId", "boardId", "type", "sentAt", "seq", "payload"],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/uuid"
+        },
+        "clientId": {
+          "$ref": "#/$defs/uuid"
+        },
+        "boardId": {
+          "$ref": "#/$defs/uuid"
+        },
+        "type": {
+          "const": "resyncRequest"
+        },
+        "sentAt": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "seq": {
+          "$ref": "#/$defs/clientSeq"
+        },
+        "payload": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["fromServerSeq"],
+          "properties": {
+            "fromServerSeq": {
+              "$ref": "#/$defs/fromServerSeq"
+            }
+          }
+        }
+      }
+    },
+    "presence": {
+      "title": "presence (client to server)",
+      "description": "Client-to-server: reports ephemeral cursor, selection and name/colour references for a board the client has joined. It carries no operation data.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "clientId", "boardId", "type", "sentAt", "seq", "payload"],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/uuid"
+        },
+        "clientId": {
+          "$ref": "#/$defs/uuid"
+        },
+        "boardId": {
+          "$ref": "#/$defs/uuid"
+        },
+        "type": {
+          "const": "presence"
+        },
+        "sentAt": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "seq": {
+          "$ref": "#/$defs/clientSeq"
+        },
+        "payload": {
+          "$ref": "#/$defs/presence-payload"
+        }
+      }
+    },
+    "welcome": {
+      "title": "welcome (server to client)",
+      "description": "Server-to-client: answers joinBoard or resyncRequest on one board with the current serverSeq and the reference of the snapshot the server will send or points at. Welcome is durable and carries a serverSeq.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "clientId", "boardId", "type", "sentAt", "serverSeq", "payload"],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/uuid"
+        },
+        "clientId": {
+          "$ref": "#/$defs/uuid"
+        },
+        "boardId": {
+          "$ref": "#/$defs/uuid"
+        },
+        "type": {
+          "const": "welcome"
+        },
+        "sentAt": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "serverSeq": {
+          "$ref": "#/$defs/serverSeq"
+        },
+        "payload": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["contractVersion", "snapshotRef"],
+          "properties": {
+            "contractVersion": {
+              "$ref": "#/$defs/contractVersion"
+            },
+            "snapshotRef": {
+              "$ref": "#/$defs/snapshotRef"
+            }
+          }
+        }
+      }
+    },
+    "ack": {
+      "title": "ack (server to client)",
+      "description": "Server-to-client: confirms that one operation batch is durable and names every operation id it covers. The serverSeq on the ack is the sequence the acknowledged batch advanced (AD-2).",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "clientId", "boardId", "type", "sentAt", "serverSeq", "payload"],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/uuid"
+        },
+        "clientId": {
+          "$ref": "#/$defs/uuid"
+        },
+        "boardId": {
+          "$ref": "#/$defs/uuid"
+        },
+        "type": {
+          "const": "ack"
+        },
+        "sentAt": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "serverSeq": {
+          "$ref": "#/$defs/serverSeq"
+        },
+        "payload": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["batchId", "opIds"],
+          "properties": {
+            "batchId": {
+              "$ref": "#/$defs/uuid"
+            },
+            "opIds": {
+              "type": "array",
+              "minItems": 1,
+              "uniqueItems": true,
+              "description": "The ids of every operation in the acknowledged batch, so the client can mark the batch durable.",
+              "items": {
+                "$ref": "#/$defs/uuid"
+              }
+            }
+          }
+        }
+      }
+    },
+    "operation-batch-broadcast": {
+      "title": "operationBatch (server to client)",
+      "description": "Server-to-client: broadcasts an acknowledged ordered operation batch to the other clients on the board, with the serverSeq of the batch. The payload references the same operation schema as the client message.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "clientId", "boardId", "type", "sentAt", "serverSeq", "payload"],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/uuid"
+        },
+        "clientId": {
+          "$ref": "#/$defs/uuid"
+        },
+        "boardId": {
+          "$ref": "#/$defs/uuid"
+        },
+        "type": {
+          "const": "operationBatch"
+        },
+        "sentAt": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "serverSeq": {
+          "$ref": "#/$defs/serverSeq"
+        },
+        "payload": {
+          "$ref": "#/$defs/operation-batch-payload"
+        }
+      }
+    },
+    "presence-broadcast": {
+      "title": "presence (server to client)",
+      "description": "Server-to-client: forwards another client's ephemeral presence on a board. Presence is not durable, so it carries no serverSeq and no operation data.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "clientId", "boardId", "type", "sentAt", "payload"],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/uuid"
+        },
+        "clientId": {
+          "$ref": "#/$defs/uuid"
+        },
+        "boardId": {
+          "$ref": "#/$defs/uuid"
+        },
+        "type": {
+          "const": "presence"
+        },
+        "sentAt": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "payload": {
+          "$ref": "#/$defs/presence-payload"
+        }
+      }
+    },
+    "reject": {
+      "title": "reject (server to client)",
+      "description": "Server-to-client: rejects one client message with a stable wire error code. The optional boardId is present when the rejected message named a board. Text is never carried; clients translate the code through the P1-05 message keys.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "clientId", "type", "sentAt", "payload"],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/uuid"
+        },
+        "clientId": {
+          "$ref": "#/$defs/uuid"
+        },
+        "boardId": {
+          "$ref": "#/$defs/uuid"
+        },
+        "type": {
+          "const": "reject"
+        },
+        "sentAt": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "payload": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["code"],
+          "properties": {
+            "code": {
+              "$ref": "#/$defs/errorCode"
+            },
+            "detail": {
+              "type": "string",
+              "maxLength": 500,
+              "description": "Internal, English-only diagnostic detail. It is never shown to users."
+            }
+          }
+        }
+      }
+    },
+    "snapshot": {
+      "title": "snapshot (server to client)",
+      "description": "Server-to-client: the catch-up payload after welcome, carrying the board snapshot document behind the snapshot reference. The boardContent is the root board-content document of contract 0.1.0.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "clientId", "boardId", "type", "sentAt", "serverSeq", "payload"],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/uuid"
+        },
+        "clientId": {
+          "$ref": "#/$defs/uuid"
+        },
+        "boardId": {
+          "$ref": "#/$defs/uuid"
+        },
+        "type": {
+          "const": "snapshot"
+        },
+        "sentAt": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "serverSeq": {
+          "$ref": "#/$defs/serverSeq"
+        },
+        "payload": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["boardContent", "snapshotRef"],
+          "properties": {
+            "boardContent": {
+              "$ref": "board-content.schema.json"
+            },
+            "snapshotRef": {
+              "$ref": "#/$defs/snapshotRef"
+            }
+          }
+        }
+      }
+    },
+    "sync-message": {
+      "title": "Sync message",
+      "description": "The message envelope union. The type discriminators are unique per direction; a message with an unknown type matches no branch and is invalid.",
+      "oneOf": [
+        {
+          "$ref": "#/$defs/hello"
+        },
+        {
+          "$ref": "#/$defs/join-board"
+        },
+        {
+          "$ref": "#/$defs/leave-board"
+        },
+        {
+          "$ref": "#/$defs/operation-batch"
+        },
+        {
+          "$ref": "#/$defs/resync-request"
+        },
+        {
+          "$ref": "#/$defs/presence"
+        },
+        {
+          "$ref": "#/$defs/welcome"
+        },
+        {
+          "$ref": "#/$defs/ack"
+        },
+        {
+          "$ref": "#/$defs/operation-batch-broadcast"
+        },
+        {
+          "$ref": "#/$defs/presence-broadcast"
+        },
+        {
+          "$ref": "#/$defs/reject"
+        },
+        {
+          "$ref": "#/$defs/snapshot"
+        }
+      ]
+    },
+    "reconnect-sequence": {
+      "title": "Reconnect catch-up sequence",
+      "description": "The catch-up exchange after a reconnect: the client sends resyncRequest from its last durable serverSeq, the server answers with welcome and the snapshot of the current serverSeq. The messages must be for the sequence clientId and boardId, in this order, and fromServerSeq must not be ahead of serverSeq.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["boardId", "clientId", "contractVersion", "fromServerSeq", "messages", "serverSeq"],
+      "properties": {
+        "boardId": {
+          "$ref": "#/$defs/uuid"
+        },
+        "clientId": {
+          "$ref": "#/$defs/uuid"
+        },
+        "contractVersion": {
+          "$ref": "#/$defs/contractVersion"
+        },
+        "fromServerSeq": {
+          "$ref": "#/$defs/fromServerSeq"
+        },
+        "serverSeq": {
+          "$ref": "#/$defs/serverSeq"
+        },
+        "messages": {
+          "type": "array",
+          "minItems": 3,
+          "maxItems": 3,
+          "description": "The ordered catch-up exchange: resyncRequest, welcome, snapshot.",
+          "items": {
+            "$ref": "#/$defs/sync-message"
+          }
+        }
+      }
+    },
+    "session-sequence": {
+      "title": "Session message log",
+      "description": "An ordered protocol log used to check the session rules: hello first, joinBoard before presence or operation batches, strictly increasing client seq, non-decreasing serverSeq, no duplicate batch and an ack that covers every operation of every batch (AD-2).",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["clientId", "contractVersion", "messages", "serverSeq"],
+      "properties": {
+        "clientId": {
+          "$ref": "#/$defs/uuid"
+        },
+        "contractVersion": {
+          "$ref": "#/$defs/contractVersion"
+        },
+        "serverSeq": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "The highest serverSeq assigned in this log; 0 means no server message carried a sequence."
+        },
+        "messages": {
+          "type": "array",
+          "minItems": 1,
+          "description": "The messages in wire order.",
+          "items": {
+            "$ref": "#/$defs/sync-message"
+          }
+        }
+      }
+    }
+  }
+}

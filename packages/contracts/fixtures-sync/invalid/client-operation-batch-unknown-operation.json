@@ -1,0 +1,31 @@
+{
+  "schema": "schemas/sync/sync.schema.json",
+  "valid": false,
+  "reason": "a batch with an unknown operation type is invalid because operation.schema.json rejects it",
+  "data": {
+    "id": "0192f0c0-7000-7000-8000-0000000000de",
+    "clientId": "0192f0b0-7000-7000-8000-0000000000c1",
+    "boardId": "0192f0b1-7000-7000-8000-0000000000b1",
+    "type": "operationBatch",
+    "sentAt": "2027-01-10T09:00:02.000Z",
+    "seq": 4,
+    "payload": {
+      "batchId": "0192f0c2-7000-7000-8000-0000000000de",
+      "operations": [
+        {
+          "id": "0192f0c1-7000-7000-8000-0000000000de",
+          "boardId": "0192f0b1-7000-7000-8000-0000000000b1",
+          "actorId": "0192f0a1-7000-7000-8000-000000000001",
+          "createdAt": "2027-01-10T09:00:02.000Z",
+          "type": "teleportCard",
+          "payload": {},
+          "inverse": {
+            "boardId": "0192f0b1-7000-7000-8000-0000000000b1",
+            "type": "teleportCard",
+            "payload": {}
+          }
+        }
+      ]
+    }
+  }
+}

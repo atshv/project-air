@@ -1,0 +1,66 @@
+{
+  "schema": "schemas/sync/sync.schema.json",
+  "valid": false,
+  "reason": "the reconnect sequence must start with resyncRequest and then welcome and snapshot in order",
+  "data": {
+    "contractVersion": "0.1.0",
+    "clientId": "0192f0b0-7000-7000-8000-0000000000c1",
+    "boardId": "0192f0b1-7000-7000-8000-0000000000b1",
+    "serverSeq": 43,
+    "fromServerSeq": 42,
+    "messages": [
+      {
+        "id": "0192f0c0-7000-7000-8000-0000000000e7",
+        "clientId": "0192f0b0-7000-7000-8000-0000000000c1",
+        "boardId": "0192f0b1-7000-7000-8000-0000000000b1",
+        "type": "welcome",
+        "sentAt": "2027-01-10T09:00:08.100Z",
+        "serverSeq": 43,
+        "payload": {
+          "contractVersion": "0.1.0",
+          "snapshotRef": "snapshot:0192f0b1-7000-7000-8000-0000000000b1:43"
+        }
+      },
+      {
+        "id": "0192f0c0-7000-7000-8000-0000000000e5",
+        "clientId": "0192f0b0-7000-7000-8000-0000000000c1",
+        "boardId": "0192f0b1-7000-7000-8000-0000000000b1",
+        "type": "resyncRequest",
+        "sentAt": "2027-01-10T09:00:08.000Z",
+        "seq": 1,
+        "payload": {
+          "fromServerSeq": 42
+        }
+      },
+      {
+        "id": "0192f0c0-7000-7000-8000-0000000000ec",
+        "clientId": "0192f0b0-7000-7000-8000-0000000000c1",
+        "boardId": "0192f0b1-7000-7000-8000-0000000000b1",
+        "type": "snapshot",
+        "sentAt": "2027-01-10T09:00:08.200Z",
+        "serverSeq": 43,
+        "payload": {
+          "snapshotRef": "snapshot:0192f0b1-7000-7000-8000-0000000000b1:43",
+          "boardContent": {
+            "contractVersion": "0.1.0",
+            "board": {
+              "id": "0192f0b1-7000-7000-8000-0000000000b1",
+              "workspaceId": "0192f0a2-7000-7000-8000-000000000002",
+              "ownerId": "0192f0a1-7000-7000-8000-000000000001",
+              "title": "Weekly review",
+              "visibility": "private",
+              "archived": false,
+              "createdAt": "2027-01-10T09:00:00.000Z",
+              "updatedAt": "2027-01-10T09:30:00.000Z"
+            },
+            "notes": [],
+            "zones": [],
+            "cards": [],
+            "blocks": [],
+            "edges": []
+          }
+        }
+      }
+    ]
+  }
+}

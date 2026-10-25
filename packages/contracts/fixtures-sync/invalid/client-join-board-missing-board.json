@@ -1,0 +1,13 @@
+{
+  "schema": "schemas/sync/sync.schema.json",
+  "valid": false,
+  "reason": "joinBoard must name the board in boardId",
+  "data": {
+    "id": "0192f0c0-7000-7000-8000-0000000000d2",
+    "clientId": "0192f0b0-7000-7000-8000-0000000000c1",
+    "type": "joinBoard",
+    "sentAt": "2027-01-10T09:00:00.500Z",
+    "seq": 2,
+    "payload": {}
+  }
+}

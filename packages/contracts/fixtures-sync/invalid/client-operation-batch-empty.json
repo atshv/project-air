@@ -1,0 +1,17 @@
+{
+  "schema": "schemas/sync/sync.schema.json",
+  "valid": false,
+  "reason": "an empty operation batch is invalid",
+  "data": {
+    "id": "0192f0c0-7000-7000-8000-0000000000d4",
+    "clientId": "0192f0b0-7000-7000-8000-0000000000c1",
+    "boardId": "0192f0b1-7000-7000-8000-0000000000b1",
+    "type": "operationBatch",
+    "sentAt": "2027-01-10T09:00:02.000Z",
+    "seq": 4,
+    "payload": {
+      "batchId": "0192f0c2-7000-7000-8000-0000000000d4",
+      "operations": []
+    }
+  }
+}

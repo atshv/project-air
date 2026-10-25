@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
-  "description": "Board-content data model and operations as JSON Schema 2020-12 (contract 0.1.0); codegen to TypeScript and C++ with fixture parity.",
+  "description": "Board-content data model, operations and WebSocket sync protocol as JSON Schema 2020-12 (contract 0.1.0); codegen to TypeScript and C++ with fixture parity.",
   "scripts": {
     "codegen": "node codegen.mjs",
     "test": "node --test test/*.test.mjs",

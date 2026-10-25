@@ -118,7 +118,10 @@
 
 ## Ready now
 
-- none
+- `P1-05` API resources and error codes
+  - P1-04: Closed P1-04: sync protocol as JSON Schema 0.1.0 with 12 message types (6 client→server, 6 server→client), 14 valid/20 invalid fixtures plus reconnect and session sequences; reject carries the seven P1-05 wire codes; 66 contract tests green.
+  - P1-04: fixtures-gate/ holds the two Polier contracts-gate specimens (byte-identical copies, test-enforced); the 77-fixture parity corpus and all pre-existing tests are untouched.
+  - P1-04: Review pass with 4 minor advisories (hello-first not enforced; weak wrong-order assertion; snapshotRef board/seq not cross-checked; board serverSeq 0 bootstrap ambiguity) to settle before realtime; P1-05 adds the errors.<camelCase> message keys.
 
 ## Done
 
@@ -144,10 +147,11 @@
 - [x] `P1-01` Board content data model as JSON Schema — status: `done` — owner: —
 - [x] `P1-02` Operations, inverse operations and group — status: `done` — owner: —
 - [x] `P1-03` Codegen TS + C++ with identical fixtures — status: `done` — owner: —
+- [x] `P1-04` Sync protocol messages — status: `done` — owner: —
 
 ## In progress
 
-- [ ] `P1-04` Sync protocol messages — status: `in_progress` — owner: —
+- none
 
 ## Blocked / failed
 
@@ -162,13 +166,6 @@
 - [ ] `P1-05` API resources and error codes — status: `pending` — owner: —
 - [ ] `P1-06` Contract documentation, ADR and 0.1.0 metadata — status: `pending` — owner: —
 - [ ] `P1-07` Contract overview in the preview — status: `pending` — owner: —
-
-<!-- polier:claims -->
-## Claims
-
-- `P1-04` in progress by dsh since 2026-10-25T12:03:06+00:00 — worktree: /Users/rasulatashev/Desktop/KI Projekte/Project air-P1-04 · slot 1
-
-<!-- /polier:claims -->
 
 ## Decisions
 

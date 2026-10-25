@@ -1,9 +1,10 @@
-// Entry point of the Project air board-content contract, version 0.1.0.
+// Entry point of the Project air contract, version 0.1.0.
 //
 // The contract is the single JSON Schema source for the board data model: one
 // schema per entity, one root board-content schema, and valid/invalid fixtures
-// for every schema. This module exports the stable paths; it has no runtime
-// dependencies.
+// for every schema. It also defines the WebSocket sync protocol as one versioned
+// schema with its own fixtures. This module exports the stable paths; it has no
+// runtime dependencies.
 
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -36,6 +37,50 @@ export const OPERATION_TYPES = Object.freeze([
   "deleteEdge",
   "group",
 ]);
+
+/** Sync protocol schema file, relative to the package directory. */
+export const SYNC_SCHEMA_FILE = "schemas/sync/sync.schema.json";
+
+/** Versioned `$id` of the sync protocol schema. */
+export const SYNC_SCHEMA_ID = `${CONTRACT_BASE_URI}sync.schema.json`;
+
+/**
+ * The 12 sync message types with their direction and their `$defs` key in
+ * `schemas/sync/sync.schema.json`. The README and ARCHITECTURE message tables
+ * list the same rows.
+ */
+export const SYNC_MESSAGE_TYPES = Object.freeze(
+  [
+    { type: "hello", direction: "client-to-server", definition: "hello" },
+    { type: "joinBoard", direction: "client-to-server", definition: "join-board" },
+    { type: "leaveBoard", direction: "client-to-server", definition: "leave-board" },
+    { type: "operationBatch", direction: "client-to-server", definition: "operation-batch" },
+    { type: "resyncRequest", direction: "client-to-server", definition: "resync-request" },
+    { type: "presence", direction: "client-to-server", definition: "presence" },
+    { type: "welcome", direction: "server-to-client", definition: "welcome" },
+    { type: "ack", direction: "server-to-client", definition: "ack" },
+    { type: "operationBatch", direction: "server-to-client", definition: "operation-batch-broadcast" },
+    { type: "presence", direction: "server-to-client", definition: "presence-broadcast" },
+    { type: "reject", direction: "server-to-client", definition: "reject" },
+    { type: "snapshot", direction: "server-to-client", definition: "snapshot" },
+  ].map((entry) => Object.freeze(entry)),
+);
+
+/** Sync fixture directories by validity, relative to the package directory. */
+export const SYNC_FIXTURE_DIRS = Object.freeze({
+  valid: "fixtures-sync/valid",
+  invalid: "fixtures-sync/invalid",
+});
+
+/**
+ * Gate fixture directories by validity, relative to the package directory. The
+ * Polier `contracts` gate (P1-06) needs direct `valid/*.json` and
+ * `invalid/*.json` files; these specimens copy canonical fixtures byte for byte.
+ */
+export const GATE_FIXTURE_DIRS = Object.freeze({
+  valid: "fixtures-gate/valid",
+  invalid: "fixtures-gate/invalid",
+});
 
 /** Absolute package directory, used to resolve the exported relative paths. */
 export const PACKAGE_DIR = dirname(fileURLToPath(import.meta.url));
@@ -90,4 +135,25 @@ export function schemaId(name) {
 export function fixturePath(name, file) {
   assertKnown(name);
   return join(PACKAGE_DIR, FIXTURE_DIRS[name], file);
+}
+
+/** Absolute path of the sync protocol schema. */
+export function syncSchemaPath() {
+  return join(PACKAGE_DIR, SYNC_SCHEMA_FILE);
+}
+
+/** Absolute path of one sync fixture file. */
+export function syncFixturePath(validity, file) {
+  if (!Object.hasOwn(SYNC_FIXTURE_DIRS, validity)) {
+    throw new Error(`unknown sync fixture validity "${validity}"`);
+  }
+  return join(PACKAGE_DIR, SYNC_FIXTURE_DIRS[validity], file);
+}
+
+/** Absolute path of one gate fixture specimen. */
+export function gateFixturePath(validity, file) {
+  if (!Object.hasOwn(GATE_FIXTURE_DIRS, validity)) {
+    throw new Error(`unknown gate fixture validity "${validity}"`);
+  }
+  return join(PACKAGE_DIR, GATE_FIXTURE_DIRS[validity], file);
 }

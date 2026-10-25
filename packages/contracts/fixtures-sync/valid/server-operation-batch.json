@@ -1,0 +1,48 @@
+{
+  "schema": "schemas/sync/sync.schema.json",
+  "valid": true,
+  "reason": "the server broadcasts the acknowledged batch at serverSeq 44",
+  "data": {
+    "id": "0192f0c0-7000-7000-8000-000000000009",
+    "clientId": "0192f0b0-7000-7000-8000-0000000000c1",
+    "boardId": "0192f0b1-7000-7000-8000-0000000000b1",
+    "type": "operationBatch",
+    "sentAt": "2027-01-10T09:00:02.300Z",
+    "serverSeq": 44,
+    "payload": {
+      "batchId": "0192f0c2-7000-7000-8000-000000000012",
+      "operations": [
+        {
+          "id": "0192f0c1-7000-7000-8000-000000000011",
+          "boardId": "0192f0b1-7000-7000-8000-0000000000b1",
+          "actorId": "0192f0a1-7000-7000-8000-000000000001",
+          "createdAt": "2027-01-10T09:00:02.000Z",
+          "type": "createNote",
+          "payload": {
+            "note": {
+              "id": "0192f0a4-7000-7000-8000-000000000004",
+              "workspaceId": "0192f0a2-7000-7000-8000-000000000002",
+              "title": "Design law",
+              "createdAt": "2027-01-10T09:00:02.000Z",
+              "updatedAt": "2027-01-10T09:00:02.000Z"
+            }
+          },
+          "inverse": {
+            "boardId": "0192f0b1-7000-7000-8000-0000000000b1",
+            "type": "deleteNote",
+            "payload": {
+              "note": {
+                "id": "0192f0a4-7000-7000-8000-000000000004",
+                "workspaceId": "0192f0a2-7000-7000-8000-000000000002",
+                "title": "Design law",
+                "createdAt": "2027-01-10T09:00:02.000Z",
+                "updatedAt": "2027-01-10T09:00:02.000Z"
+              },
+              "cards": []
+            }
+          }
+        }
+      ]
+    }
+  }
+}
