@@ -1,4 +1,4 @@
-# Design preview (P0-19, P0-20, P0-21, P0-22, P0-23)
+# Design preview (P0-19, P0-20, P0-21, P0-22, P0-23, P0-24)
 
 A design preview of the Project air design system. It is **not the product**: there is no engine,
 no data, no server and no build step. It exists so the owner can see the look and feel between
@@ -14,9 +14,9 @@ stable `data-preview-*` hooks — no runtime parsing and no fetch — and its tw
   `0.0.1 – unreleased`; the status word comes from the same heading. `CHANGELOG.md` is the display
   source and currently agrees with the root `package.json` version `0.0.1`.
 - **Last change** — the newest entry in `.changes/` by highest task id, currently
-  `.changes/P0-23-demo-anchors.md`; the line shows the task id and that task's title from
-  `board.json` / the task brief: `P0-23 — Visible connection anchors in the demo`. If several files
-  exist for the highest task id, the most recent one is used; the `.changes/README.md` and
+  `.changes/P0-24-demo-zoom.md`; the line shows the task id and that task's title from `board.json` /
+  the task brief: `P0-24 — Curved edge, visible anchors and zoom controls in the demo`. If several
+  files exist for the highest task id, the most recent one is used; the `.changes/README.md` and
   `.changes/TEMPLATE.md` files do not count as entries.
 - **Date and time** — the file modification time of that newest `.changes` entry (the moment the task
   wrote it), formatted as `YYYY-MM-DD HH:MM` in `Europe/Zurich`; it is static text in `index.html`
@@ -30,9 +30,11 @@ task.
 ## What it shows
 
 - A masthead meta line with the changelog version, the latest change entry and its date/time.
-- An **interactive connection demo**: two note cards joined by one edge. Drag a card with mouse, pen
-  or finger, or focus a card and use the arrow keys (16 px per step); `Home` resets both cards.
-  Clearly labelled “interactive demo — not the engine; no data, no server”.
+- An **interactive connection demo**: two note cards joined by one curved edge. Drag a card with
+  mouse, pen or finger, or focus a card and use the arrow keys (16 px per step); `Home` resets both
+  cards. Clearly labelled “interactive demo — not the engine; no data, no server”.
+- Floating **zoom controls** in the demo (preview-only): zoom in, zoom out and fit, drawn with CSS
+  shapes and labelled in English.
 - Colour swatches with their token names (`--bg` … `--tone-e`), including the translucent tokens over
   `--card`.
 - The typography scale (serif and sans, 28/24/22/15/13/12/11 px, weights, line height, type label).
@@ -63,17 +65,25 @@ design system updates the demo and refreshes its screenshot in `reviews/evidence
   selects without moving. While dragging the cursor is `grabbing` and the card uses the
   dragged/selected layer (`--layer-dragged-or-selected`); a selected card gets the 1.5 px `--accent`
   border and the `--accent-soft` ring.
-- **Anchors:** every card shows four connection anchors — top, right, bottom and left side
-  midpoints — as 6 px circles that move with the card. Idle anchors are `--muted` with a `--surface`
-  ring; the anchors currently used by the edge are highlighted in `--tone-d`. They are decorative
-  (`aria-hidden`) and never capture pointer events, so the whole card stays the drag handle.
-- **Edge:** one SVG line with two 3 px endpoint dots. Its endpoints are the centres of the nearest
-  anchor pair (all 4 × 4 distances are compared, the first minimal pair wins on a tie); the edge is
-  recomputed on every pointer move, keyboard step and reset. A very short remaining distance is
-  clamped to a minimum visible length of 1 px. The edge sits on the `--layer-edges` layer below the
-  cards (`--layer-note-cards`) and uses the design-system connection style — a `--tone-d` stroke with
-  `--tone-d` endpoint dots at 1.5 px (`--border-width-strong`) — the same tokens as the static
-  Connection component on this page.
+- **Anchors:** every card shows four 8 px connection anchors — top, right, bottom and left side
+  midpoints — in an `aria-hidden` wrapper that never captures pointer events, so the whole card stays
+  the drag handle. Idle anchors are `--fg` with a `--surface` ring; the anchors currently used by the
+  edge are highlighted in `--tone-d`.
+- **Edge:** one curved SVG path (cubic Bézier) between the centres of the nearest anchor pair (all
+  4 × 4 distances are compared, the first minimal pair wins on a tie). Its control points sit on the
+  two anchors' side normals at 48 px (`--space-48`), so the curve leaves and enters the cards
+  perpendicularly; it recomputes on every pointer move, keyboard step, zoom and reset and is clamped
+  to a minimum visible length of 1 px when the cards overlap. The path sits on the `--layer-edges`
+  layer below the cards (`--layer-note-cards`) and keeps the design-system connection style — a
+  `--tone-d` stroke at 1.5 px (`--border-width-strong`) with `--tone-d` endpoint dots.
+- **Zoom (preview-only):** three floating 36 px buttons in the canvas-chrome style sit 12 px from the
+  bottom-left corner of the demo surface: zoom in, zoom out and fit. Their `+`, `−` and fit glyphs are
+  drawn with CSS shapes only; labels are English `aria-label`s plus CSS tooltips (`Zoom in`,
+  `Zoom out`, `Fit to view`). Zoom scales a world layer between 50 % and 150 % in 10 % steps; the
+  zoom buttons are disabled at the limits, and fit returns to 100 % so both cards (clamped in world
+  space) are visible again, also after dragging. Pointer deltas are divided by the scale so dragging
+  stays under the cursor, and keyboard steps remain one canvas grid step (16 px) in world space. The
+  product's zoom control will use the ui-kit icon set later; this one is a preview-only sketch.
 - **Keyboard:** each card is focusable with a visible `--accent` focus outline. `ArrowLeft`,
   `ArrowRight`, `ArrowUp` and `ArrowDown` move the selected card by one canvas-grid step
   (`--canvas-grid`, 16 px); `Home` returns both cards to their start positions. Key presses that the
@@ -81,10 +91,10 @@ design system updates the demo and refreshes its screenshot in `reviews/evidence
 - **Bounds:** card positions are clamped to the dot-grid demo surface, so a card cannot leave the
   area or cause horizontal page overflow. On resize the cards are clamped again and the edge is
   redrawn.
-- **Limits:** no snapping, pan or zoom, no persistence, no add/remove, no multi-select, no engine.
-  Card positions exist only in this page’s memory; reloading resets the demo. The dot grid is drawn
-  from tokens (`--border`, `--canvas`, `--canvas-grid`). `prefers-reduced-motion: reduce` disables the
-  remaining transitions.
+- **Limits:** no snapping, no pan, no persistence, no add/remove, no multi-select, no engine; zoom
+  is only the preview control above. Card positions exist only in this page’s memory; reloading
+  resets the demo. The dot grid is drawn from tokens (`--border`, `--canvas`, `--canvas-grid`).
+  `prefers-reduced-motion: reduce` disables the remaining transitions.
 
 ## Files
 
@@ -101,7 +111,7 @@ Serve the **repository root**, not this folder, so the relative token and icon p
 the slot's `web` port from `.polier-slot` (never hard-code it), then:
 
 ```sh
-cd "/Users/rasulatashev/Desktop/KI Projekte/Project air-P0-23"
+cd "/Users/rasulatashev/Desktop/KI Projekte/Project air-P0-24"
 PORT=$(python3 -c "import json; print(json.load(open('.polier-slot'))['ports']['web'])")
 python3 -m http.server "$PORT" --bind 127.0.0.1
 ```
@@ -121,7 +131,8 @@ Committed evidence lives in `reviews/evidence/`: `P0-19-desktop.png` (1440×900)
 `P0-19-mobile.png` (390×844), `P0-20-demo.png` (1440×900, both demo cards and their edge),
 `P0-21-demo.png` (1440×900, the demo edge in the design-system `--tone-d` style),
 `P0-22-demo.png` (1440×900, the masthead version and last-change line),
-`P0-23-demo.png` (1440×900, the four anchors and the snapped edge) and the
+`P0-23-demo.png` (1440×900, the four anchors and the snapped edge),
+`P0-24-demo.png` (1440×900, the curved edge, 8 px anchors and the zoom controls) and the
 `P0-19-preview.log` / `P0-20-preview.log` / `P0-21-preview.log` / `P0-22-preview.log` /
-`P0-23-preview.log` files with the exact serve, curl and screenshot commands. The page has no
-horizontal overflow at 1440×900 or 390×844.
+`P0-23-preview.log` / `P0-24-preview.log` files with the exact serve, curl and screenshot commands.
+The page has no horizontal overflow at 1440×900 or 390×844.

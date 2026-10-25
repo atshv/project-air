@@ -1555,7 +1555,7 @@
       "satisfies": [
         "D3"
       ],
-      "status": "in_progress",
+      "status": "done",
       "depends_on": [
         "P0-23"
       ],
@@ -1592,11 +1592,20 @@
       ],
       "owner": null,
       "branch": "task/P0-24",
-      "worktree": "../Project air-P0-24",
+      "worktree": null,
       "round": 0,
-      "evidence": [],
+      "evidence": [
+        "reviews/evidence/P0-24-board-check-20261025T105000Z.json",
+        "reviews/evidence/P0-24-design-check-20261025T105000Z.json",
+        "reviews/evidence/P0-24-changelog-entry-20261025T105000Z.json"
+      ],
       "scope_write_forbidden": [
         "reference/"
+      ],
+      "handoff": [
+        "Closed P0-24: demo edge is a curve along anchor normals, anchors are visible (8 px, --fg/--tone-d), and +/−/fit zoom controls work (CSS glyphs, preview-only).",
+        "Meta line shows P0-24 with date/time; controls keep drag/keyboard correct under zoom and mobile has no overflow.",
+        "Product zoom control will use ui-kit icons in the engine stage; this demo stays in sync with every preview change."
       ]
     }
   ],

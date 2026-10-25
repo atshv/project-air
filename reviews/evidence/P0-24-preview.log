@@ -1,0 +1,127 @@
+# P0-24 — curved edge, visible anchors and zoom controls: manual evidence
+
+- Date: 2026-10-25 (Europe/Zurich)
+- Worktree: `/Users/rasulatashev/Desktop/KI Projekte/Project air-P0-24` (branch `task/P0-24`, slot 1)
+- Changed: `apps/web/preview/index.html`, `preview.css`, `preview.js`, `README.md`;
+  `.changes/P0-24-demo-zoom.md`
+- Older demo screenshots untouched: `P0-23-demo.png`
+  `a04704f7…07a3dc2`, `P0-22-demo.png` `89cd8580…c34b4`.
+
+## Port and server
+
+Slot values (`python3 "$POLIER/tools/slot.py" show`): `web=4100` for slot 1. The server was started and
+stopped by this task only; it is not left running and the port is free afterwards.
+
+```sh
+cd "/Users/rasulatashev/Desktop/KI Projekte/Project air-P0-24"
+PORT=$(python3 -c "import json;print(json.load(open('.polier-slot'))['ports']['web'])")
+python3 -m http.server "$PORT" --bind 127.0.0.1
+```
+
+Served the **repository root** so the relative token and icon paths resolve.
+
+## HTTP status
+
+```
+$ curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:4100/apps/web/preview/
+200
+```
+
+The server log for the run contains no `404`.
+
+## Screenshot
+
+Chromium: `/Users/rasulatashev/Library/Caches/ms-playwright/chromium_headless_shell-1248/chrome-headless-shell-mac-arm64/chrome-headless-shell`
+
+```sh
+/Users/rasulatashev/Library/Caches/ms-playwright/chromium_headless_shell-1248/chrome-headless-shell-mac-arm64/chrome-headless-shell \
+  --headless --disable-gpu --hide-scrollbars --window-size=1440,900 \
+  --screenshot=reviews/evidence/P0-24-demo.png \
+  "http://127.0.0.1:4100/apps/web/preview/"
+```
+
+Result: `reviews/evidence/P0-24-demo.png`, PNG 1440 × 900, 121241 bytes. It shows the demo with both
+cards, the eight visible 8 px anchors, the curved `--tone-d` connection, the three zoom controls at
+the bottom-left and the masthead meta line.
+
+## Probe: curve, anchors and zoom
+
+The demo was checked with a temporary same-origin iframe probe page (real preview at 1440 × 900 and
+390 × 844) that dispatched real `PointerEvent` / `KeyboardEvent` sequences and `click()` on the zoom
+buttons; the probe page was removed before the commit and is not part of the deliverable. Results
+(desktop and mobile identical unless noted):
+
+```
+anchorsPerCard=4/4 anchorSize=8x8 ariaHidden=true pointerEvents=none
+usedToneD=true idleFg=true
+curvePath=true curveEndpoints=true curveControls=true
+zoomButtons=3 glyphOnly=true englishLabels=true dataLabels=true initialScale=1
+zoomPosition=true buttonSize=36x36
+zoomMax=1.5 atMaxDisabled=true
+maxIgnored=1.5
+zoomMin=0.5 atMinDisabled=true
+fitScale=1
+dragAtZoomDelta=40/20 expectedScaleDrag=true
+afterZoomDrag curvePath=true curveEndpoints=true curveControls=true
+thresholdAtZoom=true
+fitAfterDrag=true bothCardsVisible=true
+keyboard16=true homeReset=true
+afterHome curvePath=true curveEndpoints=true curveControls=true
+clampInside=true afterClamp curvePath=true curveEndpoints=true curveControls=true
+desktop overflow=false scrollWidth=1440 clientWidth=1440
+mobile  overflow=false scrollWidth=390  clientWidth=390
+```
+
+What the probe proves:
+
+- **Anchors:** four 8 × 8 px anchors per card in an `aria-hidden` wrapper with
+  `pointer-events: none`; idle fill is `--fg` (computed `rgba(255, 255, 255, 0.92)`) with a
+  `--surface` ring, used anchors are `--tone-d` (`rgb(143, 176, 220)`).
+- **Curve:** the edge is an SVG `<path>` (cubic Bézier). Its start/end equal the used anchors' centres
+  in world coordinates, and its two control points sit exactly 48 px (`--space-48`) along the used
+  anchors' side normals. Checked in every state: initial, after a drag at 150 % zoom, after keyboard
+  steps, after `Home` and after clamping.
+- **Zoom:** three 36 px buttons, glyph-only text (`+`, `−` and the fit corners are CSS shapes), English
+  `aria-label`s and `data-label` tooltips (no native `title`), positioned 12 px from the bottom-left
+  corner of the surface. Scale is 1.00 initially, capped at 1.5 with `Zoom in` disabled and floored at
+  0.5 with `Zoom out` disabled; another click at a limit is ignored. `Fit to view` returns to 1.00 and
+  both cards are inside the surface again, also after dragging.
+- **Coordinates under zoom:** at 150 % a 60/30 px screen drag moved the card 40/20 px in world space
+  (`delta / scale`), the 4 px drag threshold still uses screen pixels, and keyboard steps stay one
+  canvas-grid step (16 px) in world space.
+- The previous behaviour is intact: threshold, pointer capture, clamping, `Home`, reduced motion and
+  no horizontal overflow at both sizes.
+
+## Masthead meta line
+
+```
+Version 0.0.1 · unreleased · Last change: P0-24 — Curved edge, visible anchors and zoom controls in the demo · 2026-10-25 11:47 (Europe/Zurich)
+```
+
+- Version: first `##` heading of `CHANGELOG.md` (`## 0.0.1 – unreleased`).
+- Last change: newest `.changes/` entry by highest task id — `.changes/P0-24-demo-zoom.md`; task title
+  from `board.json` / `tasks/P0-24.md`.
+- Date/time: modification time of that newest `.changes` entry in `Europe/Zurich` (`YYYY-MM-DD HH:MM`;
+  `stat` → 2026-10-25 11:47), static text in `index.html`.
+- `apps/web/preview/README.md` documents the sources, the pick rule and the same-task update rule, and
+  states that the zoom controls are preview-only; the product zoom control will use the ui-kit icons.
+
+## Gates
+
+```sh
+cd "/Users/rasulatashev/Desktop/KI Projekte/Project air-P0-24"
+export POLIER=/Users/rasulatashev/Desktop/Polier-main
+python3 "$POLIER/tools/gate.py" --task P0-24 --name board-check -- python3 "$POLIER/tools/check.py" .
+python3 "$POLIER/tools/gate.py" --task P0-24 --name design-check -- node tools/design-check/index.mjs .
+python3 "$POLIER/tools/gate.py" --task P0-24 --name changelog-entry -- node tools/release/check-changes.mjs --task P0-24 --base main
+```
+
+| Gate | Result | Record |
+| --- | --- | --- |
+| `board-check` | PASS (exit 0) | `reviews/evidence/P0-24-board-check-20261025T105000Z.json` |
+| `design-check` | PASS (exit 0, no findings) | `reviews/evidence/P0-24-design-check-20261025T105000Z.json` |
+| `changelog-entry` | PASS (exit 0) | `reviews/evidence/P0-24-changelog-entry-20261025T105000Z.json` |
+
+`check.py` ran before any `pnpm install`; no install was needed for this task. No raw colour values in
+the preview files (`grep -nE '#[0-9a-fA-F]{3,8}|rgba?\(|hsla?\(' apps/web/preview/*` returns
+nothing); all visual values are `var(--…)` tokens.

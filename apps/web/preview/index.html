@@ -22,14 +22,14 @@
         <p class="masthead__version" data-preview-meta>
           <span data-preview-version>Version 0.0.1</span>
           <span data-preview-status>unreleased</span>
-          <span data-preview-last-change>Last change: P0-23 — Visible connection anchors in the demo</span>
-          <span data-preview-last-change-time>2026-10-25 11:39 (Europe/Zurich)</span>
+          <span data-preview-last-change>Last change: P0-24 — Curved edge, visible anchors and zoom controls in the demo</span>
+          <span data-preview-last-change-time>2026-10-25 11:47 (Europe/Zurich)</span>
         </p>
         <div class="masthead__meta">
           <span>Tokens: <code>packages/ui-kit/tokens.css</code></span>
           <span>Icons: <code>packages/ui-kit/icons/</code></span>
           <span>Demo: <code>preview.js</code></span>
-          <span>Tasks: P0-19, P0-20, P0-21, P0-22, P0-23</span>
+          <span>Tasks: P0-19, P0-20, P0-21, P0-22, P0-23, P0-24</span>
         </div>
       </header>
 
@@ -52,16 +52,20 @@
           </noscript>
           <p class="demo__hint" id="demo-hint">
             A click without movement (under 4 px) selects the card but does not move it. Each card
-            has four anchors at its side midpoints; the edge snaps to the nearest anchor pair and
-            highlights both used anchors.
+            has four anchors at its side midpoints; the edge is a curve between the nearest anchor
+            pair and highlights both used anchors. The zoom controls at the bottom left are
+            preview-only (50 % to 150 %); the product zoom control will use ui-kit icons later.
           </p>
-          <p class="demo__legend token-caption">edge · --tone-d · 1.5 px</p>
+          <p class="demo__legend token-caption">
+            curve · --tone-d · 1.5 px · anchors · --fg / used --tone-d
+          </p>
           <div class="demo__surface" data-demo-surface>
-            <svg class="demo__edge" data-demo-edge aria-hidden="true" focusable="false">
-              <line class="demo__edge-line" data-demo-edge-line x1="0" y1="0" x2="0" y2="0" />
-              <circle class="demo__edge-dot" data-demo-edge-dot cx="0" cy="0" r="1.5" />
-              <circle class="demo__edge-dot" data-demo-edge-dot cx="0" cy="0" r="1.5" />
-            </svg>
+            <div class="demo__world" data-demo-world>
+              <svg class="demo__edge" data-demo-edge aria-hidden="true" focusable="false">
+                <path class="demo__edge-curve" data-demo-edge-path d="" />
+                <circle class="demo__edge-dot" data-demo-edge-dot cx="0" cy="0" r="1.5" />
+                <circle class="demo__edge-dot" data-demo-edge-dot cx="0" cy="0" r="1.5" />
+              </svg>
             <article
               class="note-card demo-card"
               data-demo-card="a"
@@ -98,6 +102,18 @@
               <h3 class="note-card__title">Token source</h3>
               <p class="note-card__body">One source for CSS and C++.</p>
             </article>
+            </div>
+            <div class="demo-zoom" role="group" aria-label="Demo zoom controls" data-demo-zoom>
+              <button class="demo-zoom__button" type="button" data-demo-zoom-in aria-label="Zoom in" data-label="Zoom in">
+                <span class="demo-zoom__glyph demo-zoom__glyph--plus" aria-hidden="true"></span>
+              </button>
+              <button class="demo-zoom__button" type="button" data-demo-zoom-out aria-label="Zoom out" data-label="Zoom out">
+                <span class="demo-zoom__glyph demo-zoom__glyph--minus" aria-hidden="true"></span>
+              </button>
+              <button class="demo-zoom__button" type="button" data-demo-zoom-fit aria-label="Fit to view" data-label="Fit to view">
+                <span class="demo-zoom__glyph demo-zoom__glyph--fit" aria-hidden="true"></span>
+              </button>
+            </div>
           </div>
           <p class="demo__status" data-demo-status aria-live="polite"></p>
         </div>

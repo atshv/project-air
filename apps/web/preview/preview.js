@@ -1,16 +1,22 @@
 // P0-20 live connection demo for the static design preview, extended in P0-23 with
-// four visible connection anchors per card. Plain DOM, pointer events and one SVG
-// edge: no dependencies, no engine, no data.
+// four visible connection anchors per card and in P0-24 with a curved edge and
+// preview-only zoom controls. Plain DOM, pointer events and one SVG path: no
+// dependencies, no engine, no data.
 
 (function () {
   "use strict";
 
   var DRAG_THRESHOLD_FALLBACK = 4;
   var CANVAS_GRID_FALLBACK = 16;
-  // Half of the 6 px anchor dot: the dot sits inside the card, so its centre is
-  // 3 px away from the card edge.
-  var ANCHOR_HALF = 3;
+  // Half of the 8 px anchor dot: the dot sits inside the card, so its centre is
+  // 4 px away from the card edge.
+  var ANCHOR_HALF = 4;
   var MIN_EDGE_LENGTH = 1;
+  var CURVE_OFFSET_FALLBACK = 48;
+  var ZOOM_MIN = 0.5;
+  var ZOOM_MAX = 1.5;
+  var ZOOM_STEP = 0.1;
+  var SCALE_PRECISION = 10;
 
   function readPixelToken(name, fallback) {
     var value = getComputedStyle(document.documentElement).getPropertyValue(name);
@@ -50,20 +56,42 @@
     return { a: best.a, b: best.b };
   }
 
+  function normalFor(side) {
+    if (side === "top") return { x: 0, y: -1 };
+    if (side === "right") return { x: 1, y: 0 };
+    if (side === "bottom") return { x: 0, y: 1 };
+    return { x: -1, y: 0 };
+  }
+
+  function roundScale(value) {
+    return Math.round(value * SCALE_PRECISION) / SCALE_PRECISION;
+  }
+
+  function format(value) {
+    return value.toFixed(1);
+  }
+
   function setupDemo(demo) {
     var surface = demo.querySelector("[data-demo-surface]");
+    var world = demo.querySelector("[data-demo-world]");
     var edge = demo.querySelector("[data-demo-edge]");
-    if (surface === null || edge === null) return;
+    if (surface === null || world === null || edge === null) return;
 
-    var edgeLine = edge.querySelector("[data-demo-edge-line]");
+    var edgePath = edge.querySelector("[data-demo-edge-path]");
     var edgeDots = edge.querySelectorAll("[data-demo-edge-dot]");
     var status = demo.querySelector("[data-demo-status]");
-    if (edgeLine === null || edgeDots.length < 2) return;
+    var zoomIn = demo.querySelector("[data-demo-zoom-in]");
+    var zoomOut = demo.querySelector("[data-demo-zoom-out]");
+    var zoomFit = demo.querySelector("[data-demo-zoom-fit]");
+    if (edgePath === null || edgeDots.length < 2) return;
+    if (zoomIn === null || zoomOut === null || zoomFit === null) return;
 
     var grid = readPixelToken("--canvas-grid", CANVAS_GRID_FALLBACK);
     var threshold = readPixelToken("--drag-threshold", DRAG_THRESHOLD_FALLBACK);
+    var curveOffset = readPixelToken("--space-48", CURVE_OFFSET_FALLBACK);
     var cards = [];
     var activePointer = null;
+    var scale = 1;
     var resizePending = false;
 
     var cardElements = surface.querySelectorAll("[data-demo-card]");
@@ -147,28 +175,41 @@
       var pair = nearestAnchorPair(rectOf(cards[0]), rectOf(cards[1]));
       var start = pair.a;
       var end = pair.b;
-      var dx = end.x - start.x;
-      var dy = end.y - start.y;
-      var length = Math.hypot(dx, dy);
-      if (length > 0 && length < MIN_EDGE_LENGTH) {
+      var startNormal = normalFor(start.side);
+      var endNormal = normalFor(end.side);
+      var deltaX = end.x - start.x;
+      var deltaY = end.y - start.y;
+      if (Math.hypot(deltaX, deltaY) < MIN_EDGE_LENGTH) {
         end = {
           side: end.side,
-          x: start.x + (dx / length) * MIN_EDGE_LENGTH,
-          y: start.y + (dy / length) * MIN_EDGE_LENGTH,
+          x: start.x + startNormal.x * MIN_EDGE_LENGTH,
+          y: start.y + startNormal.y * MIN_EDGE_LENGTH,
         };
+        endNormal = startNormal;
       }
+      var controlA = {
+        x: start.x + startNormal.x * curveOffset,
+        y: start.y + startNormal.y * curveOffset,
+      };
+      var controlB = {
+        x: end.x + endNormal.x * curveOffset,
+        y: end.y + endNormal.y * curveOffset,
+      };
       edge.setAttribute(
         "viewBox",
         "0 0 " + surface.clientWidth + " " + surface.clientHeight,
       );
-      edgeLine.setAttribute("x1", start.x.toFixed(1));
-      edgeLine.setAttribute("y1", start.y.toFixed(1));
-      edgeLine.setAttribute("x2", end.x.toFixed(1));
-      edgeLine.setAttribute("y2", end.y.toFixed(1));
-      edgeDots[0].setAttribute("cx", start.x.toFixed(1));
-      edgeDots[0].setAttribute("cy", start.y.toFixed(1));
-      edgeDots[1].setAttribute("cx", end.x.toFixed(1));
-      edgeDots[1].setAttribute("cy", end.y.toFixed(1));
+      edgePath.setAttribute(
+        "d",
+        "M " + format(start.x) + " " + format(start.y) +
+          " C " + format(controlA.x) + " " + format(controlA.y) +
+          ", " + format(controlB.x) + " " + format(controlB.y) +
+          ", " + format(end.x) + " " + format(end.y),
+      );
+      edgeDots[0].setAttribute("cx", format(start.x));
+      edgeDots[0].setAttribute("cy", format(start.y));
+      edgeDots[1].setAttribute("cx", format(end.x));
+      edgeDots[1].setAttribute("cy", format(end.y));
       highlightAnchors(pair);
     }
 
@@ -177,6 +218,32 @@
       var column = Math.round(card.x / grid) + 1;
       var row = Math.round(card.y / grid) + 1;
       status.textContent = "Card " + card.label + " at column " + column + ", row " + row + ".";
+    }
+
+    function announceZoom() {
+      if (status === null) return;
+      status.textContent = "Zoom " + Math.round(scale * 100) + " percent.";
+    }
+
+    function applyZoom() {
+      world.style.transform = "scale(" + scale + ")";
+      surface.setAttribute("data-demo-scale", scale.toFixed(2));
+      zoomIn.disabled = scale >= ZOOM_MAX - 1e-9;
+      zoomOut.disabled = scale <= ZOOM_MIN + 1e-9;
+    }
+
+    function setScale(next) {
+      scale = clamp(roundScale(next), ZOOM_MIN, ZOOM_MAX);
+      applyZoom();
+      announceZoom();
+    }
+
+    function zoomBy(direction) {
+      setScale(scale + direction * ZOOM_STEP);
+    }
+
+    function fitView() {
+      setScale(1);
     }
 
     function select(card) {
@@ -202,6 +269,7 @@
       clampCard(cards[1]);
       place(cards[0]);
       place(cards[1]);
+      applyZoom();
       drawEdge();
       demo.classList.add("is-ready");
     }
@@ -245,15 +313,16 @@
     function onPointerMove(card, event) {
       if (activePointer === null) return;
       if (activePointer.pointerId !== event.pointerId || activePointer.card !== card) return;
-      var dx = event.clientX - activePointer.startClientX;
-      var dy = event.clientY - activePointer.startClientY;
+      var screenX = event.clientX - activePointer.startClientX;
+      var screenY = event.clientY - activePointer.startClientY;
       if (!activePointer.dragging) {
-        if (Math.hypot(dx, dy) < threshold) return;
+        if (Math.hypot(screenX, screenY) < threshold) return;
         activePointer.dragging = true;
         card.element.classList.add("is-dragging");
       }
-      card.x = activePointer.startX + dx;
-      card.y = activePointer.startY + dy;
+      // Pointer deltas are screen pixels; the card lives on the scaled world layer.
+      card.x = activePointer.startX + screenX / scale;
+      card.y = activePointer.startY + screenY / scale;
       clampCard(card);
       place(card);
       drawEdge();
@@ -311,6 +380,16 @@
       card.element.addEventListener("keydown", function (event) {
         onKeyDown(card, event);
       });
+    });
+
+    zoomIn.addEventListener("click", function () {
+      zoomBy(1);
+    });
+    zoomOut.addEventListener("click", function () {
+      zoomBy(-1);
+    });
+    zoomFit.addEventListener("click", function () {
+      fitView();
     });
 
     window.addEventListener("resize", function () {
