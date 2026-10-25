@@ -132,10 +132,11 @@
 - [x] `P0-14` Change entries and changelog gate — status: `done` — owner: —
 - [x] `P0-18` i18n scaffold and language-check gate — status: `done` — owner: —
 - [x] `P0-19` Design preview page — status: `done` — owner: —
+- [x] `P0-20` Live connection demo in the preview — status: `done` — owner: —
 
 ## In progress
 
-- [ ] `P0-20` Live connection demo in the preview — status: `in_progress` — owner: —
+- none
 
 ## Blocked / failed
 

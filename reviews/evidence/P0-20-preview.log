@@ -1,0 +1,110 @@
+# P0-20 — live connection demo: manual evidence
+
+- Date: 2026-10-25 (Europe/Zurich)
+- Worktree: `/Users/rasulatashev/Desktop/KI Projekte/Project air-P0-20` (branch `task/P0-20`, slot 1)
+- Page: `apps/web/preview/index.html`, `preview.css`, `preview.js`, `README.md`
+- Server: `python3 -m http.server`, port read from the worktree's `.polier-slot` (never hard-coded)
+
+## Port and server
+
+Slot values (`python3 "$POLIER/tools/slot.py" show`): `web=4100` for slot 1. The server was started and
+stopped by this task only; it is not left running and the port is free afterwards.
+
+```sh
+cd "/Users/rasulatashev/Desktop/KI Projekte/Project air-P0-20"
+PORT=$(python3 -c "import json;print(json.load(open('.polier-slot'))['ports']['web'])")
+python3 -m http.server "$PORT" --bind 127.0.0.1
+```
+
+Served the **repository root** so the relative token and icon paths resolve.
+
+## HTTP status
+
+```
+$ curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:4100/apps/web/preview/
+200
+```
+
+The server log for the run contains no `404` (tokens, `preview.css`, `preview.js` and all ten icons
+return 200).
+
+## Screenshot
+
+Chromium: `/Users/rasulatashev/Library/Caches/ms-playwright/chromium_headless_shell-1248/chrome-headless-shell-mac-arm64/chrome-headless-shell`
+
+```sh
+/Users/rasulatashev/Library/Caches/ms-playwright/chromium_headless_shell-1248/chrome-headless-shell-mac-arm64/chrome-headless-shell \
+  --headless --disable-gpu --hide-scrollbars --window-size=1440,900 \
+  --screenshot=reviews/evidence/P0-20-demo.png \
+  "http://127.0.0.1:4100/apps/web/preview/"
+```
+
+Result: `reviews/evidence/P0-20-demo.png`, PNG 1440 × 900, 92203 bytes. It shows the top of the page
+with the “interactive demo — not the engine; no data, no server” section, both note cards (A
+“Design law”, B “Token source”) and the connection edge between their nearest edges.
+
+## How the drag was verified
+
+The cached headless Chromium has no test-runner input driver, so the interaction was verified with a
+temporary same-origin probe page (an iframe of the real preview at 1440 × 900 and at 390 × 844) that
+dispatched real `PointerEvent` / `KeyboardEvent` sequences into the page; the preview's own listeners
+handled them exactly as for real input. `setPointerCapture` is best-effort in `preview.js`, so
+synthetic pointer ids do not break the drag. The probe file was removed before the commit and is not
+part of the deliverable. Results:
+
+```
+desktop start a={"x":32,"y":16} b={"x":864,"y":208}
+desktop clickUnder4px moved=false
+desktop arrowRight16=true arrowDown16=true
+desktop homeReset=true
+desktop dragMoved=true otherCardFixed=true edgeFollowed=true
+desktop selected=true dragClassCleared=true
+desktop clampInside=true
+desktop overflow=false scrollWidth=1440 clientWidth=1440
+mobile overflow=false scrollWidth=390 clientWidth=390 cardsInside=true surface=358x360
+```
+
+Pointer and keyboard logic, manually described:
+
+- `pointerdown` on a whole card selects it (1.5 px `--accent` border + `--accent-soft` ring) and calls
+  `setPointerCapture`; movement starts only after the 4 px `--drag-threshold`, so a click with a 2 px
+  wobble selects but does not move (verified: `clickUnder4px moved=false`).
+- During the drag the card position is clamped to the dot-grid surface and the SVG edge is redrawn on
+  every move from the two card rectangles (nearest horizontal sides, vertical sides, corners, or the
+  nearest overlapping side pair). The edge uses `--layer-edges`, the cards `--layer-note-cards`, so
+  the edge stays below the cards. An 80/48 px drag moved card A, left card B in place and changed the
+  edge endpoints (verified: `dragMoved=true otherCardFixed=true edgeFollowed=true`); a 5000 px drag
+  clamped the card inside the surface (`clampInside=true`).
+- `pointerup` / `pointercancel` end the drag, remove the `is-dragging` state and announce the grid
+  position in the `aria-live` status.
+- Keyboard: each card is focused with a visible `--accent` focus outline; arrow keys move by one
+  canvas grid step (`--canvas-grid`, 16 px), `Home` returns both cards to their start positions; the
+  handled keys call `preventDefault` so the page does not scroll (verified: `arrowRight16=true`,
+  `arrowDown16=true`, `homeReset=true`).
+- `prefers-reduced-motion: reduce` disables the remaining transitions (global rule in `preview.css`).
+- Both viewports have no horizontal overflow (1440/1440 and 390/390); the mobile cards stay inside
+  the 358 × 360 demo surface. The P0-19 static sections are unchanged below the new demo section.
+
+## Gates
+
+```sh
+cd "/Users/rasulatashev/Desktop/KI Projekte/Project air-P0-20"
+export POLIER=/Users/rasulatashev/Desktop/Polier-main
+python3 "$POLIER/tools/gate.py" --task P0-20 --name board-check -- python3 "$POLIER/tools/check.py" .
+python3 "$POLIER/tools/gate.py" --task P0-20 --name changelog-entry -- node tools/release/check-changes.mjs --task P0-20 --base main
+python3 "$POLIER/tools/gate.py" --task P0-20 --name design-check -- node tools/design-check/index.mjs .
+```
+
+| Gate | Result | Record |
+| --- | --- | --- |
+| `board-check` | PASS (exit 0) | `reviews/evidence/P0-20-board-check-20261025T101230Z.json` |
+| `changelog-entry` | PASS (exit 0) | `reviews/evidence/P0-20-changelog-entry-20261025T101231Z.json` |
+| `design-check` | PASS (exit 0, no findings) | `reviews/evidence/P0-20-design-check-20261025T101231Z.json` |
+
+## Content check
+
+- `apps/web/preview/` contains no raw hex, rgb, rgba or hsl colour values; the demo dot grid, edge,
+  cards and states use only `var(--…)` tokens from `packages/ui-kit/tokens.css`.
+- No inline colour values, no external fonts, CDNs, images or dependencies; `preview.js` is plain
+  DOM/SVG.
+- `.changes/P0-20-live-preview-demo.md` carries the required entry (area `web`, kind `patch`).

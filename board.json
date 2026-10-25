@@ -1295,7 +1295,7 @@
       "satisfies": [
         "D3"
       ],
-      "status": "in_progress",
+      "status": "done",
       "depends_on": [
         "P0-19"
       ],
@@ -1332,11 +1332,20 @@
       ],
       "owner": null,
       "branch": "task/P0-20",
-      "worktree": "../Project air-P0-20",
+      "worktree": null,
       "round": 0,
-      "evidence": [],
+      "evidence": [
+        "reviews/evidence/P0-20-board-check-20261025T101230Z.json",
+        "reviews/evidence/P0-20-changelog-entry-20261025T101231Z.json",
+        "reviews/evidence/P0-20-design-check-20261025T101231Z.json"
+      ],
       "scope_write_forbidden": [
         "reference/"
+      ],
+      "handoff": [
+        "Closed P0-20: apps/web/preview/ has a live two-note connection demo (pointer drag, live edge, keyboard nudge 16 px, Home reset, clamping).",
+        "board-check, changelog-entry and design-check pass; demo is section 01 above the static sections.",
+        "Serve the page and drag to feel it; engine-spike playground remains the next real engine demo."
       ]
     }
   ],

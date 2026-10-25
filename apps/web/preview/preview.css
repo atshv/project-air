@@ -852,6 +852,104 @@ button {
   gap: var(--space-8);
 }
 
+/* ---------- interactive demo ---------- */
+
+.demo {
+  display: grid;
+  gap: var(--space-8);
+}
+
+.demo__hint {
+  color: var(--muted);
+  font-size: var(--text-12);
+}
+
+.demo__noscript {
+  color: var(--muted);
+  font-size: var(--text-12);
+}
+
+.demo__surface {
+  position: relative;
+  block-size: 360px;
+  overflow: hidden;
+  border: var(--border-width) solid var(--border);
+  border-radius: var(--radius-lg);
+  background-color: var(--canvas);
+  background-image: radial-gradient(
+    circle,
+    var(--border) var(--border-width),
+    var(--canvas) var(--border-width)
+  );
+  background-size: var(--canvas-grid) var(--canvas-grid);
+}
+
+.demo__edge {
+  position: absolute;
+  inset: 0;
+  z-index: var(--layer-edges);
+  inline-size: 100%;
+  block-size: 100%;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.demo__edge-line {
+  stroke: var(--border-strong);
+  stroke-width: var(--border-width-strong);
+  stroke-linecap: round;
+}
+
+.demo__edge-dot {
+  fill: var(--border-strong);
+}
+
+.demo__status {
+  min-block-size: var(--space-16);
+  color: var(--muted);
+  font-size: var(--text-12);
+}
+
+.demo-card {
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline-start: 0;
+  inline-size: 176px;
+  z-index: var(--layer-note-cards);
+  visibility: hidden;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+  transition: border-color var(--motion-hover) ease, box-shadow var(--motion-hover) ease;
+}
+
+.demo.is-ready .demo__edge,
+.demo.is-ready .demo-card {
+  visibility: visible;
+}
+
+.demo-card.is-dragging {
+  z-index: var(--layer-dragged-or-selected);
+  cursor: grabbing;
+  box-shadow: var(--shadow);
+  transition: none;
+}
+
+kbd {
+  padding: 0 var(--space-4);
+  border: var(--border-width) solid var(--border-strong);
+  border-radius: var(--radius-tooltip);
+  background-color: var(--surface);
+  color: var(--fg);
+  font-family: var(--font-sans);
+  font-size: var(--text-11);
+}
+
+.demo-card:focus-visible {
+  outline: var(--outline-width) solid var(--accent);
+  outline-offset: var(--outline-offset);
+}
+
 /* ---------- sample board ---------- */
 
 .board-label {

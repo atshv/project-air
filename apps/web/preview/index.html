@@ -6,6 +6,7 @@
     <title>Project air design preview — static design preview</title>
     <link rel="stylesheet" href="../../../packages/ui-kit/tokens.css" />
     <link rel="stylesheet" href="preview.css" />
+    <script src="preview.js" defer></script>
   </head>
   <body>
     <main class="page">
@@ -14,19 +15,77 @@
         <h1>Project air design system</h1>
         <p class="lead">
           A static design preview of the Project air canvas design system: tokens, type, icons,
-          component states and a sample board. This page is not the product — there is no engine,
-          no data, no routing and no interaction beyond native browser states.
+          component states and a sample board, plus a small live connection demo. This page is not
+          the product — there is no engine, no data and no server; the demo at the top is
+          illustrative only.
         </p>
         <div class="masthead__meta">
           <span>Tokens: <code>packages/ui-kit/tokens.css</code></span>
           <span>Icons: <code>packages/ui-kit/icons/</code></span>
-          <span>Task: P0-19</span>
+          <span>Demo: <code>preview.js</code></span>
+          <span>Tasks: P0-19, P0-20</span>
         </div>
       </header>
 
+      <section class="section" aria-labelledby="demo">
+        <div class="section__head">
+          <span class="eyebrow">01 — Interactive demo</span>
+          <h2 id="demo">Live connection demo</h2>
+          <p class="section__intro">
+            Two note cards and one connection. Drag a card with mouse, pen or finger — the whole card
+            is the handle — or focus a card and use the arrow keys (16 px per step, <kbd>Home</kbd>
+            resets both). <strong>interactive demo — not the engine; no data, no server</strong>.
+          </p>
+        </div>
+        <div class="demo" data-demo>
+          <noscript>
+            <p class="demo__noscript">
+              The interactive demo needs JavaScript. The rest of this page is static and works
+              without it.
+            </p>
+          </noscript>
+          <p class="demo__hint" id="demo-hint">
+            A click without movement (under 4 px) selects the card but does not move it. The edge
+            follows the nearest card edges while dragging.
+          </p>
+          <div class="demo__surface" data-demo-surface>
+            <svg class="demo__edge" data-demo-edge aria-hidden="true" focusable="false">
+              <line class="demo__edge-line" data-demo-edge-line x1="0" y1="0" x2="0" y2="0" />
+              <circle class="demo__edge-dot" data-demo-edge-dot cx="0" cy="0" r="1.5" />
+              <circle class="demo__edge-dot" data-demo-edge-dot cx="0" cy="0" r="1.5" />
+            </svg>
+            <article
+              class="note-card demo-card"
+              data-demo-card="a"
+              tabindex="0"
+              aria-label="Draggable note card A. Arrow keys move it by 16 pixels, Home resets both cards."
+            >
+              <div class="note-card__head">
+                <span class="type-label">Note A</span>
+              </div>
+              <h3 class="note-card__title">Design law</h3>
+              <p class="note-card__body">Content first, quiet chrome.</p>
+            </article>
+            <article
+              class="note-card demo-card"
+              data-demo-card="b"
+              tabindex="0"
+              aria-label="Draggable note card B. Arrow keys move it by 16 pixels, Home resets both cards."
+            >
+              <div class="note-card__head">
+                <span class="type-label">Note B</span>
+              </div>
+              <h3 class="note-card__title">Token source</h3>
+              <p class="note-card__body">One source for CSS and C++.</p>
+            </article>
+          </div>
+          <p class="demo__status" data-demo-status aria-live="polite"></p>
+        </div>
+      </section>
+
       <section class="section" aria-labelledby="colours">
         <div class="section__head">
-          <span class="eyebrow">01 — Colour</span>
+          <span class="eyebrow">02 — Colour</span>
           <h2 id="colours">Colour tokens</h2>
           <p class="section__intro">
             Every swatch reads a generated custom property from the design tokens. Translucent
@@ -130,7 +189,7 @@
 
       <section class="section" aria-labelledby="type">
         <div class="section__head">
-          <span class="eyebrow">02 — Typography</span>
+          <span class="eyebrow">03 — Typography</span>
           <h2 id="type">Typography scale</h2>
           <p class="section__intro">
             Serif for board, panel and empty-state titles, sans for everything else. Sizes come from
@@ -188,7 +247,7 @@
 
       <section class="section" aria-labelledby="space">
         <div class="section__head">
-          <span class="eyebrow">03 — Space, radii, shadows, borders</span>
+          <span class="eyebrow">04 — Space, radii, shadows, borders</span>
           <h2 id="space">Spacing and surfaces</h2>
           <p class="section__intro">
             A 4 px grid: 4, 8, 12, 16, 24, 32 and 48. Radii are 10, 14, 20, a 6 px tooltip radius
@@ -274,7 +333,7 @@
 
       <section class="section" aria-labelledby="icons">
         <div class="section__head">
-          <span class="eyebrow">04 — Icons</span>
+          <span class="eyebrow">05 — Icons</span>
           <h2 id="icons">Toolbar icons</h2>
           <p class="section__intro">
             The ten icons ship as SVG files in <code>packages/ui-kit/icons/</code>, drawn on a 24
@@ -399,7 +458,7 @@
 
       <section class="section" aria-labelledby="states">
         <div class="section__head">
-          <span class="eyebrow">05 — States</span>
+          <span class="eyebrow">06 — States</span>
           <h2 id="states">Component states</h2>
           <p class="section__intro">
             Every interactive element has rest, hover, pressed, keyboard focus and disabled; cards
@@ -486,7 +545,7 @@
 
       <section class="section" aria-labelledby="components">
         <div class="section__head">
-          <span class="eyebrow">06 — Components</span>
+          <span class="eyebrow">07 — Components</span>
           <h2 id="components">Canvas components</h2>
           <p class="section__intro">
             One example each of a note card, a block, a zone, a connection, a side-panel header and
@@ -635,7 +694,7 @@
 
       <section class="section" aria-labelledby="board">
         <div class="section__head">
-          <span class="eyebrow">07 — Sample board</span>
+          <span class="eyebrow">08 — Sample board</span>
           <h2 id="board">Sample board composition</h2>
           <div class="board-label">
             <span class="badge">static design preview</span>
@@ -728,8 +787,8 @@
       <footer class="footer">
         <p>
           <strong>This is a static design preview, not the product.</strong> It has no engine, no
-          data, no routing and no build step; it exists so the design system can be reviewed between
-          milestones.
+          data, no server and no build step; it exists so the design system can be reviewed between
+          milestones. The connection demo is a pointer-event sketch, not the engine.
         </p>
         <p>
           Colour, spacing, radius, typography, motion, shadow and layer values come only from
