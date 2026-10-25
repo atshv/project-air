@@ -118,11 +118,11 @@
 
 - [x] `P0-03` Workspace folders, package READMEs and architectures — status: `done` — owner: —
 - [x] `P0-10` Adapt design rules to this project — status: `done` — owner: —
+- [x] `P0-11` Canvas acceptance catalogue — status: `done` — owner: —
 
 ## In progress
 
 - [ ] `P0-07` Local services compose — status: `in_progress` — owner: —
-- [ ] `P0-11` Canvas acceptance catalogue — status: `in_progress` — owner: —
 
 ## Blocked / failed
 

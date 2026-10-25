@@ -769,7 +769,7 @@
       "satisfies": [
         "D3"
       ],
-      "status": "in_progress",
+      "status": "done",
       "depends_on": [
         "P0-10"
       ],
@@ -799,11 +799,18 @@
       ],
       "owner": null,
       "branch": "task/P0-11",
-      "worktree": "../Project air-P0-11",
+      "worktree": null,
       "round": 0,
-      "evidence": [],
+      "evidence": [
+        "reviews/evidence/P0-11-board-check-20261025T082414Z.json"
+      ],
       "scope_write_forbidden": [
         "reference/"
+      ],
+      "handoff": [
+        "Closed P0-11: docs/canvas-acceptance.md with L00-L20, nine fields per entry, C-mapping and open points.",
+        "Gate board-check passes; all entries status open, Q15 (L13) and Q16 (L15) remain blocking.",
+        "P0-13 can enforce the catalogue; engine-core/web-app gates check entries against it."
       ]
     },
     {
