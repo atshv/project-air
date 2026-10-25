@@ -746,7 +746,8 @@
       "scope_write": [
         "tools/polier.sh",
         ".github/workflows/ci.yml",
-        "AGENTS.md"
+        "AGENTS.md",
+        "docs/versions.md"
       ],
       "scope_read": [
         "ARCHITECTURE.md",
@@ -762,7 +763,8 @@
       ],
       "gates": [
         "polier-version",
-        "board-check"
+        "board-check",
+        "ci-local"
       ],
       "owner": null,
       "branch": "task/P0-09",
