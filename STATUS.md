@@ -20,7 +20,7 @@
 - Owner decision: `pending`
 - Exit gates: `contracts` (missing record), `codegen`
 - Exit criteria: contracts 0.1.0 tagged; every schema has a valid and an invalid fixture.; TS and C++ read the same fixtures identically.
-- Tasks: P1-01, P1-02, P1-03
+- Tasks: P1-01, P1-02, P1-03, P1-04, P1-05
 
 ### Stage 3 — `engine-spike` Engine spike
 
@@ -118,7 +118,10 @@
 
 ## Ready now
 
-- none
+- `P1-04` Sync protocol messages
+  - P1-03: Closed P1-03: deterministic codegen from schemas to generated/types.ts and generated/contract.h; codegen twice leaves no diff.
+  - P1-03: Parity proof: 77 fixtures (32 valid/45 invalid) produce identical TS and C++ canonical results; local clang++ builds the C++ test without third-party libraries.
+  - P1-03: P1-04/P1-05 extend the contract; P1-06 documents/taggs 0.1.0. Generated files are committed.
 
 ## Done
 
@@ -159,13 +162,8 @@
 - [ ] `P0-15` Release command and tag-based CI release — status: `pending` — owner: —
 - [ ] `P0-16` Dependency updates and Polier update check — status: `pending` — owner: —
 - [ ] `P0-17` RELEASING.md and release 0.0.1 — status: `pending` — owner: —
-
-<!-- polier:claims -->
-## Claims
-
-- `P1-03` in progress by dsh since 2026-10-25T11:36:27+00:00 — worktree: /Users/rasulatashev/Desktop/KI Projekte/Project air-P1-03 · slot 1
-
-<!-- /polier:claims -->
+- [ ] `P1-04` Sync protocol messages — status: `pending` — owner: —
+- [ ] `P1-05` API resources and error codes — status: `pending` — owner: —
 
 ## Decisions
 

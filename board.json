@@ -1842,6 +1842,109 @@
         "Parity proof: 77 fixtures (32 valid/45 invalid) produce identical TS and C++ canonical results; local clang++ builds the C++ test without third-party libraries.",
         "P1-04/P1-05 extend the contract; P1-06 documents/taggs 0.1.0. Generated files are committed."
       ]
+    },
+    {
+      "id": "P1-04",
+      "title": "Sync protocol messages",
+      "goal": "The contract defines the WebSocket sync protocol (join/leave, operation batches, ack, presence, reject, reconnect catch-up) as versioned JSON Schema with fixtures.",
+      "why": "Realtime and SDK need one message language over the contract operations (AD-1, AD-2, AD-3).",
+      "satisfies": [
+        "D7"
+      ],
+      "status": "pending",
+      "depends_on": [
+        "P1-03"
+      ],
+      "complexity": 5,
+      "stage": "contract",
+      "parallel_group": null,
+      "scope_write": [
+        "packages/contracts/",
+        "pnpm-lock.yaml",
+        ".changes/"
+      ],
+      "scope_read": [
+        "ARCHITECTURE.md",
+        "AGENTS.md",
+        "STATUS.md",
+        "docs/module-map.md",
+        "docs/quality.md",
+        "docs/owner/canvas-suite-blueprint.md",
+        "packages/contracts/"
+      ],
+      "acceptance": [
+        "A1",
+        "A2",
+        "A3",
+        "A4"
+      ],
+      "gates": [
+        "codegen",
+        "unit",
+        "board-check"
+      ],
+      "owner": null,
+      "branch": "task/P1-04",
+      "worktree": null,
+      "round": 0,
+      "evidence": [],
+      "scope_write_forbidden": [
+        "reference/"
+      ]
+    },
+    {
+      "id": "P1-05",
+      "title": "API resources and error codes",
+      "goal": "The contract defines REST resource envelopes and one error envelope whose codes map to translation keys errors.<CODE>.",
+      "why": "SDK, backend and web need one resource/error shape; user-visible errors must be translatable (AD-8).",
+      "satisfies": [
+        "D7"
+      ],
+      "status": "pending",
+      "depends_on": [
+        "P1-04"
+      ],
+      "complexity": 5,
+      "stage": "contract",
+      "parallel_group": null,
+      "scope_write": [
+        "packages/contracts/",
+        "apps/web/messages/",
+        "pnpm-lock.yaml",
+        ".changes/"
+      ],
+      "scope_read": [
+        "ARCHITECTURE.md",
+        "AGENTS.md",
+        "STATUS.md",
+        "docs/module-map.md",
+        "docs/quality.md",
+        "docs/owner/canvas-suite-blueprint.md",
+        "packages/contracts/",
+        "apps/web/messages/",
+        "docs/i18n/",
+        "tools/language-check/"
+      ],
+      "acceptance": [
+        "A1",
+        "A2",
+        "A3",
+        "A4"
+      ],
+      "gates": [
+        "codegen",
+        "unit",
+        "language-check",
+        "board-check"
+      ],
+      "owner": null,
+      "branch": "task/P1-05",
+      "worktree": null,
+      "round": 0,
+      "evidence": [],
+      "scope_write_forbidden": [
+        "reference/"
+      ]
     }
   ],
   "decisions": [
