@@ -683,7 +683,7 @@
       "satisfies": [
         "D6"
       ],
-      "status": "pending",
+      "status": "in_progress",
       "depends_on": [
         "P0-04"
       ],
@@ -713,7 +713,7 @@
       ],
       "owner": null,
       "branch": "task/P0-08",
-      "worktree": null,
+      "worktree": "../Project air-P0-08",
       "round": 0,
       "evidence": [],
       "scope_write_forbidden": [

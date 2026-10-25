@@ -117,10 +117,7 @@
 
 ## Ready now
 
-- `P0-08` CI skeleton
-  - P0-04: Closed P0-04: pnpm workspaces + Turborepo, exact tool versions, lockfile committed, Node 24.22.1 LTS pinned.
-  - P0-04: install = pnpm install --frozen-lockfile; unit = pnpm test; root lint/typecheck/test/build exit 0 on the empty workspace.
-  - P0-04: Board-check runs before pnpm install (check.py scans node_modules); P0-06, P0-12 and P0-18 can start.
+- none
 
 ## Done
 
@@ -140,7 +137,7 @@
 
 ## In progress
 
-- none
+- [ ] `P0-08` CI skeleton — status: `in_progress` — owner: —
 
 ## Blocked / failed
 
@@ -149,11 +146,17 @@
 ## Open
 
 - [ ] `P0-02` Protect main and document repository settings — status: `pending` — owner: —
-- [ ] `P0-08` CI skeleton — status: `pending` — owner: —
 - [ ] `P0-09` Pinned Polier for agents and CI — status: `pending` — owner: —
 - [ ] `P0-15` Release command and tag-based CI release — status: `pending` — owner: —
 - [ ] `P0-16` Dependency updates and Polier update check — status: `pending` — owner: —
 - [ ] `P0-17` RELEASING.md and release 0.0.1 — status: `pending` — owner: —
+
+<!-- polier:claims -->
+## Claims
+
+- `P0-08` in progress by dsh since 2026-10-25T10:19:20+00:00 — worktree: /Users/rasulatashev/Desktop/KI Projekte/Project air-P0-08 · slot 1
+
+<!-- /polier:claims -->
 
 ## Decisions
 
