@@ -120,10 +120,7 @@
 
 ## Ready now
 
-- `P3-05` SDK, RLS tests and backend acceptance
-  - P3-04: Closed P3-04: 20 /v1 contract routes (workspaces/boards/notes/cards) with contract envelopes, UUIDv7 requestIds, cursor pagination; permission matrix with 404 non-leak; app_user + SET LOCAL.
-  - P3-04: Defence in depth (AD-5): explicit membership checks on GETs + startup guard refusing SUPERUSER/BYPASSRLS pools; 28 api-tests (allow+deny per route), 72 unit; errors echo requestId; bad cursors 400.
-  - P3-04: Review pass; F1 fixed (GET checks + role guard). Open F2: Kratos v4 identity ids vs contract-v7 account ids -> P3-06 mapping task; member routes not in this stage.
+- none
 
 ## Done
 
@@ -165,7 +162,7 @@
 
 ## In progress
 
-- none
+- [ ] `P3-05` SDK, RLS tests and backend acceptance — status: `in_progress` — owner: —
 
 ## Blocked / failed
 
@@ -177,8 +174,14 @@
 - [ ] `P0-15` Release command and tag-based CI release — status: `pending` — owner: —
 - [ ] `P0-16` Dependency updates and Polier update check — status: `pending` — owner: —
 - [ ] `P0-17` RELEASING.md and release 0.0.1 — status: `pending` — owner: —
-- [ ] `P3-05` SDK, RLS tests and backend acceptance — status: `pending` — owner: —
 - [ ] `P3-06` Contract-valid account IDs (Kratos identity mapping) — status: `pending` — owner: —
+
+<!-- polier:claims -->
+## Claims
+
+- `P3-05` in progress by dsh since 2026-10-25T19:01:00+00:00 — worktree: /Users/rasulatashev/Desktop/KI Projekte/Project air-P3-05 · slot 1
+
+<!-- /polier:claims -->
 
 ## Decisions
 

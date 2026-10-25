@@ -2688,7 +2688,7 @@
       ]
     },
     {
-      "status": "pending",
+      "status": "in_progress",
       "stage": "backend-core",
       "parallel_group": null,
       "owner": null,
@@ -2745,7 +2745,7 @@
         "rls-tests"
       ],
       "branch": "task/P3-05",
-      "worktree": null
+      "worktree": "../Project air-P3-05"
     },
     {
       "id": "P3-06",
