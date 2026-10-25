@@ -1896,9 +1896,9 @@
         "reference/"
       ],
       "handoff": [
-        "Closed P1-04: sync protocol as JSON Schema 0.1.0 with 12 message types (6 client→server, 6 server→client), 14 valid/20 invalid fixtures plus reconnect and session sequences; reject carries the seven P1-05 wire codes; 66 contract tests green.",
-        "fixtures-gate/ holds the two Polier contracts-gate specimens (byte-identical copies, test-enforced); the 77-fixture parity corpus and all pre-existing tests are untouched.",
-        "Review pass with 4 minor advisories (hello-first not enforced; weak wrong-order assertion; snapshotRef board/seq not cross-checked; board serverSeq 0 bootstrap ambiguity) to settle before realtime; P1-05 adds the errors.<camelCase> message keys."
+        "Closed P1-04: sync protocol as JSON Schema 0.1.0 with 12 message types (6 client→server, 6 server→client), 14 valid/20 invalid fixtures plus reconnect and session sequences; 66 tests green.",
+        "reject carries the seven P1-05 wire codes; fixtures-gate/ holds the two Polier gate specimens (byte-identical copies, test-enforced); the 77-fixture parity corpus and all existing tests are untouched.",
+        "Review pass with 4 minor advisories (hello-first, wrong-order assertion, snapshotRef board/seq, serverSeq 0 bootstrap) to settle before realtime; P1-05 adds the errors.<camelCase> keys."
       ]
     },
     {
@@ -2080,6 +2080,11 @@
       "id": "ADR-0004",
       "title": "Contract v1 text limits and board visibility",
       "file": "docs/adr/ADR-0004-contract-limits-visibility.md"
+    },
+    {
+      "date": "2026-10-25",
+      "id": "ADR-0005",
+      "title": "Contract and versions"
     }
   ],
   "open_questions": [
