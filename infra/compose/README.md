@@ -6,6 +6,17 @@ checks. The stack is **shared by every worktree** of this repository; it is star
 machine and used from any checkout. Ports follow `AD-9`: only machine-wide services live here,
 per-worktree values come from `.polier-slot`.
 
+## Runtime
+
+The local stack runs on **Docker Desktop for Mac** (owner decision, 2026-10-25): Docker Desktop
+4.96.3, Docker Engine 29.9.2, Compose v5.6.1, context `desktop-linux`. Any Docker Engine with
+Compose v2 works; always start and stop the stack with the same Docker context that owns it.
+OrbStack may keep running side by side for other projects — this stack lives in the active Docker
+context, not in a specific runtime. If an image pull fails with
+`docker-credential-desktop: executable file not found`, either install the Docker Desktop CLI
+tools or remove `"credsStore": "desktop"` from `~/.docker/config.json` (public images need no
+credentials).
+
 ## Services
 
 | Compose service | Image (tag and digest pinned in [compose.yaml](compose.yaml)) | Version | Licence | Host port (default) | Purpose |
