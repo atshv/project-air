@@ -587,7 +587,7 @@
       "satisfies": [
         "D2"
       ],
-      "status": "pending",
+      "status": "in_progress",
       "depends_on": [
         "P0-03"
       ],
@@ -615,7 +615,7 @@
       ],
       "owner": null,
       "branch": "task/P0-07",
-      "worktree": null,
+      "worktree": "../Project air-P0-07",
       "round": 0,
       "evidence": [],
       "package": "infra",
@@ -769,7 +769,7 @@
       "satisfies": [
         "D3"
       ],
-      "status": "pending",
+      "status": "in_progress",
       "depends_on": [
         "P0-10"
       ],
@@ -799,7 +799,7 @@
       ],
       "owner": null,
       "branch": "task/P0-11",
-      "worktree": null,
+      "worktree": "../Project air-P0-11",
       "round": 0,
       "evidence": [],
       "scope_write_forbidden": [
