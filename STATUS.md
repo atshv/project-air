@@ -118,10 +118,7 @@
 
 ## Ready now
 
-- `P1-07` Contract overview in the preview
-  - P1-06: Closed P1-06: docs/contracts.md is the contract 0.1.0 entry point (3 families, 16 schemas, fixture corpora/counts, codegen+parity, SemVer rules, board.contracts[], logical contracts@0.1.0 tag).
-  - P1-06: ADR-0005 Contract and versions records the schema-first decision, consequences and alternatives; the board decision ADR-0005 now carries its file.
-  - P1-06: Review pass; 3 minor docs findings fixed (dependant step, gate-vs-table bump caveat, base-URI placeholder) and tag naming aligned (contracts@0.1.0; git release tags stay v<semver>).
+- none
 
 ## Done
 
@@ -153,7 +150,7 @@
 
 ## In progress
 
-- none
+- [ ] `P1-07` Contract overview in the preview — status: `in_progress` — owner: —
 
 ## Blocked / failed
 
@@ -165,7 +162,13 @@
 - [ ] `P0-15` Release command and tag-based CI release — status: `pending` — owner: —
 - [ ] `P0-16` Dependency updates and Polier update check — status: `pending` — owner: —
 - [ ] `P0-17` RELEASING.md and release 0.0.1 — status: `pending` — owner: —
-- [ ] `P1-07` Contract overview in the preview — status: `pending` — owner: —
+
+<!-- polier:claims -->
+## Claims
+
+- `P1-07` in progress by dsh since 2026-10-25T12:56:45+00:00 — worktree: /Users/rasulatashev/Desktop/KI Projekte/Project air-P1-07 · slot 1
+
+<!-- /polier:claims -->
 
 ## Decisions
 
