@@ -120,10 +120,7 @@
 
 ## Ready now
 
-- `P3-03` Auth service with self-hosted Ory Kratos
-  - P3-02: Closed P3-02: migrations 0001-0003 (profiles/workspaces/members/boards/notes/cards) with contract limits, FKs, indexes, owner and card-invariant triggers; 79 tests green incl. 10 regressions.
-  - P3-02: RLS enabled+forced, 23 app_user policies (read=member, write=owner/editor, workspace delete/members=owner), safe current_account_id, no PUBLIC execute, one owner row; note/board immutable.
-  - P3-02: Review round 1 failed (card/note invariant bypass), fixed + round 2 pass. Remaining follow-ups: production owner/BYPASSRLS helper role at hardening, cards.zone_id FK in a zones task.
+- none
 
 ## Done
 
@@ -163,7 +160,7 @@
 
 ## In progress
 
-- none
+- [ ] `P3-03` Auth service with self-hosted Ory Kratos — status: `in_progress` — owner: —
 
 ## Blocked / failed
 
@@ -175,9 +172,15 @@
 - [ ] `P0-15` Release command and tag-based CI release — status: `pending` — owner: —
 - [ ] `P0-16` Dependency updates and Polier update check — status: `pending` — owner: —
 - [ ] `P0-17` RELEASING.md and release 0.0.1 — status: `pending` — owner: —
-- [ ] `P3-03` Auth service with self-hosted Ory Kratos — status: `pending` — owner: —
 - [ ] `P3-04` Platform API routes and api-tests — status: `pending` — owner: —
 - [ ] `P3-05` SDK, RLS tests and backend acceptance — status: `pending` — owner: —
+
+<!-- polier:claims -->
+## Claims
+
+- `P3-03` in progress by dsh since 2026-10-25T17:56:08+00:00 — worktree: /Users/rasulatashev/Desktop/KI Projekte/Project air-P3-03 · slot 1
+
+<!-- /polier:claims -->
 
 ## Decisions
 
