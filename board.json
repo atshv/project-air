@@ -380,7 +380,33 @@
       "may_import": []
     }
   ],
-  "contracts": [],
+  "contracts": [
+    {
+      "name": "project-air-contract",
+      "path": "packages/contracts",
+      "version": "0.1.0",
+      "schema_files": [
+        "packages/contracts/schemas/account.schema.json",
+        "packages/contracts/schemas/workspace.schema.json",
+        "packages/contracts/schemas/board.schema.json",
+        "packages/contracts/schemas/note.schema.json",
+        "packages/contracts/schemas/card.schema.json",
+        "packages/contracts/schemas/zone.schema.json",
+        "packages/contracts/schemas/block.schema.json",
+        "packages/contracts/schemas/edge.schema.json",
+        "packages/contracts/schemas/operation.schema.json",
+        "packages/contracts/schemas/board-content.schema.json",
+        "packages/contracts/schemas/sync/sync.schema.json",
+        "packages/contracts/schemas/api/workspace.schema.json",
+        "packages/contracts/schemas/api/board.schema.json",
+        "packages/contracts/schemas/api/note.schema.json",
+        "packages/contracts/schemas/api/card.schema.json",
+        "packages/contracts/schemas/api/errors.schema.json"
+      ],
+      "fixtures_dir": "packages/contracts/fixtures-gate",
+      "dependants": []
+    }
+  ],
   "tasks": [
     {
       "id": "P0-02",
