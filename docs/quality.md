@@ -66,6 +66,16 @@ A gate passes when command, exit code and expected output match; the output is t
 The task passes when all gates are green, every acceptance criterion is evidenced and the
 reviewer gives `pass` with no blockers.
 
+## Demo cadence
+
+The owner wants to see the product after larger changes, not only at the end: build, show, continue.
+
+- After every stage that produces UI or engine output, and after `P0-19` in foundation, build the
+  runnable artifact, serve it locally on the worktree's slot ports, capture desktop (1440×900) and
+  mobile (390×844) screenshots into `reviews/evidence/`, commit them and show them in the result.
+- A small task inside a stage does not need its own demo; the stage showcase is enough.
+- A demo supplements the gates, it does not replace them.
+
 ## Review
 
 - The reviewer is not the author and sees diff, acceptance criteria and gate records only.

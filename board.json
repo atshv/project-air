@@ -37,7 +37,8 @@
         "A fresh clone installs reproducibly with the committed lockfile; root lint, typecheck, test and build pass.",
         "Two worktrees run install, lint, typecheck and tests side by side without port or database collision; tools/dev/setup and teardown create and remove the slot database and bucket and refuse slot 0.",
         "design-check, language-check, changelog-entry and boundaries reject a violating change locally; every code change carries a .changes entry.",
-        "CI, branch protection, hosting and releases are deferred to the remote stage after hardening (ADR-0003)."
+        "CI, branch protection, hosting and releases are deferred to the remote stage after hardening (ADR-0003).",
+        "A runnable design preview page exists with desktop and mobile screenshots (P0-19)."
       ],
       "exit_gates": [
         "board-check",
@@ -1195,6 +1196,55 @@
       "worktree": null,
       "round": 0,
       "evidence": [],
+      "scope_write_forbidden": [
+        "reference/"
+      ]
+    },
+    {
+      "id": "P0-19",
+      "title": "Design preview page",
+      "goal": "A runnable design preview page shows tokens, icons, states and a sample board at desktop and mobile width, with committed screenshots.",
+      "why": "The owner wants to see the look and feel after larger milestones instead of waiting for the end; this is the first visible demo.",
+      "satisfies": [
+        "D3"
+      ],
+      "status": "pending",
+      "depends_on": [
+        "P0-12"
+      ],
+      "complexity": 2,
+      "stage": "foundation",
+      "parallel_group": null,
+      "scope_write": [
+        "apps/web/preview/"
+      ],
+      "scope_read": [
+        "ARCHITECTURE.md",
+        "AGENTS.md",
+        "STATUS.md",
+        "docs/module-map.md",
+        "docs/quality.md",
+        "docs/design-rules.md",
+        "docs/canvas-acceptance.md",
+        "packages/ui-kit/tokens.css",
+        "packages/ui-kit/icons/",
+        "packages/ui-kit/layers.ts",
+        "docs/owner/canvas-suite-blueprint.md"
+      ],
+      "acceptance": [
+        "A1",
+        "A2",
+        "A3"
+      ],
+      "gates": [
+        "board-check"
+      ],
+      "owner": null,
+      "branch": "task/P0-19",
+      "worktree": null,
+      "round": 0,
+      "evidence": [],
+      "package": "apps/web",
       "scope_write_forbidden": [
         "reference/"
       ]

@@ -11,8 +11,8 @@
 - State: waiting for the owner decision
 - Owner decision: `pending`
 - Exit gates: `board-check`, `install`, `boundaries`, `dev-setup`, `compose-config`, `tokens-codegen`, `design-check` (missing record), `language-check` (missing record), `changelog-entry` (missing record)
-- Exit criteria: Every packages[] folder exists with a README and an ARCHITECTURE.md; package map and versions are filled in.; A fresh clone installs reproducibly with the committed lockfile; root lint, typecheck, test and build pass.; Two worktrees run install, lint, typecheck and tests side by side without port or database collision; tools/dev/setup and teardown create and remove the slot database and bucket and refuse slot 0.; design-check, language-check, changelog-entry and boundaries reject a violating change locally; every code change carries a .changes entry.; CI, branch protection, hosting and releases are deferred to the remote stage after hardening (ADR-0003).
-- Tasks: P0-03, P0-04, P0-06, P0-07, P0-10, P0-11, P0-12, P0-13, P0-14, P0-18
+- Exit criteria: Every packages[] folder exists with a README and an ARCHITECTURE.md; package map and versions are filled in.; A fresh clone installs reproducibly with the committed lockfile; root lint, typecheck, test and build pass.; Two worktrees run install, lint, typecheck and tests side by side without port or database collision; tools/dev/setup and teardown create and remove the slot database and bucket and refuse slot 0.; design-check, language-check, changelog-entry and boundaries reject a violating change locally; every code change carries a .changes entry.; CI, branch protection, hosting and releases are deferred to the remote stage after hardening (ADR-0003).; A runnable design preview page exists with desktop and mobile screenshots (P0-19).
+- Tasks: P0-03, P0-04, P0-06, P0-07, P0-10, P0-11, P0-12, P0-13, P0-14, P0-18, P0-19
 
 ### Stage 2 — `contract` Contract
 
@@ -129,6 +129,10 @@
   - P0-04: Closed P0-04: pnpm workspaces + Turborepo, exact tool versions, lockfile committed, Node 24.22.1 LTS pinned.
   - P0-04: install = pnpm install --frozen-lockfile; unit = pnpm test; root lint/typecheck/test/build exit 0 on the empty workspace.
   - P0-04: Board-check runs before pnpm install (check.py scans node_modules); P0-06, P0-12 and P0-18 can start.
+- `P0-19` Design preview page
+  - P0-12: Closed P0-12: packages/ui-kit tokens.json is the single visual source; codegen writes tokens.css, tokens.h and layers.ts deterministically.
+  - P0-12: Ten toolbar icons as SVG; package scripts lint/typecheck/test/build/codegen; 37 unit tests; AD-7 complete.
+  - P0-12: P0-13 design-check can consume tokens.json, layers.ts and icons; commands are in docs/quality.md.
 
 ## Done
 
@@ -159,6 +163,7 @@
 - [ ] `P0-16` Dependency updates and Polier update check — status: `pending` — owner: —
 - [ ] `P0-17` RELEASING.md and release 0.0.1 — status: `pending` — owner: —
 - [ ] `P0-18` i18n scaffold and language-check gate — status: `pending` — owner: —
+- [ ] `P0-19` Design preview page — status: `pending` — owner: —
 
 ## Decisions
 
