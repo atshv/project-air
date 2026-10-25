@@ -2,7 +2,8 @@
 
 Every dependency in every manifest appears here. `[UNVERIFIED]` and `[VERIFY: …]` never belong in
 a release. P0-04 added the workspace rows from the root manifest and lockfile; P0-09 added the
-GitHub Actions rows from `.github/workflows/ci.yml`.
+GitHub Actions rows from `.github/workflows/ci.yml`; P2-01 added the C++ engine toolchain rows from
+the Homebrew formulae.
 
 | Tool / library | Exact version | Source URL | Date checked | Approved by |
 | --- | --- | --- | --- | --- |
@@ -21,6 +22,8 @@ GitHub Actions rows from `.github/workflows/ci.yml`.
 | PostgreSQL (official image, local compose) | `17.11-alpine3.23@sha256:01ea903aa65deb58eb49d6e09d859ecff63a6bb7d61feca55f2abad71d08f72a` | https://hub.docker.com/_/postgres — PostgreSQL Licence (OSI permissive; blueprint-mandated server) | 2026-10-25 | lead (P0-07) |
 | SeaweedFS (S3, local compose) | `4.50@sha256:c2658820e763294a9e9de7b36c81e59b879e3459148351aee4e31a126ca64860` | https://github.com/seaweedfs/seaweedfs — Apache-2.0 | 2026-10-25 | lead (P0-07) |
 | Mailpit (mail catcher, local compose) | `v1.32.0@sha256:0790692be935ea4420d085694f7985b1f692ca6a8771ab0e0bd8ba75ac180498` | https://github.com/axllent/mailpit — MIT | 2026-10-25 | lead (P0-07) |
+| CMake (C++ engine build) | `4.4.4` | https://formulae.brew.sh/formula/cmake — BSD-3-Clause | 2026-10-25 | owner (2026-10-25) |
+| Emscripten (C++ → WebAssembly) | `6.0.13` | https://formulae.brew.sh/formula/emscripten — Apache-2.0, Apache-2.0 with LLVM exception, MIT or NCSA | 2026-10-25 | owner (2026-10-25) |
 
 The workspace rows pin pnpm in `packageManager`, Turborepo, TypeScript, ESLint and
 typescript-eslint in the root `devDependencies`, and Node in `.nvmrc` (`24.22.1`), which
@@ -28,6 +31,16 @@ typescript-eslint in the root `devDependencies`, and Node in `.nvmrc` (`24.22.1`
 `infra/compose/compose.yaml`. The PostgreSQL server is mandated by the blueprint (section 2); its
 PostgreSQL Licence (OSI-approved, permissive) is the only recorded exception to the licence list
 below.
+
+The engine toolchain is installed with `brew install cmake emscripten` (owner-approved 2026-10-25,
+no paid tier) and verified with `cmake --version` (`4.4.4`) and `emcc --version` (`6.0.13-git`). The
+Emscripten wrappers `emcc`, `em++` and `emcmake` are Homebrew binaries in `/opt/homebrew/bin`. The
+`wasm-build` gate runs `packages/engine/tools/build-wasm.sh`, which prepends Homebrew's Emscripten
+and brew bin to `PATH` (the launchers must find Python 3.15, not the macOS system Python 3.9) and
+trusts `emcc`/`emcmake` on `PATH` when no Homebrew is present
+([docs/gates/wasm-emscripten.md](gates/wasm-emscripten.md)); `packages/engine/CMakeLists.txt`
+requires CMake 4.4 and C++20. CI pins its own Emscripten install in the remote stage; the local
+phase uses the Homebrew formulae above.
 
 All tools in this table are open source without a required paid tier: pnpm, Turborepo, TypeScript,
 ESLint, typescript-eslint and Node.js are MIT or Apache-2.0. Turborepo's optional hosted remote

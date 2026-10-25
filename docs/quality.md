@@ -58,8 +58,8 @@ task from the project's manifests; until then the gate cannot pass.
 | `contracts` | `python3 $POLIER/tools/contracts.py check` | exit 0 |
 | `codegen` | `pnpm --filter ./packages/contracts run codegen && git diff --exit-code -- packages/contracts` | exit 0, generated TS/C++ unchanged |
 | `cpp-unit` | `cmake -S packages/engine -B packages/engine/build -DCMAKE_BUILD_TYPE=Debug && cmake --build packages/engine/build --parallel && ctest --test-dir packages/engine/build --output-on-failure` | exit 0, "100% tests passed" |
-| `wasm-build` | `emcmake cmake -S packages/engine -B packages/engine/build-wasm -DCMAKE_BUILD_TYPE=Release && cmake --build packages/engine/build-wasm --parallel` | exit 0, `engine.wasm` and `engine.js` written |
-| `wasm-size` | `node packages/engine/tools/wasm-size.mjs` | exit 0, gzip size <= 307200 bytes (300 KiB) |
+| `wasm-build` | `bash packages/engine/tools/build-wasm.sh` | exit 0, `engine.wasm` and `engine.js` written |
+| `wasm-size` | `node packages/engine/tools/wasm-size.mjs` `[VERIFY: P2-03]` | exit 0, gzip size <= 307200 bytes (300 KiB) |
 | `perf-baseline` | `node packages/engine/test/perf/run-perf.mjs` | exit 0, p95 frame time <= 16.7 ms at 50,000 rectangles on the reference hardware (exclusive) |
 | `perf` | see `docs/gates/load.md` `[VERIFY: stage engine-core]` | exit 0, within budget (exclusive) |
 | `api-tests`, `rls-tests` | see `docs/gates/postgres.md` `[VERIFY: stage backend-core]` | exit 0 |

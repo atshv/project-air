@@ -2110,12 +2110,16 @@
       ]
     },
     {
-      "status": "in_progress",
+      "status": "done",
       "stage": "engine-spike",
       "parallel_group": null,
       "owner": null,
       "round": 0,
-      "evidence": [],
+      "evidence": [
+        "reviews/evidence/P2-01-board-check-20261025T133941Z.json",
+        "reviews/evidence/P2-01-cpp-unit-20261025T133944Z.json",
+        "reviews/evidence/P2-01-wasm-build-20261025T135122Z.json"
+      ],
       "scope_write_forbidden": [
         "reference/"
       ],
@@ -2160,7 +2164,12 @@
         "wasm-build"
       ],
       "branch": "task/P2-01",
-      "worktree": "../Project air-P2-01"
+      "worktree": null,
+      "handoff": [
+        "Closed P2-01: pinned CMake 4.4.4 + Emscripten 6.0.13 with portable packages/engine/tools/build-wasm.sh; C++20 air_engine builds natively (CTest 1/1) and to engine.wasm/engine.js.",
+        "Gate docs cpp-cmake/wasm-emscripten carry the exact commands; wasm-build is one wrapper command (Homebrew Emscripten or a pinned emsdk on PATH); wasm-size is assigned to P2-03.",
+        "Review pass with 3 minor doc fixes; build dirs gitignored; disk is tight (~1.2 GiB) - clean build dirs/worktrees after each engine task."
+      ]
     },
     {
       "status": "pending",

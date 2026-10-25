@@ -24,9 +24,9 @@
 
 ### Stage 3 — `engine-spike` Engine spike
 
-- State: exit gates missing: cpp-unit, wasm-build, perf-baseline
+- State: exit gates missing: perf-baseline
 - Owner decision: `continue`
-- Exit gates: `cpp-unit` (missing record), `wasm-build` (missing record), `perf-baseline` (missing record)
+- Exit gates: `cpp-unit`, `wasm-build`, `perf-baseline` (missing record)
 - Exit criteria: 60 fps with 50,000 rectangles on the reference hardware; WASM <= 300 KB gzip.; Measured report and ADR for the engine architecture.
 - Tasks: P2-01, P2-02, P2-03, P2-04, P2-05
 
@@ -41,7 +41,7 @@
 
 - State: waiting for the owner decision
 - Owner decision: `pending`
-- Exit gates: `cpp-unit` (missing record), `visual` (missing record), `perf` (missing record)
+- Exit gates: `cpp-unit`, `visual` (missing record), `perf` (missing record)
 - Exit criteria: 10,000 objects at 60 fps in the playground.; All engine entries of the canvas work orders done; reference images green.
 
 ### Stage 6 — `realtime` Realtime
@@ -119,7 +119,10 @@
 
 ## Ready now
 
-- none
+- `P2-02` Engine core model and render command buffer
+  - P2-01: Closed P2-01: pinned CMake 4.4.4 + Emscripten 6.0.13 with portable packages/engine/tools/build-wasm.sh; C++20 air_engine builds natively (CTest 1/1) and to engine.wasm/engine.js.
+  - P2-01: Gate docs cpp-cmake/wasm-emscripten carry the exact commands; wasm-build is one wrapper command (Homebrew Emscripten or a pinned emsdk on PATH); wasm-size is assigned to P2-03.
+  - P2-01: Review pass with 3 minor doc fixes; build dirs gitignored; disk is tight (~1.2 GiB) - clean build dirs/worktrees after each engine task.
 
 ## Done
 
@@ -149,10 +152,11 @@
 - [x] `P1-05` API resources and error codes — status: `done` — owner: —
 - [x] `P1-06` Contract documentation, ADR and 0.1.0 metadata — status: `done` — owner: —
 - [x] `P1-07` Contract overview in the preview — status: `done` — owner: —
+- [x] `P2-01` Engine toolchain and native + WASM build scaffold — status: `done` — owner: —
 
 ## In progress
 
-- [ ] `P2-01` Engine toolchain and native + WASM build scaffold — status: `in_progress` — owner: —
+- none
 
 ## Blocked / failed
 
@@ -168,13 +172,6 @@
 - [ ] `P2-03` WebGL2 renderer, TS bridge and engine playground — status: `pending` — owner: —
 - [ ] `P2-04` Performance baseline and measured report — status: `pending` — owner: —
 - [ ] `P2-05` Engine architecture ADR, module docs and stage showcase — status: `pending` — owner: —
-
-<!-- polier:claims -->
-## Claims
-
-- `P2-01` in progress by dsh since 2026-10-25T13:29:32+00:00 — worktree: /Users/rasulatashev/Desktop/KI Projekte/Project air-P2-01 · slot 1
-
-<!-- /polier:claims -->
 
 ## Decisions
 

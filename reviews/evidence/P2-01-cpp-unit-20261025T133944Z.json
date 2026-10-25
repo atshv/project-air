@@ -1,0 +1,17 @@
+{
+  "task": "P2-01",
+  "gate": "cpp-unit",
+  "command": "cmake -S packages/engine -B packages/engine/build -DCMAKE_BUILD_TYPE=Debug && cmake --build packages/engine/build --parallel && ctest --test-dir packages/engine/build --output-on-failure",
+  "exit_code": 0,
+  "result": "pass",
+  "slot": null,
+  "exclusive": [],
+  "lock_wait_s": 0.0,
+  "lock_warning": null,
+  "started": "2026-10-25T13:39:44+00:00",
+  "finished": "2026-10-25T13:39:47+00:00",
+  "commit": "65a02b8ad8e35545d800fd183045f8fa83bbc9e8",
+  "dirty": true,
+  "log": "P2-01-cpp-unit-20261025T133944Z.log",
+  "log_sha256": "e5630e34d88ce43c97514e70a3754b23456b4f50b2ba222230374697bd9b2408"
+}

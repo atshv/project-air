@@ -1,0 +1,15 @@
+# P2-01 boundaries check (not a board gate of this task; brief: run as a check)
+# command: python3 "/Users/rasulatashev/Desktop/Polier-main/tools/boundaries.py" .
+# date: 2026-10-25T13:40:14Z
+
+WARN: packages/contracts/test/cpp/parity.cpp:10: cannot resolve include 'contract.h' to a package
+WARN: packages/engine/src/engine.cpp:1: cannot resolve include 'engine/engine.h' to a package
+WARN: packages/engine/src/engine.cpp:5: cannot resolve include 'contract.h' to a package
+WARN: packages/engine/src/engine.cpp:6: cannot resolve include 'tokens.h' to a package
+WARN: packages/engine/test/engine_test.cpp:4: cannot resolve include 'contract.h' to a package
+WARN: packages/engine/test/engine_test.cpp:5: cannot resolve include 'engine/engine.h' to a package
+WARN: packages/engine/test/engine_test.cpp:6: cannot resolve include 'tokens.h' to a package
+WARN: tools/design-check/test/fixtures/clean/packages/engine/src/render/clean.cc:2: cannot resolve include 'tokens.h' to a package
+OK: /Users/rasulatashev/Desktop/KI Projekte/Project air-P2-01: 21 package(s) respect the import boundaries (8 warning(s))
+
+exit_code=0

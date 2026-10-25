@@ -31,8 +31,21 @@ Exactly these workspace packages, copied from `board.json` -> `packages[]` -> `m
 
 ## Commands
 
-Install, build, lint, typecheck and test: **set by P0-04**, the workspace task. This package defines no command before the workspace exists; the task that adds code expands this section.
+The pinned toolchain is CMake 4.4.4 and Emscripten 6.0.13 with C++20
+([docs/versions.md](../../docs/versions.md)); the engine builds with CMake, not with pnpm.
 
+- **Native build and unit test:**
+  `cmake -S packages/engine -B packages/engine/build -DCMAKE_BUILD_TYPE=Debug && cmake --build packages/engine/build --parallel && ctest --test-dir packages/engine/build --output-on-failure`
+- **WebAssembly build:** `bash packages/engine/tools/build-wasm.sh` from the repository root; the
+  wrapper prepends the Homebrew Emscripten `PATH` (or trusts the CI emsdk) and runs the `emcmake`
+  configure plus build.
+- **Targets:** the `air_engine` library, the CTest suite `engine_unit_tests`, and the WASM module
+  `build-wasm/engine.js` plus `engine.wasm` exporting `air_engine_version`.
+- **Gate catalogue:** [docs/gates/cpp-cmake.md](../../docs/gates/cpp-cmake.md) and
+  [docs/gates/wasm-emscripten.md](../../docs/gates/wasm-emscripten.md).
+
+The committed generated headers (`packages/contracts/generated/contract.h`, `packages/ui-kit/tokens.h`)
+are included read-only; the engine never copies or edits them.
 
 ## References
 

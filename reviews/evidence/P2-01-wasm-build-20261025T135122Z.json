@@ -1,0 +1,17 @@
+{
+  "task": "P2-01",
+  "gate": "wasm-build",
+  "command": "bash packages/engine/tools/build-wasm.sh",
+  "exit_code": 0,
+  "result": "pass",
+  "slot": null,
+  "exclusive": [],
+  "lock_wait_s": 0.0,
+  "lock_warning": null,
+  "started": "2026-10-25T13:51:22+00:00",
+  "finished": "2026-10-25T13:51:24+00:00",
+  "commit": "65a02b8ad8e35545d800fd183045f8fa83bbc9e8",
+  "dirty": true,
+  "log": "P2-01-wasm-build-20261025T135122Z.log",
+  "log_sha256": "9ca62fb380267e076d0547c2d50c4533585967ea6755a80ee27148fee3875baf"
+}

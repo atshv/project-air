@@ -1,0 +1,8 @@
+# P2-01 A3 export check
+# command: node -e "const create=require('./packages/engine/build-wasm/engine.js');create().then(m=>{const v=m.UTF8ToString(m._air_engine_version());if(v!=='0.1.0')throw new Error(v);console.log('engine.wasm exports air_engine_version:',v)})"
+# date: 2026-10-25T13:40:10Z
+
+-rw-r--r--@ 1 rasulatashev  staff  9182 Oct 25 14:39 packages/engine/build-wasm/engine.js
+-rwxr-xr-x@ 1 rasulatashev  staff   138 Oct 25 14:39 packages/engine/build-wasm/engine.wasm
+engine.wasm exports air_engine_version: 0.1.0
+exit_code=0
