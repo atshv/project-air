@@ -33,7 +33,7 @@
       "title": "Foundation",
       "goal": "A complete, empty monorepo in which every guard against parallel-agent failures works before any product code exists.",
       "exit_criteria": [
-        "Every packages[] folder exists with a README; package map and versions are filled in.",
+        "Every packages[] folder exists with a README and an ARCHITECTURE.md; package map and versions are filled in.",
         "Two worktrees run tests side by side without port or database collision; two e2e runs wait for each other.",
         "CI rejects a pull request that leaves its scope, adds a raw colour, hard-codes UI text or lacks a change entry.",
         "Release 0.0.1 and one preview ran end to end through CI from a tag."
@@ -362,7 +362,7 @@
       "satisfies": [
         "D6"
       ],
-      "status": "pending",
+      "status": "blocked",
       "depends_on": [],
       "complexity": 2,
       "stage": "foundation",
@@ -397,8 +397,8 @@
     },
     {
       "id": "P0-03",
-      "title": "Workspace folders and package READMEs",
-      "goal": "Every packages[] folder exists with a README stating its purpose, and the package map lists them.",
+      "title": "Workspace folders, package READMEs and architectures",
+      "goal": "Every packages[] folder exists with a README stating its purpose and an ARCHITECTURE.md, and the package map lists them.",
       "why": "All later tasks write inside these folders; check.py requires them.",
       "satisfies": [
         "D1"
@@ -446,10 +446,12 @@
       "acceptance": [
         "A1",
         "A2",
-        "A3"
+        "A3",
+        "A4"
       ],
       "gates": [
-        "board-check"
+        "board-check",
+        "boundaries"
       ],
       "owner": null,
       "branch": "task/P0-03",
@@ -1127,6 +1129,12 @@
       "id": "ADR-0001",
       "title": "Monorepo with packages, services, apps, tools and infra",
       "file": "docs/adr/ADR-0001-monorepo.md"
+    },
+    {
+      "date": "2026-10-25",
+      "id": "ADR-0002",
+      "title": "Local-first build until the GitHub switch",
+      "file": "docs/adr/ADR-0002-local-first.md"
     }
   ],
   "open_questions": [

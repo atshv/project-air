@@ -11,7 +11,7 @@
 - State: waiting for the owner decision
 - Owner decision: `pending`
 - Exit gates: `board-check` (missing record), `ci-green` (missing record), `design-check` (missing record), `language-check` (missing record), `changelog-entry` (missing record), `release-dry` (missing record)
-- Exit criteria: Every packages[] folder exists with a README; package map and versions are filled in.; Two worktrees run tests side by side without port or database collision; two e2e runs wait for each other.; CI rejects a pull request that leaves its scope, adds a raw colour, hard-codes UI text or lacks a change entry.; Release 0.0.1 and one preview ran end to end through CI from a tag.
+- Exit criteria: Every packages[] folder exists with a README and an ARCHITECTURE.md; package map and versions are filled in.; Two worktrees run tests side by side without port or database collision; two e2e runs wait for each other.; CI rejects a pull request that leaves its scope, adds a raw colour, hard-codes UI text or lacks a change entry.; Release 0.0.1 and one preview ran end to end through CI from a tag.
 - Tasks: P0-02, P0-03, P0-04, P0-06, P0-07, P0-08, P0-09, P0-10, P0-11, P0-12, P0-13, P0-14, P0-15, P0-16, P0-17, P0-18
 
 ### Stage 2 — `contract` Contract
@@ -109,8 +109,7 @@
 
 ## Ready now
 
-- `P0-02` Protect main and document repository settings
-- `P0-03` Workspace folders and package READMEs
+- `P0-03` Workspace folders, package READMEs and architectures
 - `P0-10` Adapt design rules to this project
 
 ## Done
@@ -123,12 +122,11 @@
 
 ## Blocked / failed
 
-- none
+- [!] `P0-02` Protect main and document repository settings — status: `blocked` — owner: —
 
 ## Open
 
-- [ ] `P0-02` Protect main and document repository settings — status: `pending` — owner: —
-- [ ] `P0-03` Workspace folders and package READMEs — status: `pending` — owner: —
+- [ ] `P0-03` Workspace folders, package READMEs and architectures — status: `pending` — owner: —
 - [ ] `P0-04` Workspaces, build orchestration and pinned versions — status: `pending` — owner: —
 - [ ] `P0-06` Per-slot dev setup and teardown — status: `pending` — owner: —
 - [ ] `P0-07` Local services compose — status: `pending` — owner: —
@@ -147,6 +145,7 @@
 ## Decisions
 
 - 2026-10-25 `ADR-0001` Monorepo with packages, services, apps, tools and infra (`docs/adr/ADR-0001-monorepo.md`)
+- 2026-10-25 `ADR-0002` Local-first build until the GitHub switch (`docs/adr/ADR-0002-local-first.md`)
 
 ## Open questions
 

@@ -20,13 +20,13 @@ Each package gets:
 
 DSH loads a nested `AGENTS.md` automatically; Claude Code reads it through the brief's context pack.
 
-**Stage 1:** write per-package files only for the packages created in stage 1. Later packages get theirs in the stage that creates them — no empty folders.
+**Stage 1:** the scaffold task creates every `packages[]` folder from the board with a `README.md` and an `ARCHITECTURE.md` (≤ 400 words). `check.py` rejects an existing package folder without an `ARCHITECTURE.md`, so both files are written together; the stage that adds the package's code expands its architecture text and commands. No empty folders.
 
 ## Dependency direction
 
 - Packages import only what `packages[].may_import` allows. The `boundaries` gate (`python3 <package>/tools/boundaries.py .`) enforces it and names file, line and package on a violation.
 - Dependencies point one way and never form a cycle. A cycle means merge the packages or move the shared part into a contract.
-- Cross-package interfaces live in `docs/contracts/` and are versioned. A contract change updates every dependant in the same task or lists a lead-approved follow-up.
+- Cross-package interfaces live in `packages/contracts` as versioned JSON Schema; `docs/contracts.md` explains them in prose (stage contract). A contract change updates every dependant in the same task or lists a lead-approved follow-up.
 
 ## Ownership and writes
 
