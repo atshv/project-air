@@ -117,10 +117,7 @@
 
 ## Ready now
 
-- `P0-25` Grouped zoom control and invisible anchors
-  - P0-24: Closed P0-24: demo edge is a curve along anchor normals, anchors are visible (8 px, --fg/--tone-d), and +/−/fit zoom controls work (CSS glyphs, preview-only).
-  - P0-24: Meta line shows P0-24 with date/time; controls keep drag/keyboard correct under zoom and mobile has no overflow.
-  - P0-24: Product zoom control will use ui-kit icons in the engine stage; this demo stays in sync with every preview change.
+- none
 
 ## Done
 
@@ -145,7 +142,7 @@
 
 ## In progress
 
-- none
+- [ ] `P0-25` Grouped zoom control and invisible anchors — status: `in_progress` — owner: —
 
 ## Blocked / failed
 
@@ -157,7 +154,13 @@
 - [ ] `P0-15` Release command and tag-based CI release — status: `pending` — owner: —
 - [ ] `P0-16` Dependency updates and Polier update check — status: `pending` — owner: —
 - [ ] `P0-17` RELEASING.md and release 0.0.1 — status: `pending` — owner: —
-- [ ] `P0-25` Grouped zoom control and invisible anchors — status: `pending` — owner: —
+
+<!-- polier:claims -->
+## Claims
+
+- `P0-25` in progress by dsh since 2026-10-25T10:53:53+00:00 — worktree: /Users/rasulatashev/Desktop/KI Projekte/Project air-P0-25 · slot 1
+
+<!-- /polier:claims -->
 
 ## Decisions
 
