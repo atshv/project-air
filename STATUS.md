@@ -16,8 +16,8 @@
 
 ### Stage 2 — `contract` Contract
 
-- State: waiting for the owner decision
-- Owner decision: `pending`
+- State: complete
+- Owner decision: `continue`
 - Exit gates: `contracts`, `codegen`
 - Exit criteria: contracts 0.1.0 tagged; every schema has a valid and an invalid fixture.; TS and C++ read the same fixtures identically.
 - Tasks: P1-01, P1-02, P1-03, P1-04, P1-05, P1-06, P1-07

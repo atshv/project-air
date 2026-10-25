@@ -68,7 +68,7 @@
         "contracts",
         "codegen"
       ],
-      "owner_decision": "pending",
+      "owner_decision": "continue",
       "depends_on": [
         "foundation"
       ]
