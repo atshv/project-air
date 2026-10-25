@@ -119,10 +119,7 @@
 
 ## Ready now
 
-- `P2-02` Engine core model and render command buffer
-  - P2-01: Closed P2-01: pinned CMake 4.4.4 + Emscripten 6.0.13 with portable packages/engine/tools/build-wasm.sh; C++20 air_engine builds natively (CTest 1/1) and to engine.wasm/engine.js.
-  - P2-01: Gate docs cpp-cmake/wasm-emscripten carry the exact commands; wasm-build is one wrapper command (Homebrew Emscripten or a pinned emsdk on PATH); wasm-size is assigned to P2-03.
-  - P2-01: Review pass with 3 minor doc fixes; build dirs gitignored; disk is tight (~1.2 GiB) - clean build dirs/worktrees after each engine task.
+- none
 
 ## Done
 
@@ -156,7 +153,7 @@
 
 ## In progress
 
-- none
+- [ ] `P2-02` Engine core model and render command buffer — status: `in_progress` — owner: —
 
 ## Blocked / failed
 
@@ -168,10 +165,16 @@
 - [ ] `P0-15` Release command and tag-based CI release — status: `pending` — owner: —
 - [ ] `P0-16` Dependency updates and Polier update check — status: `pending` — owner: —
 - [ ] `P0-17` RELEASING.md and release 0.0.1 — status: `pending` — owner: —
-- [ ] `P2-02` Engine core model and render command buffer — status: `pending` — owner: —
 - [ ] `P2-03` WebGL2 renderer, TS bridge and engine playground — status: `pending` — owner: —
 - [ ] `P2-04` Performance baseline and measured report — status: `pending` — owner: —
 - [ ] `P2-05` Engine architecture ADR, module docs and stage showcase — status: `pending` — owner: —
+
+<!-- polier:claims -->
+## Claims
+
+- `P2-02` in progress by dsh since 2026-10-25T13:52:30+00:00 — worktree: /Users/rasulatashev/Desktop/KI Projekte/Project air-P2-02 · slot 1
+
+<!-- /polier:claims -->
 
 ## Decisions
 

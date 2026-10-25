@@ -2172,7 +2172,7 @@
       ]
     },
     {
-      "status": "pending",
+      "status": "in_progress",
       "stage": "engine-spike",
       "parallel_group": null,
       "owner": null,
@@ -2218,7 +2218,7 @@
         "cpp-unit"
       ],
       "branch": "task/P2-02",
-      "worktree": null
+      "worktree": "../Project air-P2-02"
     },
     {
       "status": "pending",
