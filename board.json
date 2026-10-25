@@ -24,7 +24,9 @@
       "ECONNREFUSED",
       "ERR_CONNECTION_REFUSED",
       "EADDRINUSE",
-      "address already in use"
+      "address already in use",
+      "software webgl renderer",
+      "swiftshader"
     ]
   },
   "stages": [
@@ -2319,6 +2321,7 @@
       "complexity": 5,
       "scope_write": [
         "packages/engine/",
+        "apps/engine-playground/",
         "docs/engine/",
         "docs/gates/",
         "docs/quality.md",

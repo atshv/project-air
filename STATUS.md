@@ -169,13 +169,6 @@
 - [ ] `P0-17` RELEASING.md and release 0.0.1 — status: `pending` — owner: —
 - [ ] `P2-05` Engine architecture ADR, module docs and stage showcase — status: `pending` — owner: —
 
-<!-- polier:claims -->
-## Claims
-
-- `P2-04` in progress by dsh since 2026-10-25T14:56:59+00:00 — worktree: /Users/rasulatashev/Desktop/KI Projekte/Project air-P2-04 · slot 1
-
-<!-- /polier:claims -->
-
 ## Decisions
 
 - 2026-10-25 `ADR-0001` Monorepo with packages, services, apps, tools and infra (`docs/adr/ADR-0001-monorepo.md`)
