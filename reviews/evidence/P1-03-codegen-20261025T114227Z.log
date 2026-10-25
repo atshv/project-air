@@ -1,0 +1,18 @@
+$ pnpm --filter ./packages/contracts run codegen && git diff --exit-code -- packages/contracts
+[exit 0]
+
+contracts codegen: wrote generated/types.ts, generated/contract.h
+✓ Lockfile passes supply-chain policies (verified 3h ago)
+Lockfile is up to date, resolution step is skipped
+Packages: +97
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Progress: resolved 97, reused 97, downloaded 0, added 97, done
+
+devDependencies:
++ eslint 10.13.0
++ turbo 2.11.10
++ typescript 5.9.3
++ typescript-eslint 8.72.0
+
+Done in 315ms using pnpm v12.14.0
+$ node codegen.mjs

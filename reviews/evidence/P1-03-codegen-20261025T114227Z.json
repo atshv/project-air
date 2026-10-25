@@ -1,0 +1,17 @@
+{
+  "task": "P1-03",
+  "gate": "codegen",
+  "command": "pnpm --filter ./packages/contracts run codegen && git diff --exit-code -- packages/contracts",
+  "exit_code": 0,
+  "result": "pass",
+  "slot": null,
+  "exclusive": [],
+  "lock_wait_s": 0.0,
+  "lock_warning": null,
+  "started": "2026-10-25T11:42:27+00:00",
+  "finished": "2026-10-25T11:42:27+00:00",
+  "commit": "05773cee930c8677782b1676861b42a1c3718c18",
+  "dirty": true,
+  "log": "P1-03-codegen-20261025T114227Z.log",
+  "log_sha256": "38a623674125efddb34c61dcbed9c2261154fc25ab4d02b9cecf184b43f6c4d1"
+}

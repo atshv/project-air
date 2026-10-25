@@ -51,7 +51,7 @@ task from the project's manifests; until then the gate cannot pass.
 | `smoke` | `python3 $POLIER/tools/smoke.py --url <environment-url> --expect-status 200 --path /` | exit 0, `SMOKE OK` |
 | `release` | `python3 $POLIER/tools/release_check.py .` | exit 0 on a tag of `main` |
 | `contracts` | `python3 $POLIER/tools/contracts.py check` | exit 0 |
-| `codegen` | `[VERIFY: stage contract]` | exit 0, TS and C++ read the same fixtures |
+| `codegen` | `pnpm --filter ./packages/contracts run codegen && git diff --exit-code -- packages/contracts` | exit 0, generated TS/C++ unchanged |
 | `cpp-unit` | see `docs/gates/cpp-cmake.md` `[VERIFY: stage engine-spike]` | exit 0 |
 | `wasm-build` | see `docs/gates/wasm-emscripten.md` `[VERIFY: stage engine-spike]` | exit 0, `.wasm` within size budget |
 | `perf-baseline`, `perf` | see `docs/gates/load.md` `[VERIFY: stage engine-spike]` | exit 0, within budget (exclusive) |

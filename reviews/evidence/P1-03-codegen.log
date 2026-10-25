@@ -1,0 +1,122 @@
+# P1-03 - codegen TS + C++ with identical fixtures: manual evidence
+
+worktree: /Users/rasulatashev/Desktop/KI Projekte/Project air-P1-03 (branch task/P1-03, slot 1)
+date (UTC): 2026-10-25T11:42:39Z
+node: v26.11.1
+pnpm: 12.14.0
+C++ compiler: Apple clang version 21.0.0 (clang-2100.1.1.101), no CMake/Emscripten used
+POLIER: /Users/rasulatashev/Desktop/Polier-main (tag v1.0.0)
+HEAD at gate time: 05773cee930c8677782b1676861b42a1c3718c18 (parent of the P1-03 commit)
+pnpm-lock.yaml sha256 before and after: 1d0e75f75debff3cf9eb8a3891d6e26ffe5e81b77a4e28002439400bf67f45a9
+
+Deliverable: packages/contracts - codegen.mjs (Node builtins), committed generated/types.ts and
+generated/contract.h, the TS/C++ fixture parity harness (test/parity/canonical.ts,
+test/cpp/parity.cpp with a self-written JSON reader), tests, tsconfig/typecheck, README/ARCHITECTURE
+and `.changes/P1-03-codegen.md`. Contract version stays 0.1.0; no dependency added; lockfile
+unchanged.
+
+## 1. board-check - run BEFORE any pnpm install
+
+Preparation: no node_modules/ existed when the gate ran.
+
+command: python3 /Users/rasulatashev/Desktop/Polier-main/tools/gate.py --task P1-03 --name board-check -- python3 /Users/rasulatashev/Desktop/Polier-main/tools/check.py .
+result: PASS, exit 0
+record: reviews/evidence/P1-03-board-check-20261025T114222Z.json
+log:    reviews/evidence/P1-03-board-check-20261025T114222Z.log
+output:
+    WARN: budgets.status overridden to 1900 words (...)
+    WARN: P0-02: context pack is about 30595 tokens (warning at 15000); ...
+    WARN: P1-03: context pack is about 74293 tokens (warning at 15000); ...
+    OK: /Users/rasulatashev/Desktop/KI Projekte/Project air-P1-03 passes the mandatory checks. (3 warning(s))
+
+## 2. gate: codegen (exit 0, empty diff)
+
+command: python3 /Users/rasulatashev/Desktop/Polier-main/tools/gate.py --task P1-03 --name codegen --shell "pnpm --filter ./packages/contracts run codegen && git diff --exit-code -- packages/contracts"
+result: PASS, exit 0
+record: reviews/evidence/P1-03-codegen-20261025T114227Z.json
+log:    reviews/evidence/P1-03-codegen-20261025T114227Z.log
+
+The generated files were staged before the gate, so `git diff --exit-code -- packages/contracts`
+compares the working tree with the staged committed content. pnpm installed the already pinned root
+devDependencies first (verify-deps-before-run, after board-check) and reported "Lockfile is up to
+date"; the gate then regenerated the files and the diff was empty.
+
+Double-run proof (two `node codegen.mjs` runs, sha256 identical):
+    5d529e1f76b86cb39b9921c44fa6ccbfd053f6a3c13d76519e5f1b502901776d  generated/types.ts
+    42d8b1bc0a6c051c68c3a1e1da845a938fd8b521f38508fdb66572e6820caef5  generated/contract.h
+The output has a generated-file banner, the contract version 0.1.0, LF endings, sorted names and no
+timestamps or absolute paths; the codegen test asserts a second render is byte-identical.
+
+## 3. gate: unit (exit 0, C++ parity included)
+
+command: python3 /Users/rasulatashev/Desktop/Polier-main/tools/gate.py --task P1-03 --name unit -- pnpm --filter ./packages/contracts test
+result: PASS, exit 0
+record: reviews/evidence/P1-03-unit-20261025T114231Z.json
+log:    reviews/evidence/P1-03-unit-20261025T114231Z.log
+output: 49 tests, 49 pass, 0 fail (37 existing schema/model tests + 6 codegen tests + 6 parity tests)
+
+Parity result: 77 fixtures (32 valid, 45 invalid), TypeScript canonical lines == C++ canonical lines
+for every fixture. The C++ side is built by the test with the local compiler:
+
+    clang++ -std=c++20 -Wall -Wextra -Wpedantic -Werror -O1 -I generated -o <tmp>/contract-parity test/cpp/parity.cpp
+
+The test fails with a clear message if neither clang++ nor g++ is on PATH; it never silently skips.
+A tampered canonical line is detected by the diff check (parity test "a tampered canonical line is
+detected as a parity difference").
+
+## 4. typecheck and lint (exit 0, supplementary)
+
+command: pnpm --filter ./packages/contracts typecheck
+    $ tsc --noEmit --project tsconfig.json
+    exit 0
+  tsconfig.json covers generated/types.ts and test/parity/canonical.ts; the parity harness uses the
+  generated entity/operation types, so the typecheck proves the generated TS model.
+command: pnpm --filter ./packages/contracts lint
+    $ eslint --max-warnings=0 .
+    exit 0
+
+## 5. Generated model (A1/A2)
+
+generated/types.ts: Account, Workspace, Board, Note, Card, Zone, Block, Edge, BoardContent,
+CardEndpoint interfaces; AccountLocale, BlockType, BoardVisibility, DeleteZonePolicy, OperationType
+enums; one payload interface per operation (CreateNotePayload ... UpdateBlockPayload,
+GroupPayload/GroupInversePayload); the discriminated Operation union, the embedded OperationInverse
+pair and the payload unions; CONTRACT_VERSION = "0.1.0".
+
+generated/contract.h: `#pragma once`, `namespace project_air::contracts`, entity and payload structs
+(std::string/double/bool, std::optional, std::vector), enum class enums, std::variant payload unions,
+OperationInverse/Operation and `inline constexpr const char* kContractVersion = "0.1.0";`. It
+compiles clean with `-std=c++20 -Wall -Wextra -Wpedantic -Werror`.
+
+The generator reads schemas/ generically (entities, local `$defs`, operation payload `$defs`,
+if/then discriminators, enums, optional/nullable fields, arrays, external `$ref`s) and special-cases
+only the operation envelope composition (union + inverse pair + group recursion).
+
+## 6. Parity harness (A3)
+
+- test/parity/canonical.ts: reduce each fixture wrapper to
+  `fixture|schema|valid|type|inverse|ids|fields|reason` (normalized reason, sorted unique UUID ids,
+  sorted top-level fields); pure TypeScript, type-checked against the generated types.
+- test/cpp/parity.cpp: self-written JSON reader (objects/arrays/strings/numbers/bools/null, escapes
+  and `\u`), includes generated/contract.h, instantiates the generated operation model, prints the
+  same canonical lines for the fixture paths given on the command line.
+- test/parity.test.mjs: compiles the C++ program, runs it over all 77 relative fixture paths, and
+  asserts both line sets are identical; also asserts 77 fixtures / 10 schemas / 45 invalid and that
+  invalid fixtures keep valid=false and model fields in the description.
+
+## 7. A4 - gates
+
+board-check (run with no node_modules/), codegen (empty diff) and unit (with C++ parity) all exit 0
+through gate.py; the three records are committed with the single P1-03 commit.
+
+## 8. Known limits and open questions
+
+- The C++ compiler version is not pinned in docs/versions.md (that file is outside this task's scope);
+  the local Apple clang 21 is used and recorded here. A clang row should be added by the lead/P1-06.
+- The parity canonical form is a normalized description (type, ids, inverse type, sorted fields,
+  reason), not a full JSON Schema validation in C++; runtime validation is out of scope (P1-04/engine).
+- The C++ payload union maps operation/inverse type to the payload structs generated from the
+  schema `$defs`; the group payloads are recursive through std::vector, which compiles with the
+  local compiler because std::vector supports incomplete element types.
+- Generated files are committed and are checked by the codegen gate; a schema change requires
+  `codegen` in the same task (AD-3).

@@ -1791,7 +1791,7 @@
       "satisfies": [
         "D7"
       ],
-      "status": "in_progress",
+      "status": "done",
       "depends_on": [
         "P1-02"
       ],
@@ -1827,11 +1827,20 @@
       ],
       "owner": null,
       "branch": "task/P1-03",
-      "worktree": "../Project air-P1-03",
+      "worktree": null,
       "round": 0,
-      "evidence": [],
+      "evidence": [
+        "reviews/evidence/P1-03-board-check-20261025T114222Z.json",
+        "reviews/evidence/P1-03-codegen-20261025T114227Z.json",
+        "reviews/evidence/P1-03-unit-20261025T114231Z.json"
+      ],
       "scope_write_forbidden": [
         "reference/"
+      ],
+      "handoff": [
+        "Closed P1-03: deterministic codegen from schemas to generated/types.ts and generated/contract.h; codegen twice leaves no diff.",
+        "Parity proof: 77 fixtures (32 valid/45 invalid) produce identical TS and C++ canonical results; local clang++ builds the C++ test without third-party libraries.",
+        "P1-04/P1-05 extend the contract; P1-06 documents/taggs 0.1.0. Generated files are committed."
       ]
     }
   ],

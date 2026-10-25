@@ -18,7 +18,7 @@
 
 - State: waiting for the owner decision
 - Owner decision: `pending`
-- Exit gates: `contracts` (missing record), `codegen` (missing record)
+- Exit gates: `contracts` (missing record), `codegen`
 - Exit criteria: contracts 0.1.0 tagged; every schema has a valid and an invalid fixture.; TS and C++ read the same fixtures identically.
 - Tasks: P1-01, P1-02, P1-03
 
@@ -143,10 +143,11 @@
 - [x] `P0-25` Grouped zoom control and invisible anchors — status: `done` — owner: —
 - [x] `P1-01` Board content data model as JSON Schema — status: `done` — owner: —
 - [x] `P1-02` Operations, inverse operations and group — status: `done` — owner: —
+- [x] `P1-03` Codegen TS + C++ with identical fixtures — status: `done` — owner: —
 
 ## In progress
 
-- [ ] `P1-03` Codegen TS + C++ with identical fixtures — status: `in_progress` — owner: —
+- none
 
 ## Blocked / failed
 

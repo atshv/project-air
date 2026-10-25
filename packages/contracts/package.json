@@ -3,9 +3,11 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
-  "description": "Board-content data model and operations as JSON Schema 2020-12 (contract 0.1.0) with valid and invalid fixtures.",
+  "description": "Board-content data model and operations as JSON Schema 2020-12 (contract 0.1.0); codegen to TypeScript and C++ with fixture parity.",
   "scripts": {
+    "codegen": "node codegen.mjs",
     "test": "node --test test/*.test.mjs",
+    "typecheck": "tsc --noEmit --project tsconfig.json",
     "lint": "eslint --max-warnings=0 ."
   }
 }
