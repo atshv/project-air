@@ -105,7 +105,7 @@
         "api-tests",
         "rls-tests"
       ],
-      "owner_decision": "pending",
+      "owner_decision": "continue",
       "depends_on": [
         "contract"
       ]
@@ -2424,6 +2424,287 @@
         "Showcase: P2-05-desktop.png 1440x900, P2-05-mobile.png 390x844, P2-05-playground.log with literal serve/curl/capture commands; screenshots are visual evidence only, perf evidence is P2-04.",
         "Review pass (6 minor doc fixes applied); D8's M1 60 fps is unproven - owner accepted the M2 proxy; re-measure on the reference hardware before hardware exit."
       ]
+    },
+    {
+      "status": "pending",
+      "stage": "backend-core",
+      "parallel_group": null,
+      "owner": null,
+      "round": 0,
+      "evidence": [],
+      "scope_write_forbidden": [
+        "reference/"
+      ],
+      "id": "P3-01",
+      "title": "Backend scaffold, PostgreSQL and local Compose",
+      "goal": "services/platform and services/auth exist as Node/TypeScript ESM packages with configuration, HTTP skeleton, health endpoints and a migration runner; the Compose stack gains a pinned Kratos service with its own database, and the slot setup creates the extra database and app role.",
+      "why": "Every backend task builds on this package layout, configuration, database connection and local service stack.",
+      "satisfies": [
+        "D9"
+      ],
+      "depends_on": [],
+      "complexity": 5,
+      "scope_write": [
+        "services/platform/",
+        "services/auth/",
+        "infra/",
+        "tools/dev/",
+        "docs/versions.md",
+        "pnpm-lock.yaml",
+        "docs/gates/",
+        ".changes/"
+      ],
+      "scope_read": [
+        "ARCHITECTURE.md",
+        "AGENTS.md",
+        "STATUS.md",
+        "docs/module-map.md",
+        "docs/quality.md",
+        "docs/versions.md",
+        "docs/gates/postgres.md",
+        "docs/gates/node-ts.md",
+        "docs/contracts.md",
+        "docs/adr/ADR-0007-auth.md",
+        "infra/compose/compose.yaml",
+        "tools/dev/",
+        "packages/contracts/generated/types.ts"
+      ],
+      "acceptance": [
+        "A1",
+        "A2",
+        "A3",
+        "A4"
+      ],
+      "gates": [
+        "board-check",
+        "boundaries",
+        "unit",
+        "compose-config"
+      ],
+      "branch": "task/P3-01",
+      "worktree": null
+    },
+    {
+      "status": "pending",
+      "stage": "backend-core",
+      "parallel_group": null,
+      "owner": null,
+      "round": 0,
+      "evidence": [],
+      "scope_write_forbidden": [
+        "reference/"
+      ],
+      "id": "P3-02",
+      "title": "PostgreSQL schema, migrations and RLS policies",
+      "goal": "Versioned migrations create profiles, workspaces, memberships, boards, notes and cards with constraints and indexes, and row-level security enforces workspace membership for the restricted app role; migration and policy tests run against the slot database.",
+      "why": "The API and the isolation tests need one schema and one policy set; AD-4 and AD-5 bind here.",
+      "satisfies": [
+        "D9"
+      ],
+      "depends_on": [
+        "P3-01"
+      ],
+      "complexity": 6,
+      "scope_write": [
+        "services/platform/",
+        "infra/migrations/",
+        "tools/dev/",
+        ".changes/"
+      ],
+      "scope_read": [
+        "ARCHITECTURE.md",
+        "AGENTS.md",
+        "STATUS.md",
+        "docs/module-map.md",
+        "docs/quality.md",
+        "docs/contracts.md",
+        "docs/gates/postgres.md",
+        "packages/contracts/generated/types.ts",
+        "infra/"
+      ],
+      "acceptance": [
+        "A1",
+        "A2",
+        "A3",
+        "A4"
+      ],
+      "gates": [
+        "board-check",
+        "unit"
+      ],
+      "branch": "task/P3-02",
+      "worktree": null
+    },
+    {
+      "status": "pending",
+      "stage": "backend-core",
+      "parallel_group": null,
+      "owner": null,
+      "round": 0,
+      "evidence": [],
+      "scope_write_forbidden": [
+        "reference/"
+      ],
+      "id": "P3-03",
+      "title": "Auth service with self-hosted Ory Kratos",
+      "goal": "services/auth validates sessions against self-hosted Ory Kratos, creates invited identities through its admin API and exposes a signed test-session mode for integration tests; Kratos runs from Compose with its identity schema, Mailpit courier and its own database.",
+      "why": "ADR-0007: Kratos owns identities; the platform needs only a session check (AD-5) and invitations.",
+      "satisfies": [
+        "D9"
+      ],
+      "depends_on": [
+        "P3-02"
+      ],
+      "complexity": 6,
+      "scope_write": [
+        "services/auth/",
+        "infra/compose/",
+        "infra/kratos/",
+        "tools/dev/",
+        "docs/versions.md",
+        "docs/gates/",
+        ".changes/"
+      ],
+      "scope_read": [
+        "ARCHITECTURE.md",
+        "AGENTS.md",
+        "STATUS.md",
+        "docs/module-map.md",
+        "docs/quality.md",
+        "docs/contracts.md",
+        "docs/adr/ADR-0007-auth.md",
+        "infra/",
+        "services/platform/"
+      ],
+      "acceptance": [
+        "A1",
+        "A2",
+        "A3",
+        "A4"
+      ],
+      "gates": [
+        "board-check",
+        "boundaries",
+        "unit",
+        "compose-config"
+      ],
+      "branch": "task/P3-03",
+      "worktree": null
+    },
+    {
+      "status": "pending",
+      "stage": "backend-core",
+      "parallel_group": null,
+      "owner": null,
+      "round": 0,
+      "evidence": [],
+      "scope_write_forbidden": [
+        "reference/"
+      ],
+      "id": "P3-04",
+      "title": "Platform API routes and api-tests",
+      "goal": "The platform API serves workspace, board, note and card envelopes from the contract with owner/editor/reader permission checks and the shared error envelope, and every route has an allow-and-deny API test.",
+      "why": "Stage exit needs a tested allow/deny API surface; the SDK and realtime build on these routes.",
+      "satisfies": [
+        "D9"
+      ],
+      "depends_on": [
+        "P3-03"
+      ],
+      "complexity": 6,
+      "exclusive": [
+        "db"
+      ],
+      "scope_write": [
+        "services/platform/",
+        ".changes/"
+      ],
+      "scope_read": [
+        "ARCHITECTURE.md",
+        "AGENTS.md",
+        "STATUS.md",
+        "docs/module-map.md",
+        "docs/quality.md",
+        "docs/contracts.md",
+        "docs/gates/postgres.md",
+        "packages/contracts/",
+        "services/auth/",
+        "services/platform/"
+      ],
+      "acceptance": [
+        "A1",
+        "A2",
+        "A3",
+        "A4"
+      ],
+      "gates": [
+        "board-check",
+        "boundaries",
+        "unit",
+        "api-tests"
+      ],
+      "branch": "task/P3-04",
+      "worktree": null
+    },
+    {
+      "status": "pending",
+      "stage": "backend-core",
+      "parallel_group": null,
+      "owner": null,
+      "round": 0,
+      "evidence": [],
+      "scope_write_forbidden": [
+        "reference/"
+      ],
+      "id": "P3-05",
+      "title": "SDK, RLS tests and backend acceptance",
+      "goal": "The typed SDK creates an account, workspace, board and note; the acceptance script proves a second account sees nothing; rls-tests prove workspace isolation at the database level for the app role; an ADR records the API and session model.",
+      "why": "This closes the backend-core exit criteria (SDK script, second account sees nothing, RLS green).",
+      "satisfies": [
+        "D9"
+      ],
+      "depends_on": [
+        "P3-04"
+      ],
+      "complexity": 5,
+      "exclusive": [
+        "db"
+      ],
+      "scope_write": [
+        "packages/sdk/",
+        "services/platform/test/rls/",
+        "tools/dev/",
+        "docs/adr/",
+        "docs/quality.md",
+        "docs/contracts.md",
+        ".changes/"
+      ],
+      "scope_read": [
+        "ARCHITECTURE.md",
+        "AGENTS.md",
+        "STATUS.md",
+        "docs/module-map.md",
+        "docs/quality.md",
+        "docs/contracts.md",
+        "docs/adr/",
+        "packages/contracts/generated/types.ts",
+        "services/platform/",
+        "services/auth/"
+      ],
+      "acceptance": [
+        "A1",
+        "A2",
+        "A3",
+        "A4"
+      ],
+      "gates": [
+        "board-check",
+        "boundaries",
+        "unit",
+        "rls-tests"
+      ],
+      "branch": "task/P3-05",
+      "worktree": null
     }
   ],
   "decisions": [
@@ -2468,6 +2749,11 @@
       "id": "ADR-0007",
       "title": "Self-hosted Ory Kratos for authentication",
       "file": "docs/adr/ADR-0007-auth.md"
+    },
+    {
+      "date": "2026-10-25",
+      "id": "ADR-0008",
+      "title": "API and session model"
     }
   ],
   "open_questions": [

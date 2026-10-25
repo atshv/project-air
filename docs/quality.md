@@ -27,6 +27,11 @@ v1) are added as D7 … when those stages are planned in detail.
   render at 60 fps on the reference hardware (MacBook Air M1, 8 GB, Chrome), the WASM artifact
   stays within 300 KiB gzip, and a measured performance report plus an ADR for the engine
   architecture exist.
+- **D9** Backend core (stage backend-core): PostgreSQL migrations create the workspace/board/note/card
+  schema and row-level security protects every workspace; the platform API serves those resources
+  with allow-and-deny tests for every route (`api-tests`); `rls-tests` prove a second account sees
+  nothing; a typed SDK script creates account, workspace, board and note; sessions come from the
+  self-hosted Ory Kratos (ADR-0007).
 - **D6** Repository discipline: `main` accepts changes only through pull requests with green CI and
   one review; CI runs scope check, boundaries, board check, lint and typecheck on every pull
   request.
@@ -62,7 +67,9 @@ task from the project's manifests; until then the gate cannot pass.
 | `wasm-size` | `node packages/engine/tools/wasm-size.mjs` | exit 0, gzip size <= 307200 bytes (300 KiB); P2-04 records the measured size |
 | `perf-baseline` | `node packages/engine/test/perf/run-perf.mjs` | exit 0, p95 frame time <= 16.7 ms at 50,000 rectangles, real GPU renderer recorded, JSON evidence written (exclusive; see `docs/gates/perf.md`) |
 | `perf` | see `docs/gates/load.md` `[VERIFY: stage engine-core]` | exit 0, within budget (exclusive) |
-| `api-tests`, `rls-tests` | see `docs/gates/postgres.md` `[VERIFY: stage backend-core]` | exit 0 |
+| `db-migrate` | `node services/platform/dist/db/migrate.js` | exit 0, migrations applied to the slot database |
+| `api-tests` | `node --test services/platform/test/api/*.test.mjs` | exit 0, every route has an allow and a deny case |
+| `rls-tests` | `node --test services/platform/test/rls/*.test.mjs` | exit 0, a second account sees nothing (exclusive) |
 | `crdt-convergence` | `[VERIFY: stage realtime]` | exit 0, 10,000 rounds without divergence |
 | `load` | see `docs/gates/load.md` `[VERIFY: stage realtime]` | exit 0 (exclusive) |
 | `visual` | see `docs/gates/visual-diff.md` `[VERIFY: stage engine-core]` | exit 0, within tolerance |
