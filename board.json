@@ -1794,6 +1794,12 @@
       "id": "ADR-0003",
       "title": "Remote phase as the last stage before v1",
       "file": "docs/adr/ADR-0003-remote-phase.md"
+    },
+    {
+      "date": "2026-10-25",
+      "id": "ADR-0004",
+      "title": "Contract v1 text limits and board visibility",
+      "file": "docs/adr/ADR-0004-contract-limits-visibility.md"
     }
   ],
   "open_questions": [

@@ -170,6 +170,7 @@
 - 2026-10-25 `ADR-0001` Monorepo with packages, services, apps, tools and infra (`docs/adr/ADR-0001-monorepo.md`)
 - 2026-10-25 `ADR-0002` Local-first build until the GitHub switch (`docs/adr/ADR-0002-local-first.md`)
 - 2026-10-25 `ADR-0003` Remote phase as the last stage before v1 (`docs/adr/ADR-0003-remote-phase.md`)
+- 2026-10-25 `ADR-0004` Contract v1 text limits and board visibility (`docs/adr/ADR-0004-contract-limits-visibility.md`)
 
 ## Open questions
 
