@@ -117,10 +117,7 @@
 
 ## Ready now
 
-- `P0-21` Match the demo connection to the design system
-  - P0-20: Closed P0-20: apps/web/preview/ has a live two-note connection demo (pointer drag, live edge, keyboard nudge 16 px, Home reset, clamping).
-  - P0-20: board-check, changelog-entry and design-check pass; demo is section 01 above the static sections.
-  - P0-20: Serve the page and drag to feel it; engine-spike playground remains the next real engine demo.
+- none
 
 ## Done
 
@@ -139,7 +136,7 @@
 
 ## In progress
 
-- none
+- [ ] `P0-21` Match the demo connection to the design system — status: `in_progress` — owner: —
 
 ## Blocked / failed
 
@@ -153,7 +150,13 @@
 - [ ] `P0-15` Release command and tag-based CI release — status: `pending` — owner: —
 - [ ] `P0-16` Dependency updates and Polier update check — status: `pending` — owner: —
 - [ ] `P0-17` RELEASING.md and release 0.0.1 — status: `pending` — owner: —
-- [ ] `P0-21` Match the demo connection to the design system — status: `pending` — owner: —
+
+<!-- polier:claims -->
+## Claims
+
+- `P0-21` in progress by dsh since 2026-10-25T10:15:50+00:00 — worktree: /Users/rasulatashev/Desktop/KI Projekte/Project air-P0-21 · slot 1
+
+<!-- /polier:claims -->
 
 ## Decisions
 
