@@ -19,6 +19,9 @@ v1) are added as D7 … when those stages are planned in detail.
 - **D5** Changes and releases: every code change carries a `.changes` entry, CHANGELOG.md starts
   at 0.0.1, releases are built by CI from a tag of a clean `main`, and release 0.0.1 plus one
   preview ran end to end with a smoke check.
+- **D7** Contract (stage contract): the board-content model and its operations are versioned JSON
+  Schema with valid and invalid fixtures; TypeScript and C++ read the same fixtures identically;
+  the contract is tagged `0.1.0` and documented in `docs/contracts.md` with an ADR.
 - **D6** Repository discipline: `main` accepts changes only through pull requests with green CI and
   one review; CI runs scope check, boundaries, board check, lint and typecheck on every pull
   request.

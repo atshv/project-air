@@ -1668,6 +1668,55 @@
         "Curved --tone-d edge still snaps to the nearest invisible side-midpoint anchor pair; zoom/fit/drag/keyboard/mobile unchanged.",
         "Meta line shows P0-25 with date/time; preview demo remains in sync with every preview change."
       ]
+    },
+    {
+      "id": "P1-01",
+      "title": "Board content data model as JSON Schema",
+      "goal": "packages/contracts holds the board-content data model (entities, relations, limits) as versioned JSON Schema with valid and invalid fixtures.",
+      "why": "Engine, backend and web must share one contract before exchanging data (AD-3, AD-4).",
+      "satisfies": [
+        "D7"
+      ],
+      "status": "pending",
+      "depends_on": [],
+      "complexity": 6,
+      "stage": "contract",
+      "parallel_group": null,
+      "scope_write": [
+        "packages/contracts/",
+        "pnpm-lock.yaml",
+        ".changes/"
+      ],
+      "scope_read": [
+        "ARCHITECTURE.md",
+        "AGENTS.md",
+        "STATUS.md",
+        "docs/module-map.md",
+        "docs/quality.md",
+        "docs/owner/canvas-suite-blueprint.md",
+        "docs/adr/ADR-0001-monorepo.md",
+        "docs/canvas-acceptance.md",
+        "packages/contracts/README.md",
+        "packages/contracts/ARCHITECTURE.md"
+      ],
+      "acceptance": [
+        "A1",
+        "A2",
+        "A3",
+        "A4"
+      ],
+      "gates": [
+        "unit",
+        "board-check"
+      ],
+      "owner": null,
+      "branch": "task/P1-01",
+      "worktree": null,
+      "round": 0,
+      "evidence": [],
+      "scope_write_forbidden": [
+        "reference/"
+      ]
     }
   ],
   "decisions": [

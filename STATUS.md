@@ -20,6 +20,7 @@
 - Owner decision: `pending`
 - Exit gates: `contracts` (missing record), `codegen` (missing record)
 - Exit criteria: contracts 0.1.0 tagged; every schema has a valid and an invalid fixture.; TS and C++ read the same fixtures identically.
+- Tasks: P1-01
 
 ### Stage 3 — `engine-spike` Engine spike
 
@@ -117,7 +118,7 @@
 
 ## Ready now
 
-- none
+- `P1-01` Board content data model as JSON Schema
 
 ## Done
 
@@ -155,13 +156,7 @@
 - [ ] `P0-15` Release command and tag-based CI release — status: `pending` — owner: —
 - [ ] `P0-16` Dependency updates and Polier update check — status: `pending` — owner: —
 - [ ] `P0-17` RELEASING.md and release 0.0.1 — status: `pending` — owner: —
-
-<!-- polier:claims -->
-## Claims
-
-- `P0-25` in progress by dsh since 2026-10-25T10:53:53+00:00 — worktree: /Users/rasulatashev/Desktop/KI Projekte/Project air-P0-25 · slot 1
-
-<!-- /polier:claims -->
+- [ ] `P1-01` Board content data model as JSON Schema — status: `pending` — owner: —
 
 ## Decisions
 
