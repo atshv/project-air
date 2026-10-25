@@ -117,14 +117,19 @@
   - P0-03: Closed P0-03: all 21 package folders with README and ARCHITECTURE (173-284 words), tests/README.
   - P0-03: Gates board-check and boundaries pass; commands remain 'set by P0-04'.
   - P0-03: P0-04 can build the workspace on top; P0-07 can add infra/compose.
+- `P0-11` Canvas acceptance catalogue
+  - P0-10: Closed P0-10: docs/design-rules.md derived from the reference, adapted to tokens.json, icons, engine, Polier and i18n.
+  - P0-10: Gate board-check passes; no prototype/vendor names, no broken links.
+  - P0-10: P0-11 can build the canvas acceptance catalogue on it; P0-12/P0-13 cite it.
 
 ## Done
 
 - [x] `P0-03` Workspace folders, package READMEs and architectures — status: `done` — owner: —
+- [x] `P0-10` Adapt design rules to this project — status: `done` — owner: —
 
 ## In progress
 
-- [ ] `P0-10` Adapt design rules to this project — status: `in_progress` — owner: —
+- none
 
 ## Blocked / failed
 
@@ -145,14 +150,6 @@
 - [ ] `P0-16` Dependency updates and Polier update check — status: `pending` — owner: —
 - [ ] `P0-17` RELEASING.md and release 0.0.1 — status: `pending` — owner: —
 - [ ] `P0-18` i18n scaffold and language-check gate — status: `pending` — owner: —
-
-<!-- polier:claims -->
-## Claims
-
-- `P0-03` in progress by dsh since 2026-10-25T08:09:51+00:00 — worktree: /Users/rasulatashev/Desktop/KI Projekte/Project air-P0-03 · slot 1
-- `P0-10` in progress by dsh since 2026-10-25T08:09:51+00:00 — worktree: /Users/rasulatashev/Desktop/KI Projekte/Project air-P0-10 · slot 2
-
-<!-- /polier:claims -->
 
 ## Decisions
 

@@ -1,0 +1,7 @@
+$ python3 /Users/rasulatashev/Desktop/Polier-main/tools/check.py .
+[exit 0]
+
+WARN: budgets.status overridden to 1600 words (reason: Ten stages with exit criteria and sixteen open owner questions are listed in STATUS.md during stage foundation; shrinks as questions are answered.)
+WARN: P0-02: context pack is about 28914 tokens (warning at 15000); trim scope_read, split the task or shorten the base files
+WARN: P0-10: record reviews/evidence/P0-10-board-check-20261025T081605Z.json was made on commit ce35859b2a, which is not in HEAD's history
+OK: /Users/rasulatashev/Desktop/KI Projekte/Project air passes the mandatory checks. (3 warning(s))

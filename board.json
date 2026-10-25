@@ -720,7 +720,7 @@
       "satisfies": [
         "D3"
       ],
-      "status": "in_progress",
+      "status": "done",
       "depends_on": [],
       "complexity": 3,
       "stage": "foundation",
@@ -747,11 +747,18 @@
       ],
       "owner": null,
       "branch": "task/P0-10",
-      "worktree": "../Project air-P0-10",
+      "worktree": null,
       "round": 0,
-      "evidence": [],
+      "evidence": [
+        "reviews/evidence/P0-10-board-check-20261025T081700Z.json"
+      ],
       "scope_write_forbidden": [
         "reference/"
+      ],
+      "handoff": [
+        "Closed P0-10: docs/design-rules.md derived from the reference, adapted to tokens.json, icons, engine, Polier and i18n.",
+        "Gate board-check passes; no prototype/vendor names, no broken links.",
+        "P0-11 can build the canvas acceptance catalogue on it; P0-12/P0-13 cite it."
       ]
     },
     {
