@@ -1356,7 +1356,7 @@
       "satisfies": [
         "D3"
       ],
-      "status": "in_progress",
+      "status": "done",
       "depends_on": [
         "P0-20"
       ],
@@ -1391,11 +1391,20 @@
       ],
       "owner": null,
       "branch": "task/P0-21",
-      "worktree": "../Project air-P0-21",
+      "worktree": null,
       "round": 0,
-      "evidence": [],
+      "evidence": [
+        "reviews/evidence/P0-21-board-check-20261025T101641Z.json",
+        "reviews/evidence/P0-21-design-check-20261025T101642Z.json",
+        "reviews/evidence/P0-21-changelog-entry-20261025T101642Z.json"
+      ],
       "scope_write_forbidden": [
         "reference/"
+      ],
+      "handoff": [
+        "Closed P0-21: demo edge now uses --tone-d at 1.5 px like the static Connection component; screenshot refreshed.",
+        "apps/web/preview/README.md: demo is permanent and updated in the same task as every preview/design-system change.",
+        "All three gates pass; refresh the served preview to see the tone-d edge."
       ]
     }
   ],

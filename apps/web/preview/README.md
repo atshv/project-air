@@ -1,4 +1,4 @@
-# Design preview (P0-19, P0-20)
+# Design preview (P0-19, P0-20, P0-21)
 
 A design preview of the Project air design system. It is **not the product**: there is no engine,
 no data, no server and no build step. It exists so the owner can see the look and feel between
@@ -31,7 +31,8 @@ images and no framework.
 ## The interactive demo
 
 The demo is plain DOM and SVG in [`preview.js`](preview.js); it has no dependencies and never talks
-to a server.
+to a server. It stays permanently at the top of the preview: every change to the preview or to the
+design system updates the demo and refreshes its screenshot in `reviews/evidence/` in the same task.
 
 - **Pointer drag:** the whole card is the handle. `pointerdown` selects the card and captures the
   pointer (`setPointerCapture`), `pointermove` moves it only after the 4 px drag threshold
@@ -43,7 +44,9 @@ to a server.
   the nearest rectangle edges of the two cards (horizontal sides when they are separated
   horizontally, vertical sides when separated vertically, corners diagonally, nearest overlapping
   side pair when they intersect). The edge sits on the `--layer-edges` layer below the cards
-  (`--layer-note-cards`) and uses a 1.5 px `--border-strong` stroke.
+  (`--layer-note-cards`) and uses the design-system connection style — a `--tone-d` stroke with
+  `--tone-d` endpoint dots at 1.5 px (`--border-width-strong`) — the same tokens as the static
+  Connection component on this page.
 - **Keyboard:** each card is focusable with a visible `--accent` focus outline. `ArrowLeft`,
   `ArrowRight`, `ArrowUp` and `ArrowDown` move the selected card by one canvas-grid step
   (`--canvas-grid`, 16 px); `Home` returns both cards to their start positions. Key presses that the
@@ -71,7 +74,7 @@ Serve the **repository root**, not this folder, so the relative token and icon p
 the slot's `web` port from `.polier-slot` (never hard-code it), then:
 
 ```sh
-cd "/Users/rasulatashev/Desktop/KI Projekte/Project air-P0-20"
+cd "/Users/rasulatashev/Desktop/KI Projekte/Project air-P0-21"
 PORT=$(python3 -c "import json; print(json.load(open('.polier-slot'))['ports']['web'])")
 python3 -m http.server "$PORT" --bind 127.0.0.1
 ```
@@ -88,6 +91,7 @@ no dependencies and is the only server this preview needs.
 ## Screenshots
 
 Committed evidence lives in `reviews/evidence/`: `P0-19-desktop.png` (1440×900),
-`P0-19-mobile.png` (390×844), `P0-20-demo.png` (1440×900, both demo cards and their edge) and the
-`P0-19-preview.log` / `P0-20-preview.log` files with the exact serve, curl and screenshot commands.
-The page has no horizontal overflow at 1440×900 or 390×844.
+`P0-19-mobile.png` (390×844), `P0-20-demo.png` (1440×900, both demo cards and their edge),
+`P0-21-demo.png` (1440×900, the demo edge in the design-system `--tone-d` style) and the
+`P0-19-preview.log` / `P0-20-preview.log` / `P0-21-preview.log` files with the exact serve, curl and
+screenshot commands. The page has no horizontal overflow at 1440×900 or 390×844.

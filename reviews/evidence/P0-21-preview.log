@@ -1,0 +1,86 @@
+# P0-21 — demo connection matched to the design system: manual evidence
+
+- Date: 2026-10-25 (Europe/Zurich)
+- Worktree: `/Users/rasulatashev/Desktop/KI Projekte/Project air-P0-21` (branch `task/P0-21`, slot 1)
+- Changed: `apps/web/preview/index.html`, `preview.css`, `README.md`; `.changes/P0-21-demo-connection.md`
+- Not changed: `preview.js` (interaction logic untouched, `git diff --stat -- apps/web/preview/preview.js` is empty)
+
+## Port and server
+
+Slot values (`python3 "$POLIER/tools/slot.py" show`): `web=4100` for slot 1. The server was started and
+stopped by this task only; it is not left running and the port is free afterwards.
+
+```sh
+cd "/Users/rasulatashev/Desktop/KI Projekte/Project air-P0-21"
+PORT=$(python3 -c "import json;print(json.load(open('.polier-slot'))['ports']['web'])")
+python3 -m http.server "$PORT" --bind 127.0.0.1
+```
+
+Served the **repository root** so the relative token and icon paths resolve.
+
+## HTTP status
+
+```
+$ curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:4100/apps/web/preview/
+200
+```
+
+The server log for the run contains no `404`.
+
+## Screenshot
+
+Chromium: `/Users/rasulatashev/Library/Caches/ms-playwright/chromium_headless_shell-1248/chrome-headless-shell-mac-arm64/chrome-headless-shell`
+
+```sh
+/Users/rasulatashev/Library/Caches/ms-playwright/chromium_headless_shell-1248/chrome-headless-shell-mac-arm64/chrome-headless-shell \
+  --headless --disable-gpu --hide-scrollbars --window-size=1440,900 \
+  --screenshot=reviews/evidence/P0-21-demo.png \
+  "http://127.0.0.1:4100/apps/web/preview/"
+```
+
+Result: `reviews/evidence/P0-21-demo.png`, PNG 1440 × 900, 95908 bytes; shows the demo with both note
+cards and the re-coloured connection edge, including the new legend `edge · --tone-d · 1.5 px`.
+
+The P0-20 screenshot was **not** overwritten; its SHA-256 is identical before and after this task:
+
+```
+5605af6a8806f04a70e405788ed52d423541036b354814e94c86c04dd5139116  reviews/evidence/P0-20-demo.png
+```
+
+## Style compared with the static Connection component
+
+| | Static Connection component | Live demo edge (after P0-21) |
+| --- | --- | --- |
+| Line | `.connection__line`: `stroke: var(--tone-d)`, `stroke-width: var(--border-width-strong)` | `.demo__edge-line`: `stroke: var(--tone-d)`, `stroke-width: var(--border-width-strong)` |
+| Endpoint dots | `.connection__dot`: `fill: var(--tone-d)` | `.demo__edge-dot`: `fill: var(--tone-d)` |
+| Width | 1.5 px (`--border-width-strong`) | 1.5 px (`--border-width-strong`) |
+| Legend | `edge · --tone-d · 1.5 px` in `index.html` | same text next to the demo hint (`.demo__legend`) |
+
+Before the change the demo line and dots used `--border-strong`; now both use the design-system
+`--tone-d` connection style. No raw colour values and no new tokens were added
+(`grep -nE '#[0-9a-fA-F]{3,8}|rgba?\(|hsla?\(' apps/web/preview/*` returns nothing).
+
+## Demo stays permanent
+
+`apps/web/preview/README.md` now states that the interactive demo stays permanently at the top of the
+preview and that every change to the preview or to the design system updates the demo and refreshes
+its screenshot in `reviews/evidence/` in the same task. The demo hint/legend also names the edge
+style.
+
+## Gates
+
+```sh
+cd "/Users/rasulatashev/Desktop/KI Projekte/Project air-P0-21"
+export POLIER=/Users/rasulatashev/Desktop/Polier-main
+python3 "$POLIER/tools/gate.py" --task P0-21 --name board-check -- python3 "$POLIER/tools/check.py" .
+python3 "$POLIER/tools/gate.py" --task P0-21 --name design-check -- node tools/design-check/index.mjs .
+python3 "$POLIER/tools/gate.py" --task P0-21 --name changelog-entry -- node tools/release/check-changes.mjs --task P0-21 --base main
+```
+
+| Gate | Result | Record |
+| --- | --- | --- |
+| `board-check` | PASS (exit 0) | `reviews/evidence/P0-21-board-check-20261025T101641Z.json` |
+| `design-check` | PASS (exit 0, no findings) | `reviews/evidence/P0-21-design-check-20261025T101642Z.json` |
+| `changelog-entry` | PASS (exit 0) | `reviews/evidence/P0-21-changelog-entry-20261025T101642Z.json` |
+
+`check.py` was run before any `pnpm install`; no install was needed for this task.

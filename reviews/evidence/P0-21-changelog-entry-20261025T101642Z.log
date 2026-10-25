@@ -1,0 +1,5 @@
+$ node tools/release/check-changes.mjs --task P0-21 --base main
+[exit 0]
+
+check-changes: task P0-21, base main, 9 changed path(s), 3 code path(s)
+changelog-entry: OK (.changes/P0-21-demo-connection.md)

@@ -895,13 +895,13 @@ button {
 }
 
 .demo__edge-line {
-  stroke: var(--border-strong);
+  stroke: var(--tone-d);
   stroke-width: var(--border-width-strong);
   stroke-linecap: round;
 }
 
 .demo__edge-dot {
-  fill: var(--border-strong);
+  fill: var(--tone-d);
 }
 
 .demo__status {
