@@ -153,10 +153,11 @@
 - [x] `P2-02` Engine core model and render command buffer — status: `done` — owner: —
 - [x] `P2-03` WebGL2 renderer, TS bridge and engine playground — status: `done` — owner: —
 - [x] `P2-04` Performance baseline and measured report — status: `done` — owner: —
+- [x] `P2-05` Engine architecture ADR, module docs and stage showcase — status: `done` — owner: —
 
 ## In progress
 
-- [ ] `P2-05` Engine architecture ADR, module docs and stage showcase — status: `in_progress` — owner: —
+- none
 
 ## Blocked / failed
 
@@ -169,13 +170,6 @@
 - [ ] `P0-16` Dependency updates and Polier update check — status: `pending` — owner: —
 - [ ] `P0-17` RELEASING.md and release 0.0.1 — status: `pending` — owner: —
 
-<!-- polier:claims -->
-## Claims
-
-- `P2-05` in progress by dsh since 2026-10-25T15:29:38+00:00 — worktree: /Users/rasulatashev/Desktop/KI Projekte/Project air-P2-05 · slot 1
-
-<!-- /polier:claims -->
-
 ## Decisions
 
 - 2026-10-25 `ADR-0001` Monorepo with packages, services, apps, tools and infra (`docs/adr/ADR-0001-monorepo.md`)
@@ -183,7 +177,7 @@
 - 2026-10-25 `ADR-0003` Remote phase as the last stage before v1 (`docs/adr/ADR-0003-remote-phase.md`)
 - 2026-10-25 `ADR-0004` Contract v1 text limits and board visibility (`docs/adr/ADR-0004-contract-limits-visibility.md`)
 - 2026-10-25 `ADR-0005` Contract and versions (`docs/adr/ADR-0005-contract.md`)
-- 2026-10-25 `ADR-0006` Engine architecture
+- 2026-10-25 `ADR-0006` Engine architecture (`docs/adr/ADR-0006-engine-architecture.md`)
 
 ## Open questions
 

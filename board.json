@@ -2366,12 +2366,15 @@
       ]
     },
     {
-      "status": "in_progress",
+      "status": "done",
       "stage": "engine-spike",
       "parallel_group": null,
       "owner": null,
       "round": 0,
-      "evidence": [],
+      "evidence": [
+        "reviews/evidence/P2-05-board-check-20261025T153235Z.json",
+        "reviews/evidence/P2-05-design-check-20261025T153237Z.json"
+      ],
       "scope_write_forbidden": [
         "reference/"
       ],
@@ -2415,7 +2418,12 @@
         "design-check"
       ],
       "branch": "task/P2-05",
-      "worktree": "../Project air-P2-05"
+      "worktree": null,
+      "handoff": [
+        "Closed P2-05: ADR-0006 (C++20 core + command buffer, WebGL2 now/WebGPU later, Emscripten, thin TS bridge) cites P2-04 evidence; docs/engine.md covers modules, grid, layout, build commands and L01.",
+        "Showcase: P2-05-desktop.png 1440x900, P2-05-mobile.png 390x844, P2-05-playground.log with literal serve/curl/capture commands; screenshots are visual evidence only, perf evidence is P2-04.",
+        "Review pass (6 minor doc fixes applied); D8's M1 60 fps is unproven - owner accepted the M2 proxy; re-measure on the reference hardware before hardware exit."
+      ]
     }
   ],
   "decisions": [
@@ -2452,7 +2460,8 @@
     {
       "date": "2026-10-25",
       "id": "ADR-0006",
-      "title": "Engine architecture"
+      "title": "Engine architecture",
+      "file": "docs/adr/ADR-0006-engine-architecture.md"
     }
   ],
   "open_questions": [

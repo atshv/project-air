@@ -1,0 +1,58 @@
+# P2-05 stage showcase — playground serve/curl/screenshot log
+
+# date: 2026-10-25T16:30:00+01:00 (Europe/Zurich) = 2026-10-25T15:30:00Z
+# (screenshots taken 16:30:52+01:00 = 15:30:52Z; log written 16:31:18+01:00 = 15:31:18Z)
+# worktree: /Users/rasulatashev/Desktop/KI Projekte/Project air-P2-05
+
+## Runtime slot (web port from .polier-slot, never hard-coded in the page)
+slot: 1 web port: 4100
+
+## Build (from the repository root)
+$ pnpm install --frozen-lockfile
+$ pnpm --filter @project-air/engine run build
+$ bash packages/engine/tools/build-wasm.sh
+$ node packages/engine/tools/wasm-size.mjs
+wasm-size: engine.wasm raw 49925 B, gzip 21806 B, budget 307200 B → OK
+
+## Serve the repository root on the slot web port (this worktree's built bridge + WASM)
+$ python3 -m http.server 4100 --bind 127.0.0.1   # from the repository root, background
+$ curl -s -o /dev/null -w '%{http_code} %{size_download}\n' http://127.0.0.1:4100/apps/engine-playground/
+200 1391
+$ curl -s -o /dev/null -w '%{http_code} %{size_download}\n' http://127.0.0.1:4100/apps/engine-playground/main.js
+200 7837
+$ curl -s -o /dev/null -w '%{http_code} %{size_download}\n' http://127.0.0.1:4100/apps/engine-playground/playground.css
+200 1766
+$ curl -s -o /dev/null -w '%{http_code} %{size_download}\n' http://127.0.0.1:4100/packages/ui-kit/tokens.css
+200 2295
+$ curl -s -o /dev/null -w '%{http_code} %{size_download}\n' http://127.0.0.1:4100/packages/engine/dist/bridge/engine.js
+200 6878
+$ curl -s -o /dev/null -w '%{http_code} %{size_download}\n' http://127.0.0.1:4100/packages/engine/build-wasm/engine.js
+200 24770
+$ curl -s -o /dev/null -w '%{http_code} %{size_download}\n' http://127.0.0.1:4100/packages/engine/build-wasm/engine.wasm
+200 49925
+
+## Screenshots (normal playground page, no benchmark query)
+$ CHROME_PATH="/Users/rasulatashev/Library/Caches/ms-playwright/chromium-1248/chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing" \
+  PLAYGROUND_URL="http://127.0.0.1:4100/apps/engine-playground/" \
+  node apps/engine-playground/tools/capture.mjs \
+  reviews/evidence/P2-05-desktop.png reviews/evidence/P2-05-mobile.png
+
+# capture helper output (same run that wrote the committed PNGs):
+reviews/evidence/P2-05-desktop.png 1440x900 {"width":1440,"height":900,"docScrollWidth":1440,"overflowX":false,"fps":"3 fps","error":"","frame":{"x":170,"y":24,"width":1100,"height":721.609375,"top":24,"right":1270,"bottom":745.609375,"left":170},"canvasPixels":[1050,591]}
+reviews/evidence/P2-05-mobile.png 390x844 {"width":390,"height":844,"docScrollWidth":390,"overflowX":false,"fps":"12 fps","error":"","frame":{"x":24,"y":24,"width":342,"height":363,"top":24,"right":366,"bottom":387,"left":24},"canvasPixels":[292,164]}
+
+## Committed screenshots
+608542 B  reviews/evidence/P2-05-desktop.png  (1440×900 PNG, 8-bit RGB)
+122630 B  reviews/evidence/P2-05-mobile.png   (390×844 PNG, 8-bit RGB)
+
+## Notes
+- The page is the normal 50,000-rectangle demo (no `?bench` query); the fps counter is visible
+  ("3 fps" desktop, "12 fps" mobile in this run) and the canvas shows the document.
+- Both viewports have no horizontal overflow (`documentElement.scrollWidth == innerWidth`).
+- The committed capture helper launches Chrome for Testing with the SwiftShader software renderer
+  (`--use-gl=angle --use-angle=swiftshader --enable-unsafe-swiftshader`) because the screenshot
+  browser must not depend on GPU availability. These screenshots are **visual evidence only and not
+  performance evidence**: the 3/12 fps labels are functional, and the real-GPU 60 fps baseline is
+  P2-04 (`reviews/evidence/P2-04-perf-20261025T151952Z.json`, ANGLE Metal Apple M2, p50 1.80 /
+  p95 2.00 ms unlocked frame production; display-locked control p95 16.80 ms).
+- The server and Chrome were started by this task and stopped afterwards; no process is left running.
