@@ -109,10 +109,7 @@
 
 ## Ready now
 
-- `P0-04` Workspaces, build orchestration and pinned versions
-  - P0-03: Closed P0-03: all 21 package folders with README and ARCHITECTURE (173-284 words), tests/README.
-  - P0-03: Gates board-check and boundaries pass; commands remain 'set by P0-04'.
-  - P0-03: P0-04 can build the workspace on top; P0-07 can add infra/compose.
+- none
 
 ## Done
 
@@ -123,7 +120,7 @@
 
 ## In progress
 
-- none
+- [ ] `P0-04` Workspaces, build orchestration and pinned versions — status: `in_progress` — owner: —
 
 ## Blocked / failed
 
@@ -131,7 +128,6 @@
 
 ## Open
 
-- [ ] `P0-04` Workspaces, build orchestration and pinned versions — status: `pending` — owner: —
 - [ ] `P0-06` Per-slot dev setup and teardown — status: `pending` — owner: —
 - [ ] `P0-08` CI skeleton — status: `pending` — owner: —
 - [ ] `P0-09` Pinned Polier for agents and CI — status: `pending` — owner: —
@@ -142,6 +138,13 @@
 - [ ] `P0-16` Dependency updates and Polier update check — status: `pending` — owner: —
 - [ ] `P0-17` RELEASING.md and release 0.0.1 — status: `pending` — owner: —
 - [ ] `P0-18` i18n scaffold and language-check gate — status: `pending` — owner: —
+
+<!-- polier:claims -->
+## Claims
+
+- `P0-04` in progress by dsh since 2026-10-25T08:38:38+00:00 — worktree: /Users/rasulatashev/Desktop/KI Projekte/Project air-P0-04 · slot 1
+
+<!-- /polier:claims -->
 
 ## Decisions
 
