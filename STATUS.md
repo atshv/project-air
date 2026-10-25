@@ -118,7 +118,7 @@
 
 ## Ready now
 
-- `P1-01` Board content data model as JSON Schema
+- none
 
 ## Done
 
@@ -144,7 +144,7 @@
 
 ## In progress
 
-- none
+- [ ] `P1-01` Board content data model as JSON Schema — status: `in_progress` — owner: —
 
 ## Blocked / failed
 
@@ -156,7 +156,13 @@
 - [ ] `P0-15` Release command and tag-based CI release — status: `pending` — owner: —
 - [ ] `P0-16` Dependency updates and Polier update check — status: `pending` — owner: —
 - [ ] `P0-17` RELEASING.md and release 0.0.1 — status: `pending` — owner: —
-- [ ] `P1-01` Board content data model as JSON Schema — status: `pending` — owner: —
+
+<!-- polier:claims -->
+## Claims
+
+- `P1-01` in progress by dsh since 2026-10-25T11:00:07+00:00 — worktree: /Users/rasulatashev/Desktop/KI Projekte/Project air-P1-01 · slot 1
+
+<!-- /polier:claims -->
 
 ## Decisions
 
