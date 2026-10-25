@@ -1,6 +1,6 @@
 # Status
 
-**Project:** project-air · **Profile:** L · **Stage:** 1 of 11 (11 defined)
+**Project:** project-air · **Profile:** L · **Stage:** 5 of 11 (11 defined)
 
 > Generated from `board.json`. Do not edit by hand.
 
@@ -40,10 +40,11 @@
 
 ### Stage 5 — `engine-core` Engine core
 
-- State: waiting for the owner decision
-- Owner decision: `pending`
+- State: exit gates missing: visual, perf
+- Owner decision: `continue`
 - Exit gates: `cpp-unit`, `visual` (missing record), `perf` (missing record)
 - Exit criteria: 10,000 objects at 60 fps in the playground.; All engine entries of the canvas work orders done; reference images green.
+- Tasks: P4-01, P4-02, P4-03, P4-04, P4-05, P4-06, P4-07, P4-08, P4-09, P4-10, P4-11, P4-12, P4-13, P4-14, P4-15, P4-16, P4-17, P4-18, P4-19, P4-20, P4-21, P4-22, P4-23, P4-24, P4-25, P4-26, P4-27, P4-28
 
 ### Stage 6 — `realtime` Realtime
 
@@ -120,7 +121,8 @@
 
 ## Ready now
 
-- none
+- `P4-01` Engine document: stable ids, incremental mutations, hit testing and spatial queries
+- `P4-25` Zones as containers I: contract parent reference (L08)
 
 ## Done
 
@@ -176,6 +178,34 @@
 - [ ] `P0-15` Release command and tag-based CI release — status: `pending` — owner: —
 - [ ] `P0-16` Dependency updates and Polier update check — status: `pending` — owner: —
 - [ ] `P0-17` RELEASING.md and release 0.0.1 — status: `pending` — owner: —
+- [ ] `P4-01` Engine document: stable ids, incremental mutations, hit testing and spatial queries — status: `pending` — owner: —
+- [ ] `P4-02` Engine playground: interactive sample board and stage shell — status: `pending` — owner: —
+- [ ] `P4-03` Engine-core perf gate and L01 basis — status: `pending` — owner: —
+- [ ] `P4-04` Visual gate with reference images — status: `pending` — owner: —
+- [ ] `P4-05` Gesture-to-operation seam and undo history core — status: `pending` — owner: —
+- [ ] `P4-06` Layers and draw order (L13) — status: `pending` — owner: —
+- [ ] `P4-07` Canvas feel: fit, dot grid and idle drawing (L19) — status: `pending` — owner: —
+- [ ] `P4-08` Text atlas and glyph texture pipeline (L02) — status: `pending` — owner: —
+- [ ] `P4-09` Glyph layout, text instances and ellipsis (L02) — status: `pending` — owner: —
+- [ ] `P4-10` Titles, previews and visible quality (L02) — status: `pending` — owner: —
+- [ ] `P4-11` WebGPU render pipeline behind the command buffer — status: `pending` — owner: —
+- [ ] `P4-12` WebGPU backend selection, capability and fallback — status: `pending` — owner: —
+- [ ] `P4-13` WebGPU switch and two-backend image comparison — status: `pending` — owner: —
+- [ ] `P4-14` Dragging versus editing (L03) — status: `pending` — owner: —
+- [ ] `P4-15` Snapping (L07) — status: `pending` — owner: —
+- [ ] `P4-16` Multi-selection (L10) — status: `pending` — owner: —
+- [ ] `P4-17` Resize (L14) — status: `pending` — owner: —
+- [ ] `P4-18` Auto-pan (L16) — status: `pending` — owner: —
+- [ ] `P4-19` Placement of new objects (L20) — status: `pending` — owner: —
+- [ ] `P4-20` Keyboard and context menu (L12) — status: `pending` — owner: —
+- [ ] `P4-21` Undo/redo (L11) — status: `pending` — owner: —
+- [ ] `P4-22` Remember view (L17) — status: `pending` — owner: —
+- [ ] `P4-23` DOM overlay for field editing and inline comfort (L18) — status: `pending` — owner: —
+- [ ] `P4-24` Trackpad and wheel defaults (L15, desktop part) — status: `pending` — owner: —
+- [ ] `P4-25` Zones as containers I: contract parent reference (L08) — status: `pending` — owner: —
+- [ ] `P4-26` Zones as containers II: platform migration and containment (L08) — status: `pending` — owner: —
+- [ ] `P4-27` Zones as containers II: engine membership and zone move (L08) — status: `pending` — owner: —
+- [ ] `P4-28` L01 final proof, two-backend reference images and stage showcase — status: `pending` — owner: —
 
 ## Decisions
 
@@ -187,6 +217,7 @@
 - 2026-10-25 `ADR-0006` Engine architecture (`docs/adr/ADR-0006-engine-architecture.md`)
 - 2026-10-25 `ADR-0007` Self-hosted Ory Kratos for authentication (`docs/adr/ADR-0007-auth.md`)
 - 2026-10-25 `ADR-0008` API and session model
+- 2026-10-25 `ADR-0009` Canvas text and overlay strategy (`docs/adr/ADR-0009-canvas-text-and-overlay.md`)
 
 ## Open questions
 
@@ -196,6 +227,3 @@
 - `Q8` Which import formats, after a legal check of their terms (needed before stage: value). — blocks: — — status: `open`
 - `Q9` Pricing model for v1 (needed before stage: v1). — blocks: — — status: `open`
 - `Q14` English visible at launch or prepared only; who translates further languages (needed before stage: v1). — blocks: — — status: `open`
-- `Q15` Canvas collisions: clear layers only (proposal) or gentle nudge (needed before stage: engine-core). — blocks: — — status: `open`
-- `Q16` Trackpad default: two fingers pan, pinch zooms (proposal) or scroll zooms (needed before stage: engine-core). — blocks: — — status: `open`
-- `Q17` Zones as containers: zones keep their content and move it as one operation (proposal, needs a decision record and migration) or zones are only visual frames? — blocks: — — status: `open`

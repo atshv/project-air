@@ -8,6 +8,43 @@
 | Gate | Command | Expected |
 | --- | --- | --- |
 | `perf-baseline` | `node packages/engine/test/perf/run-perf.mjs` | exit 0, p95 frame time <= 16.7 ms at 50,000 rectangles (60 fps); JSON evidence `reviews/evidence/P2-04-perf-<timestamp>.json` written |
+| `perf` | `node packages/engine/test/perf/run-perf.mjs --scenario engine-core` | exit 0, 10,000 board objects at 60 fps with p95 <= 16.7 ms and no frame interval above 16.7 ms while panning and zooming; the L01 basis (500 cards + 50 zones) and the final proof (< 50 ms) are recorded, every run within basis + 10 %; JSON evidence under `reviews/evidence/` (exclusive) |
+
+## `perf` — engine-core stage gate (P4-03)
+
+The stage gate set by P4-03 measures the canvas, not just the rectangle benchmark. The scenario
+builds the deterministic sample board (500 cards, 50 zones and blocks) and a 10,000-object variant
+from `packages/test-kit`, then runs two measurements on the real GPU with the same fail-closed
+renderer check and the same Chrome for Testing flags as `perf-baseline`:
+
+- **Interactive run (gate pass criterion):** 10,000 board objects, warm-up frames discarded, then
+  pan and zoom are driven continuously for the sample window (`setCamera` per frame, no gesture
+  input needed). The gate passes only when p95 frame time <= 16.7 ms **and** no frame interval after
+  warm-up exceeds 16.7 ms — the catalogue's "no long task > 16 ms" is measured as frame intervals,
+  because the browser Long Task API only reports tasks above 50 ms. The JSON records p50/p95/p99,
+  mean, max, the frame-interval histogram and the count of intervals above 16.7 ms.
+- **L01 basis / final proof:** the 500 cards + 50 zones scene is measured while panning and zooming;
+  the basis record is written before the drawing and interaction tasks, the final proof (< 50 ms)
+  repeats the same scene after them. Every run is compared with the basis and must stay within
+  basis + 10 %.
+- **Culling:** the final proof also asserts that offscreen objects are not drawn (command-buffer
+  instance count equals the visible candidates, not the document size).
+- **Backend:** WebGL2 is the measured default (owner Q19). A WebGPU run may be recorded as an
+  observation next to the gate record; it never replaces or loosens the gate.
+- **Evidence:** baseline, basis and final JSON plus the gate record under `reviews/evidence/`; the
+  numbers with date and path are quoted in the L01 task results and `docs/engine/perf-baseline.md`.
+- **Exclusive:** `perf` declares `exclusive: ["perf"]`; run it through
+  `python3 $POLIER/tools/gate.py --task <ID> --name perf --shell "node packages/engine/test/perf/run-perf.mjs --scenario engine-core"`.
+  If the harness shows GC or scheduling outliers on the proxy machine, the task must bring the
+  evidence and an owner-approved deviation; budgets are never adjusted silently.
+
+### Pitfalls (stage gate)
+
+- Camera motion must not replace the document or rebuild the spatial index every frame; if it does,
+  the scenario measures the harness, not the engine.
+- The display clock stays unlocked for the gate; the display-locked control is an observation only.
+- Run the gate before and after every drawing change; never compare numbers from different Chrome
+  builds, flags or machines.
 
 - **Exclusive:** `perf-baseline` declares `exclusive: ["perf"]`; run it through
   `python3 $POLIER/tools/gate.py --task P2-04 --name perf-baseline --shell "node packages/engine/test/perf/run-perf.mjs"`

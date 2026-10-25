@@ -1,6 +1,6 @@
 # Handoff — Project air, new session
 
-**As of:** 2026-10-25 21:10 (Europe/Zurich) · **Repository:** `/Users/rasulatashev/Desktop/KI Projekte/Project air` · **Base branch:** `main` · **Nothing pushed** (`origin/main` is still the scaffold).
+**As of:** 2026-10-25 21:20 (Europe/Zurich) · **Repository:** `/Users/rasulatashev/Desktop/KI Projekte/Project air` · **Base branch:** `main` · **Nothing pushed** (`origin/main` is still the scaffold).
 
 Read `AGENTS.md`, `ARCHITECTURE.md`, `STATUS.md`, `docs/module-map.md` and the task brief before working. Polier is pinned to v1.0.0: `export POLIER=/Users/rasulatashev/Desktop/Polier-main` then `bash tools/polier.sh --check`.
 
@@ -10,7 +10,16 @@ Read `AGENTS.md`, `ARCHITECTURE.md`, `STATUS.md`, `docs/module-map.md` and the t
 - **Stage 2 Contract:** complete, owner decision `continue`; contract `0.1.0` (16 schema files, fixtures/sync/api corpora, TS+C++ codegen/parity), `docs/contracts.md`, ADR-0005, `board.contracts[]`, Contract overview in the preview.
 - **Stage 3 Engine spike:** complete, owner decision `continue`; C++20 core (doc/camera/spatial/render command buffer), WebGL2 instanced renderer, TS bridge `@project-air/engine`, `apps/engine-playground`, ADR-0006 + `docs/engine.md`; CMake 4.4.4 + Emscripten 6.0.13; WASM 49,925 B raw / 21,806 B gzip. Measured on the Mac mini M2 8 GB proxy: p95 2.00 ms (556 fps unlocked frame production), display-locked control p95 16.80 ms. **D8 caveat:** the MacBook Air M1 8 GB reference is unproven — re-measure before treating the hardware target as met.
 - **Stage 4 Backend core:** complete, owner decision `continue`; tasks `P3-01` … `P3-06` done. `services/platform` + `services/auth`, self-hosted Ory Kratos v26.2.0 (ADR-0007; `identity` profile, Mailpit courier, test-session mode for tests, admin API bound to localhost), PostgreSQL migrations `0001`–`0004` with RLS and contract-valid account-id mapping, 20 `/v1` contract routes + `GET /v1/session`, typed SDK `@project-air/sdk`, `api-tests` 32, `rls-tests` 7, platform unit 74, acceptance script `PASS backend-core acceptance`; ADR-0008 (API/session model).
-- **Done overall:** 37 of 41 tasks. Open only the remote-phase tasks `P0-02`, `P0-15`, `P0-16`, `P0-17` (stage remote, after hardening) plus planning of the later stages (engine-core, realtime, web-app, value, hardening).
+- **Stage 5 Engine core:** planned and started, owner decision `continue`; 28 tasks `P4-01` … `P4-28`
+  in five waves (measurement/gates, drawing + WebGPU, interaction, zones, final proof); briefs
+  written for `P4-01` … `P4-05` only (JIT); first task `P4-01` (engine document: ids, incremental
+  mutations, hit testing). Stage target: 10,000 objects at 60 fps, no frame above 16 ms while
+  panning/zooming (`perf`, M2 proxy), engine entries L01–L03, L07, L08, L10–L14, L16–L20 and the
+  desktop part of L15, WebGPU behind the command buffer as second backend, reference images green
+  (`visual`, both viewports, both backends). ADR-0009 (text/overlay strategy) is recorded.
+- **Done overall:** 37 of 66 tasks. Open: the rest of stage 5 plus the remote-phase tasks `P0-02`,
+  `P0-15`, `P0-16`, `P0-17` (stage remote, after hardening) and the planning of the later stages
+  (realtime, web-app, value, hardening).
 - **Preview:** `apps/web/preview/` has the permanent Contract 0.1.0 overview as section 02 and the live two-note demo; its screenshots and README are the demo-cadence baseline (`reviews/evidence/P1-07-*`).
 - **Checks:** `check.py` exit 0 (2 warnings: `budgets.status` override, P0-02 context pack), `boundaries.py` exit 0, `contracts.py check` exit 0, `design-check` exit 0, `language-check` OK, contract unit suite 88/88, engine CTest 2/2, `codegen`/`wasm-*` clean; DB suites need a Polier slot (they cannot run in the main checkout).
 - **Reviews:** `reviews/P1-04.md` … `reviews/P3-06.md` committed; verdicts and findings are in the files.
@@ -39,14 +48,15 @@ Read `AGENTS.md`, `ARCHITECTURE.md`, `STATUS.md`, `docs/module-map.md` and the t
 - Board-check must run **before** `pnpm install` (it scans `node_modules/`).
 - Engine toolchain: Apple clang plus CMake 4.4.4/Emscripten 6.0.13 via Homebrew (pinned in `docs/versions.md`); always build WASM through `bash packages/engine/tools/build-wasm.sh`.
 - Perf measurement: Chrome for Testing 156.0.8078.4 from the Playwright cache with `--headless=new --use-angle=metal --enable-gpu` (real ANGLE Metal GPU); the harness rejects software renderers.
+- DSH sessions: Chrome does not start inside the default workspace sandbox (sandbox init denied). The `perf`/`visual` gates need a one-shot wider approval or a run outside that sandbox; never replace the evidence with a screenshot from another build.
 - Disk: ~19 GiB free (freed during the backend stage). Still clean `node_modules/`, build dirs, `dist/` and `/tmp` after each task.
 
 ## Next steps
 
-1. Owner decision for **stage 5 engine-core**, then plan the stage: the engine module list from `docs/engine.md`, the full canvas-catalogue engine entries (L01 target: 10,000 objects at 60 fps, no long task over 16 ms; the spike caveat above stays), WebGPU behind the command-buffer interface, the engine-playground showcase, and the `perf` gate. Q4 (CRDT) is needed before realtime; Q15/Q16/Q17 stay open.
-2. Then realtime (Q4), web-app (first real client of `packages/sdk`, fix its packaging first), value (imports/AI, Q8), hardening, and only at the very end the remote phase (`P0-02`, `P0-15`, `P0-16`, `P0-17`, GitHub/CI/branch protection/release, ADR-0003).
-3. Before any contract change: bump the version in `board.contracts[]`, every schema `$id` and the root `contractVersion` in the same task, add valid+invalid fixtures, regenerate codegen, keep TS/C++ parity green, update `docs/contracts.md`, run the `contracts` gate.
-4. Keep the demo cadence: every preview or design-system change updates the Contract overview, the live demo and its screenshots in the same task.
+1. Execute **stage 5 engine-core** in waves: (0) `P4-01` engine document, `P4-02` playground shell, `P4-03` `perf` gate + L01 basis, `P4-04` `visual` gate, `P4-05` operation/undo seam; (1) `P4-06` L13, `P4-07` L19, `P4-08`/`P4-09` L02 text atlas + glyph layout, `P4-10` L02 titles/visible quality, `P4-11`/`P4-12` WebGPU pipeline + fallback, `P4-13` WebGPU switch + two-backend visual; (2) `P4-14` L03, `P4-15` L07, `P4-16` L10, `P4-17` L14, `P4-18` L16, `P4-19` L20, `P4-20` L12, `P4-21` L11, `P4-22` L17, `P4-23` L18, `P4-24` L15 desktop; (3) `P4-25`/`P4-26`/`P4-27` L08 contract, database, engine; (4) `P4-28` L01 final proof + stage showcase. Only the next briefs exist (JIT, `P4-01` … `P4-05`).
+2. Then realtime (Q4), web-app (first real client of `packages/sdk`, fix its packaging first), value (imports/AI, Q8), hardening (M1 reference measurement, images, a11y mirror, touch), and only at the very end the remote phase (`P0-02`, `P0-15`, `P0-16`, `P0-17`, GitHub/CI/branch protection/release, ADR-0003).
+3. Before any contract change: bump the version in `board.contracts[]`, every schema `$id` and the root `contractVersion` in the same task, add valid+invalid fixtures, regenerate codegen, keep TS/C++ parity green, update `docs/contracts.md`, run the `contracts` gate. The first one is the zones parent reference in `P4-23` (0.1.0 -> 0.2.0).
+4. Keep the demo cadence: every preview or design-system change updates the Contract overview, the live demo and its screenshots in the same task; the engine playground showcase comes with `P4-02` and `P4-25`.
 
 ## Standard task loop
 
@@ -66,9 +76,10 @@ Rules: one commit per task (`<ID>: <title>`), change entry in `.changes/` (`pnpm
 ## Owner decisions recorded
 
 - `Q2` pnpm workspaces + Turborepo; `Q10` SemVer `0.0.1` + letter entries; `Q11` no AI release notes for now; `Q12` ICU message files now, library later; dev tools + GitHub Actions approved.
-- `Q5` self-hosted Ory Kratos, community edition only, auth UI built by us (ADR-0007); `Q6` reference hardware MacBook Air M1, 8 GB, Chrome (local M2 proxy accepted); `Q7` agents under close guidance; `Q18` 50k@60fps for the spike, catalogue L01 for engine-core.
+- `Q5` self-hosted Ory Kratos, community edition only, auth UI built by us (ADR-0007); `Q6` reference hardware MacBook Air M1, 8 GB, Chrome — M2 proxy accepted for the local engine-core exit, M1 re-measured in hardening; `Q7` agents under close guidance; `Q18` 50k@60fps for the spike, catalogue L01 (10,000 objects) for engine-core.
+- `Q15` clear layers only, no collision nudge; `Q16` two fingers pan, pinch zooms, Cmd/Ctrl+wheel zooms; `Q17` zones are containers (contract 0.2.0 parent reference, ADR + migration, no nested zones); `Q19` WebGL2 stays the measured default, WebGPU is the second backend with fallback and a two-backend image comparison; `Q20` images with detail levels and the a11y/test mirror move to hardening/web-app, the L15 touch part stays with hardening.
 - `ADR-0002` local-first until the GitHub switch; `ADR-0003` remote stage after hardening, before v1; `ADR-0004` contract limits/visibility; `ADR-0005` contract source of truth; `ADR-0006` engine architecture; `ADR-0008` API/session model.
-- Still open: Q3 hosting (tendency Infomaniak Public Cloud CH/EU; decision at P0-15), Q1 domain (contract base URI placeholder), Q4 CRDT (before realtime), Q8 import formats, Q9 pricing, Q14 languages, Q15/Q16/Q17 engine behaviour.
+- Still open: Q3 hosting (tendency Infomaniak Public Cloud CH/EU; decision at P0-15), Q1 domain (contract base URI placeholder), Q4 CRDT (before realtime), Q8 import formats, Q9 pricing, Q14 languages.
 
 ## New session prompt
 

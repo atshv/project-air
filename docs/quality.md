@@ -32,6 +32,13 @@ v1) are added as D7 … when those stages are planned in detail.
   with allow-and-deny tests for every route (`api-tests`); `rls-tests` prove a second account sees
   nothing; a typed SDK script creates account, workspace, board and note; sessions come from the
   self-hosted Ory Kratos (ADR-0007).
+- **D10** Engine core (stage engine-core): the playground shows a deterministic board with 10,000
+  objects at 60 fps and no frame interval above 16 ms while panning and zooming (`perf`, measured on
+  the documented M2 proxy until the M1 reference is re-measured in hardening); every engine entry of
+  the canvas work orders has its engine-owned acceptance evidenced, and the reference images are
+  green at 1440x900 and 390x844 for WebGL2 and WebGPU (`visual`); the engine renders titles and
+  previews from tokens, every content gesture is one contract operation with its inverse, and WebGPU
+  runs behind the command-buffer interface with a WebGL2 fallback.
 - **D6** Repository discipline: `main` accepts changes only through pull requests with green CI and
   one review; CI runs scope check, boundaries, board check, lint and typecheck on every pull
   request.
@@ -66,13 +73,13 @@ task from the project's manifests; until then the gate cannot pass.
 | `wasm-build` | `bash packages/engine/tools/build-wasm.sh && node packages/engine/tools/wasm-smoke.mjs` | exit 0, `engine.wasm` and `engine.js` written, Node smoke passes |
 | `wasm-size` | `node packages/engine/tools/wasm-size.mjs` | exit 0, gzip size <= 307200 bytes (300 KiB); P2-04 records the measured size |
 | `perf-baseline` | `node packages/engine/test/perf/run-perf.mjs` | exit 0, p95 frame time <= 16.7 ms at 50,000 rectangles, real GPU renderer recorded, JSON evidence written (exclusive; see `docs/gates/perf.md`) |
-| `perf` | see `docs/gates/load.md` `[VERIFY: stage engine-core]` | exit 0, within budget (exclusive) |
+| `perf` | `node packages/engine/test/perf/run-perf.mjs --scenario engine-core` | exit 0, 10,000 objects p95 <= 16.7 ms with continuous pan/zoom and no frame interval above 16.7 ms, 500 cards + 50 zones final proof < 50 ms, within basis + 10 %, real GPU recorded (exclusive; see `docs/gates/perf.md`) |
 | `db-migrate` | `node services/platform/dist/db/migrate.js` | exit 0, migrations applied to the slot database |
 | `api-tests` | `node --test services/platform/test/api/*.test.mjs` | exit 0, every route has an allow and a deny case |
 | `rls-tests` | `node --test services/platform/test/rls/*.test.mjs` | exit 0, a second account sees nothing (exclusive) |
 | `crdt-convergence` | `[VERIFY: stage realtime]` | exit 0, 10,000 rounds without divergence |
 | `load` | see `docs/gates/load.md` `[VERIFY: stage realtime]` | exit 0 (exclusive) |
-| `visual` | see `docs/gates/visual-diff.md` `[VERIFY: stage engine-core]` | exit 0, within tolerance |
+| `visual` | `node packages/engine/test/visual/run-visual.mjs` | exit 0, every reference image at 1440x900 and 390x844 within tolerance for WebGL2 and WebGPU (see `docs/gates/visual-diff.md`) |
 | `e2e` | see `docs/gates/playwright.md` `[VERIFY: stage web-app]` | exit 0 (exclusive) |
 | `import-tests` | `[VERIFY: stage value]` | exit 0 |
 

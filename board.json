@@ -4,7 +4,7 @@
   "profile": "L",
   "base_branch": "main",
   "generator_version": "1.0.0",
-  "stage": 1,
+  "stage": 5,
   "worktrees": "required",
   "resources": {
     "slots": 10,
@@ -123,7 +123,7 @@
         "visual",
         "perf"
       ],
-      "owner_decision": "pending",
+      "owner_decision": "continue",
       "depends_on": [
         "engine-spike"
       ]
@@ -2822,6 +2822,1605 @@
         "New public GET /v1/session exposes the resolved accountId (never the Kratos id); v4 public flow proven; 32 api-tests, 74 unit, acceptance PASS.",
         "Backend-core complete: api-tests + rls-tests records green; follow-ups: legacy v4 remap before historical import, SDK packaging declarations, member/invitation routes, production DB owner role."
       ]
+    },
+    {
+      "id": "P4-01",
+      "title": "Engine document: stable ids, incremental mutations, hit testing and spatial queries",
+      "goal": "The engine document keeps contract board objects with stable ids, applies add/move/resize/remove mutations without reloading the document, and answers hit tests and visible-bounds queries in layer and z order; native C++ tests cover ordering, mutation and rejection cases.",
+      "why": "engine-core needs one mutable working copy with identity and hit testing before any gesture, overlay or measurement work can build on it (AD-1, AD-2); the spike only loads rectangles wholesale.",
+      "satisfies": [
+        "D10"
+      ],
+      "status": "pending",
+      "depends_on": [],
+      "complexity": 6,
+      "stage": "engine-core",
+      "parallel_group": null,
+      "scope_write": [
+        "packages/engine/",
+        ".changes/"
+      ],
+      "scope_read": [
+        "ARCHITECTURE.md",
+        "AGENTS.md",
+        "STATUS.md",
+        "docs/module-map.md",
+        "docs/quality.md",
+        "docs/engine.md",
+        "docs/gates/cpp-cmake.md",
+        "docs/gates/wasm-emscripten.md",
+        "packages/engine/include/engine/",
+        "packages/engine/src/",
+        "packages/engine/test/",
+        "packages/engine/CMakeLists.txt",
+        "packages/engine/package.json",
+        "packages/engine/tsconfig.json",
+        "packages/contracts/generated/types.ts",
+        "packages/contracts/schemas/board-content.schema.json",
+        "packages/ui-kit/tokens.h"
+      ],
+      "acceptance": [
+        "A1",
+        "A2",
+        "A3",
+        "A4"
+      ],
+      "gates": [
+        "board-check",
+        "boundaries",
+        "cpp-unit",
+        "wasm-build",
+        "wasm-size",
+        "typecheck"
+      ],
+      "owner": null,
+      "branch": "task/P4-01",
+      "worktree": null,
+      "round": 0,
+      "evidence": [],
+      "scope_write_forbidden": [
+        "reference/"
+      ]
+    },
+    {
+      "id": "P4-02",
+      "title": "Engine playground: interactive sample board and stage shell",
+      "goal": "The playground shows a deterministic sample board of 500 cards, 50 zones and blocks with pan and zoom, an object and FPS HUD, and a shared scene fixture for the perf and visual harnesses; ADR-0009 records the canvas text and overlay strategy.",
+      "why": "engine-core needs one visible, reproducible board surface for demonstration, measurement and reference images before drawing and interaction work starts.",
+      "satisfies": [
+        "D10"
+      ],
+      "status": "pending",
+      "depends_on": [
+        "P4-01"
+      ],
+      "complexity": 6,
+      "stage": "engine-core",
+      "parallel_group": null,
+      "scope_write": [
+        "packages/test-kit/",
+        "apps/engine-playground/",
+        "docs/adr/",
+        "docs/engine.md",
+        ".changes/",
+        "reviews/evidence/"
+      ],
+      "scope_read": [
+        "ARCHITECTURE.md",
+        "AGENTS.md",
+        "STATUS.md",
+        "docs/module-map.md",
+        "docs/quality.md",
+        "docs/design-rules.md",
+        "docs/engine.md",
+        "docs/adr/ADR-0006-engine-architecture.md",
+        "docs/adr/ADR-0009-canvas-text-and-overlay.md",
+        "docs/gates/perf.md",
+        "docs/gates/visual-diff.md",
+        "packages/engine/src/bridge/engine.ts",
+        "packages/engine/include/engine/",
+        "packages/ui-kit/tokens.css",
+        "packages/ui-kit/tokens.json",
+        "apps/engine-playground/",
+        "packages/test-kit/"
+      ],
+      "acceptance": [
+        "A1",
+        "A2",
+        "A3",
+        "A4"
+      ],
+      "gates": [
+        "board-check",
+        "boundaries",
+        "design-check",
+        "unit"
+      ],
+      "owner": null,
+      "branch": "task/P4-02",
+      "worktree": null,
+      "round": 0,
+      "evidence": [],
+      "scope_write_forbidden": [
+        "reference/"
+      ]
+    },
+    {
+      "id": "P4-03",
+      "title": "Engine-core perf gate and L01 basis",
+      "goal": "The perf harness gains an engine-core scenario (10,000 mixed board objects with continuous pan and zoom, p95 <= 16.7 ms, no frame interval above 16.7 ms after warm-up) plus the L01 basis run with 500 cards and 50 zones; the gate writes JSON evidence and docs/gates/perf.md and docs/quality.md define the `perf` gate.",
+      "why": "L01 and the stage exit need a measured basis and a repeatable gate; Q18 fixes the engine-core target at 10,000 objects and the long-task bound.",
+      "satisfies": [
+        "D10"
+      ],
+      "status": "pending",
+      "depends_on": [
+        "P4-02"
+      ],
+      "complexity": 6,
+      "stage": "engine-core",
+      "parallel_group": null,
+      "exclusive": [
+        "perf"
+      ],
+      "scope_write": [
+        "packages/engine/test/perf/",
+        "apps/engine-playground/",
+        "packages/test-kit/",
+        "docs/gates/",
+        "docs/engine/",
+        "docs/quality.md",
+        "reviews/evidence/",
+        ".changes/"
+      ],
+      "scope_read": [
+        "ARCHITECTURE.md",
+        "AGENTS.md",
+        "STATUS.md",
+        "docs/module-map.md",
+        "docs/quality.md",
+        "docs/canvas-acceptance.md",
+        "docs/gates/perf.md",
+        "docs/engine/perf-baseline.md",
+        "docs/engine.md",
+        "docs/versions.md",
+        "packages/engine/test/perf/",
+        "apps/engine-playground/",
+        "packages/test-kit/"
+      ],
+      "acceptance": [
+        "A1",
+        "A2",
+        "A3",
+        "A4"
+      ],
+      "gates": [
+        "board-check",
+        "perf"
+      ],
+      "owner": null,
+      "branch": "task/P4-03",
+      "worktree": null,
+      "round": 0,
+      "evidence": [],
+      "scope_write_forbidden": [
+        "reference/"
+      ]
+    },
+    {
+      "id": "P4-04",
+      "title": "Visual gate with reference images",
+      "goal": "A dependency-free Node harness captures deterministic playground states at 1440x900 and 390x844, compares them against committed reference images with a documented tolerance and writes a `visual` gate record; docs/gates/visual-diff.md and docs/quality.md define the gate.",
+      "why": "The stage exit needs green reference images, and every drawing change must prove it did not regress the canvas.",
+      "satisfies": [
+        "D10"
+      ],
+      "status": "pending",
+      "depends_on": [
+        "P4-02"
+      ],
+      "complexity": 6,
+      "stage": "engine-core",
+      "parallel_group": null,
+      "exclusive": [
+        "visual"
+      ],
+      "scope_write": [
+        "packages/engine/test/visual/",
+        "apps/engine-playground/tools/",
+        "docs/gates/",
+        "docs/quality.md",
+        "reviews/evidence/",
+        ".changes/"
+      ],
+      "scope_read": [
+        "ARCHITECTURE.md",
+        "AGENTS.md",
+        "STATUS.md",
+        "docs/module-map.md",
+        "docs/quality.md",
+        "docs/design-rules.md",
+        "docs/gates/visual-diff.md",
+        "docs/gates/perf.md",
+        "docs/engine.md",
+        "apps/engine-playground/",
+        "packages/engine/test/perf/run-perf.mjs",
+        "packages/test-kit/"
+      ],
+      "acceptance": [
+        "A1",
+        "A2",
+        "A3",
+        "A4"
+      ],
+      "gates": [
+        "board-check",
+        "visual"
+      ],
+      "owner": null,
+      "branch": "task/P4-04",
+      "worktree": null,
+      "round": 0,
+      "evidence": [],
+      "scope_write_forbidden": [
+        "reference/"
+      ]
+    },
+    {
+      "id": "P4-05",
+      "title": "Gesture-to-operation seam and undo history core",
+      "goal": "The engine package gains a typed gesture-to-operation layer: every content gesture produces exactly one contract operation with its inverse, and a per-session history records up to 20 {do, undo} pairs; unit tests prove one gesture equals one operation and that a counter-operation restores the previous state.",
+      "why": "AD-1 and canvas cross-section rule 2 require reversibility from the first write; every interaction task builds on this seam.",
+      "satisfies": [
+        "D10"
+      ],
+      "status": "pending",
+      "depends_on": [
+        "P4-01"
+      ],
+      "complexity": 6,
+      "stage": "engine-core",
+      "parallel_group": null,
+      "scope_write": [
+        "packages/engine/",
+        ".changes/"
+      ],
+      "scope_read": [
+        "ARCHITECTURE.md",
+        "AGENTS.md",
+        "STATUS.md",
+        "docs/module-map.md",
+        "docs/quality.md",
+        "docs/canvas-acceptance.md",
+        "docs/contracts.md",
+        "docs/engine.md",
+        "packages/engine/src/",
+        "packages/engine/test/",
+        "packages/engine/package.json",
+        "packages/engine/tsconfig.json",
+        "packages/engine/ARCHITECTURE.md",
+        "packages/contracts/generated/types.ts",
+        "packages/contracts/schemas/operation.schema.json"
+      ],
+      "acceptance": [
+        "A1",
+        "A2",
+        "A3",
+        "A4"
+      ],
+      "gates": [
+        "board-check",
+        "boundaries",
+        "typecheck",
+        "unit"
+      ],
+      "owner": null,
+      "branch": "task/P4-05",
+      "worktree": null,
+      "round": 0,
+      "evidence": [],
+      "scope_write_forbidden": [
+        "reference/"
+      ]
+    },
+    {
+      "id": "P4-06",
+      "title": "Layers and draw order (L13)",
+      "goal": "Drawing follows design rule paragraph 8 with edges, grid, selection and snap guides in their layers; the last moved object sits on top of its layer and that position is stored through the contract's fractional z, with Q15 answered as clear layers only; C++ tests and a visual comparison confirm order and reuse.",
+      "why": "L13 entry: overlaps must be predictable and stable before selection, dragging and zones rely on the draw order.",
+      "satisfies": [
+        "D10"
+      ],
+      "status": "pending",
+      "depends_on": [
+        "P4-02",
+        "P4-05"
+      ],
+      "complexity": 5,
+      "stage": "engine-core",
+      "parallel_group": null,
+      "scope_write": [
+        "packages/engine/",
+        "apps/engine-playground/",
+        ".changes/"
+      ],
+      "scope_read": [
+        "ARCHITECTURE.md",
+        "AGENTS.md",
+        "STATUS.md",
+        "docs/module-map.md",
+        "docs/quality.md",
+        "docs/design-rules.md",
+        "docs/canvas-acceptance.md",
+        "docs/engine.md",
+        "packages/engine/",
+        "packages/contracts/generated/types.ts",
+        "packages/ui-kit/tokens.h",
+        "apps/engine-playground/",
+        "docs/gates/visual-diff.md"
+      ],
+      "acceptance": [
+        "A1",
+        "A2",
+        "A3"
+      ],
+      "gates": [
+        "board-check",
+        "boundaries",
+        "cpp-unit",
+        "visual",
+        "unit"
+      ],
+      "owner": null,
+      "branch": "task/P4-06",
+      "worktree": null,
+      "round": 0,
+      "evidence": [],
+      "scope_write_forbidden": [
+        "reference/"
+      ]
+    },
+    {
+      "id": "P4-07",
+      "title": "Canvas feel: fit, dot grid and idle drawing (L19)",
+      "goal": "Fit zooms at most to 100 % and keeps the L02 padding, the dot grid hides below zoom 0.5 and the playground renders only on change; a perf record shows no frame while idle.",
+      "why": "L19 entry: the fit rule, grid threshold and idle behaviour also underpin the credibility of the perf gate.",
+      "satisfies": [
+        "D10"
+      ],
+      "status": "pending",
+      "depends_on": [
+        "P4-02"
+      ],
+      "complexity": 4,
+      "stage": "engine-core",
+      "parallel_group": null,
+      "scope_write": [
+        "packages/engine/",
+        "apps/engine-playground/",
+        ".changes/"
+      ],
+      "scope_read": [
+        "ARCHITECTURE.md",
+        "AGENTS.md",
+        "STATUS.md",
+        "docs/module-map.md",
+        "docs/quality.md",
+        "docs/design-rules.md",
+        "docs/canvas-acceptance.md",
+        "docs/engine.md",
+        "packages/engine/",
+        "packages/contracts/generated/types.ts",
+        "packages/ui-kit/tokens.h",
+        "apps/engine-playground/"
+      ],
+      "acceptance": [
+        "A1",
+        "A2",
+        "A3"
+      ],
+      "gates": [
+        "board-check",
+        "boundaries",
+        "cpp-unit",
+        "visual",
+        "perf"
+      ],
+      "owner": null,
+      "branch": "task/P4-07",
+      "worktree": null,
+      "round": 0,
+      "evidence": [],
+      "scope_write_forbidden": [
+        "reference/"
+      ]
+    },
+    {
+      "id": "P4-08",
+      "title": "Text atlas and glyph texture pipeline (L02)",
+      "goal": "The engine renderer samples a runtime glyph atlas: the bridge rasterises the token font stack into an RGBA texture, the C++ side uploads it, resolves glyph metrics and draws textured quads; no font file is bundled and tests cover atlas upload, DPR-correct metrics, missing glyphs and texture limit fallback.",
+      "why": "L02 needs text on the canvas; a runtime atlas avoids a bundled OFL font, which the licence rules do not allow, and keeps the system font stack from tokens.",
+      "satisfies": [
+        "D10"
+      ],
+      "status": "pending",
+      "depends_on": [
+        "P4-02",
+        "P4-04"
+      ],
+      "complexity": 6,
+      "stage": "engine-core",
+      "parallel_group": null,
+      "scope_write": [
+        "packages/engine/",
+        "apps/engine-playground/",
+        "docs/engine.md",
+        ".changes/"
+      ],
+      "scope_read": [
+        "ARCHITECTURE.md",
+        "AGENTS.md",
+        "STATUS.md",
+        "docs/module-map.md",
+        "docs/quality.md",
+        "docs/design-rules.md",
+        "docs/canvas-acceptance.md",
+        "docs/engine.md",
+        "packages/engine/",
+        "packages/contracts/generated/types.ts",
+        "packages/ui-kit/tokens.h",
+        "apps/engine-playground/"
+      ],
+      "acceptance": [
+        "A1",
+        "A2",
+        "A3"
+      ],
+      "gates": [
+        "board-check",
+        "boundaries",
+        "cpp-unit",
+        "wasm-build",
+        "wasm-size",
+        "typecheck"
+      ],
+      "owner": null,
+      "branch": "task/P4-08",
+      "worktree": null,
+      "round": 0,
+      "evidence": [],
+      "scope_write_forbidden": [
+        "reference/"
+      ]
+    },
+    {
+      "id": "P4-09",
+      "title": "Glyph layout, text instances and ellipsis (L02)",
+      "goal": "Text instances are laid out from the glyph atlas with DPR-correct metrics: titles are single-line with ellipsis, previews wrap or clip to their block, and the text batch shares the command-buffer path (instances plus atlas UVs) without per-glyph JS calls; typography values come only from tokens.",
+      "why": "The atlas alone does not render readable cards; layout and ellipsis are the visible half of L02 and later title editing reuses the same instances.",
+      "satisfies": [
+        "D10"
+      ],
+      "status": "pending",
+      "depends_on": [
+        "P4-08"
+      ],
+      "complexity": 5,
+      "stage": "engine-core",
+      "parallel_group": null,
+      "scope_write": [
+        "packages/engine/",
+        "apps/engine-playground/",
+        "docs/engine.md",
+        ".changes/"
+      ],
+      "scope_read": [
+        "ARCHITECTURE.md",
+        "AGENTS.md",
+        "STATUS.md",
+        "docs/module-map.md",
+        "docs/quality.md",
+        "docs/design-rules.md",
+        "docs/canvas-acceptance.md",
+        "docs/engine.md",
+        "packages/engine/",
+        "packages/contracts/generated/types.ts",
+        "packages/ui-kit/tokens.h",
+        "apps/engine-playground/"
+      ],
+      "acceptance": [
+        "A1",
+        "A2",
+        "A3"
+      ],
+      "gates": [
+        "board-check",
+        "boundaries",
+        "cpp-unit",
+        "wasm-build",
+        "wasm-size",
+        "visual",
+        "typecheck"
+      ],
+      "owner": null,
+      "branch": "task/P4-09",
+      "worktree": null,
+      "round": 0,
+      "evidence": [],
+      "scope_write_forbidden": [
+        "reference/"
+      ]
+    },
+    {
+      "id": "P4-10",
+      "title": "Titles, previews and visible quality (L02)",
+      "goal": "Card titles render single-line with ellipsis at 15 px/600 from tokens, block and zone headers are 40 px, zones offset their content below the header, blocks grow instead of scrolling and delete affordances stay quiet; the visible defects are evidenced before and after with reference images.",
+      "why": "L02 engine entry: nothing on the canvas may look cut off, doubled or random.",
+      "satisfies": [
+        "D10"
+      ],
+      "status": "pending",
+      "depends_on": [
+        "P4-08",
+        "P4-09",
+        "P4-06"
+      ],
+      "complexity": 5,
+      "stage": "engine-core",
+      "parallel_group": null,
+      "scope_write": [
+        "packages/engine/",
+        "apps/engine-playground/",
+        "docs/engine.md",
+        ".changes/"
+      ],
+      "scope_read": [
+        "ARCHITECTURE.md",
+        "AGENTS.md",
+        "STATUS.md",
+        "docs/module-map.md",
+        "docs/quality.md",
+        "docs/design-rules.md",
+        "docs/canvas-acceptance.md",
+        "docs/engine.md",
+        "packages/engine/",
+        "packages/contracts/generated/types.ts",
+        "packages/ui-kit/tokens.h",
+        "apps/engine-playground/",
+        "docs/gates/visual-diff.md"
+      ],
+      "acceptance": [
+        "A1",
+        "A2",
+        "A3"
+      ],
+      "gates": [
+        "board-check",
+        "boundaries",
+        "cpp-unit",
+        "visual",
+        "design-check"
+      ],
+      "owner": null,
+      "branch": "task/P4-10",
+      "worktree": null,
+      "round": 0,
+      "evidence": [],
+      "scope_write_forbidden": [
+        "reference/"
+      ]
+    },
+    {
+      "id": "P4-11",
+      "title": "WebGPU render pipeline behind the command buffer",
+      "goal": "A WebGPU module renders the existing 24-byte command buffer with one instanced draw: pipeline and shader creation, instance buffer upload, tone and layer handling, resize and clear, plus native stubs so the C++ suites stay green; no second data path is introduced.",
+      "why": "ADR-0006 planned WebGPU as the second backend behind the command-buffer seam; the owner decided WebGL2 stays the measured default.",
+      "satisfies": [
+        "D10"
+      ],
+      "status": "pending",
+      "depends_on": [
+        "P4-06",
+        "P4-10"
+      ],
+      "complexity": 6,
+      "stage": "engine-core",
+      "parallel_group": null,
+      "scope_write": [
+        "packages/engine/",
+        "docs/engine.md",
+        ".changes/"
+      ],
+      "scope_read": [
+        "ARCHITECTURE.md",
+        "AGENTS.md",
+        "STATUS.md",
+        "docs/module-map.md",
+        "docs/quality.md",
+        "docs/design-rules.md",
+        "docs/canvas-acceptance.md",
+        "docs/engine.md",
+        "packages/engine/",
+        "packages/contracts/generated/types.ts",
+        "packages/ui-kit/tokens.h",
+        "docs/adr/ADR-0006-engine-architecture.md"
+      ],
+      "acceptance": [
+        "A1",
+        "A2",
+        "A3"
+      ],
+      "gates": [
+        "board-check",
+        "boundaries",
+        "cpp-unit",
+        "wasm-build",
+        "wasm-size"
+      ],
+      "owner": null,
+      "branch": "task/P4-11",
+      "worktree": null,
+      "round": 0,
+      "evidence": [],
+      "scope_write_forbidden": [
+        "reference/"
+      ]
+    },
+    {
+      "id": "P4-12",
+      "title": "WebGPU backend selection, capability and fallback",
+      "goal": "The engine detects WebGPU adapter and device availability, selects the backend, falls back to WebGL2 without crashing when WebGPU is unavailable, exposes the active backend through the C ABI and the bridge and reports the reason for a fallback; unit tests cover the selection and fallback rules with fakes.",
+      "why": "A second renderer is only safe when selection and fallback are deterministic and visible; the visual gate and the playground must know which backend produced an image.",
+      "satisfies": [
+        "D10"
+      ],
+      "status": "pending",
+      "depends_on": [
+        "P4-11"
+      ],
+      "complexity": 5,
+      "stage": "engine-core",
+      "parallel_group": null,
+      "scope_write": [
+        "packages/engine/",
+        "docs/engine.md",
+        ".changes/"
+      ],
+      "scope_read": [
+        "ARCHITECTURE.md",
+        "AGENTS.md",
+        "STATUS.md",
+        "docs/module-map.md",
+        "docs/quality.md",
+        "docs/design-rules.md",
+        "docs/canvas-acceptance.md",
+        "docs/engine.md",
+        "packages/engine/",
+        "packages/contracts/generated/types.ts",
+        "packages/ui-kit/tokens.h",
+        "docs/adr/ADR-0006-engine-architecture.md"
+      ],
+      "acceptance": [
+        "A1",
+        "A2",
+        "A3"
+      ],
+      "gates": [
+        "board-check",
+        "boundaries",
+        "cpp-unit",
+        "wasm-build",
+        "wasm-size",
+        "typecheck"
+      ],
+      "owner": null,
+      "branch": "task/P4-12",
+      "worktree": null,
+      "round": 0,
+      "evidence": [],
+      "scope_write_forbidden": [
+        "reference/"
+      ]
+    },
+    {
+      "id": "P4-13",
+      "title": "WebGPU switch and two-backend image comparison",
+      "goal": "The playground switches between WebGL2 and WebGPU by query parameter and automatic fallback, the HUD names the active backend and renderer, and the visual gate compares both backends at both viewports; docs/engine.md, ADR-0006 consequences and docs/gates/visual-diff.md document the switch and fallback.",
+      "why": "Blueprint P4-09 requires image comparison of both backends; the owner decided WebGL2 stays default and the perf path.",
+      "satisfies": [
+        "D10"
+      ],
+      "status": "pending",
+      "depends_on": [
+        "P4-11",
+        "P4-12",
+        "P4-04"
+      ],
+      "complexity": 6,
+      "stage": "engine-core",
+      "parallel_group": null,
+      "scope_write": [
+        "apps/engine-playground/",
+        "packages/engine/",
+        "docs/engine.md",
+        "docs/adr/",
+        "docs/gates/",
+        ".changes/"
+      ],
+      "scope_read": [
+        "ARCHITECTURE.md",
+        "AGENTS.md",
+        "STATUS.md",
+        "docs/module-map.md",
+        "docs/quality.md",
+        "docs/design-rules.md",
+        "docs/canvas-acceptance.md",
+        "docs/engine.md",
+        "packages/engine/",
+        "packages/contracts/generated/types.ts",
+        "packages/ui-kit/tokens.h",
+        "apps/engine-playground/",
+        "docs/gates/visual-diff.md"
+      ],
+      "acceptance": [
+        "A1",
+        "A2",
+        "A3"
+      ],
+      "gates": [
+        "board-check",
+        "boundaries",
+        "visual",
+        "design-check"
+      ],
+      "owner": null,
+      "branch": "task/P4-13",
+      "worktree": null,
+      "round": 0,
+      "evidence": [],
+      "scope_write_forbidden": [
+        "reference/"
+      ]
+    },
+    {
+      "id": "P4-14",
+      "title": "Dragging versus editing (L03)",
+      "goal": "Pointer input separates click, drag and edit: a 4 px threshold, whole-card grip for notes, 40 px header grip for blocks and zones, grab/grabbing cursors, no drag from fields or scrollable areas, and a click below the threshold writes no operation; the engine input layer and playground prove each case.",
+      "why": "L03 entry: every later gesture and the overlay editing contract depend on this separation.",
+      "satisfies": [
+        "D10"
+      ],
+      "status": "pending",
+      "depends_on": [
+        "P4-05",
+        "P4-10"
+      ],
+      "complexity": 6,
+      "stage": "engine-core",
+      "parallel_group": null,
+      "scope_write": [
+        "packages/engine/",
+        "apps/engine-playground/",
+        ".changes/"
+      ],
+      "scope_read": [
+        "ARCHITECTURE.md",
+        "AGENTS.md",
+        "STATUS.md",
+        "docs/module-map.md",
+        "docs/quality.md",
+        "docs/design-rules.md",
+        "docs/canvas-acceptance.md",
+        "docs/engine.md",
+        "packages/engine/",
+        "packages/contracts/generated/types.ts",
+        "packages/ui-kit/tokens.h",
+        "apps/engine-playground/"
+      ],
+      "acceptance": [
+        "A1",
+        "A2",
+        "A3",
+        "A4"
+      ],
+      "gates": [
+        "board-check",
+        "boundaries",
+        "cpp-unit",
+        "visual",
+        "unit"
+      ],
+      "owner": null,
+      "branch": "task/P4-14",
+      "worktree": null,
+      "round": 0,
+      "evidence": [],
+      "scope_write_forbidden": [
+        "reference/"
+      ]
+    },
+    {
+      "id": "P4-15",
+      "title": "Snapping (L07)",
+      "goal": "Dragging snaps live to the 16 px grid and to neighbour and zone edges and centres with 6 px screen tolerance, shows at most three 1 px accent lines, gives snapping precedence over the grid and frees the position with Shift; a C++ suite covers edge, centre, tolerance and precedence and the measurement stays within basis + 10 %.",
+      "why": "L07 entry: snapping shapes every move operation and must be measured against the L01 basis.",
+      "satisfies": [
+        "D10"
+      ],
+      "status": "pending",
+      "depends_on": [
+        "P4-14"
+      ],
+      "complexity": 6,
+      "stage": "engine-core",
+      "parallel_group": null,
+      "scope_write": [
+        "packages/engine/",
+        "apps/engine-playground/",
+        ".changes/"
+      ],
+      "scope_read": [
+        "ARCHITECTURE.md",
+        "AGENTS.md",
+        "STATUS.md",
+        "docs/module-map.md",
+        "docs/quality.md",
+        "docs/design-rules.md",
+        "docs/canvas-acceptance.md",
+        "docs/engine.md",
+        "packages/engine/",
+        "packages/contracts/generated/types.ts",
+        "packages/ui-kit/tokens.h",
+        "apps/engine-playground/"
+      ],
+      "acceptance": [
+        "A1",
+        "A2",
+        "A3",
+        "A4"
+      ],
+      "gates": [
+        "board-check",
+        "boundaries",
+        "cpp-unit",
+        "perf"
+      ],
+      "owner": null,
+      "branch": "task/P4-15",
+      "worktree": null,
+      "round": 0,
+      "evidence": [],
+      "scope_write_forbidden": [
+        "reference/"
+      ]
+    },
+    {
+      "id": "P4-16",
+      "title": "Multi-selection (L10)",
+      "goal": "Shift-click adds and removes, Shift-drag on empty space selects by rubber band, the selection frame uses tokens, a count bar offers delete, a joint drag is exactly one operation and Esc clears; the selection survives the drag.",
+      "why": "L10 entry: selection state and group moves are prerequisites for zone moves, resize and keyboard actions.",
+      "satisfies": [
+        "D10"
+      ],
+      "status": "pending",
+      "depends_on": [
+        "P4-14",
+        "P4-15"
+      ],
+      "complexity": 6,
+      "stage": "engine-core",
+      "parallel_group": null,
+      "scope_write": [
+        "packages/engine/",
+        "apps/engine-playground/",
+        ".changes/"
+      ],
+      "scope_read": [
+        "ARCHITECTURE.md",
+        "AGENTS.md",
+        "STATUS.md",
+        "docs/module-map.md",
+        "docs/quality.md",
+        "docs/design-rules.md",
+        "docs/canvas-acceptance.md",
+        "docs/engine.md",
+        "packages/engine/",
+        "packages/contracts/generated/types.ts",
+        "packages/ui-kit/tokens.h",
+        "apps/engine-playground/"
+      ],
+      "acceptance": [
+        "A1",
+        "A2",
+        "A3"
+      ],
+      "gates": [
+        "board-check",
+        "boundaries",
+        "cpp-unit",
+        "unit"
+      ],
+      "owner": null,
+      "branch": "task/P4-16",
+      "worktree": null,
+      "round": 0,
+      "evidence": [],
+      "scope_write_forbidden": [
+        "reference/"
+      ]
+    },
+    {
+      "id": "P4-17",
+      "title": "Resize (L14)",
+      "goal": "Selected objects show 8 px accent handles, resizing snaps to 16 px (Shift free), the per-type minimum sizes hold (note 176x80, checklist 224x128, table 288x160, zone 256x192, columns 368x192, timeline 320x160, palette 224x128) and one gesture produces one operation whose size survives.",
+      "why": "L14 entry: resize completes the direct-manipulation set with drag and keyboard.",
+      "satisfies": [
+        "D10"
+      ],
+      "status": "pending",
+      "depends_on": [
+        "P4-14"
+      ],
+      "complexity": 5,
+      "stage": "engine-core",
+      "parallel_group": null,
+      "scope_write": [
+        "packages/engine/",
+        "apps/engine-playground/",
+        ".changes/"
+      ],
+      "scope_read": [
+        "ARCHITECTURE.md",
+        "AGENTS.md",
+        "STATUS.md",
+        "docs/module-map.md",
+        "docs/quality.md",
+        "docs/design-rules.md",
+        "docs/canvas-acceptance.md",
+        "docs/engine.md",
+        "packages/engine/",
+        "packages/contracts/generated/types.ts",
+        "packages/ui-kit/tokens.h",
+        "apps/engine-playground/"
+      ],
+      "acceptance": [
+        "A1",
+        "A2",
+        "A3"
+      ],
+      "gates": [
+        "board-check",
+        "boundaries",
+        "cpp-unit"
+      ],
+      "owner": null,
+      "branch": "task/P4-17",
+      "worktree": null,
+      "round": 0,
+      "evidence": [],
+      "scope_write_forbidden": [
+        "reference/"
+      ]
+    },
+    {
+      "id": "P4-18",
+      "title": "Auto-pan (L16)",
+      "goal": "While an object or selection is dragged into the 48 px edge zone the view scrolls along without a jump, the drag continues beyond the visible area, and no auto-pan happens without a drag.",
+      "why": "L16 entry: moving content on a large board is unusable without edge scrolling.",
+      "satisfies": [
+        "D10"
+      ],
+      "status": "pending",
+      "depends_on": [
+        "P4-14"
+      ],
+      "complexity": 4,
+      "stage": "engine-core",
+      "parallel_group": null,
+      "scope_write": [
+        "packages/engine/",
+        "apps/engine-playground/",
+        ".changes/"
+      ],
+      "scope_read": [
+        "ARCHITECTURE.md",
+        "AGENTS.md",
+        "STATUS.md",
+        "docs/module-map.md",
+        "docs/quality.md",
+        "docs/design-rules.md",
+        "docs/canvas-acceptance.md",
+        "docs/engine.md",
+        "packages/engine/",
+        "packages/contracts/generated/types.ts",
+        "packages/ui-kit/tokens.h",
+        "apps/engine-playground/"
+      ],
+      "acceptance": [
+        "A1",
+        "A2"
+      ],
+      "gates": [
+        "board-check",
+        "boundaries",
+        "cpp-unit"
+      ],
+      "owner": null,
+      "branch": "task/P4-18",
+      "worktree": null,
+      "round": 0,
+      "evidence": [],
+      "scope_write_forbidden": [
+        "reference/"
+      ]
+    },
+    {
+      "id": "P4-19",
+      "title": "Placement of new objects (L20)",
+      "goal": "New objects appear at the centre of the view on the 16 px grid, cascade 32 px right and down for at most 10 attempts and never land outside the visible area; a unit suite covers the placement function.",
+      "why": "L20 entry: creating a note is the first action a person takes on a board.",
+      "satisfies": [
+        "D10"
+      ],
+      "status": "pending",
+      "depends_on": [
+        "P4-05",
+        "P4-07"
+      ],
+      "complexity": 4,
+      "stage": "engine-core",
+      "parallel_group": null,
+      "scope_write": [
+        "packages/engine/",
+        "apps/engine-playground/",
+        ".changes/"
+      ],
+      "scope_read": [
+        "ARCHITECTURE.md",
+        "AGENTS.md",
+        "STATUS.md",
+        "docs/module-map.md",
+        "docs/quality.md",
+        "docs/design-rules.md",
+        "docs/canvas-acceptance.md",
+        "docs/engine.md",
+        "packages/engine/",
+        "packages/contracts/generated/types.ts",
+        "packages/ui-kit/tokens.h",
+        "apps/engine-playground/"
+      ],
+      "acceptance": [
+        "A1",
+        "A2"
+      ],
+      "gates": [
+        "board-check",
+        "boundaries",
+        "cpp-unit",
+        "unit"
+      ],
+      "owner": null,
+      "branch": "task/P4-19",
+      "worktree": null,
+      "round": 0,
+      "evidence": [],
+      "scope_write_forbidden": [
+        "reference/"
+      ]
+    },
+    {
+      "id": "P4-20",
+      "title": "Keyboard and context menu (L12)",
+      "goal": "Cmd/Ctrl+D duplicates with a +16/+16 offset, Del/Backspace deletes, Esc closes panel or selection, arrow keys move 16 px and Shift+arrows 160 px as one operation 300 ms after the last key, and the 200 px context menu with 32 px entries is keyboard operable; shortcuts never act while a field has focus.",
+      "why": "L12 entry: keyboard access is part of the canvas contract and reuses the operation and history seam.",
+      "satisfies": [
+        "D10"
+      ],
+      "status": "pending",
+      "depends_on": [
+        "P4-14",
+        "P4-16"
+      ],
+      "complexity": 6,
+      "stage": "engine-core",
+      "parallel_group": null,
+      "scope_write": [
+        "packages/engine/",
+        "apps/engine-playground/",
+        ".changes/"
+      ],
+      "scope_read": [
+        "ARCHITECTURE.md",
+        "AGENTS.md",
+        "STATUS.md",
+        "docs/module-map.md",
+        "docs/quality.md",
+        "docs/design-rules.md",
+        "docs/canvas-acceptance.md",
+        "docs/engine.md",
+        "packages/engine/",
+        "packages/contracts/generated/types.ts",
+        "packages/ui-kit/tokens.h",
+        "apps/engine-playground/"
+      ],
+      "acceptance": [
+        "A1",
+        "A2",
+        "A3",
+        "A4"
+      ],
+      "gates": [
+        "board-check",
+        "boundaries",
+        "cpp-unit",
+        "unit",
+        "design-check"
+      ],
+      "owner": null,
+      "branch": "task/P4-20",
+      "worktree": null,
+      "round": 0,
+      "evidence": [],
+      "scope_write_forbidden": [
+        "reference/"
+      ]
+    },
+    {
+      "id": "P4-21",
+      "title": "Undo/redo (L11)",
+      "goal": "A session history of 20 {do, undo} operations backs Cmd/Ctrl+Z and Shift+Cmd/Ctrl+Z, shows the 'Undo: ...' hint for 3 s at the bottom centre, never consumes shortcuts inside a field and issues exactly one counter-operation per undo.",
+      "why": "L11 entry: the undo stack closes the reversal loop over the operation seam.",
+      "satisfies": [
+        "D10"
+      ],
+      "status": "pending",
+      "depends_on": [
+        "P4-20"
+      ],
+      "complexity": 5,
+      "stage": "engine-core",
+      "parallel_group": null,
+      "scope_write": [
+        "packages/engine/",
+        "apps/engine-playground/",
+        ".changes/"
+      ],
+      "scope_read": [
+        "ARCHITECTURE.md",
+        "AGENTS.md",
+        "STATUS.md",
+        "docs/module-map.md",
+        "docs/quality.md",
+        "docs/design-rules.md",
+        "docs/canvas-acceptance.md",
+        "docs/engine.md",
+        "packages/engine/",
+        "packages/contracts/generated/types.ts",
+        "packages/ui-kit/tokens.h",
+        "apps/engine-playground/"
+      ],
+      "acceptance": [
+        "A1",
+        "A2",
+        "A3"
+      ],
+      "gates": [
+        "board-check",
+        "boundaries",
+        "cpp-unit",
+        "unit"
+      ],
+      "owner": null,
+      "branch": "task/P4-21",
+      "worktree": null,
+      "round": 0,
+      "evidence": [],
+      "scope_write_forbidden": [
+        "reference/"
+      ]
+    },
+    {
+      "id": "P4-22",
+      "title": "Remember view (L17)",
+      "goal": "The playground stores camera position and zoom per board and device with a guarded read and write, restores them on opening, starts a new board fitted and never shares a viewport across boards.",
+      "why": "L17 entry: reload continuity belongs to the canvas feel and is cheap to verify.",
+      "satisfies": [
+        "D10"
+      ],
+      "status": "pending",
+      "depends_on": [
+        "P4-07"
+      ],
+      "complexity": 3,
+      "stage": "engine-core",
+      "parallel_group": null,
+      "scope_write": [
+        "apps/engine-playground/",
+        "packages/engine/",
+        ".changes/"
+      ],
+      "scope_read": [
+        "ARCHITECTURE.md",
+        "AGENTS.md",
+        "STATUS.md",
+        "docs/module-map.md",
+        "docs/quality.md",
+        "docs/design-rules.md",
+        "docs/canvas-acceptance.md",
+        "docs/engine.md",
+        "packages/engine/",
+        "packages/contracts/generated/types.ts",
+        "packages/ui-kit/tokens.h",
+        "apps/engine-playground/"
+      ],
+      "acceptance": [
+        "A1",
+        "A2"
+      ],
+      "gates": [
+        "board-check",
+        "boundaries",
+        "unit"
+      ],
+      "owner": null,
+      "branch": "task/P4-22",
+      "worktree": null,
+      "round": 0,
+      "evidence": [],
+      "scope_write_forbidden": [
+        "reference/"
+      ]
+    },
+    {
+      "id": "P4-23",
+      "title": "DOM overlay for field editing and inline comfort (L18)",
+      "goal": "An overlay host positions field editing over the canvas from the camera transform, routes keyboard focus and events into fields without starting a drag, and implements Enter, Tab, Shift+Tab and Backspace inline behaviour for list, column and table entries; the playground demonstrates it with plain fields until packages/editor lands.",
+      "why": "L18 and blueprint P4-08: the canvas needs a field layer before the web app can reuse it.",
+      "satisfies": [
+        "D10"
+      ],
+      "status": "pending",
+      "depends_on": [
+        "P4-14",
+        "P4-10"
+      ],
+      "complexity": 6,
+      "stage": "engine-core",
+      "parallel_group": null,
+      "scope_write": [
+        "packages/engine/",
+        "apps/engine-playground/",
+        ".changes/"
+      ],
+      "scope_read": [
+        "ARCHITECTURE.md",
+        "AGENTS.md",
+        "STATUS.md",
+        "docs/module-map.md",
+        "docs/quality.md",
+        "docs/design-rules.md",
+        "docs/canvas-acceptance.md",
+        "docs/engine.md",
+        "packages/engine/",
+        "packages/contracts/generated/types.ts",
+        "packages/ui-kit/tokens.h",
+        "apps/engine-playground/"
+      ],
+      "acceptance": [
+        "A1",
+        "A2",
+        "A3"
+      ],
+      "gates": [
+        "board-check",
+        "boundaries",
+        "cpp-unit",
+        "unit",
+        "design-check"
+      ],
+      "owner": null,
+      "branch": "task/P4-23",
+      "worktree": null,
+      "round": 0,
+      "evidence": [],
+      "scope_write_forbidden": [
+        "reference/"
+      ]
+    },
+    {
+      "id": "P4-24",
+      "title": "Trackpad and wheel defaults (L15, desktop part)",
+      "goal": "Two fingers pan, pinch zooms around the finger centre and Cmd/Ctrl+wheel zooms; wheel and pointer events are normalised in one input module with unit tests and never move the view while an object is dragged; the touch behaviour and the manual tablet check stay in hardening.",
+      "why": "L15 desktop part: Q16 fixed the default for engine-core.",
+      "satisfies": [
+        "D10"
+      ],
+      "status": "pending",
+      "depends_on": [
+        "P4-07"
+      ],
+      "complexity": 4,
+      "stage": "engine-core",
+      "parallel_group": null,
+      "scope_write": [
+        "packages/engine/",
+        "apps/engine-playground/",
+        ".changes/"
+      ],
+      "scope_read": [
+        "ARCHITECTURE.md",
+        "AGENTS.md",
+        "STATUS.md",
+        "docs/module-map.md",
+        "docs/quality.md",
+        "docs/design-rules.md",
+        "docs/canvas-acceptance.md",
+        "docs/engine.md",
+        "packages/engine/",
+        "packages/contracts/generated/types.ts",
+        "packages/ui-kit/tokens.h",
+        "apps/engine-playground/"
+      ],
+      "acceptance": [
+        "A1",
+        "A2",
+        "A3"
+      ],
+      "gates": [
+        "board-check",
+        "boundaries",
+        "cpp-unit",
+        "unit"
+      ],
+      "owner": null,
+      "branch": "task/P4-24",
+      "worktree": null,
+      "round": 0,
+      "evidence": [],
+      "scope_write_forbidden": [
+        "reference/"
+      ]
+    },
+    {
+      "id": "P4-25",
+      "title": "Zones as containers I: contract parent reference (L08)",
+      "goal": "The contract gains an optional zone parent reference on board items with a version bump, valid and invalid fixtures, regenerated TS/C++ codegen and parity, and an ADR records the Q17 decision; no database change yet.",
+      "why": "Q17 approved zones as containers; the data model must exist before storage and engine behaviour can rely on it.",
+      "satisfies": [
+        "D10"
+      ],
+      "status": "pending",
+      "depends_on": [],
+      "complexity": 5,
+      "stage": "engine-core",
+      "parallel_group": null,
+      "exclusive": [
+        "db"
+      ],
+      "scope_write": [
+        "packages/contracts/",
+        "docs/contracts.md",
+        "docs/adr/",
+        ".changes/"
+      ],
+      "scope_read": [
+        "ARCHITECTURE.md",
+        "AGENTS.md",
+        "STATUS.md",
+        "docs/module-map.md",
+        "docs/quality.md",
+        "docs/contracts.md",
+        "docs/adr/ADR-0005-contract.md",
+        "packages/contracts/",
+        "docs/gates/",
+        "docs/versions.md"
+      ],
+      "acceptance": [
+        "A1",
+        "A2",
+        "A3"
+      ],
+      "gates": [
+        "board-check",
+        "boundaries",
+        "contracts",
+        "codegen",
+        "unit"
+      ],
+      "owner": null,
+      "branch": "task/P4-25",
+      "worktree": null,
+      "round": 0,
+      "evidence": [],
+      "scope_write_forbidden": [
+        "reference/"
+      ]
+    },
+    {
+      "id": "P4-26",
+      "title": "Zones as containers II: platform migration and containment (L08)",
+      "goal": "A platform migration adds the nullable parent column with a foreign key to the zone, row-level security and containment constraints, keeps the contract-valid mapping intact, and migration, api and RLS tests cover valid and invalid containment.",
+      "why": "The approved zone membership must be stored server-side and protected like the board it belongs to (AD-4, AD-5).",
+      "satisfies": [
+        "D10"
+      ],
+      "status": "pending",
+      "depends_on": [
+        "P4-25"
+      ],
+      "complexity": 5,
+      "stage": "engine-core",
+      "parallel_group": null,
+      "exclusive": [
+        "db"
+      ],
+      "scope_write": [
+        "services/platform/",
+        "infra/migrations/",
+        ".changes/"
+      ],
+      "scope_read": [
+        "ARCHITECTURE.md",
+        "AGENTS.md",
+        "STATUS.md",
+        "docs/module-map.md",
+        "docs/quality.md",
+        "docs/contracts.md",
+        "docs/adr/ADR-0008-api-session-model.md",
+        "infra/migrations/",
+        "services/platform/",
+        "docs/gates/postgres.md"
+      ],
+      "acceptance": [
+        "A1",
+        "A2",
+        "A3"
+      ],
+      "gates": [
+        "board-check",
+        "boundaries",
+        "unit",
+        "db-migrate",
+        "api-tests",
+        "rls-tests"
+      ],
+      "owner": null,
+      "branch": "task/P4-26",
+      "worktree": null,
+      "round": 0,
+      "evidence": [],
+      "scope_write_forbidden": [
+        "reference/"
+      ]
+    },
+    {
+      "id": "P4-27",
+      "title": "Zones as containers II: engine membership and zone move (L08)",
+      "goal": "Dropping an object with its centre inside a zone stores membership, the zone highlights for 1 s in accent-line, dragging out releases it, dragging a zone moves its content as one operation, shrinking never goes below content + 16 px and nested zones are rejected; engine tests and the playground prove each case.",
+      "why": "L08 entry: the interaction half of the approved zone containment.",
+      "satisfies": [
+        "D10"
+      ],
+      "status": "pending",
+      "depends_on": [
+        "P4-25",
+        "P4-26",
+        "P4-14",
+        "P4-16"
+      ],
+      "complexity": 6,
+      "stage": "engine-core",
+      "parallel_group": null,
+      "scope_write": [
+        "packages/engine/",
+        "apps/engine-playground/",
+        ".changes/"
+      ],
+      "scope_read": [
+        "ARCHITECTURE.md",
+        "AGENTS.md",
+        "STATUS.md",
+        "docs/module-map.md",
+        "docs/quality.md",
+        "docs/design-rules.md",
+        "docs/canvas-acceptance.md",
+        "docs/engine.md",
+        "packages/engine/",
+        "packages/contracts/generated/types.ts",
+        "packages/ui-kit/tokens.h",
+        "apps/engine-playground/",
+        "docs/contracts.md"
+      ],
+      "acceptance": [
+        "A1",
+        "A2",
+        "A3",
+        "A4"
+      ],
+      "gates": [
+        "board-check",
+        "boundaries",
+        "cpp-unit",
+        "visual"
+      ],
+      "owner": null,
+      "branch": "task/P4-27",
+      "worktree": null,
+      "round": 0,
+      "evidence": [],
+      "scope_write_forbidden": [
+        "reference/"
+      ]
+    },
+    {
+      "id": "P4-28",
+      "title": "L01 final proof, two-backend reference images and stage showcase",
+      "goal": "The final L01 measurement proves 10,000 objects at 60 fps, the 500 cards + 50 zones proof under 50 ms, every run within basis + 10 % and no offscreen rendering; the visual gate is green for both backends and both viewports, and desktop and mobile showcase screenshots plus the stage handoff are committed.",
+      "why": "The stage exit needs the measured final proof, green reference images and the demo cadence.",
+      "satisfies": [
+        "D10"
+      ],
+      "status": "pending",
+      "depends_on": [
+        "P4-03",
+        "P4-13",
+        "P4-19",
+        "P4-21",
+        "P4-22",
+        "P4-23",
+        "P4-24",
+        "P4-27"
+      ],
+      "complexity": 5,
+      "stage": "engine-core",
+      "parallel_group": null,
+      "exclusive": [
+        "perf"
+      ],
+      "scope_write": [
+        "packages/engine/",
+        "apps/engine-playground/",
+        "docs/engine/",
+        "docs/quality.md",
+        "reviews/evidence/",
+        ".changes/"
+      ],
+      "scope_read": [
+        "ARCHITECTURE.md",
+        "AGENTS.md",
+        "STATUS.md",
+        "docs/module-map.md",
+        "docs/quality.md",
+        "docs/design-rules.md",
+        "docs/canvas-acceptance.md",
+        "docs/engine.md",
+        "packages/engine/",
+        "packages/contracts/generated/types.ts",
+        "packages/ui-kit/tokens.h",
+        "apps/engine-playground/",
+        "docs/gates/perf.md",
+        "docs/gates/visual-diff.md",
+        "docs/engine/perf-baseline.md"
+      ],
+      "acceptance": [
+        "A1",
+        "A2",
+        "A3"
+      ],
+      "gates": [
+        "board-check",
+        "perf",
+        "visual",
+        "design-check"
+      ],
+      "owner": null,
+      "branch": "task/P4-28",
+      "worktree": null,
+      "round": 0,
+      "evidence": [],
+      "scope_write_forbidden": [
+        "reference/"
+      ]
     }
   ],
   "decisions": [
@@ -2871,6 +4470,12 @@
       "date": "2026-10-25",
       "id": "ADR-0008",
       "title": "API and session model"
+    },
+    {
+      "date": "2026-10-25",
+      "id": "ADR-0009",
+      "title": "Canvas text and overlay strategy",
+      "file": "docs/adr/ADR-0009-canvas-text-and-overlay.md"
     }
   ],
   "open_questions": [
@@ -2911,7 +4516,7 @@
       "id": "Q6",
       "question": "Reference hardware for the 60 fps target (needed before stage: engine-spike).",
       "status": "answered",
-      "answer": "Reference hardware: MacBook Air M1, 8 GB, Chrome (owner 2026-10-25). The owner accepted a documented proxy measurement on the local Mac mini M2, 8 GB, macOS 26.5.2, Chrome for Testing for local evidence; the M1 number remains to be confirmed before the stage exits, so the stage handoff states the caveat."
+      "answer": "Reference hardware: MacBook Air M1, 8 GB, Chrome (owner 2026-10-25). The owner accepted a documented proxy measurement on the local Mac mini M2, 8 GB, macOS 26.5.2, Chrome for Testing for local evidence; the M1 number remains to be confirmed before the stage exits, so the stage handoff states the caveat. Owner 2026-10-25: for the local engine-core exit the M2 proxy is accepted, the M1 measurement moves to the hardening stage and the board and handoff keep the caveat."
     },
     {
       "id": "Q7",
@@ -2970,23 +4575,38 @@
     {
       "id": "Q15",
       "question": "Canvas collisions: clear layers only (proposal) or gentle nudge (needed before stage: engine-core).",
-      "status": "open"
+      "status": "answered",
+      "answer": "Clear layers only (owner 2026-10-25): no collision nudge. L13 keeps the design-rule 8 layer order and stores 'last moved on top' through the contract's fractional z."
     },
     {
       "id": "Q16",
       "question": "Trackpad default: two fingers pan, pinch zooms (proposal) or scroll zooms (needed before stage: engine-core).",
-      "status": "open"
+      "status": "answered",
+      "answer": "Two fingers pan, pinch zooms around the gesture centre and Cmd/Ctrl+wheel zooms (owner 2026-10-25); scrolling alone does not zoom."
     },
     {
       "id": "Q17",
       "question": "Zones as containers: zones keep their content and move it as one operation (proposal, needs a decision record and migration) or zones are only visual frames?",
-      "status": "open"
+      "status": "answered",
+      "answer": "Zones are containers (owner 2026-10-25): content belongs to the zone and moves with it as one operation; a nullable parent reference is added to the contract and the database with an ADR and a migration; no nested zones in v1."
     },
     {
       "id": "Q18",
       "question": "Performance target split: the engine-spike exit says 60 fps with 50,000 rectangles, the canvas catalogue L01 names 10,000 objects at 60 fps and no long task > 16 ms. Which target applies to which stage gate?",
       "status": "answered",
       "answer": "Split: the engine-spike gate is 50,000 rectangles at 60 fps on the reference hardware; the canvas catalogue L01 target (10,000 objects, no long task over 16 ms) applies to the engine-core stage (owner decision 2026-10-25)."
+    },
+    {
+      "id": "Q19",
+      "question": "WebGPU role in engine-core: measured default, second backend or deferred?",
+      "status": "answered",
+      "answer": "WebGL2 stays the default and the measured `perf` path; WebGPU is a second backend behind the command-buffer interface with automatic fallback, a playground switch and a two-backend visual comparison (blueprint P4-09). WebGPU performance is recorded as an observation, not as a stage gate (owner 2026-10-25)."
+    },
+    {
+      "id": "Q20",
+      "question": "Blueprint phase-4 items without catalogue entries: images with detail levels (P4-06), a11y and test mirror (P4-07), touch part of L15.",
+      "status": "answered",
+      "answer": "Deferred (owner 2026-10-25): images with detail levels and the a11y/test mirror are planned with the hardening and web-app stages; the L15 touch part stays with hardening (P8-05) and engine-core builds only the desktop trackpad defaults."
     }
   ],
   "budgets": {
