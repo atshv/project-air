@@ -2495,12 +2495,15 @@
       ]
     },
     {
-      "status": "in_progress",
+      "status": "done",
       "stage": "backend-core",
       "parallel_group": null,
       "owner": null,
       "round": 0,
-      "evidence": [],
+      "evidence": [
+        "reviews/evidence/P3-02-board-check-20261025T172949Z.json",
+        "reviews/evidence/P3-02-unit-20261025T174343Z.json"
+      ],
       "scope_write_forbidden": [
         "reference/"
       ],
@@ -2543,9 +2546,14 @@
         "unit"
       ],
       "branch": "task/P3-02",
-      "worktree": "../Project air-P3-02",
+      "worktree": null,
       "exclusive": [
         "db"
+      ],
+      "handoff": [
+        "Closed P3-02: migrations 0001-0003 (profiles/workspaces/members/boards/notes/cards) with contract limits, FKs, indexes, owner and card-invariant triggers; 79 tests green incl. 10 regressions.",
+        "RLS enabled+forced, 23 app_user policies (read=member, write=owner/editor, workspace delete/members=owner), safe current_account_id, no PUBLIC execute, one owner row; note/board immutable.",
+        "Review round 1 failed (card/note invariant bypass), fixed + round 2 pass. Remaining follow-ups: production owner/BYPASSRLS helper role at hardening, cards.zone_id FK in a zones task."
       ]
     },
     {

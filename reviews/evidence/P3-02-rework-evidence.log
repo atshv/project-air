@@ -1,0 +1,189 @@
+P3-02 rework evidence — schema, row-level security, F1-F6 regressions
+date: 2026-10-25T17:42:48Z
+slot database from .polier-slot: project-air_slot_1
+
+== A4.1 bash tools/dev/setup (idempotent) ==
+PASS: tools/dev/setup exits 0
+
+== A4.2 bash tools/dev/reset-db (drops/recreates the slot database, then migrates) ==
+PASS: tools/dev/reset-db exits 0
+reset-db: {"time":"2026-10-25T17:42:55.482Z","level":"info","message":"migration applied","version":"0001_app_schema","name":"0001_app_schema.sql"}
+reset-db: {"time":"2026-10-25T17:42:55.518Z","level":"info","message":"migration applied","version":"0002_workspace_schema","name":"0002_workspace_schema.sql"}
+reset-db: {"time":"2026-10-25T17:42:55.527Z","level":"info","message":"migration applied","version":"0003_rls_policies","name":"0003_rls_policies.sql"}
+reset-db: {"time":"2026-10-25T17:42:55.527Z","level":"info","message":"migrations complete","applied":3,"skipped":0}
+
+== A1.1 migrations applied; rerun is a no-op; versions recorded ==
+{"time":"2026-10-25T17:42:55.663Z","level":"info","message":"migrations complete","applied":0,"skipped":3}
+{"time":"2026-10-25T17:42:55.667Z","level":"info","message":"migrate: done","applied":0,"skipped":3}
+schema_migrations: 0001_app_schema | 0001_app_schema.sql | 110896fd63183642355fe432361e821c1b967a1805ae20b42e74999210aed1f8
+schema_migrations: 0002_workspace_schema | 0002_workspace_schema.sql | 6087f4ec84590df17feee21d402f5369a516b93724dc964b2bc7981c05f51a62
+schema_migrations: 0003_rls_policies | 0003_rls_policies.sql | e8c711873443ee4dee46c0a60fa94ca99b77f34bee7efce5c3f4e3070fb8094f
+PASS: schema_migrations records all three versions
+
+== A1.2 tables, minimum/maximum lengths and single-owner index ==
+table: boards: id uuid, workspace_id uuid, owner_account_id uuid, title text, visibility app.board_visibility, archived boolean, created_at timestamp with time zone, updated_at timestamp with time zone
+table: cards: id uuid, board_id uuid, note_id uuid, zone_id uuid, x double precision, y double precision, width double precision, height double precision, z text, created_at timestamp with time zone, updated_at timestamp with time zone
+table: notes: id uuid, workspace_id uuid, title text, created_at timestamp with time zone, updated_at timestamp with time zone
+table: profiles: account_id uuid, display_name text, locale text, created_at timestamp with time zone, updated_at timestamp with time zone
+table: workspace_members: workspace_id uuid, account_id uuid, role app.workspace_role, created_at timestamp with time zone, updated_at timestamp with time zone
+table: workspaces: id uuid, name text, owner_account_id uuid, created_at timestamp with time zone, updated_at timestamp with time zone
+check: boards_title_length CHECK (((char_length(title) >= 1) AND (char_length(title) <= 200)))
+check: cards_minimum_size CHECK (((width >= (176)::double precision) AND (height >= (80)::double precision)))
+check: cards_z_format CHECK ((z ~ '^[A-Za-z0-9]{1,64}$'::text))
+check: notes_title_length CHECK ((char_length(title) <= 300))
+check: profiles_display_name_length CHECK (((char_length(display_name) >= 1) AND (char_length(display_name) <= 80)))
+check: profiles_locale_values CHECK ((locale = ANY (ARRAY['de'::text, 'en'::text])))
+check: workspaces_name_length CHECK (((char_length(name) >= 1) AND (char_length(name) <= 120)))
+index: boards_owner_account_id_idx
+index: boards_workspace_id_updated_at_idx
+index: cards_board_id_z_idx
+index: cards_note_id_idx
+index: cards_zone_id_idx
+index: notes_workspace_id_updated_at_idx
+index: workspace_members_account_id_idx
+index: workspace_members_one_owner_idx
+index: workspaces_owner_account_id_idx
+
+== A2.1 row-level security enabled and forced on every table ==
+rls: boards enabled=true forced=true
+rls: cards enabled=true forced=true
+rls: notes enabled=true forced=true
+rls: profiles enabled=true forced=true
+rls: workspace_members enabled=true forced=true
+rls: workspaces enabled=true forced=true
+
+== A2.2 app_user role, ownership and table grants ==
+role: app_user canlogin=true super=false bypassrls=false createdb=false createrole=false replication=false
+PASS: app_user owns no application table
+PASS: app_user has SELECT on app.profiles
+PASS: app_user has INSERT on app.profiles
+PASS: app_user has UPDATE on app.profiles
+PASS: app_user has DELETE on app.profiles
+PASS: app_user has SELECT on app.workspaces
+PASS: app_user has INSERT on app.workspaces
+PASS: app_user has UPDATE on app.workspaces
+PASS: app_user has DELETE on app.workspaces
+PASS: app_user has SELECT on app.workspace_members
+PASS: app_user has INSERT on app.workspace_members
+PASS: app_user has UPDATE on app.workspace_members
+PASS: app_user has DELETE on app.workspace_members
+PASS: app_user has SELECT on app.boards
+PASS: app_user has INSERT on app.boards
+PASS: app_user has UPDATE on app.boards
+PASS: app_user has DELETE on app.boards
+PASS: app_user has SELECT on app.notes
+PASS: app_user has INSERT on app.notes
+PASS: app_user has UPDATE on app.notes
+PASS: app_user has DELETE on app.notes
+PASS: app_user has SELECT on app.cards
+PASS: app_user has INSERT on app.cards
+PASS: app_user has UPDATE on app.cards
+PASS: app_user has DELETE on app.cards
+
+== A2.3 policies (permission matrix) ==
+policy: boards boards_delete_writer DELETE roles=app_user
+policy: boards boards_insert_writer INSERT roles=app_user
+policy: boards boards_select_member SELECT roles=app_user
+policy: boards boards_update_writer UPDATE roles=app_user
+policy: cards cards_delete_writer DELETE roles=app_user
+policy: cards cards_insert_writer INSERT roles=app_user
+policy: cards cards_select_member SELECT roles=app_user
+policy: cards cards_update_writer UPDATE roles=app_user
+policy: notes notes_delete_writer DELETE roles=app_user
+policy: notes notes_insert_writer INSERT roles=app_user
+policy: notes notes_select_member SELECT roles=app_user
+policy: notes notes_update_writer UPDATE roles=app_user
+policy: profiles profiles_insert_self INSERT roles=app_user
+policy: profiles profiles_select_self SELECT roles=app_user
+policy: profiles profiles_update_self UPDATE roles=app_user
+policy: workspace_members workspace_members_delete_owner DELETE roles=app_user
+policy: workspace_members workspace_members_insert_owner INSERT roles=app_user
+policy: workspace_members workspace_members_select_member SELECT roles=app_user
+policy: workspace_members workspace_members_update_owner UPDATE roles=app_user
+policy: workspaces workspaces_delete_owner DELETE roles=app_user
+policy: workspaces workspaces_insert_owner INSERT roles=app_user
+policy: workspaces workspaces_select_member SELECT roles=app_user
+policy: workspaces workspaces_update_writer UPDATE roles=app_user
+
+== Fixtures for the app_user probes (owner creates, as in the review) ==
+PASS: fixtures created (workspace trigger created the owner rows)
+
+== F1 (blocker): note/board workspace moves are rejected as app_user alice, writer of both ==
+app_user note move: BEGIN
+app_user note move: SET
+app_user note move: ERROR:  moving a note to another workspace is not supported yet
+app_user note move: CONTEXT:  PL/pgSQL function app.protect_note_workspace() line 4 at RAISE
+app_user note move: ROLLBACK
+PASS: F1 note move rejected
+app_user board move: BEGIN
+app_user board move: SET
+app_user board move: ERROR:  moving a board to another workspace is not supported yet
+app_user board move: CONTEXT:  PL/pgSQL function app.protect_board_workspace() line 4 at RAISE
+app_user board move: ROLLBACK
+PASS: F1 board move rejected
+PASS: F1 card/board/note workspaces stay consistent
+
+== F2 (major): exactly one owner row; no promotion, no manual owner row ==
+app_user promote: BEGIN
+app_user promote: SET
+app_user promote: ERROR:  only the workspace owner may hold the owner role
+app_user promote: CONTEXT:  PL/pgSQL function app.validate_workspace_owner_role() line 9 at RAISE
+app_user promote: ROLLBACK
+PASS: F2 promotion to owner rejected
+app_user direct owner insert: BEGIN
+app_user direct owner insert: SET
+app_user direct owner insert: ERROR:  the owner membership row is created with the workspace and cannot be inserted directly
+app_user direct owner insert: CONTEXT:  PL/pgSQL function app.validate_workspace_owner_role() line 14 at RAISE
+app_user direct owner insert: ROLLBACK
+PASS: F2 manual owner row rejected
+PASS: F2 every workspace has exactly one owner row
+PASS: F2 no workspace is ownerless
+owner deletes owner profile: ERROR:  the owner of a workspace cannot be deleted while the workspace exists
+owner deletes owner profile: CONTEXT:  PL/pgSQL function app.protect_profile_owner_delete() line 8 at RAISE
+PASS: F2 owner profile deletion fails cleanly (FK RESTRICT contract)
+PASS: F2 a plain member profile can be deleted
+PASS: F2 the deleted member profile is gone
+
+== F3: helpers are not PUBLIC and do not answer for foreign pairs ==
+PASS: F3 no app function is executable by PUBLIC
+PASS: F3 app_user may execute the policy helpers
+app_user helper: BEGIN
+app_user helper: SET
+app_user helper: own=true
+app_user helper: foreign=false
+app_user helper: ROLLBACK
+PASS: F3 helper true for the own pair
+PASS: F3 helper false for a foreign pair (no oracle)
+
+== F4: malformed app.account_id yields no rows, not an error ==
+app_user malformed: BEGIN
+app_user malformed: SET
+app_user malformed: helper=null
+app_user malformed: workspaces=0
+app_user malformed: ROLLBACK
+PASS: F4 malformed setting parses to null
+PASS: F4 malformed setting yields zero rows without an error
+
+== F5: as app_user, workspace creation creates exactly one owner row ==
+app_user create workspace: BEGIN
+app_user create workspace: SET
+app_user create workspace: INSERT 0 1
+app_user create workspace: owner_rows=1
+app_user create workspace: ROLLBACK
+PASS: F5 app_user workspace creation creates exactly one owner row
+
+== F6: contract minimum lengths are enforced (empty strings rejected) ==
+PASS: F6 rejected: INSERT INTO app.profiles (account_id, display_name) VALUES (...
+PASS: F6 rejected: INSERT INTO app.workspaces (id, name, owner_account_id) VALU...
+PASS: F6 rejected: INSERT INTO app.boards (id, workspace_id, owner_account_id, ...
+note empty title: BEGIN
+note empty title: INSERT 0 1
+note empty title: empty_note_allowed=1
+note empty title: ROLLBACK
+PASS: F6 note title minLength 0 stays valid
+
+== Cleanup fixtures ==
+PASS: fixtures removed
+PASS: slot database left with zero application rows
+
+P3-02 rework RESULT: PASS (all checks green)

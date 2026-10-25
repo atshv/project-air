@@ -1,0 +1,99 @@
+$ pnpm --filter ./services/platform test
+[exit 0]
+
+✔ parses a complete environment (1.347459ms)
+✔ defaults NODE_ENV, LOG_LEVEL and HOST (0.106875ms)
+✔ a missing DATABASE_URL fails fast (0.197209ms)
+✔ an invalid DATABASE_URL is rejected without echoing the value (0.137417ms)
+✔ a non-PostgreSQL DATABASE_URL is rejected (0.072542ms)
+✔ PORT is required and must be a valid port number (0.119125ms)
+✔ NODE_ENV and LOG_LEVEL reject unknown values (0.094625ms)
+✔ HOST must not contain whitespace (0.547792ms)
+✔ liveness answers 200 while the database is down (25.944125ms)
+✔ readiness answers 200 when the database ping succeeds (4.64075ms)
+✔ readiness answers 503 when the database ping fails (1.761166ms)
+✔ readiness pings the real slot database (23.302916ms)
+✔ readiness answers 503 when the database is unreachable (2.636792ms)
+▶ migration runner
+  ✔ loads the migrations in file-name order with SHA-256 checksums (4.5285ms)
+{"time":"2026-10-25T17:43:44.204Z","level":"info","message":"migrations complete","applied":0,"skipped":3}
+  ✔ applies the migrations once and records versions in schema_migrations (39.998875ms)
+{"time":"2026-10-25T17:43:44.232Z","level":"info","message":"migrations complete","applied":0,"skipped":3}
+  ✔ a second run is a no-op (12.492625ms)
+  ✔ fails when an applied migration changed (13.138958ms)
+  ✔ fails when an applied migration disappeared (9.651667ms)
+✔ migration runner (80.897625ms)
+{"time":"2026-10-25T17:43:44.393Z","level":"info","message":"migrations complete","applied":0,"skipped":3}
+✔ F1: a note cannot be moved to another workspace, even by a writer of both (65.758541ms)
+✔ F1: a board cannot be moved to another workspace, even by a writer of both (3.509834ms)
+✔ F2: a member cannot be promoted to the owner role (3.556458ms)
+✔ F2: an owner membership row cannot be inserted directly (3.025125ms)
+✔ F5: as app_user, creating a workspace creates exactly one owner row (3.330875ms)
+✔ F2: the owner of a workspace cannot be deleted, a member can (2.279291ms)
+✔ F4: a malformed app.account_id yields no rows instead of an error (13.909542ms)
+✔ F6: the contract minimum lengths are enforced (2.244792ms)
+✔ F3: the helpers are executable by app_user only (2.952334ms)
+✔ F3: the note/board helper does not answer for a foreign workspace (2.52575ms)
+{"time":"2026-10-25T17:43:44.616Z","level":"info","message":"migrations complete","applied":0,"skipped":3}
+✔ returns null and no rows when app.account_id is unset (53.415417ms)
+✔ does not leak app.account_id into the next transaction (3.147833ms)
+✔ a member sees only rows of their own workspaces (6.290875ms)
+✔ the owner sees the membership list of their workspace only (4.302459ms)
+✔ an account cannot insert rows into a foreign workspace (4.771958ms)
+✔ an account cannot create a workspace for somebody else (1.160375ms)
+✔ an owner can write, delete and manage membership (4.96175ms)
+✔ an editor can write but cannot manage the workspace (6.383166ms)
+✔ an editor cannot claim board ownership for somebody else (1.37625ms)
+✔ a reader can only read (3.955167ms)
+✔ a card cannot attach a note from a foreign workspace (1.656417ms)
+✔ the owner membership row cannot be changed or removed (3.026875ms)
+✔ profiles are visible and writable only for the owning account (3.306667ms)
+{"time":"2026-10-25T17:43:44.834Z","level":"info","message":"migrations complete","applied":0,"skipped":3}
+{"time":"2026-10-25T17:43:44.860Z","level":"info","message":"migrations complete","applied":0,"skipped":3}
+✔ applies the migrations once and records every version with its checksum (45.819ms)
+✔ creates the six application tables with the expected columns and types (4.070625ms)
+✔ uses the contract enums for roles and board visibility (1.257042ms)
+✔ has the primary keys, check constraints, foreign-key delete rules and indexes (3.590917ms)
+✔ enables and forces row-level security on every table (0.632542ms)
+✔ has a policy for every operation of the permission matrix, bound to app_user (1.817083ms)
+✔ gives app_user CRUD grants but no superuser, bypass or table ownership (9.518708ms)
+✔ creating a workspace creates the owner membership atomically (1.807209ms)
+▶ rejects invalid rows
+  ✔ an orphan board (0.840666ms)
+  ✔ a workspace with a missing owner profile (0.519916ms)
+  ✔ a card without a note (0.508125ms)
+  ✔ a card with a note from another workspace (2.1565ms)
+  ✔ a card below the minimum size (0.788667ms)
+  ✔ a card with an invalid fractional z (0.464084ms)
+  ✔ a note title above the contract limit (0.583209ms)
+  ✔ a workspace name above the contract limit (0.502875ms)
+  ✔ a display name above the contract limit (0.509416ms)
+  ✔ an unknown locale (0.414083ms)
+  ✔ a duplicate membership (1.170208ms)
+  ✔ removing or demoting the owner membership (1.443708ms)
+  ✔ transferring workspace ownership (0.641208ms)
+  ✔ deleting a note that still has cards (0.631666ms)
+  ✔ deleting a board cascades its cards and keeps the note (3.517875ms)
+  ✔ deleting a workspace cascades every child row (3.385792ms)
+✔ rejects invalid rows (19.2635ms)
+✔ returns the success envelope and mirrors the request id in a header (14.151709ms)
+✔ keeps a valid client request id and replaces an invalid one (3.175042ms)
+✔ parses the query string (1.365958ms)
+✔ returns a 404 envelope for an unknown path (0.945708ms)
+✔ returns 405 with an Allow header for a known path and the wrong method (1.50225ms)
+✔ reads a JSON body and wraps the result (2.32475ms)
+✔ rejects invalid JSON with 400 (0.902083ms)
+✔ rejects a non-JSON content type with 415 (0.810084ms)
+✔ rejects a body above the limit with 413 (1.247875ms)
+✔ a custom status and headers are preserved (0.791458ms)
+✔ an empty handler result is a 204 without a body (0.527334ms)
+✔ an unexpected error becomes a generic 500 envelope (0.523667ms)
+ℹ tests 79
+ℹ suites 0
+ℹ pass 79
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1374.916875
+$ node --test --test-concurrency=1 test/*.test.mjs test/migrations/*.test.mjs

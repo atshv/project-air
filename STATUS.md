@@ -120,7 +120,10 @@
 
 ## Ready now
 
-- none
+- `P3-03` Auth service with self-hosted Ory Kratos
+  - P3-02: Closed P3-02: migrations 0001-0003 (profiles/workspaces/members/boards/notes/cards) with contract limits, FKs, indexes, owner and card-invariant triggers; 79 tests green incl. 10 regressions.
+  - P3-02: RLS enabled+forced, 23 app_user policies (read=member, write=owner/editor, workspace delete/members=owner), safe current_account_id, no PUBLIC execute, one owner row; note/board immutable.
+  - P3-02: Review round 1 failed (card/note invariant bypass), fixed + round 2 pass. Remaining follow-ups: production owner/BYPASSRLS helper role at hardening, cards.zone_id FK in a zones task.
 
 ## Done
 
@@ -156,10 +159,11 @@
 - [x] `P2-04` Performance baseline and measured report — status: `done` — owner: —
 - [x] `P2-05` Engine architecture ADR, module docs and stage showcase — status: `done` — owner: —
 - [x] `P3-01` Backend scaffold, PostgreSQL and local Compose — status: `done` — owner: —
+- [x] `P3-02` PostgreSQL schema, migrations and RLS policies — status: `done` — owner: —
 
 ## In progress
 
-- [ ] `P3-02` PostgreSQL schema, migrations and RLS policies — status: `in_progress` — owner: —
+- none
 
 ## Blocked / failed
 

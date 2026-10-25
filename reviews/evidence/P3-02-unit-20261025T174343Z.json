@@ -1,0 +1,17 @@
+{
+  "task": "P3-02",
+  "gate": "unit",
+  "command": "pnpm --filter ./services/platform test",
+  "exit_code": 0,
+  "result": "pass",
+  "slot": null,
+  "exclusive": [],
+  "lock_wait_s": 0.0,
+  "lock_warning": null,
+  "started": "2026-10-25T17:43:43+00:00",
+  "finished": "2026-10-25T17:43:45+00:00",
+  "commit": "87f265684697437710a06d6e6554c4cbacd4b302",
+  "dirty": true,
+  "log": "P3-02-unit-20261025T174343Z.log",
+  "log_sha256": "9ddefd9dfcb22172698d7996e7a421a6f41bf1347dcfd3f3baf74159894eedd6"
+}

@@ -98,3 +98,25 @@ export function databaseUrl(root = repositoryRoot()) {
   const password = process.env.PGPASSWORD ?? composeEnvironment.POSTGRES_PASSWORD ?? DEFAULT_LOCAL_DATABASE.password;
   return `postgresql://${encodeURIComponent(user)}:${encodeURIComponent(password)}@${host}:${port}/${slot.db_name}`;
 }
+
+/**
+ * Connection of the restricted `app_user` role for the policy tests: the row
+ * level security of AD-5 is invisible to the superuser, so the policy smoke has
+ * to run as app_user. The password comes from `APP_USER_PASSWORD` or from the
+ * gitignored `infra/compose/.env` written by `tools/dev/setup`; it is never
+ * printed. The database and host are the slot owner's.
+ */
+export function appDatabaseUrl(root = repositoryRoot()) {
+  const composeEnvironment = readEnvironmentFile(path.join(root, "infra", "compose", ".env"));
+  const password = process.env.APP_USER_PASSWORD?.trim() ?? composeEnvironment.APP_USER_PASSWORD ?? "";
+  if (password === "") {
+    throw new Error(
+      "APP_USER_PASSWORD is not set; run bash tools/dev/setup in this worktree so app_user exists with a password",
+    );
+  }
+  const slot = readSlot(root);
+  const host = process.env.PGHOST ?? composeEnvironment.POSTGRES_HOST ?? DEFAULT_LOCAL_DATABASE.host;
+  const port = process.env.PGPORT ?? composeEnvironment.POSTGRES_HOST_PORT ?? DEFAULT_LOCAL_DATABASE.port;
+  return `postgresql://app_user:${encodeURIComponent(password)}@${host}:${port}/${slot.db_name}`;
+}
+
