@@ -2462,6 +2462,12 @@
       "id": "ADR-0006",
       "title": "Engine architecture",
       "file": "docs/adr/ADR-0006-engine-architecture.md"
+    },
+    {
+      "date": "2026-10-25",
+      "id": "ADR-0007",
+      "title": "Self-hosted Ory Kratos for authentication",
+      "file": "docs/adr/ADR-0007-auth.md"
     }
   ],
   "open_questions": [
@@ -2495,7 +2501,8 @@
     {
       "id": "Q5",
       "question": "Auth: build it ourselves (proposal) or a self-hosted open-source server (needed before stage: backend-core).",
-      "status": "open"
+      "status": "answered",
+      "answer": "Owner decision 2026-10-25: self-host the open-source Ory Kratos (Apache-2.0, Go) and build the auth UI ourselves; community edition only, no Ory Network or paid features. Ory Hydra (Apache-2.0) is added only if an OIDC provider is needed later. Workspaces/roles stay in services/platform + PostgreSQL RLS. See docs/adr/ADR-0007-auth.md."
     },
     {
       "id": "Q6",

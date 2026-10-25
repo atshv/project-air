@@ -178,13 +178,13 @@
 - 2026-10-25 `ADR-0004` Contract v1 text limits and board visibility (`docs/adr/ADR-0004-contract-limits-visibility.md`)
 - 2026-10-25 `ADR-0005` Contract and versions (`docs/adr/ADR-0005-contract.md`)
 - 2026-10-25 `ADR-0006` Engine architecture (`docs/adr/ADR-0006-engine-architecture.md`)
+- 2026-10-25 `ADR-0007` Self-hosted Ory Kratos for authentication (`docs/adr/ADR-0007-auth.md`)
 
 ## Open questions
 
 - `Q1` Product name (working title: Project air) (needed before stage: v1). — blocks: — — status: `open`
 - `Q3` Hosting provider and country (CH/EU). — blocks: P0-15 — status: `open`
 - `Q4` CRDT: open-source library behind an own interface (proposal) or own algorithm (needed before stage: realtime). — blocks: — — status: `open`
-- `Q5` Auth: build it ourselves (proposal) or a self-hosted open-source server (needed before stage: backend-core). — blocks: — — status: `open`
 - `Q8` Which import formats, after a legal check of their terms (needed before stage: value). — blocks: — — status: `open`
 - `Q9` Pricing model for v1 (needed before stage: v1). — blocks: — — status: `open`
 - `Q14` English visible at launch or prepared only; who translates further languages (needed before stage: v1). — blocks: — — status: `open`
