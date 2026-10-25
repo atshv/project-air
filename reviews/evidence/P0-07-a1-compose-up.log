@@ -1,0 +1,21 @@
+# P0-07 A1 evidence: one start command brings all three services to healthy within 60 s
+# Worktree: /Users/rasulatashev/Desktop/KI Projekte/Project air-P0-07
+# Date: 2026-10-25T08:24:29Z (Europe/Zurich local: 2026-10-25T09:24:29+0100)
+
+$ docker compose -f infra/compose/compose.yaml up -d --wait
+ Container project-air-local-postgres-1 Running 
+ Container project-air-local-seaweedfs-1 Running 
+ Container project-air-local-mailpit-1 Running 
+ Container project-air-local-postgres-1 Waiting 
+ Container project-air-local-seaweedfs-1 Waiting 
+ Container project-air-local-mailpit-1 Waiting 
+ Container project-air-local-mailpit-1 Healthy 
+ Container project-air-local-seaweedfs-1 Healthy 
+ Container project-air-local-postgres-1 Healthy 
+[exit 0, elapsed 1 s]
+
+$ docker compose -f infra/compose/compose.yaml ps
+NAME                            IMAGE                                                                                               COMMAND                  SERVICE     CREATED          STATUS                    PORTS
+project-air-local-mailpit-1     axllent/mailpit:v1.32.0@sha256:0790692be935ea4420d085694f7985b1f692ca6a8771ab0e0bd8ba75ac180498     "/mailpit"               mailpit     36 seconds ago   Up 35 seconds (healthy)   127.0.0.1:1025->1025/tcp, 127.0.0.1:8025->8025/tcp, 1110/tcp
+project-air-local-postgres-1    postgres:17.11-alpine3.23@sha256:01ea903aa65deb58eb49d6e09d859ecff63a6bb7d61feca55f2abad71d08f72a   "docker-entrypoint.s…"   postgres    36 seconds ago   Up 35 seconds (healthy)   127.0.0.1:5433->5432/tcp
+project-air-local-seaweedfs-1   chrislusf/seaweedfs:4.50@sha256:c2658820e763294a9e9de7b36c81e59b879e3459148351aee4e31a126ca64860    "/entrypoint.sh serv…"   seaweedfs   36 seconds ago   Up 35 seconds (healthy)   7333/tcp, 8080/tcp, 8888/tcp, 9333/tcp, 18080/tcp, 18888/tcp, 19333/tcp, 127.0.0.1:8333->8333/tcp

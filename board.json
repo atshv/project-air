@@ -587,7 +587,7 @@
       "satisfies": [
         "D2"
       ],
-      "status": "in_progress",
+      "status": "done",
       "depends_on": [
         "P0-03"
       ],
@@ -615,12 +615,19 @@
       ],
       "owner": null,
       "branch": "task/P0-07",
-      "worktree": "../Project air-P0-07",
+      "worktree": null,
       "round": 0,
-      "evidence": [],
+      "evidence": [
+        "reviews/evidence/P0-07-compose-config-20261025T082451Z.json"
+      ],
       "package": "infra",
       "scope_write_forbidden": [
         "reference/"
+      ],
+      "handoff": [
+        "Closed P0-07: infra/compose with PostgreSQL 17.11, SeaweedFS 4.50 (S3) and Mailpit 1.32.0, pinned, healthy, loopback ports 5433/8333/1025/8025.",
+        "Gate compose-config passes; images recorded in docs/versions.md, gate command in docs/quality.md.",
+        "P0-06 reads .polier-slot and creates per-slot DB/bucket against this stack; never resets slot 0 data."
       ]
     },
     {

@@ -1,0 +1,73 @@
+# Local development services for Project air (P0-07): PostgreSQL, SeaweedFS (S3) and Mailpit.
+#
+# Shared by every worktree: one stack per machine, fixed host ports outside the slot range
+# 4000-4999. Slot databases and buckets are not created here; they come from `.polier-slot`
+# and are created by `tools/dev/setup` (P0-06). See README.md in this folder.
+#
+# Images are pinned by tag and digest. Values are local development defaults only; override
+# them in `infra/compose/.env` (gitignored). No default is a production secret.
+
+name: project-air-local
+
+services:
+  postgres:
+    image: postgres:17.11-alpine3.23@sha256:01ea903aa65deb58eb49d6e09d859ecff63a6bb7d61feca55f2abad71d08f72a
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-projectair}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-projectair_local_only}
+      POSTGRES_DB: ${POSTGRES_DB:-projectair}
+    ports:
+      - "127.0.0.1:${POSTGRES_HOST_PORT:-5433}:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -p 5432 -U \"$$POSTGRES_USER\" -d \"$$POSTGRES_DB\""]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+      start_period: 10s
+
+  seaweedfs:
+    image: chrislusf/seaweedfs:4.50@sha256:c2658820e763294a9e9de7b36c81e59b879e3459148351aee4e31a126ca64860
+    command:
+      - server
+      - -dir=/data
+      - -filer
+      - -s3
+      - -s3.port=8333
+      - -master.telemetry=false
+    environment:
+      AWS_ACCESS_KEY_ID: ${SEAWEEDFS_S3_ACCESS_KEY:-projectair_local_access_key}
+      AWS_SECRET_ACCESS_KEY: ${SEAWEEDFS_S3_SECRET_KEY:-projectair_local_secret_key}
+    ports:
+      - "127.0.0.1:${SEAWEEDFS_S3_HOST_PORT:-8333}:8333"
+    volumes:
+      - seaweedfs-data:/data
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:9333/cluster/healthz"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+      start_period: 15s
+
+  mailpit:
+    image: axllent/mailpit:v1.32.0@sha256:0790692be935ea4420d085694f7985b1f692ca6a8771ab0e0bd8ba75ac180498
+    environment:
+      MP_DATABASE: /data/mailpit.db
+      MP_MAX_MESSAGES: 5000
+    ports:
+      - "127.0.0.1:${MAILPIT_SMTP_HOST_PORT:-1025}:1025"
+      - "127.0.0.1:${MAILPIT_HTTP_HOST_PORT:-8025}:8025"
+    volumes:
+      - mailpit-data:/data
+    healthcheck:
+      test: ["CMD", "/mailpit", "readyz"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+      start_period: 5s
+
+volumes:
+  postgres-data:
+  seaweedfs-data:
+  mailpit-data:

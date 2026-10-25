@@ -1,0 +1,17 @@
+{
+  "task": "P0-07",
+  "gate": "compose-config",
+  "command": "docker compose -f infra/compose/compose.yaml config --quiet",
+  "exit_code": 0,
+  "result": "pass",
+  "slot": null,
+  "exclusive": [],
+  "lock_wait_s": 0.0,
+  "lock_warning": null,
+  "started": "2026-10-25T08:24:51+00:00",
+  "finished": "2026-10-25T08:24:51+00:00",
+  "commit": "e709bdf438b031f363c6dc3a81e3ae4b7d913d45",
+  "dirty": true,
+  "log": "P0-07-compose-config-20261025T082451Z.log",
+  "log_sha256": "d99527f679936e570358a17bb80fab6b8174e41d97d3aca2e744183bcc10bd1b"
+}

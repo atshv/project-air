@@ -35,7 +35,7 @@ task from the project's manifests; until then the gate cannot pass.
 | `branch-protection` | `gh api repos/atshv/project-air/branches/main/protection` | exit 0, required checks and reviews listed |
 | `install` | `[VERIFY: set by P0-04, e.g. clean install from the lockfile]` | exit 0, lockfile unchanged |
 | `unit` | `[VERIFY: set by P0-04 per package]` | exit 0, all tests pass |
-| `compose-config` | `[VERIFY: set by P0-07, compose config validation]` | exit 0, services listed |
+| `compose-config` | `docker compose -f infra/compose/compose.yaml config --quiet` | exit 0, exactly the three services with health checks |
 | `dev-setup` | `python3 $POLIER/tools/slot.py acquire && bash tools/dev/setup` | exit 0, slot database and bucket created |
 | `ci-green` | `gh run list --workflow ci.yml --limit 1 --json conclusion --jq '.[0].conclusion'` | `success` |
 | `polier-version` | `bash tools/polier.sh --check` | exit 0, Polier version equals `generator_version` |
