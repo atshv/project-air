@@ -1487,6 +1487,56 @@
         "Sources are CHANGELOG.md and the newest .changes entry; README and demo cadence require updating the line with every preview/changelog change.",
         "Screenshot P0-22-demo.png; all three gates pass."
       ]
+    },
+    {
+      "id": "P0-23",
+      "title": "Visible connection anchors in the demo",
+      "goal": "The demo cards show four connection anchors at their side midpoints and the edge snaps to the nearest anchor pair.",
+      "why": "The owner wants to see where a card connects and feel the edge snapping to those points.",
+      "satisfies": [
+        "D3"
+      ],
+      "status": "pending",
+      "depends_on": [
+        "P0-22"
+      ],
+      "complexity": 2,
+      "stage": "foundation",
+      "parallel_group": null,
+      "scope_write": [
+        "apps/web/preview/",
+        ".changes/"
+      ],
+      "scope_read": [
+        "ARCHITECTURE.md",
+        "AGENTS.md",
+        "STATUS.md",
+        "docs/quality.md",
+        "docs/design-rules.md",
+        "docs/canvas-acceptance.md",
+        "apps/web/preview/",
+        "packages/ui-kit/tokens.css",
+        "CHANGELOG.md",
+        ".changes/README.md"
+      ],
+      "acceptance": [
+        "A1",
+        "A2",
+        "A3"
+      ],
+      "gates": [
+        "board-check",
+        "design-check",
+        "changelog-entry"
+      ],
+      "owner": null,
+      "branch": "task/P0-23",
+      "worktree": null,
+      "round": 0,
+      "evidence": [],
+      "scope_write_forbidden": [
+        "reference/"
+      ]
     }
   ],
   "decisions": [
