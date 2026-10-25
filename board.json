@@ -846,7 +846,8 @@
       "stage": "foundation",
       "parallel_group": null,
       "scope_write": [
-        "packages/ui-kit/"
+        "packages/ui-kit/",
+        "pnpm-lock.yaml"
       ],
       "scope_read": [
         "ARCHITECTURE.md",
@@ -873,7 +874,6 @@
       "worktree": null,
       "round": 0,
       "evidence": [],
-      "package": "packages/ui-kit",
       "scope_write_forbidden": [
         "reference/"
       ]
