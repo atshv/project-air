@@ -117,10 +117,7 @@
 
 ## Ready now
 
-- `P0-23` Visible connection anchors in the demo
-  - P0-22: Closed P0-22: preview masthead shows Version 0.0.1 · unreleased · Last change P0-21.
-  - P0-22: Sources are CHANGELOG.md and the newest .changes entry; README and demo cadence require updating the line with every preview/changelog change.
-  - P0-22: Screenshot P0-22-demo.png; all three gates pass.
+- none
 
 ## Done
 
@@ -143,7 +140,7 @@
 
 ## In progress
 
-- none
+- [ ] `P0-23` Visible connection anchors in the demo — status: `in_progress` — owner: —
 
 ## Blocked / failed
 
@@ -155,7 +152,13 @@
 - [ ] `P0-15` Release command and tag-based CI release — status: `pending` — owner: —
 - [ ] `P0-16` Dependency updates and Polier update check — status: `pending` — owner: —
 - [ ] `P0-17` RELEASING.md and release 0.0.1 — status: `pending` — owner: —
-- [ ] `P0-23` Visible connection anchors in the demo — status: `pending` — owner: —
+
+<!-- polier:claims -->
+## Claims
+
+- `P0-23` in progress by dsh since 2026-10-25T10:38:37+00:00 — worktree: /Users/rasulatashev/Desktop/KI Projekte/Project air-P0-23 · slot 1
+
+<!-- /polier:claims -->
 
 ## Decisions
 
