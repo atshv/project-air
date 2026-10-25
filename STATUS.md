@@ -109,18 +109,40 @@
 
 ## Ready now
 
-- none
+- `P0-06` Per-slot dev setup and teardown
+  - P0-04: Closed P0-04: pnpm workspaces + Turborepo, exact tool versions, lockfile committed, Node 24.22.1 LTS pinned.
+  - P0-04: install = pnpm install --frozen-lockfile; unit = pnpm test; root lint/typecheck/test/build exit 0 on the empty workspace.
+  - P0-04: Board-check runs before pnpm install (check.py scans node_modules); P0-06, P0-12 and P0-18 can start.
+  - P0-07: Closed P0-07: infra/compose with PostgreSQL 17.11, SeaweedFS 4.50 (S3) and Mailpit 1.32.0, pinned, healthy, loopback ports 5433/8333/1025/8025.
+  - P0-07: Gate compose-config passes; images recorded in docs/versions.md, gate command in docs/quality.md.
+  - P0-07: P0-06 reads .polier-slot and creates per-slot DB/bucket against this stack; never resets slot 0 data.
+- `P0-08` CI skeleton
+  - P0-04: Closed P0-04: pnpm workspaces + Turborepo, exact tool versions, lockfile committed, Node 24.22.1 LTS pinned.
+  - P0-04: install = pnpm install --frozen-lockfile; unit = pnpm test; root lint/typecheck/test/build exit 0 on the empty workspace.
+  - P0-04: Board-check runs before pnpm install (check.py scans node_modules); P0-06, P0-12 and P0-18 can start.
+- `P0-12` Design tokens and icons in ui-kit
+  - P0-04: Closed P0-04: pnpm workspaces + Turborepo, exact tool versions, lockfile committed, Node 24.22.1 LTS pinned.
+  - P0-04: install = pnpm install --frozen-lockfile; unit = pnpm test; root lint/typecheck/test/build exit 0 on the empty workspace.
+  - P0-04: Board-check runs before pnpm install (check.py scans node_modules); P0-06, P0-12 and P0-18 can start.
+  - P0-10: Closed P0-10: docs/design-rules.md derived from the reference, adapted to tokens.json, icons, engine, Polier and i18n.
+  - P0-10: Gate board-check passes; no prototype/vendor names, no broken links.
+  - P0-10: P0-11 can build the canvas acceptance catalogue on it; P0-12/P0-13 cite it.
+- `P0-18` i18n scaffold and language-check gate
+  - P0-04: Closed P0-04: pnpm workspaces + Turborepo, exact tool versions, lockfile committed, Node 24.22.1 LTS pinned.
+  - P0-04: install = pnpm install --frozen-lockfile; unit = pnpm test; root lint/typecheck/test/build exit 0 on the empty workspace.
+  - P0-04: Board-check runs before pnpm install (check.py scans node_modules); P0-06, P0-12 and P0-18 can start.
 
 ## Done
 
 - [x] `P0-03` Workspace folders, package READMEs and architectures — status: `done` — owner: —
+- [x] `P0-04` Workspaces, build orchestration and pinned versions — status: `done` — owner: —
 - [x] `P0-07` Local services compose — status: `done` — owner: —
 - [x] `P0-10` Adapt design rules to this project — status: `done` — owner: —
 - [x] `P0-11` Canvas acceptance catalogue — status: `done` — owner: —
 
 ## In progress
 
-- [ ] `P0-04` Workspaces, build orchestration and pinned versions — status: `in_progress` — owner: —
+- none
 
 ## Blocked / failed
 

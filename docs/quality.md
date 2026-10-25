@@ -30,7 +30,7 @@ task from the project's manifests; until then the gate cannot pass.
 
 | Gate | Command | Expected |
 |---|---|---|
-| `board-check` | `python3 $POLIER/tools/check.py .` | exit 0 |
+| `board-check` | `python3 $POLIER/tools/check.py .` (before `pnpm install`, see below) | exit 0 |
 | `boundaries` | `python3 $POLIER/tools/boundaries.py .` | exit 0, no forbidden import |
 | `branch-protection` | `gh api repos/atshv/project-air/branches/main/protection` | exit 0, required checks and reviews listed |
 | `install` | `[VERIFY: set by P0-04, e.g. clean install from the lockfile]` | exit 0, lockfile unchanged |
@@ -57,6 +57,10 @@ task from the project's manifests; until then the gate cannot pass.
 | `visual` | see `docs/gates/visual-diff.md` `[VERIFY: stage engine-core]` | exit 0, within tolerance |
 | `e2e` | see `docs/gates/playwright.md` `[VERIFY: stage web-app]` | exit 0 (exclusive) |
 | `import-tests` | `[VERIFY: stage value]` | exit 0 |
+
+`board-check` scans every `*.md` under the project root, including `node_modules/`. Run it before
+`pnpm install` or remove `node_modules/` first; CI runs `board-check` before the install job (P0-08).
+Third-party README links inside `node_modules/` are not project defects.
 
 A gate passes when command, exit code and expected output match; the output is the evidence.
 The task passes when all gates are green, every acceptance criterion is evidenced and the

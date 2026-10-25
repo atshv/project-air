@@ -5,17 +5,18 @@ Details: `ARCHITECTURE.md`. Progress: `STATUS.md`. Structure: `docs/module-map.m
 ## Commands
 
 - **Polier (pinned `v1.0.0`):** set `POLIER` to a checkout of that tag; CI does the same (P0-09).
-- **Board check:** `python3 $POLIER/tools/check.py .`
+- **Board check:** `python3 $POLIER/tools/check.py .` — before `pnpm install` (scans `node_modules/`).
 - **Boundaries:** `python3 $POLIER/tools/boundaries.py .`
 - **Status:** `python3 $POLIER/tools/render_status.py .` (lead only)
 - **Worktree:** `python3 $POLIER/tools/worktree.py start <ID>` / `finish <ID>`
 - **Gate:** `python3 $POLIER/tools/gate.py --task <ID> --name <gate> --shell "<command>"`
 - **Git:** `git status --short` · `git diff` · `git log --oneline -5`
-- **Install, build, lint, typecheck, test:** defined by P0-04 in `docs/module-map.md`; until then only the board check exists.
+- **Install:** `pnpm install --frozen-lockfile` (lockfile committed).
+- **Build, lint, typecheck, test:** `pnpm build` · `pnpm lint` · `pnpm typecheck` · `pnpm test` — Turborepo, affected packages; per kind: `docs/module-map.md`.
 
 ## Deviations
 
-- Profile L monorepo; `src/` at the root does not exist. Code lives in `packages/`, `services/`, `apps/`, `tools/`, `infra/`.
+- Profile L: code lives in `packages/`, `services/`, `apps/`, `tools/`, `infra/`; no root `src/`.
 - `reference/` holds unchanged originals from an earlier prototype. Read them when a brief lists them; never edit or import them.
 - `docs/owner/` is the owner's German blueprint. Read only when a brief lists it.
 - Code, comments, commits, tests, briefs and reviews in English. User-visible text only from translation files (from P0-18); German uses `ss`, never `ß`.

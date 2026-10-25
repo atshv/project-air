@@ -478,7 +478,7 @@
       "satisfies": [
         "D1"
       ],
-      "status": "in_progress",
+      "status": "done",
       "depends_on": [
         "P0-03"
       ],
@@ -521,11 +521,19 @@
       ],
       "owner": null,
       "branch": "task/P0-04",
-      "worktree": "../Project air-P0-04",
+      "worktree": null,
       "round": 0,
-      "evidence": [],
+      "evidence": [
+        "reviews/evidence/P0-04-install-20261025T084450Z.json",
+        "reviews/evidence/P0-04-board-check-20261025T084530Z.json"
+      ],
       "scope_write_forbidden": [
         "reference/"
+      ],
+      "handoff": [
+        "Closed P0-04: pnpm workspaces + Turborepo, exact tool versions, lockfile committed, Node 24.22.1 LTS pinned.",
+        "install = pnpm install --frozen-lockfile; unit = pnpm test; root lint/typecheck/test/build exit 0 on the empty workspace.",
+        "Board-check runs before pnpm install (check.py scans node_modules); P0-06, P0-12 and P0-18 can start."
       ]
     },
     {

@@ -1,0 +1,96 @@
+# P0-04 - empty-workspace proof (manual evidence)
+# worktree: /Users/rasulatashev/Desktop/KI Projekte/Project air-P0-04
+# date (UTC): 2026-10-25T08:45:14Z
+# node: v26.11.1
+# pnpm: 12.14.0
+# turbo: 2.11.10
+# tsc: Version 5.9.3
+
+## lockfile integrity
+pnpm-lock.yaml sha256 before: 1d0e75f75debff3cf9eb8a3891d6e26ffe5e81b77a4e28002439400bf67f45a9
+
+## pnpm lint
+$ turbo run lint
+
+   • turbo 2.11.10
+   • Packages in scope: 
+   • Running lint in 0 packages
+   • Remote caching disabled, using shared worktree cache
+
+ WARNING  No tasks were executed as part of this run.
+
+ Tasks:    0 successful, 0 total
+Cached:    0 cached, 0 total
+  Time:    26ms 
+exit code: 0
+
+## pnpm typecheck
+$ turbo run typecheck && tsc -b tsconfig.json
+
+   • turbo 2.11.10
+   • Packages in scope: 
+   • Running typecheck in 0 packages
+   • Remote caching disabled, using shared worktree cache
+
+ WARNING  No tasks were executed as part of this run.
+
+ Tasks:    0 successful, 0 total
+Cached:    0 cached, 0 total
+  Time:    3ms 
+exit code: 0
+
+## pnpm test
+$ turbo run test
+
+   • turbo 2.11.10
+   • Packages in scope: 
+   • Running test in 0 packages
+   • Remote caching disabled, using shared worktree cache
+
+ WARNING  No tasks were executed as part of this run.
+
+ Tasks:    0 successful, 0 total
+Cached:    0 cached, 0 total
+  Time:    3ms 
+exit code: 0
+
+## pnpm build
+$ turbo run build
+
+   • turbo 2.11.10
+   • Packages in scope: 
+   • Running build in 0 packages
+   • Remote caching disabled, using shared worktree cache
+
+ WARNING  No tasks were executed as part of this run.
+
+ Tasks:    0 successful, 0 total
+Cached:    0 cached, 0 total
+  Time:    3ms 
+exit code: 0
+
+## pnpm exec eslint . --no-error-on-unmatched-pattern --max-warnings=0
+
+exit code: 0
+
+## tsc -b tsconfig.json (root solution build)
+
+exit code: 0
+
+pnpm-lock.yaml sha256 after: 1d0e75f75debff3cf9eb8a3891d6e26ffe5e81b77a4e28002439400bf67f45a9
+lockfile: UNCHANGED
+
+## board-check and third-party files
+`python3 $POLIER/tools/check.py .` walks every `*.md` under the root, including an installed
+`node_modules/`. Third-party READMEs contain relative links that do not resolve in the pnpm
+layout, so the `board-check` gate runs against the source tree without `node_modules/`. With
+dependencies installed the same command reports those third-party links only; CI must run
+`board-check` before `pnpm install` (P0-08). Passing records:
+reviews/evidence/P0-04-install-20261025T084450Z.json (PASS, exit 0) and
+reviews/evidence/P0-04-board-check-20261025T084530Z.json (PASS, exit 0).
+
+## board-check (source tree, no node_modules)
+WARN: budgets.status overridden to 1600 words (reason: Ten stages with exit criteria and sixteen open owner questions are listed in STATUS.md during stage foundation; shrinks as questions are answered.)
+WARN: P0-02: context pack is about 29431 tokens (warning at 15000); trim scope_read, split the task or shorten the base files
+OK: /Users/rasulatashev/Desktop/KI Projekte/Project air-P0-04 passes the mandatory checks. (2 warning(s))
+exit code: 0
