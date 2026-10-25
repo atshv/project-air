@@ -1725,6 +1725,55 @@
         "Model covers AD-4 (note exists once, cards reference notes), parent relation, fractional index string, minimum sizes and ISO timestamps; 19 unit tests.",
         "P1-02 adds operations/undo; P1-03 codegen; P1-06 documents the contract and fills board.contracts[]."
       ]
+    },
+    {
+      "id": "P1-02",
+      "title": "Operations, inverse operations and group",
+      "goal": "Every board change is one contract operation with an inverse, plus an ordered group operation, with fixtures and tests (AD-1).",
+      "why": "Undo, realtime sync and the engine need one operation vocabulary; one gesture = one operation.",
+      "satisfies": [
+        "D7"
+      ],
+      "status": "pending",
+      "depends_on": [
+        "P1-01"
+      ],
+      "complexity": 6,
+      "stage": "contract",
+      "parallel_group": null,
+      "scope_write": [
+        "packages/contracts/",
+        "pnpm-lock.yaml",
+        ".changes/"
+      ],
+      "scope_read": [
+        "ARCHITECTURE.md",
+        "AGENTS.md",
+        "STATUS.md",
+        "docs/module-map.md",
+        "docs/quality.md",
+        "docs/owner/canvas-suite-blueprint.md",
+        "docs/canvas-acceptance.md",
+        "packages/contracts/"
+      ],
+      "acceptance": [
+        "A1",
+        "A2",
+        "A3",
+        "A4"
+      ],
+      "gates": [
+        "unit",
+        "board-check"
+      ],
+      "owner": null,
+      "branch": "task/P1-02",
+      "worktree": null,
+      "round": 0,
+      "evidence": [],
+      "scope_write_forbidden": [
+        "reference/"
+      ]
     }
   ],
   "decisions": [

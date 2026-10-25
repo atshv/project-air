@@ -20,7 +20,7 @@
 - Owner decision: `pending`
 - Exit gates: `contracts` (missing record), `codegen` (missing record)
 - Exit criteria: contracts 0.1.0 tagged; every schema has a valid and an invalid fixture.; TS and C++ read the same fixtures identically.
-- Tasks: P1-01
+- Tasks: P1-01, P1-02
 
 ### Stage 3 — `engine-spike` Engine spike
 
@@ -118,7 +118,10 @@
 
 ## Ready now
 
-- none
+- `P1-02` Operations, inverse operations and group
+  - P1-01: Closed P1-01: packages/contracts has 9 JSON-Schema-2020-12 files (v0.1.0) for account/workspace/board/note/card/zone/block/edge/root and 35 valid+invalid fixtures.
+  - P1-01: Model covers AD-4 (note exists once, cards reference notes), parent relation, fractional index string, minimum sizes and ISO timestamps; 19 unit tests.
+  - P1-01: P1-02 adds operations/undo; P1-03 codegen; P1-06 documents the contract and fills board.contracts[].
 
 ## Done
 
@@ -157,13 +160,7 @@
 - [ ] `P0-15` Release command and tag-based CI release — status: `pending` — owner: —
 - [ ] `P0-16` Dependency updates and Polier update check — status: `pending` — owner: —
 - [ ] `P0-17` RELEASING.md and release 0.0.1 — status: `pending` — owner: —
-
-<!-- polier:claims -->
-## Claims
-
-- `P1-01` in progress by dsh since 2026-10-25T11:00:07+00:00 — worktree: /Users/rasulatashev/Desktop/KI Projekte/Project air-P1-01 · slot 1
-
-<!-- /polier:claims -->
+- [ ] `P1-02` Operations, inverse operations and group — status: `pending` — owner: —
 
 ## Decisions
 
