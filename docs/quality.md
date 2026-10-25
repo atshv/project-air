@@ -42,7 +42,7 @@ task from the project's manifests; until then the gate cannot pass.
 | `tokens-codegen` | `pnpm --filter ./packages/ui-kit run codegen && git diff --exit-code -- packages/ui-kit` | exit 0, CSS, C++ header and layers regenerated without diff |
 | `design-check` | `node tools/design-check/index.mjs .` | exit 0 |
 | `language-check` | `node tools/language-check/index.mjs .` | exit 0 |
-| `changelog-entry` | `[VERIFY: set by P0-14]` | exit 0, entry present for code changes |
+| `changelog-entry` | `node tools/release/check-changes.mjs --task <ID> --base main` | exit 0, entry present for code changes |
 | `release-dry` | `[VERIFY: set by P0-15, release command in dry-run mode]` | exit 0, version and entries shown, nothing changed |
 | `smoke` | `python3 $POLIER/tools/smoke.py --url <environment-url> --expect-status 200 --path /` | exit 0, `SMOKE OK` |
 | `release` | `python3 $POLIER/tools/release_check.py .` | exit 0 on a tag of `main` |

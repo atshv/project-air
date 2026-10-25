@@ -983,7 +983,7 @@
       "satisfies": [
         "D5"
       ],
-      "status": "in_progress",
+      "status": "done",
       "depends_on": [
         "P0-04"
       ],
@@ -1018,11 +1018,20 @@
       ],
       "owner": null,
       "branch": "task/P0-14",
-      "worktree": "../Project air-P0-14",
+      "worktree": null,
       "round": 0,
-      "evidence": [],
+      "evidence": [
+        "reviews/evidence/P0-14-board-check-20261025T100350Z.json",
+        "reviews/evidence/P0-14-changelog-entry-20261025T100353Z.json",
+        "reviews/evidence/P0-14-unit-20261025T100357Z.json"
+      ],
       "scope_write_forbidden": [
         "reference/"
+      ],
+      "handoff": [
+        "Closed P0-14: .changes/ entries for every finished task, tools/release change + check-changes tools, CHANGELOG.md at 0.0.1.",
+        "changelog-entry and unit gates pass; gate checks base...HEAD plus working tree and ignores docs/board changes.",
+        "Release stage collects entries; agents never edit CHANGELOG directly. Root version is 0.0.1."
       ]
     },
     {

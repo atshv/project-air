@@ -1,0 +1,10 @@
+{
+  "name": "@project-air/release",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Change entries, changelog gate and release commands.",
+  "type": "module",
+  "scripts": {
+    "test": "node --test test/*.test.mjs"
+  }
+}

@@ -1,0 +1,53 @@
+$ pnpm --filter ./tools/release test
+[exit 0]
+
+✔ writes a deterministic entry from flags (166.785041ms)
+✔ derives the task id from the branch and accepts positional arguments (170.949417ms)
+✔ defaults the kind to patch (145.969917ms)
+✔ refuses unknown areas and kinds without writing a file (223.272ms)
+✔ refuses invalid task ids, missing and multi-line summaries (386.916959ms)
+✔ refuses a task id when the branch is not task/<ID> (154.913625ms)
+✔ refuses to overwrite an entry unless --force is passed (297.873542ms)
+✔ ignores a -- separator forwarded by a package manager (254.343ms)
+✔ never edits CHANGELOG.md (147.545584ms)
+✔ fails on a committed code change without an entry (261.02675ms)
+✔ passes with a matching entry (244.546208ms)
+✔ passes for docs-only changes (244.280292ms)
+✔ passes with the owner exception and the reason (266.56475ms)
+✔ rejects --no-changelog without a reason (245.666167ms)
+✔ detects uncommitted working-tree code changes (206.247292ms)
+✔ requires an entry for a changed root manifest (390.734833ms)
+✔ fails on an invalid entry (266.336834ms)
+✔ fails when a task has more than one entry (227.945334ms)
+✔ exits 2 for usage and configuration errors (370.638417ms)
+✔ accepts an explicit --task on a branch that is not task/<ID> (224.550958ms)
+✔ areas and kinds are fixed (1.228625ms)
+✔ task ids are normalized to upper case and validated (0.138708ms)
+✔ slug is deterministic and stays short (0.185708ms)
+✔ entry file name uses the task id and the slug (0.062084ms)
+✔ entry render and parse round-trip (0.201416ms)
+✔ parse rejects invalid entries (0.163125ms)
+✔ entry files for a task are listed sorted and ignore other files (1.685417ms)
+✔ code paths follow the gate policy (0.114125ms)
+ℹ tests 28
+ℹ suites 0
+ℹ pass 28
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 3047.622625
+✓ Lockfile passes supply-chain policies (verified 1h ago)
+Lockfile is up to date, resolution step is skipped
+Packages: +97
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Progress: resolved 97, reused 97, downloaded 0, added 97, done
+
+devDependencies:
++ eslint 10.13.0
++ turbo 2.11.10
++ typescript 5.9.3
++ typescript-eslint 8.72.0
+
+Done in 235ms using pnpm v12.14.0
+$ node --test test/*.test.mjs

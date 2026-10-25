@@ -1,0 +1,17 @@
+{
+  "task": "P0-14",
+  "gate": "unit",
+  "command": "pnpm --filter ./tools/release test",
+  "exit_code": 0,
+  "result": "pass",
+  "slot": null,
+  "exclusive": [],
+  "lock_wait_s": 0.0,
+  "lock_warning": null,
+  "started": "2026-10-25T10:03:57+00:00",
+  "finished": "2026-10-25T10:04:01+00:00",
+  "commit": "025bc337b61ae5f78e309c17f6ba9979a2c83e50",
+  "dirty": true,
+  "log": "P0-14-unit-20261025T100357Z.log",
+  "log_sha256": "ac29bd37e118651c2bf76cfcd4ac85b80aadc6baf4be358eabfb8871621921f8"
+}

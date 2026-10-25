@@ -83,6 +83,22 @@ Turbo skips it.
 `infra/` is outside the workspace globs; its commands are `docker compose -f infra/compose/compose.yaml …`
 (P0-07). A package without a script for a task is skipped by Turbo.
 
+### Change entries and changelog
+
+Every code change needs exactly one entry in `.changes/`; `tools/release` writes and checks it.
+Release sections in `CHANGELOG.md` are written by the release tooling only, never by agents or
+tasks.
+
+| Command | What it runs |
+| --- | --- |
+| `pnpm run change -- <area> <kind> "<summary>"` | writes `.changes/<task-id>-<short-name>.md`; task id from the branch `task/<ID>` or `--task <ID>` |
+| `node tools/release/change.mjs --task <ID> --area <area> --kind <kind> "<summary>"` | same with explicit flags; `--force` overwrites an existing entry |
+| `node tools/release/check-changes.mjs --task <ID> --base main` | `changelog-entry` gate: committed changes against `--base` plus the working tree; exit 0/1/2 |
+| `pnpm --filter ./tools/release test` | unit tests for the change tools |
+
+Areas, kinds, the entry format and the owner exception `--no-changelog "<reason>"` are documented
+in [.changes/README.md](../.changes/README.md).
+
 ## Layers inside a TypeScript package
 
 | Layer | Folder | Purpose | May import | May not import |

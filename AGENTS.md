@@ -12,14 +12,14 @@ Details: `ARCHITECTURE.md`. Progress: `STATUS.md`. Structure: `docs/module-map.m
 - **Gate:** `python3 $POLIER/tools/gate.py --task <ID> --name <gate> --shell "<command>"`
 - **Git:** `git status --short` · `git diff` · `git log --oneline -5`
 - **Install:** `pnpm install --frozen-lockfile` (lockfile committed).
-- **Build, lint, typecheck, test:** `pnpm build` · `pnpm lint` · `pnpm typecheck` · `pnpm test` — Turborepo, affected packages; per kind: `docs/module-map.md`.
+- **Build, lint, typecheck, test:** `pnpm build` · `pnpm lint` · `pnpm typecheck` · `pnpm test` — Turborepo; per kind: `docs/module-map.md`.
 
 ## Deviations
 
 - Profile L: code lives in `packages/`, `services/`, `apps/`, `tools/`, `infra/`; no root `src/`.
-- `reference/` holds unchanged originals from an earlier prototype. Read them when a brief lists them; never edit or import them.
-- `docs/owner/` is the owner's German blueprint. Read only when a brief lists it.
-- Code, comments, commits, tests, briefs and reviews in English. User-visible text only from translation files (from P0-18); German uses `ss`, never `ß`.
+- `reference/`: unchanged prototype originals; read only when a brief lists them; never edit or import.
+- `docs/owner/`: owner's German blueprint; read only when a brief lists it.
+- Code, comments, commits, tests, briefs, reviews in English. UI text only from translation files (P0-18); German uses `ss`, never `ß`.
 
 ## Runtime
 
@@ -30,10 +30,11 @@ Details: `ARCHITECTURE.md`. Progress: `STATUS.md`. Structure: `docs/module-map.m
 ## Rules
 
 - One task per session, one live claim per task, work in the task's worktree (`worktrees: required`).
-- Read `ARCHITECTURE.md`, `AGENTS.md`, `STATUS.md`, `docs/module-map.md` and your brief first. Unclear: `open_questions` in the result; do not guess.
+- Read `ARCHITECTURE.md`, `AGENTS.md`, `STATUS.md`, `docs/module-map.md` and your brief first. Unclear: `open_questions` in the result.
 - Run every gate through `gate.py` with the names from `board.json`; commit `reviews/evidence/` with the task. Records with result `infra`, `busy` or `timeout` are not evidence.
 - Stay inside `scope_write`. One commit per task: `<ID>: <title>`. No push, tag or PR without approval.
 - Imports only per `packages[].may_import` (gate `boundaries`). Inside a TS package: UI → logic → data.
+- **Change:** every code change adds `.changes/<ID>-<short-name>.md` (`pnpm run change -- <area> <kind> "<summary>"`).
 - Versions only from manifests or cited docs; every dependency in `docs/versions.md`.
 - No secrets in the repo, bundle or logs.
 - Agents never publish; releases run in CI from tags (`docs/releasing.md`).

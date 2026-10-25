@@ -1,0 +1,106 @@
+# P0-14 - manual checks (evidence for A1, A2, A3)
+# worktree: /Users/rasulatashev/Desktop/KI Projekte/Project air-P0-14
+# date (UTC): 2026-10-25T10:03:35Z
+# node: v26.11.1, pnpm: 12.14.0, git: git version 2.50.1 (Apple Git-155)
+
+## A3: writer via the root pnpm script
+$ pnpm run change -- tooling patch "Manual evidence smoke entry"
+wrote .changes/P0-14-manual-evidence-smoke-entry.md
+area: tooling, kind: patch
+$ node tools/release/change.mjs -- tooling patch 'Manual evidence smoke entry'
+exit code: 0
+
+$ cat .changes/P0-14-manual-evidence-smoke-entry.md
+area: tooling
+kind: patch
+
+Manual evidence smoke entry
+
+(removed .changes/P0-14-manual-evidence-smoke-entry.md after the capture)
+
+$ pnpm run change -- --area design patch "Bad area"
+$ node tools/release/change.mjs -- --area design patch 'Bad area'
+change: unknown area 'design' (allowed: web, engine, sync, platform, auth, media, ai, contracts, infra, tooling)
+[ELIFECYCLE] Command failed with exit code 2.
+exit code: 2
+
+$ pnpm run change -- tooling patch "Manual evidence smoke entry"   # re-create for the overwrite check
+wrote .changes/P0-14-manual-evidence-smoke-entry.md
+area: tooling, kind: patch
+$ node tools/release/change.mjs -- tooling patch 'Manual evidence smoke entry'
+exit code: 0
+
+$ pnpm run change -- tooling patch "Manual evidence smoke entry"   # existing file, no --force
+$ node tools/release/change.mjs -- tooling patch 'Manual evidence smoke entry'
+change: .changes/P0-14-manual-evidence-smoke-entry.md already exists; pass --force to overwrite
+[ELIFECYCLE] Command failed with exit code 2.
+exit code: 2
+
+$ pnpm run change -- --force tooling patch "Manual evidence smoke entry"
+wrote .changes/P0-14-manual-evidence-smoke-entry.md
+area: tooling, kind: patch
+$ node tools/release/change.mjs -- --force tooling patch 'Manual evidence smoke entry'
+exit code: 0
+
+(removed .changes/P0-14-manual-evidence-smoke-entry.md after the capture)
+
+## A1/A4: changelog gate on this worktree (code changes + .changes/P0-14 entry)
+$ node tools/release/check-changes.mjs --task P0-14 --base main
+check-changes: task P0-14, base main, 30 changed path(s), 13 code path(s)
+changelog-entry: OK (.changes/P0-14-change-entries.md)
+exit code: 0
+
+## A1: code change without an entry in a temporary git repository
+$ node tools/release/check-changes.mjs --task P0-14 --base main   # cwd: /var/folders/68/93nwhkp965xd6yk4gqfq7fch0000gn/T/p0-14-evidence-oCLj5j
+check-changes: task P0-14, base main, 1 changed path(s), 1 code path(s)
+changelog-entry: FAIL (missing entry for P0-14)
+create .changes/P0-14-<short-name>.md, for example: pnpm run change -- <area> <kind> "<summary>"
+code files without a change entry:
+  - tools/example/index.mjs
+exit code: 1
+
+## A1: the same change with an entry passes
+$ node tools/release/check-changes.mjs --task P0-14 --base main   # cwd: /var/folders/68/93nwhkp965xd6yk4gqfq7fch0000gn/T/p0-14-evidence-oCLj5j
+check-changes: task P0-14, base main, 2 changed path(s), 1 code path(s)
+changelog-entry: OK (.changes/P0-14-example-tool.md)
+exit code: 0
+
+## A1: docs-only changes need no entry
+$ node tools/release/check-changes.mjs --task P0-14 --base main   # cwd: /var/folders/68/93nwhkp965xd6yk4gqfq7fch0000gn/T/p0-14-evidence-fLbxqb
+check-changes: task P0-14, base main, 1 changed path(s), 0 code path(s)
+changelog-entry: OK (no code changes)
+exit code: 0
+
+## A1: owner exception --no-changelog needs a reason
+$ node tools/release/check-changes.mjs --task P0-14 --base main --no-changelog "owner approved: build-only change"   # cwd: /var/folders/68/93nwhkp965xd6yk4gqfq7fch0000gn/T/p0-14-evidence-APaA4x
+check-changes: task P0-14, base main, 1 changed path(s), 1 code path(s)
+changelog-entry: OK (owner exception no-changelog: owner approved: build-only change)
+exit code: 0
+
+$ node tools/release/check-changes.mjs --task P0-14 --base main --no-changelog   # cwd: /var/folders/68/93nwhkp965xd6yk4gqfq7fch0000gn/T/p0-14-evidence-APaA4x
+check-changes: --no-changelog needs a non-empty reason
+exit code: 2
+
+## A2: one valid entry per done foundation task
+P0-03: P0-03-workspace-folders.md | area=tooling kind=patch | valid
+P0-04: P0-04-workspace-build.md | area=tooling kind=patch | valid
+P0-06: P0-06-slot-dev-setup.md | area=tooling kind=patch | valid
+P0-07: P0-07-local-compose.md | area=infra kind=patch | valid
+P0-10: P0-10-design-rules.md | area=web kind=patch | valid
+P0-11: P0-11-canvas-acceptance.md | area=engine kind=patch | valid
+P0-12: P0-12-ui-kit-tokens.md | area=web kind=patch | valid
+P0-13: P0-13-design-check-gate.md | area=tooling kind=patch | valid
+P0-14: P0-14-change-entries.md | area=tooling kind=patch | valid
+P0-18: P0-18-i18n-language-check.md | area=web kind=patch | valid
+P0-19: P0-19-design-preview.md | area=web kind=patch | valid
+entries for done tasks: 11/11 valid
+
+## A3: CHANGELOG.md starts at 0.0.1; package.json version and change script
+$ head -3 CHANGELOG.md
+# Changelog
+
+## 0.0.1 – unreleased
+
+package.json version: 0.0.1
+package.json change script: node tools/release/change.mjs
+

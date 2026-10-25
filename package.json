@@ -1,6 +1,6 @@
 {
   "name": "project-air",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "private": true,
   "description": "Project air monorepo: workspace root, tooling and build orchestration.",
   "packageManager": "pnpm@12.14.0",
@@ -9,6 +9,7 @@
   },
   "scripts": {
     "build": "turbo run build",
+    "change": "node tools/release/change.mjs",
     "lint": "turbo run lint",
     "typecheck": "turbo run typecheck && tsc -b tsconfig.json",
     "test": "turbo run test",
