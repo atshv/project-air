@@ -27,7 +27,19 @@ None. `board.json` -> `packages[]` -> `may_import` is empty, so this package imp
 
 ## Commands
 
-Install, build, lint, typecheck and test: **set by P0-04**, the workspace task. This package defines no command before the workspace exists; the task that adds code expands this section.
+The scripts need bash, Docker with Compose and the Python 3 standard library; there is no install
+step and no lint/build/test command for this tool. Runtime values come only from `.polier-slot`
+(AD-9); slot 0 is refused and the shared stack is started but never stopped.
+
+| Command | What it does |
+| --- | --- |
+| `python3 $POLIER/tools/slot.py acquire` | take (or reuse) this worktree's slot; writes `.polier-slot` |
+| `bash tools/dev/setup` | start the shared compose stack if needed, then create and verify the slot database and bucket |
+| `bash tools/dev/teardown` | drop the slot database and bucket idempotently; refuses slot 0 |
+| `docker compose -f infra/compose/compose.yaml down` | stop the shared stack manually; volumes are kept and the scripts never run this |
+
+The `dev-setup` gate is `python3 $POLIER/tools/slot.py acquire && bash tools/dev/setup` and is
+recorded under `reviews/evidence/`; usage and safety rules are in [README.md](README.md).
 
 
 ## References

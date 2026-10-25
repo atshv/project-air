@@ -1,0 +1,39 @@
+$ python3 /Users/rasulatashev/Desktop/Polier-main/tools/slot.py acquire && bash tools/dev/setup
+[exit 0]
+
+slot 1: ai=4150 auth=4120 media=4140 platform=4110 playground=4160 sync=4130 web=4100 web-e2e=4101 · db project-air_slot_1 · bucket project-air-slot-1
+setup: slot 1 from /Users/rasulatashev/Desktop/KI Projekte/Project air-P0-06/.polier-slot
+setup: database project-air_slot_1, bucket project-air-slot-1
+setup: ports from .polier-slot: ai=4150 auth=4120 media=4140 platform=4110 playground=4160 sync=4130 web=4100 web-e2e=4101
+setup: ensuring the shared compose stack is running (infra/compose)
+setup: database project-air_slot_1 created
+setup: bucket project-air-slot-1 created
+setup: databases on the shared server:
+  postgres
+  project-air_slot_1
+  projectair
+setup: buckets in the shared SeaweedFS:
+    project-air-slot-1	size:0	logical:0	chunk:0
+setup: slot 1 ready (database project-air_slot_1, bucket project-air-slot-1)
+ Network project-air-local_default Creating 
+ Network project-air-local_default Creating 
+ Network project-air-local_default Created 
+ Network project-air-local_default Created 
+ Container project-air-local-seaweedfs-1 Creating 
+ Container project-air-local-postgres-1 Creating 
+ Container project-air-local-mailpit-1 Creating 
+ Container project-air-local-mailpit-1 Created 
+ Container project-air-local-postgres-1 Created 
+ Container project-air-local-seaweedfs-1 Created 
+ Container project-air-local-mailpit-1 Starting 
+ Container project-air-local-seaweedfs-1 Starting 
+ Container project-air-local-postgres-1 Starting 
+ Container project-air-local-mailpit-1 Started 
+ Container project-air-local-postgres-1 Started 
+ Container project-air-local-seaweedfs-1 Started 
+ Container project-air-local-seaweedfs-1 Waiting 
+ Container project-air-local-mailpit-1 Waiting 
+ Container project-air-local-postgres-1 Waiting 
+ Container project-air-local-mailpit-1 Healthy 
+ Container project-air-local-postgres-1 Healthy 
+ Container project-air-local-seaweedfs-1 Healthy 

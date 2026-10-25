@@ -544,7 +544,7 @@
       "satisfies": [
         "D2"
       ],
-      "status": "in_progress",
+      "status": "done",
       "depends_on": [
         "P0-04",
         "P0-07"
@@ -575,9 +575,12 @@
       ],
       "owner": null,
       "branch": "task/P0-06",
-      "worktree": "../Project air-P0-06",
+      "worktree": null,
       "round": 0,
-      "evidence": [],
+      "evidence": [
+        "reviews/evidence/P0-06-board-check-20261025T085620Z.json",
+        "reviews/evidence/P0-06-dev-setup-20261025T085623Z.json"
+      ],
       "package": "tools/dev",
       "resources": [
         "ports",
@@ -586,6 +589,11 @@
       ],
       "scope_write_forbidden": [
         "reference/"
+      ],
+      "handoff": [
+        "Closed P0-06: tools/dev/setup and tools/dev/teardown read slot, db_name and bucket only from .polier-slot.",
+        "setup starts the shared compose stack and creates the slot DB/bucket idempotently; teardown drops them and refuses slot 0.",
+        "Verified with real runs on slot 1 (log in reviews/evidence/); P0-18 and later services can use it."
       ]
     },
     {

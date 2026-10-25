@@ -1,0 +1,277 @@
+# P0-06 evidence: per-slot dev setup and teardown, proven with real runs (A1, A2, A3)
+# Worktree: /Users/rasulatashev/Desktop/KI Projekte/Project air-P0-06 (branch task/P0-06, runtime slot 1)
+# Date: 2026-10-25T08:55:27Z (Europe/Zurich local: 2026-10-25T09:55:27+0100)
+#
+# Every runtime value comes from the worktree's .polier-slot; the scripts contain no
+# port, database name or bucket name (A3 below). This log lists database and bucket
+# names only: it contains no password, role secret or connection string.
+
+## State before the proof: shared stack running, slot 1 resources absent
+
+$ docker compose -f infra/compose/compose.yaml ps
+NAME                            IMAGE                                                                                               COMMAND                  SERVICE     CREATED         STATUS                   PORTS
+project-air-local-mailpit-1     axllent/mailpit:v1.32.0@sha256:0790692be935ea4420d085694f7985b1f692ca6a8771ab0e0bd8ba75ac180498     "/mailpit"               mailpit     4 minutes ago   Up 4 minutes (healthy)   127.0.0.1:1025->1025/tcp, 127.0.0.1:8025->8025/tcp, 1110/tcp
+project-air-local-postgres-1    postgres:17.11-alpine3.23@sha256:01ea903aa65deb58eb49d6e09d859ecff63a6bb7d61feca55f2abad71d08f72a   "docker-entrypoint.s…"   postgres    4 minutes ago   Up 4 minutes (healthy)   127.0.0.1:5433->5432/tcp
+project-air-local-seaweedfs-1   chrislusf/seaweedfs:4.50@sha256:c2658820e763294a9e9de7b36c81e59b879e3459148351aee4e31a126ca64860    "/entrypoint.sh serv…"   seaweedfs   4 minutes ago   Up 4 minutes (healthy)   7333/tcp, 8080/tcp, 8888/tcp, 9333/tcp, 18080/tcp, 18888/tcp, 19333/tcp, 127.0.0.1:8333->8333/tcp
+[exit 0]
+
+$ docker compose -f infra/compose/compose.yaml exec -T postgres sh -c 'psql -U "$POSTGRES_USER" -d postgres -tAc "SELECT datname FROM pg_database WHERE datistemplate = false ORDER BY datname"'
+postgres
+projectair
+[exit 0]
+
+$ printf 's3.bucket.list\n' | docker compose -f infra/compose/compose.yaml exec -T seaweedfs weed shell
+[exit 0]
+
+## A1.1 setup starts the shared stack when it is not running (stack stopped first)
+
+$ docker compose -f infra/compose/compose.yaml down
+ Container project-air-local-postgres-1 Stopping 
+ Container project-air-local-mailpit-1 Stopping 
+ Container project-air-local-seaweedfs-1 Stopping 
+ Container project-air-local-postgres-1 Stopped 
+ Container project-air-local-postgres-1 Removing 
+ Container project-air-local-mailpit-1 Stopped 
+ Container project-air-local-mailpit-1 Removing 
+ Container project-air-local-postgres-1 Removed 
+ Container project-air-local-mailpit-1 Removed 
+ Container project-air-local-seaweedfs-1 Stopped 
+ Container project-air-local-seaweedfs-1 Removing 
+ Container project-air-local-seaweedfs-1 Removed 
+ Network project-air-local_default Removing 
+ Network project-air-local_default Removed 
+[exit 0]
+
+$ docker compose -f infra/compose/compose.yaml ps
+NAME      IMAGE     COMMAND   SERVICE   CREATED   STATUS    PORTS
+[exit 0]
+
+$ bash tools/dev/setup
+setup: slot 1 from /Users/rasulatashev/Desktop/KI Projekte/Project air-P0-06/.polier-slot
+setup: database project-air_slot_1, bucket project-air-slot-1
+setup: ports from .polier-slot: ai=4150 auth=4120 media=4140 platform=4110 playground=4160 sync=4130 web=4100 web-e2e=4101
+setup: ensuring the shared compose stack is running (infra/compose)
+ Network project-air-local_default Creating 
+ Network project-air-local_default Creating 
+ Network project-air-local_default Created 
+ Network project-air-local_default Created 
+ Container project-air-local-seaweedfs-1 Creating 
+ Container project-air-local-postgres-1 Creating 
+ Container project-air-local-mailpit-1 Creating 
+ Container project-air-local-mailpit-1 Created 
+ Container project-air-local-seaweedfs-1 Created 
+ Container project-air-local-postgres-1 Created 
+ Container project-air-local-postgres-1 Starting 
+ Container project-air-local-seaweedfs-1 Starting 
+ Container project-air-local-mailpit-1 Starting 
+ Container project-air-local-mailpit-1 Started 
+ Container project-air-local-seaweedfs-1 Started 
+ Container project-air-local-postgres-1 Started 
+ Container project-air-local-postgres-1 Waiting 
+ Container project-air-local-seaweedfs-1 Waiting 
+ Container project-air-local-mailpit-1 Waiting 
+ Container project-air-local-mailpit-1 Healthy 
+ Container project-air-local-postgres-1 Healthy 
+ Container project-air-local-seaweedfs-1 Healthy 
+setup: database project-air_slot_1 created
+setup: bucket project-air-slot-1 created
+setup: databases on the shared server:
+  postgres
+  project-air_slot_1
+  projectair
+setup: buckets in the shared SeaweedFS:
+    project-air-slot-1	size:0	logical:0	chunk:0
+setup: slot 1 ready (database project-air_slot_1, bucket project-air-slot-1)
+[exit 0]
+
+## A1.2 verify independently that the slot database and bucket exist
+
+$ docker compose -f infra/compose/compose.yaml exec -T postgres sh -c 'psql -U "$POSTGRES_USER" -d postgres -tAc "SELECT datname FROM pg_database WHERE datistemplate = false ORDER BY datname"'
+postgres
+project-air_slot_1
+projectair
+[exit 0]
+
+$ printf 's3.bucket.list\n' | docker compose -f infra/compose/compose.yaml exec -T seaweedfs weed shell
+  project-air-slot-1	size:0	logical:0	chunk:0
+[exit 0]
+
+## A1.3 second setup run is idempotent (keeps database and bucket, exit 0)
+
+$ bash tools/dev/setup
+setup: slot 1 from /Users/rasulatashev/Desktop/KI Projekte/Project air-P0-06/.polier-slot
+setup: database project-air_slot_1, bucket project-air-slot-1
+setup: ports from .polier-slot: ai=4150 auth=4120 media=4140 platform=4110 playground=4160 sync=4130 web=4100 web-e2e=4101
+setup: ensuring the shared compose stack is running (infra/compose)
+ Container project-air-local-seaweedfs-1 Running 
+ Container project-air-local-mailpit-1 Running 
+ Container project-air-local-postgres-1 Running 
+ Container project-air-local-mailpit-1 Waiting 
+ Container project-air-local-postgres-1 Waiting 
+ Container project-air-local-seaweedfs-1 Waiting 
+ Container project-air-local-mailpit-1 Healthy 
+ Container project-air-local-seaweedfs-1 Healthy 
+ Container project-air-local-postgres-1 Healthy 
+setup: database project-air_slot_1 already exists
+setup: bucket project-air-slot-1 already exists
+setup: databases on the shared server:
+  postgres
+  project-air_slot_1
+  projectair
+setup: buckets in the shared SeaweedFS:
+    project-air-slot-1	size:0	logical:0	chunk:0
+setup: slot 1 ready (database project-air_slot_1, bucket project-air-slot-1)
+[exit 0]
+
+## A2.1 slot 0 is refused with a non-zero exit and nothing is changed
+# A slot-0 variant of .polier-slot is written with the same db_name and bucket;
+# the original file is gitignored and is restored from /tmp afterwards.
+
+$ cp .polier-slot /tmp/p006-slot-backup.json
+[exit 0]
+
+$ python3 -c 'import json; d=json.load(open(".polier-slot")); d["slot"]=0; json.dump(d, open(".polier-slot","w"), indent=2)'
+[exit 0]
+
+$ python3 $POLIER/tools/slot.py show
+slot 0: ai=4150 auth=4120 media=4140 platform=4110 playground=4160 sync=4130 web=4100 web-e2e=4101 · db project-air_slot_1 · bucket project-air-slot-1
+[exit 0]
+
+$ bash tools/dev/teardown
+teardown: refusing slot 0 — it belongs to the owner's main checkout; nothing was changed
+[exit 1]
+
+$ bash tools/dev/setup
+setup: refusing slot 0 — it belongs to the owner's main checkout; nothing was changed
+[exit 1]
+
+$ cp /tmp/p006-slot-backup.json .polier-slot
+[exit 0]
+
+$ cmp /tmp/p006-slot-backup.json .polier-slot
+[exit 0]
+
+$ python3 $POLIER/tools/slot.py show
+slot 1: ai=4150 auth=4120 media=4140 platform=4110 playground=4160 sync=4130 web=4100 web-e2e=4101 · db project-air_slot_1 · bucket project-air-slot-1
+[exit 0]
+# The refused runs changed nothing: database and bucket still exist.
+
+$ docker compose -f infra/compose/compose.yaml exec -T postgres sh -c 'psql -U "$POSTGRES_USER" -d postgres -tAc "SELECT datname FROM pg_database WHERE datistemplate = false ORDER BY datname"'
+postgres
+project-air_slot_1
+projectair
+[exit 0]
+
+$ printf 's3.bucket.list\n' | docker compose -f infra/compose/compose.yaml exec -T seaweedfs weed shell
+  project-air-slot-1	size:0	logical:0	chunk:0
+[exit 0]
+
+## A2.2 teardown drops the slot database and deletes the slot bucket (exit 0)
+
+$ bash tools/dev/teardown
+teardown: slot 1 from /Users/rasulatashev/Desktop/KI Projekte/Project air-P0-06/.polier-slot
+teardown: database project-air_slot_1, bucket project-air-slot-1
+teardown: ports from .polier-slot: ai=4150 auth=4120 media=4140 platform=4110 playground=4160 sync=4130 web=4100 web-e2e=4101
+teardown: ensuring the shared compose stack is running (infra/compose)
+ Container project-air-local-mailpit-1 Running 
+ Container project-air-local-postgres-1 Running 
+ Container project-air-local-seaweedfs-1 Running 
+ Container project-air-local-mailpit-1 Waiting 
+ Container project-air-local-postgres-1 Waiting 
+ Container project-air-local-seaweedfs-1 Waiting 
+ Container project-air-local-seaweedfs-1 Healthy 
+ Container project-air-local-postgres-1 Healthy 
+ Container project-air-local-mailpit-1 Healthy 
+teardown: database project-air_slot_1 dropped
+teardown: bucket project-air-slot-1 deleted
+teardown: databases on the shared server:
+  postgres
+  projectair
+teardown: buckets in the shared SeaweedFS:
+teardown: slot 1 torn down; the shared stack is left running (volumes kept)
+[exit 0]
+
+## A2.3 verify independently that database and bucket are gone
+
+$ docker compose -f infra/compose/compose.yaml exec -T postgres sh -c 'psql -U "$POSTGRES_USER" -d postgres -tAc "SELECT datname FROM pg_database WHERE datistemplate = false ORDER BY datname"'
+postgres
+projectair
+[exit 0]
+
+$ printf 's3.bucket.list\n' | docker compose -f infra/compose/compose.yaml exec -T seaweedfs weed shell
+[exit 0]
+
+## A2.4 second teardown run is idempotent (nothing to remove, exit 0)
+
+$ bash tools/dev/teardown
+teardown: slot 1 from /Users/rasulatashev/Desktop/KI Projekte/Project air-P0-06/.polier-slot
+teardown: database project-air_slot_1, bucket project-air-slot-1
+teardown: ports from .polier-slot: ai=4150 auth=4120 media=4140 platform=4110 playground=4160 sync=4130 web=4100 web-e2e=4101
+teardown: ensuring the shared compose stack is running (infra/compose)
+ Container project-air-local-postgres-1 Running 
+ Container project-air-local-seaweedfs-1 Running 
+ Container project-air-local-mailpit-1 Running 
+ Container project-air-local-postgres-1 Waiting 
+ Container project-air-local-seaweedfs-1 Waiting 
+ Container project-air-local-mailpit-1 Waiting 
+ Container project-air-local-mailpit-1 Healthy 
+ Container project-air-local-postgres-1 Healthy 
+ Container project-air-local-seaweedfs-1 Healthy 
+teardown: database project-air_slot_1 does not exist
+teardown: bucket project-air-slot-1 does not exist
+teardown: databases on the shared server:
+  postgres
+  projectair
+teardown: buckets in the shared SeaweedFS:
+teardown: slot 1 torn down; the shared stack is left running (volumes kept)
+[exit 0]
+
+## The scripts start the shared stack but never stop it
+
+$ docker compose -f infra/compose/compose.yaml ps
+NAME                            IMAGE                                                                                               COMMAND                  SERVICE     CREATED          STATUS                    PORTS
+project-air-local-mailpit-1     axllent/mailpit:v1.32.0@sha256:0790692be935ea4420d085694f7985b1f692ca6a8771ab0e0bd8ba75ac180498     "/mailpit"               mailpit     24 seconds ago   Up 23 seconds (healthy)   127.0.0.1:1025->1025/tcp, 127.0.0.1:8025->8025/tcp, 1110/tcp
+project-air-local-postgres-1    postgres:17.11-alpine3.23@sha256:01ea903aa65deb58eb49d6e09d859ecff63a6bb7d61feca55f2abad71d08f72a   "docker-entrypoint.s…"   postgres    24 seconds ago   Up 23 seconds (healthy)   127.0.0.1:5433->5432/tcp
+project-air-local-seaweedfs-1   chrislusf/seaweedfs:4.50@sha256:c2658820e763294a9e9de7b36c81e59b879e3459148351aee4e31a126ca64860    "/entrypoint.sh serv…"   seaweedfs   24 seconds ago   Up 23 seconds (healthy)   7333/tcp, 8080/tcp, 8888/tcp, 9333/tcp, 18080/tcp, 18888/tcp, 19333/tcp, 127.0.0.1:8333->8333/tcp
+[exit 0]
+
+## A3 no port, database name or bucket name is hard-coded; values come from .polier-slot
+# The grep looks for the slot names and slot/shared ports of this machine; no match is expected.
+
+$ grep -nE 'project-air|_slot_[0-9]|-slot-[0-9]|(^|[^0-9])(4100|4101|4110|4120|4130|4140|4150|4160|5433|8333)([^0-9]|$)' tools/dev/setup tools/dev/teardown
+[exit 1]
+# grep exited 1 above because the scripts contain none of these names or ports.
+
+$ python3 $POLIER/tools/slot.py show
+slot 1: ai=4150 auth=4120 media=4140 platform=4110 playground=4160 sync=4130 web=4100 web-e2e=4101 · db project-air_slot_1 · bucket project-air-slot-1
+[exit 0]
+
+$ python3 $POLIER/tools/slot.py list
+slot 1: ai=4150 auth=4120 media=4140 platform=4110 playground=4160 sync=4130 web=4100 web-e2e=4101 · db project-air_slot_1 · bucket project-air-slot-1 · /Users/rasulatashev/Desktop/KI Projekte/Project air-P0-06
+slot 2: ai=4250 auth=4220 media=4240 platform=4210 playground=4260 sync=4230 web=4200 web-e2e=4201 · db project-air_slot_2 · bucket project-air-slot-2 · /Users/rasulatashev/Desktop/KI Projekte/Project air-P0-12
+[exit 0]
+# Slot 1 and slot 2 carry different db_name and bucket values; the scripts derive
+# theirs from the worktree's .polier-slot, as the setup output above shows.
+
+## Manual cleanup after the proof (not part of the scripts): stop the shared stack, volumes kept
+
+$ docker compose -f infra/compose/compose.yaml down
+ Container project-air-local-postgres-1 Stopping 
+ Container project-air-local-seaweedfs-1 Stopping 
+ Container project-air-local-mailpit-1 Stopping 
+ Container project-air-local-postgres-1 Stopped 
+ Container project-air-local-postgres-1 Removing 
+ Container project-air-local-postgres-1 Removed 
+ Container project-air-local-mailpit-1 Stopped 
+ Container project-air-local-mailpit-1 Removing 
+ Container project-air-local-mailpit-1 Removed 
+ Container project-air-local-seaweedfs-1 Stopped 
+ Container project-air-local-seaweedfs-1 Removing 
+ Container project-air-local-seaweedfs-1 Removed 
+ Network project-air-local_default Removing 
+ Network project-air-local_default Removed 
+[exit 0]
+
+$ docker compose -f infra/compose/compose.yaml ps
+NAME      IMAGE     COMMAND   SERVICE   CREATED   STATUS    PORTS
+[exit 0]
