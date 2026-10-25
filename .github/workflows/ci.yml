@@ -1,0 +1,75 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  ci:
+    name: Board check, install and gates
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node.js from .nvmrc
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+
+      - name: Set up pnpm 12.14.0
+        uses: pnpm/action-setup@v4
+        with:
+          version: 12.14.0
+
+      - name: Install Polier v1.0.0
+        run: |
+          git clone --depth 1 --branch v1.0.0 https://github.com/atshv/Polier.git "$RUNNER_TEMP/polier"
+          echo "POLIER=$RUNNER_TEMP/polier" >> "$GITHUB_ENV"
+
+      # check.py scans every markdown file under the root, including node_modules/,
+      # so the board check runs before the install step.
+      - name: Board check
+        run: python3 "$POLIER/tools/check.py" .
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+      - name: Test
+        run: pnpm test
+
+      - name: Boundaries
+        run: python3 "$POLIER/tools/boundaries.py" .
+
+      - name: Design check
+        run: node tools/design-check/index.mjs .
+
+      - name: Language check
+        run: node tools/language-check/index.mjs .
+
+      - name: Change-entry gate
+        # Only task/* branches need a .changes entry; workflow_dispatch and other
+        # branches skip this gate in the next step.
+        if: github.event_name == 'pull_request' && startsWith(github.head_ref, 'task/')
+        run: |
+          TASK="${GITHUB_HEAD_REF#task/}"
+          git fetch --no-tags origin "${{ github.base_ref }}"
+          node tools/release/check-changes.mjs --task "$TASK" --base "origin/${{ github.base_ref }}"
+
+      - name: Change-entry gate skipped
+        if: "github.event_name != 'pull_request' || !startsWith(github.head_ref, 'task/')"
+        run: |
+          echo "Skipping the change-entry gate: only branches named task/* require a .changes entry."

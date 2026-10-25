@@ -1,0 +1,3 @@
+$ docker run --rm -v /Users/rasulatashev/Desktop/KI Projekte/Project air-P0-08:/repo -w /repo rhysd/actionlint:latest
+[exit 0]
+

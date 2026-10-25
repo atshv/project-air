@@ -683,7 +683,7 @@
       "satisfies": [
         "D6"
       ],
-      "status": "in_progress",
+      "status": "done",
       "depends_on": [
         "P0-04"
       ],
@@ -713,11 +713,19 @@
       ],
       "owner": null,
       "branch": "task/P0-08",
-      "worktree": "../Project air-P0-08",
+      "worktree": null,
       "round": 0,
-      "evidence": [],
+      "evidence": [
+        "reviews/evidence/P0-08-board-check-20261025T102311Z.json",
+        "reviews/evidence/P0-08-ci-local-20261025T102314Z.json"
+      ],
       "scope_write_forbidden": [
         "reference/"
+      ],
+      "handoff": [
+        "Closed P0-08: .github/workflows/ci.yml runs board-check before install, then install/lint/typecheck/test/boundaries/design-check/language-check/changelog-entry on PRs.",
+        "Locally proven with actionlint (Docker) and every run-step executed in order; act image unavailable, real run deferred to remote.",
+        "P0-09 pins Polier through tools/polier.sh and refines the CI; actions still use major tags and need exact pins + versions rows."
       ]
     },
     {

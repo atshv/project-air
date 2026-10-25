@@ -37,6 +37,7 @@ task from the project's manifests; until then the gate cannot pass.
 | `unit` | `pnpm test` (root, affected packages) | exit 0, all tests pass |
 | `compose-config` | `docker compose -f infra/compose/compose.yaml config --quiet` | exit 0, exactly the three services with health checks |
 | `dev-setup` | `python3 $POLIER/tools/slot.py acquire && bash tools/dev/setup` | exit 0, slot database and bucket created |
+| `ci-local` | `docker run --rm -v "$PWD":/repo -w /repo rhysd/actionlint:latest` | exit 0, no workflow findings |
 | `ci-green` | `gh run list --workflow ci.yml --limit 1 --json conclusion --jq '.[0].conclusion'` | `success` |
 | `polier-version` | `bash tools/polier.sh --check` | exit 0, Polier version equals `generator_version` |
 | `tokens-codegen` | `pnpm --filter ./packages/ui-kit run codegen && git diff --exit-code -- packages/ui-kit` | exit 0, CSS, C++ header and layers regenerated without diff |

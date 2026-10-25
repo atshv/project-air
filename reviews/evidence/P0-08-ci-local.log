@@ -1,0 +1,320 @@
+P0-08 CI skeleton - local proof
+Date (UTC): 2026-10-25T10:22:58Z
+Worktree: /Users/rasulatashev/Desktop/KI Projekte/Project air-P0-08
+Branch: task/P0-08
+Base commit: 28d4f1089bf0f808881e87dd7e92e6aab6c92e2e
+Polier: v1.0.0 from https://github.com/atshv/Polier.git
+Runner stand-in: macOS host, Node v26.11.1, pnpm 12.14.0, Python 3.9.6, Docker 29.9.2
+
+1. Workflow lint with actionlint (gate ci-local command)
+$ docker run --rm -v "/Users/rasulatashev/Desktop/KI Projekte/Project air-P0-08":/repo -w /repo rhysd/actionlint:latest
+exit: 0
+
+2. Local runner attempt with nektos/act via Docker (no host installs)
+$ docker pull nektos/act:latest
+Error response from daemon: pull access denied for nektos/act, repository does not exist or may require 'docker login'
+exit: 1
+$ docker pull ghcr.io/nektos/act:latest
+Error response from daemon: error from registry: denied
+denied
+exit: 1
+$ docker pull nektos/act:v0.2.82
+Error response from daemon: pull access denied for nektos/act, repository does not exist or may require 'docker login'
+exit: 1
+Result: no act image is downloadable in this environment, and installing act on the host is not
+allowed. Per the task fallback (A3), every workflow `run:` step is executed locally in section 3,
+in workflow order; the `uses:` steps (checkout, setup-node, pnpm/action-setup) are provided by the
+GitHub Actions runner and have no local equivalent.
+
+3. Local run of the workflow run-steps (in workflow order)
+   Stand-in for $RUNNER_TEMP: /tmp/p0-08-runner-temp
+
+3.1 Install Polier v1.0.0
+$ RUNNER_TEMP=/tmp/p0-08-runner-temp
+$ git clone --depth 1 --branch v1.0.0 https://github.com/atshv/Polier.git "$RUNNER_TEMP/polier"
+Cloning into '/tmp/p0-08-runner-temp/polier'...
+warning: refs/tags/v1.0.0 ce5b43fbe72c621f094d16e5997edee5284388a6 is not a commit!
+Note: switching to 'bd2a2e96932134387ebdca5f019059e995aaab1a'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by switching back to a branch.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -c with the switch command. Example:
+
+  git switch -c <new-branch-name>
+
+Or undo this operation with:
+
+  git switch -
+
+Turn off this advice by setting config variable advice.detachedHead to false
+
+exit: 0
+$ cat "$RUNNER_TEMP/polier/VERSION"
+1.0.0
+exit: 0
+
+3.2 Board check (before install, so check.py does not scan node_modules/)
+$ python3 "$POLIER/tools/check.py" .
+WARN: budgets.status overridden to 1900 words (reason: Eleven stages with exit criteria, the remote stage and eighteen owner questions are listed in STATUS.md during foundation; shrinks as questions are answered and tasks finish.)
+WARN: P0-02: context pack is about 30287 tokens (warning at 15000); trim scope_read, split the task or shorten the base files
+OK: /Users/rasulatashev/Desktop/KI Projekte/Project air-P0-08 passes the mandatory checks. (2 warning(s))
+exit: 0
+
+3.3 Install
+$ pnpm install --frozen-lockfile
+Scope: all 5 workspace projects
+✓ Lockfile passes supply-chain policies (verified 1h ago)
+Lockfile is up to date, resolution step is skipped
+Packages: +97
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Progress: resolved 97, reused 97, downloaded 0, added 97, done
+
+devDependencies:
++ eslint 10.13.0
++ turbo 2.11.10
++ typescript 5.9.3
++ typescript-eslint 8.72.0
+
+Done in 330ms using pnpm v12.14.0
+exit: 0
+
+3.4 Lint
+$ pnpm lint
+$ turbo run lint
+
+   • turbo 2.11.10
+   • Packages in scope: @project-air/design-check, @project-air/language-check, @project-air/release, @project-air/ui-kit
+   • Running lint in 4 packages
+   • Remote caching disabled, using shared worktree cache
+
+@project-air/design-check:lint: cache miss, executing 10d5c058994a2cfa
+@project-air/ui-kit:lint: cache miss, executing dc6ef944b6be4bc0
+@project-air/ui-kit:lint: $ eslint --max-warnings=0 .
+@project-air/design-check:lint: $ eslint --max-warnings=0 .
+
+ Tasks:    2 successful, 2 total
+Cached:    0 cached, 2 total
+  Time:    1.3s 
+
+exit: 0
+
+3.5 Typecheck
+$ pnpm typecheck
+$ turbo run typecheck && tsc -b tsconfig.json
+
+   • turbo 2.11.10
+   • Packages in scope: @project-air/design-check, @project-air/language-check, @project-air/release, @project-air/ui-kit
+   • Running typecheck in 4 packages
+   • Remote caching disabled, using shared worktree cache
+
+@project-air/ui-kit:typecheck: cache miss, executing 4ff1d05b7fcc0696
+@project-air/design-check:typecheck: cache miss, executing e1ff47d8c940a177
+@project-air/ui-kit:typecheck: $ tsc --noEmit --project tsconfig.json
+@project-air/design-check:typecheck: $ node --check check.mjs && node --check index.mjs && node --check test/design-check.test.mjs
+
+ Tasks:    2 successful, 2 total
+Cached:    0 cached, 2 total
+  Time:    424ms 
+
+exit: 0
+
+3.6 Test
+$ pnpm test
+$ turbo run test
+
+   • turbo 2.11.10
+   • Packages in scope: @project-air/design-check, @project-air/language-check, @project-air/release, @project-air/ui-kit
+   • Running test in 4 packages
+   • Remote caching disabled, using shared worktree cache
+
+@project-air/release:test: cache miss, executing 6208a4f92fbd7e43
+@project-air/language-check:test: cache miss, executing 45665d8f316c696e
+@project-air/ui-kit:build: cache miss, executing b46d9f450a959229
+@project-air/design-check:test: cache miss, executing 9395e1bbe4317723
+@project-air/language-check:test: $ node --test test/*.test.mjs
+@project-air/design-check:test: $ node --test test/*.test.mjs
+@project-air/ui-kit:build: $ node codegen.mjs
+@project-air/release:test: $ node --test test/*.test.mjs
+@project-air/ui-kit:build: ui-kit codegen: wrote tokens.css, tokens.h, layers.ts
+@project-air/ui-kit:test: cache miss, executing 6e32879618d6cbc0
+@project-air/ui-kit:test: $ node --test tests/*.test.mjs
+@project-air/ui-kit:test: ✔ committed tokens.css equals the generated CSS (0.897291ms)
+@project-air/ui-kit:test: ✔ committed tokens.h equals the generated C++ header (0.972208ms)
+@project-air/ui-kit:test: ✔ committed layers.ts equals the generated layer order (0.333667ms)
+@project-air/ui-kit:test: ✔ every token appears in the generated CSS with the token value (0.233167ms)
+@project-air/ui-kit:test: ✔ every token appears in the generated C++ header with the token value (0.284167ms)
+@project-air/ui-kit:test: ✔ a second render is byte-identical (no timestamps, stable ordering) (1.022916ms)
+@project-air/ui-kit:test: ✔ codegen.mjs uses Node builtins only (0.474625ms)
+@project-air/ui-kit:test: ✔ layers.ts data matches tokens.json (0.311625ms)
+@project-air/ui-kit:test: ✔ writeGenerated writes the three documented files (1.389333ms)
+@project-air/ui-kit:test: ✔ icons/ contains exactly the ten toolbar icons (3.790084ms)
+@project-air/ui-kit:test: ✔ note.svg is a valid standalone 24x24 stroke icon (0.387ms)
+@project-air/ui-kit:test: ✔ source.svg is a valid standalone 24x24 stroke icon (0.211833ms)
+@project-air/ui-kit:test: ✔ image.svg is a valid standalone 24x24 stroke icon (0.103667ms)
+@project-air/ui-kit:test: ✔ file.svg is a valid standalone 24x24 stroke icon (0.094084ms)
+@project-air/ui-kit:test: ✔ zone.svg is a valid standalone 24x24 stroke icon (0.08425ms)
+@project-air/ui-kit:test: ✔ checklist.svg is a valid standalone 24x24 stroke icon (0.62675ms)
+@project-air/ui-kit:test: ✔ palette.svg is a valid standalone 24x24 stroke icon (0.317042ms)
+@project-air/ui-kit:test: ✔ columns.svg is a valid standalone 24x24 stroke icon (0.464209ms)
+@project-air/ui-kit:test: ✔ timeline.svg is a valid standalone 24x24 stroke icon (0.332333ms)
+@project-air/ui-kit:test: ✔ table.svg is a valid standalone 24x24 stroke icon (0.260541ms)
+@project-air/ui-kit:test: ✔ package.json defines the five required scripts and no dependencies (0.6215ms)
+@project-air/ui-kit:test: ✔ the generated files exist and are documented in README.md (1.45825ms)
+@project-air/ui-kit:test: ✔ the open questions live in README.md, not in tokens.json (0.202125ms)
+@project-air/ui-kit:test: ✔ only tokens.json holds raw colour values; generated files are derived (2.316792ms)
+@project-air/ui-kit:test: ✔ no placeholder or TODO ships in the package (0.639083ms)
+@project-air/ui-kit:test: ✔ ARCHITECTURE.md stays within the 400-word package budget and names commands (0.370625ms)
+@project-air/ui-kit:test: ✔ tsconfig.json includes the generated layer module (0.348625ms)
+@project-air/ui-kit:test: ✔ tokens.json holds token data only (3.837709ms)
+@project-air/ui-kit:test: ✔ colours carry the design-law names and the blueprint/reference values (0.309ms)
+@project-air/ui-kit:test: ✔ spacing is the 4-px series only (0.129167ms)
+@project-air/ui-kit:test: ✔ sizes cover borders, focus outline, grid, thresholds, targets, icons and header (0.094ms)
+@project-air/ui-kit:test: ✔ radii carry the design-law names and values, including the tooltip radius (0.06475ms)
+@project-air/ui-kit:test: ✔ typography has both stacks, the seven sizes and the three weights (0.123541ms)
+@project-air/ui-kit:test: ✔ motion has the four design-law durations plus the 2 s saved fade (0.051166ms)
+@project-air/ui-kit:test: ✔ shadows are exactly card-shadow and shadow (0.052625ms)
+@project-air/ui-kit:test: ✔ layers keep the design-law order 1-11 including 7a (0.183416ms)
+@project-air/ui-kit:test: ✔ no token value is null, empty or a placeholder (0.247375ms)
+@project-air/ui-kit:test: ℹ tests 37
+@project-air/ui-kit:test: ℹ suites 0
+@project-air/ui-kit:test: ℹ pass 37
+@project-air/ui-kit:test: ℹ fail 0
+@project-air/ui-kit:test: ℹ cancelled 0
+@project-air/ui-kit:test: ℹ skipped 0
+@project-air/ui-kit:test: ℹ todo 0
+@project-air/ui-kit:test: ℹ duration_ms 178.664709
+@project-air/design-check:test: ✔ the design source is read from tokens.json and layers.ts (1.809667ms)
+@project-air/design-check:test: ✔ the clean fixture has no findings (4.184541ms)
+@project-air/design-check:test: ✔ the repository itself is clean (11.168166ms)
+@project-air/design-check:test: ✔ raw colours are reported; var() and currentColor are allowed (0.842875ms)
+@project-air/design-check:test: ✔ off-grid spacing is reported and non-px values are skipped (0.904542ms)
+@project-air/design-check:test: ✔ numeric z-index values must come from layers.ts (0.365459ms)
+@project-air/design-check:test: ✔ ignored directories, generated token files and test files are skipped (1.643417ms)
+@project-air/design-check:test: ✔ node_modules, VCS, cache and build directories are skipped (5.577792ms)
+@project-air/design-check:test: ✔ isIgnored covers generated, ignored and test paths (0.217042ms)
+@project-air/design-check:test: ✔ allowed values come from the project's own tokens.json and layers.ts (3.464583ms)
+@project-air/design-check:test: ✔ --task requires the before and after screenshots (2.111875ms)
+@project-air/design-check:test: ✔ an empty project is clean (0.067709ms)
+@project-air/design-check:test: ✔ missing design source is a configuration error (98.940541ms)
+@project-air/design-check:test: ✔ the CLI reports findings as file:line: rule and supports --json (256.827875ms)
+@project-air/design-check:test: ✔ the CLI exits 0 on the repository and with JSON (158.917708ms)
+@project-air/design-check:test: ✔ the CLI validates its arguments and the root (207.870541ms)
+@project-air/design-check:test: ℹ tests 16
+@project-air/design-check:test: ℹ suites 0
+@project-air/design-check:test: ℹ pass 16
+@project-air/design-check:test: ℹ fail 0
+@project-air/design-check:test: ℹ cancelled 0
+@project-air/design-check:test: ℹ skipped 0
+@project-air/design-check:test: ℹ todo 0
+@project-air/design-check:test: ℹ duration_ms 897.286375
+@project-air/language-check:test: ✔ clean fixture passes with exit 0 and no findings (151.073709ms)
+@project-air/language-check:test: ✔ key drift is reported per key with file, line and rule (105.19325ms)
+@project-air/language-check:test: ✔ broken ICU is reported with the message key (83.776916ms)
+@project-air/language-check:test: ✔ the German sharp-s character in code is reported (84.451792ms)
+@project-air/language-check:test: ✔ a German word in a user-facing string is reported (84.513708ms)
+@project-air/language-check:test: ✔ a drifting pseudo-locale is reported per key (83.741208ms)
+@project-air/language-check:test: ✔ --write-pseudo repairs en-XA.json and is deterministic on a second run (242.820459ms)
+@project-air/language-check:test: ✔ a missing root is a configuration error with exit 2 (66.824625ms)
+@project-air/language-check:test: ✔ the repository itself passes (139.132792ms)
+@project-air/language-check:test: ℹ tests 9
+@project-air/language-check:test: ℹ suites 0
+@project-air/language-check:test: ℹ pass 9
+@project-air/language-check:test: ℹ fail 0
+@project-air/language-check:test: ℹ cancelled 0
+@project-air/language-check:test: ℹ skipped 0
+@project-air/language-check:test: ℹ todo 0
+@project-air/language-check:test: ℹ duration_ms 1180.633792
+@project-air/release:test: ✔ writes a deterministic entry from flags (263.76125ms)
+@project-air/release:test: ✔ derives the task id from the branch and accepts positional arguments (196.65025ms)
+@project-air/release:test: ✔ defaults the kind to patch (170.274083ms)
+@project-air/release:test: ✔ refuses unknown areas and kinds without writing a file (239.662709ms)
+@project-air/release:test: ✔ refuses invalid task ids, missing and multi-line summaries (410.446458ms)
+@project-air/release:test: ✔ refuses a task id when the branch is not task/<ID> (153.119541ms)
+@project-air/release:test: ✔ refuses to overwrite an entry unless --force is passed (293.877916ms)
+@project-air/release:test: ✔ ignores a -- separator forwarded by a package manager (253.361292ms)
+@project-air/release:test: ✔ never edits CHANGELOG.md (148.987709ms)
+@project-air/release:test: ✔ fails on a committed code change without an entry (369.301167ms)
+@project-air/release:test: ✔ passes with a matching entry (286.883792ms)
+@project-air/release:test: ✔ passes for docs-only changes (264.78625ms)
+@project-air/release:test: ✔ passes with the owner exception and the reason (260.164709ms)
+@project-air/release:test: ✔ rejects --no-changelog without a reason (270.804583ms)
+@project-air/release:test: ✔ detects uncommitted working-tree code changes (210.219125ms)
+@project-air/release:test: ✔ requires an entry for a changed root manifest (397.381166ms)
+@project-air/release:test: ✔ fails on an invalid entry (232.841708ms)
+@project-air/release:test: ✔ fails when a task has more than one entry (224.675292ms)
+@project-air/release:test: ✔ exits 2 for usage and configuration errors (352.0725ms)
+@project-air/release:test: ✔ accepts an explicit --task on a branch that is not task/<ID> (219.549542ms)
+@project-air/release:test: ✔ areas and kinds are fixed (2.01025ms)
+@project-air/release:test: ✔ task ids are normalized to upper case and validated (0.286667ms)
+@project-air/release:test: ✔ slug is deterministic and stays short (0.406084ms)
+@project-air/release:test: ✔ entry file name uses the task id and the slug (0.068417ms)
+@project-air/release:test: ✔ entry render and parse round-trip (0.215833ms)
+@project-air/release:test: ✔ parse rejects invalid entries (0.181709ms)
+@project-air/release:test: ✔ entry files for a task are listed sorted and ignore other files (2.51275ms)
+@project-air/release:test: ✔ code paths follow the gate policy (0.162416ms)
+@project-air/release:test: ℹ tests 28
+@project-air/release:test: ℹ suites 0
+@project-air/release:test: ℹ pass 28
+@project-air/release:test: ℹ fail 0
+@project-air/release:test: ℹ cancelled 0
+@project-air/release:test: ℹ skipped 0
+@project-air/release:test: ℹ todo 0
+@project-air/release:test: ℹ duration_ms 3225.475791
+
+ Tasks:    5 successful, 5 total
+Cached:    0 cached, 5 total
+  Time:    3.341s 
+
+ WARNING  no output files found for task @project-air/design-check#test. Please check your `outputs` key in `turbo.json`
+ WARNING  no output files found for task @project-air/language-check#test. Please check your `outputs` key in `turbo.json`
+ WARNING  no output files found for task @project-air/release#test. Please check your `outputs` key in `turbo.json`
+ WARNING  no output files found for task @project-air/ui-kit#build. Please check your `outputs` key in `turbo.json`
+ WARNING  no output files found for task @project-air/ui-kit#test. Please check your `outputs` key in `turbo.json`
+exit: 0
+
+3.7 Boundaries
+$ python3 /tmp/p0-08-runner-temp/polier/tools/boundaries.py .
+WARN: tools/design-check/test/fixtures/clean/packages/engine/src/render/clean.cc:2: cannot resolve include 'tokens.h' to a package
+OK: /Users/rasulatashev/Desktop/KI Projekte/Project air-P0-08: 21 package(s) respect the import boundaries (1 warning(s))
+exit: 0
+
+3.8 Design check
+$ node tools/design-check/index.mjs .
+exit: 0
+
+3.9 Language check
+$ node tools/language-check/index.mjs .
+language-check: OK
+exit: 0
+
+3.10 Change-entry gate (pull_request, task/* branch)
+$ TASK="${GITHUB_HEAD_REF#task/}"    # local stand-in: TASK=P0-08
+$ git fetch --no-tags origin "${{ github.base_ref }}"    # not run locally: local-first phase, no remote branch state
+$ node tools/release/check-changes.mjs --task "$TASK" --base "origin/${{ github.base_ref }}"
+Local stand-in: the origin remote exists (https://github.com/atshv/project-air.git), but the
+local-first phase does not fetch remote branch state (ADR-0002), so the stand-in uses the local branch
+main as base; the three-dot merge-base semantics are the same as origin/main in CI. The working tree
+contains only the workflow file and evidence, so there is no code path and no .changes entry is required.
+check-changes: task P0-08, base main, 6 changed path(s), 0 code path(s)
+changelog-entry: OK (no code changes)
+exit: 0
+
+3.11 Change-entry gate skipped (workflow_dispatch or non-task branch)
+condition is false on this task branch, so the step does not run in this stand-in; its command is a
+single echo message and has no side effects.
+
+4. Cleanup (not a workflow step)
+$ pnpm clean
+exit: 0
+The local stand-in removes .turbo/, node_modules/ and coverage/ afterwards, so the worktree matches the
+pre-install state that the board check expects.
+
+5. Result
+- actionlint: exit 0, no findings.
+- act: no image obtainable via Docker (three pull attempts above); the task fallback (A3) applies.
+- Workflow run-steps executed locally in workflow order: 3.1 to 3.10 all exit 0; the skip step (3.11)
+  is inactive on a task/* branch. The three `uses:` steps have no local equivalent.
+- The real GitHub run stays deferred to the remote stage (ADR-0003).

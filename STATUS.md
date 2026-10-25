@@ -10,7 +10,7 @@
 
 - State: waiting for the owner decision
 - Owner decision: `pending`
-- Exit gates: `board-check`, `install`, `boundaries`, `dev-setup`, `compose-config`, `tokens-codegen`, `design-check`, `language-check`, `changelog-entry`, `ci-local` (missing record), `polier-version` (missing record)
+- Exit gates: `board-check`, `install`, `boundaries`, `dev-setup`, `compose-config`, `tokens-codegen`, `design-check`, `language-check`, `changelog-entry`, `ci-local`, `polier-version` (missing record)
 - Exit criteria: Every packages[] folder exists with a README and an ARCHITECTURE.md; package map and versions are filled in.; A fresh clone installs reproducibly with the committed lockfile; root lint, typecheck, test and build pass.; Two worktrees run install, lint, typecheck and tests side by side without port or database collision; tools/dev/setup and teardown create and remove the slot database and bucket and refuse slot 0.; design-check, language-check, changelog-entry and boundaries reject a violating change locally; every code change carries a .changes entry.; The CI workflow is authored and proven locally (actionlint + act) and local sessions use Polier at the board's generator_version; the real GitHub run, branch protection, hosting and releases are deferred to the remote stage after hardening (ADR-0003).; A runnable design preview page exists with desktop and mobile screenshots and a live two-note connection demo (P0-19, P0-20).
 - Tasks: P0-03, P0-04, P0-06, P0-07, P0-08, P0-09, P0-10, P0-11, P0-12, P0-13, P0-14, P0-18, P0-19, P0-20, P0-21
 
@@ -117,7 +117,10 @@
 
 ## Ready now
 
-- none
+- `P0-09` Pinned Polier for agents and CI
+  - P0-08: Closed P0-08: .github/workflows/ci.yml runs board-check before install, then install/lint/typecheck/test/boundaries/design-check/language-check/changelog-entry on PRs.
+  - P0-08: Locally proven with actionlint (Docker) and every run-step executed in order; act image unavailable, real run deferred to remote.
+  - P0-08: P0-09 pins Polier through tools/polier.sh and refines the CI; actions still use major tags and need exact pins + versions rows.
 
 ## Done
 
@@ -125,6 +128,7 @@
 - [x] `P0-04` Workspaces, build orchestration and pinned versions — status: `done` — owner: —
 - [x] `P0-06` Per-slot dev setup and teardown — status: `done` — owner: —
 - [x] `P0-07` Local services compose — status: `done` — owner: —
+- [x] `P0-08` CI skeleton — status: `done` — owner: —
 - [x] `P0-10` Adapt design rules to this project — status: `done` — owner: —
 - [x] `P0-11` Canvas acceptance catalogue — status: `done` — owner: —
 - [x] `P0-12` Design tokens and icons in ui-kit — status: `done` — owner: —
@@ -137,7 +141,7 @@
 
 ## In progress
 
-- [ ] `P0-08` CI skeleton — status: `in_progress` — owner: —
+- none
 
 ## Blocked / failed
 
