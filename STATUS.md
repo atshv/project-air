@@ -121,7 +121,6 @@
 
 ## Ready now
 
-- `P4-01` Engine document: stable ids, incremental mutations, hit testing and spatial queries
 - `P4-25` Zones as containers I: contract parent reference (L08)
 
 ## Done
@@ -166,7 +165,7 @@
 
 ## In progress
 
-- none
+- [ ] `P4-01` Engine document: stable ids, incremental mutations, hit testing and spatial queries — status: `in_progress` — owner: lead
 
 ## Blocked / failed
 
@@ -178,7 +177,6 @@
 - [ ] `P0-15` Release command and tag-based CI release — status: `pending` — owner: —
 - [ ] `P0-16` Dependency updates and Polier update check — status: `pending` — owner: —
 - [ ] `P0-17` RELEASING.md and release 0.0.1 — status: `pending` — owner: —
-- [ ] `P4-01` Engine document: stable ids, incremental mutations, hit testing and spatial queries — status: `pending` — owner: —
 - [ ] `P4-02` Engine playground: interactive sample board and stage shell — status: `pending` — owner: —
 - [ ] `P4-03` Engine-core perf gate and L01 basis — status: `pending` — owner: —
 - [ ] `P4-04` Visual gate with reference images — status: `pending` — owner: —
@@ -206,6 +204,13 @@
 - [ ] `P4-26` Zones as containers II: platform migration and containment (L08) — status: `pending` — owner: —
 - [ ] `P4-27` Zones as containers II: engine membership and zone move (L08) — status: `pending` — owner: —
 - [ ] `P4-28` L01 final proof, two-backend reference images and stage showcase — status: `pending` — owner: —
+
+<!-- polier:claims -->
+## Claims
+
+- `P4-01` in progress by dsh since 2026-10-25T20:19:47+00:00 — worktree: /private/tmp/air-P4-01 · slot 1
+
+<!-- /polier:claims -->
 
 ## Decisions
 
