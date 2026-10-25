@@ -1,0 +1,68 @@
+$ pnpm --filter ./services/auth test
+[exit 0]
+
+✔ parses a complete environment and normalises the Kratos URLs (2.422208ms)
+✔ defaults NODE_ENV, LOG_LEVEL and HOST (0.421083ms)
+✔ AUTH_PORT is required and must be a valid port number (0.466875ms)
+✔ secrets are required, long enough and never echoed (0.269375ms)
+✔ the Kratos URLs are required http(s) URLs (0.751708ms)
+✔ a missing or invalid DATABASE_URL fails fast (0.266084ms)
+✔ NODE_ENV and LOG_LEVEL reject unknown values (1.8625ms)
+✔ the test-session mode is opt-in and impossible in production (0.417833ms)
+✔ liveness answers 200 while the database is down (26.588459ms)
+✔ readiness answers 200 when the database ping succeeds (12.317458ms)
+✔ readiness includes the Kratos check when wired (11.683041ms)
+✔ readiness answers 503 when the database ping fails (7.611ms)
+✔ readiness answers 503 when the database is unreachable (3.256125ms)
+✔ creates an identity through the Kratos admin API and returns its id (28.168333ms)
+✔ a missing or wrong admin token is 401 AUTH_REQUIRED (7.365667ms)
+✔ an invalid invitation body is 400 VALIDATION with field details (1.224458ms)
+✔ a duplicate e-mail is 409 CONFLICT (3.940292ms)
+✔ a Kratos failure is a 503 INTERNAL (8.746583ms)
+✔ whoami returns the mapped identity and forwards the cookie (39.3685ms)
+✔ whoami returns null for a missing or expired session (7.947625ms)
+✔ whoami rejects an unexpected Kratos status (13.9005ms)
+✔ createIdentity sends the traits and returns the identity (10.966875ms)
+✔ createIdentity maps a duplicate e-mail to conflict (9.784917ms)
+✔ createRecoveryLink and listIdentities call the admin API (2.825042ms)
+✔ the public flow clients return id and action (12.200333ms)
+✔ ready is true for a healthy Kratos and false for 503 or a closed port (7.876667ms)
+✔ a slow Kratos times out as unavailable (52.484125ms)
+✔ an invalid JSON body is a bad_response error (0.4975ms)
+✔ loads the migrations in file-name order with SHA-256 checksums (14.221417ms)
+✔ returns the success envelope with a UUIDv7 request id in the header (29.837042ms)
+✔ keeps a valid UUIDv7 client request id and replaces anything else (17.766375ms)
+✔ parses the query string (7.23075ms)
+✔ returns the contract error envelope for an unknown path (1.081833ms)
+✔ returns 405 with an Allow header for a known path and the wrong method (9.30475ms)
+✔ reads a JSON body and wraps the result (7.751ms)
+✔ rejects invalid JSON with a VALIDATION envelope (1.353917ms)
+✔ rejects a non-JSON content type with 415 (2.752333ms)
+✔ rejects a body above the limit with 413 (2.057875ms)
+✔ a custom status and headers are preserved (3.500292ms)
+✔ an empty handler result is a 204 without a body (6.5625ms)
+✔ an unexpected error becomes a generic INTERNAL envelope (3.413834ms)
+✔ a valid Kratos session returns the account id, e-mail and display name (31.51725ms)
+✔ no session cookie is 401 AUTH_REQUIRED (5.251333ms)
+✔ an invalid or expired Kratos session is 401 AUTH_REQUIRED (9.8725ms)
+✔ an error response from Kratos is a 503 INTERNAL (10.542708ms)
+✔ an unreachable Kratos is a 503 INTERNAL (7.694125ms)
+✔ POST /test/session mints a session that GET /session accepts (14.585ms)
+✔ a tampered or expired test session is 401, never 500 (7.670458ms)
+✔ POST /test/session validates its body (2.786208ms)
+✔ without test mode the test-session route does not exist and the header is ignored (1.493916ms)
+✔ mints the documented three-part token and verifies it (1.367208ms)
+✔ rejects a tampered signature and another secret (0.122ms)
+✔ rejects an expired token (0.09275ms)
+✔ rejects malformed tokens (0.077958ms)
+✔ rejects an invalid account id and an out-of-range TTL (0.201ms)
+✔ the header name and the deterministic test profile are stable (0.10275ms)
+ℹ tests 56
+ℹ suites 0
+ℹ pass 56
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 701.586
+$ node --test test/*.test.mjs

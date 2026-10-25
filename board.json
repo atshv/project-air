@@ -2557,12 +2557,17 @@
       ]
     },
     {
-      "status": "in_progress",
+      "status": "done",
       "stage": "backend-core",
       "parallel_group": null,
       "owner": null,
       "round": 0,
-      "evidence": [],
+      "evidence": [
+        "reviews/evidence/P3-03-board-check-20261025T180510Z.json",
+        "reviews/evidence/P3-03-boundaries-20261025T180914Z.json",
+        "reviews/evidence/P3-03-unit-20261025T180914Z.json",
+        "reviews/evidence/P3-03-compose-config-20261025T180915Z.json"
+      ],
       "scope_write_forbidden": [
         "reference/"
       ],
@@ -2610,7 +2615,12 @@
         "compose-config"
       ],
       "branch": "task/P3-03",
-      "worktree": "../Project air-P3-03"
+      "worktree": null,
+      "handoff": [
+        "Closed P3-03: Ory Kratos v26.2.0 in compose (identity profile, migrate one-shot, localhost public/admin, Mailpit courier, env secrets) with identity schema; flows live; 56 auth tests.",
+        "services/auth: GET /session via whoami (401 AUTH_REQUIRED, 503 INTERNAL), POST /internal/invitations Bearer-protected (409 CONFLICT), HMAC test-session only non-production; flat error envelope.",
+        "Review pass, 8 minors (fallback secrets + slot-1 browser URLs in kratos.yml, error-code mappings, 24h sessions vs ADR-0007, admin-API boundary) - documented follow-ups for P3-04/hardening."
+      ]
     },
     {
       "status": "pending",

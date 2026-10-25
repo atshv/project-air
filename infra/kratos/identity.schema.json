@@ -1,0 +1,50 @@
+{
+  "$id": "https://project-air.dev/kratos/identity.schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Project air account",
+  "description": "Identity traits owned by Ory Kratos (ADR-0007). The e-mail is the unique credential identifier and is verified once through the code flow; workspace membership and permissions are not part of the identity.",
+  "type": "object",
+  "properties": {
+    "traits": {
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string",
+          "format": "email",
+          "title": "E-Mail",
+          "maxLength": 320,
+          "ory.sh/kratos": {
+            "credentials": {
+              "password": {
+                "identifier": true
+              },
+              "code": {
+                "identifier": true,
+                "via": "email"
+              }
+            },
+            "verification": {
+              "via": "email"
+            },
+            "recovery": {
+              "via": "email"
+            }
+          }
+        },
+        "display_name": {
+          "type": "string",
+          "title": "Display name",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "locale": {
+          "type": "string",
+          "title": "Locale",
+          "enum": ["de", "en"]
+        }
+      },
+      "required": ["email", "display_name"],
+      "additionalProperties": false
+    }
+  }
+}

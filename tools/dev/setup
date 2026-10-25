@@ -312,6 +312,38 @@ ensure_kratos_database() {
   printf '%s: identity database %s created\n' "$PROG" "$KRATOS_DB_NAME"
 }
 
+# Generates the Kratos secrets once (cookie, cipher, admin token) and stores them
+# in the gitignored env file. Kratos requires a cipher secret of exactly 32
+# characters and a cookie secret of at least 32; the admin token is our shared
+# secret for `POST /internal/invitations`. Values are never printed.
+ensure_kratos_secrets() {
+  local key existing generated
+  for key in KRATOS_COOKIE_SECRET KRATOS_CIPHER_SECRET KRATOS_ADMIN_TOKEN; do
+    if [ -n "${!key:-}" ]; then
+      continue
+    fi
+    if existing="$(env_file_value "$key")" && [ -n "$existing" ]; then
+      printf -v "$key" '%s' "$existing"
+      continue
+    fi
+    case "$key" in
+      KRATOS_CIPHER_SECRET)
+        generated="$(python3 -c 'import secrets, string; print("".join(secrets.choice(string.ascii_letters + string.digits) for _ in range(32)))')"
+        ;;
+      KRATOS_COOKIE_SECRET)
+        generated="$(python3 -c 'import secrets; print(secrets.token_urlsafe(24))')"
+        ;;
+      *)
+        generated="$(python3 -c 'import secrets; print(secrets.token_urlsafe(32))')"
+        ;;
+    esac
+    persist_env_value "$key" "$generated"
+    printf -v "$key" '%s' "$generated"
+    printf '%s: generated %s and stored it in %s (gitignored, not printed)\n' "$PROG" "$key" "$ENV_FILE"
+  done
+  printf '%s: Kratos secrets ready (cookie, cipher and admin token; never printed)\n' "$PROG"
+}
+
 ensure_bucket() {
   if bucket_exists; then
     printf '%s: bucket %s already exists\n' "$PROG" "$BUCKET"
@@ -339,6 +371,7 @@ main() {
   ensure_app_role
   grant_app_permissions
   ensure_kratos_database
+  ensure_kratos_secrets
   ensure_bucket
 
   printf '%s: databases on the shared server:\n' "$PROG"
@@ -348,6 +381,8 @@ main() {
   printf '%s: slot %s ready (database %s, bucket %s)\n' "$PROG" "$SLOT" "$DB_NAME" "$BUCKET"
   printf '%s: role %s ready; its password comes from the environment or %s and is never printed\n' \
     "$PROG" "$APP_USER_NAME" "$ENV_FILE"
+  printf '%s: Kratos secrets are in %s; start the identity profile with:\n' "$PROG" "$ENV_FILE"
+  printf '  docker compose -f infra/compose/compose.yaml --profile identity up -d --wait\n'
 }
 
 main "$@"

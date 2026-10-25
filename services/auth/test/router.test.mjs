@@ -1,6 +1,6 @@
 /**
- * Router: method and path matching, JSON envelopes, request ids, body limit
- * and error mapping, exercised over a real HTTP server.
+ * Router: method and path matching, JSON envelopes, UUIDv7 request ids, body
+ * limit and error mapping, exercised over a real HTTP server.
  */
 
 import assert from "node:assert/strict";
@@ -10,7 +10,8 @@ import { after, before, test } from "node:test";
 import { Router } from "../src/http/router.ts";
 import { silentLogger } from "../src/log.ts";
 
-const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
+const UUID_V7_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/;
+const FIXED_REQUEST_ID = "0192f0d0-7000-7000-8000-0000000000d1";
 const JSON_BODY_LIMIT_BYTES = 64;
 
 let server;
@@ -50,25 +51,27 @@ after(async () => {
   await once(server, "close");
 });
 
-test("returns the success envelope and mirrors the request id in a header", async () => {
+test("returns the success envelope with a UUIDv7 request id in the header", async () => {
   const response = await fetch(`${baseUrl}/health`);
   assert.equal(response.status, 200);
   assert.equal(response.headers.get("content-type"), "application/json; charset=utf-8");
   const body = await response.json();
   assert.equal(body.data.status, "ok");
   assert.equal(response.headers.get("x-request-id"), body.requestId);
-  assert.match(body.requestId, UUID_PATTERN);
+  assert.match(body.requestId, UUID_V7_PATTERN);
 });
 
-test("keeps a valid client request id and replaces an invalid one", async () => {
-  const kept = await fetch(`${baseUrl}/health`, { headers: { "x-request-id": "client-request-42" } });
-  assert.equal(kept.headers.get("x-request-id"), "client-request-42");
-  assert.equal((await kept.json()).requestId, "client-request-42");
+test("keeps a valid UUIDv7 client request id and replaces anything else", async () => {
+  const kept = await fetch(`${baseUrl}/health`, { headers: { "x-request-id": FIXED_REQUEST_ID } });
+  assert.equal(kept.headers.get("x-request-id"), FIXED_REQUEST_ID);
+  assert.equal((await kept.json()).requestId, FIXED_REQUEST_ID);
 
-  const replaced = await fetch(`${baseUrl}/health`, { headers: { "x-request-id": "not a valid id" } });
-  const replacedId = replaced.headers.get("x-request-id");
-  assert.match(replacedId ?? "", UUID_PATTERN);
-  assert.notEqual(replacedId, "not a valid id");
+  for (const invalid of ["not a valid id", "123e4567-e89b-12d3-a456-426614174000"]) {
+    const replaced = await fetch(`${baseUrl}/health`, { headers: { "x-request-id": invalid } });
+    const replacedId = replaced.headers.get("x-request-id");
+    assert.match(replacedId ?? "", UUID_V7_PATTERN);
+    assert.notEqual(replacedId, invalid);
+  }
 });
 
 test("parses the query string", async () => {
@@ -77,20 +80,23 @@ test("parses the query string", async () => {
   assert.deepEqual((await response.json()).data, { query: "notes" });
 });
 
-test("returns a 404 envelope for an unknown path", async () => {
+test("returns the contract error envelope for an unknown path", async () => {
   const response = await fetch(`${baseUrl}/nope`);
   assert.equal(response.status, 404);
   const body = await response.json();
-  assert.equal(body.error.code, "NOT_FOUND");
-  assert.equal(typeof body.error.message, "string");
-  assert.equal(typeof body.requestId, "string");
+  assert.deepEqual(Object.keys(body).sort(), ["code", "messageKey", "requestId"]);
+  assert.equal(body.code, "NOT_FOUND");
+  assert.equal(body.messageKey, "errors.notFound");
+  assert.match(body.requestId, UUID_V7_PATTERN);
 });
 
 test("returns 405 with an Allow header for a known path and the wrong method", async () => {
   const response = await fetch(`${baseUrl}/health`, { method: "POST" });
   assert.equal(response.status, 405);
   assert.equal(response.headers.get("allow"), "GET");
-  assert.equal((await response.json()).error.code, "METHOD_NOT_ALLOWED");
+  const body = await response.json();
+  assert.equal(body.code, "FORBIDDEN");
+  assert.equal(body.messageKey, "errors.forbidden");
 });
 
 test("reads a JSON body and wraps the result", async () => {
@@ -103,14 +109,17 @@ test("reads a JSON body and wraps the result", async () => {
   assert.deepEqual((await response.json()).data, { title: "note" });
 });
 
-test("rejects invalid JSON with 400", async () => {
+test("rejects invalid JSON with a VALIDATION envelope", async () => {
   const response = await fetch(`${baseUrl}/echo`, {
     method: "POST",
     headers: { "content-type": "application/json" },
     body: '{"broken":',
   });
   assert.equal(response.status, 400);
-  assert.equal((await response.json()).error.code, "BAD_REQUEST");
+  const body = await response.json();
+  assert.equal(body.code, "VALIDATION");
+  assert.equal(body.messageKey, "errors.validation");
+  assert.equal(body.details, undefined);
 });
 
 test("rejects a non-JSON content type with 415", async () => {
@@ -120,7 +129,7 @@ test("rejects a non-JSON content type with 415", async () => {
     body: "hello",
   });
   assert.equal(response.status, 415);
-  assert.equal((await response.json()).error.code, "UNSUPPORTED_MEDIA_TYPE");
+  assert.equal((await response.json()).code, "VALIDATION");
 });
 
 test("rejects a body above the limit with 413", async () => {
@@ -130,7 +139,7 @@ test("rejects a body above the limit with 413", async () => {
     body: JSON.stringify({ value: "x".repeat(JSON_BODY_LIMIT_BYTES * 2) }),
   });
   assert.equal(response.status, 413);
-  assert.equal((await response.json()).error.code, "PAYLOAD_TOO_LARGE");
+  assert.equal((await response.json()).code, "VALIDATION");
 });
 
 test("a custom status and headers are preserved", async () => {
@@ -146,10 +155,12 @@ test("an empty handler result is a 204 without a body", async () => {
   assert.equal(await response.text(), "");
 });
 
-test("an unexpected error becomes a generic 500 envelope", async () => {
+test("an unexpected error becomes a generic INTERNAL envelope", async () => {
   const response = await fetch(`${baseUrl}/boom`);
   assert.equal(response.status, 500);
   const text = await response.text();
   assert.doesNotMatch(text, /kaboom/);
-  assert.equal(JSON.parse(text).error.code, "INTERNAL_ERROR");
+  const body = JSON.parse(text);
+  assert.equal(body.code, "INTERNAL");
+  assert.equal(body.messageKey, "errors.internal");
 });

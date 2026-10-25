@@ -2,9 +2,12 @@
  * Runtime configuration for the auth service.
  *
  * The environment is parsed exactly once at start-up. A missing or malformed
- * value raises a `ConfigError`; the entry point turns that into exit code 2
- * and a message that names the variable but never echoes its value, so no
- * credential or connection string can reach a log.
+ * value raises a `ConfigError`; the entry point turns that into exit code 2 and
+ * a message that names the variable but never echoes its value, so no
+ * credential, token or connection string can reach a log.
+ *
+ * The test-session mode is impossible in production: `AUTH_TEST_MODE=1` together
+ * with `NODE_ENV=production` fails the start-up.
  */
 
 import { LOG_LEVELS, type LogLevel } from "./log.ts";
@@ -13,8 +16,10 @@ export type NodeEnvironment = "development" | "test" | "production";
 
 export const NODE_ENVIRONMENTS: readonly NodeEnvironment[] = ["development", "test", "production"];
 
-/** A session secret shorter than this is rejected before the service starts. */
-export const MINIMUM_SESSION_SECRET_LENGTH = 32;
+/** Secrets shorter than this are rejected before the service starts. */
+export const MINIMUM_SECRET_LENGTH = 32;
+/** The shared admin token may be shorter than a signing secret, but not empty. */
+export const MINIMUM_ADMIN_TOKEN_LENGTH = 16;
 
 export interface AuthConfig {
   readonly serviceName: "auth";
@@ -23,8 +28,16 @@ export interface AuthConfig {
   readonly host: string;
   readonly port: number;
   readonly databaseUrl: string;
-  /** Read from `AUTH_SESSION_SECRET`; never logged or returned in an envelope. */
+  /** Read from `AUTH_SESSION_SECRET`; signs the HMAC test sessions, never logged. */
   readonly sessionSecret: string;
+  /** Kratos public API, e.g. `http://127.0.0.1:8433` (no trailing slash). */
+  readonly kratosPublicUrl: string;
+  /** Kratos admin API, e.g. `http://127.0.0.1:8434` (no trailing slash). */
+  readonly kratosAdminUrl: string;
+  /** Shared secret for `POST /internal/invitations`; never logged. */
+  readonly kratosAdminToken: string;
+  /** `AUTH_TEST_MODE=1` outside production only. */
+  readonly testMode: boolean;
 }
 
 export class ConfigError extends Error {
@@ -116,13 +129,53 @@ function parseDatabaseUrl(environment: Environment): string {
   return raw;
 }
 
+function parseHttpUrl(environment: Environment, name: string): string {
+  const raw = required(environment, name);
+  let url: URL;
+  try {
+    url = new URL(raw);
+  } catch {
+    throw new ConfigError(`${name} must be a valid http(s) URL`);
+  }
+  if (url.protocol !== "http:" && url.protocol !== "https:") {
+    throw new ConfigError(`${name} must use the http:// or https:// scheme`);
+  }
+  if (url.hostname === "") {
+    throw new ConfigError(`${name} must name a host`);
+  }
+  return raw.replace(/\/+$/, "");
+}
+
 function parseSessionSecret(environment: Environment): string {
   const value = required(environment, "AUTH_SESSION_SECRET");
-  if (value.length < MINIMUM_SESSION_SECRET_LENGTH) {
-    throw new ConfigError(`AUTH_SESSION_SECRET must be at least ${MINIMUM_SESSION_SECRET_LENGTH} characters long`);
+  if (value.length < MINIMUM_SECRET_LENGTH) {
+    throw new ConfigError(`AUTH_SESSION_SECRET must be at least ${MINIMUM_SECRET_LENGTH} characters long`);
   }
   // The value is returned for signing but never logged or included in an error.
   return value;
+}
+
+function parseAdminToken(environment: Environment): string {
+  const value = required(environment, "KRATOS_ADMIN_TOKEN");
+  if (value.length < MINIMUM_ADMIN_TOKEN_LENGTH) {
+    throw new ConfigError(`KRATOS_ADMIN_TOKEN must be at least ${MINIMUM_ADMIN_TOKEN_LENGTH} characters long`);
+  }
+  return value;
+}
+
+function parseTestMode(environment: Environment, nodeEnv: NodeEnvironment): boolean {
+  const raw = environment.AUTH_TEST_MODE;
+  const value = typeof raw === "string" ? raw.trim() : "";
+  if (value === "" || value === "0") {
+    return false;
+  }
+  if (value !== "1") {
+    throw new ConfigError('AUTH_TEST_MODE must be unset, "0" or "1"');
+  }
+  if (nodeEnv === "production") {
+    throw new ConfigError("AUTH_TEST_MODE must not be enabled when NODE_ENV is production");
+  }
+  return true;
 }
 
 /**
@@ -131,13 +184,18 @@ function parseSessionSecret(environment: Environment): string {
  * are never hard-coded in the service.
  */
 export function parseConfig(environment: Environment = process.env): AuthConfig {
+  const nodeEnv = parseNodeEnvironment(environment);
   return {
     serviceName: "auth",
-    nodeEnv: parseNodeEnvironment(environment),
+    nodeEnv,
     logLevel: parseLogLevel(environment),
     host: parseHost(environment),
     port: parsePort(environment, "AUTH_PORT"),
     databaseUrl: parseDatabaseUrl(environment),
     sessionSecret: parseSessionSecret(environment),
+    kratosPublicUrl: parseHttpUrl(environment, "KRATOS_PUBLIC_URL"),
+    kratosAdminUrl: parseHttpUrl(environment, "KRATOS_ADMIN_URL"),
+    kratosAdminToken: parseAdminToken(environment),
+    testMode: parseTestMode(environment, nodeEnv),
   };
 }

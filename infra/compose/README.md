@@ -1,11 +1,11 @@
 # Local services compose
 
-Local development stack for Project air (task P0-07, extended by P3-01; satisfies D2): PostgreSQL,
-an S3-compatible object store (SeaweedFS), a mail catcher (Mailpit) and the pinned Ory Kratos
-identity service. One command starts the three default services with health checks; Kratos sits
-behind the `identity` profile until its configuration arrives in P3-03. The stack is **shared by
-every worktree** of this repository; it is started once per machine and used from any checkout.
-Ports follow `AD-9`: only machine-wide services live here, per-worktree values come from
+Local development stack for Project air (task P0-07, extended by P3-01 and P3-03; satisfies D2):
+PostgreSQL, an S3-compatible object store (SeaweedFS), a mail catcher (Mailpit) and the pinned Ory
+Kratos identity service. One command starts the three default services with health checks; the
+`identity` profile starts Kratos (migrations first) when authentication is needed. The stack is
+**shared by every worktree** of this repository; it is started once per machine and used from any
+checkout. Ports follow `AD-9`: only machine-wide services live here, per-worktree values come from
 `.polier-slot`.
 
 ## Runtime
@@ -26,7 +26,8 @@ credentials).
 | `postgres` | `postgres:17.11-alpine3.23` | PostgreSQL 17.11 | PostgreSQL licence (permissive exception: PostgreSQL is mandated by the blueprint) | `5433` | database server for every slot database and the shared identity database |
 | `seaweedfs` | `chrislusf/seaweedfs:4.50` | SeaweedFS 4.50 | Apache-2.0 | `8333` | S3 API; master (`9333`) and filer (`8888`) stay inside the compose network |
 | `mailpit` | `axllent/mailpit:v1.32.0` | Mailpit 1.32.0 | MIT | `1025` (SMTP), `8025` (web inbox) | catches development e-mail and shows it in a web inbox |
-| `kratos` | `oryd/kratos:v26.2.0` | Ory Kratos 26.2.0 | Apache-2.0 | `8433` (public), `8434` (admin) | identity service from [ADR-0007](../../docs/adr/ADR-0007-auth.md); `identity` profile, configured in P3-03 |
+| `kratos` | `oryd/kratos:v26.2.0` | Ory Kratos 26.2.0 | Apache-2.0 | `8433` (public), `8434` (admin) | identity service from [ADR-0007](../../docs/adr/ADR-0007-auth.md); `identity` profile, configuration in [../kratos/](../kratos/README.md) |
+| `kratos-migrate` | `oryd/kratos:v26.2.0` | Ory Kratos 26.2.0 | Apache-2.0 | – | one-shot `kratos migrate sql` before `kratos` starts (`identity` profile) |
 
 Upstream sources: <https://hub.docker.com/_/postgres>, <https://github.com/seaweedfs/seaweedfs>,
 <https://github.com/axllent/mailpit>, <https://github.com/ory/kratos>. The lead adds these rows to
@@ -35,7 +36,7 @@ Upstream sources: <https://hub.docker.com/_/postgres>, <https://github.com/seawe
 Every published port binds to `127.0.0.1` only. All host ports are **outside the slot range
 4000-4999**, so two worktrees never collide with these shared services. Every service has a
 health check: `pg_isready` for PostgreSQL, `GET /cluster/healthz` for SeaweedFS, `mailpit readyz`
-for Mailpit and Kratos' admin `GET /health/ready`.
+for Mailpit and Kratos' public `GET /health/ready`.
 
 ## Start
 
@@ -50,15 +51,20 @@ cache) and exits 0. From another worktree the same command controls the same sta
 compose project name (`project-air-local`) is fixed in the file.
 
 The command starts the three default services (PostgreSQL, SeaweedFS, Mailpit). Kratos is part of
-the file but behind the `identity` profile, so it starts only when it is asked for:
+the file but behind the `identity` profile; it starts (after `kratos-migrate` applied the Kratos
+SQL migrations) only when it is asked for:
 
 ```bash
-docker compose -f infra/compose/compose.yaml --profile identity up -d kratos
+docker compose -f infra/compose/compose.yaml --profile identity up -d --wait
 ```
 
-Until P3-03 adds the identity configuration (`kratos.yml`, identity schemas, courier settings) the
-Kratos container has nothing to serve, which is why it is not started by default — a plain
-`up -d --wait` stays green for every worktree.
+The first `bash tools/dev/setup` generates the Kratos cookie secret, cipher secret and admin token
+into the gitignored `infra/compose/.env` if they are absent; the values are names only in
+[.env.example](.env.example) and are never printed. The identity configuration
+([kratos.yml](../kratos/kratos.yml), [identity.schema.json](../kratos/identity.schema.json)) is
+mounted read-only from [../kratos/](../kratos/README.md). A plain
+`docker compose -f infra/compose/compose.yaml up -d --wait` keeps only the three default services,
+so every worktree without identity work stays green.
 
 Check the state:
 
@@ -153,6 +159,10 @@ machine. Real values go into the gitignored `infra/compose/.env`.
 | `SEAWEEDFS_S3_ACCESS_KEY` | S3 access key ID |
 | `SEAWEEDFS_S3_SECRET_KEY` | S3 secret access key |
 | `KRATOS_DB_NAME` | shared local identity database name, default `projectair_kratos` |
+| `KRATOS_DSN` | full Kratos database DSN; defaults to the local Postgres fixture; set it when you change `POSTGRES_*` |
+| `KRATOS_COOKIE_SECRET` | Kratos session cookie secret, generated by `tools/dev/setup`, never printed |
+| `KRATOS_CIPHER_SECRET` | Kratos encryption secret (32 characters), generated by `tools/dev/setup`, never printed |
+| `KRATOS_ADMIN_TOKEN` | shared secret for `POST /internal/invitations` (services/auth), generated by `tools/dev/setup`, never printed |
 | `APP_USER_PASSWORD` | password of the per-slot restricted `app_user` role; generated by `tools/dev/setup` when absent, never printed |
 
 Connections from the host:
@@ -160,7 +170,8 @@ Connections from the host:
 - PostgreSQL: `postgresql://127.0.0.1:5433/<database>` with the role above.
 - S3: endpoint `http://127.0.0.1:8333`, path-style addressing, the access key pair above.
 - Mailpit: SMTP `127.0.0.1:1025`, web inbox <http://127.0.0.1:8025>.
-- Kratos (once configured in P3-03): public `http://127.0.0.1:8433`, admin `http://127.0.0.1:8434`.
+- Kratos: public `http://127.0.0.1:8433`, admin `http://127.0.0.1:8434` (admin API is local only;
+  the courier delivers to Mailpit at `mailpit:1025` inside the Compose network).
 
 Example queries:
 

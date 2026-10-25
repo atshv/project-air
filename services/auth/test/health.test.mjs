@@ -1,6 +1,6 @@
 /**
- * Health endpoints: liveness answers even while the database is down,
- * readiness answers 503 (never 200) when the database ping fails.
+ * Health endpoints: liveness answers even while dependencies are down,
+ * readiness answers 503 (never 200) when the database or Kratos fails.
  */
 
 import assert from "node:assert/strict";
@@ -11,8 +11,8 @@ import { createPool, ping, closePool } from "../src/db/pool.ts";
 import { createApp } from "../src/http/app.ts";
 import { silentLogger } from "../src/log.ts";
 
-async function withApp(checkDatabase, run) {
-  const server = createApp({ serviceName: "auth", checkDatabase, logger: silentLogger() });
+async function withApp(checkDatabase, run, extraOptions = {}) {
+  const server = createApp({ serviceName: "auth", checkDatabase, logger: silentLogger(), ...extraOptions });
   server.listen(0, "127.0.0.1");
   await once(server, "listening");
   const address = server.address();
@@ -51,6 +51,33 @@ test("readiness answers 200 when the database ping succeeds", async () => {
   );
 });
 
+test("readiness includes the Kratos check when wired", async () => {
+  await withApp(
+    async () => undefined,
+    async (baseUrl) => {
+      const response = await fetch(`${baseUrl}/health/ready`);
+      assert.equal(response.status, 200);
+    },
+    { checkKratos: async () => undefined },
+  );
+
+  await withApp(
+    async () => undefined,
+    async (baseUrl) => {
+      const response = await fetch(`${baseUrl}/health/ready`);
+      assert.equal(response.status, 503);
+      const body = await response.json();
+      assert.equal(body.code, "INTERNAL");
+      assert.equal(body.messageKey, "errors.internal");
+    },
+    {
+      checkKratos: async () => {
+        throw new Error("kratos down");
+      },
+    },
+  );
+});
+
 test("readiness answers 503 when the database ping fails", async () => {
   await withApp(
     async () => {
@@ -60,7 +87,8 @@ test("readiness answers 503 when the database ping fails", async () => {
       const response = await fetch(`${baseUrl}/health/ready`);
       assert.equal(response.status, 503);
       const body = await response.json();
-      assert.equal(body.error.code, "SERVICE_UNAVAILABLE");
+      assert.equal(body.code, "INTERNAL");
+      assert.equal(body.messageKey, "errors.internal");
       assert.equal(typeof body.requestId, "string");
     },
   );
@@ -76,7 +104,7 @@ test("readiness answers 503 when the database is unreachable", async () => {
       async (baseUrl) => {
         const response = await fetch(`${baseUrl}/health/ready`);
         assert.equal(response.status, 503);
-        assert.equal((await response.json()).error.code, "SERVICE_UNAVAILABLE");
+        assert.equal((await response.json()).code, "INTERNAL");
       },
     );
   } finally {

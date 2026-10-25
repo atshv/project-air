@@ -1,0 +1,79 @@
+P3-03 evidence — Ory Kratos identity service and the auth integration
+date: 2026-10-25T18:09:25Z
+
+== A1.1 docker compose config --quiet (identity profile included) ==
+PASS: docker compose config --quiet exits 0
+
+== A1.2 kratos-migrate ran once and kratos is healthy ==
+container: kratos running 0
+container: kratos-migrate exited 0
+container: mailpit running 0
+container: postgres running 0
+container: seaweedfs running 0
+PASS: kratos-migrate exited 0
+PASS: kratos reports healthy
+PASS: Kratos public /health/ready answers 200
+PASS: Kratos admin /health/ready answers 200
+
+== A1.3 identity schema and self-service flows are exposed ==
+PASS: GET /self-service/login/api answers 200
+flow: login id=cbfea5cd-ec8d-4ac6-9ba7-52a6cec2821e type=api nodes=csrf_token,identifier,method,password
+PASS: GET /self-service/registration/api answers 200
+flow: registration id=1ba989bd-daa7-4640-9fa4-ab4479d6f316 type=api nodes=csrf_token,method,traits.display_name,traits.email,traits.locale
+PASS: GET /self-service/recovery/api answers 200
+flow: recovery id=052938c8-e937-4329-a940-0bbe5cc50885 type=api nodes=csrf_token,email,method
+
+== A1.4 courier SMTP: a recovery code e-mail reaches Mailpit ==
+courier probe identity: 38c77753-abcb-46d4-9872-97480b5645a3
+recovery flow: 7bb618b3-9c37-46cb-86de-94e709365e7c
+recovery submit status: 200
+recovery state: sent_email
+mailpit messages after recovery attempt: 9
+PASS: the recovery e-mail reached Mailpit
+PASS: courier probe identity deleted
+
+== A2/A3. the auth service against the live Kratos ==
+PASS: auth listens on its slot port 4120
+PASS: auth readiness is 200 (database + Kratos)
+GET /health: {"requestId":"01a17440-cf9c-7ef5-af24-f20f25154955","data":{"status":"ok","service":"auth"}}
+
+-- GET /session without a cookie (expect 401 AUTH_REQUIRED) --
+response: {"requestId":"01a17440-cfa4-788e-886c-bced2601eebd","code":"AUTH_REQUIRED","messageKey":"errors.authRequired"}|401
+PASS: session without cookie is 401
+envelope: AUTH_REQUIRED/errors.authRequired with UUIDv7 requestId 01a17440-cfa4-788e-886c-bced2601eebd
+
+-- A3: test-session mode (AUTH_TEST_MODE=1, NODE_ENV=development) --
+PASS: POST /test/session mints a session
+GET /session with x-test-session: {"requestId":"01a17440-cfec-7fd2-bda9-e25ddae0ee04","data":{"accountId":"0192f0d0-7000-7000-8000-00000000aa01","email":"0192f0d0-7000-7000-8000-00000000aa01@test-session.project-air.invalid","displayName":"Test session 0192f0d0"}}|200
+PASS: GET /session accepts the signed test session
+
+-- A2: a real browser registration session is accepted by GET /session --
+PASS: the browser registration flow starts
+registration submit status: 200
+PASS: password registration through the browser flow succeeds
+PASS: Kratos set the session cookie
+PASS: the registered identity exists in Kratos
+live GET /session status: 200
+live GET /session body: {'requestId': '01a17440-d190-77fd-bfe9-dc31c3de4580', 'data': {'accountId': 'c07b7dcc-c438-44f7-a06b-817497fa9b14', 'email': 'p303-reg-1792951767@example.test', 'displayName': 'Session Probe'}}
+PASS: GET /session forwards the real Kratos session cookie
+PASS: the session maps to the Kratos identity id
+PASS: the session returns the registered e-mail
+PASS: the session returns the display name
+PASS: registration probe identity deleted
+
+-- A2/A3: invitation through the Kratos admin API --
+invitation: {"requestId":"01a17440-d23b-7d06-90ab-078ee87c8be4","data":{"identityId":"c83ebb73-25b7-4507-8138-be701b9c2017","email":"p303-invite-1792951767@example.test"}}|201
+PASS: invitation creates a Kratos identity (201)
+duplicate: {"requestId":"01a17440-d26c-76c2-ac67-9f676bb59166","code":"CONFLICT","messageKey":"errors.conflict"}|409
+PASS: duplicate e-mail is 409 CONFLICT
+PASS: duplicate uses the CONFLICT error code
+PASS: invitation without the admin token is 401
+
+-- cleanup: remove the smoke identity through the admin API --
+PASS: smoke identity deleted
+
+== auth service log (no cookie, token or DSN) ==
+auth: {"time":"2026-10-25T18:09:26.885Z","level":"info","message":"http server listening","host":"127.0.0.1","port":4120,"testMode":true}
+PASS: the auth log contains no secret
+
+P3-03 RESULT: PASS (all checks green)

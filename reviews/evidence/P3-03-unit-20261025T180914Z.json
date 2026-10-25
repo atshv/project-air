@@ -1,0 +1,17 @@
+{
+  "task": "P3-03",
+  "gate": "unit",
+  "command": "pnpm --filter ./services/auth test",
+  "exit_code": 0,
+  "result": "pass",
+  "slot": null,
+  "exclusive": [],
+  "lock_wait_s": 0.0,
+  "lock_warning": null,
+  "started": "2026-10-25T18:09:14+00:00",
+  "finished": "2026-10-25T18:09:15+00:00",
+  "commit": "f6deca7b62363520c0f24c1a25c050e28786082c",
+  "dirty": true,
+  "log": "P3-03-unit-20261025T180914Z.log",
+  "log_sha256": "c9c332bccb1067654f2fcf03fe2ab198a4ccf3490a218601cae3781c61c91b76"
+}

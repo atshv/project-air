@@ -32,9 +32,13 @@ port, database name or bucket name is written in the scripts (AD-9).
 5. Creates the shared local identity database `projectair_kratos` for Ory Kratos (P3-01, configured
    in P3-03); an existing database is kept. One Kratos database serves every local slot — a
    local-development limitation documented in the compose README; tests never depend on it.
-6. Creates the slot bucket with `weed shell` inside the `seaweedfs` container; an existing bucket is
+6. Generates the Kratos secrets once — `KRATOS_COOKIE_SECRET`, `KRATOS_CIPHER_SECRET` (32
+   characters) and the shared `KRATOS_ADMIN_TOKEN` for `POST /internal/invitations` — and stores
+   them in the same gitignored `infra/compose/.env` (mode 600). The values are read from the
+   environment first; they are never printed.
+7. Creates the slot bucket with `weed shell` inside the `seaweedfs` container; an existing bucket is
    kept.
-7. Prints the database and bucket names and verifies that the database, the role attributes, the
+8. Prints the database and bucket names and verifies that the database, the role attributes, the
    grants and the bucket exist.
 
 `bash tools/dev/reset-db` (P3-01):
@@ -64,6 +68,7 @@ From the worktree root:
 ```bash
 python3 "$POLIER/tools/slot.py" acquire   # once per worktree, writes .polier-slot
 bash tools/dev/setup
+docker compose -f infra/compose/compose.yaml --profile identity up -d --wait   # Kratos, when needed
 bash tools/dev/reset-db                   # destructive: this slot's database only
 bash tools/dev/teardown
 ```

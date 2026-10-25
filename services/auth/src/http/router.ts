@@ -2,28 +2,28 @@
  * A deliberately small `node:http` router.
  *
  * Routes are exact `(method, pathname)` pairs; there are no parameters yet.
- * The router owns the request id, the JSON body limit, the JSON envelopes and
- * the error mapping, so every response of the service has the same shape.
+ * The router owns the request id (UUIDv7 for the contract error envelope), the
+ * JSON body limit, the JSON envelopes and the error mapping, so every response
+ * of the service has the same shape.
  */
 
-import { randomUUID } from "node:crypto";
 import { createServer, type IncomingHttpHeaders, type IncomingMessage, type Server, type ServerResponse } from "node:http";
 
 import type { Logger } from "../log.ts";
 import {
   HttpError,
-  badRequest,
   methodNotAllowed,
   notFound,
   payloadTooLarge,
   unsupportedMediaType,
+  validationFailed,
 } from "./errors.ts";
+import { createRequestId, isRequestId } from "./request-id.ts";
 import { errorEnvelope, sendJson, successEnvelope } from "./responses.ts";
 
 export const DEFAULT_JSON_BODY_LIMIT_BYTES = 64 * 1024;
 export const REQUEST_ID_HEADER = "x-request-id";
 
-const REQUEST_ID_PATTERN = /^[A-Za-z0-9._:-]{1,128}$/;
 const METHOD_PATTERN = /^[A-Z]+$/;
 
 export interface RouteResponse {
@@ -68,7 +68,7 @@ export class Router {
       throw new Error("jsonBodyLimitBytes must be a positive integer");
     }
     this.#requestIdHeader = (options.requestIdHeader ?? REQUEST_ID_HEADER).toLowerCase();
-    this.#generateRequestId = options.generateRequestId ?? randomUUID;
+    this.#generateRequestId = options.generateRequestId ?? createRequestId;
   }
 
   add(method: string, pathname: string, handler: RouteHandler): this {
@@ -137,7 +137,7 @@ export class Router {
   #resolveRequestId(request: IncomingMessage): string {
     const headerValue = request.headers[this.#requestIdHeader];
     const candidate = Array.isArray(headerValue) ? headerValue[0] : headerValue;
-    if (typeof candidate === "string" && REQUEST_ID_PATTERN.test(candidate)) {
+    if (isRequestId(candidate)) {
       return candidate;
     }
     return this.#generateRequestId();
@@ -163,22 +163,22 @@ export class Router {
 
     const text = Buffer.concat(chunks).toString("utf8").trim();
     if (text === "") {
-      throw badRequest("the request body must be JSON");
+      throw validationFailed([], "the request body must be JSON");
     }
     try {
       return JSON.parse(text) as unknown;
     } catch {
-      throw badRequest("the request body is not valid JSON");
+      throw validationFailed([], "the request body is not valid JSON");
     }
   }
 
   #handleError(requestId: string, response: ServerResponse, error: unknown): void {
     if (error instanceof HttpError) {
-      sendJson(response, error.status, errorEnvelope(requestId, error.code, error.message), error.headers);
+      sendJson(response, error.status, errorEnvelope(requestId, error.code, error.details), error.headers);
       return;
     }
     const detail = error instanceof Error ? `${error.name}: ${error.message}` : String(error);
     this.#logger?.error("unhandled request error", { requestId, error: detail });
-    sendJson(response, 500, errorEnvelope(requestId, "INTERNAL_ERROR", "internal server error"));
+    sendJson(response, 500, errorEnvelope(requestId, "INTERNAL"));
   }
 }

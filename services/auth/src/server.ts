@@ -1,7 +1,7 @@
 /**
- * Lifecycle of the platform HTTP process: pool, application and graceful
- * shutdown. The entry point (`index.ts`) parses the configuration and wires
- * the signal handlers to `close()`.
+ * Lifecycle of the auth HTTP process: pool, Kratos client, application and
+ * graceful shutdown. The entry point (`index.ts`) parses the configuration and
+ * wires the signal handlers to `close()`.
  */
 
 import type { Server } from "node:http";
@@ -9,6 +9,7 @@ import type { Server } from "node:http";
 import type { AuthConfig } from "./config.ts";
 import { closePool, createPool, ping } from "./db/pool.ts";
 import { createApp } from "./http/app.ts";
+import { KratosClient } from "./kratos.ts";
 import type { Logger } from "./log.ts";
 
 export interface RunningService {
@@ -22,10 +23,20 @@ export async function startService(config: AuthConfig, logger: Logger): Promise<
     application_name: config.serviceName,
     connectionTimeoutMillis: 3_000,
   });
+  const kratos = new KratosClient({
+    publicUrl: config.kratosPublicUrl,
+    adminUrl: config.kratosAdminUrl,
+  });
+
   const server = createApp({
     serviceName: config.serviceName,
     checkDatabase: () => ping(pool),
+    checkKratos: () => kratos.requireReady(),
     logger,
+    kratos,
+    testMode: config.testMode,
+    testSessionSecret: config.sessionSecret,
+    adminToken: config.kratosAdminToken,
   });
 
   await new Promise<void>((resolve, reject) => {
@@ -35,7 +46,11 @@ export async function startService(config: AuthConfig, logger: Logger): Promise<
     server.once("error", onError);
     server.listen(config.port, config.host, () => {
       server.off("error", onError);
-      logger.info("http server listening", { host: config.host, port: config.port });
+      logger.info("http server listening", {
+        host: config.host,
+        port: config.port,
+        testMode: config.testMode,
+      });
       resolve();
     });
   });
