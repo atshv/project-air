@@ -14,6 +14,29 @@ export const CONTRACT_VERSION = "0.1.0";
 /** Base URI of the versioned schemas. It is a namespace, not a fetched URL. */
 export const CONTRACT_BASE_URI = `https://project-air.dev/contracts/${CONTRACT_VERSION}/`;
 
+/** Operation types of contract 0.1.0 (AD-1: one gesture = one operation). */
+export const OPERATION_TYPES = Object.freeze([
+  "createNote",
+  "updateNote",
+  "deleteNote",
+  "createCard",
+  "moveCard",
+  "resizeCard",
+  "deleteCard",
+  "createZone",
+  "moveZone",
+  "resizeZone",
+  "deleteZone",
+  "createBlock",
+  "moveBlock",
+  "resizeBlock",
+  "updateBlock",
+  "deleteBlock",
+  "createEdge",
+  "deleteEdge",
+  "group",
+]);
+
 /** Absolute package directory, used to resolve the exported relative paths. */
 export const PACKAGE_DIR = dirname(fileURLToPath(import.meta.url));
 
@@ -27,6 +50,7 @@ export const SCHEMA_FILES = Object.freeze({
   zone: "schemas/zone.schema.json",
   block: "schemas/block.schema.json",
   edge: "schemas/edge.schema.json",
+  operation: "schemas/operation.schema.json",
   "board-content": "schemas/board-content.schema.json",
 });
 
@@ -40,6 +64,7 @@ export const FIXTURE_DIRS = Object.freeze({
   zone: "fixtures/zone",
   block: "fixtures/block",
   edge: "fixtures/edge",
+  operation: "fixtures/operation",
   "board-content": "fixtures/board-content",
 });
 

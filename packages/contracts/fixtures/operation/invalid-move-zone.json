@@ -1,0 +1,25 @@
+{
+  "schema": "schemas/operation.schema.json",
+  "valid": false,
+  "reason": "the moveZone payload is missing y",
+  "data": {
+    "id": "0192f0c1-7000-7000-8000-00000000001e",
+    "boardId": "0192f0a3-7000-7000-8000-000000000003",
+    "actorId": "0192f0a1-7000-7000-8000-000000000001",
+    "createdAt": "2027-01-10T09:00:00.000Z",
+    "type": "moveZone",
+    "payload": {
+      "zoneId": "0192f0a5-7000-7000-8000-000000000005",
+      "x": 144
+    },
+    "inverse": {
+      "boardId": "0192f0a3-7000-7000-8000-000000000003",
+      "type": "moveZone",
+      "payload": {
+        "zoneId": "0192f0a5-7000-7000-8000-000000000005",
+        "x": 128,
+        "y": 64
+      }
+    }
+  }
+}

@@ -1,0 +1,1397 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://project-air.dev/contracts/0.1.0/operation.schema.json",
+  "title": "Board operation",
+  "description": "One board change with exactly one inverse (AD-1): one gesture is one operation. A group bundles ordered child operations and reverses their inverses.",
+  "$ref": "#/$defs/operation",
+  "$defs": {
+    "operationType": {
+      "enum": [
+        "createNote",
+        "updateNote",
+        "deleteNote",
+        "createCard",
+        "moveCard",
+        "resizeCard",
+        "deleteCard",
+        "createZone",
+        "moveZone",
+        "resizeZone",
+        "deleteZone",
+        "createBlock",
+        "moveBlock",
+        "resizeBlock",
+        "updateBlock",
+        "deleteBlock",
+        "createEdge",
+        "deleteEdge",
+        "group"
+      ]
+    },
+    "operation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "boardId",
+        "actorId",
+        "createdAt",
+        "type",
+        "payload",
+        "inverse"
+      ],
+      "description": "One board change. Exactly one inverse is carried with it (AD-1).",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+          "description": "UUIDv7, time-sortable operation id."
+        },
+        "boardId": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+          "description": "The board this operation changes."
+        },
+        "actorId": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+          "description": "The account that triggered the operation."
+        },
+        "createdAt": {
+          "type": "string",
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\\.[0-9]+)?(?:Z|[+-][0-9]{2}:[0-9]{2})$"
+        },
+        "type": {
+          "$ref": "#/$defs/operationType"
+        },
+        "payload": {
+          "description": "Type-specific payload, constrained by the type."
+        },
+        "inverse": {
+          "$ref": "#/$defs/inverse"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "createNote"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "payload": {
+                "$ref": "#/$defs/payload-create-note"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "updateNote"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "payload": {
+                "$ref": "#/$defs/payload-update-note"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "deleteNote"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "payload": {
+                "$ref": "#/$defs/payload-delete-note"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "createCard"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "payload": {
+                "$ref": "#/$defs/payload-create-card"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "moveCard"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "payload": {
+                "$ref": "#/$defs/payload-move-card"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "resizeCard"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "payload": {
+                "$ref": "#/$defs/payload-resize-card"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "deleteCard"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "payload": {
+                "$ref": "#/$defs/payload-delete-card"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "createZone"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "payload": {
+                "$ref": "#/$defs/payload-create-zone"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "moveZone"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "payload": {
+                "$ref": "#/$defs/payload-move-zone"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "resizeZone"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "payload": {
+                "$ref": "#/$defs/payload-resize-zone"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "deleteZone"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "payload": {
+                "$ref": "#/$defs/payload-delete-zone"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "createBlock"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "payload": {
+                "$ref": "#/$defs/payload-create-block"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "moveBlock"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "payload": {
+                "$ref": "#/$defs/payload-move-block"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "resizeBlock"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "payload": {
+                "$ref": "#/$defs/payload-resize-block"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "updateBlock"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "payload": {
+                "$ref": "#/$defs/payload-update-block"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "deleteBlock"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "payload": {
+                "$ref": "#/$defs/payload-delete-block"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "createEdge"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "payload": {
+                "$ref": "#/$defs/payload-create-edge"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "deleteEdge"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "payload": {
+                "$ref": "#/$defs/payload-delete-edge"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "group"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "payload": {
+                "$ref": "#/$defs/group-payload"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "inverse": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "boardId",
+        "type",
+        "payload"
+      ],
+      "description": "The exactly one counter-operation: same board, the inverse type and the payload that restores the previous state.",
+      "properties": {
+        "boardId": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+          "description": "Must equal the operation boardId."
+        },
+        "type": {
+          "$ref": "#/$defs/operationType"
+        },
+        "payload": {
+          "description": "Payload of the inverse operation, constrained by the inverse type."
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "createNote"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "payload": {
+                "$ref": "#/$defs/payload-create-note"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "updateNote"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "payload": {
+                "$ref": "#/$defs/payload-update-note"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "deleteNote"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "payload": {
+                "$ref": "#/$defs/payload-delete-note"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "createCard"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "payload": {
+                "$ref": "#/$defs/payload-create-card"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "moveCard"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "payload": {
+                "$ref": "#/$defs/payload-move-card"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "resizeCard"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "payload": {
+                "$ref": "#/$defs/payload-resize-card"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "deleteCard"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "payload": {
+                "$ref": "#/$defs/payload-delete-card"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "createZone"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "payload": {
+                "$ref": "#/$defs/payload-create-zone"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "moveZone"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "payload": {
+                "$ref": "#/$defs/payload-move-zone"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "resizeZone"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "payload": {
+                "$ref": "#/$defs/payload-resize-zone"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "deleteZone"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "payload": {
+                "$ref": "#/$defs/payload-delete-zone"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "createBlock"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "payload": {
+                "$ref": "#/$defs/payload-create-block"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "moveBlock"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "payload": {
+                "$ref": "#/$defs/payload-move-block"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "resizeBlock"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "payload": {
+                "$ref": "#/$defs/payload-resize-block"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "updateBlock"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "payload": {
+                "$ref": "#/$defs/payload-update-block"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "deleteBlock"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "payload": {
+                "$ref": "#/$defs/payload-delete-block"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "createEdge"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "payload": {
+                "$ref": "#/$defs/payload-create-edge"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "deleteEdge"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "payload": {
+                "$ref": "#/$defs/payload-delete-edge"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "group"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "payload": {
+                "$ref": "#/$defs/group-inverse-payload"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "child-operation": {
+      "description": "An operation inside a group. Groups do not nest in v1.",
+      "allOf": [
+        {
+          "$ref": "#/$defs/operation"
+        },
+        {
+          "not": {
+            "properties": {
+              "type": {
+                "const": "group"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          }
+        }
+      ]
+    },
+    "group-payload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "children"
+      ],
+      "properties": {
+        "children": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/child-operation"
+          },
+          "minItems": 1
+        }
+      },
+      "description": "Ordered child operations of one gesture; at least one, groups do not nest."
+    },
+    "group-inverse-payload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "children"
+      ],
+      "properties": {
+        "children": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/inverse"
+          },
+          "minItems": 1
+        }
+      },
+      "description": "The reversed child inverse pairs: the last child's inverse comes first."
+    },
+    "payload-create-note": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "note"
+      ],
+      "properties": {
+        "note": {
+          "$ref": "note.schema.json"
+        }
+      },
+      "description": "Creates one note in the workspace; its inverse is deleteNote."
+    },
+    "payload-update-note": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "noteId",
+        "changes"
+      ],
+      "properties": {
+        "noteId": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+          "description": "Reference to the note id."
+        },
+        "changes": {
+          "type": "object",
+          "additionalProperties": false,
+          "minProperties": 1,
+          "description": "Only fields that are actually changed; the inverse carries the previous title.",
+          "properties": {
+            "title": {
+              "type": "string",
+              "minLength": 0,
+              "maxLength": 300
+            }
+          }
+        }
+      },
+      "description": "Updates fields of a note. The inverse stores the previous values of the same fields."
+    },
+    "payload-delete-note": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "note",
+        "cards"
+      ],
+      "properties": {
+        "note": {
+          "$ref": "note.schema.json"
+        },
+        "cards": {
+          "type": "array",
+          "items": {
+            "$ref": "card.schema.json"
+          },
+          "minItems": 0
+        }
+      },
+      "description": "Deletes the note and its card placements together (AD-4: a card cannot outlive its note); cards lists every restored placement."
+    },
+    "payload-create-card": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "card"
+      ],
+      "properties": {
+        "card": {
+          "$ref": "card.schema.json"
+        }
+      },
+      "description": "Creates one card placement; its inverse is deleteCard."
+    },
+    "payload-move-card": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "cardId",
+        "x",
+        "y"
+      ],
+      "properties": {
+        "cardId": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+          "description": "Reference to the card id."
+        },
+        "x": {
+          "type": "number",
+          "description": "World x in pixels (Float64)."
+        },
+        "y": {
+          "type": "number",
+          "description": "World y in pixels (Float64)."
+        },
+        "zoneId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+          "description": "Parent zone after the move; omitted or null means board level."
+        }
+      },
+      "description": "Moves a card to a new world position and optional zone parent."
+    },
+    "payload-resize-card": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "cardId",
+        "width",
+        "height"
+      ],
+      "properties": {
+        "cardId": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+          "description": "Reference to the card id."
+        },
+        "width": {
+          "type": "number",
+          "minimum": 176,
+          "description": "Width in pixels; minimum 176."
+        },
+        "height": {
+          "type": "number",
+          "minimum": 80,
+          "description": "Height in pixels; minimum 80."
+        }
+      },
+      "description": "Resizes a card; the end state must still respect its minimum size."
+    },
+    "payload-delete-card": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "card"
+      ],
+      "properties": {
+        "card": {
+          "$ref": "card.schema.json"
+        }
+      },
+      "description": "The full card placement."
+    },
+    "payload-create-zone": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "zone"
+      ],
+      "properties": {
+        "zone": {
+          "$ref": "zone.schema.json"
+        }
+      },
+      "description": "Creates one zone (never nested); its inverse is deleteZone."
+    },
+    "payload-move-zone": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "zoneId",
+        "x",
+        "y"
+      ],
+      "properties": {
+        "zoneId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+          "description": "Parent zone after the move; omitted or null means board level."
+        },
+        "x": {
+          "type": "number",
+          "description": "World x in pixels (Float64)."
+        },
+        "y": {
+          "type": "number",
+          "description": "World y in pixels (Float64)."
+        }
+      },
+      "description": "Moves a zone to a new world position and optional zone parent."
+    },
+    "payload-resize-zone": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "zoneId",
+        "width",
+        "height"
+      ],
+      "properties": {
+        "zoneId": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+          "description": "Reference to the zone id."
+        },
+        "width": {
+          "type": "number",
+          "minimum": 256,
+          "description": "Width in pixels; minimum 256."
+        },
+        "height": {
+          "type": "number",
+          "minimum": 192,
+          "description": "Height in pixels; minimum 192."
+        }
+      },
+      "description": "Resizes a zone; the end state must still respect its minimum size."
+    },
+    "payload-delete-zone": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "zone",
+        "policy",
+        "cards",
+        "blocks"
+      ],
+      "properties": {
+        "zone": {
+          "$ref": "zone.schema.json"
+        },
+        "policy": {
+          "enum": [
+            "keep",
+            "delete"
+          ],
+          "description": "keep leaves the contained cards and blocks on the board (board level), delete removes them with the zone (L08)."
+        },
+        "cards": {
+          "type": "array",
+          "items": {
+            "$ref": "card.schema.json"
+          },
+          "minItems": 0
+        },
+        "blocks": {
+          "type": "array",
+          "items": {
+            "$ref": "block.schema.json"
+          },
+          "minItems": 0
+        }
+      },
+      "description": "Deletes a zone and applies the content policy. cards and blocks store the contained objects so the inverse can restore or reparent them."
+    },
+    "payload-create-block": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "block"
+      ],
+      "properties": {
+        "block": {
+          "$ref": "block.schema.json"
+        }
+      },
+      "description": "Creates one block; its inverse is deleteBlock."
+    },
+    "payload-move-block": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "blockId",
+        "x",
+        "y"
+      ],
+      "properties": {
+        "blockId": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+          "description": "Reference to the block id."
+        },
+        "x": {
+          "type": "number",
+          "description": "World x in pixels (Float64)."
+        },
+        "y": {
+          "type": "number",
+          "description": "World y in pixels (Float64)."
+        },
+        "zoneId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+          "description": "Parent zone after the move; omitted or null means board level."
+        }
+      },
+      "description": "Moves a block to a new world position and optional zone parent."
+    },
+    "payload-resize-block": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "blockId",
+        "type",
+        "width",
+        "height"
+      ],
+      "description": "Resizes a block; the end state must respect the minimum size of its block type.",
+      "properties": {
+        "blockId": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+          "description": "Reference to the block id."
+        },
+        "type": {
+          "enum": [
+            "checklist",
+            "palette",
+            "columns",
+            "timeline",
+            "table"
+          ]
+        },
+        "width": {
+          "type": "number",
+          "description": "Width in pixels; the minimum depends on the block type."
+        },
+        "height": {
+          "type": "number",
+          "description": "Height in pixels; the minimum depends on the block type."
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "checklist"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "width": {
+                "minimum": 224
+              },
+              "height": {
+                "minimum": 128
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "palette"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "width": {
+                "minimum": 224
+              },
+              "height": {
+                "minimum": 128
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "columns"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "width": {
+                "minimum": 368
+              },
+              "height": {
+                "minimum": 192
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "timeline"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "width": {
+                "minimum": 320
+              },
+              "height": {
+                "minimum": 160
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "table"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "width": {
+                "minimum": 288
+              },
+              "height": {
+                "minimum": 160
+              }
+            }
+          }
+        }
+      ]
+    },
+    "payload-update-block": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "blockId",
+        "changes"
+      ],
+      "properties": {
+        "blockId": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+          "description": "Reference to the block id."
+        },
+        "changes": {
+          "type": "object",
+          "additionalProperties": false,
+          "minProperties": 1,
+          "description": "Only fields that are actually changed; the inverse carries the previous zoneId.",
+          "properties": {
+            "zoneId": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+              "description": "New parent zone; null moves the block to the board. Block content updates arrive with the block-content contract."
+            }
+          }
+        }
+      },
+      "description": "Updates fields of a block. The inverse stores the previous values of the same fields."
+    },
+    "payload-delete-block": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "block"
+      ],
+      "properties": {
+        "block": {
+          "$ref": "block.schema.json"
+        }
+      },
+      "description": "The full block."
+    },
+    "payload-create-edge": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "edge"
+      ],
+      "properties": {
+        "edge": {
+          "$ref": "edge.schema.json"
+        }
+      },
+      "description": "Creates one card-to-card connection; its inverse is deleteEdge."
+    },
+    "payload-delete-edge": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "edge"
+      ],
+      "properties": {
+        "edge": {
+          "$ref": "edge.schema.json"
+        }
+      },
+      "description": "The full edge."
+    }
+  }
+}

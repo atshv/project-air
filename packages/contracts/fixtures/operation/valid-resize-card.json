@@ -1,0 +1,26 @@
+{
+  "schema": "schemas/operation.schema.json",
+  "valid": true,
+  "reason": "a resizeCard whose inverse restores the previous size",
+  "data": {
+    "id": "0192f0c1-7000-7000-8000-000000000006",
+    "boardId": "0192f0a3-7000-7000-8000-000000000003",
+    "actorId": "0192f0a1-7000-7000-8000-000000000001",
+    "createdAt": "2027-01-10T09:00:00.000Z",
+    "type": "resizeCard",
+    "payload": {
+      "cardId": "0192f0a6-7000-7000-8000-000000000006",
+      "width": 192,
+      "height": 96
+    },
+    "inverse": {
+      "boardId": "0192f0a3-7000-7000-8000-000000000003",
+      "type": "resizeCard",
+      "payload": {
+        "cardId": "0192f0a6-7000-7000-8000-000000000006",
+        "width": 176,
+        "height": 80
+      }
+    }
+  }
+}

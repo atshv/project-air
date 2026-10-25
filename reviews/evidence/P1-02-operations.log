@@ -1,0 +1,127 @@
+# P1-02 - operations, inverse operations and group: manual evidence
+
+worktree: /Users/rasulatashev/Desktop/KI Projekte/Project air-P1-02 (branch task/P1-02, slot 1)
+date (UTC): 2026-10-25T11:12:45Z
+node: v26.11.1
+pnpm: 12.14.0
+POLIER: /Users/rasulatashev/Desktop/Polier-main (tag v1.0.0)
+HEAD at gate time: b0452a1c8b1937e8574e07d3454737639d61caf9 (parent of the P1-02 commit)
+pnpm-lock.yaml sha256 before and after: 1d0e75f75debff3cf9eb8a3891d6e26ffe5e81b77a4e28002439400bf67f45a9
+
+Deliverable: packages/contracts - `schemas/operation.schema.json` (operation envelope with one
+discriminated payload per operation type), 42 operation fixtures, 19 new/updated unit tests (37 in
+the package), README/ARCHITECTURE operation table and inverse rule, `.changes/P1-02-operations.md`.
+Contract version stays `0.1.0`; no dependency was added and the lockfile is unchanged.
+
+## 1. board-check - run BEFORE any pnpm install
+
+Preparation: no node_modules/ existed when the gate ran.
+
+command: python3 /Users/rasulatashev/Desktop/Polier-main/tools/gate.py --task P1-02 --name board-check -- python3 /Users/rasulatashev/Desktop/Polier-main/tools/check.py .
+result: PASS, exit 0
+record: reviews/evidence/P1-02-board-check-20261025T111237Z.json
+log:    reviews/evidence/P1-02-board-check-20261025T111237Z.log
+output:
+    WARN: budgets.status overridden to 1900 words (...)
+    WARN: P0-02: context pack is about 30546 tokens (warning at 15000); ...
+    WARN: P1-02: context pack is about 75155 tokens (warning at 15000); ...
+    OK: /Users/rasulatashev/Desktop/KI Projekte/Project air-P1-02 passes the mandatory checks. (3 warning(s))
+
+## 2. gate: unit (exit 0)
+
+command: python3 /Users/rasulatashev/Desktop/Polier-main/tools/gate.py --task P1-02 --name unit -- pnpm --filter ./packages/contracts test
+result: PASS, exit 0
+record: reviews/evidence/P1-02-unit-20261025T111241Z.json
+log:    reviews/evidence/P1-02-unit-20261025T111241Z.log
+output: 37 tests, 37 pass, 0 fail (19 board-content tests + 18 operation tests)
+
+pnpm 12 verifies the workspace dependency state before running a script
+(`verify-deps-before-run`), so the unit run installed the already pinned root devDependencies into
+the gitignored node_modules/ after board-check. No dependency was added and pnpm-lock.yaml is
+byte-identical before and after (sha256 above).
+
+## 3. package lint (exit 0, supplementary)
+
+command: pnpm --filter ./packages/contracts lint
+    $ eslint --max-warnings=0 .
+    exit 0
+
+## 4. Operation schema (A1)
+
+`schemas/operation.schema.json` (JSON Schema 2020-12, `$id` .../0.1.0/operation.schema.json) has a
+`$defs/operation` envelope and a `$defs/operationType` enum with the 19 types, dispatched with
+`if`/`then` to one payload definition per type:
+
+    operation envelope  id, boardId, actorId (UUIDv7), createdAt (ISO-8601), type, payload, inverse
+    19 types            createNote/updateNote/deleteNote, createCard/moveCard/resizeCard/deleteCard,
+                        createZone/moveZone/resizeZone/deleteZone,
+                        createBlock/moveBlock/resizeBlock/updateBlock/deleteBlock,
+                        createEdge/deleteEdge, group
+    inverse             exactly one object {boardId, type, payload}; boardId must equal the
+                        operation boardId (checked by the tests, see section 6)
+    payloads            create* store the entity; update* store only changed fields, minimum one;
+                        move* store x/y and an optional zoneId parent; resize* carry the P1-01
+                        minimum sizes; delete* store the whole object; deleteNote stores note +
+                        cards (AD-4); deleteZone stores zone + content policy keep/delete + members
+    group               payload.children = ordered full operations (minItems 1, no group child);
+                        group-inverse-payload.children = inverse pairs (minItems 1)
+
+The operation schema is exported by `index.mjs` (`SCHEMA_FILES.operation`, `schemaId`,
+`schemaPath`, `fixturePath`, `OPERATION_TYPES`). The entity schemas and `board-content` are
+unchanged.
+
+## 5. Fixtures (A2)
+
+42 operation fixtures under `fixtures/operation/` in the `{schema, valid, reason, data}` wrapper:
+19 valid (one per operation type) and 23 invalid. Every type has a valid and an invalid fixture; the
+invalid ones name the violated rule, for example:
+
+    invalid-create-card        card height 79 is below the card minimum 80
+    invalid-resize-card        width 175 is below the card minimum 176
+    invalid-resize-zone        height 191 is below the zone minimum 192
+    invalid-resize-block       table width 287 is below the table minimum 288
+    invalid-create-edge        an edge endpoint must be a card; a zone endpoint is invalid
+    invalid-update-note        changes may only contain known fields
+    invalid-update-block       changes must contain at least one field
+    invalid-group-empty        a group needs at least one child
+    invalid-group-nested       groups do not nest
+    invalid-group-not-reversed the group inverse must list the reversed child inverses
+    invalid-inverse-board      the inverse boardId does not match the operation boardId
+    invalid-inverse-target     the inverse target id does not match the operation target
+
+All 77 contract fixtures (35 board-content + 42 operation) parse and map to their schema.
+
+## 6. Tests (A3)
+
+37 tests, 37 pass. The operation suite (`test/operations.test.mjs`, shared validator and helpers in
+`test/support.mjs`) covers: the operation schema and type enum, index exports, fixture coverage per
+type, fixture wrapper and mapping, schema validation of valid fixtures, rejection of invalid
+fixtures, exactly one inverse per operation, UUIDv7 ids / ISO timestamps, the documented inverse
+type per operation, ordered group children and the reversed child inverses, no nested groups and
+minItems 1, updates storing only changed fields with previous values in the inverse, deletes storing
+the object and creates inverting to deletes, resize minimum sizes matching the P1-01 entity schemas,
+move payloads with position and optional zone parent, and the two model-only invalid cases
+(mismatching inverse board, mismatching inverse target).
+
+JSON Schema cannot compare values across fields, so the model rules that need it are checked by the
+tests in addition to the schema: inverse board/target equality, exact-one-inverse, group reversal,
+no nesting and the update field rules. Invalid fixtures are rejected if they break the schema or one
+of these model rules; the two model-only invalid fixtures are schema-valid on purpose.
+
+## 7. A4 - gates
+
+board-check (run with no node_modules/) exit 0 and unit exit 0 through gate.py; both records are
+committed with the single P1-02 commit. Contract version stays 0.1.0; no dependency was added.
+
+## 8. Known limits and open questions
+
+- The inverse of `deleteNote` and `deleteZone` is a `group`, because those deletes remove several
+  objects and the contract keeps exactly one inverse per operation. The group inverse contains
+  inverse pairs (type + payload, no ids/timestamps); P1-04 (sync) must define how these pairs are
+  applied and P1-03 (codegen) how they are typed.
+- `updateBlock` can only change `zoneId` in 0.1.0 because block content is not modelled yet; block
+  content updates need the block-content contract.
+- Cross-field rules (inverse board/target equality, group reversal) are enforced by the test suite,
+  not by JSON Schema. A generated runtime validator in P1-03 must repeat them.
+- Move/resize operations store the previous position/size only; multi-step undo history is engine
+  behaviour (P4-05), not part of this contract.

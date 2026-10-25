@@ -1734,7 +1734,7 @@
       "satisfies": [
         "D7"
       ],
-      "status": "in_progress",
+      "status": "done",
       "depends_on": [
         "P1-01"
       ],
@@ -1768,11 +1768,19 @@
       ],
       "owner": null,
       "branch": "task/P1-02",
-      "worktree": "../Project air-P1-02",
+      "worktree": null,
       "round": 0,
-      "evidence": [],
+      "evidence": [
+        "reviews/evidence/P1-02-board-check-20261025T111237Z.json",
+        "reviews/evidence/P1-02-unit-20261025T111241Z.json"
+      ],
       "scope_write_forbidden": [
         "reference/"
+      ],
+      "handoff": [
+        "Closed P1-02: operation schema covers note/card/zone/block/edge create/update/delete plus move/resize and an ordered group; every operation carries exactly one inverse.",
+        "Group inverse reverses child inverses, no nesting; fixtures valid+invalid per type; unit tests pass.",
+        "P1-03 codegen consumes these schemas; ADR-0004 fixes text limits and private/workspace/link visibility (link read-only, revocable)."
       ]
     }
   ],

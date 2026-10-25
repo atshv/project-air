@@ -1,0 +1,28 @@
+{
+  "schema": "schemas/operation.schema.json",
+  "valid": true,
+  "reason": "a resizeBlock whose inverse restores the previous size within the table minimum",
+  "data": {
+    "id": "0192f0c1-7000-7000-8000-00000000000e",
+    "boardId": "0192f0a3-7000-7000-8000-000000000003",
+    "actorId": "0192f0a1-7000-7000-8000-000000000001",
+    "createdAt": "2027-01-10T09:00:00.000Z",
+    "type": "resizeBlock",
+    "payload": {
+      "blockId": "0192f0a7-7000-7000-8000-000000000007",
+      "type": "table",
+      "width": 304,
+      "height": 176
+    },
+    "inverse": {
+      "boardId": "0192f0a3-7000-7000-8000-000000000003",
+      "type": "resizeBlock",
+      "payload": {
+        "blockId": "0192f0a7-7000-7000-8000-000000000007",
+        "type": "table",
+        "width": 288,
+        "height": 160
+      }
+    }
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "schema": "schemas/operation.schema.json",
+  "valid": true,
+  "reason": "an updateNote whose inverse carries the previous title",
+  "data": {
+    "id": "0192f0c1-7000-7000-8000-000000000002",
+    "boardId": "0192f0a3-7000-7000-8000-000000000003",
+    "actorId": "0192f0a1-7000-7000-8000-000000000001",
+    "createdAt": "2027-01-10T09:00:00.000Z",
+    "type": "updateNote",
+    "payload": {
+      "noteId": "0192f0a4-7000-7000-8000-000000000004",
+      "changes": {
+        "title": "Updated title"
+      }
+    },
+    "inverse": {
+      "boardId": "0192f0a3-7000-7000-8000-000000000003",
+      "type": "updateNote",
+      "payload": {
+        "noteId": "0192f0a4-7000-7000-8000-000000000004",
+        "changes": {
+          "title": "Design law"
+        }
+      }
+    }
+  }
+}

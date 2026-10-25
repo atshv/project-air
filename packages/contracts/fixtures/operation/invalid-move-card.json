@@ -1,0 +1,24 @@
+{
+  "schema": "schemas/operation.schema.json",
+  "valid": false,
+  "reason": "the moveCard payload is missing x and y",
+  "data": {
+    "id": "0192f0c1-7000-7000-8000-00000000001a",
+    "boardId": "0192f0a3-7000-7000-8000-000000000003",
+    "actorId": "0192f0a1-7000-7000-8000-000000000001",
+    "createdAt": "2027-01-10T09:00:00.000Z",
+    "type": "moveCard",
+    "payload": {
+      "cardId": "0192f0a6-7000-7000-8000-000000000006"
+    },
+    "inverse": {
+      "boardId": "0192f0a3-7000-7000-8000-000000000003",
+      "type": "moveCard",
+      "payload": {
+        "cardId": "0192f0a6-7000-7000-8000-000000000006",
+        "x": 512,
+        "y": 256
+      }
+    }
+  }
+}

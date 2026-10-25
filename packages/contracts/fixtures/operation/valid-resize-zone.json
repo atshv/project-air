@@ -1,0 +1,26 @@
+{
+  "schema": "schemas/operation.schema.json",
+  "valid": true,
+  "reason": "a resizeZone whose inverse restores the previous size",
+  "data": {
+    "id": "0192f0c1-7000-7000-8000-00000000000a",
+    "boardId": "0192f0a3-7000-7000-8000-000000000003",
+    "actorId": "0192f0a1-7000-7000-8000-000000000001",
+    "createdAt": "2027-01-10T09:00:00.000Z",
+    "type": "resizeZone",
+    "payload": {
+      "zoneId": "0192f0a5-7000-7000-8000-000000000005",
+      "width": 320,
+      "height": 224
+    },
+    "inverse": {
+      "boardId": "0192f0a3-7000-7000-8000-000000000003",
+      "type": "resizeZone",
+      "payload": {
+        "zoneId": "0192f0a5-7000-7000-8000-000000000005",
+        "width": 256,
+        "height": 192
+      }
+    }
+  }
+}

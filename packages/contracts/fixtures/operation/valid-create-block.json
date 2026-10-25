@@ -1,0 +1,46 @@
+{
+  "schema": "schemas/operation.schema.json",
+  "valid": true,
+  "reason": "a createBlock whose inverse is the matching deleteBlock",
+  "data": {
+    "id": "0192f0c1-7000-7000-8000-00000000000c",
+    "boardId": "0192f0a3-7000-7000-8000-000000000003",
+    "actorId": "0192f0a1-7000-7000-8000-000000000001",
+    "createdAt": "2027-01-10T09:00:00.000Z",
+    "type": "createBlock",
+    "payload": {
+      "block": {
+        "id": "0192f0a7-7000-7000-8000-000000000007",
+        "boardId": "0192f0a3-7000-7000-8000-000000000003",
+        "zoneId": "0192f0a5-7000-7000-8000-000000000005",
+        "type": "checklist",
+        "x": 160,
+        "y": 96,
+        "width": 224,
+        "height": 128,
+        "z": "a1",
+        "createdAt": "2027-01-10T09:00:00.000Z",
+        "updatedAt": "2027-01-10T09:30:00.000Z"
+      }
+    },
+    "inverse": {
+      "boardId": "0192f0a3-7000-7000-8000-000000000003",
+      "type": "deleteBlock",
+      "payload": {
+        "block": {
+          "id": "0192f0a7-7000-7000-8000-000000000007",
+          "boardId": "0192f0a3-7000-7000-8000-000000000003",
+          "zoneId": "0192f0a5-7000-7000-8000-000000000005",
+          "type": "checklist",
+          "x": 160,
+          "y": 96,
+          "width": 224,
+          "height": 128,
+          "z": "a1",
+          "createdAt": "2027-01-10T09:00:00.000Z",
+          "updatedAt": "2027-01-10T09:30:00.000Z"
+        }
+      }
+    }
+  }
+}

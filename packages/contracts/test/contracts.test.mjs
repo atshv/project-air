@@ -1,27 +1,37 @@
 // Unit tests for the board-content contract 0.1.0.
 //
 // The suite parses every schema and fixture, validates the fixtures against the
-// schemas with a small structural validator for the keywords this contract uses
-// (type, required, properties, additionalProperties, enum, const, pattern,
-// minLength, maxLength, minimum, items, allOf/if/then and $ref), and checks the
-// model rules the task requires: AD-4, the parent relation, the fractional index,
-// the minimum sizes, ISO-8601 timestamps and the fixed enums.
+// schemas with a small structural validator for the keywords this contract uses,
+// and checks the model rules the task requires: AD-4, the parent relation, the
+// fractional index, the minimum sizes, ISO-8601 timestamps and the fixed enums.
+// Operation schemas and fixtures are covered by operations.test.mjs.
 
 import assert from "node:assert/strict";
-import { readdirSync, readFileSync } from "node:fs";
-import { join } from "node:path";
 import test from "node:test";
 
 import {
   CONTRACT_BASE_URI,
   CONTRACT_VERSION,
   FIXTURE_DIRS,
-  PACKAGE_DIR,
   SCHEMA_FILES,
   fixturePath,
   schemaId,
   schemaPath,
 } from "../index.mjs";
+import {
+  FRACTIONAL_INDEX,
+  ISO_TIMESTAMP,
+  JSON_SCHEMA_2020_12,
+  UUID_V7,
+  blockMinimums,
+  collectRefs,
+  fixtureFiles,
+  fixtureOf,
+  readJson,
+  schemaOf,
+  validate,
+  walk,
+} from "./support.mjs";
 
 const SCHEMA_NAMES = Object.keys(SCHEMA_FILES);
 const EXPECTED_SCHEMA_NAMES = [
@@ -32,13 +42,11 @@ const EXPECTED_SCHEMA_NAMES = [
   "card",
   "edge",
   "note",
+  "operation",
   "workspace",
   "zone",
 ];
-const ISO_TIMESTAMP = /^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\.[0-9]+)?(?:Z|[+-][0-9]{2}:[0-9]{2})$/;
-const UUID_V7 = /^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/;
-const FRACTIONAL_INDEX = /^[0-9A-Za-z]{1,64}$/;
-const JSON_SCHEMA_2020_12 = "https://json-schema.org/draft/2020-12/schema";
+const ENTITY_SCHEMA_NAMES = EXPECTED_SCHEMA_NAMES.filter((name) => name !== "operation");
 
 const EXPECTED_MINIMUMS = {
   card: { width: 176, height: 80 },
@@ -51,122 +59,6 @@ const EXPECTED_MINIMUMS = {
     table: { width: 288, height: 160 },
   },
 };
-
-const readJson = (relativePath) => JSON.parse(readFileSync(join(PACKAGE_DIR, relativePath), "utf8"));
-const schemaOf = (name) => JSON.parse(readFileSync(schemaPath(name), "utf8"));
-const fixtureOf = (name, file) => JSON.parse(readFileSync(fixturePath(name, file), "utf8"));
-const fixtureFiles = (name) =>
-  readdirSync(join(PACKAGE_DIR, FIXTURE_DIRS[name]))
-    .filter((file) => file.endsWith(".json"))
-    .sort();
-
-const walk = (value, visit) => {
-  visit(value);
-  if (Array.isArray(value)) {
-    for (const item of value) walk(item, visit);
-    return;
-  }
-  if (value !== null && typeof value === "object") {
-    for (const child of Object.values(value)) walk(child, visit);
-  }
-};
-
-const collectRefs = (value, refs = []) => {
-  if (Array.isArray(value)) {
-    for (const item of value) collectRefs(item, refs);
-  } else if (value !== null && typeof value === "object") {
-    if (typeof value.$ref === "string") refs.push(value.$ref);
-    for (const child of Object.values(value)) collectRefs(child, refs);
-  }
-  return refs;
-};
-
-// --- the structural validator -------------------------------------------------
-
-const CONTEXT = new Map();
-for (const name of SCHEMA_NAMES) CONTEXT.set(schemaOf(name).$id, schemaOf(name));
-
-function matchesType(value, type) {
-  const types = Array.isArray(type) ? type : [type];
-  return types.some((candidate) => {
-    if (candidate === "null") return value === null;
-    if (candidate === "array") return Array.isArray(value);
-    if (candidate === "object") return value !== null && typeof value === "object" && !Array.isArray(value);
-    if (candidate === "integer") return Number.isInteger(value);
-    if (candidate === "number") return typeof value === "number" && Number.isFinite(value);
-    return typeof value === candidate;
-  });
-}
-
-function resolvePointer(document, pointer) {
-  let current = document;
-  for (const rawPart of pointer.split("/")) {
-    const part = rawPart.replaceAll("~1", "/").replaceAll("~0", "~");
-    current = current[part];
-    if (current === undefined) throw new Error(`unresolvable $ref pointer #/${pointer}`);
-  }
-  return current;
-}
-
-function validate(value, schema, document) {
-  if (schema === true) return true;
-  if (schema === undefined) return true;
-  if (typeof schema.$ref === "string") {
-    if (schema.$ref.startsWith("#/")) {
-      return validate(value, resolvePointer(document, schema.$ref.slice(2)), document);
-    }
-    const target = CONTEXT.get(new URL(schema.$ref, document.$id).href);
-    if (target === undefined) throw new Error(`unresolvable $ref ${schema.$ref}`);
-    return validate(value, target, target);
-  }
-  if (schema.type !== undefined && !matchesType(value, schema.type)) return false;
-  if (schema.enum !== undefined && !schema.enum.some((entry) => JSON.stringify(entry) === JSON.stringify(value))) return false;
-  if (schema.const !== undefined && JSON.stringify(schema.const) !== JSON.stringify(value)) return false;
-  if (typeof value === "string") {
-    if (schema.minLength !== undefined && value.length < schema.minLength) return false;
-    if (schema.maxLength !== undefined && value.length > schema.maxLength) return false;
-    if (schema.pattern !== undefined && !new RegExp(schema.pattern).test(value)) return false;
-  }
-  if (typeof value === "number" && schema.minimum !== undefined && value < schema.minimum) return false;
-  if (Array.isArray(value)) {
-    if (schema.items !== undefined && !value.every((item) => validate(item, schema.items, document))) return false;
-  }
-  if (value !== null && typeof value === "object" && !Array.isArray(value)) {
-    if (Array.isArray(schema.required) && schema.required.some((key) => !(key in value))) return false;
-    const properties = schema.properties ?? {};
-    if (schema.additionalProperties === false) {
-      for (const key of Object.keys(value)) {
-        if (!Object.hasOwn(properties, key)) return false;
-      }
-    }
-    for (const [key, subschema] of Object.entries(properties)) {
-      if (Object.hasOwn(value, key) && !validate(value[key], subschema, document)) return false;
-    }
-  }
-  if (Array.isArray(schema.allOf)) {
-    for (const branch of schema.allOf) {
-      if (branch.if !== undefined) {
-        if (validate(value, branch.if, document) && branch.then !== undefined) {
-          if (!validate(value, branch.then, document)) return false;
-        }
-      } else if (!validate(value, branch, document)) {
-        return false;
-      }
-    }
-  }
-  return true;
-}
-
-function blockMinimums(blockSchema) {
-  const minimums = {};
-  for (const branch of blockSchema.allOf) {
-    minimums[branch.if.properties.type.const] = {
-      width: branch.then.properties.width.minimum,
-      height: branch.then.properties.height.minimum,
-    };
-  }
-  return minimums;
-}
 
 // --- the contract -------------------------------------------------------------
 
@@ -186,7 +78,7 @@ test("index exports the versioned schema and fixture paths", () => {
 });
 
 test("every schema is JSON Schema 2020-12 with a versioned $id and required fields", () => {
-  for (const name of EXPECTED_SCHEMA_NAMES) {
+  for (const name of ENTITY_SCHEMA_NAMES) {
     const schema = schemaOf(name);
     assert.equal(schema.$schema, JSON_SCHEMA_2020_12, `${name} uses JSON Schema 2020-12`);
     assert.equal(schema.$id, schemaId(name), `${name} has the versioned $id`);
@@ -205,7 +97,7 @@ test("every schema is JSON Schema 2020-12 with a versioned $id and required fiel
 });
 
 test("every schema has at least one valid and one invalid fixture with the wrapper", () => {
-  for (const name of EXPECTED_SCHEMA_NAMES) {
+  for (const name of ENTITY_SCHEMA_NAMES) {
     const files = fixtureFiles(name);
     const valid = files.filter((file) => file.startsWith("valid"));
     const invalid = files.filter((file) => file.startsWith("invalid"));
@@ -238,7 +130,7 @@ test("every fixture schema path resolves to a schema", () => {
 });
 
 test("valid fixtures satisfy their schema", () => {
-  for (const name of EXPECTED_SCHEMA_NAMES) {
+  for (const name of ENTITY_SCHEMA_NAMES) {
     const schema = schemaOf(name);
     for (const file of fixtureFiles(name).filter((entry) => entry.startsWith("valid"))) {
       const wrapper = fixtureOf(name, file);
@@ -248,7 +140,7 @@ test("valid fixtures satisfy their schema", () => {
 });
 
 test("invalid fixtures violate their schema and name the broken rule", () => {
-  for (const name of EXPECTED_SCHEMA_NAMES) {
+  for (const name of ENTITY_SCHEMA_NAMES) {
     for (const file of fixtureFiles(name).filter((entry) => entry.startsWith("invalid"))) {
       const wrapper = fixtureOf(name, file);
       assert.ok(!validate(wrapper.data, schemaOf(name), schemaOf(name)), `${name}/${file} is invalid`);
@@ -258,7 +150,7 @@ test("invalid fixtures violate their schema and name the broken rule", () => {
 });
 
 test("valid fixtures carry every required top-level field", () => {
-  for (const name of EXPECTED_SCHEMA_NAMES) {
+  for (const name of ENTITY_SCHEMA_NAMES) {
     const required = schemaOf(name).required;
     for (const file of fixtureFiles(name).filter((entry) => entry.startsWith("valid"))) {
       const { data } = fixtureOf(name, file);
@@ -270,7 +162,7 @@ test("valid fixtures carry every required top-level field", () => {
 });
 
 test("valid ids are UUIDv7 and valid timestamps are ISO-8601 with timezone", () => {
-  for (const name of EXPECTED_SCHEMA_NAMES) {
+  for (const name of ENTITY_SCHEMA_NAMES) {
     for (const file of fixtureFiles(name).filter((entry) => entry.startsWith("valid"))) {
       const { data } = fixtureOf(name, file);
       walk(data, (node) => {
