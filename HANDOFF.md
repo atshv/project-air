@@ -1,6 +1,6 @@
 # Handoff — Project air, new session
 
-**As of:** 2026-10-25 21:20 (Europe/Zurich) · **Repository:** `/Users/rasulatashev/Desktop/KI Projekte/Project air` · **Base branch:** `main` · **Nothing pushed** (`origin/main` is still the scaffold).
+**As of:** 2026-10-25 21:40 (Europe/Zurich) · **Repository:** `/Users/rasulatashev/Desktop/KI Projekte/Project air` · **Base branch:** `main` · **Pushed:** `origin/main` now tracks `main` (owner request 2026-10-25, after the stage-5 plan); the remote commit `30626f0` (branding fix in `reference/`) was merged first with `fccf5c5`. The remote stage (`P0-02` branch protection, CI, release) is still pending.
 
 Read `AGENTS.md`, `ARCHITECTURE.md`, `STATUS.md`, `docs/module-map.md` and the task brief before working. Polier is pinned to v1.0.0: `export POLIER=/Users/rasulatashev/Desktop/Polier-main` then `bash tools/polier.sh --check`.
 
@@ -71,7 +71,9 @@ cd <worktree>; bash tools/polier.sh --check; python3 $POLIER/tools/gate.py --tas
 #       worktree.py finish <ID>, amend the one task commit, verify main
 ```
 
-Rules: one commit per task (`<ID>: <title>`), change entry in `.changes/` (`pnpm run change -- …`), gates via `gate.py`, evidence in `reviews/evidence/`, no push/tag/PR, no new dependencies without owner approval.
+Rules: one commit per task (`<ID>: <title>`), change entry in `.changes/` (`pnpm run change -- …`), gates via `gate.py`, evidence in `reviews/evidence/`, no push/tag/PR without owner approval (owner approved pushing `main` on 2026-10-25; task branches stay local until the merge), no new dependencies without owner approval.
+
+- `reference/` was edited remotely in `30626f0` (branding); the rules keep `reference/` read-only, the change is integrated as-is in `fccf5c5` — the owner decides whether to revert it before the remote stage.
 
 - DSH sandboxed sessions cannot create the default sibling worktree (`../<repo>-<ID>` lies outside the workspace). Create it under `/tmp/air-<ID>` (`git worktree add /tmp/air-<ID> -b task/<ID> main`), acquire the slot there (`python3 $POLIER/tools/slot.py acquire`), take the claim with `--worktree /private/tmp/air-<ID> --slot N`, store that absolute path in `board.json`; `worktree.py finish <ID>` accepts the stored absolute path.
 
@@ -80,9 +82,10 @@ Rules: one commit per task (`<ID>: <title>`), change entry in `.changes/` (`pnpm
 - `Q2` pnpm workspaces + Turborepo; `Q10` SemVer `0.0.1` + letter entries; `Q11` no AI release notes for now; `Q12` ICU message files now, library later; dev tools + GitHub Actions approved.
 - `Q5` self-hosted Ory Kratos, community edition only, auth UI built by us (ADR-0007); `Q6` reference hardware MacBook Air M1, 8 GB, Chrome — M2 proxy accepted for the local engine-core exit, M1 re-measured in hardening; `Q7` agents under close guidance; `Q18` 50k@60fps for the spike, catalogue L01 (10,000 objects) for engine-core.
 - `Q15` clear layers only, no collision nudge; `Q16` two fingers pan, pinch zooms, Cmd/Ctrl+wheel zooms; `Q17` zones are containers (contract 0.2.0 parent reference, ADR + migration, no nested zones); `Q19` WebGL2 stays the measured default, WebGPU is the second backend with fallback and a two-backend image comparison; `Q20` images with detail levels and the a11y/test mirror move to hardening/web-app, the L15 touch part stays with hardening.
+- 2026-10-25: owner approved the first push to `origin/main`; this is the GitHub switch in part (ADR-0002), while branch protection, CI and release remain the remote stage (`P0-02`, `P0-15` … `P0-17`).
 - `ADR-0002` local-first until the GitHub switch; `ADR-0003` remote stage after hardening, before v1; `ADR-0004` contract limits/visibility; `ADR-0005` contract source of truth; `ADR-0006` engine architecture; `ADR-0008` API/session model.
 - Still open: Q3 hosting (tendency Infomaniak Public Cloud CH/EU; decision at P0-15), Q1 domain (contract base URI placeholder), Q4 CRDT (before realtime), Q8 import formats, Q9 pricing, Q14 languages.
 
 ## New session prompt
 
-> Lies `AGENTS.md`, `ARCHITECTURE.md`, `STATUS.md`, `docs/module-map.md` und `HANDOFF.md`. Foundation, Contract, Engine-Spike und Backend-Core sind lokal fertig (37/41 Tasks; Engine-Spike-M1-Referenz noch offen; Kratos selbst gehostet nach ADR-0007). Kläre mit mir die Eigentümer-Entscheidung für Stage 5 `engine-core` und plane die Stage: Canvas-Katalog L01/Engine-Einträge, WebGPU hinter dem Command-Buffer, Engine-Playground, `perf`-Gate; danach die erste Aufgabe starten. Lokal arbeiten, nichts pushen.
+> Lies `AGENTS.md`, `ARCHITECTURE.md`, `STATUS.md`, `docs/module-map.md` und `HANDOFF.md`. Foundation, Contract, Engine-Spike und Backend-Core sind lokal fertig (37/41 Tasks; Engine-Spike-M1-Referenz noch offen; Kratos selbst gehostet nach ADR-0007). Kläre mit mir die Eigentümer-Entscheidung für Stage 5 `engine-core` und plane die Stage: Canvas-Katalog L01/Engine-Einträge, WebGPU hinter dem Command-Buffer, Engine-Playground, `perf`-Gate; danach die erste Aufgabe starten. Lokal arbeiten; `main` ist auf `origin/main` gepusht, Task-Branches bleiben lokal bis zum Merge.
