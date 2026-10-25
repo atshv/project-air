@@ -929,7 +929,7 @@
       "satisfies": [
         "D3"
       ],
-      "status": "pending",
+      "status": "in_progress",
       "depends_on": [
         "P0-12"
       ],
@@ -959,7 +959,7 @@
       ],
       "owner": null,
       "branch": "task/P0-13",
-      "worktree": null,
+      "worktree": "../Project air-P0-13",
       "round": 0,
       "evidence": [],
       "scope_write_forbidden": [
@@ -1160,7 +1160,7 @@
       "satisfies": [
         "D4"
       ],
-      "status": "pending",
+      "status": "in_progress",
       "depends_on": [
         "P0-04"
       ],
@@ -1193,7 +1193,7 @@
       ],
       "owner": null,
       "branch": "task/P0-18",
-      "worktree": null,
+      "worktree": "../Project air-P0-18",
       "round": 0,
       "evidence": [],
       "scope_write_forbidden": [
