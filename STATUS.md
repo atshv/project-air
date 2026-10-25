@@ -152,7 +152,7 @@
 <!-- polier:claims -->
 ## Claims
 
-- `P0-14` in progress by dsh since 2026-10-25T09:56:48+00:00 — worktree: /Users/rasulatashev/Desktop/KI Projekte/Project air-P0-14 · slot 1
+- `P0-14` in progress by dsh since 2026-10-25T09:57:08+00:00 — worktree: /Users/rasulatashev/Desktop/KI Projekte/Project air-P0-14 · slot 1
 
 <!-- /polier:claims -->
 
