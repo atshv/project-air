@@ -1,0 +1,5 @@
+$ node tools/release/check-changes.mjs --task P0-25 --base main
+[exit 0]
+
+check-changes: task P0-25, base main, 10 changed path(s), 4 code path(s)
+changelog-entry: OK (.changes/P0-25-zoom-pill.md)

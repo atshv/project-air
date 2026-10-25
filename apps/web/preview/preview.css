@@ -938,50 +938,7 @@ button {
   font-size: var(--text-12);
 }
 
-.demo-card__anchors {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-}
-
-.demo-anchor {
-  position: absolute;
-  inline-size: 8px;
-  block-size: 8px;
-  border: var(--border-width) solid var(--surface);
-  border-radius: var(--radius-pill);
-  background-color: var(--fg);
-}
-
-.demo-anchor.is-used {
-  background-color: var(--tone-d);
-}
-
-.demo-anchor--top {
-  inset-block-start: calc(var(--border-width) * -1);
-  inset-inline-start: 50%;
-  transform: translate(-50%, 0);
-}
-
-.demo-anchor--right {
-  inset-block-start: 50%;
-  inset-inline-end: calc(var(--border-width) * -1);
-  transform: translate(0, -50%);
-}
-
-.demo-anchor--bottom {
-  inset-block-end: calc(var(--border-width) * -1);
-  inset-inline-start: 50%;
-  transform: translate(-50%, 0);
-}
-
-.demo-anchor--left {
-  inset-block-start: 50%;
-  inset-inline-start: calc(var(--border-width) * -1);
-  transform: translate(0, -50%);
-}
-
-/* ---------- demo zoom controls (preview-only) ---------- */
+/* ---------- demo zoom control (preview-only) ---------- */
 
 .demo-zoom {
   position: absolute;
@@ -989,9 +946,10 @@ button {
   inset-inline-start: var(--space-12);
   z-index: var(--layer-canvas-chrome);
   display: flex;
-  gap: var(--space-4);
+  flex-direction: column;
+  inline-size: 44px;
   padding: var(--space-4);
-  border: var(--border-width) solid var(--border);
+  outline: var(--border-width) solid var(--border);
   border-radius: var(--radius-md);
   background-color: var(--surface);
   box-shadow: var(--card-shadow);
@@ -1002,10 +960,10 @@ button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  inline-size: var(--button-bar);
+  inline-size: 100%;
   block-size: var(--button-bar);
   padding: 0;
-  border: var(--border-width) solid transparent;
+  border: 0;
   border-radius: var(--radius-sm);
   background-color: transparent;
   color: var(--muted);
@@ -1013,10 +971,19 @@ button {
   transition: background-color var(--motion-hover) ease, color var(--motion-hover) ease;
 }
 
+.demo-zoom__button + .demo-zoom__button {
+  border-block-start: var(--border-width) solid var(--border);
+}
+
 .demo-zoom__button:hover {
   background-color: var(--faint);
-  border-color: var(--border-strong);
   color: var(--fg);
+}
+
+.demo-zoom__button:active {
+  background-color: var(--faint);
+  color: var(--fg);
+  transform: scale(0.97);
 }
 
 .demo-zoom__button:focus-visible {
@@ -1031,7 +998,6 @@ button {
 
 .demo-zoom__button:disabled:hover {
   background-color: transparent;
-  border-color: transparent;
   color: var(--muted);
 }
 
@@ -1090,8 +1056,8 @@ button {
 .demo-zoom__button::after {
   content: attr(data-label);
   position: absolute;
-  inset-block-end: calc(100% + var(--space-8));
-  inset-inline-start: 50%;
+  inset-block-start: 50%;
+  inset-inline-start: calc(100% + var(--space-8));
   z-index: var(--layer-context-menu);
   padding: var(--space-4) var(--space-8);
   border: var(--border-width) solid var(--border);
@@ -1103,7 +1069,7 @@ button {
   white-space: nowrap;
   opacity: 0;
   pointer-events: none;
-  transform: translateX(-50%);
+  transform: translateY(-50%);
   transition: opacity var(--motion-fade) ease var(--motion-tooltip);
 }
 

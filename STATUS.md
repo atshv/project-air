@@ -139,10 +139,11 @@
 - [x] `P0-22` Version and last change in the preview masthead — status: `done` — owner: —
 - [x] `P0-23` Visible connection anchors in the demo — status: `done` — owner: —
 - [x] `P0-24` Curved edge, visible anchors and zoom controls in the demo — status: `done` — owner: —
+- [x] `P0-25` Grouped zoom control and invisible anchors — status: `done` — owner: —
 
 ## In progress
 
-- [ ] `P0-25` Grouped zoom control and invisible anchors — status: `in_progress` — owner: —
+- none
 
 ## Blocked / failed
 

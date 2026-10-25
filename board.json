@@ -1616,7 +1616,7 @@
       "satisfies": [
         "D3"
       ],
-      "status": "in_progress",
+      "status": "done",
       "depends_on": [
         "P0-24"
       ],
@@ -1653,11 +1653,20 @@
       ],
       "owner": null,
       "branch": "task/P0-25",
-      "worktree": "../Project air-P0-25",
+      "worktree": null,
       "round": 0,
-      "evidence": [],
+      "evidence": [
+        "reviews/evidence/P0-25-board-check-20261025T105536Z.json",
+        "reviews/evidence/P0-25-design-check-20261025T105537Z.json",
+        "reviews/evidence/P0-25-changelog-entry-20261025T105537Z.json"
+      ],
       "scope_write_forbidden": [
         "reference/"
+      ],
+      "handoff": [
+        "Closed P0-25: zoom control is one vertical grouped pill (+, −, fit, CSS glyphs) and the four anchors are invisible geometry only.",
+        "Curved --tone-d edge still snaps to the nearest invisible side-midpoint anchor pair; zoom/fit/drag/keyboard/mobile unchanged.",
+        "Meta line shows P0-25 with date/time; preview demo remains in sync with every preview change."
       ]
     }
   ],

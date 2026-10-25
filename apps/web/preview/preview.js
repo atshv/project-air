@@ -1,6 +1,6 @@
-// P0-20 live connection demo for the static design preview, extended in P0-23 with
-// four visible connection anchors per card and in P0-24 with a curved edge and
-// preview-only zoom controls. Plain DOM, pointer events and one SVG path: no
+// P0-20 live connection demo for the static design preview: two cards, a curved
+// edge snapped to invisible side-midpoint anchors (P0-23/P0-25) and preview-only
+// zoom controls (P0-24). Plain DOM, pointer events and one SVG path: no
 // dependencies, no engine, no data.
 
 (function () {
@@ -8,8 +8,8 @@
 
   var DRAG_THRESHOLD_FALLBACK = 4;
   var CANVAS_GRID_FALLBACK = 16;
-  // Half of the 8 px anchor dot: the dot sits inside the card, so its centre is
-  // 4 px away from the card edge.
+  // Invisible anchor geometry: the anchor points sit 4 px inside the card edge
+  // (they are not rendered as elements).
   var ANCHOR_HALF = 4;
   var MIN_EDGE_LENGTH = 1;
   var CURVE_OFFSET_FALLBACK = 48;
@@ -98,18 +98,9 @@
     for (var index = 0; index < cardElements.length; index += 1) {
       var element = cardElements[index];
       if (!(element instanceof HTMLElement)) continue;
-      var anchorElements = element.querySelectorAll(".demo-anchor");
-      var anchors = [];
-      for (var anchorIndex = 0; anchorIndex < anchorElements.length; anchorIndex += 1) {
-        anchors.push({
-          side: anchorElements[anchorIndex].getAttribute("data-anchor") || "",
-          element: anchorElements[anchorIndex],
-        });
-      }
       cards.push({
         element: element,
         label: (element.getAttribute("data-demo-card") || "?").toUpperCase(),
-        anchors: anchors,
         x: 0,
         y: 0,
         homeX: 0,
@@ -157,20 +148,6 @@
       };
     }
 
-    function highlightAnchors(pair) {
-      for (var cardIndex = 0; cardIndex < cards.length; cardIndex += 1) {
-        var usedSide = cardIndex === 0 ? pair.a.side : pair.b.side;
-        var card = cards[cardIndex];
-        card.element.setAttribute("data-demo-used", usedSide);
-        for (var anchorIndex = 0; anchorIndex < card.anchors.length; anchorIndex += 1) {
-          card.anchors[anchorIndex].element.classList.toggle(
-            "is-used",
-            card.anchors[anchorIndex].side === usedSide,
-          );
-        }
-      }
-    }
-
     function drawEdge() {
       var pair = nearestAnchorPair(rectOf(cards[0]), rectOf(cards[1]));
       var start = pair.a;
@@ -210,7 +187,8 @@
       edgeDots[0].setAttribute("cy", format(start.y));
       edgeDots[1].setAttribute("cx", format(end.x));
       edgeDots[1].setAttribute("cy", format(end.y));
-      highlightAnchors(pair);
+      cards[0].element.setAttribute("data-demo-used", pair.a.side);
+      cards[1].element.setAttribute("data-demo-used", pair.b.side);
     }
 
     function announce(card) {

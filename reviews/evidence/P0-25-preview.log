@@ -1,0 +1,128 @@
+# P0-25 — grouped zoom pill and invisible anchors: manual evidence
+
+- Date: 2026-10-25 (Europe/Zurich)
+- Worktree: `/Users/rasulatashev/Desktop/KI Projekte/Project air-P0-25` (branch `task/P0-25`, slot 1)
+- Changed: `apps/web/preview/index.html`, `preview.css`, `preview.js`, `README.md`;
+  `.changes/P0-25-zoom-pill.md`
+- Older demo screenshots untouched: `P0-24-demo.png`
+  `5cc9b265…a6ecbc`, `P0-23-demo.png` `a04704f7…07a3dc2`.
+
+## Port and server
+
+Slot values (`python3 "$POLIER/tools/slot.py" show`): `web=4100` for slot 1. The server was started and
+stopped by this task only; it is not left running and the port is free afterwards.
+
+```sh
+cd "/Users/rasulatashev/Desktop/KI Projekte/Project air-P0-25"
+PORT=$(python3 -c "import json;print(json.load(open('.polier-slot'))['ports']['web'])")
+python3 -m http.server "$PORT" --bind 127.0.0.1
+```
+
+Served the **repository root** so the relative token and icon paths resolve.
+
+## HTTP status
+
+```
+$ curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:4100/apps/web/preview/
+200
+```
+
+The server log for the run contains no `404`.
+
+## Screenshot
+
+Chromium: `/Users/rasulatashev/Library/Caches/ms-playwright/chromium_headless_shell-1248/chrome-headless-shell-mac-arm64/chrome-headless-shell`
+
+```sh
+/Users/rasulatashev/Library/Caches/ms-playwright/chromium_headless_shell-1248/chrome-headless-shell-mac-arm64/chrome-headless-shell \
+  --headless --disable-gpu --hide-scrollbars --window-size=1440,900 \
+  --screenshot=reviews/evidence/P0-25-demo.png \
+  "http://127.0.0.1:4100/apps/web/preview/"
+```
+
+Result: `reviews/evidence/P0-25-demo.png`, PNG 1440 × 900, 119668 bytes. It shows the grouped vertical
+zoom pill at the bottom-left of the demo surface, both cards without any anchor dots and the curved
+`--tone-d` edge, plus the masthead meta line.
+
+## Probe: pill, invisible anchors and zoom
+
+The demo was checked with a temporary same-origin iframe probe page (real preview at 1440 × 900 and
+390 × 844) that dispatched real `PointerEvent` / `KeyboardEvent` sequences and `click()` on the zoom
+segments; the probe page was removed before the commit and is not part of the deliverable. Results
+(desktop and mobile identical unless noted):
+
+```
+anchorElements=0 ariaHiddenAnchorNodes=0
+initial curveEndpointsOnInvisibleAnchors=true curveControls=true usedSides=right/left
+zoomButtons=3 container=44x116 radius=14px outline=1px rgba(255, 255, 255, 0.08) padding=4px
+surfaceBg=true stacked=true position12=true glyphOnly=true labels=true
+initialScale=1
+zoomMax=1.5 atMaxDisabled=true disabledOpacity=0.4
+maxIgnored=1.5
+zoomMin=0.5 atMinDisabled=true
+fitScale=1
+dragAtZoomDelta=40/20 expectedScaleDrag=true
+afterZoomDrag curveEndpointsOnInvisibleAnchors=true curveControls=true
+thresholdAtZoom=true
+fitAfterDrag=true bothCardsVisible=true
+keyboard16=true
+homeReset=true afterHome curveEndpointsOnInvisibleAnchors=true curveControls=true
+clampInside=true afterClamp curveEndpointsOnInvisibleAnchors=true curveControls=true
+desktop overflow=false scrollWidth=1440 clientWidth=1440
+mobile  overflow=false scrollWidth=390  clientWidth=390
+```
+
+What the probe proves:
+
+- **Invisible anchors:** there is no anchor markup at all (`.demo-anchor` /
+  `.demo-card__anchors` / `[data-anchor]` count = 0), so the cards have no visible or hidden dots.
+  The four side-midpoint anchor positions (4 px inside each card edge) are computed as geometry only,
+  and the curved path still starts and ends exactly on the used ones — in every state: initial, after
+  a drag at 150 % zoom, after keyboard steps, after `Home` and after clamping. The Bézier control
+  points stay 48 px (`--space-48`) along the used sides' normals.
+- **Grouped zoom pill:** one container 44 × 116 px at 12 px from the surface's bottom-left corner,
+  `border-radius` 14 px (`--radius-md`), `--surface` background (`rgb(26, 29, 26)`), 1 px
+  `--border` outline (`rgba(255, 255, 255, 0.08)`), 4 px padding, three stacked 36 px segments with
+  1 px separators; glyph-only content (`+`, `−`, fit corners drawn in CSS), English `aria-label`s and
+  `data-label` tooltips (no native `title`).
+- **Zoom behaviour unchanged:** limits 1.5 / 0.5 with the corresponding segment disabled at 0.4
+  opacity, an extra click at a limit is ignored, fit returns to 1.00 and both cards are visible again
+  after dragging; at 150 % a 60/30 px screen drag moves the card 40/20 world px (`delta / scale`), the
+  4 px drag threshold stays in screen pixels and keyboard steps stay one canvas-grid step (16 px) in
+  world space. Threshold, pointer capture, clamping, `Home`, reduced motion and no horizontal overflow
+  at both sizes are preserved.
+
+## Masthead meta line
+
+```
+Version 0.0.1 · unreleased · Last change: P0-25 — Grouped zoom control and invisible anchors · 2026-10-25 11:54 (Europe/Zurich)
+```
+
+- Version: first `##` heading of `CHANGELOG.md` (`## 0.0.1 – unreleased`).
+- Last change: newest `.changes/` entry by highest task id — `.changes/P0-25-zoom-pill.md`; task title
+  from `board.json` / `tasks/P0-25.md`.
+- Date/time: modification time of that newest `.changes` entry in `Europe/Zurich` (`YYYY-MM-DD HH:MM`;
+  `stat` → 2026-10-25 11:54), static text in `index.html`.
+- `apps/web/preview/README.md` documents the sources, the pick rule and the same-task update rule, and
+  states that anchors are invisible geometry, the zoom pill is preview-only and the product zoom
+  control will use the ui-kit icons.
+
+## Gates
+
+```sh
+cd "/Users/rasulatashev/Desktop/KI Projekte/Project air-P0-25"
+export POLIER=/Users/rasulatashev/Desktop/Polier-main
+python3 "$POLIER/tools/gate.py" --task P0-25 --name board-check -- python3 "$POLIER/tools/check.py" .
+python3 "$POLIER/tools/gate.py" --task P0-25 --name design-check -- node tools/design-check/index.mjs .
+python3 "$POLIER/tools/gate.py" --task P0-25 --name changelog-entry -- node tools/release/check-changes.mjs --task P0-25 --base main
+```
+
+| Gate | Result | Record |
+| --- | --- | --- |
+| `board-check` | PASS (exit 0) | `reviews/evidence/P0-25-board-check-20261025T105536Z.json` |
+| `design-check` | PASS (exit 0, no findings) | `reviews/evidence/P0-25-design-check-20261025T105537Z.json` |
+| `changelog-entry` | PASS (exit 0) | `reviews/evidence/P0-25-changelog-entry-20261025T105537Z.json` |
+
+`check.py` ran before any `pnpm install`; no install was needed for this task. No raw colour values in
+the preview files (`grep -nE '#[0-9a-fA-F]{3,8}|rgba?\(|hsla?\(' apps/web/preview/*` returns
+nothing); all visual values are `var(--…)` tokens.
