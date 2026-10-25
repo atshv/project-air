@@ -3,7 +3,8 @@
 Every dependency in every manifest appears here. `[UNVERIFIED]` and `[VERIFY: …]` never belong in
 a release. P0-04 added the workspace rows from the root manifest and lockfile; P0-09 added the
 GitHub Actions rows from `.github/workflows/ci.yml`; P2-01 added the C++ engine toolchain rows from
-the Homebrew formulae.
+the Homebrew formulae; P2-04 added the Chrome for Testing row used by the local performance
+baseline.
 
 | Tool / library | Exact version | Source URL | Date checked | Approved by |
 | --- | --- | --- | --- | --- |
@@ -24,13 +25,15 @@ the Homebrew formulae.
 | Mailpit (mail catcher, local compose) | `v1.32.0@sha256:0790692be935ea4420d085694f7985b1f692ca6a8771ab0e0bd8ba75ac180498` | https://github.com/axllent/mailpit — MIT | 2026-10-25 | lead (P0-07) |
 | CMake (C++ engine build) | `4.4.4` | https://formulae.brew.sh/formula/cmake — BSD-3-Clause | 2026-10-25 | owner (2026-10-25) |
 | Emscripten (C++ → WebAssembly) | `6.0.13` | https://formulae.brew.sh/formula/emscripten — Apache-2.0, Apache-2.0 with LLVM exception, MIT or NCSA | 2026-10-25 | owner (2026-10-25) |
+| Chrome for Testing (local perf baseline) | `156.0.8078.4` | https://googlechromelabs.github.io/chrome-for-testing/ — proprietary Chrome for Testing licence (local measurement tool, owner decision; not bundled, not a shipped dependency) | 2026-10-25 | owner (2026-10-25) |
 
 The workspace rows pin pnpm in `packageManager`, Turborepo, TypeScript, ESLint and
 typescript-eslint in the root `devDependencies`, and Node in `.nvmrc` (`24.22.1`), which
 `engines.node` accepts as `>=24.22.1`. The container images are pinned in
 `infra/compose/compose.yaml`. The PostgreSQL server is mandated by the blueprint (section 2); its
-PostgreSQL Licence (OSI-approved, permissive) is the only recorded exception to the licence list
-below.
+PostgreSQL Licence (OSI-approved, permissive) is a recorded exception to the licence list below,
+alongside the two local-tool exceptions: Docker Desktop and the Chrome for Testing binary used by
+the local performance baseline (owner-approved, local only, never shipped).
 
 The engine toolchain is installed with `brew install cmake emscripten` (owner-approved 2026-10-25,
 no paid tier) and verified with `cmake --version` (`4.4.4`) and `emcc --version` (`6.0.13-git`). The
@@ -52,6 +55,18 @@ Local gate only, not a workflow dependency: the `rhysd/actionlint` Docker image 
 `sha256:b1934ee5f1c509618f2508e6eb47ee0d3520686341fec936f3b79331f9315667`) checks
 `.github/workflows/ci.yml` locally (`ci-local` gate); the CI workflow does not pull it.
 
+Chrome for Testing is a **local measurement tool only**: the `perf-baseline` gate launches it with
+a real GPU (ANGLE/Metal) to measure the engine; the browser is not added to any manifest or
+lockfile, is not bundled with the product and is not part of the CI workflow. The baseline was run
+with the measurement machine's Node `v26.12.1` while the repository pins Node `24.22.1`; the
+deviation is recorded in [docs/engine/perf-baseline.md](engine/perf-baseline.md) and re-running the
+harness under the pinned Node is part of the reference-hardware measurement. The binary used on the
+measurement machine lives outside the repository at
+`~/Library/Caches/ms-playwright/chromium-1248/...`; re-install it from the Chrome for Testing
+releases and record the exact version again when it changes. The owner chose Chrome as the
+reference browser (2026-10-25); its proprietary licence is a second recorded local-tool exception,
+like Docker Desktop, and never applies to code shipped from this repository.
+
 ## Rules
 
 1. Every dependency from `package.json`, lockfiles, `CMakeLists.txt` and CI workflows appears here,
@@ -61,4 +76,6 @@ Local gate only, not a workflow dependency: the `rhysd/actionlint` Docker image 
 3. A version change updates the manifest, the lockfile and this table in the same task. No silent
    upgrades, no `latest`.
 4. Licences: MIT, BSD, Apache-2.0, ISC or Zlib only; note the licence in the source URL column if
-   it is not obvious.
+   it is not obvious. Owner-approved local-tool exceptions are listed in the licence note above
+   (blueprint-mandated PostgreSQL, Docker Desktop, Chrome for Testing); they are never shipped and
+   never appear in the product bundle.

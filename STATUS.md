@@ -24,9 +24,9 @@
 
 ### Stage 3 — `engine-spike` Engine spike
 
-- State: exit gates missing: perf-baseline
+- State: complete
 - Owner decision: `continue`
-- Exit gates: `cpp-unit`, `wasm-build`, `perf-baseline` (missing record)
+- Exit gates: `cpp-unit`, `wasm-build`, `perf-baseline`
 - Exit criteria: 60 fps with 50,000 rectangles on the reference hardware; WASM <= 300 KB gzip.; Measured report and ADR for the engine architecture.
 - Tasks: P2-01, P2-02, P2-03, P2-04, P2-05
 
@@ -119,7 +119,10 @@
 
 ## Ready now
 
-- none
+- `P2-05` Engine architecture ADR, module docs and stage showcase
+  - P2-04: Closed P2-04: Chrome benchmark (ANGLE Metal GPU, fail-closed renderer, 50k assertion) measured p95 2.00 ms = 556 fps headroom on the M2 proxy; display-locked control p95 16.80 ms committed.
+  - P2-04: WASM 21,806 B gzip (budget 300 KiB); docs/engine/perf-baseline.md + docs/gates/perf.md; Chrome for Testing 156.0.8078.4 local-only tool; board infra_patterns flag software renderers.
+  - P2-04: Honest reading: headroom proxy for 60 fps, not delivered 60 fps/GPU-completion; MacBook Air M1 reference unproven - re-measure before stage exit on that hardware. Round-1 majors fixed, round-2 pass.
 
 ## Done
 
@@ -152,10 +155,11 @@
 - [x] `P2-01` Engine toolchain and native + WASM build scaffold — status: `done` — owner: —
 - [x] `P2-02` Engine core model and render command buffer — status: `done` — owner: —
 - [x] `P2-03` WebGL2 renderer, TS bridge and engine playground — status: `done` — owner: —
+- [x] `P2-04` Performance baseline and measured report — status: `done` — owner: —
 
 ## In progress
 
-- [ ] `P2-04` Performance baseline and measured report — status: `in_progress` — owner: —
+- none
 
 ## Blocked / failed
 

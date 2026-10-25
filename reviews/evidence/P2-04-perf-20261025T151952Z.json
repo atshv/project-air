@@ -1,0 +1,113 @@
+{
+  "task": "P2-04",
+  "gate": "perf-baseline",
+  "timestamp": "2026-10-25T15:19:52.959Z",
+  "mode": "unlocked-baseline",
+  "displayLocked": false,
+  "result": "pass",
+  "resultReason": "pass",
+  "assertions": {
+    "expected": {
+      "rectangles": 50000,
+      "warmup": 120,
+      "samples": 600
+    },
+    "actual": {
+      "rectangles": 50000,
+      "warmup": 120,
+      "samples": 600
+    },
+    "scenarioMatches": true,
+    "sampleCount": 600,
+    "requestedSamples": 600,
+    "enoughSamples": true,
+    "rendererIdentified": true,
+    "rendererPolicy": "fail-closed: renderer must match ANGLE (...) plus a known GPU hint and must not be software"
+  },
+  "scenario": {
+    "name": "50,000 rectangles, fitted camera, one instanced WebGL2 draw per frame",
+    "rectangles": 50000,
+    "requestedSamples": 600,
+    "warmupFrames": 120,
+    "sampleCount": 600,
+    "timing": "rAF intervals with the display clock unlocked (--disable-frame-rate-limit --disable-gpu-vsync), i.e. frame-production throughput (CPU submission and compositor pipeline); no per-frame GPU sync/fence is measured"
+  },
+  "threshold": {
+    "p95FrameTimeMsMax": 16.7,
+    "targetFps": 60
+  },
+  "hardware": {
+    "model": "Apple M2",
+    "logicalCores": 8,
+    "memoryGiB": 8,
+    "arch": "arm64",
+    "os": {
+      "type": "Darwin",
+      "release": "25.5.0",
+      "version": "Darwin Kernel Version 25.5.0: Tue Jun  9 22:27:52 PDT 2026; root:xnu-12377.121.10~1/RELEASE_ARM64_T8112"
+    },
+    "node": "v26.12.1"
+  },
+  "browser": {
+    "product": "Chrome/156.0.8078.4",
+    "revision": "@f842f52ef39fd97b449eb27cff414bf05a98ddce",
+    "executable": "/Users/rasulatashev/Library/Caches/ms-playwright/chromium-1248/chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing",
+    "source": "local Playwright cache default",
+    "flags": [
+      "--headless=new",
+      "--use-angle=metal",
+      "--enable-gpu",
+      "--hide-scrollbars",
+      "--disable-frame-rate-limit",
+      "--disable-gpu-vsync",
+      "--no-first-run",
+      "--no-default-browser-check",
+      "--disable-background-timer-throttling",
+      "--disable-renderer-backgrounding",
+      "--disable-backgrounding-occluded-windows",
+      "--window-size=1440,900"
+    ]
+  },
+  "gpu": {
+    "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M2, Unspecified Version)",
+    "software": false,
+    "identified": true
+  },
+  "build": {
+    "profile": "Release",
+    "cmake_build_type": "Release",
+    "emscripten": "emcc (Emscripten gcc/clang-like replacement + linker emulating GNU ld) 6.0.13-git",
+    "wasmRawBytes": 49925,
+    "wasmGzipBytes": 21806,
+    "engineJsBytes": 24770,
+    "bridgeBytes": 6878
+  },
+  "page": {
+    "url": "http://127.0.0.1:4100/apps/engine-playground/?bench=50000&samples=600&warmup=120",
+    "canvas": {
+      "cssWidth": 1048,
+      "cssHeight": 589,
+      "pixelWidth": 1050,
+      "pixelHeight": 591,
+      "devicePixelRatio": 1
+    }
+  },
+  "results": {
+    "p50FrameTimeMs": 1.7999999999999545,
+    "p95FrameTimeMs": 2.004999999999991,
+    "p99FrameTimeMs": 2.2000000000000455,
+    "meanFrameTimeMs": 1.7981666666666665,
+    "meanFps": 556.1219760867551,
+    "minFrameTimeMs": 1.599999999999909,
+    "maxFrameTimeMs": 3.2000000000000455
+  },
+  "chromeStderr": [
+    "DevTools listening on ws://127.0.0.1:49468/devtools/browser/21ebfe9d-ac75-4ad8-9b1a-1644282ec3a1",
+    "[8703:731270:1025/161951.315795:ERROR:ui/display/mac/cv_display_link_mac.mm:188] CVDisplayLinkCreateWithCGDisplay failed. CVReturn: -6670",
+    "[8703:731270:1025/161951.316233:ERROR:ui/display/mac/cv_display_link_mac.mm:188] CVDisplayLinkCreateWithCGDisplay failed. CVReturn: -6670",
+    "[8703:731270:1025/161951.316327:ERROR:ui/display/mac/cv_display_link_mac.mm:188] CVDisplayLinkCreateWithCGDisplay failed. CVReturn: -6670",
+    "[8703:731270:1025/161951.316420:ERROR:ui/display/mac/cv_display_link_mac.mm:188] CVDisplayLinkCreateWithCGDisplay failed. CVReturn: -6670",
+    "[8703:731270:1025/161951.316519:ERROR:ui/display/mac/cv_display_link_mac.mm:188] CVDisplayLinkCreateWithCGDisplay failed. CVReturn: -6670",
+    "[8703:731270:1025/161951.662734:ERROR:ui/display/mac/cv_display_link_mac.mm:188] CVDisplayLinkCreateWithCGDisplay failed. CVReturn: -6670"
+  ]
+}

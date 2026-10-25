@@ -1,0 +1,14 @@
+$ node packages/engine/test/perf/run-perf.mjs
+[exit 0]
+
+serve /var/folders/68/93nwhkp965xd6yk4gqfq7fch0000gn/T/p204-perf-Mx9Cvn on http://127.0.0.1:4100/apps/engine-playground/
+chrome: /Users/rasulatashev/Library/Caches/ms-playwright/chromium-1248/chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing (source: local Playwright cache default)
+mode: unlocked-baseline; flags: --headless=new --use-angle=metal --enable-gpu --hide-scrollbars --disable-frame-rate-limit --disable-gpu-vsync --no-first-run --no-default-browser-check --disable-background-timer-throttling --disable-renderer-backgrounding --disable-backgrounding-occluded-windows --window-size=1440,900
+url: http://127.0.0.1:4100/apps/engine-playground/?bench=50000&samples=600&warmup=120
+renderer: ANGLE (Apple, ANGLE Metal Renderer: Apple M2, Unspecified Version) (identified: true, software: false)
+scenario: {"rectangles":50000,"warmup":120,"samples":600}
+samples: 600; warm-up 120
+frame time: p50 1.80 ms, p95 2.00 ms, p99 2.20 ms, mean 1.80 ms (556.1 fps)
+wasm: 49925 B raw, 21806 B gzip; browser Chrome/156.0.8078.4
+evidence: reviews/evidence/P2-04-perf-20261025T151952Z.json
+result: pass

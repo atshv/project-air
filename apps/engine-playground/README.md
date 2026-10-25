@@ -23,6 +23,17 @@ Static page, no build step; it imports the compiled bridge and the Emscripten mo
    `window.__enginePlayground` and prints the layout and fps it captured. `CHROME_PATH` overrides
    the browser, `PLAYGROUND_URL` the page URL.
 
+### Benchmark mode
+
+`?bench=<rectangles>&samples=<n>&warmup=<n>` (for example
+`?bench=50000&samples=600&warmup=120`) runs the deterministic scene with the display loop replaced by
+a benchmark loop: it discards `warmup` frames, collects `samples` rAF frame intervals, exposes
+`window.__engineBenchmark` (`status`, `count`, `warmup`, `samples`, `frameTimesMs`, `renderer`,
+`canvas`) and logs one `PERF_RESULT` JSON line when done. Without the query the page behaves exactly
+like the normal demo. The `packages/engine/test/perf/run-perf.mjs` harness drives this mode; its
+`--display-locked` flag runs the same page with the normal 60 Hz display clock as a control
+observation (no vsync-unlock flags).
+
 The page must be served over HTTP: WASM does not load from `file://`. The port comes from
 `.polier-slot`; never hard-code it in the page. The import map maps the package name
 `@project-air/engine` to the compiled bridge at `packages/engine/dist/bridge/engine.js`; that deep

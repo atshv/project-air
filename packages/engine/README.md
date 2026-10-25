@@ -26,6 +26,13 @@ from [docs/versions.md](../../docs/versions.md), not through pnpm.
   and checks the exported C API failure contract (no browser needed); the `wasm-build` gate runs
   it after the wrapper.
 - **WASM size:** `node packages/engine/tools/wasm-size.mjs` — fails above 307200 bytes gzip.
+- **Performance baseline:** `node packages/engine/test/perf/run-perf.mjs` — exclusive `perf-baseline`
+  gate: launches Chrome for Testing with a real GPU, measures 50,000 rectangles
+  (`?bench=50000&samples=600&warmup=120`), writes `reviews/evidence/P2-04-perf-<timestamp>.json` and
+  exits 0 only when p95 frame time is <= 16.7 ms; see [docs/gates/perf.md](../../docs/gates/perf.md)
+  and [docs/engine/perf-baseline.md](../../docs/engine/perf-baseline.md). The display-locked
+  control run is `node packages/engine/test/perf/run-perf.mjs --display-locked` (result `control`,
+  never a pass).
 - **Toolchain:** CMake 4.4.4, Emscripten 6.0.13, C++20; gate details in
   [docs/gates/cpp-cmake.md](../../docs/gates/cpp-cmake.md) and
   [docs/gates/wasm-emscripten.md](../../docs/gates/wasm-emscripten.md).

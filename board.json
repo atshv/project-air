@@ -2299,12 +2299,15 @@
       ]
     },
     {
-      "status": "in_progress",
+      "status": "done",
       "stage": "engine-spike",
       "parallel_group": null,
       "owner": null,
       "round": 0,
-      "evidence": [],
+      "evidence": [
+        "reviews/evidence/P2-04-board-check-20261025T151946Z.json",
+        "reviews/evidence/P2-04-perf-baseline-20261025T151950Z.json"
+      ],
       "scope_write_forbidden": [
         "reference/"
       ],
@@ -2355,7 +2358,12 @@
         "perf"
       ],
       "branch": "task/P2-04",
-      "worktree": "../Project air-P2-04"
+      "worktree": null,
+      "handoff": [
+        "Closed P2-04: Chrome benchmark (ANGLE Metal GPU, fail-closed renderer, 50k assertion) measured p95 2.00 ms = 556 fps headroom on the M2 proxy; display-locked control p95 16.80 ms committed.",
+        "WASM 21,806 B gzip (budget 300 KiB); docs/engine/perf-baseline.md + docs/gates/perf.md; Chrome for Testing 156.0.8078.4 local-only tool; board infra_patterns flag software renderers.",
+        "Honest reading: headroom proxy for 60 fps, not delivered 60 fps/GPU-completion; MacBook Air M1 reference unproven - re-measure before stage exit on that hardware. Round-1 majors fixed, round-2 pass."
+      ]
     },
     {
       "status": "pending",

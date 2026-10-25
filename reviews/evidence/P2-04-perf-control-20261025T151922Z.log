@@ -1,0 +1,11 @@
+serve /var/folders/68/93nwhkp965xd6yk4gqfq7fch0000gn/T/p204-perf-XZJGup on http://127.0.0.1:4100/apps/engine-playground/
+chrome: /Users/rasulatashev/Library/Caches/ms-playwright/chromium-1248/chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing (source: local Playwright cache default)
+mode: display-locked-control; flags: --headless=new --use-angle=metal --enable-gpu --hide-scrollbars --no-first-run --no-default-browser-check --disable-background-timer-throttling --disable-renderer-backgrounding --disable-backgrounding-occluded-windows --window-size=1440,900
+url: http://127.0.0.1:4100/apps/engine-playground/?bench=50000&samples=600&warmup=120
+renderer: ANGLE (Apple, ANGLE Metal Renderer: Apple M2, Unspecified Version) (identified: true, software: false)
+scenario: {"rectangles":50000,"warmup":120,"samples":600}
+samples: 600; warm-up 120
+frame time: p50 16.70 ms, p95 16.80 ms, p99 16.80 ms, mean 16.67 ms (60.0 fps)
+wasm: 49925 B raw, 21806 B gzip; browser Chrome/156.0.8078.4
+evidence: reviews/evidence/P2-04-perf-control-20261025T151922Z.json
+result: control (display-locked control, not a pass)

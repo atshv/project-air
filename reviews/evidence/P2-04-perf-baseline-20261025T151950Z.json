@@ -1,0 +1,19 @@
+{
+  "task": "P2-04",
+  "gate": "perf-baseline",
+  "command": "node packages/engine/test/perf/run-perf.mjs",
+  "exit_code": 0,
+  "result": "pass",
+  "slot": null,
+  "exclusive": [
+    "perf"
+  ],
+  "lock_wait_s": 0.0,
+  "lock_warning": null,
+  "started": "2026-10-25T15:19:50+00:00",
+  "finished": "2026-10-25T15:19:53+00:00",
+  "commit": "ba03c72b7b1a9eda8d4c73cee1d6a265c57b9c9b",
+  "dirty": true,
+  "log": "P2-04-perf-baseline-20261025T151950Z.log",
+  "log_sha256": "1c0183619f1da1b7419a738e7b684faa33e5408bdb063ab73cf3e930662893bf"
+}
