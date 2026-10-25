@@ -86,7 +86,7 @@
         "wasm-build",
         "perf-baseline"
       ],
-      "owner_decision": "pending",
+      "owner_decision": "continue",
       "depends_on": [
         "contract"
       ]
@@ -2452,7 +2452,7 @@
       "id": "Q6",
       "question": "Reference hardware for the 60 fps target (needed before stage: engine-spike).",
       "status": "answered",
-      "answer": "Reference hardware: MacBook Air M1, 8 GB, Chrome (owner decision 2026-10-25). The local development machine is a Mac mini M2, 8 GB, macOS 26.5.2; perf evidence on it is documented as a proxy with the deviation in the measured report."
+      "answer": "Reference hardware: MacBook Air M1, 8 GB, Chrome (owner 2026-10-25). The owner accepted a documented proxy measurement on the local Mac mini M2, 8 GB, macOS 26.5.2, Chrome for Testing for local evidence; the M1 number remains to be confirmed before the stage exits, so the stage handoff states the caveat."
     },
     {
       "id": "Q7",

@@ -24,8 +24,8 @@
 
 ### Stage 3 — `engine-spike` Engine spike
 
-- State: waiting for the owner decision
-- Owner decision: `pending`
+- State: exit gates missing: cpp-unit, wasm-build, perf-baseline
+- Owner decision: `continue`
 - Exit gates: `cpp-unit` (missing record), `wasm-build` (missing record), `perf-baseline` (missing record)
 - Exit criteria: 60 fps with 50,000 rectangles on the reference hardware; WASM <= 300 KB gzip.; Measured report and ADR for the engine architecture.
 - Tasks: P2-01, P2-02, P2-03, P2-04, P2-05
