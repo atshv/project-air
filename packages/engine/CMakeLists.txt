@@ -31,6 +31,7 @@ add_library(air_engine_objects OBJECT
   src/doc.cpp
   src/engine.cpp
   src/render.cpp
+  src/render_gl.cpp
   src/spatial.cpp
 )
 target_include_directories(air_engine_objects PUBLIC ${AIR_ENGINE_INCLUDE_DIRS})
@@ -47,10 +48,13 @@ if(EMSCRIPTEN)
   )
   target_link_options(engine PRIVATE
     "--no-entry"
-    "-sEXPORTED_FUNCTIONS=_air_engine_version"
-    "-sEXPORTED_RUNTIME_METHODS=ccall,cwrap,UTF8ToString"
+    "-sEXPORTED_FUNCTIONS=_air_engine_version,_engine_create,_engine_resize,_engine_set_camera,_engine_load_rectangles,_engine_render_frame,_engine_last_error,_malloc,_free"
+    "-sEXPORTED_RUNTIME_METHODS=ccall,cwrap,UTF8ToString,HEAPF32"
     "-sMODULARIZE=1"
     "-sEXPORT_NAME=createAirEngine"
+    "-sMIN_WEBGL_VERSION=2"
+    "-sMAX_WEBGL_VERSION=2"
+    "-sINITIAL_MEMORY=67108864"
   )
 else()
   enable_testing()

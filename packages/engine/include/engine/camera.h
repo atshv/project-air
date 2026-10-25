@@ -27,7 +27,12 @@ class Camera {
 
   Status setPan(double panX, double panY);
 
+  // Sets pan and zoom atomically: a rejected value leaves both untouched.
+  // The zoom is clamped to [kMinZoom, kMaxZoom] after validation.
+  Status setView(double panX, double panY, double zoom);
+
   // Moves the content with the pointer: a screen-space drag delta pans the view.
+  // Rejects a drag that would overflow the pan to a non-finite value.
   Status panByScreen(double deltaX, double deltaY);
 
   // Clamps to [kMinZoom, kMaxZoom]; rejects non-finite input.

@@ -119,7 +119,10 @@
 
 ## Ready now
 
-- none
+- `P2-04` Performance baseline and measured report
+  - P2-03: Closed P2-03: WebGL2 instanced renderer, C API with correct failure returns + Node wasm smoke in wasm-build, TS bridge @project-air/engine, playground demo; wasm 49,925 B raw / 21,806 B gzip.
+  - P2-03: Evidence: P2-03-playground.png 1440x900 (16:9 scene fills the canvas, no overflow at 390), serve/curl/screenshot log with full Chrome path and committed capture helper.
+  - P2-03: Reviews: round 1 pass with a major failure-return bug (fixed + regression), round 2 pass. Limits: one engine per module, dispose detaches only; SwiftShader fps functional only (P2-04 measures on HW).
 
 ## Done
 
@@ -151,10 +154,11 @@
 - [x] `P1-07` Contract overview in the preview — status: `done` — owner: —
 - [x] `P2-01` Engine toolchain and native + WASM build scaffold — status: `done` — owner: —
 - [x] `P2-02` Engine core model and render command buffer — status: `done` — owner: —
+- [x] `P2-03` WebGL2 renderer, TS bridge and engine playground — status: `done` — owner: —
 
 ## In progress
 
-- [ ] `P2-03` WebGL2 renderer, TS bridge and engine playground — status: `in_progress` — owner: —
+- none
 
 ## Blocked / failed
 
@@ -168,13 +172,6 @@
 - [ ] `P0-17` RELEASING.md and release 0.0.1 — status: `pending` — owner: —
 - [ ] `P2-04` Performance baseline and measured report — status: `pending` — owner: —
 - [ ] `P2-05` Engine architecture ADR, module docs and stage showcase — status: `pending` — owner: —
-
-<!-- polier:claims -->
-## Claims
-
-- `P2-03` in progress by dsh since 2026-10-25T14:16:23+00:00 — worktree: /Users/rasulatashev/Desktop/KI Projekte/Project air-P2-03 · slot 1
-
-<!-- /polier:claims -->
 
 ## Decisions
 

@@ -26,7 +26,19 @@ Exactly these workspace packages, copied from `board.json` -> `packages[]` -> `m
 
 ## Commands
 
-Install, build, lint, typecheck and test: **set by P0-04**, the workspace task. This package defines no command before the workspace exists; the task that adds code expands this section.
+Static page, no bundler and no build step: `index.html` + `playground.css` + `main.js`, all values
+from `packages/ui-kit/tokens.css`.
+
+- **Bridge:** `pnpm --filter @project-air/engine run build` (compiles `packages/engine/dist/`).
+- **WASM:** `bash packages/engine/tools/build-wasm.sh`.
+- **Serve:** `python3 -m http.server <slot web port> --bind 127.0.0.1` from the repository root
+  (port from `.polier-slot`), then open `/apps/engine-playground/` over HTTP — WASM cannot load
+  from `file://`.
+- **Size:** `node packages/engine/tools/wasm-size.mjs` (gzip budget 307200 bytes).
+- **Evidence:** `node apps/engine-playground/tools/capture.mjs <desktop.png> [mobile.png]` starts
+  headless Chrome for Testing with SwiftShader, emulates exact viewports, pauses the loop via
+  `window.__enginePlayground` and prints the captured layout/fps; the page imports the bridge by
+  package name through an import map (no bundler).
 
 
 ## References

@@ -1,0 +1,4 @@
+$ node packages/engine/tools/wasm-size.mjs
+[exit 0]
+
+wasm-size: engine.wasm raw 49925 B, gzip 21806 B, budget 307200 B → OK

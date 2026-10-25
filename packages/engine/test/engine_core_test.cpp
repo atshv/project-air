@@ -182,9 +182,29 @@ void cameraValidation() {
   test::expect(!status.ok, "an infinite drag delta is rejected");
   test::expectNear(camera.panX(), 10.0, 0.0, "a rejected drag keeps the pan");
 
+  camera.setZoom(0.5);
+  status = camera.panByScreen(std::numeric_limits<double>::max(), 0.0);
+  test::expect(!status.ok && status.reason != nullptr,
+               "a drag that overflows the pan is rejected with a reason");
+  test::expectNear(camera.panX(), 10.0, 0.0, "an overflowed pan keeps the previous value");
+
   status = camera.setZoom(1.0e9);
   test::expect(status.ok, "a finite zoom is still accepted");
   test::expectNear(camera.zoom(), Camera::kMaxZoom, 0.0, "a finite zoom still clamps");
+
+  // setView is atomic: a rejected zoom must not leave a new pan behind.
+  Camera atomicCamera;
+  atomicCamera.setView(10.0, 20.0, 3.0);
+  status = atomicCamera.setView(50.0, 60.0, std::numeric_limits<double>::quiet_NaN());
+  test::expect(!status.ok && status.reason != nullptr,
+               "a non-finite setView zoom is rejected with a reason");
+  test::expectNear(atomicCamera.panX(), 10.0, 0.0, "a rejected setView keeps the pan x");
+  test::expectNear(atomicCamera.panY(), 20.0, 0.0, "a rejected setView keeps the pan y");
+  test::expectNear(atomicCamera.zoom(), 3.0, 0.0, "a rejected setView keeps the zoom");
+  status = atomicCamera.setView(50.0, 60.0, 2.0);
+  test::expect(status.ok, "a finite setView is accepted atomically");
+  test::expectNear(atomicCamera.panX(), 50.0, 0.0, "an accepted setView commits the pan x");
+  test::expectNear(atomicCamera.zoom(), 2.0, 0.0, "an accepted setView commits the zoom");
 }
 
 void cullingAndDrawOrder() {
@@ -380,6 +400,18 @@ void largeCoordinates() {
   std::vector<std::uint32_t> candidates;
   spatial.query({std::numeric_limits<double>::quiet_NaN(), 0.0, 1.0, 1.0}, candidates);
   test::expect(candidates.empty(), "a non-finite query bound is clamped instead of UB");
+
+  // A finite world rectangle whose screen quad overflows float must fail loudly
+  // instead of producing an infinite instance record.
+  Document huge;
+  addRectangle(huge, makeRectangle(0.0, 0.0, 1.0e40, 10.0, "a"));
+  SpatialIndex hugeSpatial;
+  hugeSpatial.rebuild(huge);
+  Camera hugeCamera;
+  status = buffer.build(huge, hugeCamera, 100.0, 100.0, hugeSpatial);
+  test::expect(!status.ok && status.reason != nullptr,
+               "a rectangle outside the float range is rejected with a reason");
+  test::expect(buffer.empty(), "the float-range failure leaves an empty buffer");
 }
 
 void determinismAndPerformance() {
@@ -435,14 +467,17 @@ void staleIndexAndCapacity() {
   addRectangle(document, makeRectangle(0.0, 0.0, 10.0, 10.0, "a"));
   SpatialIndex spatial;
   spatial.rebuild(document);
-  addRectangle(document, makeRectangle(20.0, 20.0, 10.0, 10.0, "b"));
 
   Camera camera;
   CommandBuffer buffer;
   Status status = buffer.build(document, camera, 100.0, 100.0, spatial);
+  test::expect(status.ok && buffer.size() == 1, "the current index builds the buffer");
+
+  addRectangle(document, makeRectangle(20.0, 20.0, 10.0, 10.0, "b"));
+  status = buffer.build(document, camera, 100.0, 100.0, spatial);
   test::expect(!status.ok && status.reason != nullptr,
                "a stale spatial index is reported instead of silently skipped");
-  test::expect(buffer.empty(), "the stale-index failure leaves an empty buffer");
+  test::expect(buffer.empty(), "a failed build empties a previously filled buffer");
   test::expect(buffer.bytes() == nullptr, "the failed build has no record pointer");
   spatial.rebuild(document);
   status = buffer.build(document, camera, 100.0, 100.0, spatial);

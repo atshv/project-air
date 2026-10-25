@@ -1,0 +1,20 @@
+{
+  "name": "@project-air/engine",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "C++20 canvas engine compiled to WebAssembly with the thin TypeScript bridge createEngine(canvas, options).",
+  "main": "./dist/bridge/engine.js",
+  "types": "./dist/bridge/engine.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/bridge/engine.d.ts",
+      "import": "./dist/bridge/engine.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc --project tsconfig.json",
+    "typecheck": "tsc --noEmit --project tsconfig.json",
+    "lint": "eslint --max-warnings=0 ."
+  }
+}

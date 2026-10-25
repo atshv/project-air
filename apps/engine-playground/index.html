@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Engine playground — Project air</title>
+    <link rel="stylesheet" href="../../packages/ui-kit/tokens.css" />
+    <link rel="stylesheet" href="playground.css" />
+    <script type="importmap">
+      {
+        "imports": {
+          "@project-air/engine": "../../packages/engine/dist/bridge/engine.js"
+        }
+      }
+    </script>
+    <script type="module" src="main.js"></script>
+  </head>
+  <body>
+    <main class="frame">
+      <header class="frame__header">
+        <h1 class="heading">Engine playground</h1>
+        <p class="spike-label">spike — not the engine</p>
+      </header>
+      <div class="canvas-wrap">
+        <canvas
+          id="canvas"
+          class="canvas"
+          width="960"
+          height="540"
+          role="img"
+          aria-label="WebGL2 engine demo: a 50,000-rectangle document"
+        >
+          Your browser does not support WebGL2.
+        </canvas>
+      </div>
+      <footer class="frame__footer">
+        <p class="caption">
+          A 50,000-rectangle document, one instanced WebGL2 draw per frame. No
+          editing, no server.
+        </p>
+        <p class="fps" id="fps">0 fps</p>
+      </footer>
+      <p class="error" id="error" hidden></p>
+    </main>
+  </body>
+</html>

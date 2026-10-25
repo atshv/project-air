@@ -6,7 +6,7 @@
 
 | Gate | Command | Expected |
 | --- | --- | --- |
-| `wasm-build` | `bash packages/engine/tools/build-wasm.sh` | exit 0; `packages/engine/build-wasm/engine.js` and `packages/engine/build-wasm/engine.wasm` written |
+| `wasm-build` | `bash packages/engine/tools/build-wasm.sh && node packages/engine/tools/wasm-smoke.mjs` | exit 0; `packages/engine/build-wasm/engine.js` and `packages/engine/build-wasm/engine.wasm` written; Node smoke passes |
 | `wasm-size` | `node packages/engine/tools/wasm-size.mjs` (ships with P2-03; P2-04 records the measured size) | exit 0, gzip size <= 307200 bytes (300 KiB) |
 
 - `packages/engine/tools/build-wasm.sh` is the portable entry point and the only supported
@@ -16,9 +16,14 @@
   `emcmake cmake -S packages/engine -B packages/engine/build-wasm -DCMAKE_BUILD_TYPE=Release && cmake --build packages/engine/build-wasm --parallel`;
   without Homebrew it trusts `emcc`/`emcmake` on `PATH`, which is how CI runs a pinned emsdk
   installation.
-- The WASM artifact is a JavaScript module without `main()` (`--no-entry`); the C ABI function
-  `air_engine_version` is exported (`-sEXPORTED_FUNCTIONS=_air_engine_version`) and available on
-  the module object as `_air_engine_version` (also callable through `ccall`).
+- The WASM artifact is a JavaScript module without `main()` (`--no-entry`); the C ABI functions
+  `air_engine_version` and the P2-03 renderer API (`engine_create`, `engine_resize`,
+  `engine_set_camera`, `engine_load_rectangles`, `engine_render_frame`, `engine_last_error`) are
+  exported and callable through `ccall`.
+- `packages/engine/tools/wasm-smoke.mjs` loads the built module in Node (the wrapper marks
+  `build-wasm/` as CommonJS) and checks the C API failure contract without a browser:
+  `engine_create` on a missing WebGL2 canvas returns 0 with a non-empty `engine_last_error()`, and
+  a pre-create `engine_load_rectangles` keeps reporting the pre-create error.
 - Export check (A3), loads the built module in Node and reads the version string:
 
   ```bash
@@ -27,9 +32,8 @@
 
   → `engine.wasm exports air_engine_version: 0.1.0`.
 - All Emscripten settings live in `packages/engine/CMakeLists.txt` inside `if(EMSCRIPTEN)`
-  (`--no-entry`, `-sEXPORTED_FUNCTIONS=_air_engine_version`,
-  `-sEXPORTED_RUNTIME_METHODS=ccall,cwrap,UTF8ToString`, `-sMODULARIZE=1`,
-  `-sEXPORT_NAME=createAirEngine`), not on the command line.
+  (entry point, exported functions/runtime methods, module name and memory flags), not on the
+  command line; read that block for the authoritative export list.
 
 ## Pitfalls
 

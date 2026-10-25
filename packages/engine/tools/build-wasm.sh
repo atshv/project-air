@@ -62,3 +62,8 @@ fi
 
 emcmake cmake -S "${PACKAGE_DIR}" -B "${BUILD_DIR}" -DCMAKE_BUILD_TYPE=Release
 cmake --build "${BUILD_DIR}" --parallel
+
+# packages/engine/package.json declares "type": "module", which would make Node
+# treat the generated engine.js as ESM. Tag the build output as CommonJS so the
+# classic browser script loader and the documented Node require check both work.
+printf '{ "type": "commonjs" }\n' > "${BUILD_DIR}/package.json"

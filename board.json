@@ -2229,12 +2229,19 @@
       ]
     },
     {
-      "status": "in_progress",
+      "status": "done",
       "stage": "engine-spike",
       "parallel_group": null,
       "owner": null,
       "round": 0,
-      "evidence": [],
+      "evidence": [
+        "reviews/evidence/P2-03-board-check-20261025T144724Z.json",
+        "reviews/evidence/P2-03-boundaries-20261025T144705Z.json",
+        "reviews/evidence/P2-03-cpp-unit-20261025T144701Z.json",
+        "reviews/evidence/P2-03-wasm-build-20261025T144708Z.json",
+        "reviews/evidence/P2-03-wasm-size-20261025T144712Z.json",
+        "reviews/evidence/P2-03-design-check-20261025T144715Z.json"
+      ],
       "scope_write_forbidden": [
         "reference/"
       ],
@@ -2282,7 +2289,12 @@
         "design-check"
       ],
       "branch": "task/P2-03",
-      "worktree": "../Project air-P2-03"
+      "worktree": null,
+      "handoff": [
+        "Closed P2-03: WebGL2 instanced renderer, C API with correct failure returns + Node wasm smoke in wasm-build, TS bridge @project-air/engine, playground demo; wasm 49,925 B raw / 21,806 B gzip.",
+        "Evidence: P2-03-playground.png 1440x900 (16:9 scene fills the canvas, no overflow at 390), serve/curl/screenshot log with full Chrome path and committed capture helper.",
+        "Reviews: round 1 pass with a major failure-return bug (fixed + regression), round 2 pass. Limits: one engine per module, dispose detaches only; SwiftShader fps functional only (P2-04 measures on HW)."
+      ]
     },
     {
       "status": "pending",

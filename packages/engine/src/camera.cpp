@@ -16,12 +16,27 @@ Status Camera::setPan(double panX, double panY) {
   return Status::success();
 }
 
+Status Camera::setView(double panX, double panY, double zoom) {
+  if (!std::isfinite(panX) || !std::isfinite(panY) || !std::isfinite(zoom)) {
+    return Status::failure("camera pan and zoom must be finite");
+  }
+  panX_ = panX;
+  panY_ = panY;
+  zoom_ = std::clamp(zoom, kMinZoom, kMaxZoom);
+  return Status::success();
+}
+
 Status Camera::panByScreen(double deltaX, double deltaY) {
   if (!std::isfinite(deltaX) || !std::isfinite(deltaY)) {
     return Status::failure("camera drag delta must be finite");
   }
-  panX_ -= deltaX / zoom_;
-  panY_ -= deltaY / zoom_;
+  const double nextPanX = panX_ - deltaX / zoom_;
+  const double nextPanY = panY_ - deltaY / zoom_;
+  if (!std::isfinite(nextPanX) || !std::isfinite(nextPanY)) {
+    return Status::failure("camera pan would become non-finite");
+  }
+  panX_ = nextPanX;
+  panY_ = nextPanY;
   return Status::success();
 }
 

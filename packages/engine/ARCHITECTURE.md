@@ -31,17 +31,19 @@ Exactly these workspace packages, copied from `board.json` -> `packages[]` -> `m
 
 ## Commands
 
-The pinned toolchain is CMake 4.4.4 and Emscripten 6.0.13 with C++20
-([docs/versions.md](../../docs/versions.md)); the engine builds with CMake, not with pnpm.
+Pinned toolchain: CMake 4.4.4 + Emscripten 6.0.13, C++20
+([docs/versions.md](../../docs/versions.md)); the engine builds with CMake, not pnpm.
 
 - **Native build and unit test:**
   `cmake -S packages/engine -B packages/engine/build -DCMAKE_BUILD_TYPE=Debug && cmake --build packages/engine/build --parallel && ctest --test-dir packages/engine/build --output-on-failure`
 - **WebAssembly build:** `bash packages/engine/tools/build-wasm.sh` from the repository root; the
   wrapper prepends the Homebrew Emscripten `PATH` (or trusts the CI emsdk) and runs the `emcmake`
   configure plus build.
-- **Targets:** the `air_engine` library, the core modules `doc`, `camera`, `spatial` and `render`,
-  the CTest suites `engine_unit_tests` and `engine_core_tests`, and the WASM module
-  `build-wasm/engine.js` plus `engine.wasm` exporting `air_engine_version`.
+- **Targets:** the `air_engine` library, the core modules `doc`, `camera`, `spatial`, `render` and
+  the WASM-only `render_gl` WebGL2 renderer, the CTest suites `engine_unit_tests` and
+  `engine_core_tests`, and the WASM module `build-wasm/engine.js` plus `engine.wasm`.
+- **TypeScript bridge:** `pnpm --filter @project-air/engine run build` compiles
+  `src/bridge/engine.ts`; `node packages/engine/tools/wasm-size.mjs` enforces the gzip budget.
 - **Gate catalogue:** [docs/gates/cpp-cmake.md](../../docs/gates/cpp-cmake.md) and
   [docs/gates/wasm-emscripten.md](../../docs/gates/wasm-emscripten.md).
 

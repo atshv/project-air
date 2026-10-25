@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <limits>
 
 #include "tokens.h"
 
@@ -50,6 +51,10 @@ std::size_t CommandBuffer::byteSize() const { return instances_.size() * sizeof(
 Status CommandBuffer::build(const Document& document, const Camera& camera,
                             double viewportWidth, double viewportHeight,
                             const SpatialIndex& spatial) {
+  // A failed build always leaves an empty buffer (documented in render.h).
+  instances_.clear();
+  candidates_.clear();
+
   if (!spatial.isCurrent(document)) {
     return Status::failure(
         "spatial index is stale or belongs to another document; rebuild it for this document");
@@ -58,9 +63,6 @@ Status CommandBuffer::build(const Document& document, const Camera& camera,
         viewportHeight > 0.0)) {
     return Status::failure("viewport size must be a positive finite number");
   }
-
-  instances_.clear();
-  candidates_.clear();
 
   const Bounds visible = camera.visibleWorldBounds(viewportWidth, viewportHeight);
   spatial.query(visible, candidates_);
@@ -90,9 +92,21 @@ Status CommandBuffer::build(const Document& document, const Camera& camera,
       continue;
     }
     const Point topLeft = camera.worldToScreen({rectangle.x, rectangle.y});
+    const double screenWidth = rectangle.width * zoom;
+    const double screenHeight = rectangle.height * zoom;
+    // The instance record is float; a huge world rectangle must fail loudly
+    // instead of silently producing an infinite quad.
+    const double floatMax = static_cast<double>(std::numeric_limits<float>::max());
+    if (!std::isfinite(topLeft.x) || !std::isfinite(topLeft.y) || !std::isfinite(screenWidth) ||
+        !std::isfinite(screenHeight) || std::abs(topLeft.x) > floatMax ||
+        std::abs(topLeft.y) > floatMax || std::abs(screenWidth) > floatMax ||
+        std::abs(screenHeight) > floatMax) {
+      instances_.clear();
+      return Status::failure("rectangle quad exceeds the supported float range");
+    }
     instances_.push_back(Instance{static_cast<float>(topLeft.x), static_cast<float>(topLeft.y),
-                                  static_cast<float>(rectangle.width * zoom),
-                                  static_cast<float>(rectangle.height * zoom),
+                                  static_cast<float>(screenWidth),
+                                  static_cast<float>(screenHeight),
                                   static_cast<std::uint32_t>(rectangle.tone),
                                   static_cast<std::uint32_t>(rectangle.layer)});
   }

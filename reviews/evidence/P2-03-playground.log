@@ -1,0 +1,54 @@
+# P2-03 playground serve/curl/screenshot log
+# date (UTC): 2026-10-25T14:46:45Z
+
+## Runtime slot (web port comes from .polier-slot, never hard-coded in the page)
+slot: 1 web port: 4100
+
+## Build steps
+$ pnpm install --frozen-lockfile
+$ pnpm --filter @project-air/engine run build
+$ bash packages/engine/tools/build-wasm.sh
+
+## Serve the repository root on the slot web port
+$ python3 -m http.server 4100 --bind 127.0.0.1   # from the repository root, background
+
+## HTTP status and bytes (curl -s -o /dev/null -w '%{http_code} %{size_download}')
+200 1391  /apps/engine-playground/
+200 4395  /apps/engine-playground/main.js
+200 1766  /apps/engine-playground/playground.css
+200 2295  /packages/ui-kit/tokens.css
+200 6878  /packages/engine/dist/bridge/engine.js
+200 24770  /packages/engine/build-wasm/engine.js
+200 49925  /packages/engine/build-wasm/engine.wasm
+
+## WASM smoke and size
+wasm-smoke: engine_create without WebGL2 -> 0, error: could not create a WebGL2 context on the canvas
+wasm-smoke: engine_load_rectangles before create -> 0, error: engine_create must be called before engine_load_rectangles
+wasm-smoke: OK
+wasm-size: engine.wasm raw 49925 B, gzip 21806 B, budget 307200 B → OK
+
+## Screenshot (headless Google Chrome for Testing, WebGL via SwiftShader)
+chrome: /Users/rasulatashev/Library/Caches/ms-playwright/chromium-1248/chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing
+$ node apps/engine-playground/tools/capture.mjs reviews/evidence/P2-03-playground.png /tmp/P2-03-playground-mobile.png
+# capture helper output (same run that wrote the committed PNG):
+chrome: /Users/rasulatashev/Library/Caches/ms-playwright/chromium-1248/chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing
+url: http://127.0.0.1:4100/apps/engine-playground/
+reviews/evidence/P2-03-playground.png 1440x900 {"width":1440,"height":900,"docScrollWidth":1440,"overflowX":false,"fps":"3 fps","error":"","frame":{"x":170,"y":24,"width":1100,"height":721.609375,"top":24,"right":1270,"bottom":745.609375,"left":170},"canvasPixels":[1050,591]}
+/tmp/P2-03-playground-mobile.png 390x844 {"width":390,"height":844,"docScrollWidth":390,"overflowX":false,"fps":"12 fps","error":"","frame":{"x":24,"y":24,"width":342,"height":363,"top":24,"right":366,"bottom":387,"left":24},"canvasPixels":[292,164]}
+
+## Files
+-rw-r--r--@ 1 rasulatashev  wheel  122630 Oct 25 15:46 /tmp/P2-03-playground-mobile.png
+-rw-r--r--@ 1 rasulatashev  staff   24770 Oct 25 15:44 packages/engine/build-wasm/engine.js
+-rwxr-xr-x@ 1 rasulatashev  staff   49925 Oct 25 15:44 packages/engine/build-wasm/engine.wasm
+-rw-r--r--@ 1 rasulatashev  staff  608542 Oct 25 15:46 reviews/evidence/P2-03-playground.png
+
+## Notes
+- Screenshot is 1440x900 CSS pixels and shows the whole 50,000-rectangle document (world
+  8000x4500, 16:9 like the canvas) with no letterbox; the mobile 390x844 layout has no
+  horizontal overflow (documentElement.scrollWidth == innerWidth). The camera clamps at zoom
+  0.1, so at 390 px the view crops the document; the caption names the document, not the
+  drawn subset.
+- The helper pauses the loop through window.__enginePlayground before capture, so the fps
+  label in the PNG matches the value logged above (3 fps desktop, 12 fps mobile in this run).
+- The headless browser renders WebGL with SwiftShader, so these fps values are a functional
+  check only; performance numbers belong to P2-04 on the recorded hardware.

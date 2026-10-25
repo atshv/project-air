@@ -17,6 +17,15 @@ from [docs/versions.md](../../docs/versions.md), not through pnpm.
 - **WebAssembly build:** `bash packages/engine/tools/build-wasm.sh` from the repository root —
   writes `build-wasm/engine.js` and `build-wasm/engine.wasm`. The wrapper sets the toolchain `PATH`
   itself (Homebrew locally, a pinned emsdk on CI) and runs the `emcmake` configure plus build.
+- **TypeScript bridge:** `pnpm --filter @project-air/engine run build` compiles
+  `src/bridge/engine.ts` to `dist/`; `pnpm --filter @project-air/engine run typecheck` and
+  `pnpm --filter @project-air/engine run lint` are the checks. The package entry
+  (`main`/`types`/`exports` → `dist/bridge/engine.js`) exposes
+  `createEngine(canvas, options)` over the exported WebGL2 C API.
+- **WASM smoke:** `node packages/engine/tools/wasm-smoke.mjs` — loads the built module in Node
+  and checks the exported C API failure contract (no browser needed); the `wasm-build` gate runs
+  it after the wrapper.
+- **WASM size:** `node packages/engine/tools/wasm-size.mjs` — fails above 307200 bytes gzip.
 - **Toolchain:** CMake 4.4.4, Emscripten 6.0.13, C++20; gate details in
   [docs/gates/cpp-cmake.md](../../docs/gates/cpp-cmake.md) and
   [docs/gates/wasm-emscripten.md](../../docs/gates/wasm-emscripten.md).
