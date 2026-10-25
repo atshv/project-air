@@ -1782,6 +1782,57 @@
         "Group inverse reverses child inverses, no nesting; fixtures valid+invalid per type; unit tests pass.",
         "P1-03 codegen consumes these schemas; ADR-0004 fixes text limits and private/workspace/link visibility (link read-only, revocable)."
       ]
+    },
+    {
+      "id": "P1-03",
+      "title": "Codegen TS + C++ with identical fixtures",
+      "goal": "Deterministic codegen from the contract schemas to TypeScript types and a C++ header; both read the same fixtures identically.",
+      "why": "Engine (C++) and backend/web (TS) must read one contract identically (AD-3).",
+      "satisfies": [
+        "D7"
+      ],
+      "status": "pending",
+      "depends_on": [
+        "P1-02"
+      ],
+      "complexity": 6,
+      "stage": "contract",
+      "parallel_group": null,
+      "scope_write": [
+        "packages/contracts/",
+        "pnpm-lock.yaml",
+        ".changes/"
+      ],
+      "scope_read": [
+        "ARCHITECTURE.md",
+        "AGENTS.md",
+        "STATUS.md",
+        "docs/module-map.md",
+        "docs/quality.md",
+        "docs/owner/canvas-suite-blueprint.md",
+        "docs/versions.md",
+        "docs/gates/cpp-cmake.md",
+        "packages/contracts/"
+      ],
+      "acceptance": [
+        "A1",
+        "A2",
+        "A3",
+        "A4"
+      ],
+      "gates": [
+        "codegen",
+        "unit",
+        "board-check"
+      ],
+      "owner": null,
+      "branch": "task/P1-03",
+      "worktree": null,
+      "round": 0,
+      "evidence": [],
+      "scope_write_forbidden": [
+        "reference/"
+      ]
     }
   ],
   "decisions": [
