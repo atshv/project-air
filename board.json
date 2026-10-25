@@ -37,7 +37,7 @@
         "A fresh clone installs reproducibly with the committed lockfile; root lint, typecheck, test and build pass.",
         "Two worktrees run install, lint, typecheck and tests side by side without port or database collision; tools/dev/setup and teardown create and remove the slot database and bucket and refuse slot 0.",
         "design-check, language-check, changelog-entry and boundaries reject a violating change locally; every code change carries a .changes entry.",
-        "CI, branch protection, hosting and releases are deferred to the remote stage after hardening (ADR-0003).",
+        "The CI workflow is authored and proven locally (actionlint + act) and local sessions use Polier at the board's generator_version; the real GitHub run, branch protection, hosting and releases are deferred to the remote stage after hardening (ADR-0003).",
         "A runnable design preview page exists with desktop and mobile screenshots and a live two-note connection demo (P0-19, P0-20)."
       ],
       "exit_gates": [
@@ -49,7 +49,9 @@
         "tokens-codegen",
         "design-check",
         "language-check",
-        "changelog-entry"
+        "changelog-entry",
+        "ci-local",
+        "polier-version"
       ],
       "owner_decision": "pending",
       "depends_on": []
@@ -676,7 +678,7 @@
     {
       "id": "P0-08",
       "title": "CI skeleton",
-      "goal": "Every pull request runs scope check, boundaries, board check, lint and typecheck.",
+      "goal": "Every pull request runs the board check, boundaries, install, lint, typecheck, tests and the tool gates through one CI workflow, proven locally now.",
       "why": "All later gates plug into this pipeline.",
       "satisfies": [
         "D6"
@@ -686,7 +688,7 @@
         "P0-04"
       ],
       "complexity": 4,
-      "stage": "remote",
+      "stage": "foundation",
       "parallel_group": null,
       "scope_write": [
         ".github/workflows/ci.yml"
@@ -706,8 +708,8 @@
         "A4"
       ],
       "gates": [
-        "ci-green",
-        "board-check"
+        "board-check",
+        "ci-local"
       ],
       "owner": null,
       "branch": "task/P0-08",
@@ -731,7 +733,7 @@
         "P0-08"
       ],
       "complexity": 2,
-      "stage": "remote",
+      "stage": "foundation",
       "parallel_group": null,
       "scope_write": [
         "tools/polier.sh",
@@ -751,7 +753,8 @@
         "A3"
       ],
       "gates": [
-        "polier-version"
+        "polier-version",
+        "board-check"
       ],
       "owner": null,
       "branch": "task/P0-09",
