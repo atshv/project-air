@@ -146,7 +146,6 @@
 ## Claims
 
 - `P0-07` in progress by dsh since 2026-10-25T08:17:14+00:00 — worktree: /Users/rasulatashev/Desktop/KI Projekte/Project air-P0-07 · slot 1
-- `P0-11` in progress by dsh since 2026-10-25T08:18:16+00:00 — worktree: /Users/rasulatashev/Desktop/KI Projekte/Project air-P0-11 · slot 2
 
 <!-- /polier:claims -->
 
@@ -172,3 +171,5 @@
 - `Q14` English visible at launch or prepared only; who translates further languages (needed before stage: v1). — blocks: — — status: `open`
 - `Q15` Canvas collisions: clear layers only (proposal) or gentle nudge (needed before stage: engine-core). — blocks: — — status: `open`
 - `Q16` Trackpad default: two fingers pan, pinch zooms (proposal) or scroll zooms (needed before stage: engine-core). — blocks: — — status: `open`
+- `Q17` Zones as containers: zones keep their content and move it as one operation (proposal, needs a decision record and migration) or zones are only visual frames? — blocks: — — status: `open`
+- `Q18` Performance target split: the engine-spike exit says 60 fps with 50,000 rectangles, the canvas catalogue L01 names 10,000 objects at 60 fps and no long task > 16 ms. Which target applies to which stage gate? — blocks: — — status: `open`

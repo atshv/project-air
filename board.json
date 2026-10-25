@@ -1255,6 +1255,16 @@
       "id": "Q16",
       "question": "Trackpad default: two fingers pan, pinch zooms (proposal) or scroll zooms (needed before stage: engine-core).",
       "status": "open"
+    },
+    {
+      "id": "Q17",
+      "question": "Zones as containers: zones keep their content and move it as one operation (proposal, needs a decision record and migration) or zones are only visual frames?",
+      "status": "open"
+    },
+    {
+      "id": "Q18",
+      "question": "Performance target split: the engine-spike exit says 60 fps with 50,000 rectangles, the canvas catalogue L01 names 10,000 objects at 60 fps and no long task > 16 ms. Which target applies to which stage gate?",
+      "status": "open"
     }
   ],
   "budgets": {
