@@ -143,13 +143,6 @@
 - [ ] `P0-17` RELEASING.md and release 0.0.1 — status: `pending` — owner: —
 - [ ] `P0-18` i18n scaffold and language-check gate — status: `pending` — owner: —
 
-<!-- polier:claims -->
-## Claims
-
-- `P0-07` in progress by dsh since 2026-10-25T08:17:14+00:00 — worktree: /Users/rasulatashev/Desktop/KI Projekte/Project air-P0-07 · slot 1
-
-<!-- /polier:claims -->
-
 ## Decisions
 
 - 2026-10-25 `ADR-0001` Monorepo with packages, services, apps, tools and infra (`docs/adr/ADR-0001-monorepo.md`)
@@ -158,7 +151,6 @@
 ## Open questions
 
 - `Q1` Product name (working title: Project air) (needed before stage: v1). — blocks: — — status: `open`
-- `Q2` Package manager and build orchestration for the workspace. — blocks: P0-04 — status: `open`
 - `Q3` Hosting provider and country (CH/EU). — blocks: P0-15 — status: `open`
 - `Q4` CRDT: open-source library behind an own interface (proposal) or own algorithm (needed before stage: realtime). — blocks: — — status: `open`
 - `Q5` Auth: build it ourselves (proposal) or a self-hosted open-source server (needed before stage: backend-core). — blocks: — — status: `open`

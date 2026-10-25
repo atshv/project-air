@@ -493,6 +493,7 @@
         "turbo.json",
         "nx.json",
         "tsconfig.base.json",
+        "tsconfig.json",
         ".nvmrc",
         ".npmrc",
         "eslint.config.mjs",
@@ -1175,10 +1176,11 @@
     {
       "id": "Q2",
       "question": "Package manager and build orchestration for the workspace.",
-      "status": "open",
+      "status": "answered",
       "blocks": [
         "P0-04"
-      ]
+      ],
+      "answer": "pnpm workspaces + Turborepo (owner, 2026-10-25)."
     },
     {
       "id": "Q3",
