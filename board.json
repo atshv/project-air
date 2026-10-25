@@ -929,7 +929,7 @@
       "satisfies": [
         "D3"
       ],
-      "status": "in_progress",
+      "status": "done",
       "depends_on": [
         "P0-12"
       ],
@@ -959,11 +959,20 @@
       ],
       "owner": null,
       "branch": "task/P0-13",
-      "worktree": "../Project air-P0-13",
+      "worktree": null,
       "round": 0,
-      "evidence": [],
+      "evidence": [
+        "reviews/evidence/P0-13-board-check-20261025T095406Z.json",
+        "reviews/evidence/P0-13-design-check-20261025T095407Z.json",
+        "reviews/evidence/P0-13-unit-20261025T095509Z.json"
+      ],
       "scope_write_forbidden": [
         "reference/"
+      ],
+      "handoff": [
+        "Closed P0-13: tools/design-check (builtins only) rejects raw colours, off-grid spacing, z-index outside layers.ts and missing UI evidence with --task; 16 tests.",
+        "design-check and unit gates pass; findings are file:line: rule: message, deterministic.",
+        "P0-08 wires design-check into CI at the remote switch; UI tasks use --task to require before/after screenshots."
       ]
     },
     {

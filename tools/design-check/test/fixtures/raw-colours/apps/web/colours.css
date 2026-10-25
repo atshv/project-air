@@ -1,0 +1,10 @@
+.bad-hex-three { color: #fff; }
+.bad-hex-six { background-color: #ff0000; }
+.bad-hex-four { color: #f00f; }
+.bad-hex-eight { color: #ff000080; }
+.bad-rgb { border-color: rgb(1, 2, 3); }
+.bad-rgba { outline-color: rgba(0, 0, 0, 0.5); }
+.bad-hsl { color: hsl(120 50% 50%); }
+.bad-hsla { color: hsla(120, 50%, 50%, 0.5); }
+.good-var { color: var(--fg); background: var(--card); }
+.good-current { border-color: currentColor; }

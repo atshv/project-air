@@ -1,0 +1,135 @@
+# P0-13 - design-check gate: manual evidence
+
+worktree: /Users/rasulatashev/Desktop/KI Projekte/Project air-P0-13 (branch task/P0-13, slot 1)
+date (UTC): 2026-10-25T09:54:27Z
+node: v26.11.1
+pnpm: 12.14.0
+POLIER: /Users/rasulatashev/Desktop/Polier-main (tag v1.0.0)
+HEAD before the P0-13 commit: 972a6210a4c2837a3eac805ed1f834935dc22895
+pnpm-lock.yaml sha256 before and after: 1d0e75f75debff3cf9eb8a3891d6e26ffe5e81b77a4e28002439400bf67f45a9
+
+Deliverable: tools/design-check/ - dependency-free Node.js ESM gate (check.mjs library, index.mjs
+CLI), 16 node:test tests with fixtures, package.json scripts, README/ARCHITECTURE. No dependency
+was added; the lockfile is unchanged.
+
+## 1. board-check - run BEFORE any pnpm install
+
+Preparation: no node_modules/ existed when the gate ran (it was removed first; see section 7).
+
+command: python3 /Users/rasulatashev/Desktop/Polier-main/tools/gate.py --task P0-13 --name board-check -- python3 /Users/rasulatashev/Desktop/Polier-main/tools/check.py .
+result: PASS, exit 0
+record: reviews/evidence/P0-13-board-check-20261025T095406Z.json
+log:    reviews/evidence/P0-13-board-check-20261025T095406Z.log
+output:
+    WARN: budgets.status overridden to 1900 words (...)
+    WARN: P0-02: context pack is about 30099 tokens (warning at 15000); ...
+    WARN: P0-18: context pack is about 39887 tokens (warning at 15000); ...
+    OK: /Users/rasulatashev/Desktop/KI Projekte/Project air-P0-13 passes the mandatory checks. (3 warning(s))
+
+## 2. gate: design-check (exit 0)
+
+command: python3 /Users/rasulatashev/Desktop/Polier-main/tools/gate.py --task P0-13 --name design-check -- node tools/design-check/index.mjs .
+result: PASS, exit 0
+record: reviews/evidence/P0-13-design-check-20261025T095407Z.json
+log:    reviews/evidence/P0-13-design-check-20261025T095407Z.log
+output (the log is empty because the repository is clean):
+    $ node tools/design-check/index.mjs .
+    [exit 0]
+
+The repository run in JSON form:
+    node tools/design-check/index.mjs . --json
+    {
+      "root": ".",
+      "task": null,
+      "findings": [],
+      "skipped": [],
+      "summary": { "files": 13, "findings": 0, "skipped": 0 }
+    }
+13 scanned files: apps/web/preview/index.html and preview.css, packages/ui-kit/codegen.mjs and its ten
+icons; generated token files, tests, tools and reference are ignored.
+
+## 3. gate: unit (exit 0)
+
+command: python3 /Users/rasulatashev/Desktop/Polier-main/tools/gate.py --task P0-13 --name unit -- pnpm --filter ./tools/design-check test
+result: PASS, exit 0
+record: reviews/evidence/P0-13-unit-20261025T095509Z.json
+log:    reviews/evidence/P0-13-unit-20261025T095509Z.log
+output: 16 tests, 16 pass, 0 fail (`node --test test/*.test.mjs`)
+pnpm 12 verifies the workspace dependency state before running a script
+(`verify-deps-before-run`), so the first unit run after removing node_modules/ installed the already
+pinned root devDependencies into the gitignored node_modules/. No dependency was added and
+pnpm-lock.yaml is unchanged (same sha256 as before this task).
+
+## 4. package scripts: lint and typecheck (exit 0)
+
+command: pnpm --filter ./tools/design-check lint
+    $ eslint --max-warnings=0 .
+    exit 0
+command: pnpm --filter ./tools/design-check typecheck
+    $ node --check check.mjs && node --check index.mjs && node --check test/design-check.test.mjs
+    exit 0
+
+The tool is plain Node.js ESM; the root ESLint config is type-aware for TypeScript, so the package
+has a local eslint.config.mjs that ignores the intentionally violating fixtures and leaves the ESM
+files to the JavaScript defaults.
+
+## 5. A1 - the CLI rejects violations and names file, line and rule
+
+A temporary project with the real tokens.json/layers.ts and one bad file per rule
+(apps/web/bad.css, plus ignored decoys in reference/, node_modules/ and the generated tokens.css):
+
+    node tools/design-check/index.mjs /tmp/p013-demo.qlsJqn
+    apps/web/bad.css:1: off-grid-spacing: spacing 5px on margin is not 0 or a multiple of 4px; use a var(--space-…) token (design rule 3)
+    apps/web/bad.css:1: raw-colour: raw colour #ff0000; use a var(--…) token from packages/ui-kit/tokens.json (design rule 2)
+    apps/web/bad.css:1: z-index: z-index 42 has no layer entry in packages/ui-kit/layers.ts; allowed layer z-index values: 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 (design rule 8)
+    exit 1
+
+The JSON run reports summary files: 1, findings: 3 (the reference/, node_modules/ and generated
+tokens.css decoys are ignored). With `--task P1-99` and no screenshots the same project adds:
+
+    reviews/evidence:0: missing-evidence: missing reviews/evidence/P1-99-after-*.png (design rule 11)
+    reviews/evidence:0: missing-evidence: missing reviews/evidence/P1-99-before-*.png (design rule 11)
+
+and after creating reviews/evidence/P1-99-before-1440.png and P1-99-after-390.png only the three bad
+findings remain: the evidence rule works and is skipped without --task.
+
+Determinism: two runs on the same project are byte-identical (cmp: no difference); findings are
+sorted by file, line and rule.
+
+## 6. A2 - the ignore list
+
+The ignored fixture (test/fixtures/ignored/) contains violations in apps/web/node_modules/, .git/,
+.turbo/, docs/, reviews/, fixtures/, tests/, coverage/, dist/, build/, __tests__/, in *.test.css and
+*.spec.mjs files and in packages/ui-kit/tokens.css, tokens.h, tokens.json and layers.ts. The gate
+reports exactly the single visible violation:
+
+    apps/web/visible.css:1: off-grid-spacing: spacing 6px on margin is not 0 or a multiple of 4px; ...
+
+The generated token files are read as the source and never scanned, so a derived raw colour cannot
+make the gate fail.
+
+## 7. A3/A4 - tests and gates
+
+16 unit tests pass and cover: the design source being read from tokens.json/layers.ts (grid, spacing
+values, layer z-indexes, colour/token names), a clean fixture, the clean repository, each of the four
+rules, the committed ignore fixture, the gitignored-directory ignore list in a temporary project,
+isIgnored, a project-local design source (8-px grid, single layer z-index), the --task evidence rule,
+an empty project, missing configuration (exit 2), the CLI human/JSON output and determinism, argument
+validation, and the clean repository CLI run.
+
+A4: board-check (run with no node_modules/), design-check and unit all exit 0 through gate.py and the
+three records are committed with this task. The design-check and unit gates ran after board-check;
+the unit gate's pnpm script run created the gitignored node_modules/ afterwards (section 3).
+
+## 8. Known limits and deviations
+
+- The scan is line based: a declaration whose value spans lines is judged on its first line only, and
+  a `#abc`-looking CSS id selector could be reported as a hex colour (the project uses no id
+  selectors).
+- Non-px spacing values and calc()/function values are skipped; --json lists them under "skipped"
+  with file, line and reason.
+- `--task` requires both screenshot globs; there is no git-based "changed files" detection (the brief
+  specifies the two globs only).
+- The evidence rule reports a synthetic location `reviews/evidence:0` because a missing screenshot has
+  no line.
+- No CI workflow file was added (out of scope); no dependency was added.

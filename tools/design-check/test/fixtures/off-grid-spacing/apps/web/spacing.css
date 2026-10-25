@@ -1,0 +1,13 @@
+.bad-margin { margin: 5px; }
+.bad-padding { padding: 13px; }
+.bad-gap { gap: 7px; }
+.bad-inset { inset: 3px; }
+.bad-top { top: 10px; }
+.bad-logical { margin-inline-start: 6px; }
+.bad-shorthand { padding: 8px 10px 0 24px; }
+.good-zero { margin: 0; padding: 0; gap: 0; }
+.good-series { padding: 16px 8px 0 24px; }
+.good-negative { margin: -8px; }
+.good-var { gap: var(--space-8); padding: var(--space-4) var(--space-16); }
+.good-calc { padding: calc(4px + 8px); margin: 1rem; inset: 10%; }
+.good-border { border-top: 1px solid var(--border); border-left: 2px solid var(--border); }

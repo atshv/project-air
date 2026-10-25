@@ -1,0 +1,12 @@
+{
+  "name": "@project-air/design-check",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Design rules gate: raw colours, off-grid spacing, layer z-index and UI evidence.",
+  "scripts": {
+    "test": "node --test test/*.test.mjs",
+    "lint": "eslint --max-warnings=0 .",
+    "typecheck": "node --check check.mjs && node --check index.mjs && node --check test/design-check.test.mjs"
+  }
+}

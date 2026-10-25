@@ -1,0 +1,3 @@
+$ node tools/design-check/index.mjs .
+[exit 0]
+

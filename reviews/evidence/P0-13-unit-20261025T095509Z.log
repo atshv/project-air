@@ -1,0 +1,28 @@
+$ pnpm --filter ./tools/design-check test
+[exit 0]
+
+✔ the design source is read from tokens.json and layers.ts (0.902333ms)
+✔ the clean fixture has no findings (1.708792ms)
+✔ the repository itself is clean (4.930958ms)
+✔ raw colours are reported; var() and currentColor are allowed (0.573125ms)
+✔ off-grid spacing is reported and non-px values are skipped (0.525ms)
+✔ numeric z-index values must come from layers.ts (0.240125ms)
+✔ ignored directories, generated token files and test files are skipped (0.362209ms)
+✔ node_modules, VCS, cache and build directories are skipped (5.116833ms)
+✔ isIgnored covers generated, ignored and test paths (0.106375ms)
+✔ allowed values come from the project's own tokens.json and layers.ts (1.679084ms)
+✔ --task requires the before and after screenshots (2.502417ms)
+✔ an empty project is clean (0.067ms)
+✔ missing design source is a configuration error (66.451791ms)
+✔ the CLI reports findings as file:line: rule and supports --json (199.037125ms)
+✔ the CLI exits 0 on the repository and with JSON (139.451167ms)
+✔ the CLI validates its arguments and the root (185.710667ms)
+ℹ tests 16
+ℹ suites 0
+ℹ pass 16
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 691.643084
+$ node --test test/*.test.mjs

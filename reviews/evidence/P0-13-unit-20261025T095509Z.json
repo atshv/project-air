@@ -1,0 +1,17 @@
+{
+  "task": "P0-13",
+  "gate": "unit",
+  "command": "pnpm --filter ./tools/design-check test",
+  "exit_code": 0,
+  "result": "pass",
+  "slot": null,
+  "exclusive": [],
+  "lock_wait_s": 0.0,
+  "lock_warning": null,
+  "started": "2026-10-25T09:55:09+00:00",
+  "finished": "2026-10-25T09:55:10+00:00",
+  "commit": "972a6210a4c2837a3eac805ed1f834935dc22895",
+  "dirty": true,
+  "log": "P0-13-unit-20261025T095509Z.log",
+  "log_sha256": "d566f3be16250124dd7aab30a1495234cd427f96d392b18ce54784b9383c27dc"
+}

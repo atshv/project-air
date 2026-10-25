@@ -40,7 +40,7 @@ task from the project's manifests; until then the gate cannot pass.
 | `ci-green` | `gh run list --workflow ci.yml --limit 1 --json conclusion --jq '.[0].conclusion'` | `success` |
 | `polier-version` | `bash tools/polier.sh --check` | exit 0, Polier version equals `generator_version` |
 | `tokens-codegen` | `pnpm --filter ./packages/ui-kit run codegen && git diff --exit-code -- packages/ui-kit` | exit 0, CSS, C++ header and layers regenerated without diff |
-| `design-check` | `[VERIFY: set by P0-13]` | exit 0 |
+| `design-check` | `node tools/design-check/index.mjs .` | exit 0 |
 | `language-check` | `node tools/language-check/index.mjs .` | exit 0 |
 | `changelog-entry` | `[VERIFY: set by P0-14]` | exit 0, entry present for code changes |
 | `release-dry` | `[VERIFY: set by P0-15, release command in dry-run mode]` | exit 0, version and entries shown, nothing changed |

@@ -1,0 +1,8 @@
+.good-layer { z-index: 2; }
+.good-dialog { z-index: 11; }
+.good-var { z-index: var(--layer-zones); }
+.good-auto { z-index: auto; }
+.bad-high { z-index: 12; }
+.bad-unknown { z-index: 42; }
+.bad-zero { z-index: 0; }
+.bad-negative { z-index: -1; }
