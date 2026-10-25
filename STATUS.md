@@ -118,10 +118,7 @@
 
 ## Ready now
 
-- `P1-03` Codegen TS + C++ with identical fixtures
-  - P1-02: Closed P1-02: operation schema covers note/card/zone/block/edge create/update/delete plus move/resize and an ordered group; every operation carries exactly one inverse.
-  - P1-02: Group inverse reverses child inverses, no nesting; fixtures valid+invalid per type; unit tests pass.
-  - P1-02: P1-03 codegen consumes these schemas; ADR-0004 fixes text limits and private/workspace/link visibility (link read-only, revocable).
+- none
 
 ## Done
 
@@ -149,7 +146,7 @@
 
 ## In progress
 
-- none
+- [ ] `P1-03` Codegen TS + C++ with identical fixtures — status: `in_progress` — owner: —
 
 ## Blocked / failed
 
@@ -161,7 +158,13 @@
 - [ ] `P0-15` Release command and tag-based CI release — status: `pending` — owner: —
 - [ ] `P0-16` Dependency updates and Polier update check — status: `pending` — owner: —
 - [ ] `P0-17` RELEASING.md and release 0.0.1 — status: `pending` — owner: —
-- [ ] `P1-03` Codegen TS + C++ with identical fixtures — status: `pending` — owner: —
+
+<!-- polier:claims -->
+## Claims
+
+- `P1-03` in progress by dsh since 2026-10-25T11:36:27+00:00 — worktree: /Users/rasulatashev/Desktop/KI Projekte/Project air-P1-03 · slot 1
+
+<!-- /polier:claims -->
 
 ## Decisions
 

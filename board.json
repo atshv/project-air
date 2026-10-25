@@ -1791,7 +1791,7 @@
       "satisfies": [
         "D7"
       ],
-      "status": "pending",
+      "status": "in_progress",
       "depends_on": [
         "P1-02"
       ],
@@ -1827,7 +1827,7 @@
       ],
       "owner": null,
       "branch": "task/P1-03",
-      "worktree": null,
+      "worktree": "../Project air-P1-03",
       "round": 0,
       "evidence": [],
       "scope_write_forbidden": [
