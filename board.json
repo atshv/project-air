@@ -2426,7 +2426,7 @@
       ]
     },
     {
-      "status": "pending",
+      "status": "in_progress",
       "stage": "backend-core",
       "parallel_group": null,
       "owner": null,
@@ -2482,7 +2482,7 @@
         "compose-config"
       ],
       "branch": "task/P3-01",
-      "worktree": null
+      "worktree": "../Project air-P3-01"
     },
     {
       "status": "pending",
