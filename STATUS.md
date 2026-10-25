@@ -117,10 +117,7 @@
 
 ## Ready now
 
-- `P0-24` Curved edge, visible anchors and zoom controls in the demo
-  - P0-23: Closed P0-23: demo cards show four side-midpoint anchors; the edge snaps to the nearest anchor pair and highlights it in --tone-d.
-  - P0-23: Masthead meta line now shows version, last change P0-23 and timestamp 2026-10-25 11:39 (Europe/Zurich).
-  - P0-23: All three gates pass; demo, anchors and meta line are updated in the same task from now on.
+- none
 
 ## Done
 
@@ -144,7 +141,7 @@
 
 ## In progress
 
-- none
+- [ ] `P0-24` Curved edge, visible anchors and zoom controls in the demo — status: `in_progress` — owner: —
 
 ## Blocked / failed
 
@@ -156,7 +153,13 @@
 - [ ] `P0-15` Release command and tag-based CI release — status: `pending` — owner: —
 - [ ] `P0-16` Dependency updates and Polier update check — status: `pending` — owner: —
 - [ ] `P0-17` RELEASING.md and release 0.0.1 — status: `pending` — owner: —
-- [ ] `P0-24` Curved edge, visible anchors and zoom controls in the demo — status: `pending` — owner: —
+
+<!-- polier:claims -->
+## Claims
+
+- `P0-24` in progress by dsh since 2026-10-25T10:46:59+00:00 — worktree: /Users/rasulatashev/Desktop/KI Projekte/Project air-P0-24 · slot 1
+
+<!-- /polier:claims -->
 
 ## Decisions
 
