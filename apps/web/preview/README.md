@@ -1,4 +1,4 @@
-# Design preview (P0-19, P0-20, P0-21, P0-22)
+# Design preview (P0-19, P0-20, P0-21, P0-22, P0-23)
 
 A design preview of the Project air design system. It is **not the product**: there is no engine,
 no data, no server and no build step. It exists so the owner can see the look and feel between
@@ -14,18 +14,22 @@ stable `data-preview-*` hooks — no runtime parsing and no fetch — and its tw
   `0.0.1 – unreleased`; the status word comes from the same heading. `CHANGELOG.md` is the display
   source and currently agrees with the root `package.json` version `0.0.1`.
 - **Last change** — the newest entry in `.changes/` by highest task id, currently
-  `.changes/P0-21-demo-connection.md`; the line shows the task id and that task's title from
-  `board.json` / the task brief: `P0-21 — Match the demo connection to the design system`. If several
-  files exist for the highest task id, the most recent one is used; the `.changes/README.md` and
+  `.changes/P0-23-demo-anchors.md`; the line shows the task id and that task's title from
+  `board.json` / the task brief: `P0-23 — Visible connection anchors in the demo`. If several files
+  exist for the highest task id, the most recent one is used; the `.changes/README.md` and
   `.changes/TEMPLATE.md` files do not count as entries.
+- **Date and time** — the file modification time of that newest `.changes` entry (the moment the task
+  wrote it), formatted as `YYYY-MM-DD HH:MM` in `Europe/Zurich`; it is static text in `index.html`
+  (`data-preview-last-change-time`) and is not parsed at runtime.
 
-Both values follow the demo cadence: every change to the preview, the changelog or the design system
-updates this line, the interactive demo and the screenshot in `reviews/evidence/` in the same task. A
-later changelog version or change entry must refresh this line in that same task.
+Version, last change, date/time, the interactive demo and the screenshot in `reviews/evidence/` are
+all updated in the same task as every change to the preview, the changelog or the design system (demo
+cadence). A later changelog version or change entry must refresh the whole meta line in that same
+task.
 
 ## What it shows
 
-- A masthead meta line with the changelog version and the latest change entry.
+- A masthead meta line with the changelog version, the latest change entry and its date/time.
 - An **interactive connection demo**: two note cards joined by one edge. Drag a card with mouse, pen
   or finger, or focus a card and use the arrow keys (16 px per step); `Home` resets both cards.
   Clearly labelled “interactive demo — not the engine; no data, no server”.
@@ -59,11 +63,15 @@ design system updates the demo and refreshes its screenshot in `reviews/evidence
   selects without moving. While dragging the cursor is `grabbing` and the card uses the
   dragged/selected layer (`--layer-dragged-or-selected`); a selected card gets the 1.5 px `--accent`
   border and the `--accent-soft` ring.
-- **Edge:** one SVG line with two 3 px endpoint dots. Its endpoints are recomputed on every move from
-  the nearest rectangle edges of the two cards (horizontal sides when they are separated
-  horizontally, vertical sides when separated vertically, corners diagonally, nearest overlapping
-  side pair when they intersect). The edge sits on the `--layer-edges` layer below the cards
-  (`--layer-note-cards`) and uses the design-system connection style — a `--tone-d` stroke with
+- **Anchors:** every card shows four connection anchors — top, right, bottom and left side
+  midpoints — as 6 px circles that move with the card. Idle anchors are `--muted` with a `--surface`
+  ring; the anchors currently used by the edge are highlighted in `--tone-d`. They are decorative
+  (`aria-hidden`) and never capture pointer events, so the whole card stays the drag handle.
+- **Edge:** one SVG line with two 3 px endpoint dots. Its endpoints are the centres of the nearest
+  anchor pair (all 4 × 4 distances are compared, the first minimal pair wins on a tie); the edge is
+  recomputed on every pointer move, keyboard step and reset. A very short remaining distance is
+  clamped to a minimum visible length of 1 px. The edge sits on the `--layer-edges` layer below the
+  cards (`--layer-note-cards`) and uses the design-system connection style — a `--tone-d` stroke with
   `--tone-d` endpoint dots at 1.5 px (`--border-width-strong`) — the same tokens as the static
   Connection component on this page.
 - **Keyboard:** each card is focusable with a visible `--accent` focus outline. `ArrowLeft`,
@@ -93,7 +101,7 @@ Serve the **repository root**, not this folder, so the relative token and icon p
 the slot's `web` port from `.polier-slot` (never hard-code it), then:
 
 ```sh
-cd "/Users/rasulatashev/Desktop/KI Projekte/Project air-P0-22"
+cd "/Users/rasulatashev/Desktop/KI Projekte/Project air-P0-23"
 PORT=$(python3 -c "import json; print(json.load(open('.polier-slot'))['ports']['web'])")
 python3 -m http.server "$PORT" --bind 127.0.0.1
 ```
@@ -112,7 +120,8 @@ no dependencies and is the only server this preview needs.
 Committed evidence lives in `reviews/evidence/`: `P0-19-desktop.png` (1440×900),
 `P0-19-mobile.png` (390×844), `P0-20-demo.png` (1440×900, both demo cards and their edge),
 `P0-21-demo.png` (1440×900, the demo edge in the design-system `--tone-d` style),
-`P0-22-demo.png` (1440×900, the masthead version and last-change line) and the
-`P0-19-preview.log` / `P0-20-preview.log` / `P0-21-preview.log` / `P0-22-preview.log` files with the
-exact serve, curl and screenshot commands. The page has no horizontal overflow at 1440×900 or
-390×844.
+`P0-22-demo.png` (1440×900, the masthead version and last-change line),
+`P0-23-demo.png` (1440×900, the four anchors and the snapped edge) and the
+`P0-19-preview.log` / `P0-20-preview.log` / `P0-21-preview.log` / `P0-22-preview.log` /
+`P0-23-preview.log` files with the exact serve, curl and screenshot commands. The page has no
+horizontal overflow at 1440×900 or 390×844.

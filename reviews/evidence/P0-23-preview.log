@@ -1,0 +1,134 @@
+# P0-23 — visible connection anchors in the demo: manual evidence
+
+- Date: 2026-10-25 (Europe/Zurich)
+- Worktree: `/Users/rasulatashev/Desktop/KI Projekte/Project air-P0-23` (branch `task/P0-23`, slot 1)
+- Changed: `apps/web/preview/index.html`, `preview.css`, `preview.js`, `README.md`;
+  `.changes/P0-23-demo-anchors.md`
+- Older demo screenshots untouched: `P0-22-demo.png` SHA-256
+  `89cd8580bb992d238a7d457c117ec28152fc4e4b5cb15e63b60728105bfc34b4` before and after this task.
+
+## Port and server
+
+Slot values (`python3 "$POLIER/tools/slot.py" show`): `web=4100` for slot 1. The server was started and
+stopped by this task only; it is not left running and the port is free afterwards.
+
+```sh
+cd "/Users/rasulatashev/Desktop/KI Projekte/Project air-P0-23"
+PORT=$(python3 -c "import json;print(json.load(open('.polier-slot'))['ports']['web'])")
+python3 -m http.server "$PORT" --bind 127.0.0.1
+```
+
+Served the **repository root** so the relative token and icon paths resolve.
+
+## HTTP status
+
+```
+$ curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:4100/apps/web/preview/
+200
+```
+
+The server log for the run contains no `404`.
+
+## Screenshot
+
+Chromium: `/Users/rasulatashev/Library/Caches/ms-playwright/chromium_headless_shell-1248/chrome-headless-shell-mac-arm64/chrome-headless-shell`
+
+```sh
+/Users/rasulatashev/Library/Caches/ms-playwright/chromium_headless_shell-1248/chrome-headless-shell-mac-arm64/chrome-headless-shell \
+  --headless --disable-gpu --hide-scrollbars --window-size=1440,900 \
+  --screenshot=reviews/evidence/P0-23-demo.png \
+  "http://127.0.0.1:4100/apps/web/preview/"
+```
+
+Result: `reviews/evidence/P0-23-demo.png`, PNG 1440 × 900, 110009 bytes. It shows the four anchors on
+both cards, the edge snapped between the used right anchor of card A and the used left anchor of card
+B (both highlighted in `--tone-d`, the idle anchors neutral), and the masthead meta line.
+
+## Anchor-snap check
+
+The interaction was verified with a temporary same-origin iframe probe page (real preview at 1440 × 900
+and 390 × 844) that dispatched real `PointerEvent` / `KeyboardEvent` sequences; the preview's own
+listeners handled them like user input. The probe page was removed before the commit and is not part
+of the deliverable. Results:
+
+```
+desktop cards=2 anchorsPerCard=4/4 anchorsAriaHidden=true
+desktop initial usedAnchors=2 edgeMatchesAnchors=true
+desktop usedColor=rgb(143, 176, 220) idleColor=rgba(255, 255, 255, 0.66)
+desktop clickUnder4pxMoved=false
+desktop dragMoved=true otherCardFixed=true
+desktop afterDrag usedAnchors=2 edgeMatchesAnchors=true
+desktop keyboard16=true
+desktop afterKeyboard usedAnchors=2 edgeMatchesAnchors=true
+desktop homeReset=true
+desktop afterHome usedAnchors=2 edgeMatchesAnchors=true
+desktop clampInside=true
+desktop afterClamp usedAnchors=2 edgeMatchesAnchors=true
+desktop overflow=false scrollWidth=1440 clientWidth=1440
+mobile cards=2 anchorsPerCard=4/4 anchorsAriaHidden=true
+mobile initial usedAnchors=2 edgeMatchesAnchors=true
+mobile usedColor=rgb(143, 176, 220) idleColor=rgba(255, 255, 255, 0.66)
+mobile clickUnder4pxMoved=false
+mobile dragMoved=true otherCardFixed=true
+mobile afterDrag usedAnchors=2 edgeMatchesAnchors=true
+mobile keyboard16=true
+mobile afterKeyboard usedAnchors=2 edgeMatchesAnchors=true
+mobile homeReset=true
+mobile afterHome usedAnchors=2 edgeMatchesAnchors=true
+mobile clampInside=true
+mobile afterClamp usedAnchors=2 edgeMatchesAnchors=true
+mobile overflow=false scrollWidth=390 clientWidth=390
+```
+
+`edgeMatchesAnchors=true` means the line endpoints (converted to surface coordinates) equal the centres
+of the two `.demo-anchor.is-used` dots within 0.6 px, in every state (initial, after drag, after
+keyboard steps, after `Home`, after clamping). Rules behind it:
+
+- **Anchors:** four per card at the top/right/bottom/left side midpoints, 6 px circles 3 px inside the
+  card edge (top/right/bottom/left offsets match the card rectangle), inside a decorative
+  `aria-hidden` wrapper with `pointer-events: none`, so they move with the card and never steal the
+  drag.
+- **Snap:** all 4 × 4 anchor pairs are compared; the first minimal pair wins on a tie and the edge is
+  drawn between those two anchor centres (no other attachment points). The edge recomputes on every
+  pointer move, keyboard step and reset, and is clamped to a minimum visible length of 1 px.
+- **Styling:** used anchors get `background-color: var(--tone-d)`; idle anchors are `--muted` with a
+  `--surface` ring. The edge keeps the design-system connection style: `--tone-d`, 1.5 px
+  (`--border-width-strong`). No raw colours and no new tokens (`grep -nE
+  '#[0-9a-fA-F]{3,8}|rgba?\(|hsla?\(' apps/web/preview/*` returns nothing).
+- **Behaviour kept:** 4 px drag threshold (click under 4 px does not move), pointer capture, clamping,
+  arrow keys 16 px, `Home` reset, `prefers-reduced-motion` global rule, no horizontal overflow at
+  1440 × 900 or 390 × 844.
+
+## Masthead meta line
+
+```
+Version 0.0.1 · unreleased · Last change: P0-23 — Visible connection anchors in the demo · 2026-10-25 11:39 (Europe/Zurich)
+```
+
+- Version: first `##` heading of `CHANGELOG.md` (`## 0.0.1 – unreleased`).
+- Last change: newest `.changes/` entry by highest task id — `.changes/P0-23-demo-anchors.md`; the
+  task title comes from `board.json` / `tasks/P0-23.md`.
+- Date/time: file modification time of that newest `.changes` entry, formatted `YYYY-MM-DD HH:MM` in
+  `Europe/Zurich` (`stat` → 2026-10-25 11:39). Static text in `index.html`
+  (`data-preview-version`, `data-preview-status`, `data-preview-last-change`,
+  `data-preview-last-change-time`); no runtime parsing or fetch.
+- `apps/web/preview/README.md` documents both sources, the pick rule and the same-task update rule
+  (meta line, demo and screenshot are refreshed in the same task as every preview/changelog change).
+
+## Gates
+
+```sh
+cd "/Users/rasulatashev/Desktop/KI Projekte/Project air-P0-23"
+export POLIER=/Users/rasulatashev/Desktop/Polier-main
+python3 "$POLIER/tools/gate.py" --task P0-23 --name board-check -- python3 "$POLIER/tools/check.py" .
+python3 "$POLIER/tools/gate.py" --task P0-23 --name design-check -- node tools/design-check/index.mjs .
+python3 "$POLIER/tools/gate.py" --task P0-23 --name changelog-entry -- node tools/release/check-changes.mjs --task P0-23 --base main
+```
+
+| Gate | Result | Record |
+| --- | --- | --- |
+| `board-check` | PASS (exit 0) | `reviews/evidence/P0-23-board-check-20261025T104222Z.json` |
+| `design-check` | PASS (exit 0, no findings) | `reviews/evidence/P0-23-design-check-20261025T104222Z.json` |
+| `changelog-entry` | PASS (exit 0) | `reviews/evidence/P0-23-changelog-entry-20261025T104223Z.json` |
+
+`check.py` ran before any `pnpm install`; no install was needed for this task.

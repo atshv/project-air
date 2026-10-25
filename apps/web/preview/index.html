@@ -22,13 +22,14 @@
         <p class="masthead__version" data-preview-meta>
           <span data-preview-version>Version 0.0.1</span>
           <span data-preview-status>unreleased</span>
-          <span data-preview-last-change>Last change: P0-21 — Match the demo connection to the design system</span>
+          <span data-preview-last-change>Last change: P0-23 — Visible connection anchors in the demo</span>
+          <span data-preview-last-change-time>2026-10-25 11:39 (Europe/Zurich)</span>
         </p>
         <div class="masthead__meta">
           <span>Tokens: <code>packages/ui-kit/tokens.css</code></span>
           <span>Icons: <code>packages/ui-kit/icons/</code></span>
           <span>Demo: <code>preview.js</code></span>
-          <span>Tasks: P0-19, P0-20, P0-21, P0-22</span>
+          <span>Tasks: P0-19, P0-20, P0-21, P0-22, P0-23</span>
         </div>
       </header>
 
@@ -50,8 +51,9 @@
             </p>
           </noscript>
           <p class="demo__hint" id="demo-hint">
-            A click without movement (under 4 px) selects the card but does not move it. The edge
-            follows the nearest card edges while dragging.
+            A click without movement (under 4 px) selects the card but does not move it. Each card
+            has four anchors at its side midpoints; the edge snaps to the nearest anchor pair and
+            highlights both used anchors.
           </p>
           <p class="demo__legend token-caption">edge · --tone-d · 1.5 px</p>
           <div class="demo__surface" data-demo-surface>
@@ -66,6 +68,12 @@
               tabindex="0"
               aria-label="Draggable note card A. Arrow keys move it by 16 pixels, Home resets both cards."
             >
+              <span class="demo-card__anchors" aria-hidden="true">
+                <span class="demo-anchor demo-anchor--top" data-anchor="top"></span>
+                <span class="demo-anchor demo-anchor--right" data-anchor="right"></span>
+                <span class="demo-anchor demo-anchor--bottom" data-anchor="bottom"></span>
+                <span class="demo-anchor demo-anchor--left" data-anchor="left"></span>
+              </span>
               <div class="note-card__head">
                 <span class="type-label">Note A</span>
               </div>
@@ -78,6 +86,12 @@
               tabindex="0"
               aria-label="Draggable note card B. Arrow keys move it by 16 pixels, Home resets both cards."
             >
+              <span class="demo-card__anchors" aria-hidden="true">
+                <span class="demo-anchor demo-anchor--top" data-anchor="top"></span>
+                <span class="demo-anchor demo-anchor--right" data-anchor="right"></span>
+                <span class="demo-anchor demo-anchor--bottom" data-anchor="bottom"></span>
+                <span class="demo-anchor demo-anchor--left" data-anchor="left"></span>
+              </span>
               <div class="note-card__head">
                 <span class="type-label">Note B</span>
               </div>

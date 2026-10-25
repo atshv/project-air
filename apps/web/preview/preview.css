@@ -927,6 +927,49 @@ button {
   font-size: var(--text-12);
 }
 
+.demo-card__anchors {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.demo-anchor {
+  position: absolute;
+  inline-size: 6px;
+  block-size: 6px;
+  border: var(--border-width) solid var(--surface);
+  border-radius: var(--radius-pill);
+  background-color: var(--muted);
+}
+
+.demo-anchor.is-used {
+  background-color: var(--tone-d);
+}
+
+.demo-anchor--top {
+  inset-block-start: calc(var(--border-width) * -1);
+  inset-inline-start: 50%;
+  transform: translate(-50%, 0);
+}
+
+.demo-anchor--right {
+  inset-block-start: 50%;
+  inset-inline-end: calc(var(--border-width) * -1);
+  transform: translate(0, -50%);
+}
+
+.demo-anchor--bottom {
+  inset-block-end: calc(var(--border-width) * -1);
+  inset-inline-start: 50%;
+  transform: translate(-50%, 0);
+}
+
+.demo-anchor--left {
+  inset-block-start: 50%;
+  inset-inline-start: calc(var(--border-width) * -1);
+  transform: translate(0, -50%);
+}
+
 .demo-card {
   position: absolute;
   inset-block-start: 0;

@@ -1496,7 +1496,7 @@
       "satisfies": [
         "D3"
       ],
-      "status": "in_progress",
+      "status": "done",
       "depends_on": [
         "P0-22"
       ],
@@ -1531,11 +1531,20 @@
       ],
       "owner": null,
       "branch": "task/P0-23",
-      "worktree": "../Project air-P0-23",
+      "worktree": null,
       "round": 0,
-      "evidence": [],
+      "evidence": [
+        "reviews/evidence/P0-23-board-check-20261025T104222Z.json",
+        "reviews/evidence/P0-23-design-check-20261025T104222Z.json",
+        "reviews/evidence/P0-23-changelog-entry-20261025T104223Z.json"
+      ],
       "scope_write_forbidden": [
         "reference/"
+      ],
+      "handoff": [
+        "Closed P0-23: demo cards show four side-midpoint anchors; the edge snaps to the nearest anchor pair and highlights it in --tone-d.",
+        "Masthead meta line now shows version, last change P0-23 and timestamp 2026-10-25 11:39 (Europe/Zurich).",
+        "All three gates pass; demo, anchors and meta line are updated in the same task from now on."
       ]
     }
   ],

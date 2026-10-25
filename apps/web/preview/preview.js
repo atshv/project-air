@@ -1,11 +1,16 @@
-// P0-20 live connection demo for the static design preview.
-// Plain DOM, pointer events and one SVG edge: no dependencies, no engine, no data.
+// P0-20 live connection demo for the static design preview, extended in P0-23 with
+// four visible connection anchors per card. Plain DOM, pointer events and one SVG
+// edge: no dependencies, no engine, no data.
 
 (function () {
   "use strict";
 
   var DRAG_THRESHOLD_FALLBACK = 4;
   var CANVAS_GRID_FALLBACK = 16;
+  // Half of the 6 px anchor dot: the dot sits inside the card, so its centre is
+  // 3 px away from the card edge.
+  var ANCHOR_HALF = 3;
+  var MIN_EDGE_LENGTH = 1;
 
   function readPixelToken(name, fallback) {
     var value = getComputedStyle(document.documentElement).getPropertyValue(name);
@@ -17,68 +22,32 @@
     return Math.min(Math.max(value, min), max);
   }
 
-  // Nearest points on the two axis-aligned rectangles: horizontal sides when the
-  // rectangles are separated horizontally, vertical sides when separated
-  // vertically, corners when separated in both axes, and the nearest overlapping
-  // side pair when they intersect.
-  function nearestAnchors(a, b) {
-    var aRight = a.x + a.w;
-    var aBottom = a.y + a.h;
-    var bRight = b.x + b.w;
-    var bBottom = b.y + b.h;
-    var aCentreX = a.x + a.w / 2;
-    var aCentreY = a.y + a.h / 2;
-    var bCentreX = b.x + b.w / 2;
-    var bCentreY = b.y + b.h / 2;
-    var gapX = Math.max(a.x - bRight, b.x - aRight);
-    var gapY = Math.max(a.y - bBottom, b.y - aBottom);
-    var overlapLeft = Math.max(a.x, b.x);
-    var overlapRight = Math.min(aRight, bRight);
-    var overlapTop = Math.max(a.y, b.y);
-    var overlapBottom = Math.min(aBottom, bBottom);
-
-    if (gapX > 0 && gapY <= 0) {
-      var y = clamp((aCentreY + bCentreY) / 2, overlapTop, overlapBottom);
-      var aOnLeft = aCentreX < bCentreX;
-      return [
-        { x: aOnLeft ? aRight : a.x, y: y },
-        { x: aOnLeft ? b.x : bRight, y: y },
-      ];
-    }
-
-    if (gapY > 0 && gapX <= 0) {
-      var x = clamp((aCentreX + bCentreX) / 2, overlapLeft, overlapRight);
-      var aOnTop = aCentreY < bCentreY;
-      return [
-        { x: x, y: aOnTop ? aBottom : a.y },
-        { x: x, y: aOnTop ? b.y : bBottom },
-      ];
-    }
-
-    if (gapX > 0 && gapY > 0) {
-      var aOnLeftCorner = aCentreX < bCentreX;
-      var aOnTopCorner = aCentreY < bCentreY;
-      return [
-        { x: aOnLeftCorner ? aRight : a.x, y: aOnTopCorner ? aBottom : a.y },
-        { x: aOnLeftCorner ? b.x : bRight, y: aOnTopCorner ? b.y : bBottom },
-      ];
-    }
-
-    if (Math.abs(aCentreX - bCentreX) >= Math.abs(aCentreY - bCentreY)) {
-      var overlapY = clamp((aCentreY + bCentreY) / 2, overlapTop, overlapBottom);
-      var aLeftOfB = aCentreX < bCentreX;
-      return [
-        { x: aLeftOfB ? aRight : a.x, y: overlapY },
-        { x: aLeftOfB ? b.x : bRight, y: overlapY },
-      ];
-    }
-
-    var overlapX = clamp((aCentreX + bCentreX) / 2, overlapLeft, overlapRight);
-    var aAboveB = aCentreY < bCentreY;
+  // Visible connection anchors sit at the four side midpoints of a card; the
+  // demo edge connects the nearest anchor pair, comparing all 4 x 4 pairs.
+  function anchorPoints(rect) {
     return [
-      { x: overlapX, y: aAboveB ? aBottom : a.y },
-      { x: overlapX, y: aAboveB ? b.y : bBottom },
+      { side: "top", x: rect.x + rect.w / 2, y: rect.y + ANCHOR_HALF },
+      { side: "right", x: rect.x + rect.w - ANCHOR_HALF, y: rect.y + rect.h / 2 },
+      { side: "bottom", x: rect.x + rect.w / 2, y: rect.y + rect.h - ANCHOR_HALF },
+      { side: "left", x: rect.x + ANCHOR_HALF, y: rect.y + rect.h / 2 },
     ];
+  }
+
+  function nearestAnchorPair(a, b) {
+    var pointsA = anchorPoints(a);
+    var pointsB = anchorPoints(b);
+    var best = null;
+    for (var i = 0; i < pointsA.length; i += 1) {
+      for (var j = 0; j < pointsB.length; j += 1) {
+        var dx = pointsB[j].x - pointsA[i].x;
+        var dy = pointsB[j].y - pointsA[i].y;
+        var distance = dx * dx + dy * dy;
+        if (best === null || distance < best.distance) {
+          best = { distance: distance, a: pointsA[i], b: pointsB[j] };
+        }
+      }
+    }
+    return { a: best.a, b: best.b };
   }
 
   function setupDemo(demo) {
@@ -101,9 +70,18 @@
     for (var index = 0; index < cardElements.length; index += 1) {
       var element = cardElements[index];
       if (!(element instanceof HTMLElement)) continue;
+      var anchorElements = element.querySelectorAll(".demo-anchor");
+      var anchors = [];
+      for (var anchorIndex = 0; anchorIndex < anchorElements.length; anchorIndex += 1) {
+        anchors.push({
+          side: anchorElements[anchorIndex].getAttribute("data-anchor") || "",
+          element: anchorElements[anchorIndex],
+        });
+      }
       cards.push({
         element: element,
         label: (element.getAttribute("data-demo-card") || "?").toUpperCase(),
+        anchors: anchors,
         x: 0,
         y: 0,
         homeX: 0,
@@ -151,20 +129,47 @@
       };
     }
 
+    function highlightAnchors(pair) {
+      for (var cardIndex = 0; cardIndex < cards.length; cardIndex += 1) {
+        var usedSide = cardIndex === 0 ? pair.a.side : pair.b.side;
+        var card = cards[cardIndex];
+        card.element.setAttribute("data-demo-used", usedSide);
+        for (var anchorIndex = 0; anchorIndex < card.anchors.length; anchorIndex += 1) {
+          card.anchors[anchorIndex].element.classList.toggle(
+            "is-used",
+            card.anchors[anchorIndex].side === usedSide,
+          );
+        }
+      }
+    }
+
     function drawEdge() {
-      var anchors = nearestAnchors(rectOf(cards[0]), rectOf(cards[1]));
+      var pair = nearestAnchorPair(rectOf(cards[0]), rectOf(cards[1]));
+      var start = pair.a;
+      var end = pair.b;
+      var dx = end.x - start.x;
+      var dy = end.y - start.y;
+      var length = Math.hypot(dx, dy);
+      if (length > 0 && length < MIN_EDGE_LENGTH) {
+        end = {
+          side: end.side,
+          x: start.x + (dx / length) * MIN_EDGE_LENGTH,
+          y: start.y + (dy / length) * MIN_EDGE_LENGTH,
+        };
+      }
       edge.setAttribute(
         "viewBox",
         "0 0 " + surface.clientWidth + " " + surface.clientHeight,
       );
-      edgeLine.setAttribute("x1", anchors[0].x.toFixed(1));
-      edgeLine.setAttribute("y1", anchors[0].y.toFixed(1));
-      edgeLine.setAttribute("x2", anchors[1].x.toFixed(1));
-      edgeLine.setAttribute("y2", anchors[1].y.toFixed(1));
-      edgeDots[0].setAttribute("cx", anchors[0].x.toFixed(1));
-      edgeDots[0].setAttribute("cy", anchors[0].y.toFixed(1));
-      edgeDots[1].setAttribute("cx", anchors[1].x.toFixed(1));
-      edgeDots[1].setAttribute("cy", anchors[1].y.toFixed(1));
+      edgeLine.setAttribute("x1", start.x.toFixed(1));
+      edgeLine.setAttribute("y1", start.y.toFixed(1));
+      edgeLine.setAttribute("x2", end.x.toFixed(1));
+      edgeLine.setAttribute("y2", end.y.toFixed(1));
+      edgeDots[0].setAttribute("cx", start.x.toFixed(1));
+      edgeDots[0].setAttribute("cy", start.y.toFixed(1));
+      edgeDots[1].setAttribute("cx", end.x.toFixed(1));
+      edgeDots[1].setAttribute("cy", end.y.toFixed(1));
+      highlightAnchors(pair);
     }
 
     function announce(card) {
