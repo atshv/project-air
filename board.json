@@ -53,7 +53,7 @@
         "ci-local",
         "polier-version"
       ],
-      "owner_decision": "pending",
+      "owner_decision": "continue",
       "depends_on": []
     },
     {
