@@ -2366,7 +2366,7 @@
       ]
     },
     {
-      "status": "pending",
+      "status": "in_progress",
       "stage": "engine-spike",
       "parallel_group": null,
       "owner": null,
@@ -2415,7 +2415,7 @@
         "design-check"
       ],
       "branch": "task/P2-05",
-      "worktree": null
+      "worktree": "../Project air-P2-05"
     }
   ],
   "decisions": [

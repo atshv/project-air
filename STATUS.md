@@ -119,10 +119,7 @@
 
 ## Ready now
 
-- `P2-05` Engine architecture ADR, module docs and stage showcase
-  - P2-04: Closed P2-04: Chrome benchmark (ANGLE Metal GPU, fail-closed renderer, 50k assertion) measured p95 2.00 ms = 556 fps headroom on the M2 proxy; display-locked control p95 16.80 ms committed.
-  - P2-04: WASM 21,806 B gzip (budget 300 KiB); docs/engine/perf-baseline.md + docs/gates/perf.md; Chrome for Testing 156.0.8078.4 local-only tool; board infra_patterns flag software renderers.
-  - P2-04: Honest reading: headroom proxy for 60 fps, not delivered 60 fps/GPU-completion; MacBook Air M1 reference unproven - re-measure before stage exit on that hardware. Round-1 majors fixed, round-2 pass.
+- none
 
 ## Done
 
@@ -159,7 +156,7 @@
 
 ## In progress
 
-- none
+- [ ] `P2-05` Engine architecture ADR, module docs and stage showcase — status: `in_progress` — owner: —
 
 ## Blocked / failed
 
@@ -171,7 +168,13 @@
 - [ ] `P0-15` Release command and tag-based CI release — status: `pending` — owner: —
 - [ ] `P0-16` Dependency updates and Polier update check — status: `pending` — owner: —
 - [ ] `P0-17` RELEASING.md and release 0.0.1 — status: `pending` — owner: —
-- [ ] `P2-05` Engine architecture ADR, module docs and stage showcase — status: `pending` — owner: —
+
+<!-- polier:claims -->
+## Claims
+
+- `P2-05` in progress by dsh since 2026-10-25T15:29:38+00:00 — worktree: /Users/rasulatashev/Desktop/KI Projekte/Project air-P2-05 · slot 1
+
+<!-- /polier:claims -->
 
 ## Decisions
 
