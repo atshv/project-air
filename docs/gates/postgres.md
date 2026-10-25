@@ -42,6 +42,8 @@ bash tools/dev/reset-db                    # drops/recreates the slot database, 
 
 - One database per slot and one shared `app_user` role (last `setup` wins); backend tasks are
   exclusive on `db` and run sequentially. Never touch slot 0's data.
+- The backend suites live in `services/platform/test/migrations/`, `services/platform/test/api/`
+  and `services/platform/test/rls/`; the `unit` gate runs the first two together.
 - `db-reset` and the RLS tests are destructive/order-sensitive: mark tasks with
   `"exclusive": ["db"]` and run them only against your slot.
 - Close pools in `after()` hooks; set a statement timeout so a lock wait fails instead of hanging.

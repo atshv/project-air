@@ -2543,7 +2543,10 @@
         "unit"
       ],
       "branch": "task/P3-02",
-      "worktree": "../Project air-P3-02"
+      "worktree": "../Project air-P3-02",
+      "exclusive": [
+        "db"
+      ]
     },
     {
       "status": "pending",

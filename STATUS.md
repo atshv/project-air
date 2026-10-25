@@ -175,13 +175,6 @@
 - [ ] `P3-04` Platform API routes and api-tests — status: `pending` — owner: —
 - [ ] `P3-05` SDK, RLS tests and backend acceptance — status: `pending` — owner: —
 
-<!-- polier:claims -->
-## Claims
-
-- `P3-02` in progress by dsh since 2026-10-25T17:25:44+00:00 — worktree: /Users/rasulatashev/Desktop/KI Projekte/Project air-P3-02 · slot 1
-
-<!-- /polier:claims -->
-
 ## Decisions
 
 - 2026-10-25 `ADR-0001` Monorepo with packages, services, apps, tools and infra (`docs/adr/ADR-0001-monorepo.md`)
