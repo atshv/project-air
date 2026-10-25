@@ -1,15 +1,16 @@
 # Handoff — Project air, new session
 
-**As of:** 2026-10-25 14:20 (Europe/Zurich) · **Repository:** `/Users/rasulatashev/Desktop/KI Projekte/Project air` · **Base branch:** `main` · **Nothing pushed** (`origin/main` is still the scaffold).
+**As of:** 2026-10-25 17:00 (Europe/Zurich) · **Repository:** `/Users/rasulatashev/Desktop/KI Projekte/Project air` · **Base branch:** `main` · **Nothing pushed** (`origin/main` is still the scaffold).
 
 Read `AGENTS.md`, `ARCHITECTURE.md`, `STATUS.md`, `docs/module-map.md` and the task brief before working. Polier is pinned to v1.0.0: `export POLIER=/Users/rasulatashev/Desktop/Polier-main` then `bash tools/polier.sh --check`.
 
 ## State
 
 - **Stage 1 Foundation:** complete, owner decision `continue`.
-- **Stage 2 Contract:** all seven tasks done (`P1-01` … `P1-07`); exit gates `contracts` and `codegen` have passing records. The stage state is still “waiting for the owner decision” (`owner_decision: pending`) — set it to `continue` to start stage 3.
-- **Stage 3 Engine spike:** planned but not started — tasks `P2-01` … `P2-05` and their briefs exist, D8 and the engine gate commands are in `docs/quality.md`; the stage owner decision is still `pending`. After approval start with `P2-01`.
-- **Done overall:** 26 of 30 tasks. Open: `P2-01` … `P2-05` (stage 3) and the remote-phase tasks `P0-02`, `P0-15`, `P0-16`, `P0-17`.
+- **Stage 2 Contract:** complete, owner decision `continue`; contract `0.1.0` (16 schema files, fixtures/sync/api corpora, TS+C++ codegen/parity), `docs/contracts.md`, ADR-0005, `board.contracts[]`, Contract overview in the preview.
+- **Stage 3 Engine spike:** complete, owner decision `continue`; tasks `P2-01` … `P2-05` done. C++20 core (doc/camera/spatial/render command buffer), WebGL2 instanced renderer, TS bridge `@project-air/engine`, `apps/engine-playground`, ADR-0006 + `docs/engine.md`. Toolchain pinned: CMake 4.4.4, Emscripten 6.0.13. WASM 49,925 B raw / 21,806 B gzip (budget 300 KiB). Measured on the Mac mini M2 8 GB proxy: p50 1.80 / p95 2.00 / p99 2.20 ms, mean 556.1 fps unlocked frame production; display-locked control p95 16.80 ms. **D8 hardware caveat:** the MacBook Air M1 8 GB reference is unproven — re-measure there before treating the hardware target as met.
+- **Done overall:** 31 of 35 tasks. Open only the remote-phase tasks `P0-02`, `P0-15`, `P0-16`, `P0-17` (stage remote, after hardening) plus planning of later stages (backend-core, engine-core, realtime, web-app, value, hardening).
+- **Stage 4 Backend core:** not planned yet; the owner decision is `pending`, and Q5 (auth: build it ourselves or self-host an open-source server) must be answered before planning its tasks.
 - **Contract 0.1.0:** three schema families, 16 schema files — board-content (10 top-level schemas), sync protocol (`schemas/sync/sync.schema.json`, 12 message types 6+6), REST API (`schemas/api/`, 4 resources × 7 envelopes + errors, 7 UPPER_SNAKE codes mapped to `errors.<camelCase>` keys). Fixtures: `fixtures/` 77 (32 valid/45 invalid) with the TS+C++ parity harness, `fixtures-sync/` 14/20, `fixtures-api/` 35/20, `fixtures-gate/` 2 Polier gate specimens. `board.contracts[]` declares `project-air-contract` 0.1.0 / `fixtures-gate` / empty dependants. Docs: `docs/contracts.md`, `docs/adr/ADR-0005-contract.md`. Logical tag `contracts@0.1.0` (no git tag until the remote phase, ADR-0002/0003).
 - **Preview:** `apps/web/preview/` has the permanent Contract 0.1.0 overview as section 02 (facts, schema families/corpora, 19 operation chips, 6+6 sync messages, 7 code→key rows, parity/codegen proof, cadence line, doc/ADR links) above the design sections; the live two-note demo is unchanged. Evidence `P1-07-desktop.png`, `P1-07-mobile.png`, `P1-07-contract.png`, `P1-07-preview.log`.
 - **Checks:** `check.py` exit 0 (2 warnings: `budgets.status` override, P0-02 context pack), `boundaries.py` exit 0, `contracts.py check` exit 0, `design-check` exit 0, `language-check` OK, contract unit suite 88/88, `codegen` clean, worktrees clean.
@@ -27,12 +28,14 @@ Read `AGENTS.md`, `ARCHITECTURE.md`, `STATUS.md`, `docs/module-map.md` and the t
 - Docker Desktop (context `desktop-linux`) is the local runtime; the compose stack is started/stopped with `docker compose -f infra/compose/compose.yaml up -d --wait` / `down`.
 - The design preview is served from the main checkout on port 4000: `python3 -m http.server 4000` in the repo root → `http://127.0.0.1:4000/apps/web/preview/`. Worktree slots use their own web port from `.polier-slot`.
 - Board-check must run **before** `pnpm install` (it scans `node_modules/`).
-- Local C++ compiler: Apple clang (`clang++`); the contract parity harness needs only that. CMake/Emscripten are still missing (engine stage must plan them).
+- Local C++ compiler: Apple clang (`clang++`); CMake 4.4.4 and Emscripten 6.0.13 are installed via Homebrew (pinned in `docs/versions.md`; always build WASM through `bash packages/engine/tools/build-wasm.sh`). The engine gates are `cpp-unit`, `wasm-build` (build + Node smoke), `wasm-size`, `perf-baseline`.
+- Perf measurement: Chrome for Testing 156.0.8078.4 from the Playwright cache with `--headless=new --use-angle=metal --enable-gpu` (real ANGLE Metal GPU); the harness detects and rejects software renderers. The disk is nearly full (~1.9 GiB free): clean `node_modules/`, `packages/engine/build*`, `dist/` and `/tmp` after each task, and keep additions small.
 - The preview has no build step, no fetch and no server; screenshots use the local Chromium headless shell from the Playwright cache.
 
 ## Next steps
 
-1. Approve the engine-spike plan; set the stage decision to `continue` and start `P2-01` (toolchain: CMake 4.4.4 + Emscripten 6.0.13 via Homebrew, owner-approved; Q6 reference hardware MacBook Air M1 8 GB, Chrome; Q7 agents under close guidance; Q18 50k@60fps for the spike, L01 in engine-core).
+1. Owner decision for **stage 4 backend-core**: answer Q5 (auth) and set the stage decision to `continue`; then plan the stage (API tests + RLS tests, PostgreSQL migrations, compose stack, `packages/sdk`) and write the first briefs. Q6/Q7/Q18 are answered; the engine-spike D8 hardware caveat (M1 unproven) stays recorded.
+2. Later stages: engine-core (canvas catalogue L01 full target), realtime (Q4 CRDT), web-app, value, hardening. The remote phase (`P0-02`, `P0-15`, `P0-16`, `P0-17`, GitHub/CI/branch protection/release) stays at the very end before v1 (ADR-0003).
 2. Before any contract change: bump the version in `board.contracts[]`, every schema `$id` and the root `contractVersion` in the same task, add valid+invalid fixtures, regenerate codegen, keep TS/C++ parity green, update `docs/contracts.md`, run the `contracts` gate.
 3. Keep the demo cadence: every preview or design-system change updates the Contract overview, the live demo and its screenshots in the same task.
 4. The remote phase (`P0-02`, `P0-15`, `P0-16`, `P0-17`, GitHub/CI/branch protection/release) stays at the very end before v1 (ADR-0003).
@@ -60,4 +63,4 @@ Rules: one commit per task (`<ID>: <title>`), change entry in `.changes/` (`pnpm
 
 ## New session prompt
 
-> Lies `AGENTS.md`, `ARCHITECTURE.md`, `STATUS.md`, `docs/module-map.md` und `HANDOFF.md`. Die Contract-Stage ist lokal fertig (P1-01 bis P1-07, Vertrag 0.1.0, `contracts`- und `codegen`-Gate grün). Setze die Eigentümer-Entscheidung für die Contract-Stage auf `continue` und plane danach die Stage 3 `engine-spike`: Aufgaben und Briefs anlegen, Q6/Q7 klären, CMake/Emscripten-Plan. Lokal arbeiten, nichts pushen.
+> Lies `AGENTS.md`, `ARCHITECTURE.md`, `STATUS.md`, `docs/module-map.md` und `HANDOFF.md`. Foundation, Contract und Engine-Spike sind lokal fertig (31/35 Tasks, Engine-Spike mit gemessenem Report und ADR-0006; M1-Referenz noch offen). Kläre Q5 (Auth) mit mir, setze die Eigentümer-Entscheidung für die Stage 4 `backend-core` und plane die Stage: Aufgaben, Briefs, `api-tests`/`rls-tests`-Gates, PostgreSQL/RLS und Compose-Stack. Lokal arbeiten, nichts pushen.
