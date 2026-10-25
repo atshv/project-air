@@ -18,7 +18,7 @@
 
 - State: waiting for the owner decision
 - Owner decision: `pending`
-- Exit gates: `contracts` (missing record), `codegen`
+- Exit gates: `contracts`, `codegen`
 - Exit criteria: contracts 0.1.0 tagged; every schema has a valid and an invalid fixture.; TS and C++ read the same fixtures identically.
 - Tasks: P1-01, P1-02, P1-03, P1-04, P1-05, P1-06, P1-07
 
@@ -118,7 +118,10 @@
 
 ## Ready now
 
-- none
+- `P1-07` Contract overview in the preview
+  - P1-06: Closed P1-06: docs/contracts.md is the contract 0.1.0 entry point (3 families, 16 schemas, fixture corpora/counts, codegen+parity, SemVer rules, board.contracts[], logical contracts@0.1.0 tag).
+  - P1-06: ADR-0005 Contract and versions records the schema-first decision, consequences and alternatives; the board decision ADR-0005 now carries its file.
+  - P1-06: Review pass; 3 minor docs findings fixed (dependant step, gate-vs-table bump caveat, base-URI placeholder) and tag naming aligned (contracts@0.1.0; git release tags stay v<semver>).
 
 ## Done
 
@@ -146,10 +149,11 @@
 - [x] `P1-03` Codegen TS + C++ with identical fixtures — status: `done` — owner: —
 - [x] `P1-04` Sync protocol messages — status: `done` — owner: —
 - [x] `P1-05` API resources and error codes — status: `done` — owner: —
+- [x] `P1-06` Contract documentation, ADR and 0.1.0 metadata — status: `done` — owner: —
 
 ## In progress
 
-- [ ] `P1-06` Contract documentation, ADR and 0.1.0 metadata — status: `in_progress` — owner: —
+- none
 
 ## Blocked / failed
 
@@ -163,20 +167,13 @@
 - [ ] `P0-17` RELEASING.md and release 0.0.1 — status: `pending` — owner: —
 - [ ] `P1-07` Contract overview in the preview — status: `pending` — owner: —
 
-<!-- polier:claims -->
-## Claims
-
-- `P1-06` in progress by dsh since 2026-10-25T12:39:22+00:00 — worktree: /Users/rasulatashev/Desktop/KI Projekte/Project air-P1-06 · slot 1
-
-<!-- /polier:claims -->
-
 ## Decisions
 
 - 2026-10-25 `ADR-0001` Monorepo with packages, services, apps, tools and infra (`docs/adr/ADR-0001-monorepo.md`)
 - 2026-10-25 `ADR-0002` Local-first build until the GitHub switch (`docs/adr/ADR-0002-local-first.md`)
 - 2026-10-25 `ADR-0003` Remote phase as the last stage before v1 (`docs/adr/ADR-0003-remote-phase.md`)
 - 2026-10-25 `ADR-0004` Contract v1 text limits and board visibility (`docs/adr/ADR-0004-contract-limits-visibility.md`)
-- 2026-10-25 `ADR-0005` Contract and versions
+- 2026-10-25 `ADR-0005` Contract and versions (`docs/adr/ADR-0005-contract.md`)
 
 ## Open questions
 

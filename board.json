@@ -1999,7 +1999,7 @@
       "satisfies": [
         "D7"
       ],
-      "status": "in_progress",
+      "status": "done",
       "depends_on": [
         "P1-05"
       ],
@@ -2036,11 +2036,20 @@
       ],
       "owner": null,
       "branch": "task/P1-06",
-      "worktree": "../Project air-P1-06",
+      "worktree": null,
       "round": 0,
-      "evidence": [],
+      "evidence": [
+        "reviews/evidence/P1-06-board-check-20261025T124329Z.json",
+        "reviews/evidence/P1-06-contracts-20261025T124330Z.json",
+        "reviews/evidence/P1-06-unit-20261025T124332Z.json"
+      ],
       "scope_write_forbidden": [
         "reference/"
+      ],
+      "handoff": [
+        "Closed P1-06: docs/contracts.md is the contract 0.1.0 entry point (3 families, 16 schemas, fixture corpora/counts, codegen+parity, SemVer rules, board.contracts[], logical contracts@0.1.0 tag).",
+        "ADR-0005 Contract and versions records the schema-first decision, consequences and alternatives; the board decision ADR-0005 now carries its file.",
+        "Review pass; 3 minor docs findings fixed (dependant step, gate-vs-table bump caveat, base-URI placeholder) and tag naming aligned (contracts@0.1.0; git release tags stay v<semver>)."
       ]
     },
     {
@@ -2120,7 +2129,8 @@
     {
       "date": "2026-10-25",
       "id": "ADR-0005",
-      "title": "Contract and versions"
+      "title": "Contract and versions",
+      "file": "docs/adr/ADR-0005-contract.md"
     }
   ],
   "open_questions": [
