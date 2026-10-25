@@ -1347,6 +1347,56 @@
         "board-check, changelog-entry and design-check pass; demo is section 01 above the static sections.",
         "Serve the page and drag to feel it; engine-spike playground remains the next real engine demo."
       ]
+    },
+    {
+      "id": "P0-21",
+      "title": "Match the demo connection to the design system",
+      "goal": "The live demo edge uses the design system's connection style (--tone-d, 1.5 px) and the demo stays permanent with every preview update.",
+      "why": "The owner wants the demo to feel like the product; the edge style must match the Connection component.",
+      "satisfies": [
+        "D3"
+      ],
+      "status": "pending",
+      "depends_on": [
+        "P0-20"
+      ],
+      "complexity": 1,
+      "stage": "foundation",
+      "parallel_group": null,
+      "scope_write": [
+        "apps/web/preview/",
+        ".changes/"
+      ],
+      "scope_read": [
+        "ARCHITECTURE.md",
+        "AGENTS.md",
+        "STATUS.md",
+        "docs/module-map.md",
+        "docs/quality.md",
+        "docs/design-rules.md",
+        "apps/web/preview/",
+        "packages/ui-kit/tokens.css",
+        "packages/ui-kit/tokens.json",
+        ".changes/README.md"
+      ],
+      "acceptance": [
+        "A1",
+        "A2",
+        "A3"
+      ],
+      "gates": [
+        "board-check",
+        "design-check",
+        "changelog-entry"
+      ],
+      "owner": null,
+      "branch": "task/P0-21",
+      "worktree": null,
+      "round": 0,
+      "evidence": [],
+      "scope_write_forbidden": [
+        "reference/"
+      ]
     }
   ],
   "decisions": [

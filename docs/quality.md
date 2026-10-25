@@ -75,6 +75,8 @@ The owner wants to see the product after larger changes, not only at the end: bu
   mobile (390×844) screenshots into `reviews/evidence/`, commit them and show them in the result.
 - A small task inside a stage does not need its own demo; the stage showcase is enough.
 - A demo supplements the gates, it does not replace them.
+- The live two-note connection demo in `apps/web/preview/` stays permanently: every change to the
+  preview or to the design system updates the demo and its screenshot in the same task.
 
 ## Review
 

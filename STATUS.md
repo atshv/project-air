@@ -12,7 +12,7 @@
 - Owner decision: `pending`
 - Exit gates: `board-check`, `install`, `boundaries`, `dev-setup`, `compose-config`, `tokens-codegen`, `design-check`, `language-check`, `changelog-entry`
 - Exit criteria: Every packages[] folder exists with a README and an ARCHITECTURE.md; package map and versions are filled in.; A fresh clone installs reproducibly with the committed lockfile; root lint, typecheck, test and build pass.; Two worktrees run install, lint, typecheck and tests side by side without port or database collision; tools/dev/setup and teardown create and remove the slot database and bucket and refuse slot 0.; design-check, language-check, changelog-entry and boundaries reject a violating change locally; every code change carries a .changes entry.; CI, branch protection, hosting and releases are deferred to the remote stage after hardening (ADR-0003).; A runnable design preview page exists with desktop and mobile screenshots and a live two-note connection demo (P0-19, P0-20).
-- Tasks: P0-03, P0-04, P0-06, P0-07, P0-10, P0-11, P0-12, P0-13, P0-14, P0-18, P0-19, P0-20
+- Tasks: P0-03, P0-04, P0-06, P0-07, P0-10, P0-11, P0-12, P0-13, P0-14, P0-18, P0-19, P0-20, P0-21
 
 ### Stage 2 — `contract` Contract
 
@@ -117,7 +117,10 @@
 
 ## Ready now
 
-- none
+- `P0-21` Match the demo connection to the design system
+  - P0-20: Closed P0-20: apps/web/preview/ has a live two-note connection demo (pointer drag, live edge, keyboard nudge 16 px, Home reset, clamping).
+  - P0-20: board-check, changelog-entry and design-check pass; demo is section 01 above the static sections.
+  - P0-20: Serve the page and drag to feel it; engine-spike playground remains the next real engine demo.
 
 ## Done
 
@@ -150,13 +153,7 @@
 - [ ] `P0-15` Release command and tag-based CI release — status: `pending` — owner: —
 - [ ] `P0-16` Dependency updates and Polier update check — status: `pending` — owner: —
 - [ ] `P0-17` RELEASING.md and release 0.0.1 — status: `pending` — owner: —
-
-<!-- polier:claims -->
-## Claims
-
-- `P0-20` in progress by dsh since 2026-10-25T10:08:56+00:00 — worktree: /Users/rasulatashev/Desktop/KI Projekte/Project air-P0-20 · slot 1
-
-<!-- /polier:claims -->
+- [ ] `P0-21` Match the demo connection to the design system — status: `pending` — owner: —
 
 ## Decisions
 
