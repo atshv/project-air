@@ -1,6 +1,6 @@
 # Status
 
-**Project:** project-air · **Profile:** L · **Stage:** 1 of 10 (10 defined)
+**Project:** project-air · **Profile:** L · **Stage:** 1 of 11 (11 defined)
 
 > Generated from `board.json`. Do not edit by hand.
 
@@ -10,9 +10,9 @@
 
 - State: waiting for the owner decision
 - Owner decision: `pending`
-- Exit gates: `board-check`, `ci-green` (missing record), `design-check` (missing record), `language-check` (missing record), `changelog-entry` (missing record), `release-dry` (missing record)
-- Exit criteria: Every packages[] folder exists with a README and an ARCHITECTURE.md; package map and versions are filled in.; Two worktrees run tests side by side without port or database collision; two e2e runs wait for each other.; CI rejects a pull request that leaves its scope, adds a raw colour, hard-codes UI text or lacks a change entry.; Release 0.0.1 and one preview ran end to end through CI from a tag.
-- Tasks: P0-02, P0-03, P0-04, P0-06, P0-07, P0-08, P0-09, P0-10, P0-11, P0-12, P0-13, P0-14, P0-15, P0-16, P0-17, P0-18
+- Exit gates: `board-check`, `install`, `boundaries`, `dev-setup`, `compose-config`, `tokens-codegen`, `design-check` (missing record), `language-check` (missing record), `changelog-entry` (missing record)
+- Exit criteria: Every packages[] folder exists with a README and an ARCHITECTURE.md; package map and versions are filled in.; A fresh clone installs reproducibly with the committed lockfile; root lint, typecheck, test and build pass.; Two worktrees run install, lint, typecheck and tests side by side without port or database collision; tools/dev/setup and teardown create and remove the slot database and bucket and refuse slot 0.; design-check, language-check, changelog-entry and boundaries reject a violating change locally; every code change carries a .changes entry.; CI, branch protection, hosting and releases are deferred to the remote stage after hardening (ADR-0003).
+- Tasks: P0-03, P0-04, P0-06, P0-07, P0-10, P0-11, P0-12, P0-13, P0-14, P0-18
 
 ### Stage 2 — `contract` Contract
 
@@ -70,7 +70,15 @@
 - Exit gates: `smoke` (missing record), `load` (missing record), `release-dry` (missing record)
 - Exit criteria: All product targets measured; no open high-severity security findings.; Two weeks of beta without data loss.
 
-### Stage 10 — `v1` Public v1
+### Stage 10 — `remote` Remote
+
+- State: waiting for the owner decision
+- Owner decision: `pending`
+- Exit gates: `branch-protection` (missing record), `ci-green` (missing record), `polier-version` (missing record), `release-dry` (missing record), `smoke` (missing record)
+- Exit criteria: main is protected; CI rejects a pull request outside its scope, with raw colours, hard-coded UI text or without a change entry.; Polier v1.0.0 is pinned in CI; release 0.0.1 and one preview ran end to end from a tag.; Hosting is chosen (Q3), environments and smoke checks are complete.
+- Tasks: P0-02, P0-08, P0-09, P0-15, P0-16, P0-17
+
+### Stage 11 — `v1` Public v1
 
 - State: waiting for the owner decision
 - Owner decision: `pending`
@@ -109,14 +117,14 @@
 
 ## Ready now
 
-- `P0-08` CI skeleton
-  - P0-04: Closed P0-04: pnpm workspaces + Turborepo, exact tool versions, lockfile committed, Node 24.22.1 LTS pinned.
-  - P0-04: install = pnpm install --frozen-lockfile; unit = pnpm test; root lint/typecheck/test/build exit 0 on the empty workspace.
-  - P0-04: Board-check runs before pnpm install (check.py scans node_modules); P0-06, P0-12 and P0-18 can start.
 - `P0-13` design-check gate
   - P0-12: Closed P0-12: packages/ui-kit tokens.json is the single visual source; codegen writes tokens.css, tokens.h and layers.ts deterministically.
   - P0-12: Ten toolbar icons as SVG; package scripts lint/typecheck/test/build/codegen; 37 unit tests; AD-7 complete.
   - P0-12: P0-13 design-check can consume tokens.json, layers.ts and icons; commands are in docs/quality.md.
+- `P0-14` Change entries and changelog gate
+  - P0-04: Closed P0-04: pnpm workspaces + Turborepo, exact tool versions, lockfile committed, Node 24.22.1 LTS pinned.
+  - P0-04: install = pnpm install --frozen-lockfile; unit = pnpm test; root lint/typecheck/test/build exit 0 on the empty workspace.
+  - P0-04: Board-check runs before pnpm install (check.py scans node_modules); P0-06, P0-12 and P0-18 can start.
 - `P0-18` i18n scaffold and language-check gate
   - P0-04: Closed P0-04: pnpm workspaces + Turborepo, exact tool versions, lockfile committed, Node 24.22.1 LTS pinned.
   - P0-04: install = pnpm install --frozen-lockfile; unit = pnpm test; root lint/typecheck/test/build exit 0 on the empty workspace.
@@ -138,10 +146,11 @@
 
 ## Blocked / failed
 
-- [!] `P0-02` Protect main and document repository settings — status: `blocked` — owner: —
+- none
 
 ## Open
 
+- [ ] `P0-02` Protect main and document repository settings — status: `pending` — owner: —
 - [ ] `P0-08` CI skeleton — status: `pending` — owner: —
 - [ ] `P0-09` Pinned Polier for agents and CI — status: `pending` — owner: —
 - [ ] `P0-13` design-check gate — status: `pending` — owner: —
@@ -155,6 +164,7 @@
 
 - 2026-10-25 `ADR-0001` Monorepo with packages, services, apps, tools and infra (`docs/adr/ADR-0001-monorepo.md`)
 - 2026-10-25 `ADR-0002` Local-first build until the GitHub switch (`docs/adr/ADR-0002-local-first.md`)
+- 2026-10-25 `ADR-0003` Remote phase as the last stage before v1 (`docs/adr/ADR-0003-remote-phase.md`)
 
 ## Open questions
 
@@ -166,9 +176,6 @@
 - `Q7` Who builds the engine: a person with C++/graphics experience or agents under close guidance (needed before stage: engine-spike). — blocks: — — status: `open`
 - `Q8` Which import formats, after a legal check of their terms (needed before stage: value). — blocks: — — status: `open`
 - `Q9` Pricing model for v1 (needed before stage: v1). — blocks: — — status: `open`
-- `Q10` Version scheme: 0.0.1 plus letter entries (proposal) or four-part. — blocks: P0-14 — status: `open`
-- `Q11` AI-written release notes workflow: yes or no. — blocks: P0-16 — status: `open`
-- `Q12` i18n library or own thin layer on Intl. — blocks: P0-18 — status: `open`
 - `Q14` English visible at launch or prepared only; who translates further languages (needed before stage: v1). — blocks: — — status: `open`
 - `Q15` Canvas collisions: clear layers only (proposal) or gentle nudge (needed before stage: engine-core). — blocks: — — status: `open`
 - `Q16` Trackpad default: two fingers pan, pinch zooms (proposal) or scroll zooms (needed before stage: engine-core). — blocks: — — status: `open`

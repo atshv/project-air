@@ -34,17 +34,21 @@
       "goal": "A complete, empty monorepo in which every guard against parallel-agent failures works before any product code exists.",
       "exit_criteria": [
         "Every packages[] folder exists with a README and an ARCHITECTURE.md; package map and versions are filled in.",
-        "Two worktrees run tests side by side without port or database collision; two e2e runs wait for each other.",
-        "CI rejects a pull request that leaves its scope, adds a raw colour, hard-codes UI text or lacks a change entry.",
-        "Release 0.0.1 and one preview ran end to end through CI from a tag."
+        "A fresh clone installs reproducibly with the committed lockfile; root lint, typecheck, test and build pass.",
+        "Two worktrees run install, lint, typecheck and tests side by side without port or database collision; tools/dev/setup and teardown create and remove the slot database and bucket and refuse slot 0.",
+        "design-check, language-check, changelog-entry and boundaries reject a violating change locally; every code change carries a .changes entry.",
+        "CI, branch protection, hosting and releases are deferred to the remote stage after hardening (ADR-0003)."
       ],
       "exit_gates": [
         "board-check",
-        "ci-green",
+        "install",
+        "boundaries",
+        "dev-setup",
+        "compose-config",
+        "tokens-codegen",
         "design-check",
         "language-check",
-        "changelog-entry",
-        "release-dry"
+        "changelog-entry"
       ],
       "owner_decision": "pending",
       "depends_on": []
@@ -191,6 +195,27 @@
       ]
     },
     {
+      "id": "remote",
+      "title": "Remote",
+      "goal": "GitHub protection, CI, pinned Polier in CI, tag-based releases, preview/staging/production smoke and update automation, after the local build.",
+      "exit_criteria": [
+        "main is protected; CI rejects a pull request outside its scope, with raw colours, hard-coded UI text or without a change entry.",
+        "Polier v1.0.0 is pinned in CI; release 0.0.1 and one preview ran end to end from a tag.",
+        "Hosting is chosen (Q3), environments and smoke checks are complete."
+      ],
+      "exit_gates": [
+        "branch-protection",
+        "ci-green",
+        "polier-version",
+        "release-dry",
+        "smoke"
+      ],
+      "owner_decision": "pending",
+      "depends_on": [
+        "hardening"
+      ]
+    },
+    {
       "id": "v1",
       "title": "Public v1",
       "goal": "First public release 1.0.0.",
@@ -203,7 +228,7 @@
       ],
       "owner_decision": "pending",
       "depends_on": [
-        "hardening"
+        "remote"
       ]
     }
   ],
@@ -362,10 +387,10 @@
       "satisfies": [
         "D6"
       ],
-      "status": "blocked",
+      "status": "pending",
       "depends_on": [],
       "complexity": 2,
-      "stage": "foundation",
+      "stage": "remote",
       "parallel_group": null,
       "scope_write": [
         "docs/runbooks/repository.md"
@@ -660,7 +685,7 @@
         "P0-04"
       ],
       "complexity": 4,
-      "stage": "foundation",
+      "stage": "remote",
       "parallel_group": null,
       "scope_write": [
         ".github/workflows/ci.yml"
@@ -705,7 +730,7 @@
         "P0-08"
       ],
       "complexity": 2,
-      "stage": "foundation",
+      "stage": "remote",
       "parallel_group": null,
       "scope_write": [
         "tools/polier.sh",
@@ -911,8 +936,7 @@
       "stage": "foundation",
       "parallel_group": null,
       "scope_write": [
-        "tools/design-check/",
-        ".github/workflows/ci.yml"
+        "tools/design-check/"
       ],
       "scope_read": [
         "ARCHITECTURE.md",
@@ -951,7 +975,7 @@
       ],
       "status": "pending",
       "depends_on": [
-        "P0-08"
+        "P0-04"
       ],
       "complexity": 3,
       "stage": "foundation",
@@ -959,8 +983,7 @@
       "scope_write": [
         "tools/release/",
         ".changes/",
-        "CHANGELOG.md",
-        ".github/workflows/ci.yml"
+        "CHANGELOG.md"
       ],
       "scope_read": [
         "ARCHITECTURE.md",
@@ -1001,7 +1024,7 @@
         "P0-14"
       ],
       "complexity": 6,
-      "stage": "foundation",
+      "stage": "remote",
       "parallel_group": null,
       "scope_write": [
         "tools/release/",
@@ -1050,7 +1073,7 @@
         "P0-15"
       ],
       "complexity": 3,
-      "stage": "foundation",
+      "stage": "remote",
       "parallel_group": null,
       "scope_write": [
         ".github/dependabot.yml",
@@ -1095,7 +1118,7 @@
         "P0-15"
       ],
       "complexity": 3,
-      "stage": "foundation",
+      "stage": "remote",
       "parallel_group": null,
       "scope_write": [
         "RELEASING.md",
@@ -1146,8 +1169,7 @@
       "scope_write": [
         "tools/language-check/",
         "apps/web/messages/",
-        "docs/i18n/",
-        ".github/workflows/ci.yml"
+        "docs/i18n/"
       ],
       "scope_read": [
         "ARCHITECTURE.md",
@@ -1190,6 +1212,12 @@
       "id": "ADR-0002",
       "title": "Local-first build until the GitHub switch",
       "file": "docs/adr/ADR-0002-local-first.md"
+    },
+    {
+      "date": "2026-10-25",
+      "id": "ADR-0003",
+      "title": "Remote phase as the last stage before v1",
+      "file": "docs/adr/ADR-0003-remote-phase.md"
     }
   ],
   "open_questions": [
@@ -1248,26 +1276,29 @@
     {
       "id": "Q10",
       "question": "Version scheme: 0.0.1 plus letter entries (proposal) or four-part.",
-      "status": "open",
+      "status": "answered",
       "blocks": [
         "P0-14"
-      ]
+      ],
+      "answer": "SemVer 0.0.1 plus letter entries for unpublished intermediate steps (owner, 2026-10-25)."
     },
     {
       "id": "Q11",
       "question": "AI-written release notes workflow: yes or no.",
-      "status": "open",
+      "status": "answered",
       "blocks": [
         "P0-16"
-      ]
+      ],
+      "answer": "No AI-written release notes for now; optional later (owner, 2026-10-25)."
     },
     {
       "id": "Q12",
       "question": "i18n library or own thin layer on Intl.",
-      "status": "open",
+      "status": "answered",
       "blocks": [
         "P0-18"
-      ]
+      ],
+      "answer": "ICU MessageFormat message files now, framework-neutral; an established ICU library follows when the web framework is chosen (owner, 2026-10-25)."
     },
     {
       "id": "Q13",
@@ -1303,8 +1334,8 @@
   ],
   "budgets": {
     "status": {
-      "limit": 1600,
-      "reason": "Ten stages with exit criteria and sixteen open owner questions are listed in STATUS.md during stage foundation; shrinks as questions are answered."
+      "limit": 1900,
+      "reason": "Eleven stages with exit criteria, the remote stage and eighteen owner questions are listed in STATUS.md during foundation; shrinks as questions are answered and tasks finish."
     }
   }
 }
