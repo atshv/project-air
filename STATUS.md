@@ -136,10 +136,11 @@
 - [x] `P0-19` Design preview page — status: `done` — owner: —
 - [x] `P0-20` Live connection demo in the preview — status: `done` — owner: —
 - [x] `P0-21` Match the demo connection to the design system — status: `done` — owner: —
+- [x] `P0-22` Version and last change in the preview masthead — status: `done` — owner: —
 
 ## In progress
 
-- [ ] `P0-22` Version and last change in the preview masthead — status: `in_progress` — owner: —
+- none
 
 ## Blocked / failed
 

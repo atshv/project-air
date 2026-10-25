@@ -1437,7 +1437,7 @@
       "satisfies": [
         "D3"
       ],
-      "status": "in_progress",
+      "status": "done",
       "depends_on": [
         "P0-21"
       ],
@@ -1472,11 +1472,20 @@
       ],
       "owner": null,
       "branch": "task/P0-22",
-      "worktree": "../Project air-P0-22",
+      "worktree": null,
       "round": 0,
-      "evidence": [],
+      "evidence": [
+        "reviews/evidence/P0-22-board-check-20261025T103654Z.json",
+        "reviews/evidence/P0-22-design-check-20261025T103655Z.json",
+        "reviews/evidence/P0-22-changelog-entry-20261025T103655Z.json"
+      ],
       "scope_write_forbidden": [
         "reference/"
+      ],
+      "handoff": [
+        "Closed P0-22: preview masthead shows Version 0.0.1 · unreleased · Last change P0-21.",
+        "Sources are CHANGELOG.md and the newest .changes entry; README and demo cadence require updating the line with every preview/changelog change.",
+        "Screenshot P0-22-demo.png; all three gates pass."
       ]
     }
   ],

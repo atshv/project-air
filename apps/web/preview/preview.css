@@ -88,6 +88,23 @@ button {
   font-size: var(--text-15);
 }
 
+.masthead__version {
+  color: var(--muted);
+  font-size: var(--text-12);
+  line-height: var(--line-height);
+  overflow-wrap: anywhere;
+}
+
+.masthead__version span + span::before {
+  content: "";
+  display: inline-block;
+  inline-size: var(--border-width);
+  block-size: var(--space-12);
+  margin-inline: var(--space-8);
+  background-color: var(--border);
+  vertical-align: middle;
+}
+
 .masthead__meta {
   display: flex;
   flex-wrap: wrap;

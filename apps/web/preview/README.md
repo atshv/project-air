@@ -1,12 +1,31 @@
-# Design preview (P0-19, P0-20, P0-21)
+# Design preview (P0-19, P0-20, P0-21, P0-22)
 
 A design preview of the Project air design system. It is **not the product**: there is no engine,
 no data, no server and no build step. It exists so the owner can see the look and feel between
 milestones — the top section is a small live interaction demo, the rest is static token and
 component documentation.
 
+## Version and last change
+
+The masthead identifies which build the preview represents. The line is static in `index.html` with
+stable `data-preview-*` hooks — no runtime parsing and no fetch — and its two values come from:
+
+- **Version** — the first `##` heading of [`CHANGELOG.md`](../../../CHANGELOG.md), currently
+  `0.0.1 – unreleased`; the status word comes from the same heading. `CHANGELOG.md` is the display
+  source and currently agrees with the root `package.json` version `0.0.1`.
+- **Last change** — the newest entry in `.changes/` by highest task id, currently
+  `.changes/P0-21-demo-connection.md`; the line shows the task id and that task's title from
+  `board.json` / the task brief: `P0-21 — Match the demo connection to the design system`. If several
+  files exist for the highest task id, the most recent one is used; the `.changes/README.md` and
+  `.changes/TEMPLATE.md` files do not count as entries.
+
+Both values follow the demo cadence: every change to the preview, the changelog or the design system
+updates this line, the interactive demo and the screenshot in `reviews/evidence/` in the same task. A
+later changelog version or change entry must refresh this line in that same task.
+
 ## What it shows
 
+- A masthead meta line with the changelog version and the latest change entry.
 - An **interactive connection demo**: two note cards joined by one edge. Drag a card with mouse, pen
   or finger, or focus a card and use the arrow keys (16 px per step); `Home` resets both cards.
   Clearly labelled “interactive demo — not the engine; no data, no server”.
@@ -74,7 +93,7 @@ Serve the **repository root**, not this folder, so the relative token and icon p
 the slot's `web` port from `.polier-slot` (never hard-code it), then:
 
 ```sh
-cd "/Users/rasulatashev/Desktop/KI Projekte/Project air-P0-21"
+cd "/Users/rasulatashev/Desktop/KI Projekte/Project air-P0-22"
 PORT=$(python3 -c "import json; print(json.load(open('.polier-slot'))['ports']['web'])")
 python3 -m http.server "$PORT" --bind 127.0.0.1
 ```
@@ -92,6 +111,8 @@ no dependencies and is the only server this preview needs.
 
 Committed evidence lives in `reviews/evidence/`: `P0-19-desktop.png` (1440×900),
 `P0-19-mobile.png` (390×844), `P0-20-demo.png` (1440×900, both demo cards and their edge),
-`P0-21-demo.png` (1440×900, the demo edge in the design-system `--tone-d` style) and the
-`P0-19-preview.log` / `P0-20-preview.log` / `P0-21-preview.log` files with the exact serve, curl and
-screenshot commands. The page has no horizontal overflow at 1440×900 or 390×844.
+`P0-21-demo.png` (1440×900, the demo edge in the design-system `--tone-d` style),
+`P0-22-demo.png` (1440×900, the masthead version and last-change line) and the
+`P0-19-preview.log` / `P0-20-preview.log` / `P0-21-preview.log` / `P0-22-preview.log` files with the
+exact serve, curl and screenshot commands. The page has no horizontal overflow at 1440×900 or
+390×844.
