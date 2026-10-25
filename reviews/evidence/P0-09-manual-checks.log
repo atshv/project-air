@@ -1,0 +1,82 @@
+# P0-09 - manual checks (evidence for A1 and A2)
+# worktree: /Users/rasulatashev/Desktop/KI Projekte/Project air-P0-09
+# date (UTC): 2026-10-25T10:28:17Z
+# node: v26.11.1, bash: 3.2.57(1)-release, git: git version 2.50.1
+# POLIER=/Users/rasulatashev/Desktop/Polier-main
+
+## A1: --check accepts the pinned checkout
+$ POLIER=/Users/rasulatashev/Desktop/Polier-main bash tools/polier.sh --check
+polier.sh: v1.0.0 at /Users/rasulatashev/Desktop/Polier-main
+exit code: 0
+
+--check wrote nothing to the repository: git status unchanged
+
+## A1: --check fails with a clear message on a missing or mismatched checkout
+$ env -u POLIER bash tools/polier.sh --check
+polier.sh: POLIER is not set; it must point at a Polier checkout of v1.0.0.
+Install a pinned checkout with:
+  export POLIER="$(bash tools/polier.sh --install)"
+exit code: 1
+
+$ POLIER=/tmp/p0-09-manual-fixtures/mismatch bash tools/polier.sh --check
+polier.sh: version mismatch: '/tmp/p0-09-manual-fixtures/mismatch' has 9.9.9, board.json expects 1.0.0.
+Install a pinned checkout with:
+  export POLIER="$(bash tools/polier.sh --install)"
+exit code: 1
+
+$ POLIER=/tmp/p0-09-manual-fixtures/wrong-tag bash tools/polier.sh --check
+polier.sh: '/tmp/p0-09-manual-fixtures/wrong-tag' is tagged v1.0, board.json expects v1.0.0.
+Install a pinned checkout with:
+  export POLIER="$(bash tools/polier.sh --install)"
+exit code: 1
+
+$ POLIER=/tmp/p0-09-manual-fixtures/does-not-exist bash tools/polier.sh --check
+polier.sh: checkout '/tmp/p0-09-manual-fixtures/does-not-exist' does not exist.
+Install a pinned checkout with:
+  export POLIER="$(bash tools/polier.sh --install)"
+exit code: 1
+
+$ POLIER=/tmp/p0-09-manual-fixtures/tarball bash tools/polier.sh --check   # exported archive without .git
+polier.sh: warning: '/tmp/p0-09-manual-fixtures/tarball' is not a git checkout; the exact tag v1.0.0 cannot be verified.
+polier.sh: v1.0.0 at /tmp/p0-09-manual-fixtures/tarball
+exit code: 0
+
+## A1: --show prints the resolved checkout and version
+$ POLIER=/Users/rasulatashev/Desktop/Polier-main bash tools/polier.sh --show
+checkout: /Users/rasulatashev/Desktop/Polier-main
+version: 1.0.0
+exit code: 0
+
+## A2: --install reuses a valid checkout without network
+$ bash tools/polier.sh --install /tmp/p0-09-manual-fixtures/exact
+/tmp/p0-09-manual-fixtures/exact
+exit code: 0
+
+$ bash tools/polier.sh --install /tmp/p0-09-manual-fixtures/mismatch   # invalid existing target
+polier.sh: target '/tmp/p0-09-manual-fixtures/mismatch' exists and is not a v1.0.0 checkout; remove it or pass another directory
+exit code: 1
+
+## A2: --install clones the exact tag from the Polier repository (CI path)
+$ bash tools/polier.sh --install /tmp/p0-09-manual-fixtures/clone
+polier.sh: cloning https://github.com/atshv/Polier.git (tag v1.0.0) into /tmp/p0-09-manual-fixtures/clone
+Cloning into '/tmp/p0-09-manual-fixtures/clone'...
+warning: refs/tags/v1.0.0 ce5b43fbe72c621f094d16e5997edee5284388a6 is not a commit!
+/tmp/p0-09-manual-fixtures/clone
+exit code: 0
+
+$ POLIER=/tmp/p0-09-manual-fixtures/clone bash tools/polier.sh --check
+polier.sh: v1.0.0 at /tmp/p0-09-manual-fixtures/clone
+exit code: 0
+
+cloned VERSION: 1.0.0
+cloned tag: v1.0.0
+
+## A2: every workflow action is pinned and listed in docs/versions.md
+$ grep 'uses:' .github/workflows/ci.yml
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+
+$ grep -c 'GitHub Action' docs/versions.md
+4
+

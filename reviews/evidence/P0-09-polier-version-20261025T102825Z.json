@@ -1,0 +1,17 @@
+{
+  "task": "P0-09",
+  "gate": "polier-version",
+  "command": "bash tools/polier.sh --check",
+  "exit_code": 0,
+  "result": "pass",
+  "slot": null,
+  "exclusive": [],
+  "lock_wait_s": 0.0,
+  "lock_warning": null,
+  "started": "2026-10-25T10:28:25+00:00",
+  "finished": "2026-10-25T10:28:25+00:00",
+  "commit": "6942bccbc4a24001051dfd3e47a9ecdb37c58a5b",
+  "dirty": true,
+  "log": "P0-09-polier-version-20261025T102825Z.log",
+  "log_sha256": "bd83067d40a5088cd2100d957220751416f77a2db52fb2e8120c778328d086fc"
+}

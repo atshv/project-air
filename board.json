@@ -736,7 +736,7 @@
       "satisfies": [
         "D2"
       ],
-      "status": "in_progress",
+      "status": "done",
       "depends_on": [
         "P0-08"
       ],
@@ -768,11 +768,20 @@
       ],
       "owner": null,
       "branch": "task/P0-09",
-      "worktree": "../Project air-P0-09",
+      "worktree": null,
       "round": 0,
-      "evidence": [],
+      "evidence": [
+        "reviews/evidence/P0-09-board-check-20261025T102822Z.json",
+        "reviews/evidence/P0-09-polier-version-20261025T102825Z.json",
+        "reviews/evidence/P0-09-ci-local-20261025T102855Z.json"
+      ],
       "scope_write_forbidden": [
         "reference/"
+      ],
+      "handoff": [
+        "Closed P0-09: tools/polier.sh --check/--install/--show pins Polier v1.0.0 from board.generator_version; CI uses the wrapper.",
+        "GitHub Actions pinned by SHA and recorded in docs/versions.md (owner-approved CI tooling).",
+        "polier-version and ci-local pass; AGENTS 397 words. Foundation is complete after the owner decision."
       ]
     },
     {

@@ -1,11 +1,15 @@
 # Versions: Project air
 
 Every dependency in every manifest appears here. `[UNVERIFIED]` and `[VERIFY: …]` never belong in
-a release. P0-04 added the workspace rows from the root manifest and lockfile.
+a release. P0-04 added the workspace rows from the root manifest and lockfile; P0-09 added the
+GitHub Actions rows from `.github/workflows/ci.yml`.
 
 | Tool / library | Exact version | Source URL | Date checked | Approved by |
 | --- | --- | --- | --- | --- |
 | Polier | `1.0.0` | https://github.com/atshv/Polier/releases/tag/v1.0.0 | 2026-10-25 | owner |
+| GitHub Action `actions/checkout` | `v7.0.1@3d3c42e5aac5ba805825da76410c181273ba90b1` | https://github.com/actions/checkout/releases/tag/v7.0.1 — MIT | 2026-10-25 | owner (2026-10-25) |
+| GitHub Action `actions/setup-node` | `v7.1.0@949feb2413d6458794dcd2491c4babbbce0c15c1` | https://github.com/actions/setup-node/releases/tag/v7.1.0 — MIT | 2026-10-25 | owner (2026-10-25) |
+| GitHub Action `pnpm/action-setup` | `v6.1.0@ea17c68df8912ef543352723c149a84f56e3d413` | https://github.com/pnpm/action-setup/releases/tag/v6.1.0 — MIT | 2026-10-25 | owner (2026-10-25) |
 | pnpm (package manager) | `12.14.0` | https://www.npmjs.com/package/pnpm/v/12.14.0 — MIT | 2026-10-25 | owner (2026-10-25) |
 | Node.js LTS (Krypton) | `24.22.1` | https://nodejs.org/dist/index.json — v24.22.1, 2026-10-20, MIT | 2026-10-25 | owner (2026-10-25) |
 | Turborepo (`turbo`) | `2.11.10` | https://www.npmjs.com/package/turbo/v/2.11.10 — MIT | 2026-10-25 | owner (2026-10-25) |
@@ -28,6 +32,11 @@ All tools in this table are open source without a required paid tier: pnpm, Turb
 ESLint, typescript-eslint and Node.js are MIT or Apache-2.0. Turborepo's optional hosted remote
 cache (Vercel) is a paid service on larger plans and is not used; the local Turbo cache is enough
 for the local phase.
+
+Local gate only, not a workflow dependency: the `rhysd/actionlint` Docker image at tag `latest`
+(actionlint `1.7.12`, digest
+`sha256:b1934ee5f1c509618f2508e6eb47ee0d3520686341fec936f3b79331f9315667`) checks
+`.github/workflows/ci.yml` locally (`ci-local` gate); the CI workflow does not pull it.
 
 ## Rules
 

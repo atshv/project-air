@@ -1,0 +1,4 @@
+$ bash tools/polier.sh --check
+[exit 0]
+
+polier.sh: v1.0.0 at /Users/rasulatashev/Desktop/Polier-main

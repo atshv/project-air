@@ -15,24 +15,29 @@ jobs:
     timeout-minutes: 30
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
 
       - name: Set up Node.js from .nvmrc
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version-file: .nvmrc
 
       - name: Set up pnpm 12.14.0
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
         with:
           version: 12.14.0
 
-      - name: Install Polier v1.0.0
+      # The wrapper clones the tag from board.json (generator_version) and prints the path;
+      # nothing from the Polier checkout is committed to this repository.
+      - name: Install pinned Polier
         run: |
-          git clone --depth 1 --branch v1.0.0 https://github.com/atshv/Polier.git "$RUNNER_TEMP/polier"
-          echo "POLIER=$RUNNER_TEMP/polier" >> "$GITHUB_ENV"
+          POLIER_PATH="$(bash tools/polier.sh --install "$RUNNER_TEMP/polier")"
+          echo "POLIER=$POLIER_PATH" >> "$GITHUB_ENV"
+
+      - name: Verify pinned Polier
+        run: bash tools/polier.sh --check
 
       # check.py scans every markdown file under the root, including node_modules/,
       # so the board check runs before the install step.

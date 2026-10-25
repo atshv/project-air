@@ -10,7 +10,7 @@
 
 - State: waiting for the owner decision
 - Owner decision: `pending`
-- Exit gates: `board-check`, `install`, `boundaries`, `dev-setup`, `compose-config`, `tokens-codegen`, `design-check`, `language-check`, `changelog-entry`, `ci-local`, `polier-version` (missing record)
+- Exit gates: `board-check`, `install`, `boundaries`, `dev-setup`, `compose-config`, `tokens-codegen`, `design-check`, `language-check`, `changelog-entry`, `ci-local`, `polier-version`
 - Exit criteria: Every packages[] folder exists with a README and an ARCHITECTURE.md; package map and versions are filled in.; A fresh clone installs reproducibly with the committed lockfile; root lint, typecheck, test and build pass.; Two worktrees run install, lint, typecheck and tests side by side without port or database collision; tools/dev/setup and teardown create and remove the slot database and bucket and refuse slot 0.; design-check, language-check, changelog-entry and boundaries reject a violating change locally; every code change carries a .changes entry.; The CI workflow is authored and proven locally (actionlint + act) and local sessions use Polier at the board's generator_version; the real GitHub run, branch protection, hosting and releases are deferred to the remote stage after hardening (ADR-0003).; A runnable design preview page exists with desktop and mobile screenshots and a live two-note connection demo (P0-19, P0-20).
 - Tasks: P0-03, P0-04, P0-06, P0-07, P0-08, P0-09, P0-10, P0-11, P0-12, P0-13, P0-14, P0-18, P0-19, P0-20, P0-21
 
@@ -74,7 +74,7 @@
 
 - State: waiting for the owner decision
 - Owner decision: `pending`
-- Exit gates: `branch-protection` (missing record), `ci-green` (missing record), `polier-version` (missing record), `release-dry` (missing record), `smoke` (missing record)
+- Exit gates: `branch-protection` (missing record), `ci-green` (missing record), `polier-version`, `release-dry` (missing record), `smoke` (missing record)
 - Exit criteria: main is protected; CI rejects a pull request outside its scope, with raw colours, hard-coded UI text or without a change entry.; Polier v1.0.0 is pinned in CI; release 0.0.1 and one preview ran end to end from a tag.; Hosting is chosen (Q3), environments and smoke checks are complete.
 - Tasks: P0-02, P0-15, P0-16, P0-17
 
@@ -126,6 +126,7 @@
 - [x] `P0-06` Per-slot dev setup and teardown — status: `done` — owner: —
 - [x] `P0-07` Local services compose — status: `done` — owner: —
 - [x] `P0-08` CI skeleton — status: `done` — owner: —
+- [x] `P0-09` Pinned Polier for agents and CI — status: `done` — owner: —
 - [x] `P0-10` Adapt design rules to this project — status: `done` — owner: —
 - [x] `P0-11` Canvas acceptance catalogue — status: `done` — owner: —
 - [x] `P0-12` Design tokens and icons in ui-kit — status: `done` — owner: —
@@ -138,7 +139,7 @@
 
 ## In progress
 
-- [ ] `P0-09` Pinned Polier for agents and CI — status: `in_progress` — owner: —
+- none
 
 ## Blocked / failed
 

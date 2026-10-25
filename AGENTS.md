@@ -4,7 +4,7 @@ Details: `ARCHITECTURE.md`. Progress: `STATUS.md`. Structure: `docs/module-map.m
 
 ## Commands
 
-- **Polier (pinned `v1.0.0`):** set `POLIER` to a checkout of that tag; CI does the same (P0-09).
+- **Polier:** `export POLIER=...`, then `bash tools/polier.sh --check` (`--install` clones; version from `board.json`; CI same).
 - **Board check:** `python3 $POLIER/tools/check.py .` — before `pnpm install` (scans `node_modules/`).
 - **Boundaries:** `python3 $POLIER/tools/boundaries.py .`
 - **Status:** `python3 $POLIER/tools/render_status.py .` (lead only)

@@ -25,6 +25,11 @@ moves into `P0-08` at the switch; those tools and gates are built and proven loc
 `contract` through `hardening` proceed locally after `foundation`; only `v1` waits for the remote
 stage.
 
+**Update 2026-10-25:** `P0-08` (CI skeleton) and `P0-09` (pinned Polier) moved from the
+remote stage into `foundation` and are proven locally with actionlint plus the workflow's
+step commands; the real GitHub run and the remaining remote tasks (`P0-02`, `P0-15`,
+`P0-16`, `P0-17`) stay in the `remote` stage.
+
 ## Consequences
 
 - **Positive:** the product can be built and verified locally without a paid GitHub plan or a
