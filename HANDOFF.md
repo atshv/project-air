@@ -8,7 +8,8 @@ Read `AGENTS.md`, `ARCHITECTURE.md`, `STATUS.md`, `docs/module-map.md` and the t
 
 - **Stage 1 Foundation:** complete, owner decision `continue`.
 - **Stage 2 Contract:** all seven tasks done (`P1-01` … `P1-07`); exit gates `contracts` and `codegen` have passing records. The stage state is still “waiting for the owner decision” (`owner_decision: pending`) — set it to `continue` to start stage 3.
-- **Done overall:** 26 of 30 tasks. Open only the remote-phase tasks: `P0-02`, `P0-15`, `P0-16`, `P0-17`.
+- **Stage 3 Engine spike:** planned but not started — tasks `P2-01` … `P2-05` and their briefs exist, D8 and the engine gate commands are in `docs/quality.md`; the stage owner decision is still `pending`. After approval start with `P2-01`.
+- **Done overall:** 26 of 30 tasks. Open: `P2-01` … `P2-05` (stage 3) and the remote-phase tasks `P0-02`, `P0-15`, `P0-16`, `P0-17`.
 - **Contract 0.1.0:** three schema families, 16 schema files — board-content (10 top-level schemas), sync protocol (`schemas/sync/sync.schema.json`, 12 message types 6+6), REST API (`schemas/api/`, 4 resources × 7 envelopes + errors, 7 UPPER_SNAKE codes mapped to `errors.<camelCase>` keys). Fixtures: `fixtures/` 77 (32 valid/45 invalid) with the TS+C++ parity harness, `fixtures-sync/` 14/20, `fixtures-api/` 35/20, `fixtures-gate/` 2 Polier gate specimens. `board.contracts[]` declares `project-air-contract` 0.1.0 / `fixtures-gate` / empty dependants. Docs: `docs/contracts.md`, `docs/adr/ADR-0005-contract.md`. Logical tag `contracts@0.1.0` (no git tag until the remote phase, ADR-0002/0003).
 - **Preview:** `apps/web/preview/` has the permanent Contract 0.1.0 overview as section 02 (facts, schema families/corpora, 19 operation chips, 6+6 sync messages, 7 code→key rows, parity/codegen proof, cadence line, doc/ADR links) above the design sections; the live two-note demo is unchanged. Evidence `P1-07-desktop.png`, `P1-07-mobile.png`, `P1-07-contract.png`, `P1-07-preview.log`.
 - **Checks:** `check.py` exit 0 (2 warnings: `budgets.status` override, P0-02 context pack), `boundaries.py` exit 0, `contracts.py check` exit 0, `design-check` exit 0, `language-check` OK, contract unit suite 88/88, `codegen` clean, worktrees clean.
@@ -31,7 +32,7 @@ Read `AGENTS.md`, `ARCHITECTURE.md`, `STATUS.md`, `docs/module-map.md` and the t
 
 ## Next steps
 
-1. Owner decides the contract stage (`continue`); then plan **stage 3 engine-spike** (no tasks exist yet): write the stage tasks/briefs, settle Q6/Q7 (reference hardware, who builds the engine), and plan CMake/Emscripten per `docs/gates/cpp-cmake.md` and `docs/gates/wasm-emscripten.md`.
+1. Approve the engine-spike plan; set the stage decision to `continue` and start `P2-01` (toolchain: CMake 4.4.4 + Emscripten 6.0.13 via Homebrew, owner-approved; Q6 reference hardware MacBook Air M1 8 GB, Chrome; Q7 agents under close guidance; Q18 50k@60fps for the spike, L01 in engine-core).
 2. Before any contract change: bump the version in `board.contracts[]`, every schema `$id` and the root `contractVersion` in the same task, add valid+invalid fixtures, regenerate codegen, keep TS/C++ parity green, update `docs/contracts.md`, run the `contracts` gate.
 3. Keep the demo cadence: every preview or design-system change updates the Contract overview, the live demo and its screenshots in the same task.
 4. The remote phase (`P0-02`, `P0-15`, `P0-16`, `P0-17`, GitHub/CI/branch protection/release) stays at the very end before v1 (ADR-0003).

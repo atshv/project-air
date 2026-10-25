@@ -22,6 +22,11 @@ v1) are added as D7 … when those stages are planned in detail.
 - **D7** Contract (stage contract): the board-content model and its operations are versioned JSON
   Schema with valid and invalid fixtures; TypeScript and C++ read the same fixtures identically;
   the contract is tagged `0.1.0` and documented in `docs/contracts.md` with an ADR.
+- **D8** Engine spike (stage engine-spike): the C++20 engine builds natively and to WebAssembly with
+  the pinned CMake/Emscripten toolchain (`cpp-unit` and `wasm-build` green); 50,000 rectangles
+  render at 60 fps on the reference hardware (MacBook Air M1, 8 GB, Chrome), the WASM artifact
+  stays within 300 KiB gzip, and a measured performance report plus an ADR for the engine
+  architecture exist.
 - **D6** Repository discipline: `main` accepts changes only through pull requests with green CI and
   one review; CI runs scope check, boundaries, board check, lint and typecheck on every pull
   request.
@@ -52,9 +57,11 @@ task from the project's manifests; until then the gate cannot pass.
 | `release` | `python3 $POLIER/tools/release_check.py .` | exit 0 on a tag of `main` |
 | `contracts` | `python3 $POLIER/tools/contracts.py check` | exit 0 |
 | `codegen` | `pnpm --filter ./packages/contracts run codegen && git diff --exit-code -- packages/contracts` | exit 0, generated TS/C++ unchanged |
-| `cpp-unit` | see `docs/gates/cpp-cmake.md` `[VERIFY: stage engine-spike]` | exit 0 |
-| `wasm-build` | see `docs/gates/wasm-emscripten.md` `[VERIFY: stage engine-spike]` | exit 0, `.wasm` within size budget |
-| `perf-baseline`, `perf` | see `docs/gates/load.md` `[VERIFY: stage engine-spike]` | exit 0, within budget (exclusive) |
+| `cpp-unit` | `ctest --test-dir packages/engine/build --output-on-failure` | exit 0, "100% tests passed" |
+| `wasm-build` | `emcmake cmake -S packages/engine -B packages/engine/build-wasm -DCMAKE_BUILD_TYPE=Release && cmake --build packages/engine/build-wasm --parallel` | exit 0, `engine.wasm` and `engine.js` written |
+| `wasm-size` | `node packages/engine/tools/wasm-size.mjs` | exit 0, gzip size <= 307200 bytes (300 KiB) |
+| `perf-baseline` | `node packages/engine/test/perf/run-perf.mjs` | exit 0, p95 frame time <= 16.7 ms at 50,000 rectangles on the reference hardware (exclusive) |
+| `perf` | see `docs/gates/load.md` `[VERIFY: stage engine-core]` | exit 0, within budget (exclusive) |
 | `api-tests`, `rls-tests` | see `docs/gates/postgres.md` `[VERIFY: stage backend-core]` | exit 0 |
 | `crdt-convergence` | `[VERIFY: stage realtime]` | exit 0, 10,000 rounds without divergence |
 | `load` | see `docs/gates/load.md` `[VERIFY: stage realtime]` | exit 0 (exclusive) |

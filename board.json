@@ -2108,6 +2108,274 @@
         "Evidence: P1-07-desktop.png 1440x900, P1-07-mobile.png 390x844, P1-07-contract.png 1440x1602, P1-07-preview.log with serve/curl/screenshot commands; no horizontal overflow, demo unchanged and live.",
         "Review pass; one cosmetic fix (card stretch -> align-items start) re-shot and re-gated; board-check, design-check and changelog-entry green."
       ]
+    },
+    {
+      "status": "pending",
+      "stage": "engine-spike",
+      "parallel_group": null,
+      "owner": null,
+      "round": 0,
+      "evidence": [],
+      "scope_write_forbidden": [
+        "reference/"
+      ],
+      "id": "P2-01",
+      "title": "Engine toolchain and native + WASM build scaffold",
+      "goal": "packages/engine builds a minimal C++20 engine target natively and to WebAssembly with the pinned CMake/Emscripten toolchain, and its unit suite and gate commands are documented and green.",
+      "why": "Every later engine task and the stage exit gates cpp-unit and wasm-build build on this toolchain.",
+      "satisfies": [
+        "D8"
+      ],
+      "depends_on": [],
+      "complexity": 4,
+      "scope_write": [
+        "packages/engine/",
+        "docs/versions.md",
+        "docs/gates/",
+        "docs/quality.md",
+        ".changes/"
+      ],
+      "scope_read": [
+        "ARCHITECTURE.md",
+        "AGENTS.md",
+        "STATUS.md",
+        "docs/module-map.md",
+        "docs/quality.md",
+        "docs/versions.md",
+        "docs/gates/cpp-cmake.md",
+        "docs/gates/wasm-emscripten.md",
+        "packages/engine/",
+        "packages/contracts/generated/contract.h",
+        "packages/ui-kit/tokens.h"
+      ],
+      "acceptance": [
+        "A1",
+        "A2",
+        "A3",
+        "A4"
+      ],
+      "gates": [
+        "board-check",
+        "cpp-unit",
+        "wasm-build"
+      ],
+      "branch": "task/P2-01",
+      "worktree": null
+    },
+    {
+      "status": "pending",
+      "stage": "engine-spike",
+      "parallel_group": null,
+      "owner": null,
+      "round": 0,
+      "evidence": [],
+      "scope_write_forbidden": [
+        "reference/"
+      ],
+      "id": "P2-02",
+      "title": "Engine core model and render command buffer",
+      "goal": "The C++20 core holds up to 50,000 rectangles in flat arrays, applies the camera transform and emits a deterministic instanced render command buffer; native unit tests cover the model, ordering and determinism without a GPU.",
+      "why": "The WebGL2 renderer and the performance baseline consume this core; it keeps the engine independent of the network and of per-object JS calls (AD-1, AD-2).",
+      "satisfies": [
+        "D8"
+      ],
+      "depends_on": [
+        "P2-01"
+      ],
+      "complexity": 5,
+      "scope_write": [
+        "packages/engine/",
+        ".changes/"
+      ],
+      "scope_read": [
+        "ARCHITECTURE.md",
+        "AGENTS.md",
+        "STATUS.md",
+        "docs/module-map.md",
+        "docs/quality.md",
+        "docs/owner/canvas-suite-blueprint.md",
+        "packages/engine/",
+        "packages/contracts/generated/contract.h",
+        "packages/ui-kit/tokens.h"
+      ],
+      "acceptance": [
+        "A1",
+        "A2",
+        "A3",
+        "A4"
+      ],
+      "gates": [
+        "board-check",
+        "cpp-unit"
+      ],
+      "branch": "task/P2-02",
+      "worktree": null
+    },
+    {
+      "status": "pending",
+      "stage": "engine-spike",
+      "parallel_group": null,
+      "owner": null,
+      "round": 0,
+      "evidence": [],
+      "scope_write_forbidden": [
+        "reference/"
+      ],
+      "id": "P2-03",
+      "title": "WebGL2 renderer, TS bridge and engine playground",
+      "goal": "The WASM build renders 50,000 rectangles via WebGL2 instanced draws in apps/engine-playground behind the thin TypeScript bridge createEngine(canvas, options), and the artifacts stay within the 300 KiB gzip budget.",
+      "why": "This is the visible spike artifact and the target of the performance gate; the later canvas stages replace the sketch with the full engine.",
+      "satisfies": [
+        "D8"
+      ],
+      "depends_on": [
+        "P2-02"
+      ],
+      "complexity": 6,
+      "scope_write": [
+        "packages/engine/",
+        "apps/engine-playground/",
+        ".changes/"
+      ],
+      "scope_read": [
+        "ARCHITECTURE.md",
+        "AGENTS.md",
+        "STATUS.md",
+        "docs/module-map.md",
+        "docs/quality.md",
+        "docs/design-rules.md",
+        "packages/engine/",
+        "packages/contracts/generated/contract.h",
+        "packages/ui-kit/tokens.h",
+        "packages/ui-kit/tokens.css",
+        "apps/engine-playground/"
+      ],
+      "acceptance": [
+        "A1",
+        "A2",
+        "A3",
+        "A4"
+      ],
+      "gates": [
+        "board-check",
+        "boundaries",
+        "cpp-unit",
+        "wasm-build",
+        "wasm-size",
+        "design-check"
+      ],
+      "branch": "task/P2-03",
+      "worktree": null
+    },
+    {
+      "status": "pending",
+      "stage": "engine-spike",
+      "parallel_group": null,
+      "owner": null,
+      "round": 0,
+      "evidence": [],
+      "scope_write_forbidden": [
+        "reference/"
+      ],
+      "id": "P2-04",
+      "title": "Performance baseline and measured report",
+      "goal": "A reproducible browser benchmark measures 50,000 rectangles at 60 fps on the recorded hardware, writes a measured report and a perf-baseline gate record, and documents the WASM size.",
+      "why": "The stage exit criterion needs a measured number and a report; engine-core and the quality stages compare against this baseline.",
+      "satisfies": [
+        "D8"
+      ],
+      "depends_on": [
+        "P2-03"
+      ],
+      "complexity": 5,
+      "scope_write": [
+        "packages/engine/",
+        "docs/engine/",
+        "docs/gates/",
+        "docs/quality.md",
+        "docs/versions.md",
+        "reviews/evidence/",
+        ".changes/"
+      ],
+      "scope_read": [
+        "ARCHITECTURE.md",
+        "AGENTS.md",
+        "STATUS.md",
+        "docs/module-map.md",
+        "docs/quality.md",
+        "docs/gates/cpp-cmake.md",
+        "docs/gates/wasm-emscripten.md",
+        "docs/versions.md",
+        "packages/engine/",
+        "apps/engine-playground/"
+      ],
+      "acceptance": [
+        "A1",
+        "A2",
+        "A3",
+        "A4"
+      ],
+      "gates": [
+        "board-check",
+        "perf-baseline"
+      ],
+      "exclusive": [
+        "perf"
+      ],
+      "branch": "task/P2-04",
+      "worktree": null
+    },
+    {
+      "status": "pending",
+      "stage": "engine-spike",
+      "parallel_group": null,
+      "owner": null,
+      "round": 0,
+      "evidence": [],
+      "scope_write_forbidden": [
+        "reference/"
+      ],
+      "id": "P2-05",
+      "title": "Engine architecture ADR, module docs and stage showcase",
+      "goal": "ADR-0006 records the engine architecture with the measured evidence, docs/engine.md documents the C++ module list and canvas-catalogue mapping, and desktop/mobile showcase screenshots of the playground are committed.",
+      "why": "The stage exit criterion needs the ADR; engine-core builds on the documented module map and the measured baseline.",
+      "satisfies": [
+        "D8"
+      ],
+      "depends_on": [
+        "P2-04"
+      ],
+      "complexity": 3,
+      "scope_write": [
+        "docs/adr/",
+        "docs/engine.md",
+        "docs/quality.md",
+        "reviews/evidence/"
+      ],
+      "scope_read": [
+        "ARCHITECTURE.md",
+        "AGENTS.md",
+        "STATUS.md",
+        "docs/module-map.md",
+        "docs/quality.md",
+        "docs/design-rules.md",
+        "docs/contracts.md",
+        "docs/adr/",
+        "packages/engine/",
+        "apps/engine-playground/"
+      ],
+      "acceptance": [
+        "A1",
+        "A2",
+        "A3",
+        "A4"
+      ],
+      "gates": [
+        "board-check",
+        "design-check"
+      ],
+      "branch": "task/P2-05",
+      "worktree": null
     }
   ],
   "decisions": [
@@ -2140,6 +2408,11 @@
       "id": "ADR-0005",
       "title": "Contract and versions",
       "file": "docs/adr/ADR-0005-contract.md"
+    },
+    {
+      "date": "2026-10-25",
+      "id": "ADR-0006",
+      "title": "Engine architecture"
     }
   ],
   "open_questions": [
@@ -2178,12 +2451,14 @@
     {
       "id": "Q6",
       "question": "Reference hardware for the 60 fps target (needed before stage: engine-spike).",
-      "status": "open"
+      "status": "answered",
+      "answer": "Reference hardware: MacBook Air M1, 8 GB, Chrome (owner decision 2026-10-25). The local development machine is a Mac mini M2, 8 GB, macOS 26.5.2; perf evidence on it is documented as a proxy with the deviation in the measured report."
     },
     {
       "id": "Q7",
       "question": "Who builds the engine: a person with C++/graphics experience or agents under close guidance (needed before stage: engine-spike).",
-      "status": "open"
+      "status": "answered",
+      "answer": "Agents under close guidance build the engine; the lead and the ADR/gates decide, the owner reviews the results (owner decision 2026-10-25)."
     },
     {
       "id": "Q8",
@@ -2251,7 +2526,8 @@
     {
       "id": "Q18",
       "question": "Performance target split: the engine-spike exit says 60 fps with 50,000 rectangles, the canvas catalogue L01 names 10,000 objects at 60 fps and no long task > 16 ms. Which target applies to which stage gate?",
-      "status": "open"
+      "status": "answered",
+      "answer": "Split: the engine-spike gate is 50,000 rectangles at 60 fps on the reference hardware; the canvas catalogue L01 target (10,000 objects, no long task over 16 ms) applies to the engine-core stage (owner decision 2026-10-25)."
     }
   ],
   "budgets": {

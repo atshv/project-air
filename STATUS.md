@@ -28,6 +28,7 @@
 - Owner decision: `pending`
 - Exit gates: `cpp-unit` (missing record), `wasm-build` (missing record), `perf-baseline` (missing record)
 - Exit criteria: 60 fps with 50,000 rectangles on the reference hardware; WASM <= 300 KB gzip.; Measured report and ADR for the engine architecture.
+- Tasks: P2-01, P2-02, P2-03, P2-04, P2-05
 
 ### Stage 4 — `backend-core` Backend core
 
@@ -118,7 +119,7 @@
 
 ## Ready now
 
-- none
+- `P2-01` Engine toolchain and native + WASM build scaffold
 
 ## Done
 
@@ -163,6 +164,11 @@
 - [ ] `P0-15` Release command and tag-based CI release — status: `pending` — owner: —
 - [ ] `P0-16` Dependency updates and Polier update check — status: `pending` — owner: —
 - [ ] `P0-17` RELEASING.md and release 0.0.1 — status: `pending` — owner: —
+- [ ] `P2-01` Engine toolchain and native + WASM build scaffold — status: `pending` — owner: —
+- [ ] `P2-02` Engine core model and render command buffer — status: `pending` — owner: —
+- [ ] `P2-03` WebGL2 renderer, TS bridge and engine playground — status: `pending` — owner: —
+- [ ] `P2-04` Performance baseline and measured report — status: `pending` — owner: —
+- [ ] `P2-05` Engine architecture ADR, module docs and stage showcase — status: `pending` — owner: —
 
 ## Decisions
 
@@ -171,6 +177,7 @@
 - 2026-10-25 `ADR-0003` Remote phase as the last stage before v1 (`docs/adr/ADR-0003-remote-phase.md`)
 - 2026-10-25 `ADR-0004` Contract v1 text limits and board visibility (`docs/adr/ADR-0004-contract-limits-visibility.md`)
 - 2026-10-25 `ADR-0005` Contract and versions (`docs/adr/ADR-0005-contract.md`)
+- 2026-10-25 `ADR-0006` Engine architecture
 
 ## Open questions
 
@@ -178,12 +185,9 @@
 - `Q3` Hosting provider and country (CH/EU). — blocks: P0-15 — status: `open`
 - `Q4` CRDT: open-source library behind an own interface (proposal) or own algorithm (needed before stage: realtime). — blocks: — — status: `open`
 - `Q5` Auth: build it ourselves (proposal) or a self-hosted open-source server (needed before stage: backend-core). — blocks: — — status: `open`
-- `Q6` Reference hardware for the 60 fps target (needed before stage: engine-spike). — blocks: — — status: `open`
-- `Q7` Who builds the engine: a person with C++/graphics experience or agents under close guidance (needed before stage: engine-spike). — blocks: — — status: `open`
 - `Q8` Which import formats, after a legal check of their terms (needed before stage: value). — blocks: — — status: `open`
 - `Q9` Pricing model for v1 (needed before stage: v1). — blocks: — — status: `open`
 - `Q14` English visible at launch or prepared only; who translates further languages (needed before stage: v1). — blocks: — — status: `open`
 - `Q15` Canvas collisions: clear layers only (proposal) or gentle nudge (needed before stage: engine-core). — blocks: — — status: `open`
 - `Q16` Trackpad default: two fingers pan, pinch zooms (proposal) or scroll zooms (needed before stage: engine-core). — blocks: — — status: `open`
 - `Q17` Zones as containers: zones keep their content and move it as one operation (proposal, needs a decision record and migration) or zones are only visual frames? — blocks: — — status: `open`
-- `Q18` Performance target split: the engine-spike exit says 60 fps with 50,000 rectangles, the canvas catalogue L01 names 10,000 objects at 60 fps and no long task > 16 ms. Which target applies to which stage gate? — blocks: — — status: `open`
