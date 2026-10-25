@@ -1,0 +1,49 @@
+$ pnpm --filter ./packages/ui-kit test
+[exit 0]
+
+✔ committed tokens.css equals the generated CSS (0.724208ms)
+✔ committed tokens.h equals the generated C++ header (0.795458ms)
+✔ committed layers.ts equals the generated layer order (0.200875ms)
+✔ every token appears in the generated CSS with the token value (0.326458ms)
+✔ every token appears in the generated C++ header with the token value (1.288792ms)
+✔ a second render is byte-identical (no timestamps, stable ordering) (1.463958ms)
+✔ codegen.mjs uses Node builtins only (0.344834ms)
+✔ layers.ts data matches tokens.json (0.402542ms)
+✔ writeGenerated writes the three documented files (0.656625ms)
+✔ icons/ contains exactly the ten toolbar icons (2.272041ms)
+✔ note.svg is a valid standalone 24x24 stroke icon (0.435ms)
+✔ source.svg is a valid standalone 24x24 stroke icon (0.205791ms)
+✔ image.svg is a valid standalone 24x24 stroke icon (0.116541ms)
+✔ file.svg is a valid standalone 24x24 stroke icon (0.106166ms)
+✔ zone.svg is a valid standalone 24x24 stroke icon (0.087542ms)
+✔ checklist.svg is a valid standalone 24x24 stroke icon (0.111667ms)
+✔ palette.svg is a valid standalone 24x24 stroke icon (0.098917ms)
+✔ columns.svg is a valid standalone 24x24 stroke icon (0.231ms)
+✔ timeline.svg is a valid standalone 24x24 stroke icon (0.14225ms)
+✔ table.svg is a valid standalone 24x24 stroke icon (0.160375ms)
+✔ package.json defines the five required scripts and no dependencies (0.775375ms)
+✔ the generated files exist and are documented in README.md (0.778375ms)
+✔ the open questions live in README.md, not in tokens.json (0.1635ms)
+✔ only tokens.json holds raw colour values; generated files are derived (1.006875ms)
+✔ no placeholder or TODO ships in the package (0.457ms)
+✔ ARCHITECTURE.md stays within the 400-word package budget and names commands (0.3315ms)
+✔ tsconfig.json includes the generated layer module (0.115917ms)
+✔ tokens.json holds token data only (1.272292ms)
+✔ colours carry the design-law names and the blueprint/reference values (0.40325ms)
+✔ spacing is the 4-px series only (0.217625ms)
+✔ sizes cover borders, focus outline, grid, thresholds, targets, icons and header (0.0995ms)
+✔ radii carry the design-law names and values, including the tooltip radius (0.071333ms)
+✔ typography has both stacks, the seven sizes and the three weights (0.277875ms)
+✔ motion has the four design-law durations plus the 2 s saved fade (0.083375ms)
+✔ shadows are exactly card-shadow and shadow (0.067083ms)
+✔ layers keep the design-law order 1-11 including 7a (0.198625ms)
+✔ no token value is null, empty or a placeholder (0.355834ms)
+ℹ tests 37
+ℹ suites 0
+ℹ pass 37
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 159.912959
+$ node --test tests/*.test.mjs

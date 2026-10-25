@@ -1,0 +1,168 @@
+# P0-12 - design tokens and icons: manual evidence
+
+worktree: /Users/rasulatashev/Desktop/KI Projekte/Project air-P0-12 (branch task/P0-12, slot 2)
+date (UTC): 2026-10-25T08:59:49Z
+node: v26.11.1
+pnpm: 12.14.0
+POLIER: /Users/rasulatashev/Desktop/Polier-main (tag v1.0.0)
+HEAD before this follow-up amend: 49013ec (the single P0-12 commit, amended in place)
+
+The package was empty before P0-12 (only README.md and ARCHITECTURE.md, no package.json and no
+commands; see reviews/evidence/P0-04-empty-workspace.log). With P0-12 the root workspace runs one
+package, @project-air/ui-kit.
+
+This follow-up adds the missing visual tokens (borders, focus outline, tooltip radius), removes the
+`open_questions` key from tokens.json (the points moved to README.md) and re-runs every gate. The
+previous gate records were deleted so each gate has exactly one record in the single commit.
+
+## 1. board-check - run BEFORE any pnpm install
+
+Preparation: `rm -rf node_modules` in the worktree root (gitignored), then the old board-check
+record was deleted. The command ran with no node_modules/ present.
+
+command: python3 /Users/rasulatashev/Desktop/Polier-main/tools/gate.py --task P0-12 --name board-check -- python3 /Users/rasulatashev/Desktop/Polier-main/tools/check.py .
+result: PASS, exit 0
+record: reviews/evidence/P0-12-board-check-20261025T085936Z.json
+log:    reviews/evidence/P0-12-board-check-20261025T085936Z.log
+output (warnings are the pre-existing board warnings, no P0-12 error):
+
+    WARN: budgets.status overridden to 1600 words (...)
+    WARN: STATUS.md: 1803 words (target max. 1600); it is read in every session
+    WARN: P0-02: context pack is about 29996 tokens (warning at 15000); ...
+    WARN: P0-06: context pack is about 30583 tokens (warning at 15000); ...
+    OK: /Users/rasulatashev/Desktop/KI Projekte/Project air-P0-12 passes the mandatory checks. (4 warning(s))
+
+## 2. lockfile
+
+command: pnpm install --lockfile-only   (exit 0)
+    Scope: all 2 workspace projects
+    Lockfile is up to date, resolution step is skipped
+command: pnpm install --frozen-lockfile   (exit 0)
+    97 packages reused/added for the root devDependencies
+
+pnpm-lock.yaml sha256 from P0-04 through this follow-up:
+    1d0e75f75debff3cf9eb8a3891d6e26ffe5e81b77a4e28002439400bf67f45a9
+
+The lockfile stays unchanged on purpose: the new workspace package declares no dependencies (no new
+dependency allowed), and pnpm 12 writes no importer entry for a package without dependencies. The
+frozen install on the workspace graph succeeds, so the lockfile is in sync and nothing is committed.
+
+## 3. codegen determinism - two consecutive runs, no drift
+
+Generated files are staged before the gate, so `git diff --exit-code -- packages/ui-kit` compares
+the working tree with the committed content instead of ignoring new files.
+
+command: node codegen.mjs   (run 1)
+    ui-kit codegen: wrote tokens.css, tokens.h, layers.ts
+sha256 after run 1:
+    4bd7b951c2199532c595521fda2aae18a75a4f38318904075497e4b407c4ef5f  tokens.css
+    0bd48aa0594e5a86f6c7fef621252fddf346650ade3ca3ca41f3578657edb16d  tokens.h
+    227b1184879e7607eab2378279fc335d11b5a6dee38d3192ea9a7e9d7eb0f515  layers.ts
+
+command: node codegen.mjs   (run 2)
+    ui-kit codegen: wrote tokens.css, tokens.h, layers.ts
+sha256 after run 2:
+    4bd7b951c2199532c595521fda2aae18a75a4f38318904075497e4b407c4ef5f  tokens.css
+    0bd48aa0594e5a86f6c7fef621252fddf346650ade3ca3ca41f3578657edb16d  tokens.h
+    227b1184879e7607eab2378279fc335d11b5a6dee38d3192ea9a7e9d7eb0f515  layers.ts
+
+proof: run 1 and run 2 are byte-identical (same sha256).
+command: git diff --exit-code -- packages/ui-kit
+    exit 0
+    empty output: 0 bytes (no line)
+(The only other working-tree changes at this point are the deleted old gate records and the new
+records; the package tree itself has no diff.)
+
+Source and generated-file hashes at this revision:
+    482e3dd0845178e96cf4780c18291ca3452bdeaa27a31ffa4272b54bcb0b2962  packages/ui-kit/tokens.json
+    25d44fe46add30665930e34193a04d4b57330f3ddd1db978704447dd21631ef5  packages/ui-kit/codegen.mjs
+    4bd7b951c2199532c595521fda2aae18a75a4f38318904075497e4b407c4ef5f  packages/ui-kit/tokens.css
+    0bd48aa0594e5a86f6c7fef621252fddf346650ade3ca3ca41f3578657edb16d  packages/ui-kit/tokens.h
+    227b1184879e7607eab2378279fc335d11b5a6dee38d3192ea9a7e9d7eb0f515  packages/ui-kit/layers.ts
+    9039b6e651dad01e179584bcec3c1d174ff9c463b38bf26e4ecee5950e294ac7  packages/ui-kit/package.json
+
+tokens: 65 value tokens (colours 18, spacing 7, sizes 14, radii 5, typography 14, motion 5,
+shadows 2) + 12 layers = 77 custom properties and 77 C++ constants.
+
+New in the follow-up:
+    --border-width: 1px           resting border (design rule 3 / 6)
+    --border-width-strong: 1.5px  selected border / frame (design rules 3 and 6)
+    --outline-width: 2px          keyboard focus outline (design rule 6)
+    --outline-offset: 2px         keyboard focus outline offset (design rule 6)
+    --radius-tooltip: 6px         tooltip radius (design rule 3)
+
+## 4. gate: tokens-codegen (exit 0)
+
+command: python3 /Users/rasulatashev/Desktop/Polier-main/tools/gate.py --task P0-12 --name tokens-codegen --shell "pnpm --filter ./packages/ui-kit run codegen && git diff --exit-code -- packages/ui-kit"
+result: PASS, exit 0
+record: reviews/evidence/P0-12-tokens-codegen-20261025T085941Z.json
+log:    reviews/evidence/P0-12-tokens-codegen-20261025T085941Z.log
+output:
+    $ pnpm --filter ./packages/ui-kit run codegen && git diff --exit-code -- packages/ui-kit
+    ui-kit codegen: wrote tokens.css, tokens.h, layers.ts
+    $ node codegen.mjs
+    [exit 0]
+
+## 5. gate: unit (exit 0)
+
+command: python3 /Users/rasulatashev/Desktop/Polier-main/tools/gate.py --task P0-12 --name unit --shell "pnpm --filter ./packages/ui-kit test"
+result: PASS, exit 0
+record: reviews/evidence/P0-12-unit-20261025T085941Z.json
+log:    reviews/evidence/P0-12-unit-20261025T085941Z.log
+summary: 37 tests, 37 pass, 0 fail (full list in the log)
+    node --test tests/*.test.mjs
+    tests 37 / pass 37 / fail 0
+
+The same command run directly (package output):
+    $ pnpm --filter ./packages/ui-kit test
+    $ node --test tests/*.test.mjs
+    ... 37 pass, 0 fail
+    exit 0
+
+## 6. package commands - lint and typecheck (exit 0 each)
+
+command: pnpm --filter ./packages/ui-kit run typecheck
+    $ tsc --noEmit --project tsconfig.json
+    exit 0
+command: pnpm --filter ./packages/ui-kit run lint
+    $ eslint --max-warnings=0 .
+    exit 0
+command: pnpm --filter ./packages/ui-kit run codegen
+    $ node codegen.mjs
+    exit 0
+
+## 7. root workspace integration (P0-04 workspace, run from the worktree root)
+
+pnpm build      exit 0  (1 task: @project-air/ui-kit#build)
+pnpm lint       exit 0  (1 task: @project-air/ui-kit#lint)
+pnpm typecheck  exit 0  (1 task: @project-air/ui-kit#typecheck, then tsc -b tsconfig.json)
+pnpm test       exit 0  (2 tasks: @project-air/ui-kit#build, @project-air/ui-kit#test)
+Turbo warns that no output files were declared for build/test because the generated files sit at the
+package root and the root turbo.json only declares dist/ and build/; the commands themselves exit 0.
+
+## 8. Acceptance map
+
+A1: tokens.json + tests/tokens.test.mjs - groups colours, spacing, sizes, radii, typography, motion,
+    shadows, layers; names from docs/design-rules.md, values from blueprint 21.1 first and
+    reference/src/app/globals.css where the blueprint summary has none. Borders, the focus outline
+    and the tooltip radius are included as tokens (design rules 3, 6 and 13). tokens.json holds
+    token values only; its four open points moved to README.md ("Open questions"), and the tooltip
+    radius point is resolved by the new --radius-tooltip token. 37/37 tests pass.
+A2: codegen.mjs - deterministic (stable order, LF, no timestamps); tokens.css, tokens.h and layers.ts
+    are committed and equal the in-memory render; two runs leave the package tree clean (section 3)
+    and the tokens-codegen gate passes.
+A3: icons/ - exactly the ten toolbar SVGs (note, source, image, file, zone, checklist, palette,
+    columns, timeline, table), each viewBox 0 0 24 24, fill="none", stroke="currentColor",
+    stroke-width 1.6, round caps/joins, geometry copied from the reference component.
+A4: board-check (before install, node_modules removed), tokens-codegen, unit, lint and typecheck all
+    exit 0; exactly one record per gate is committed with the single P0-12 commit.
+
+## 9. Open questions
+
+They are documented in packages/ui-kit/README.md ("Open questions"), not in tokens.json:
+- font families (reference stacks lead with framework font variables; the tokens keep the explicit
+  fallback families and leave loading the real families/licences to the web-app task);
+- reference-only colour tokens (--accent-strong, --on-light, --button, --button-hover), not named by
+  the design law and deliberately not tokens;
+- layer 7a (no integer z-index between 7 and 8; layers.ts records order "7a" with z-index 7);
+- tooltip radius: resolved in this follow-up by the token --radius-tooltip (6px).

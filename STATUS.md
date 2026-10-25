@@ -113,6 +113,10 @@
   - P0-04: Closed P0-04: pnpm workspaces + Turborepo, exact tool versions, lockfile committed, Node 24.22.1 LTS pinned.
   - P0-04: install = pnpm install --frozen-lockfile; unit = pnpm test; root lint/typecheck/test/build exit 0 on the empty workspace.
   - P0-04: Board-check runs before pnpm install (check.py scans node_modules); P0-06, P0-12 and P0-18 can start.
+- `P0-13` design-check gate
+  - P0-12: Closed P0-12: packages/ui-kit tokens.json is the single visual source; codegen writes tokens.css, tokens.h and layers.ts deterministically.
+  - P0-12: Ten toolbar icons as SVG; package scripts lint/typecheck/test/build/codegen; 37 unit tests; AD-7 complete.
+  - P0-12: P0-13 design-check can consume tokens.json, layers.ts and icons; commands are in docs/quality.md.
 - `P0-18` i18n scaffold and language-check gate
   - P0-04: Closed P0-04: pnpm workspaces + Turborepo, exact tool versions, lockfile committed, Node 24.22.1 LTS pinned.
   - P0-04: install = pnpm install --frozen-lockfile; unit = pnpm test; root lint/typecheck/test/build exit 0 on the empty workspace.
@@ -126,10 +130,11 @@
 - [x] `P0-07` Local services compose — status: `done` — owner: —
 - [x] `P0-10` Adapt design rules to this project — status: `done` — owner: —
 - [x] `P0-11` Canvas acceptance catalogue — status: `done` — owner: —
+- [x] `P0-12` Design tokens and icons in ui-kit — status: `done` — owner: —
 
 ## In progress
 
-- [ ] `P0-12` Design tokens and icons in ui-kit — status: `in_progress` — owner: —
+- none
 
 ## Blocked / failed
 
@@ -145,14 +150,6 @@
 - [ ] `P0-16` Dependency updates and Polier update check — status: `pending` — owner: —
 - [ ] `P0-17` RELEASING.md and release 0.0.1 — status: `pending` — owner: —
 - [ ] `P0-18` i18n scaffold and language-check gate — status: `pending` — owner: —
-
-<!-- polier:claims -->
-## Claims
-
-- `P0-06` in progress by dsh since 2026-10-25T08:48:42+00:00 — worktree: /Users/rasulatashev/Desktop/KI Projekte/Project air-P0-06 · slot 1
-- `P0-12` in progress by dsh since 2026-10-25T08:48:42+00:00 — worktree: /Users/rasulatashev/Desktop/KI Projekte/Project air-P0-12 · slot 2
-
-<!-- /polier:claims -->
 
 ## Decisions
 

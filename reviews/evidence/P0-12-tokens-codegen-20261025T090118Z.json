@@ -1,0 +1,17 @@
+{
+  "task": "P0-12",
+  "gate": "tokens-codegen",
+  "command": "pnpm --filter ./packages/ui-kit run codegen && git diff --exit-code -- packages/ui-kit",
+  "exit_code": 0,
+  "result": "pass",
+  "slot": null,
+  "exclusive": [],
+  "lock_wait_s": 0.0,
+  "lock_warning": null,
+  "started": "2026-10-25T09:01:18+00:00",
+  "finished": "2026-10-25T09:01:19+00:00",
+  "commit": "7b4176bd4cc1841b0eae02c2febd7199d4b78f00",
+  "dirty": true,
+  "log": "P0-12-tokens-codegen-20261025T090118Z.log",
+  "log_sha256": "c26c10195832a2009d8b372a919fc0d811d7797e399351b93c9b10d8771cf3a9"
+}

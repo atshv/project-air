@@ -845,7 +845,7 @@
       "satisfies": [
         "D3"
       ],
-      "status": "in_progress",
+      "status": "done",
       "depends_on": [
         "P0-04",
         "P0-10"
@@ -879,11 +879,20 @@
       ],
       "owner": null,
       "branch": "task/P0-12",
-      "worktree": "../Project air-P0-12",
+      "worktree": null,
       "round": 0,
-      "evidence": [],
+      "evidence": [
+        "reviews/evidence/P0-12-board-check-20261025T090131Z.json",
+        "reviews/evidence/P0-12-tokens-codegen-20261025T090118Z.json",
+        "reviews/evidence/P0-12-unit-20261025T090119Z.json"
+      ],
       "scope_write_forbidden": [
         "reference/"
+      ],
+      "handoff": [
+        "Closed P0-12: packages/ui-kit tokens.json is the single visual source; codegen writes tokens.css, tokens.h and layers.ts deterministically.",
+        "Ten toolbar icons as SVG; package scripts lint/typecheck/test/build/codegen; 37 unit tests; AD-7 complete.",
+        "P0-13 design-check can consume tokens.json, layers.ts and icons; commands are in docs/quality.md."
       ]
     },
     {

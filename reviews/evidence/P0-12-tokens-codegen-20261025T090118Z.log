@@ -1,0 +1,5 @@
+$ pnpm --filter ./packages/ui-kit run codegen && git diff --exit-code -- packages/ui-kit
+[exit 0]
+
+ui-kit codegen: wrote tokens.css, tokens.h, layers.ts
+$ node codegen.mjs
