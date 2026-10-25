@@ -993,7 +993,10 @@
       "scope_write": [
         "tools/release/",
         ".changes/",
-        "CHANGELOG.md"
+        "CHANGELOG.md",
+        "package.json",
+        "docs/module-map.md",
+        "AGENTS.md"
       ],
       "scope_read": [
         "ARCHITECTURE.md",

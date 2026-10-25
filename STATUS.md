@@ -153,13 +153,6 @@
 - [ ] `P0-16` Dependency updates and Polier update check — status: `pending` — owner: —
 - [ ] `P0-17` RELEASING.md and release 0.0.1 — status: `pending` — owner: —
 
-<!-- polier:claims -->
-## Claims
-
-- `P0-13` in progress by dsh since 2026-10-25T09:47:44+00:00 — worktree: /Users/rasulatashev/Desktop/KI Projekte/Project air-P0-13 · slot 1
-
-<!-- /polier:claims -->
-
 ## Decisions
 
 - 2026-10-25 `ADR-0001` Monorepo with packages, services, apps, tools and infra (`docs/adr/ADR-0001-monorepo.md`)
