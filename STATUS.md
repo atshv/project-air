@@ -10,7 +10,7 @@
 
 - State: waiting for the owner decision
 - Owner decision: `pending`
-- Exit gates: `board-check` (missing record), `ci-green` (missing record), `design-check` (missing record), `language-check` (missing record), `changelog-entry` (missing record), `release-dry` (missing record)
+- Exit gates: `board-check`, `ci-green` (missing record), `design-check` (missing record), `language-check` (missing record), `changelog-entry` (missing record), `release-dry` (missing record)
 - Exit criteria: Every packages[] folder exists with a README and an ARCHITECTURE.md; package map and versions are filled in.; Two worktrees run tests side by side without port or database collision; two e2e runs wait for each other.; CI rejects a pull request that leaves its scope, adds a raw colour, hard-codes UI text or lacks a change entry.; Release 0.0.1 and one preview ran end to end through CI from a tag.
 - Tasks: P0-02, P0-03, P0-04, P0-06, P0-07, P0-08, P0-09, P0-10, P0-11, P0-12, P0-13, P0-14, P0-15, P0-16, P0-17, P0-18
 
@@ -109,15 +109,21 @@
 
 ## Ready now
 
-- none
+- `P0-04` Workspaces, build orchestration and pinned versions
+  - P0-03: Closed P0-03: all 21 package folders with README and ARCHITECTURE (173-284 words), tests/README.
+  - P0-03: Gates board-check and boundaries pass; commands remain 'set by P0-04'.
+  - P0-03: P0-04 can build the workspace on top; P0-07 can add infra/compose.
+- `P0-07` Local services compose
+  - P0-03: Closed P0-03: all 21 package folders with README and ARCHITECTURE (173-284 words), tests/README.
+  - P0-03: Gates board-check and boundaries pass; commands remain 'set by P0-04'.
+  - P0-03: P0-04 can build the workspace on top; P0-07 can add infra/compose.
 
 ## Done
 
-- none
+- [x] `P0-03` Workspace folders, package READMEs and architectures — status: `done` — owner: —
 
 ## In progress
 
-- [ ] `P0-03` Workspace folders, package READMEs and architectures — status: `in_progress` — owner: —
 - [ ] `P0-10` Adapt design rules to this project — status: `in_progress` — owner: —
 
 ## Blocked / failed

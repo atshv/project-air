@@ -403,7 +403,7 @@
       "satisfies": [
         "D1"
       ],
-      "status": "in_progress",
+      "status": "done",
       "depends_on": [],
       "complexity": 3,
       "stage": "foundation",
@@ -455,11 +455,19 @@
       ],
       "owner": null,
       "branch": "task/P0-03",
-      "worktree": "../Project air-P0-03",
+      "worktree": null,
       "round": 0,
-      "evidence": [],
+      "evidence": [
+        "reviews/evidence/P0-03-board-check-20261025T081413Z.json",
+        "reviews/evidence/P0-03-boundaries-20261025T081416Z.json"
+      ],
       "scope_write_forbidden": [
         "reference/"
+      ],
+      "handoff": [
+        "Closed P0-03: all 21 package folders with README and ARCHITECTURE (173-284 words), tests/README.",
+        "Gates board-check and boundaries pass; commands remain 'set by P0-04'.",
+        "P0-04 can build the workspace on top; P0-07 can add infra/compose."
       ]
     },
     {
