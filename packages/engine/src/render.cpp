@@ -7,6 +7,16 @@
 #include "tokens.h"
 
 namespace air::engine {
+namespace {
+
+bool viewportIsValid(double viewportWidth, double viewportHeight) {
+  return std::isfinite(viewportWidth) && std::isfinite(viewportHeight) && viewportWidth > 0.0 &&
+         viewportHeight > 0.0;
+}
+
+bool pointIsFinite(Point point) { return std::isfinite(point.x) && std::isfinite(point.y); }
+
+}  // namespace
 
 const char* toneColor(Tone tone) {
   switch (tone) {
@@ -59,35 +69,42 @@ Status CommandBuffer::build(const Document& document, const Camera& camera,
     return Status::failure(
         "spatial index is stale or belongs to another document; rebuild it for this document");
   }
-  if (!(std::isfinite(viewportWidth) && std::isfinite(viewportHeight) && viewportWidth > 0.0 &&
-        viewportHeight > 0.0)) {
+  if (!viewportIsValid(viewportWidth, viewportHeight)) {
     return Status::failure("viewport size must be a positive finite number");
   }
 
   const Bounds visible = camera.visibleWorldBounds(viewportWidth, viewportHeight);
-  spatial.query(visible, candidates_);
+  const Status queryStatus = spatial.query(visible, candidates_);
+  if (!queryStatus) {
+    return queryStatus;
+  }
 
   // Defence in depth: a foreign or corrupted index must never cause an
   // out-of-bounds read while ranking; fail with a reason instead.
   const std::vector<std::uint32_t>& rank = document.drawOrderRank();
+  const std::vector<Rectangle>& rectangles = document.rectangles();
   for (const std::uint32_t candidate : candidates_) {
-    if (candidate >= rank.size()) {
+    if (candidate >= rank.size() || candidate >= rectangles.size()) {
       candidates_.clear();
       return Status::failure("spatial index returned an out-of-range rectangle index");
     }
   }
 
-  // Candidates arrive in cell order with duplicates; ordering them by the
-  // document's draw-order rank makes the buffer stable and dedupes exactly.
+  // Candidates arrive in document (slot) order with overlaps removed by the
+  // index; ordering them by the document's draw-order rank makes the buffer
+  // stable. Equal ranks are impossible, and removed slots never draw.
   std::sort(candidates_.begin(), candidates_.end(), [&rank](std::uint32_t left, std::uint32_t right) {
     return rank[left] < rank[right];
   });
   candidates_.erase(std::unique(candidates_.begin(), candidates_.end()), candidates_.end());
 
-  const std::vector<Rectangle>& rectangles = document.rectangles();
   const double zoom = camera.zoom();
   for (const std::uint32_t index : candidates_) {
     const Rectangle& rectangle = rectangles[index];
+    // A stale index could still name a removed slot; never draw a tombstone.
+    if (!rectangle.live) {
+      continue;
+    }
     if (!rectangle.bounds().intersects(visible)) {
       continue;
     }
@@ -111,6 +128,56 @@ Status CommandBuffer::build(const Document& document, const Camera& camera,
                                   static_cast<std::uint32_t>(rectangle.layer)});
   }
 
+  return Status::success();
+}
+
+Status CommandBuffer::hitTest(const Document& document, const Camera& camera,
+                              const SpatialIndex& spatial, double viewportWidth,
+                              double viewportHeight, Point screenPoint, HitResult& out) {
+  out = HitResult{};
+  if (!spatial.isCurrent(document)) {
+    return Status::failure(
+        "spatial index is stale or belongs to another document; rebuild it for this document");
+  }
+  if (!viewportIsValid(viewportWidth, viewportHeight)) {
+    return Status::failure("viewport size must be a positive finite number");
+  }
+  if (!pointIsFinite(screenPoint)) {
+    return Status::failure("hit test point must be a finite screen point");
+  }
+  const Point worldPoint = camera.screenToWorld(screenPoint);
+  if (!pointIsFinite(worldPoint)) {
+    return Status::failure("hit test point is outside the supported world range");
+  }
+
+  // One spatial query per hit test, no per-object work in JavaScript. The index
+  // reuses its buffers, so a hit test does not allocate per object.
+  const Status queryStatus = spatial.queryPoint(worldPoint, candidates_);
+  if (!queryStatus) {
+    return queryStatus;
+  }
+
+  const std::vector<std::uint32_t>& rank = document.drawOrderRank();
+  const std::vector<Rectangle>& rectangles = document.rectangles();
+  for (const std::uint32_t candidate : candidates_) {
+    if (candidate >= rank.size() || candidate >= rectangles.size()) {
+      return Status::failure("spatial index returned an out-of-range rectangle index");
+    }
+    const Rectangle& rectangle = rectangles[candidate];
+    if (!rectangle.live) {
+      continue;
+    }
+    // Bounds::contains includes the edges and corners; the draw-order rank picks
+    // exactly one object when several include the point.
+    if (!rectangle.bounds().contains(worldPoint)) {
+      continue;
+    }
+    if (!out.found || rank[candidate] > rank[out.slot]) {
+      out.found = true;
+      out.slot = candidate;
+      out.objectId = rectangle.id;
+    }
+  }
   return Status::success();
 }
 

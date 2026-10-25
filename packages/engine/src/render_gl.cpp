@@ -23,7 +23,6 @@ namespace air::engine {
 namespace {
 
 constexpr int kToneCount = 6;
-constexpr int kInstanceStrideFloats = 6;
 
 // Vertex/fragment shaders are inline C++ strings (brief P2-03): one static unit
 // quad, per-instance screen-space rect and tone, one instanced draw per frame.
@@ -161,6 +160,9 @@ class Renderer {
       return false;
     }
     buildBuffers();
+    // An empty document is a valid document: index it now so a frame, a hit test
+    // or the visible count works before the first engine_load_rectangles.
+    spatial_.rebuild(document_);
     created_ = true;
     return true;
   }
@@ -197,47 +199,146 @@ class Renderer {
     if (!created_) {
       return fail("engine_create must be called before engine_load_rectangles");
     }
-    const int maxRectangles = static_cast<int>(Document::kMaxRectangles);
-    if (count < 0 || count > maxRectangles) {
-      return fail("rectangle count is outside the supported range");
-    }
-    if (count > 0 && rectangles == nullptr) {
-      return fail("rectangle data must not be null");
-    }
-
-    document_.clear();
-    for (int index = 0; index < count; ++index) {
-      const float* data =
-          rectangles + static_cast<std::size_t>(index) * static_cast<std::size_t>(kInstanceStrideFloats);
-      Rectangle rectangle;
-      rectangle.x = data[0];
-      rectangle.y = data[1];
-      rectangle.width = data[2];
-      rectangle.height = data[3];
-      const int tone = static_cast<int>(std::lround(data[4]));
-      rectangle.tone = static_cast<Tone>(std::clamp(tone, 0, kToneCount - 1));
-      switch (std::clamp(static_cast<int>(std::lround(data[5])), 0, 2)) {
-        case 0:
-          rectangle.layer = Layer::zones;
-          break;
-        case 1:
-          rectangle.layer = Layer::blocks;
-          break;
-        default:
-          rectangle.layer = Layer::noteCards;
-          break;
-      }
-      char fractionalIndex[16] = {};
-      std::snprintf(fractionalIndex, sizeof(fractionalIndex), "%012d", index);
-      rectangle.z = fractionalIndex;
-
-      const Status status = document_.addRectangle(std::move(rectangle));
-      if (!status) {
-        return fail(status.reason);
-      }
+    // The document validates the whole packed array before it replaces the
+    // content: a rejected load leaves the previous document and its spatial index
+    // untouched instead of half loading and leaving a stale grid behind.
+    const Status status = document_.loadPackedRectangles(rectangles, count);
+    if (!status) {
+      return fail(status.reason);
     }
     spatial_.rebuild(document_);
     return 1;
+  }
+
+  int addRectangle(double x, double y, double width, double height, int tone, int layer) {
+    if (!created_) {
+      fail("engine_create must be called before engine_add_rectangle");
+      return -1;
+    }
+    ensureSpatialCurrent();
+    Rectangle rectangle;
+    rectangle.x = x;
+    rectangle.y = y;
+    rectangle.width = width;
+    rectangle.height = height;
+    rectangle.tone = toneFromOrdinal(tone);
+    rectangle.layer = layerFromOrdinal(layer);
+
+    ObjectId objectId = kInvalidObjectId;
+    const Status status = document_.addObject(std::move(rectangle), objectId);
+    if (!status) {
+      fail(status.reason);
+      return -1;
+    }
+    std::uint32_t slot = 0;
+    const Status slotStatus = document_.slotForId(objectId, slot);
+    if (!slotStatus) {
+      fail(slotStatus.reason);
+      return -1;
+    }
+    // Incremental index update: a gesture must not pay for a full document scan.
+    spatial_.updateSlot(document_, slot);
+    return static_cast<int>(slot);
+  }
+
+  int updateGeometry(int index, double x, double y, double width, double height) {
+    if (!created_) {
+      return fail("engine_create must be called before engine_update_geometry");
+    }
+    ensureSpatialCurrent();
+    std::uint32_t slot = 0;
+    const Status slotStatus = objectSlot(index, slot);
+    if (!slotStatus) {
+      return fail(slotStatus.reason);
+    }
+    const Status status =
+        document_.updateGeometry(document_.rectangles()[slot].id, x, y, width, height);
+    if (!status) {
+      return fail(status.reason);
+    }
+    spatial_.updateSlot(document_, slot);
+    return 1;
+  }
+
+  int updateZ(int index, const char* z) {
+    if (!created_) {
+      return fail("engine_create must be called before engine_update_z");
+    }
+    if (z == nullptr) {
+      return fail("z value must not be null");
+    }
+    ensureSpatialCurrent();
+    std::uint32_t slot = 0;
+    const Status slotStatus = objectSlot(index, slot);
+    if (!slotStatus) {
+      return fail(slotStatus.reason);
+    }
+    const Status status = document_.updateZ(document_.rectangles()[slot].id, z);
+    if (!status) {
+      return fail(status.reason);
+    }
+    // The z key changes draw order but not the grid cells.
+    spatial_.syncVersion(document_);
+    return 1;
+  }
+
+  int removeObject(int index) {
+    if (!created_) {
+      return fail("engine_create must be called before engine_remove_object");
+    }
+    ensureSpatialCurrent();
+    std::uint32_t slot = 0;
+    const Status slotStatus = objectSlot(index, slot);
+    if (!slotStatus) {
+      return fail(slotStatus.reason);
+    }
+    const ObjectId objectId = document_.rectangles()[slot].id;
+    const Status status = document_.removeObject(objectId);
+    if (!status) {
+      return fail(status.reason);
+    }
+    spatial_.removeSlot(document_, slot);
+    return 1;
+  }
+
+  int hitTest(double screenX, double screenY) {
+    if (!created_) {
+      fail("engine_create must be called before engine_hit_test");
+      return -1;
+    }
+    if (css_width_ <= 0 || css_height_ <= 0) {
+      fail("engine_resize must be called before engine_hit_test");
+      return -1;
+    }
+    HitResult result;
+    const Status status =
+        commands_.hitTest(document_, camera_, spatial_, static_cast<double>(css_width_),
+                          static_cast<double>(css_height_), Point{screenX, screenY}, result);
+    if (!status) {
+      fail(status.reason);
+      return -1;
+    }
+    return result.found ? static_cast<int>(result.slot) : -1;
+  }
+
+  int visibleInstanceCount() {
+    if (!created_) {
+      fail("engine_create must be called before engine_visible_instance_count");
+      return -1;
+    }
+    if (css_width_ <= 0 || css_height_ <= 0) {
+      fail("engine_resize must be called before engine_visible_instance_count");
+      return -1;
+    }
+    // Build without uploading; this reports the current visibility, not the last
+    // uploaded frame.
+    const Status status = commands_.build(document_, camera_, static_cast<double>(css_width_),
+                                          static_cast<double>(css_height_), spatial_);
+    if (!status) {
+      fail(status.reason);
+      return -1;
+    }
+    return static_cast<int>(commands_.size());
   }
 
   int renderFrame() {
@@ -287,6 +388,28 @@ class Renderer {
   const char* lastError() const { return g_last_error.c_str(); }
 
  private:
+  // An incremental patch must never trust a stale grid: before the document is
+  // mutated, an index that does not match the current document and version is
+  // rebuilt. This is defence in depth against a path that left the document
+  // partially populated (a rejected load, a foreign document).
+  void ensureSpatialCurrent() {
+    spatial_.ensureCurrent(document_);
+  }
+
+  // Maps an ABI slot index to a live document slot; rejects -1, out-of-range and
+  // tombstoned slots without touching the document.
+  Status objectSlot(int index, std::uint32_t& slot) const {
+    if (index < 0 || static_cast<std::size_t>(index) >= document_.slotCount()) {
+      return Status::failure("object index is out of range");
+    }
+    const std::uint32_t candidate = static_cast<std::uint32_t>(index);
+    if (!document_.isLive(candidate)) {
+      return Status::failure("object index is not a live object");
+    }
+    slot = candidate;
+    return Status::success();
+  }
+
   bool buildProgram() {
     const GLuint vertexShader = compileShader(GL_VERTEX_SHADER, kVertexShader);
     if (vertexShader == 0) {
@@ -394,6 +517,32 @@ AIR_ENGINE_RENDER_GL_API int engine_load_rectangles(const float* rectangles, int
   return air::engine::g_renderer.loadRectangles(rectangles, count);
 }
 
+AIR_ENGINE_RENDER_GL_API int engine_add_rectangle(double x, double y, double width, double height,
+                                                  int tone, int layer) {
+  return air::engine::g_renderer.addRectangle(x, y, width, height, tone, layer);
+}
+
+AIR_ENGINE_RENDER_GL_API int engine_update_geometry(int index, double x, double y, double width,
+                                                    double height) {
+  return air::engine::g_renderer.updateGeometry(index, x, y, width, height);
+}
+
+AIR_ENGINE_RENDER_GL_API int engine_update_z(int index, const char* z) {
+  return air::engine::g_renderer.updateZ(index, z);
+}
+
+AIR_ENGINE_RENDER_GL_API int engine_remove_object(int index) {
+  return air::engine::g_renderer.removeObject(index);
+}
+
+AIR_ENGINE_RENDER_GL_API int engine_hit_test(double screen_x, double screen_y) {
+  return air::engine::g_renderer.hitTest(screen_x, screen_y);
+}
+
+AIR_ENGINE_RENDER_GL_API int engine_visible_instance_count() {
+  return air::engine::g_renderer.visibleInstanceCount();
+}
+
 AIR_ENGINE_RENDER_GL_API int engine_render_frame() {
   return air::engine::g_renderer.renderFrame();
 }
@@ -436,6 +585,47 @@ AIR_ENGINE_RENDER_GL_API int engine_load_rectangles(const float* rectangles, int
   (void)count;
   return 0;
 }
+
+// Index-returning stubs report -1 so a caller can never mistake them for slot 0.
+AIR_ENGINE_RENDER_GL_API int engine_add_rectangle(double x, double y, double width, double height,
+                                                  int tone, int layer) {
+  (void)x;
+  (void)y;
+  (void)width;
+  (void)height;
+  (void)tone;
+  (void)layer;
+  return -1;
+}
+
+AIR_ENGINE_RENDER_GL_API int engine_update_geometry(int index, double x, double y, double width,
+                                                    double height) {
+  (void)index;
+  (void)x;
+  (void)y;
+  (void)width;
+  (void)height;
+  return 0;
+}
+
+AIR_ENGINE_RENDER_GL_API int engine_update_z(int index, const char* z) {
+  (void)index;
+  (void)z;
+  return 0;
+}
+
+AIR_ENGINE_RENDER_GL_API int engine_remove_object(int index) {
+  (void)index;
+  return 0;
+}
+
+AIR_ENGINE_RENDER_GL_API int engine_hit_test(double screen_x, double screen_y) {
+  (void)screen_x;
+  (void)screen_y;
+  return -1;
+}
+
+AIR_ENGINE_RENDER_GL_API int engine_visible_instance_count() { return -1; }
 
 AIR_ENGINE_RENDER_GL_API int engine_render_frame() { return 0; }
 

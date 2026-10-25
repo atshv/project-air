@@ -121,6 +121,14 @@
 
 ## Ready now
 
+- `P4-02` Engine playground: interactive sample board and stage shell
+  - P4-01: Closed P4-01: engine document with stable ObjectIds (never reused), tombstones, incremental add/move/resize/z/remove, atomic packed loads, incremental spatial index and command-buffer hit testing.
+  - P4-01: 6 C ABI exports + typed bridge methods; docs/engine.md updated; WASM 27,981 B gzip; cpp-unit 2/2. Two review rounds, all findings fixed; review in reviews/P4-01.md.
+  - P4-01: Deviations: Node v26.12.1 vs the .nvmrc pin (pins untouched); build-wasm.sh defaults EM_CACHE to build-wasm/.emscripten-cache because the Homebrew cache is read-only in the sandbox.
+- `P4-05` Gesture-to-operation seam and undo history core
+  - P4-01: Closed P4-01: engine document with stable ObjectIds (never reused), tombstones, incremental add/move/resize/z/remove, atomic packed loads, incremental spatial index and command-buffer hit testing.
+  - P4-01: 6 C ABI exports + typed bridge methods; docs/engine.md updated; WASM 27,981 B gzip; cpp-unit 2/2. Two review rounds, all findings fixed; review in reviews/P4-01.md.
+  - P4-01: Deviations: Node v26.12.1 vs the .nvmrc pin (pins untouched); build-wasm.sh defaults EM_CACHE to build-wasm/.emscripten-cache because the Homebrew cache is read-only in the sandbox.
 - `P4-25` Zones as containers I: contract parent reference (L08)
 
 ## Done
@@ -162,10 +170,11 @@
 - [x] `P3-04` Platform API routes and api-tests — status: `done` — owner: —
 - [x] `P3-05` SDK, RLS tests and backend acceptance — status: `done` — owner: —
 - [x] `P3-06` Contract-valid account IDs (Kratos identity mapping) — status: `done` — owner: —
+- [x] `P4-01` Engine document: stable ids, incremental mutations, hit testing and spatial queries — status: `done` — owner: —
 
 ## In progress
 
-- [ ] `P4-01` Engine document: stable ids, incremental mutations, hit testing and spatial queries — status: `in_progress` — owner: lead
+- none
 
 ## Blocked / failed
 

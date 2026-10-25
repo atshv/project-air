@@ -2,6 +2,7 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <limits>
 #include <vector>
 
 #include "engine/camera.h"
@@ -25,6 +26,16 @@ struct Instance {
   std::uint32_t layer{0};
 };
 static_assert(sizeof(Instance) == 24, "instance layout is the WebGL2 seam");
+
+// Result of a command-buffer hit test: the empty result has found == false,
+// slot == kNoObject and objectId == kInvalidObjectId.
+inline constexpr std::uint32_t kNoObject = std::numeric_limits<std::uint32_t>::max();
+
+struct HitResult {
+  bool found{false};
+  std::uint32_t slot{kNoObject};
+  ObjectId objectId{kInvalidObjectId};
+};
 
 // Returns the generated tokens.h colour for a tone; P2-03 parses this string.
 // `toneColor(Tone::neutral)` is a provisional spike mapping to tokens::card; the
@@ -51,12 +62,23 @@ class CommandBuffer {
   const std::uint8_t* bytes() const;
   std::size_t byteSize() const;
 
-  // Builds the screen-space quads of every visible rectangle in stable draw
+  // Builds the screen-space quads of every visible live rectangle in stable draw
   // order. Fails with a Status when the spatial index is stale or belongs to
   // another document, the viewport is not positive and finite, or a candidate
   // index is out of range (defence in depth); the buffer is then left empty.
   Status build(const Document& document, const Camera& camera, double viewportWidth,
                double viewportHeight, const SpatialIndex& spatial);
+
+  // Hit test on the command-buffer level: maps the screen point through the
+  // camera, asks the spatial index for its candidates and returns the topmost
+  // live object in draw order (highest layer, then greatest z, then latest
+  // insertion order), or the empty result when no object contains the point.
+  // A point exactly on an edge or corner hits every rectangle that includes it;
+  // the draw-order rule picks one deterministically. Fails with a Status for a
+  // non-finite point or a viewport that is not positive and finite, and when the
+  // spatial index is stale or belongs to another document.
+  Status hitTest(const Document& document, const Camera& camera, const SpatialIndex& spatial,
+                 double viewportWidth, double viewportHeight, Point screenPoint, HitResult& out);
 
  private:
   std::vector<Instance> instances_;

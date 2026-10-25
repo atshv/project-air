@@ -15,11 +15,15 @@ export type ToneName =
 
 export type LayerName = "zones" | "blocks" | "note-cards";
 
-export interface EngineRectangle {
+/** World-space geometry of one engine object, in the contract's pixels. */
+export interface EngineGeometry {
   readonly x: number;
   readonly y: number;
   readonly width: number;
   readonly height: number;
+}
+
+export interface EngineRectangle extends EngineGeometry {
   readonly tone?: ToneName;
   readonly layer?: LayerName;
 }
@@ -37,7 +41,30 @@ export interface EngineOptions {
 
 export interface Engine {
   readonly canvas: HTMLCanvasElement;
+  /**
+   * Replaces the document content. Every slot handle returned by `addRectangle`
+   * is invalidated, even when the new content happens to reuse the same slots; a
+   * rejected load throws and leaves the current document and handles unchanged.
+   */
   loadRectangles(rectangles: readonly EngineRectangle[]): void;
+  /**
+   * Adds one object without reloading the document and returns its document slot
+   * index. Mutations and `hitTest` address live objects by that index. The handle
+   * is valid until its object is removed or `loadRectangles` replaces the
+   * document; a removed object's slot may be reused by a later insert.
+   */
+  addRectangle(rectangle: EngineRectangle): number;
+  updateGeometry(index: number, geometry: EngineGeometry): void;
+  updateZ(index: number, z: string): void;
+  removeObject(index: number): void;
+  /**
+   * Topmost live object at the screen point in draw order, as a slot index, or
+   * -1 when no object is hit. A non-finite point throws; an engine-level
+   * rejection reports -1 and leaves the reason in `lastError()`.
+   */
+  hitTest(screenX: number, screenY: number): number;
+  /** Instances the current document, camera and viewport render. */
+  visibleInstanceCount(): number;
   setCamera(camera: EngineCamera): void;
   resize(cssWidth: number, cssHeight: number, devicePixelRatio: number): void;
   renderFrame(): void;
@@ -213,6 +240,76 @@ class WebGlEngine implements Engine {
     } finally {
       this.#module._free(pointer);
     }
+  }
+
+  addRectangle(rectangle: EngineRectangle): number {
+    this.#assertUsable("addRectangle");
+    const index = callNumber(
+      this.#module,
+      "engine_add_rectangle",
+      ["number", "number", "number", "number", "number", "number"],
+      [
+        rectangle.x,
+        rectangle.y,
+        rectangle.width,
+        rectangle.height,
+        TONE_ORDINALS[rectangle.tone ?? "neutral"],
+        LAYER_ORDINALS[rectangle.layer ?? "note-cards"],
+      ],
+    );
+    if (index < 0) {
+      throw new EngineError(`engine_add_rectangle failed: ${lastError(this.#module)}`);
+    }
+    return index;
+  }
+
+  updateGeometry(index: number, geometry: EngineGeometry): void {
+    this.#assertUsable("updateGeometry");
+    this.#requireOk("engine_update_geometry", ["number", "number", "number", "number", "number"], [
+      index,
+      geometry.x,
+      geometry.y,
+      geometry.width,
+      geometry.height,
+    ]);
+  }
+
+  updateZ(index: number, z: string): void {
+    this.#assertUsable("updateZ");
+    this.#requireOk("engine_update_z", ["number", "string"], [index, z]);
+  }
+
+  removeObject(index: number): void {
+    this.#assertUsable("removeObject");
+    this.#requireOk("engine_remove_object", ["number"], [index]);
+  }
+
+  hitTest(screenX: number, screenY: number): number {
+    this.#assertUsable("hitTest");
+    // The C ABI rejects a non-finite point with -1 and an error; validating here
+    // keeps the typed method's one-number contract unambiguous.
+    if (!Number.isFinite(screenX) || !Number.isFinite(screenY)) {
+      throw new EngineError("hitTest needs a finite screen point");
+    }
+    const index = callNumber(this.#module, "engine_hit_test", ["number", "number"], [
+      screenX,
+      screenY,
+    ]);
+    if (!Number.isInteger(index) || index < -1) {
+      throw new EngineError(`engine_hit_test failed: ${lastError(this.#module)}`);
+    }
+    return index;
+  }
+
+  visibleInstanceCount(): number {
+    this.#assertUsable("visibleInstanceCount");
+    const count = callNumber(this.#module, "engine_visible_instance_count", [], []);
+    if (count < 0) {
+      throw new EngineError(
+        `engine_visible_instance_count failed: ${lastError(this.#module)}`,
+      );
+    }
+    return count;
   }
 
   setCamera(camera: EngineCamera): void {

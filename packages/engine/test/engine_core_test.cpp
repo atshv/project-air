@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <chrono>
 #include <cmath>
 #include <cstdint>
@@ -23,8 +24,12 @@ using air::engine::Bounds;
 using air::engine::Camera;
 using air::engine::CommandBuffer;
 using air::engine::Document;
+using air::engine::HitResult;
 using air::engine::Instance;
+using air::engine::kInvalidObjectId;
+using air::engine::kNoObject;
 using air::engine::Layer;
+using air::engine::ObjectId;
 using air::engine::Point;
 using air::engine::Rectangle;
 using air::engine::SpatialIndex;
@@ -95,6 +100,43 @@ void fillFiftyThousandRectangles(Document& document) {
       return;
     }
   }
+}
+
+ObjectId addObjectWithId(Document& document, Rectangle rectangle) {
+  ObjectId objectId = kInvalidObjectId;
+  const Status status = document.addObject(std::move(rectangle), objectId);
+  test::expect(status.ok && objectId != kInvalidObjectId, "addObject succeeds with a stable id");
+  return objectId;
+}
+
+std::uint32_t slotOf(const Document& document, ObjectId objectId) {
+  std::uint32_t slot = 0;
+  const Status status = document.slotForId(objectId, slot);
+  test::expect(status.ok, "a live object id resolves to its slot");
+  return slot;
+}
+
+std::vector<std::uint8_t> captureBytes(CommandBuffer& buffer, const Document& document,
+                                       const Camera& camera, const SpatialIndex& spatial) {
+  const Status status = buffer.build(document, camera, 800.0, 600.0, spatial);
+  test::expect(status.ok, "the command buffer build succeeds");
+  std::vector<std::uint8_t> bytes;
+  if (status.ok && buffer.byteSize() > 0) {
+    bytes.assign(buffer.bytes(), buffer.bytes() + buffer.byteSize());
+  }
+  return bytes;
+}
+
+void expectSameBytes(const std::vector<std::uint8_t>& actual,
+                     const std::vector<std::uint8_t>& expected, std::string_view description) {
+  test::expect(actual.size() == expected.size() &&
+                   (actual.empty() ||
+                    std::memcmp(actual.data(), expected.data(), actual.size()) == 0),
+               description);
+}
+
+bool candidatesContain(const std::vector<std::uint32_t>& candidates, std::uint32_t slot) {
+  return std::find(candidates.begin(), candidates.end(), slot) != candidates.end();
 }
 
 void cameraRoundTrip() {
@@ -560,6 +602,568 @@ void tonesAndContract() {
   test::expect(ties.drawOrder() == expected, "equal z and layer keep insertion order");
 }
 
+void documentIdentityAndMutations() {
+  test::section("stable ids, incremental mutations, removal and rejection");
+  Document document;
+  const ObjectId first = addObjectWithId(document, makeRectangle(0.0, 0.0, 10.0, 10.0, "a"));
+  const ObjectId second = addObjectWithId(document, makeRectangle(20.0, 0.0, 10.0, 10.0, "b"));
+  const ObjectId third =
+      addObjectWithId(document, makeRectangle(40.0, 0.0, 10.0, 10.0, "c", Layer::blocks));
+  test::expect(first != kInvalidObjectId && first < second && second < third,
+               "object ids are monotonic and never zero");
+  test::expect(document.size() == 3 && document.version() == 3,
+               "three adds leave three live objects at version 3");
+
+  const std::uint32_t firstSlot = slotOf(document, first);
+  const std::uint32_t secondSlot = slotOf(document, second);
+  const std::uint32_t thirdSlot = slotOf(document, third);
+  test::expect(document.slotCount() == 3, "three live objects occupy three slots");
+
+  // Geometry update: in place, same id, version +1, other objects untouched.
+  Status status = document.updateGeometry(second, 25.0, 5.0, 30.0, 40.0);
+  test::expect(status.ok, "updateGeometry accepts finite geometry");
+  test::expect(document.version() == 4, "updateGeometry increments the version once");
+  test::expect(document.rectangles()[secondSlot].id == second,
+               "a geometry update keeps the object id");
+  test::expectNear(document.rectangles()[secondSlot].x, 25.0, 0.0,
+                   "a geometry update changes the stored geometry");
+  test::expectNear(document.rectangles()[firstSlot].x, 0.0, 0.0,
+                   "a geometry update leaves other objects alone");
+
+  // z update: the draw order follows and the inverse restores it.
+  const std::vector<std::uint32_t> orderBeforeZ = document.drawOrder();
+  status = document.updateZ(first, "z");
+  test::expect(status.ok, "updateZ accepts a fractional-order key");
+  test::expect(document.version() == 5, "updateZ increments the version once");
+  const std::vector<std::uint32_t> orderAfterZ = document.drawOrder();
+  test::expect(orderAfterZ.size() == 3 && orderAfterZ[0] == thirdSlot &&
+                   orderAfterZ[1] == secondSlot && orderAfterZ[2] == firstSlot,
+               "a greater z moves the object above its layer neighbours");
+  test::expect(document.drawOrderRank()[firstSlot] == 2,
+               "the draw-order rank follows the new z");
+  status = document.updateZ(first, "a");
+  test::expect(status.ok, "the inverse z update is accepted");
+  test::expect(document.drawOrder() == orderBeforeZ,
+               "the inverse z update restores the previous draw order");
+
+  // Removal: the other objects keep their id, geometry and relative order.
+  const std::uint32_t versionBeforeRemove = document.version();
+  status = document.removeObject(first);
+  test::expect(status.ok && document.version() == versionBeforeRemove + 1,
+               "removeObject increments the version once");
+  test::expect(document.size() == 2, "removal lowers the live count");
+  test::expect(!document.isLive(firstSlot), "the removed slot is tombstoned");
+  test::expect(document.rectangles()[firstSlot].id == kInvalidObjectId,
+               "the tombstone keeps no object id");
+  std::uint32_t unresolved = 0;
+  test::expect(!document.slotForId(first, unresolved).ok,
+               "a removed id no longer resolves to a slot");
+  test::expect(document.rectangles()[secondSlot].id == second,
+               "another object keeps its id after a removal");
+  test::expect(document.rectangles()[thirdSlot].id == third,
+               "a third object keeps its id after a removal");
+  test::expectNear(document.rectangles()[secondSlot].width, 30.0, 0.0,
+                   "another object keeps its geometry after a removal");
+  const std::vector<std::uint32_t> orderAfterRemove = document.drawOrder();
+  test::expect(orderAfterRemove.size() == 2, "the draw order lists only live objects");
+  if (orderAfterRemove.size() == 2) {
+    test::expect(orderAfterRemove[0] == thirdSlot && orderAfterRemove[1] == secondSlot,
+                 "the remaining objects keep their relative draw order");
+    test::expect(document.drawOrderRank()[orderAfterRemove[0]] == 0 &&
+                     document.drawOrderRank()[orderAfterRemove[1]] == 1,
+                 "the ranks are a fresh permutation of the live objects");
+  }
+
+  // Reuse: the freed slot is offered to the next insert, the id is not.
+  const std::size_t slotsBeforeReuse = document.slotCount();
+  const ObjectId fourth =
+      addObjectWithId(document, makeRectangle(60.0, 0.0, 10.0, 10.0, "d"));
+  test::expect(fourth > third, "a removed object's id is never reused");
+  const std::uint32_t fourthSlot = slotOf(document, fourth);
+  test::expect(document.slotCount() == slotsBeforeReuse,
+               "the freed slot is reused instead of growing storage");
+  test::expect(fourthSlot == firstSlot, "the next insert reuses the freed slot");
+
+  // Rejections: nothing is consumed, nothing changes.
+  const std::uint32_t versionBeforeRejections = document.version();
+  const std::size_t liveBeforeRejections = document.size();
+  status = document.updateGeometry(kInvalidObjectId, 1.0, 2.0, 3.0, 4.0);
+  test::expect(!status.ok && status.reason != nullptr,
+               "an unknown id is rejected with a reason");
+  status = document.updateGeometry(second, std::numeric_limits<double>::quiet_NaN(), 0.0, 10.0,
+                                   10.0);
+  test::expect(!status.ok && status.reason != nullptr,
+               "a non-finite geometry update is rejected");
+  status = document.updateGeometry(second, std::numeric_limits<double>::max(), 0.0,
+                                   std::numeric_limits<double>::max(), 10.0);
+  test::expect(!status.ok, "a geometry update whose bounds overflow is rejected");
+  test::expectNear(document.rectangles()[secondSlot].x, 25.0, 0.0,
+                   "a rejected geometry update leaves the geometry unchanged");
+  status = document.updateZ(first, "x");
+  test::expect(!status.ok, "a removed id is rejected by updateZ");
+  status = document.removeObject(first);
+  test::expect(!status.ok, "removing an already removed object is rejected");
+  ObjectId rejectedId = kInvalidObjectId;
+  status = document.addObject(
+      makeRectangle(std::numeric_limits<double>::infinity(), 0.0, 10.0, 10.0, "e"), rejectedId);
+  test::expect(!status.ok && rejectedId == kInvalidObjectId,
+               "a non-finite add is rejected without assigning an id");
+  test::expect(document.version() == versionBeforeRejections &&
+                   document.size() == liveBeforeRejections,
+               "rejected mutations leave the document unchanged");
+
+  // A full document rejects the insert without consuming an id or a version.
+  Document full;
+  fillFiftyThousandRectangles(full);
+  const std::uint32_t fullVersion = full.version();
+  ObjectId overflowId = kInvalidObjectId;
+  status = full.addObject(makeRectangle(0.0, 0.0, 1.0, 1.0, "z"), overflowId);
+  test::expect(!status.ok && status.reason != nullptr && overflowId == kInvalidObjectId,
+               "the 50,001st object is rejected with a reason and without an id");
+  test::expect(full.version() == fullVersion && full.size() == Document::kMaxRectangles,
+               "a full document stays unchanged after a rejected add");
+
+  // Removing the last object keeps the document usable and the storage reserved.
+  Document lastOne;
+  const ObjectId onlyObject =
+      addObjectWithId(lastOne, makeRectangle(0.0, 0.0, 10.0, 10.0, "a"));
+  const std::uint32_t onlySlot = slotOf(lastOne, onlyObject);
+  status = lastOne.removeObject(onlyObject);
+  test::expect(status.ok && lastOne.size() == 0 && lastOne.slotCount() == 1,
+               "removing the last object keeps the reserved slot");
+  test::expect(lastOne.drawOrder().empty() && !lastOne.isLive(onlySlot),
+               "a document without live objects has an empty draw order");
+  const ObjectId reinserted =
+      addObjectWithId(lastOne, makeRectangle(0.0, 0.0, 10.0, 10.0, "a"));
+  test::expect(reinserted > onlyObject && slotOf(lastOne, reinserted) == onlySlot,
+               "the last slot is reused while the id is not");
+
+  // clear() keeps the id sequence monotonic.
+  Document reloaded;
+  const ObjectId beforeClear =
+      addObjectWithId(reloaded, makeRectangle(0.0, 0.0, 1.0, 1.0, "a"));
+  reloaded.clear();
+  test::expect(reloaded.size() == 0, "clear removes every live object");
+  const ObjectId afterClear =
+      addObjectWithId(reloaded, makeRectangle(0.0, 0.0, 1.0, 1.0, "a"));
+  test::expect(afterClear > beforeClear, "object ids are not reused after clear");
+}
+
+void mutationCommandBufferRoundTrip() {
+  test::section("mutation plus inverse restores a byte-identical command buffer");
+  Document document;
+  const ObjectId blockObject = addObjectWithId(
+      document, makeRectangle(10.0, 10.0, 60.0, 40.0, "a", Layer::blocks, Tone::toneA));
+  const ObjectId cardB = addObjectWithId(
+      document, makeRectangle(100.0, 30.0, 80.0, 60.0, "b", Layer::noteCards, Tone::toneB));
+  const ObjectId cardC = addObjectWithId(
+      document, makeRectangle(40.0, 120.0, 50.0, 50.0, "c", Layer::noteCards, Tone::toneC));
+  const std::uint32_t blockSlot = slotOf(document, blockObject);
+  const std::uint32_t bSlot = slotOf(document, cardB);
+  const std::uint32_t cSlot = slotOf(document, cardC);
+
+  Camera camera;
+  SpatialIndex spatial;
+  spatial.rebuild(document);
+  CommandBuffer buffer;
+  const std::vector<std::uint8_t> baseline = captureBytes(buffer, document, camera, spatial);
+  test::expect(buffer.size() == 3, "the baseline frame draws the three objects");
+  test::expect(!baseline.empty(), "the baseline frame has record bytes");
+
+  // A move and its inverse: geometry, spatial index and buffer follow in place.
+  Status status = document.updateGeometry(cardB, 320.0, 30.0, 80.0, 60.0);
+  test::expect(status.ok, "a move is accepted");
+  spatial.updateSlot(document, bSlot);
+  test::expect(spatial.isCurrent(document),
+               "the index follows a move without a full rebuild");
+  std::vector<std::uint32_t> candidates;
+  Status queryStatus = spatial.queryPoint({325.0, 40.0}, candidates);
+  test::expect(queryStatus.ok && candidatesContain(candidates, bSlot),
+               "the moved object is found at its new position");
+  queryStatus = spatial.queryPoint({105.0, 40.0}, candidates);
+  test::expect(queryStatus.ok && !candidatesContain(candidates, bSlot),
+               "the moved object is gone from its old cell");
+  const std::vector<std::uint8_t> moved = captureBytes(buffer, document, camera, spatial);
+  test::expect(buffer.size() == 3, "the moved frame still draws three objects");
+  test::expect(moved != baseline, "a move changes the command buffer");
+  status = document.updateGeometry(cardB, 100.0, 30.0, 80.0, 60.0);
+  test::expect(status.ok, "the inverse move is accepted");
+  spatial.updateSlot(document, bSlot);
+  expectSameBytes(captureBytes(buffer, document, camera, spatial), baseline,
+                  "moving an object and back restores the byte-identical command buffer");
+
+  // A resize and its inverse.
+  status = document.updateGeometry(cardC, 40.0, 120.0, 90.0, 80.0);
+  test::expect(status.ok, "a resize is accepted");
+  spatial.updateSlot(document, cSlot);
+  const std::vector<std::uint8_t> resized = captureBytes(buffer, document, camera, spatial);
+  test::expect(buffer.size() == 3 && resized != baseline,
+               "a resize changes the command buffer");
+  status = document.updateGeometry(cardC, 40.0, 120.0, 50.0, 50.0);
+  test::expect(status.ok, "the inverse resize is accepted");
+  spatial.updateSlot(document, cSlot);
+  expectSameBytes(captureBytes(buffer, document, camera, spatial), baseline,
+                  "resizing an object and back restores the byte-identical command buffer");
+
+  // A z change and its inverse: the draw order and the buffer follow.
+  const std::vector<std::uint32_t> orderBeforeZ = document.drawOrder();
+  status = document.updateZ(cardB, "d");
+  test::expect(status.ok, "a z update is accepted");
+  spatial.syncVersion(document);
+  test::expect(spatial.isCurrent(document), "the index follows a z-only mutation");
+  const std::vector<std::uint32_t>& reorderedOrder = document.drawOrder();
+  test::expect(reorderedOrder.size() == 3 && reorderedOrder[0] == blockSlot &&
+                   reorderedOrder[1] == cSlot && reorderedOrder[2] == bSlot,
+               "a greater z moves the object above its layer neighbour");
+  const std::vector<std::uint8_t> reordered = captureBytes(buffer, document, camera, spatial);
+  test::expect(reordered != baseline, "a z change changes the command buffer order");
+  status = document.updateZ(cardB, "b");
+  test::expect(status.ok, "the inverse z update is accepted");
+  spatial.syncVersion(document);
+  test::expect(document.drawOrder() == orderBeforeZ,
+               "the inverse z update restores the draw order");
+  expectSameBytes(captureBytes(buffer, document, camera, spatial), baseline,
+                  "restoring the z restores the byte-identical command buffer");
+
+  // An add and its inverse: the freed slot is kept, the buffer returns.
+  const std::size_t slotsBeforeAdd = document.slotCount();
+  const ObjectId added = addObjectWithId(
+      document, makeRectangle(300.0, 300.0, 40.0, 40.0, "d", Layer::blocks, Tone::toneD));
+  const std::uint32_t addedSlot = slotOf(document, added);
+  spatial.updateSlot(document, addedSlot);
+  test::expect(spatial.isCurrent(document), "the index follows an insert");
+  const std::vector<std::uint8_t> withAdded = captureBytes(buffer, document, camera, spatial);
+  test::expect(buffer.size() == 4, "the added object becomes a fourth instance");
+  test::expect(withAdded.size() > baseline.size(), "an add grows the command buffer");
+  status = document.removeObject(added);
+  test::expect(status.ok, "the added object can be removed again");
+  spatial.removeSlot(document, addedSlot);
+  test::expect(spatial.isCurrent(document), "the index follows a removal");
+  expectSameBytes(captureBytes(buffer, document, camera, spatial), baseline,
+                  "adding and removing an object restores the byte-identical command buffer");
+  test::expect(document.slotCount() == slotsBeforeAdd + 1,
+               "the freed slot stays reserved as a tombstone for reuse");
+}
+
+void commandBufferHitTesting() {
+  test::section("hit testing: draw-order precedence, edges and rejection");
+  Document document;
+  const ObjectId lowLayer = addObjectWithId(
+      document, makeRectangle(0.0, 0.0, 100.0, 100.0, "z", Layer::blocks, Tone::toneA));
+  const ObjectId cardA = addObjectWithId(
+      document, makeRectangle(0.0, 0.0, 100.0, 100.0, "a", Layer::noteCards, Tone::toneB));
+  const ObjectId cardB = addObjectWithId(
+      document, makeRectangle(0.0, 0.0, 100.0, 100.0, "b", Layer::noteCards, Tone::toneC));
+  const ObjectId cardB2 = addObjectWithId(
+      document, makeRectangle(0.0, 0.0, 100.0, 100.0, "b", Layer::noteCards, Tone::toneD));
+  const std::uint32_t lowSlot = slotOf(document, lowLayer);
+  const std::uint32_t aSlot = slotOf(document, cardA);
+  const std::uint32_t bSlot = slotOf(document, cardB);
+  const std::uint32_t b2Slot = slotOf(document, cardB2);
+
+  Camera camera;
+  SpatialIndex spatial;
+  spatial.rebuild(document);
+  CommandBuffer buffer;
+  HitResult hit;
+  Status status =
+      buffer.hitTest(document, camera, spatial, 800.0, 600.0, {50.0, 50.0}, hit);
+  test::expect(status.ok && hit.found && hit.slot == b2Slot && hit.objectId == cardB2,
+               "the topmost is the latest insertion of the greatest z on the highest layer");
+  const std::uint32_t versionBeforeHits = document.version();
+
+  status = document.removeObject(cardB2);
+  test::expect(status.ok, "the topmost object can be removed");
+  spatial.removeSlot(document, b2Slot);
+  status = buffer.hitTest(document, camera, spatial, 800.0, 600.0, {50.0, 50.0}, hit);
+  test::expect(status.ok && hit.found && hit.slot == bSlot,
+               "with the later equal-z object removed the earlier one wins");
+
+  status = document.removeObject(cardB);
+  test::expect(status.ok, "the equal-z predecessor can be removed");
+  spatial.removeSlot(document, bSlot);
+  status = buffer.hitTest(document, camera, spatial, 800.0, 600.0, {50.0, 50.0}, hit);
+  test::expect(status.ok && hit.found && hit.slot == aSlot,
+               "a higher layer beats a lower layer's greater z");
+
+  status = document.removeObject(cardA);
+  test::expect(status.ok, "the top card can be removed");
+  spatial.removeSlot(document, aSlot);
+  status = buffer.hitTest(document, camera, spatial, 800.0, 600.0, {50.0, 50.0}, hit);
+  test::expect(status.ok && hit.found && hit.slot == lowSlot,
+               "removal exposes the remaining object to the hit test");
+  status = buffer.hitTest(document, camera, spatial, 800.0, 600.0, {500.0, 500.0}, hit);
+  test::expect(status.ok && !hit.found && hit.slot == kNoObject &&
+                   hit.objectId == kInvalidObjectId,
+               "a point without objects returns the empty result");
+  test::expect(document.version() == versionBeforeHits + 3,
+               "hit tests never mutate the document");
+
+  // Edges and corners are inclusive; the draw order picks one deterministically.
+  Document edges;
+  const ObjectId left = addObjectWithId(edges, makeRectangle(0.0, 0.0, 10.0, 10.0, "a"));
+  const ObjectId right = addObjectWithId(edges, makeRectangle(10.0, 0.0, 10.0, 10.0, "a"));
+  const std::uint32_t leftSlot = slotOf(edges, left);
+  const std::uint32_t rightSlot = slotOf(edges, right);
+  SpatialIndex edgeSpatial;
+  edgeSpatial.rebuild(edges);
+  CommandBuffer edgeBuffer;
+  HitResult edgeHit;
+  status = edgeBuffer.hitTest(edges, camera, edgeSpatial, 800.0, 600.0, {10.0, 5.0}, edgeHit);
+  test::expect(status.ok && edgeHit.slot == rightSlot,
+               "a point on a shared edge hits both and the later insertion wins");
+  status = edgeBuffer.hitTest(edges, camera, edgeSpatial, 800.0, 600.0, {10.0, 0.0}, edgeHit);
+  test::expect(status.ok && edgeHit.slot == rightSlot,
+               "a shared corner follows the same deterministic rule");
+  status = edgeBuffer.hitTest(edges, camera, edgeSpatial, 800.0, 600.0, {0.0, 0.0}, edgeHit);
+  test::expect(status.ok && edgeHit.slot == leftSlot,
+               "the top-left corner of an object counts as a hit");
+
+  // The screen point is mapped through the camera before the hit test.
+  Document mapped;
+  const ObjectId mappedId = addObjectWithId(
+      mapped, makeRectangle(100.0, 200.0, 50.0, 50.0, "a", Layer::noteCards));
+  const std::uint32_t mappedSlot = slotOf(mapped, mappedId);
+  Camera mappedCamera;
+  test::expect(mappedCamera.setView(100.0, 200.0, 2.0).ok, "the camera is placed on the object");
+  SpatialIndex mappedSpatial;
+  mappedSpatial.rebuild(mapped);
+  CommandBuffer mappedBuffer;
+  HitResult mappedHit;
+  status = mappedBuffer.hitTest(mapped, mappedCamera, mappedSpatial, 800.0, 600.0,
+                                {10.0, 10.0}, mappedHit);
+  test::expect(status.ok && mappedHit.slot == mappedSlot,
+               "a screen point maps through the camera before the hit test");
+  status = mappedBuffer.hitTest(mapped, mappedCamera, mappedSpatial, 800.0, 600.0,
+                                {101.0, 101.0}, mappedHit);
+  test::expect(status.ok && !mappedHit.found, "a point outside the mapped quad is not a hit");
+
+  // Rejections leave the result empty; the empty document is a valid query.
+  status = buffer.hitTest(document, camera, spatial, 800.0, 600.0,
+                          {std::numeric_limits<double>::quiet_NaN(), 5.0}, hit);
+  test::expect(!status.ok && status.reason != nullptr && !hit.found,
+               "a non-finite screen point is rejected with an empty result");
+  status = buffer.hitTest(document, camera, spatial, 800.0, 600.0,
+                          {5.0, std::numeric_limits<double>::infinity()}, hit);
+  test::expect(!status.ok && !hit.found, "an infinite screen point is rejected");
+  status = buffer.hitTest(document, camera, spatial, 0.0, 600.0, {5.0, 5.0}, hit);
+  test::expect(!status.ok && status.reason != nullptr && !hit.found,
+               "a zero-size viewport is rejected");
+  status = buffer.hitTest(document, camera, spatial,
+                          std::numeric_limits<double>::quiet_NaN(), 600.0, {5.0, 5.0}, hit);
+  test::expect(!status.ok && !hit.found, "a non-finite viewport is rejected");
+
+  Document emptyDocument;
+  SpatialIndex emptySpatial;
+  emptySpatial.rebuild(emptyDocument);
+  CommandBuffer emptyBuffer;
+  HitResult emptyHit;
+  status = emptyBuffer.hitTest(emptyDocument, camera, emptySpatial, 800.0, 600.0, {10.0, 10.0},
+                               emptyHit);
+  test::expect(status.ok && !emptyHit.found && emptyHit.slot == kNoObject &&
+                   emptyHit.objectId == kInvalidObjectId,
+               "an empty document returns the empty result without a division");
+
+  Document staleDocument;
+  addObjectWithId(staleDocument, makeRectangle(0.0, 0.0, 10.0, 10.0, "a"));
+  SpatialIndex staleSpatial;
+  staleSpatial.rebuild(staleDocument);
+  addObjectWithId(staleDocument, makeRectangle(20.0, 0.0, 10.0, 10.0, "b"));
+  CommandBuffer staleBuffer;
+  HitResult staleHit;
+  status = staleBuffer.hitTest(staleDocument, camera, staleSpatial, 800.0, 600.0, {5.0, 5.0},
+                               staleHit);
+  test::expect(!status.ok && status.reason != nullptr,
+               "a stale index is reported instead of returning a wrong hit");
+}
+
+void spatialPointAndBoundsQueries() {
+  test::section("spatial point and bounds queries return document-ordered candidates");
+  Document document;
+  const ObjectId nearId = addObjectWithId(document, makeRectangle(0.0, 0.0, 10.0, 10.0, "a"));
+  const ObjectId middleId = addObjectWithId(document, makeRectangle(300.0, 0.0, 10.0, 10.0, "b"));
+  const ObjectId farId = addObjectWithId(document, makeRectangle(600.0, 0.0, 10.0, 10.0, "c"));
+  const std::uint32_t nearSlot = slotOf(document, nearId);
+  const std::uint32_t middleSlot = slotOf(document, middleId);
+  const std::uint32_t farSlot = slotOf(document, farId);
+
+  SpatialIndex spatial;
+  spatial.rebuild(document);
+  test::expect(spatial.isCurrent(document), "a rebuilt index is current for its document");
+  std::vector<std::uint32_t> candidates;
+  Status status = spatial.query({0.0, 0.0, 1.0, 1.0}, candidates);
+  test::expect(status.ok && candidates.size() == 1 && candidates[0] == nearSlot,
+               "a narrow bounds query returns only the intersecting object");
+  status = spatial.query({0.0, 0.0, 700.0, 10.0}, candidates);
+  test::expect(status.ok && candidates.size() == 3, "a wide bounds query returns every object");
+  if (candidates.size() == 3) {
+    test::expect(candidates[0] == nearSlot && candidates[1] == middleSlot &&
+                     candidates[2] == farSlot,
+                 "candidates arrive in document order");
+  }
+  status = spatial.queryPoint({305.0, 5.0}, candidates);
+  test::expect(status.ok && candidates.size() == 1 && candidates[0] == middleSlot,
+               "a point query returns the object under the point");
+
+  // A rectangle spanning several cells is offered exactly once, not once per cell.
+  const ObjectId wideId = addObjectWithId(document, makeRectangle(0.0, 0.0, 700.0, 10.0, "d"));
+  const std::uint32_t wideSlot = slotOf(document, wideId);
+  spatial.updateSlot(document, wideSlot);
+  test::expect(spatial.isCurrent(document), "the index follows an insert");
+  status = spatial.queryPoint({305.0, 5.0}, candidates);
+  test::expect(status.ok, "the point query succeeds after the insert");
+  test::expect(std::count(candidates.begin(), candidates.end(), wideSlot) == 1,
+               "a rectangle spanning several cells is offered exactly once");
+  test::expect(candidatesContain(candidates, middleSlot),
+               "a plain candidate is still returned next to the spanning one");
+
+  // An oversized rectangle stays a candidate everywhere (the buffer filters it).
+  const ObjectId oversizedId =
+      addObjectWithId(document, makeRectangle(0.0, 0.0, 40000.0, 40000.0, "e"));
+  const std::uint32_t oversizedSlot = slotOf(document, oversizedId);
+  spatial.updateSlot(document, oversizedSlot);
+  status = spatial.queryPoint({100000.0, 100000.0}, candidates);
+  test::expect(status.ok && candidatesContain(candidates, oversizedSlot),
+               "an oversized rectangle is always offered as a candidate");
+
+  // Incremental move: the old cell no longer offers the slot, the new one does.
+  status = document.updateGeometry(middleId, 520.0, 0.0, 10.0, 10.0);
+  test::expect(status.ok, "the move behind the incremental query is accepted");
+  spatial.updateSlot(document, middleSlot);
+  status = spatial.queryPoint({305.0, 5.0}, candidates);
+  test::expect(status.ok && !candidatesContain(candidates, middleSlot),
+               "a moved object leaves its old cell");
+  status = spatial.queryPoint({525.0, 5.0}, candidates);
+  test::expect(status.ok && candidatesContain(candidates, middleSlot),
+               "a moved object enters its new cell");
+
+  // Removal: the slot disappears from the candidates and the index stays bound.
+  status = document.removeObject(farId);
+  test::expect(status.ok, "the far object can be removed");
+  spatial.removeSlot(document, farSlot);
+  test::expect(spatial.isCurrent(document), "the index follows a removal");
+  status = spatial.queryPoint({605.0, 5.0}, candidates);
+  test::expect(status.ok && !candidatesContain(candidates, farSlot),
+               "a removed object is no longer a candidate");
+
+  // A non-finite bound is clamped onto the grid instead of casting UB.
+  status = spatial.query({std::numeric_limits<double>::quiet_NaN(), 0.0, 1.0, 1.0}, candidates);
+  std::vector<std::uint32_t> clamped;
+  const Status clampedStatus = spatial.query({0.0, 0.0, 1.0, 1.0}, clamped);
+  test::expect(status.ok && clampedStatus.ok && candidates == clamped,
+               "a non-finite bound is clamped to the origin cell");
+
+  // A never-built index reports a failure instead of returning stale candidates.
+  SpatialIndex unbuilt;
+  status = unbuilt.query({0.0, 0.0, 1.0, 1.0}, candidates);
+  test::expect(!status.ok && status.reason != nullptr,
+               "a never-built index reports a failure");
+}
+
+void packedLoadAndSpatialGuard() {
+  test::section("a rejected packed load is atomic and the patch guard rebuilds a stale index");
+
+  // Previous, valid document loaded through the packed C ABI format.
+  const float previous[3 * 6] = {
+      10.0F,  10.0F,  60.0F, 40.0F, 0.0F, 1.0F,
+      100.0F, 30.0F,  80.0F, 60.0F, 1.0F, 2.0F,
+      40.0F,  120.0F, 50.0F, 50.0F, 2.0F, 2.0F,
+  };
+  Document document;
+  Status status = document.loadPackedRectangles(previous, 3);
+  test::expect(status.ok && document.size() == 3, "a valid packed load fills the document");
+  const std::uint32_t versionAfterLoad = document.version();
+  const ObjectId firstLoaded = document.rectangles()[0].id;
+  const ObjectId secondLoaded = document.rectangles()[1].id;
+  Camera camera;
+  SpatialIndex spatial;
+  spatial.rebuild(document);
+  CommandBuffer buffer;
+  const std::vector<std::uint8_t> baseline = captureBytes(buffer, document, camera, spatial);
+  test::expect(buffer.size() == 3, "the loaded objects are visible");
+
+  // Three valid records and a NaN: the load must fail before replacing anything.
+  const float invalid[4 * 6] = {
+      10.0F,  10.0F,  60.0F, 40.0F, 0.0F, 1.0F,
+      100.0F, 30.0F,  80.0F, 60.0F, 1.0F, 2.0F,
+      40.0F,  120.0F, 50.0F, 50.0F, 2.0F, 2.0F,
+      std::numeric_limits<float>::quiet_NaN(), 0.0F, 10.0F, 10.0F, 0.0F, 2.0F,
+  };
+  status = document.loadPackedRectangles(invalid, 4);
+  test::expect(!status.ok && status.reason != nullptr, "a packed load with a NaN is rejected");
+  test::expect(document.size() == 3 && document.version() == versionAfterLoad,
+               "a rejected packed load leaves the document unchanged");
+  test::expect(spatial.isCurrent(document), "a rejected packed load leaves the index current");
+  expectSameBytes(captureBytes(buffer, document, camera, spatial), baseline,
+                  "a rejected packed load leaves the command buffer byte-identical");
+
+  // Count, null and non-finite-ordinal rejections are atomic too.
+  Document untouched;
+  const float invalidOrdinal[6] = {0.0F, 0.0F, 10.0F, 10.0F,
+                                   std::numeric_limits<float>::quiet_NaN(), 0.0F};
+  test::expect(!untouched.loadPackedRectangles(nullptr, 1).ok,
+               "a null packed load is rejected");
+  test::expect(!untouched.loadPackedRectangles(previous, -1).ok,
+               "a negative packed count is rejected");
+  test::expect(!untouched.loadPackedRectangles(invalidOrdinal, 1).ok,
+               "a packed load with a non-finite ordinal is rejected");
+  std::vector<float> oversized(static_cast<std::size_t>(Document::kMaxRectangles + 1) * 6, 0.0F);
+  test::expect(!untouched.loadPackedRectangles(oversized.data(),
+                                               static_cast<int>(Document::kMaxRectangles + 1))
+                    .ok,
+               "an oversized packed load is rejected");
+  test::expect(untouched.size() == 0 && untouched.version() == 0,
+               "rejected packed loads leave an empty document untouched");
+
+  // The next incremental add, frame build and hit tests see every live object.
+  const ObjectId added = addObjectWithId(
+      document, makeRectangle(300.0, 300.0, 40.0, 40.0, "d", Layer::blocks));
+  const std::uint32_t addedSlot = slotOf(document, added);
+  spatial.updateSlot(document, addedSlot);
+  test::expect(spatial.isCurrent(document), "the next incremental add keeps the index current");
+  const std::vector<std::uint8_t> withAdded = captureBytes(buffer, document, camera, spatial);
+  test::expect(buffer.size() == 4, "the frame after the rejected load draws every live object");
+  test::expect(withAdded.size() > baseline.size(),
+               "the frame after the rejected load includes the new object");
+  HitResult hit;
+  status = buffer.hitTest(document, camera, spatial, 800.0, 600.0, {15.0, 15.0}, hit);
+  test::expect(status.ok && hit.found && hit.objectId == firstLoaded,
+               "hit testing finds an object loaded before the rejected load");
+  status = buffer.hitTest(document, camera, spatial, 800.0, 600.0, {105.0, 40.0}, hit);
+  test::expect(status.ok && hit.found && hit.objectId == secondLoaded,
+               "hit testing finds a second object loaded before the rejected load");
+  status = buffer.hitTest(document, camera, spatial, 800.0, 600.0, {305.0, 305.0}, hit);
+  test::expect(status.ok && hit.found && hit.objectId == added,
+               "hit testing finds the object added after the rejected load");
+
+  // Defence in depth: every ABI mutation first rebuilds an index left stale by a
+  // path outside the incremental patch (SpatialIndex::ensureCurrent).
+  Document stale;
+  addObjectWithId(stale, makeRectangle(0.0, 0.0, 10.0, 10.0, "a"));
+  SpatialIndex staleSpatial;
+  staleSpatial.rebuild(stale);
+  const ObjectId staleSecond =
+      addObjectWithId(stale, makeRectangle(20.0, 0.0, 10.0, 10.0, "b"));
+  const std::uint32_t staleSecondSlot = slotOf(stale, staleSecond);
+  test::expect(!staleSpatial.isCurrent(stale),
+               "a direct document mutation leaves the index stale");
+  staleSpatial.ensureCurrent(stale);
+  test::expect(staleSpatial.isCurrent(stale), "the patch guard rebuilds a stale index");
+  std::vector<std::uint32_t> candidates;
+  status = staleSpatial.query({0.0, 0.0, 100.0, 10.0}, candidates);
+  test::expect(status.ok && candidates.size() == 2 &&
+                   candidatesContain(candidates, staleSecondSlot),
+               "the rebuilt index knows every live object again");
+  const ObjectId staleThird =
+      addObjectWithId(stale, makeRectangle(40.0, 0.0, 10.0, 10.0, "c"));
+  staleSpatial.updateSlot(stale, slotOf(stale, staleThird));
+  test::expect(staleSpatial.isCurrent(stale),
+               "an incremental patch after the guard stays current");
+  status = staleSpatial.query({0.0, 0.0, 100.0, 10.0}, candidates);
+  test::expect(status.ok && candidates.size() == 3,
+               "the patched index sees every live object");
+}
+
 }  // namespace
 
 int main() {
@@ -575,6 +1179,11 @@ int main() {
   determinismAndPerformance();
   staleIndexAndCapacity();
   tonesAndContract();
+  documentIdentityAndMutations();
+  mutationCommandBufferRoundTrip();
+  commandBufferHitTesting();
+  spatialPointAndBoundsQueries();
+  packedLoadAndSpatialGuard();
 
   if (test::failures != 0) {
     std::fprintf(stderr, "engine_core_tests: %d check(s) failed\n", test::failures);

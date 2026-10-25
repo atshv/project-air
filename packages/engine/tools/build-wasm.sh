@@ -12,8 +12,16 @@
 
 set -euo pipefail
 
-PACKAGE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+PACKAGE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd -P)"
 BUILD_DIR="${PACKAGE_DIR}/build-wasm"
+
+# Keep Emscripten's cache next to the artifact when the caller does not pin one:
+# the Homebrew package cache lives inside the read-only Cellar (sandboxed agent
+# sessions cannot write it) and a shared user cache leaks between checkouts. The
+# real path from `pwd -P` matters on macOS: Emscripten derives its system-library
+# paths relative to the cache, and a /tmp-symlinked path breaks that arithmetic.
+EM_CACHE="${EM_CACHE:-${BUILD_DIR}/.emscripten-cache}"
+export EM_CACHE
 
 find_brew() {
   if command -v brew >/dev/null 2>&1; then

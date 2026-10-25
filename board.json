@@ -2831,7 +2831,7 @@
       "satisfies": [
         "D10"
       ],
-      "status": "in_progress",
+      "status": "done",
       "depends_on": [],
       "complexity": 6,
       "stage": "engine-core",
@@ -2874,13 +2874,25 @@
         "wasm-size",
         "typecheck"
       ],
-      "owner": "lead",
+      "owner": null,
       "branch": "task/P4-01",
-      "worktree": "/private/tmp/air-P4-01",
+      "worktree": null,
       "round": 0,
-      "evidence": [],
+      "evidence": [
+        "reviews/evidence/P4-01-board-check-20261025T204541Z.json",
+        "reviews/evidence/P4-01-boundaries-20261025T204546Z.json",
+        "reviews/evidence/P4-01-cpp-unit-20261025T204549Z.json",
+        "reviews/evidence/P4-01-typecheck-20261025T204550Z.json",
+        "reviews/evidence/P4-01-wasm-build-20261025T204553Z.json",
+        "reviews/evidence/P4-01-wasm-size-20261025T204557Z.json"
+      ],
       "scope_write_forbidden": [
         "reference/"
+      ],
+      "handoff": [
+        "Closed P4-01: engine document with stable ObjectIds (never reused), tombstones, incremental add/move/resize/z/remove, atomic packed loads, incremental spatial index and command-buffer hit testing.",
+        "6 C ABI exports + typed bridge methods; docs/engine.md updated; WASM 27,981 B gzip; cpp-unit 2/2. Two review rounds, all findings fixed; review in reviews/P4-01.md.",
+        "Deviations: Node v26.12.1 vs the .nvmrc pin (pins untouched); build-wasm.sh defaults EM_CACHE to build-wasm/.emscripten-cache because the Homebrew cache is read-only in the sandbox."
       ]
     },
     {
