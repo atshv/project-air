@@ -1,0 +1,108 @@
+/* Single source of design tokens for the landing page and the app (ADR-0006). Dark only in v1. */
+
+:root {
+  color-scheme: dark;
+
+  --bg: #121412;
+  --surface: #1a1d1a;
+  --card: #202420;
+  --canvas: #151815;
+  --border: rgba(255, 255, 255, 0.08);
+  --border-strong: rgba(255, 255, 255, 0.16);
+  --fg: rgba(255, 255, 255, 0.92);
+  --muted: rgba(255, 255, 255, 0.66);
+  --faint: rgba(255, 255, 255, 0.12);
+  --accent: #8fbfaf;
+  --accent-strong: #3b6e62;
+  --accent-soft: rgba(143, 191, 175, 0.14);
+  --accent-line: rgba(143, 191, 175, 0.4);
+  --danger: #f0a8a0;
+  --on-light: #121412;
+  --button: #ffffff;
+  --button-hover: #eef3f0;
+
+  --tone-a: #8fbfaf;
+  --tone-b: #d9bd8f;
+  --tone-c: #b8a6e0;
+  --tone-d: #8fb0dc;
+  --tone-e: #dca48f;
+
+  --radius-sm: 10px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --radius-pill: 9999px;
+  --card-shadow: 0 10px 30px -16px rgba(0, 0, 0, 0.7);
+  --shadow: 0 1px 0 rgba(255, 255, 255, 0.04) inset,
+    0 24px 60px -24px rgba(0, 0, 0, 0.6);
+
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system,
+    "Segoe UI", sans-serif;
+  --font-serif: var(--font-source-serif), "Source Serif 4", Georgia, serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: rgba(143, 191, 175, 0.35);
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+h1 {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: clamp(2rem, 5vw, 3rem);
+  font-weight: 400;
+  letter-spacing: -0.01em;
+}
+
+p {
+  margin: 0;
+  max-width: 52ch;
+  line-height: 1.6;
+  color: var(--muted);
+}
+
+a {
+  color: var(--accent);
+}
+
+/* React Flow in dark mode, mapped to the tokens (ADR-0001, ADR-0006). */
+.react-flow.dark {
+  --xy-background-color: transparent;
+  --xy-controls-button-background-color: var(--card);
+  --xy-controls-button-background-color-hover: var(--surface);
+  --xy-controls-button-color: var(--fg);
+  --xy-controls-button-color-hover: var(--accent);
+  --xy-controls-button-border-color: var(--border);
+  --xy-controls-box-shadow: var(--card-shadow);
+}
+
+.react-flow.dark .react-flow__controls {
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+}
+
+.react-flow.dark .react-flow__attribution {
+  background: transparent;
+}
+
+.react-flow.dark .react-flow__attribution a {
+  color: var(--muted);
+}

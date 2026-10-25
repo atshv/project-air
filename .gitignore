@@ -1,0 +1,34 @@
+# OS and editors
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+
+# Dependencies and builds
+node_modules/
+dist/
+build/
+build-*/
+.next/
+.turbo/
+coverage/
+*.tsbuildinfo
+
+# Python caches (tooling)
+__pycache__/
+*.pyc
+
+# Secrets and local config (names live in .env.example)
+.env
+.env.*
+!.env.example
+
+# Polier runtime (per worktree)
+.polier-slot
+
+# Test output
+test-results/
+playwright-report/
+*.log
+!reviews/evidence/*.log

@@ -1,0 +1,1236 @@
+{
+  "schema_version": "1.0",
+  "project": "project-air",
+  "profile": "L",
+  "base_branch": "main",
+  "generator_version": "1.0.0",
+  "stage": 1,
+  "worktrees": "required",
+  "resources": {
+    "slots": 10,
+    "port_base": 4000,
+    "port_stride": 100,
+    "services": {
+      "web": 0,
+      "web-e2e": 1,
+      "platform": 10,
+      "auth": 20,
+      "sync": 30,
+      "media": 40,
+      "ai": 50,
+      "playground": 60
+    },
+    "infra_patterns": [
+      "ECONNREFUSED",
+      "ERR_CONNECTION_REFUSED",
+      "EADDRINUSE",
+      "address already in use"
+    ]
+  },
+  "stages": [
+    {
+      "id": "foundation",
+      "title": "Foundation",
+      "goal": "A complete, empty monorepo in which every guard against parallel-agent failures works before any product code exists.",
+      "exit_criteria": [
+        "Every packages[] folder exists with a README; package map and versions are filled in.",
+        "Two worktrees run tests side by side without port or database collision; two e2e runs wait for each other.",
+        "CI rejects a pull request that leaves its scope, adds a raw colour, hard-codes UI text or lacks a change entry.",
+        "Release 0.0.1 and one preview ran end to end through CI from a tag."
+      ],
+      "exit_gates": [
+        "board-check",
+        "ci-green",
+        "design-check",
+        "language-check",
+        "changelog-entry",
+        "release-dry"
+      ],
+      "owner_decision": "pending",
+      "depends_on": []
+    },
+    {
+      "id": "contract",
+      "title": "Contract",
+      "goal": "The shared language (data model, operations, sync protocol, API errors) exists as versioned JSON Schema with fixtures and TS + C++ codegen.",
+      "exit_criteria": [
+        "contracts 0.1.0 tagged; every schema has a valid and an invalid fixture.",
+        "TS and C++ read the same fixtures identically."
+      ],
+      "exit_gates": [
+        "contracts",
+        "codegen"
+      ],
+      "owner_decision": "pending",
+      "depends_on": [
+        "foundation"
+      ]
+    },
+    {
+      "id": "engine-spike",
+      "title": "Engine spike",
+      "goal": "Prove that the own C++/WebAssembly engine reaches the performance targets; owner decides continue or plan B.",
+      "exit_criteria": [
+        "60 fps with 50,000 rectangles on the reference hardware; WASM <= 300 KB gzip.",
+        "Measured report and ADR for the engine architecture."
+      ],
+      "exit_gates": [
+        "cpp-unit",
+        "wasm-build",
+        "perf-baseline"
+      ],
+      "owner_decision": "pending",
+      "depends_on": [
+        "contract"
+      ]
+    },
+    {
+      "id": "backend-core",
+      "title": "Backend core",
+      "goal": "Accounts, permissions and durable data without any hosted backend vendor.",
+      "exit_criteria": [
+        "API suite covers allow and deny for every route; RLS tests green.",
+        "A script creates account, workspace, board and note via the SDK; a second account sees nothing."
+      ],
+      "exit_gates": [
+        "api-tests",
+        "rls-tests"
+      ],
+      "owner_decision": "pending",
+      "depends_on": [
+        "contract"
+      ]
+    },
+    {
+      "id": "engine-core",
+      "title": "Engine core",
+      "goal": "Display and edit board content in the engine, still without a server.",
+      "exit_criteria": [
+        "10,000 objects at 60 fps in the playground.",
+        "All engine entries of the canvas work orders done; reference images green."
+      ],
+      "exit_gates": [
+        "cpp-unit",
+        "visual",
+        "perf"
+      ],
+      "owner_decision": "pending",
+      "depends_on": [
+        "engine-spike"
+      ]
+    },
+    {
+      "id": "realtime",
+      "title": "Realtime",
+      "goal": "Several people edit one board at the same time without losing data.",
+      "exit_criteria": [
+        "Load test 25 clients p95 <= 150 ms; restart loses no acknowledged change.",
+        "Two offline browsers converge after reconnect."
+      ],
+      "exit_gates": [
+        "crdt-convergence",
+        "load"
+      ],
+      "owner_decision": "pending",
+      "depends_on": [
+        "backend-core",
+        "engine-core"
+      ]
+    },
+    {
+      "id": "web-app",
+      "title": "Web app",
+      "goal": "The product in one piece: web app on SDK, engine and sync.",
+      "exit_criteria": [
+        "Main e2e flows green on a preview environment.",
+        "Every canvas work order done with evidence; design-check and language-check green repo-wide."
+      ],
+      "exit_gates": [
+        "e2e",
+        "design-check",
+        "language-check"
+      ],
+      "owner_decision": "pending",
+      "depends_on": [
+        "realtime"
+      ]
+    },
+    {
+      "id": "value",
+      "title": "Import, export and AI",
+      "goal": "Data in and out, coach, sharing and comments.",
+      "exit_criteria": [
+        "Ten sample boards imported with a per-object checklist; JSON export round-trips.",
+        "Coach budget enforced."
+      ],
+      "exit_gates": [
+        "import-tests",
+        "e2e"
+      ],
+      "owner_decision": "pending",
+      "depends_on": [
+        "web-app"
+      ]
+    },
+    {
+      "id": "hardening",
+      "title": "Hardening and beta",
+      "goal": "Production-ready operations and a closed beta.",
+      "exit_criteria": [
+        "All product targets measured; no open high-severity security findings.",
+        "Two weeks of beta without data loss."
+      ],
+      "exit_gates": [
+        "smoke",
+        "load",
+        "release-dry"
+      ],
+      "owner_decision": "pending",
+      "depends_on": [
+        "value"
+      ]
+    },
+    {
+      "id": "v1",
+      "title": "Public v1",
+      "goal": "First public release 1.0.0.",
+      "exit_criteria": [
+        "Release 1.0.0 built by CI from a tag; smoke checks green on every environment."
+      ],
+      "exit_gates": [
+        "release",
+        "smoke"
+      ],
+      "owner_decision": "pending",
+      "depends_on": [
+        "hardening"
+      ]
+    }
+  ],
+  "packages": [
+    {
+      "path": "packages/contracts",
+      "kind": "package",
+      "may_import": []
+    },
+    {
+      "path": "packages/ui-kit",
+      "kind": "package",
+      "may_import": []
+    },
+    {
+      "path": "packages/engine",
+      "kind": "package",
+      "may_import": [
+        "packages/contracts",
+        "packages/ui-kit"
+      ]
+    },
+    {
+      "path": "packages/crdt",
+      "kind": "package",
+      "may_import": [
+        "packages/contracts"
+      ]
+    },
+    {
+      "path": "packages/editor",
+      "kind": "package",
+      "may_import": [
+        "packages/contracts",
+        "packages/ui-kit"
+      ]
+    },
+    {
+      "path": "packages/sdk",
+      "kind": "package",
+      "may_import": [
+        "packages/contracts"
+      ]
+    },
+    {
+      "path": "packages/test-kit",
+      "kind": "package",
+      "may_import": [
+        "packages/contracts"
+      ]
+    },
+    {
+      "path": "services/platform",
+      "kind": "service",
+      "may_import": [
+        "packages/contracts"
+      ]
+    },
+    {
+      "path": "services/auth",
+      "kind": "service",
+      "may_import": [
+        "packages/contracts"
+      ]
+    },
+    {
+      "path": "services/sync",
+      "kind": "service",
+      "may_import": [
+        "packages/contracts",
+        "packages/crdt"
+      ]
+    },
+    {
+      "path": "services/media",
+      "kind": "service",
+      "may_import": [
+        "packages/contracts"
+      ]
+    },
+    {
+      "path": "services/ai",
+      "kind": "service",
+      "may_import": [
+        "packages/contracts"
+      ]
+    },
+    {
+      "path": "services/worker",
+      "kind": "service",
+      "may_import": [
+        "packages/contracts"
+      ]
+    },
+    {
+      "path": "apps/web",
+      "kind": "app",
+      "may_import": [
+        "packages/contracts",
+        "packages/ui-kit",
+        "packages/editor",
+        "packages/engine",
+        "packages/sdk"
+      ]
+    },
+    {
+      "path": "apps/engine-playground",
+      "kind": "app",
+      "may_import": [
+        "packages/contracts",
+        "packages/ui-kit",
+        "packages/engine",
+        "packages/test-kit"
+      ]
+    },
+    {
+      "path": "tools/import-export",
+      "kind": "tool",
+      "may_import": [
+        "packages/contracts"
+      ]
+    },
+    {
+      "path": "tools/design-check",
+      "kind": "tool",
+      "may_import": []
+    },
+    {
+      "path": "tools/language-check",
+      "kind": "tool",
+      "may_import": []
+    },
+    {
+      "path": "tools/release",
+      "kind": "tool",
+      "may_import": []
+    },
+    {
+      "path": "tools/dev",
+      "kind": "tool",
+      "may_import": []
+    },
+    {
+      "path": "infra",
+      "kind": "infra",
+      "may_import": []
+    }
+  ],
+  "contracts": [],
+  "tasks": [
+    {
+      "id": "P0-02",
+      "title": "Protect main and document repository settings",
+      "goal": "main accepts changes only through pull requests with green CI and one review, and the settings are documented.",
+      "why": "Every later task merges through this protection; without it CI cannot stop a bad merge.",
+      "satisfies": [
+        "D6"
+      ],
+      "status": "pending",
+      "depends_on": [],
+      "complexity": 2,
+      "stage": "foundation",
+      "parallel_group": null,
+      "scope_write": [
+        "docs/runbooks/repository.md"
+      ],
+      "scope_read": [
+        "ARCHITECTURE.md",
+        "AGENTS.md",
+        "STATUS.md",
+        "docs/module-map.md",
+        "docs/quality.md",
+        "docs/owner/canvas-suite-blueprint.md"
+      ],
+      "acceptance": [
+        "A1",
+        "A2",
+        "A3"
+      ],
+      "gates": [
+        "branch-protection"
+      ],
+      "owner": null,
+      "branch": "task/P0-02",
+      "worktree": null,
+      "round": 0,
+      "evidence": [],
+      "scope_write_forbidden": [
+        "reference/"
+      ]
+    },
+    {
+      "id": "P0-03",
+      "title": "Workspace folders and package READMEs",
+      "goal": "Every packages[] folder exists with a README stating its purpose, and the package map lists them.",
+      "why": "All later tasks write inside these folders; check.py requires them.",
+      "satisfies": [
+        "D1"
+      ],
+      "status": "pending",
+      "depends_on": [],
+      "complexity": 3,
+      "stage": "foundation",
+      "parallel_group": null,
+      "scope_write": [
+        "packages/contracts",
+        "packages/ui-kit",
+        "packages/engine",
+        "packages/crdt",
+        "packages/editor",
+        "packages/sdk",
+        "packages/test-kit",
+        "services/platform",
+        "services/auth",
+        "services/sync",
+        "services/media",
+        "services/ai",
+        "services/worker",
+        "apps/web",
+        "apps/engine-playground",
+        "tools/import-export",
+        "tools/design-check",
+        "tools/language-check",
+        "tools/release",
+        "tools/dev",
+        "infra",
+        "tests/",
+        "docs/module-map.md",
+        "docs/monorepo-layout.md"
+      ],
+      "scope_read": [
+        "ARCHITECTURE.md",
+        "AGENTS.md",
+        "STATUS.md",
+        "docs/module-map.md",
+        "docs/quality.md",
+        "docs/monorepo-layout.md",
+        "docs/owner/canvas-suite-blueprint.md"
+      ],
+      "acceptance": [
+        "A1",
+        "A2",
+        "A3"
+      ],
+      "gates": [
+        "board-check"
+      ],
+      "owner": null,
+      "branch": "task/P0-03",
+      "worktree": null,
+      "round": 0,
+      "evidence": [],
+      "scope_write_forbidden": [
+        "reference/"
+      ]
+    },
+    {
+      "id": "P0-04",
+      "title": "Workspaces, build orchestration and pinned versions",
+      "goal": "The root workspace installs reproducibly, builds only changed packages and every tool version is pinned with source.",
+      "why": "Every package task needs working install, lint, typecheck and test commands.",
+      "satisfies": [
+        "D1"
+      ],
+      "status": "pending",
+      "depends_on": [
+        "P0-03"
+      ],
+      "complexity": 5,
+      "stage": "foundation",
+      "parallel_group": null,
+      "scope_write": [
+        "package.json",
+        "package-lock.json",
+        "pnpm-lock.yaml",
+        "pnpm-workspace.yaml",
+        "turbo.json",
+        "nx.json",
+        "tsconfig.base.json",
+        ".nvmrc",
+        ".npmrc",
+        "eslint.config.mjs",
+        "docs/versions.md",
+        "docs/module-map.md",
+        "AGENTS.md"
+      ],
+      "scope_read": [
+        "ARCHITECTURE.md",
+        "AGENTS.md",
+        "STATUS.md",
+        "docs/module-map.md",
+        "docs/quality.md",
+        "docs/gates/node-ts.md"
+      ],
+      "acceptance": [
+        "A1",
+        "A2",
+        "A3",
+        "A4"
+      ],
+      "gates": [
+        "install",
+        "board-check"
+      ],
+      "owner": null,
+      "branch": "task/P0-04",
+      "worktree": null,
+      "round": 0,
+      "evidence": [],
+      "scope_write_forbidden": [
+        "reference/"
+      ]
+    },
+    {
+      "id": "P0-06",
+      "title": "Per-slot dev setup and teardown",
+      "goal": "Each worktree gets its own ports, database and bucket from .polier-slot through tools/dev/setup and teardown.",
+      "why": "Parallel test runs must never collide (AD-9).",
+      "satisfies": [
+        "D2"
+      ],
+      "status": "pending",
+      "depends_on": [
+        "P0-04",
+        "P0-07"
+      ],
+      "complexity": 4,
+      "stage": "foundation",
+      "parallel_group": null,
+      "scope_write": [
+        "tools/dev/"
+      ],
+      "scope_read": [
+        "ARCHITECTURE.md",
+        "AGENTS.md",
+        "STATUS.md",
+        "docs/module-map.md",
+        "docs/quality.md",
+        "docs/owner/canvas-suite-blueprint.md"
+      ],
+      "acceptance": [
+        "A1",
+        "A2",
+        "A3",
+        "A4"
+      ],
+      "gates": [
+        "dev-setup",
+        "board-check"
+      ],
+      "owner": null,
+      "branch": "task/P0-06",
+      "worktree": null,
+      "round": 0,
+      "evidence": [],
+      "package": "tools/dev",
+      "resources": [
+        "ports",
+        "db",
+        "bucket"
+      ],
+      "scope_write_forbidden": [
+        "reference/"
+      ]
+    },
+    {
+      "id": "P0-07",
+      "title": "Local services compose",
+      "goal": "PostgreSQL, S3-compatible storage and a mail catcher start locally with one command.",
+      "why": "Backend, media and auth tasks need these services.",
+      "satisfies": [
+        "D2"
+      ],
+      "status": "pending",
+      "depends_on": [
+        "P0-03"
+      ],
+      "complexity": 3,
+      "stage": "foundation",
+      "parallel_group": null,
+      "scope_write": [
+        "infra/compose/"
+      ],
+      "scope_read": [
+        "ARCHITECTURE.md",
+        "AGENTS.md",
+        "STATUS.md",
+        "docs/module-map.md",
+        "docs/quality.md",
+        "docs/gates/postgres.md"
+      ],
+      "acceptance": [
+        "A1",
+        "A2",
+        "A3"
+      ],
+      "gates": [
+        "compose-config"
+      ],
+      "owner": null,
+      "branch": "task/P0-07",
+      "worktree": null,
+      "round": 0,
+      "evidence": [],
+      "package": "infra",
+      "scope_write_forbidden": [
+        "reference/"
+      ]
+    },
+    {
+      "id": "P0-08",
+      "title": "CI skeleton",
+      "goal": "Every pull request runs scope check, boundaries, board check, lint and typecheck.",
+      "why": "All later gates plug into this pipeline.",
+      "satisfies": [
+        "D6"
+      ],
+      "status": "pending",
+      "depends_on": [
+        "P0-04"
+      ],
+      "complexity": 4,
+      "stage": "foundation",
+      "parallel_group": null,
+      "scope_write": [
+        ".github/workflows/ci.yml"
+      ],
+      "scope_read": [
+        "ARCHITECTURE.md",
+        "AGENTS.md",
+        "STATUS.md",
+        "docs/module-map.md",
+        "docs/quality.md",
+        "docs/gates/node-ts.md"
+      ],
+      "acceptance": [
+        "A1",
+        "A2",
+        "A3",
+        "A4"
+      ],
+      "gates": [
+        "ci-green",
+        "board-check"
+      ],
+      "owner": null,
+      "branch": "task/P0-08",
+      "worktree": null,
+      "round": 0,
+      "evidence": [],
+      "scope_write_forbidden": [
+        "reference/"
+      ]
+    },
+    {
+      "id": "P0-09",
+      "title": "Pinned Polier for agents and CI",
+      "goal": "Local sessions and CI use Polier at exactly the board's generator_version.",
+      "why": "Gate records and guards must come from the same tool version everywhere.",
+      "satisfies": [
+        "D2"
+      ],
+      "status": "pending",
+      "depends_on": [
+        "P0-08"
+      ],
+      "complexity": 2,
+      "stage": "foundation",
+      "parallel_group": null,
+      "scope_write": [
+        "tools/polier.sh",
+        ".github/workflows/ci.yml",
+        "AGENTS.md"
+      ],
+      "scope_read": [
+        "ARCHITECTURE.md",
+        "AGENTS.md",
+        "STATUS.md",
+        "docs/module-map.md",
+        "docs/quality.md"
+      ],
+      "acceptance": [
+        "A1",
+        "A2",
+        "A3"
+      ],
+      "gates": [
+        "polier-version"
+      ],
+      "owner": null,
+      "branch": "task/P0-09",
+      "worktree": null,
+      "round": 0,
+      "evidence": [],
+      "scope_write_forbidden": [
+        "reference/"
+      ]
+    },
+    {
+      "id": "P0-10",
+      "title": "Adapt design rules to this project",
+      "goal": "docs/design-rules.md is created from reference/docs/design-rules.md and applies to web app and engine, with values from packages/ui-kit/tokens.json.",
+      "why": "Every UI and engine task cites these rules.",
+      "satisfies": [
+        "D3"
+      ],
+      "status": "pending",
+      "depends_on": [],
+      "complexity": 3,
+      "stage": "foundation",
+      "parallel_group": "docs",
+      "scope_write": [
+        "docs/design-rules.md"
+      ],
+      "scope_read": [
+        "ARCHITECTURE.md",
+        "AGENTS.md",
+        "STATUS.md",
+        "docs/module-map.md",
+        "docs/quality.md",
+        "docs/owner/canvas-suite-blueprint.md",
+        "reference/docs/design-rules.md"
+      ],
+      "acceptance": [
+        "A1",
+        "A2",
+        "A3"
+      ],
+      "gates": [
+        "board-check"
+      ],
+      "owner": null,
+      "branch": "task/P0-10",
+      "worktree": null,
+      "round": 0,
+      "evidence": [],
+      "scope_write_forbidden": [
+        "reference/"
+      ]
+    },
+    {
+      "id": "P0-11",
+      "title": "Canvas acceptance catalogue",
+      "goal": "The canvas work orders become a catalogue with package, phase and evidence per entry.",
+      "why": "Phase gates for engine and web check against this catalogue.",
+      "satisfies": [
+        "D3"
+      ],
+      "status": "pending",
+      "depends_on": [
+        "P0-10"
+      ],
+      "complexity": 3,
+      "stage": "foundation",
+      "parallel_group": null,
+      "scope_write": [
+        "docs/canvas-acceptance.md"
+      ],
+      "scope_read": [
+        "ARCHITECTURE.md",
+        "AGENTS.md",
+        "STATUS.md",
+        "docs/module-map.md",
+        "docs/quality.md",
+        "reference/docs/canvas-polish.md",
+        "docs/design-rules.md",
+        "docs/owner/canvas-suite-blueprint.md"
+      ],
+      "acceptance": [
+        "A1",
+        "A2",
+        "A3"
+      ],
+      "gates": [
+        "board-check"
+      ],
+      "owner": null,
+      "branch": "task/P0-11",
+      "worktree": null,
+      "round": 0,
+      "evidence": [],
+      "scope_write_forbidden": [
+        "reference/"
+      ]
+    },
+    {
+      "id": "P0-12",
+      "title": "Design tokens and icons in ui-kit",
+      "goal": "packages/ui-kit/tokens.json generates CSS custom properties and a C++ header; the toolbar icons are SVG files.",
+      "why": "AD-7: one source of visual values for web and engine.",
+      "satisfies": [
+        "D3"
+      ],
+      "status": "pending",
+      "depends_on": [
+        "P0-04",
+        "P0-10"
+      ],
+      "complexity": 5,
+      "stage": "foundation",
+      "parallel_group": null,
+      "scope_write": [
+        "packages/ui-kit/"
+      ],
+      "scope_read": [
+        "ARCHITECTURE.md",
+        "AGENTS.md",
+        "STATUS.md",
+        "docs/module-map.md",
+        "docs/quality.md",
+        "reference/src/app/globals.css",
+        "reference/src/ui/canvas/toolbar-icons.tsx",
+        "docs/design-rules.md"
+      ],
+      "acceptance": [
+        "A1",
+        "A2",
+        "A3",
+        "A4"
+      ],
+      "gates": [
+        "tokens-codegen",
+        "unit"
+      ],
+      "owner": null,
+      "branch": "task/P0-12",
+      "worktree": null,
+      "round": 0,
+      "evidence": [],
+      "package": "packages/ui-kit",
+      "scope_write_forbidden": [
+        "reference/"
+      ]
+    },
+    {
+      "id": "P0-13",
+      "title": "design-check gate",
+      "goal": "tools/design-check rejects raw colours, off-grid spacing, z-index outside the layer tokens and missing UI evidence.",
+      "why": "Design rules must be enforced by a tool, not by memory.",
+      "satisfies": [
+        "D3"
+      ],
+      "status": "pending",
+      "depends_on": [
+        "P0-12"
+      ],
+      "complexity": 5,
+      "stage": "foundation",
+      "parallel_group": null,
+      "scope_write": [
+        "tools/design-check/",
+        ".github/workflows/ci.yml"
+      ],
+      "scope_read": [
+        "ARCHITECTURE.md",
+        "AGENTS.md",
+        "STATUS.md",
+        "docs/module-map.md",
+        "docs/quality.md",
+        "docs/design-rules.md"
+      ],
+      "acceptance": [
+        "A1",
+        "A2",
+        "A3",
+        "A4"
+      ],
+      "gates": [
+        "design-check",
+        "unit"
+      ],
+      "owner": null,
+      "branch": "task/P0-13",
+      "worktree": null,
+      "round": 0,
+      "evidence": [],
+      "scope_write_forbidden": [
+        "reference/"
+      ]
+    },
+    {
+      "id": "P0-14",
+      "title": "Change entries and changelog gate",
+      "goal": "Each task adds a .changes entry; CI rejects code changes without one; CHANGELOG.md starts at 0.0.1.",
+      "why": "Parallel tasks must never collide on CHANGELOG.md.",
+      "satisfies": [
+        "D5"
+      ],
+      "status": "pending",
+      "depends_on": [
+        "P0-08"
+      ],
+      "complexity": 3,
+      "stage": "foundation",
+      "parallel_group": null,
+      "scope_write": [
+        "tools/release/",
+        ".changes/",
+        "CHANGELOG.md",
+        ".github/workflows/ci.yml"
+      ],
+      "scope_read": [
+        "ARCHITECTURE.md",
+        "AGENTS.md",
+        "STATUS.md",
+        "docs/module-map.md",
+        "docs/quality.md",
+        "docs/owner/canvas-suite-blueprint.md"
+      ],
+      "acceptance": [
+        "A1",
+        "A2",
+        "A3"
+      ],
+      "gates": [
+        "changelog-entry",
+        "unit"
+      ],
+      "owner": null,
+      "branch": "task/P0-14",
+      "worktree": null,
+      "round": 0,
+      "evidence": [],
+      "scope_write_forbidden": [
+        "reference/"
+      ]
+    },
+    {
+      "id": "P0-15",
+      "title": "Release command and tag-based CI release",
+      "goal": "npm run release creates a release PR; CI tags, builds, deploys staging and waits for production approval.",
+      "why": "AD-10: only clean tagged main goes live.",
+      "satisfies": [
+        "D5"
+      ],
+      "status": "pending",
+      "depends_on": [
+        "P0-14"
+      ],
+      "complexity": 6,
+      "stage": "foundation",
+      "parallel_group": null,
+      "scope_write": [
+        "tools/release/",
+        ".github/workflows/release.yml",
+        "docs/releasing.md",
+        "docs/environments.md",
+        "package.json"
+      ],
+      "scope_read": [
+        "ARCHITECTURE.md",
+        "AGENTS.md",
+        "STATUS.md",
+        "docs/module-map.md",
+        "docs/quality.md",
+        "docs/owner/canvas-suite-blueprint.md"
+      ],
+      "acceptance": [
+        "A1",
+        "A2",
+        "A3",
+        "A4"
+      ],
+      "gates": [
+        "release-dry",
+        "unit"
+      ],
+      "owner": null,
+      "branch": "task/P0-15",
+      "worktree": null,
+      "round": 0,
+      "evidence": [],
+      "scope_write_forbidden": [
+        "reference/"
+      ]
+    },
+    {
+      "id": "P0-16",
+      "title": "Dependency updates and Polier update check",
+      "goal": "Weekly grouped dependency update pull requests run the normal CI; a check reports Polier drift.",
+      "why": "Updates must flow through the same gates as code.",
+      "satisfies": [
+        "D5"
+      ],
+      "status": "pending",
+      "depends_on": [
+        "P0-15"
+      ],
+      "complexity": 3,
+      "stage": "foundation",
+      "parallel_group": null,
+      "scope_write": [
+        ".github/dependabot.yml",
+        ".github/workflows/",
+        "docs/versions.md"
+      ],
+      "scope_read": [
+        "ARCHITECTURE.md",
+        "AGENTS.md",
+        "STATUS.md",
+        "docs/module-map.md",
+        "docs/quality.md"
+      ],
+      "acceptance": [
+        "A1",
+        "A2",
+        "A3"
+      ],
+      "gates": [
+        "board-check",
+        "ci-green"
+      ],
+      "owner": null,
+      "branch": "task/P0-16",
+      "worktree": null,
+      "round": 0,
+      "evidence": [],
+      "scope_write_forbidden": [
+        "reference/"
+      ]
+    },
+    {
+      "id": "P0-17",
+      "title": "RELEASING.md and release 0.0.1",
+      "goal": "RELEASING.md describes the release flow and release 0.0.1 of the empty scaffold ran through CI.",
+      "why": "Proves the release path before product code exists.",
+      "satisfies": [
+        "D5"
+      ],
+      "status": "pending",
+      "depends_on": [
+        "P0-15"
+      ],
+      "complexity": 3,
+      "stage": "foundation",
+      "parallel_group": null,
+      "scope_write": [
+        "RELEASING.md",
+        "CHANGELOG.md"
+      ],
+      "scope_read": [
+        "ARCHITECTURE.md",
+        "AGENTS.md",
+        "STATUS.md",
+        "docs/module-map.md",
+        "docs/quality.md",
+        "docs/releasing.md",
+        "docs/owner/canvas-suite-blueprint.md"
+      ],
+      "acceptance": [
+        "A1",
+        "A2",
+        "A3"
+      ],
+      "gates": [
+        "release-dry",
+        "smoke"
+      ],
+      "owner": null,
+      "branch": "task/P0-17",
+      "worktree": null,
+      "round": 0,
+      "evidence": [],
+      "scope_write_forbidden": [
+        "reference/"
+      ]
+    },
+    {
+      "id": "P0-18",
+      "title": "i18n scaffold and language-check gate",
+      "goal": "German and English message files with English keys exist and tools/language-check rejects German in code and UI text outside them.",
+      "why": "AD-8: the site stays translatable without code changes.",
+      "satisfies": [
+        "D4"
+      ],
+      "status": "pending",
+      "depends_on": [
+        "P0-04"
+      ],
+      "complexity": 6,
+      "stage": "foundation",
+      "parallel_group": null,
+      "scope_write": [
+        "tools/language-check/",
+        "apps/web/messages/",
+        "docs/i18n/",
+        ".github/workflows/ci.yml"
+      ],
+      "scope_read": [
+        "ARCHITECTURE.md",
+        "AGENTS.md",
+        "STATUS.md",
+        "docs/module-map.md",
+        "docs/quality.md",
+        "reference/src/ui/strings.de.ts",
+        "docs/owner/canvas-suite-blueprint.md"
+      ],
+      "acceptance": [
+        "A1",
+        "A2",
+        "A3",
+        "A4"
+      ],
+      "gates": [
+        "language-check",
+        "unit"
+      ],
+      "owner": null,
+      "branch": "task/P0-18",
+      "worktree": null,
+      "round": 0,
+      "evidence": [],
+      "scope_write_forbidden": [
+        "reference/"
+      ]
+    }
+  ],
+  "decisions": [
+    {
+      "date": "2026-10-25",
+      "id": "ADR-0001",
+      "title": "Monorepo with packages, services, apps, tools and infra",
+      "file": "docs/adr/ADR-0001-monorepo.md"
+    }
+  ],
+  "open_questions": [
+    {
+      "id": "Q1",
+      "question": "Product name (working title: Project air) (needed before stage: v1).",
+      "status": "open"
+    },
+    {
+      "id": "Q2",
+      "question": "Package manager and build orchestration for the workspace.",
+      "status": "open",
+      "blocks": [
+        "P0-04"
+      ]
+    },
+    {
+      "id": "Q3",
+      "question": "Hosting provider and country (CH/EU).",
+      "status": "open",
+      "blocks": [
+        "P0-15"
+      ]
+    },
+    {
+      "id": "Q4",
+      "question": "CRDT: open-source library behind an own interface (proposal) or own algorithm (needed before stage: realtime).",
+      "status": "open"
+    },
+    {
+      "id": "Q5",
+      "question": "Auth: build it ourselves (proposal) or a self-hosted open-source server (needed before stage: backend-core).",
+      "status": "open"
+    },
+    {
+      "id": "Q6",
+      "question": "Reference hardware for the 60 fps target (needed before stage: engine-spike).",
+      "status": "open"
+    },
+    {
+      "id": "Q7",
+      "question": "Who builds the engine: a person with C++/graphics experience or agents under close guidance (needed before stage: engine-spike).",
+      "status": "open"
+    },
+    {
+      "id": "Q8",
+      "question": "Which import formats, after a legal check of their terms (needed before stage: value).",
+      "status": "open"
+    },
+    {
+      "id": "Q9",
+      "question": "Pricing model for v1 (needed before stage: v1).",
+      "status": "open"
+    },
+    {
+      "id": "Q10",
+      "question": "Version scheme: 0.0.1 plus letter entries (proposal) or four-part.",
+      "status": "open",
+      "blocks": [
+        "P0-14"
+      ]
+    },
+    {
+      "id": "Q11",
+      "question": "AI-written release notes workflow: yes or no.",
+      "status": "open",
+      "blocks": [
+        "P0-16"
+      ]
+    },
+    {
+      "id": "Q12",
+      "question": "i18n library or own thin layer on Intl.",
+      "status": "open",
+      "blocks": [
+        "P0-18"
+      ]
+    },
+    {
+      "id": "Q13",
+      "question": "German spelling and locale.",
+      "status": "answered",
+      "answer": "Always ss, never ß; one German file with locale de-DE; no separate de-CH (owner, 2026-10-25)."
+    },
+    {
+      "id": "Q14",
+      "question": "English visible at launch or prepared only; who translates further languages (needed before stage: v1).",
+      "status": "open"
+    },
+    {
+      "id": "Q15",
+      "question": "Canvas collisions: clear layers only (proposal) or gentle nudge (needed before stage: engine-core).",
+      "status": "open"
+    },
+    {
+      "id": "Q16",
+      "question": "Trackpad default: two fingers pan, pinch zooms (proposal) or scroll zooms (needed before stage: engine-core).",
+      "status": "open"
+    }
+  ],
+  "budgets": {
+    "status": {
+      "limit": 1600,
+      "reason": "Ten stages with exit criteria and sixteen open owner questions are listed in STATUS.md during stage foundation; shrinks as questions are answered."
+    }
+  }
+}

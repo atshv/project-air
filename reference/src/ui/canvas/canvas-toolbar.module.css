@@ -1,0 +1,109 @@
+/* Floating icon toolbar at the top of the canvas (Photoshop-style tool strip). */
+
+.bar {
+  display: flex;
+  align-items: center;
+  gap: 0.15rem;
+  padding: 0.3rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: rgba(32, 36, 32, 0.92);
+  box-shadow: var(--card-shadow);
+  backdrop-filter: blur(8px);
+}
+
+.group {
+  display: flex;
+  align-items: center;
+  gap: 0.15rem;
+}
+
+.divider {
+  width: 1px;
+  height: 1.5rem;
+  margin: 0 0.3rem;
+  background: var(--border-strong);
+}
+
+.tool {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  transition:
+    background-color 120ms ease,
+    color 120ms ease;
+}
+
+.tool:hover:not(:disabled) {
+  background: var(--faint);
+  color: var(--fg);
+}
+
+.tool:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.tool:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.primary {
+  background: var(--accent-soft);
+  border-color: var(--accent-line);
+  color: var(--accent);
+}
+
+.primary:hover:not(:disabled) {
+  background: rgba(143, 191, 175, 0.24);
+  color: var(--accent);
+}
+
+/* Tooltip below the button, shown on hover and keyboard focus. */
+.tool::after {
+  content: attr(data-label);
+  position: absolute;
+  top: calc(100% + 0.45rem);
+  left: 50%;
+  transform: translate(-50%, -2px);
+  padding: 0.25rem 0.55rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--fg);
+  font-size: 0.78rem;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition:
+    opacity 100ms ease,
+    transform 100ms ease;
+}
+
+.tool:hover::after,
+.tool:focus-visible::after {
+  opacity: 1;
+  transform: translate(-50%, 0);
+  transition-delay: 250ms;
+}
+
+@media (max-width: 640px) {
+  .bar {
+    max-width: calc(100vw - 3rem);
+    overflow-x: auto;
+  }
+
+  .tool::after {
+    display: none;
+  }
+}
