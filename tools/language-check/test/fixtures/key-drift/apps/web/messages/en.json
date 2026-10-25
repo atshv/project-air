@@ -1,0 +1,24 @@
+{
+  "canvas": {
+    "empty": "This board is still empty.",
+    "selection": {
+      "count": "{count, plural, one {# element selected} other {# elements selected}}"
+    },
+    "toolbar": {
+      "addNote": "Add note"
+    },
+    "zoom": {
+      "in": "Zoom in"
+    }
+  },
+  "errors": {
+    "generic": "Something went wrong. Please try again."
+  },
+  "note": {
+    "placeholder": "Start writing …"
+  },
+  "panel": {
+    "close": "Close",
+    "label": "Note"
+  }
+}

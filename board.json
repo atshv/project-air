@@ -1160,7 +1160,7 @@
       "satisfies": [
         "D4"
       ],
-      "status": "in_progress",
+      "status": "done",
       "depends_on": [
         "P0-04"
       ],
@@ -1193,11 +1193,20 @@
       ],
       "owner": null,
       "branch": "task/P0-18",
-      "worktree": "../Project air-P0-18",
+      "worktree": null,
       "round": 0,
-      "evidence": [],
+      "evidence": [
+        "reviews/evidence/P0-18-board-check-20261025T095343Z.json",
+        "reviews/evidence/P0-18-language-check-20261025T095346Z.json",
+        "reviews/evidence/P0-18-unit-20261025T095348Z.json"
+      ],
       "scope_write_forbidden": [
         "reference/"
+      ],
+      "handoff": [
+        "Closed P0-18: de/en/en-XA message files with English ICU keys, docs/i18n glossary and German style (ss, de-DE).",
+        "tools/language-check (builtins only) enforces key parity, ICU, pseudo consistency, ss and German-in-code; 9 unit tests.",
+        "language-check and unit gates pass; web-app stage adds the ICU library and real UI text on these files."
       ]
     },
     {

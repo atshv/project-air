@@ -10,7 +10,7 @@
 
 - State: waiting for the owner decision
 - Owner decision: `pending`
-- Exit gates: `board-check`, `install`, `boundaries`, `dev-setup`, `compose-config`, `tokens-codegen`, `design-check` (missing record), `language-check` (missing record), `changelog-entry` (missing record)
+- Exit gates: `board-check`, `install`, `boundaries`, `dev-setup`, `compose-config`, `tokens-codegen`, `design-check` (missing record), `language-check`, `changelog-entry` (missing record)
 - Exit criteria: Every packages[] folder exists with a README and an ARCHITECTURE.md; package map and versions are filled in.; A fresh clone installs reproducibly with the committed lockfile; root lint, typecheck, test and build pass.; Two worktrees run install, lint, typecheck and tests side by side without port or database collision; tools/dev/setup and teardown create and remove the slot database and bucket and refuse slot 0.; design-check, language-check, changelog-entry and boundaries reject a violating change locally; every code change carries a .changes entry.; CI, branch protection, hosting and releases are deferred to the remote stage after hardening (ADR-0003).; A runnable design preview page exists with desktop and mobile screenshots (P0-19).
 - Tasks: P0-03, P0-04, P0-06, P0-07, P0-10, P0-11, P0-12, P0-13, P0-14, P0-18, P0-19
 
@@ -53,7 +53,7 @@
 
 - State: waiting for the owner decision
 - Owner decision: `pending`
-- Exit gates: `e2e` (missing record), `design-check` (missing record), `language-check` (missing record)
+- Exit gates: `e2e` (missing record), `design-check` (missing record), `language-check`
 - Exit criteria: Main e2e flows green on a preview environment.; Every canvas work order done with evidence; design-check and language-check green repo-wide.
 
 ### Stage 8 — `value` Import, export and AI
@@ -131,12 +131,12 @@
 - [x] `P0-10` Adapt design rules to this project — status: `done` — owner: —
 - [x] `P0-11` Canvas acceptance catalogue — status: `done` — owner: —
 - [x] `P0-12` Design tokens and icons in ui-kit — status: `done` — owner: —
+- [x] `P0-18` i18n scaffold and language-check gate — status: `done` — owner: —
 - [x] `P0-19` Design preview page — status: `done` — owner: —
 
 ## In progress
 
 - [ ] `P0-13` design-check gate — status: `in_progress` — owner: —
-- [ ] `P0-18` i18n scaffold and language-check gate — status: `in_progress` — owner: —
 
 ## Blocked / failed
 

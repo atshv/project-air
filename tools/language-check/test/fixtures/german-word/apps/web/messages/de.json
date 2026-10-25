@@ -1,0 +1,25 @@
+{
+  "canvas": {
+    "empty": "Dieses Board ist noch leer.",
+    "selection": {
+      "count": "{count, plural, one {# Element ausgewählt} other {# Elemente ausgewählt}}"
+    },
+    "toolbar": {
+      "addNote": "Notiz hinzufügen"
+    },
+    "zoom": {
+      "in": "Vergrössern"
+    }
+  },
+  "errors": {
+    "generic": "Etwas ist schiefgelaufen. Bitte erneut versuchen."
+  },
+  "note": {
+    "placeholder": "Schreib los …",
+    "untitled": "Ohne Titel"
+  },
+  "panel": {
+    "close": "Schliessen",
+    "label": "Notiz"
+  }
+}

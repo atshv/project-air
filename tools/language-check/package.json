@@ -1,0 +1,13 @@
+{
+  "name": "@project-air/language-check",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Dependency-free language and translation gate: English-key parity, ICU checks, deterministic pseudo-locale, German-in-code detection.",
+  "scripts": {
+    "test": "node --test test/*.test.mjs"
+  },
+  "engines": {
+    "node": ">=24.22.1"
+  }
+}

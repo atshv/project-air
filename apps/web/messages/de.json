@@ -1,0 +1,59 @@
+{
+  "canvas": {
+    "empty": "Dieses Board ist noch leer.",
+    "emptyHint": "Füge über „Notiz hinzufügen“ deine erste Karte hinzu.",
+    "save": {
+      "failed": "Nicht gespeichert – erneut versuchen",
+      "saved": "Gespeichert",
+      "saving": "Speichert …"
+    },
+    "selection": {
+      "count": "{count, plural, one {# Element ausgewählt} other {# Elemente ausgewählt}}"
+    },
+    "toolbar": {
+      "addChecklist": "Checkliste",
+      "addColumns": "Spalten",
+      "addFile": "Datei",
+      "addImage": "Bild",
+      "addNote": "Notiz hinzufügen",
+      "addPalette": "Palette",
+      "addSource": "Quelle",
+      "addTable": "Tabelle",
+      "addTimeline": "Zeitstrahl",
+      "addZone": "Zone",
+      "connect": "Verbinden",
+      "label": "Werkzeuge",
+      "select": "Auswählen"
+    },
+    "zoom": {
+      "fit": "Alles anzeigen",
+      "in": "Vergrössern",
+      "label": "Ansicht steuern",
+      "out": "Verkleinern"
+    }
+  },
+  "errors": {
+    "boardNotFound": "Dieses Board gibt es nicht oder es gehört nicht zu deinem Konto.",
+    "createFailed": "Die Karte konnte nicht erstellt werden. Bitte erneut versuchen.",
+    "generic": "Etwas ist schiefgelaufen. Bitte erneut versuchen.",
+    "invalidPosition": "Die Position ist ungültig.",
+    "moveFailed": "Die Position konnte nicht gespeichert werden. Bitte erneut versuchen.",
+    "noteNotFound": "Die Notiz wurde nicht gefunden.",
+    "notAuthorized": "Bitte melde dich erneut an.",
+    "removeFailed": "Die Karte konnte nicht entfernt werden. Bitte erneut versuchen.",
+    "saveFailed": "Speichern fehlgeschlagen. Bitte erneut versuchen."
+  },
+  "note": {
+    "editorLabel": "Notizinhalt",
+    "newTitle": "Neue Notiz",
+    "placeholder": "Schreib los …",
+    "untitled": "Ohne Titel"
+  },
+  "panel": {
+    "addToBoard": "Auf ein anderes Board legen",
+    "backlinks": "Backlinks",
+    "close": "Schliessen",
+    "eyebrow": "Notiz",
+    "label": "Notiz"
+  }
+}

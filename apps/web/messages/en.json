@@ -1,0 +1,59 @@
+{
+  "canvas": {
+    "empty": "This board is still empty.",
+    "emptyHint": "Add your first card with “Add note”.",
+    "save": {
+      "failed": "Not saved – try again",
+      "saved": "Saved",
+      "saving": "Saving …"
+    },
+    "selection": {
+      "count": "{count, plural, one {# element selected} other {# elements selected}}"
+    },
+    "toolbar": {
+      "addChecklist": "Checklist",
+      "addColumns": "Columns",
+      "addFile": "File",
+      "addImage": "Image",
+      "addNote": "Add note",
+      "addPalette": "Palette",
+      "addSource": "Source",
+      "addTable": "Table",
+      "addTimeline": "Timeline",
+      "addZone": "Zone",
+      "connect": "Connect",
+      "label": "Tools",
+      "select": "Select"
+    },
+    "zoom": {
+      "fit": "Show all",
+      "in": "Zoom in",
+      "label": "View controls",
+      "out": "Zoom out"
+    }
+  },
+  "errors": {
+    "boardNotFound": "This board does not exist or does not belong to your account.",
+    "createFailed": "The card could not be created. Please try again.",
+    "generic": "Something went wrong. Please try again.",
+    "invalidPosition": "The position is invalid.",
+    "moveFailed": "The position could not be saved. Please try again.",
+    "noteNotFound": "The note was not found.",
+    "notAuthorized": "Please sign in again.",
+    "removeFailed": "The card could not be removed. Please try again.",
+    "saveFailed": "Saving failed. Please try again."
+  },
+  "note": {
+    "editorLabel": "Note content",
+    "newTitle": "New note",
+    "placeholder": "Start writing …",
+    "untitled": "Untitled"
+  },
+  "panel": {
+    "addToBoard": "Move to another board",
+    "backlinks": "Backlinks",
+    "close": "Close",
+    "eyebrow": "Note",
+    "label": "Note"
+  }
+}

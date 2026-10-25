@@ -1,0 +1,34 @@
+$ pnpm --filter ./tools/language-check test
+[exit 0]
+
+✔ clean fixture passes with exit 0 and no findings (78.829833ms)
+✔ key drift is reported per key with file, line and rule (77.966667ms)
+✔ broken ICU is reported with the message key (79.313792ms)
+✔ the German sharp-s character in code is reported (75.600333ms)
+✔ a German word in a user-facing string is reported (78.014625ms)
+✔ a drifting pseudo-locale is reported per key (76.506917ms)
+✔ --write-pseudo repairs en-XA.json and is deterministic on a second run (235.802667ms)
+✔ a missing root is a configuration error with exit 2 (67.753541ms)
+✔ the repository itself passes (122.315625ms)
+ℹ tests 9
+ℹ suites 0
+ℹ pass 9
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 977.03325
+✓ Lockfile passes supply-chain policies (verified 1h ago)
+Lockfile is up to date, resolution step is skipped
+Packages: +97
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Progress: resolved 97, reused 97, downloaded 0, added 97, done
+
+devDependencies:
++ eslint 10.13.0
++ turbo 2.11.10
++ typescript 5.9.3
++ typescript-eslint 8.72.0
+
+Done in 172ms using pnpm v12.14.0
+$ node --test test/*.test.mjs

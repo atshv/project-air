@@ -4,33 +4,57 @@
 
 ## Purpose
 
-The language and translation gate. It rejects German in code, user-visible text outside the message files and the German sharp-s character (which must be `ss`), and it checks that German and English message files share the same English keys. It is the `language-check` gate that enforces `AD-8` for `apps/web`, `services/auth` and `services/ai`.
+The dependency-free Node.js ESM gate for language and translation. It enforces `AD-8`: UI text
+comes only from the message files, German text stays out of code, German uses `ss` and the locale
+files never drift apart.
+
+## Contents
+
+- `index.mjs` — CLI and checks (`node tools/language-check/index.mjs [root] [--write-pseudo]`).
+- `german-words.json` — small documented German word list used by the code check.
+- `test/` — unit tests and fixtures with deliberate violations.
 
 ## Inputs
 
-- Source files and the English-keyed message files.
-- The glossary and style rules in `docs/i18n/`.
+- `apps/web/messages/de.json`, `en.json`, `en-XA.json`.
+- `docs/i18n/*.md`.
+- Code under `apps/`, `packages/editor/`, `packages/ui-kit/` and `tools/` (outside
+  `apps/web/messages/`).
 
 ## Outputs
 
-- Findings with file and line for every violation.
-- The exit code consumed as the `language-check` gate.
+- Findings `file:line: rule: message`, deterministic and sorted.
+- Exit `0` clean, `1` findings, `2` usage or configuration error.
+- With `--write-pseudo`, a regenerated `en-XA.json` (sorted keys, two-space indent, no diff on a
+  second run).
+
+## Checks
+
+Key parity and English `lowerCamelCase` keys; ICU syntax, required plural/select branches and
+placeholder parity; deterministic pseudo-locale of `de.json`; the German sharp-s character in
+messages and i18n docs; German words and umlauts in user-facing string literals in code.
 
 ## Invariants
 
-- `AD-3` — Cross-package interfaces are JSON Schema contracts with fixtures and SemVer; a change updates every dependant in the same task.
-- `AD-9` — Ports, databases and buckets come only from `.polier-slot`; shared resources run through exclusive gates.
+- `AD-8` — user-visible text comes only from translation files with English keys.
+- `AD-3` — contracts stay the source of cross-package truth; this tool reads files, it does not
+  define messages for other packages.
+- Node.js builtins only; no dependency, no network, no clock-dependent output.
 
 ## Allowed imports
 
-None. `board.json` -> `packages[]` -> `may_import` is empty, so this package imports no other workspace package.
+None (`board.json` -> `packages[]` -> `may_import` is empty).
 
 ## Commands
 
-Install, build, lint, typecheck and test: **set by P0-04**, the workspace task. This package defines no command before the workspace exists; the task that adds code expands this section.
-
+- Gate: `node tools/language-check/index.mjs .`
+- Test: `pnpm --filter ./tools/language-check test` or
+  `node --test tools/language-check/test/*.test.mjs`
+- Lint: no `lint` script yet; the tool has no dependencies and the root ESLint setup does not
+  cover `.mjs` in this stage (P0-04 defines the workspace lint).
 
 ## References
 
 - Root architecture and the `AD-1` … `AD-10` table: [ARCHITECTURE.md](../../ARCHITECTURE.md)
 - Package map: [docs/module-map.md](../../docs/module-map.md)
+- Message rules: [README.md](README.md) · [apps/web/messages/README.md](../../apps/web/messages/README.md)
