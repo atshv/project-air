@@ -120,10 +120,7 @@
 
 ## Ready now
 
-- `P3-04` Platform API routes and api-tests
-  - P3-03: Closed P3-03: Ory Kratos v26.2.0 in compose (identity profile, migrate one-shot, localhost public/admin, Mailpit courier, env secrets) with identity schema; flows live; 56 auth tests.
-  - P3-03: services/auth: GET /session via whoami (401 AUTH_REQUIRED, 503 INTERNAL), POST /internal/invitations Bearer-protected (409 CONFLICT), HMAC test-session only non-production; flat error envelope.
-  - P3-03: Review pass, 8 minors (fallback secrets + slot-1 browser URLs in kratos.yml, error-code mappings, 24h sessions vs ADR-0007, admin-API boundary) - documented follow-ups for P3-04/hardening.
+- none
 
 ## Done
 
@@ -164,7 +161,7 @@
 
 ## In progress
 
-- none
+- [ ] `P3-04` Platform API routes and api-tests — status: `in_progress` — owner: —
 
 ## Blocked / failed
 
@@ -176,8 +173,14 @@
 - [ ] `P0-15` Release command and tag-based CI release — status: `pending` — owner: —
 - [ ] `P0-16` Dependency updates and Polier update check — status: `pending` — owner: —
 - [ ] `P0-17` RELEASING.md and release 0.0.1 — status: `pending` — owner: —
-- [ ] `P3-04` Platform API routes and api-tests — status: `pending` — owner: —
 - [ ] `P3-05` SDK, RLS tests and backend acceptance — status: `pending` — owner: —
+
+<!-- polier:claims -->
+## Claims
+
+- `P3-04` in progress by dsh since 2026-10-25T18:20:05+00:00 — worktree: /Users/rasulatashev/Desktop/KI Projekte/Project air-P3-04 · slot 1
+
+<!-- /polier:claims -->
 
 ## Decisions
 

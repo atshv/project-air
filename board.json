@@ -2623,7 +2623,7 @@
       ]
     },
     {
-      "status": "pending",
+      "status": "in_progress",
       "stage": "backend-core",
       "parallel_group": null,
       "owner": null,
@@ -2675,7 +2675,7 @@
         "api-tests"
       ],
       "branch": "task/P3-04",
-      "worktree": null
+      "worktree": "../Project air-P3-04"
     },
     {
       "status": "pending",
