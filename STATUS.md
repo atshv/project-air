@@ -121,10 +121,6 @@
 
 ## Ready now
 
-- `P4-03` Engine-core perf gate and L01 basis
-  - P4-02: Closed P4-02: deterministic test-kit scenes (500 cards/50 zones/144 blocks, 10k stress), interactive playground with pan/zoom, HUD, ready hook; benchmark mode preserved.
-  - P4-02: Screenshots 1440x900/390x844 + serve/capture log (HTTP 200, SwiftShader capture); test-kit suite 12/12; four gates green after the owner-approved design-check test fix 32c8f28.
-  - P4-02: Two review rounds; minors fixed (serve-log consistency, per-zone block assertions). Deviation: Node v26.12.1 vs the .nvmrc pin.
 - `P4-04` Visual gate with reference images
   - P4-02: Closed P4-02: deterministic test-kit scenes (500 cards/50 zones/144 blocks, 10k stress), interactive playground with pan/zoom, HUD, ready hook; benchmark mode preserved.
   - P4-02: Screenshots 1440x900/390x844 + serve/capture log (HTTP 200, SwiftShader capture); test-kit suite 12/12; four gates green after the owner-approved design-check test fix 32c8f28.
@@ -183,7 +179,7 @@
 
 ## In progress
 
-- none
+- [ ] `P4-03` Engine-core perf gate and L01 basis — status: `in_progress` — owner: lead
 
 ## Blocked / failed
 
@@ -195,7 +191,6 @@
 - [ ] `P0-15` Release command and tag-based CI release — status: `pending` — owner: —
 - [ ] `P0-16` Dependency updates and Polier update check — status: `pending` — owner: —
 - [ ] `P0-17` RELEASING.md and release 0.0.1 — status: `pending` — owner: —
-- [ ] `P4-03` Engine-core perf gate and L01 basis — status: `pending` — owner: —
 - [ ] `P4-04` Visual gate with reference images — status: `pending` — owner: —
 - [ ] `P4-05` Gesture-to-operation seam and undo history core — status: `pending` — owner: —
 - [ ] `P4-06` Layers and draw order (L13) — status: `pending` — owner: —
@@ -221,6 +216,13 @@
 - [ ] `P4-26` Zones as containers II: platform migration and containment (L08) — status: `pending` — owner: —
 - [ ] `P4-27` Zones as containers II: engine membership and zone move (L08) — status: `pending` — owner: —
 - [ ] `P4-28` L01 final proof, two-backend reference images and stage showcase — status: `pending` — owner: —
+
+<!-- polier:claims -->
+## Claims
+
+- `P4-03` in progress by dsh since 2026-10-26T06:00:41+00:00 — worktree: /private/tmp/air-P4-03 · slot 1
+
+<!-- /polier:claims -->
 
 ## Decisions
 
