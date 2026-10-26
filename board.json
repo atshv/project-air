@@ -2903,7 +2903,7 @@
       "satisfies": [
         "D10"
       ],
-      "status": "in_progress",
+      "status": "done",
       "depends_on": [
         "P4-01"
       ],
@@ -2949,13 +2949,26 @@
         "design-check",
         "unit"
       ],
-      "owner": "lead",
+      "owner": null,
       "branch": "task/P4-02",
-      "worktree": "/private/tmp/air-P4-02",
+      "worktree": null,
       "round": 0,
-      "evidence": [],
+      "evidence": [
+        "reviews/evidence/P4-02-board-check-20261026T055538Z.json",
+        "reviews/evidence/P4-02-boundaries-20261026T055544Z.json",
+        "reviews/evidence/P4-02-design-check-20261026T055545Z.json",
+        "reviews/evidence/P4-02-unit-20261026T055547Z.json",
+        "reviews/evidence/P4-02-desktop.png",
+        "reviews/evidence/P4-02-mobile.png",
+        "reviews/evidence/P4-02-playground.log"
+      ],
       "scope_write_forbidden": [
         "reference/"
+      ],
+      "handoff": [
+        "Closed P4-02: deterministic test-kit scenes (500 cards/50 zones/144 blocks, 10k stress), interactive playground with pan/zoom, HUD, ready hook; benchmark mode preserved.",
+        "Screenshots 1440x900/390x844 + serve/capture log (HTTP 200, SwiftShader capture); test-kit suite 12/12; four gates green after the owner-approved design-check test fix 32c8f28.",
+        "Two review rounds; minors fixed (serve-log consistency, per-zone block assertions). Deviation: Node v26.12.1 vs the .nvmrc pin."
       ]
     },
     {

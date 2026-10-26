@@ -1,0 +1,17 @@
+{
+  "task": "P4-02",
+  "gate": "unit",
+  "command": "pnpm test",
+  "exit_code": 0,
+  "result": "pass",
+  "slot": null,
+  "exclusive": [],
+  "lock_wait_s": 0.0,
+  "lock_warning": null,
+  "started": "2026-10-26T05:55:47+00:00",
+  "finished": "2026-10-26T05:55:49+00:00",
+  "commit": "824fb6e2f045f8e460b217c957e10671a09603d3",
+  "dirty": true,
+  "log": "P4-02-unit-20261026T055547Z.log",
+  "log_sha256": "ed8b5fa994b2faeb1fd3a5690291c06dd663467fc415beb1b0cb910e11c37faf"
+}

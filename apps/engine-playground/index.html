@@ -9,7 +9,8 @@
     <script type="importmap">
       {
         "imports": {
-          "@project-air/engine": "../../packages/engine/dist/bridge/engine.js"
+          "@project-air/engine": "../../packages/engine/dist/bridge/engine.js",
+          "@project-air/test-kit": "../../packages/test-kit/dist/scenes.js"
         }
       }
     </script>
@@ -19,7 +20,7 @@
     <main class="frame">
       <header class="frame__header">
         <h1 class="heading">Engine playground</h1>
-        <p class="spike-label">spike — not the engine</p>
+        <p class="stage-label">engine-core — interactive board</p>
       </header>
       <div class="canvas-wrap">
         <canvas
@@ -28,17 +29,42 @@
           width="960"
           height="540"
           role="img"
-          aria-label="WebGL2 engine demo: a 50,000-rectangle document"
+          aria-label="WebGL2 engine demo: a deterministic board scene"
         >
           Your browser does not support WebGL2.
         </canvas>
       </div>
       <footer class="frame__footer">
-        <p class="caption">
-          A 50,000-rectangle document, one instanced WebGL2 draw per frame. No
-          editing, no server.
+        <p class="caption" id="scene-caption">
+          Sample board: 500 cards, 50 zones and their blocks. Drag to pan, scroll or pinch to
+          zoom.
         </p>
-        <p class="fps" id="fps">0 fps</p>
+        <dl class="hud" id="hud">
+          <div class="hud__item">
+            <dt class="hud__label">Objects</dt>
+            <dd class="hud__value" id="hud-objects">0</dd>
+          </div>
+          <div class="hud__item">
+            <dt class="hud__label">Cards</dt>
+            <dd class="hud__value" id="hud-cards">0</dd>
+          </div>
+          <div class="hud__item">
+            <dt class="hud__label">Zones</dt>
+            <dd class="hud__value" id="hud-zones">0</dd>
+          </div>
+          <div class="hud__item">
+            <dt class="hud__label">Visible</dt>
+            <dd class="hud__value" id="hud-visible">0</dd>
+          </div>
+          <div class="hud__item">
+            <dt class="hud__label">FPS</dt>
+            <dd class="hud__value" id="fps">0 fps</dd>
+          </div>
+          <div class="hud__item">
+            <dt class="hud__label">Backend</dt>
+            <dd class="hud__value" id="hud-backend">WebGL2</dd>
+          </div>
+        </dl>
       </footer>
       <p class="error" id="error" hidden></p>
     </main>

@@ -1,0 +1,21 @@
+{
+  "name": "@project-air/test-kit",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Deterministic board scenes for the engine playground, the perf gate and the visual gate.",
+  "main": "./dist/scenes.js",
+  "types": "./dist/scenes.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/scenes.d.ts",
+      "import": "./dist/scenes.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc --project tsconfig.json",
+    "typecheck": "tsc --noEmit --project tsconfig.json",
+    "lint": "eslint --max-warnings=0 .",
+    "test": "node --test test/*.test.mjs"
+  }
+}

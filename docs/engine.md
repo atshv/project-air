@@ -103,16 +103,61 @@ behind. The same `SpatialIndex::ensureCurrent` guard is covered by the native su
 - **Performance:** `node packages/engine/test/perf/run-perf.mjs` (exclusive `perf-baseline`, 50,000 rectangles, p95 ≤ 16.7 ms; report [docs/engine/perf-baseline.md](engine/perf-baseline.md)).
 - **Bridge:** `pnpm --filter @project-air/engine run build|typecheck|lint`. Pins: CMake 4.4.4, Emscripten 6.0.13 in [docs/versions.md](versions.md); gates in [docs/gates/cpp-cmake.md](gates/cpp-cmake.md), [docs/gates/wasm-emscripten.md](gates/wasm-emscripten.md), [docs/gates/perf.md](gates/perf.md).
 
+## Scenes and the playground
+
+`apps/engine-playground` shows the engine alone (no backend). It loads a deterministic scene from
+`packages/test-kit`, draws it with one instanced WebGL2 draw per frame, and keeps the data fixed while
+the view moves.
+
+| Scene | Query | Content |
+| --- | --- | --- |
+| sample (default) | `?scene=sample` | 500 note cards, 50 zones with 2–4 contained blocks each, all five zone tones, world 9600×5408 px |
+| stress | `?scene=stress` | N objects on a tight grid, `?count=N` default 10,000, valid 0 … 50,000 |
+| benchmark | `?bench=50000&samples=600&warmup=120` | unchanged 50,000-rectangle perf document for `packages/engine/test/perf/run-perf.mjs` |
+
+- **Scene builders:** `packages/test-kit` (`@project-air/test-kit`) builds both scenes with a seeded
+  PRNG and no ambient randomness or clock: ids `card-0001`/`zone-0001`/`block-0001` (stress:
+  `stress-00001`), geometry on the 16 px canvas grid, the engine's tone and layer names, and
+  metadata (world, bounds, counts, seed, fit at 1440×900 and 390×844). Scenes are pure functions of
+  their arguments, so every machine gets identical objects and bounds;
+  `pnpm --filter @project-air/test-kit test` proves determinism, the 500/50 counts and the
+  10,000/0/50,000 stress sizes.
+- **Fit and clamp:** the sample world is 9600×5408 px. The fit zoom is clamped to the engine camera
+  range 0.1 … 8: the raw fit is **0.15** at 1440×900 (desktop) and **0.040625** at 390×844, so a
+  narrow viewport clamps to **0.1** and crops the board instead of zooming further out.
+- **Interaction:** demo-level pointer-drag pan and wheel or two-pointer pinch zoom around the
+  pointer; both only call `setCamera`, so the scene data never changes. L15 (P4-24) owns the final
+  trackpad defaults.
+- **HUD:** object, card and zone counts, visible instances, FPS and active backend (`WebGL2` today)
+  in DOM chrome below the canvas, not an overlay; the text updates once per second so it adds no
+  per-frame layout work to the measured frame.
+- **Ready hook:** `window.__enginePlayground.ready` is a Promise that resolves once the first full
+  HUD second is drawn (`{ ok: true, scene, counts, objectCount, visibleCount }`) or with
+  `{ ok: false, error }` when the engine failed. `window.__enginePlayground.pause()` stops the loop
+  for a capture and `getState()` reports scene, counts, FPS, backend and camera.
+- **Serve:** from the repository root, `python3 -m http.server <slot playground port> --bind
+  127.0.0.1`, then open `http://127.0.0.1:<port>/apps/engine-playground/?scene=sample`; the port is
+  `ports.playground` from `.polier-slot`, never hard-coded in the page.
+- **Import map:** `@project-air/engine` → `packages/engine/dist/bridge/engine.js` and
+  `@project-air/test-kit` → `packages/test-kit/dist/scenes.js` (build the test-kit with
+  `pnpm --filter @project-air/test-kit run build`). The test-kit import is dynamic so the benchmark
+  mode keeps working in the perf harness copy, which only carries the engine artefacts.
+- **Capture:** build the bridge, WASM and test-kit, serve, then `node
+  apps/engine-playground/tools/capture.mjs reviews/evidence/P4-02-desktop.png
+  reviews/evidence/P4-02-mobile.png`; it emulates 1440×900 and 390×844, waits for the ready hook,
+  pauses the loop and prints layout, HUD and state per shot.
+
 ## Canvas acceptance catalogue
 
 The stage table in [docs/canvas-acceptance.md](canvas-acceptance.md) maps blueprint phase 2
-(`engine-spike`) to **L01 — Performance basis and proof**. This spike delivers the engine-spike/D8
+(`engine-spike`) to **L01 — Performance basis and proof**. The spike delivered the engine-spike/D8
 performance basis: 50,000 rectangles at p95 ≤ 16.7 ms, committed JSON evidence and gate record
-(see [docs/engine/perf-baseline.md](engine/perf-baseline.md)). L01's basis (500 cards +
-50 zones, long tasks ≤ 16 ms while panning/zooming) and final proof (500 cards + 50 zones, long tasks
-≤ 50 ms) remain open for `engine-core`, `realtime` and `hardening` (board Q18). Other engine-owned
-entries — L02, L03, L07, L08, L10–L20 — belong to those stages; their interaction behaviours are
-not implemented.
+(see [docs/engine/perf-baseline.md](engine/perf-baseline.md)). `engine-core` adds the L01 basis
+fixtures — the deterministic 500-card/50-zone sample board and the stress scene from
+`packages/test-kit` — and demo-level pan/zoom in the playground. The measured L01 basis and final
+proof, the `perf` gate and the reference images remain with P4-03, P4-04 and P4-28 (board Q18).
+Other engine-owned entries — L02, L03, L07, L08, L10–L20 — belong to those stages; their interaction
+behaviours are not implemented.
 
 ## What the spike does not prove yet
 
@@ -121,9 +166,10 @@ not implemented.
 - **Measurement shape:** frame production (unlocked display, no per-frame GPU sync/fence), not GPU
   completion, long tasks while panning/zooming, or the L01 final proof (500 cards + 50 zones, no long
   task > 50 ms).
-- **Canvas behaviours:** gestures, selection, editing, snapping, zones, undo, keyboard, text, images,
-  edges, cursors and the accessibility mirror are not implemented. Hit testing exists at the
-  document/command-buffer level (P4-01); interaction policy, selection state and overlays are not.
+- **Canvas behaviours:** the playground has demo-level pan/zoom over a fixed scene; gestures,
+  selection, editing, snapping, zone membership, undo, keyboard, text, images, edges, cursors and the
+  accessibility mirror are not implemented. Hit testing exists at the document/command-buffer level
+  (P4-01); interaction policy, selection state and overlays are not.
 - **Contracts of the mutation API:** the `ObjectId` stays inside the C++ core for now; the C ABI
   addresses live objects by their document slot index, and the bridge owns the contract-UUID mapping
   that a later task may expose.

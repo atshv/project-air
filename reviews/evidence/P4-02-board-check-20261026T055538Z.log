@@ -1,0 +1,19 @@
+$ python3 /Users/rasulatashev/Desktop/Polier-main/tools/check.py .
+[exit 0]
+
+WARN: budgets.status overridden to 1900 words (reason: Eleven stages with exit criteria, the remote stage and eighteen owner questions are listed in STATUS.md during foundation; shrinks as questions are answered and tasks finish.)
+WARN: STATUS.md: 2414 words (target max. 1900); it is read in every session
+WARN: P0-02: context pack is about 32127 tokens (warning at 15000); trim scope_read, split the task or shorten the base files
+WARN: P4-02: context pack is about 50676 tokens (warning at 15000); trim scope_read, split the task or shorten the base files
+WARN: P4-03: context pack is about 48273 tokens (warning at 15000); trim scope_read, split the task or shorten the base files
+WARN: P4-04: context pack is about 38420 tokens (warning at 15000); trim scope_read, split the task or shorten the base files
+WARN: P4-05: context pack is about 68761 tokens (warning at 15000); trim scope_read, split the task or shorten the base files
+WARN: P4-06: context pack is about 2166168 tokens (warning at 15000); trim scope_read, split the task or shorten the base files
+WARN: P4-07: context pack is about 2165248 tokens (warning at 15000); trim scope_read, split the task or shorten the base files
+WARN: P4-01: record reviews/evidence/P4-01-board-check-20261025T204541Z.json was made on commit b9f5e85a3b, which is not in HEAD's history
+WARN: P4-01: record reviews/evidence/P4-01-boundaries-20261025T204546Z.json was made on commit b9f5e85a3b, which is not in HEAD's history
+WARN: P4-01: record reviews/evidence/P4-01-cpp-unit-20261025T204549Z.json was made on commit b9f5e85a3b, which is not in HEAD's history
+WARN: P4-01: record reviews/evidence/P4-01-typecheck-20261025T204550Z.json was made on commit b9f5e85a3b, which is not in HEAD's history
+WARN: P4-01: record reviews/evidence/P4-01-wasm-build-20261025T204553Z.json was made on commit b9f5e85a3b, which is not in HEAD's history
+WARN: P4-01: record reviews/evidence/P4-01-wasm-size-20261025T204557Z.json was made on commit b9f5e85a3b, which is not in HEAD's history
+OK: /private/tmp/air-P4-02 passes the mandatory checks. (15 warning(s))

@@ -30,6 +30,11 @@ We use a hybrid presentation:
 - **Images:** not part of engine-core (owner Q20). When media arrives, images use the same engine
   quad path with detail levels, decided together with `services/media`.
 
+**Confirmed in P4-02:** the engine-core playground keeps its chrome and HUD in the DOM below the
+canvas and draws board content through the engine, exactly as decided here. No canvas text, glyph
+atlas or field overlay exists yet and none was needed for the deterministic sample board; no
+deviation from this decision.
+
 ## Consequences
 
 - **Positive:** no font licence risk and no bundled binary; text uses the same system rendering as
