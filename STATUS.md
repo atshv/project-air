@@ -130,10 +130,6 @@
   - P4-02: Screenshots 1440x900/390x844 + serve/capture log (HTTP 200, SwiftShader capture); test-kit suite 12/12; four gates green after the owner-approved design-check test fix 32c8f28.
   - P4-02: Two review rounds; minors fixed (serve-log consistency, per-zone block assertions). Deviation: Node v26.12.1 vs the .nvmrc pin.
 - `P4-25` Zones as containers I: contract parent reference (L08)
-- `P0-27` Bilingual preview with DE/EN switch and cache-busted assets
-  - P0-26: Closed P0-26: preview demo gets a top-centre ten-tool toolbar (note active, link via source.svg, divider, aria-pressed) and a static zone with notepad + image window (owner photo); tokens only.
-  - P0-26: Responsive: compact viewport <=900 px uses a two-row grid (toolbar row + 864 px world, no overlaps 390-1440); desktop >=901 px floats the toolbar over the 360 px canvas; demo interactions unchanged.
-  - P0-26: Evidence: P0-26-desktop.png 1440x900, mid-768.png, mobile.png, mobile-demo.png, toolbar-states.png, preview.log; gates board-check, design-check, changelog-entry green; masthead P0-26.
 
 ## Done
 
@@ -182,6 +178,7 @@
 ## In progress
 
 - [ ] `P4-04` Visual gate with reference images — status: `in_progress` — owner: lead
+- [ ] `P0-27` Bilingual preview with DE/EN switch and cache-busted assets — status: `in_progress` — owner: —
 
 ## Blocked / failed
 
@@ -217,8 +214,14 @@
 - [ ] `P4-26` Zones as containers II: platform migration and containment (L08) — status: `pending` — owner: —
 - [ ] `P4-27` Zones as containers II: engine membership and zone move (L08) — status: `pending` — owner: —
 - [ ] `P4-28` L01 final proof, two-backend reference images and stage showcase — status: `pending` — owner: —
-- [ ] `P0-27` Bilingual preview with DE/EN switch and cache-busted assets — status: `pending` — owner: —
 - [ ] `P0-28` Zone detach interaction: drag notepad and photo out and back — status: `pending` — owner: —
+
+<!-- polier:claims -->
+## Claims
+
+- `P0-27` in progress by dsh since 2026-10-26T21:10:33+00:00 — worktree: /Users/rasulatashev/Desktop/KI Projekte/Project air-P0-27 · slot 2
+
+<!-- /polier:claims -->
 
 ## Decisions
 
