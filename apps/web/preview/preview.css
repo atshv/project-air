@@ -117,6 +117,67 @@ button {
   color: var(--fg);
 }
 
+/* ---------- locale switch (preview-only) ---------- */
+
+.masthead__meta .preview-locale {
+  margin-inline-start: auto;
+}
+
+.preview-locale {
+  display: inline-flex;
+  align-items: stretch;
+  border: var(--border-width) solid var(--border);
+  border-radius: var(--radius-pill);
+  background-color: var(--surface);
+}
+
+.preview-locale__option {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-inline-size: var(--click-target);
+  min-block-size: var(--click-target);
+  padding: 0 var(--space-8);
+  border: 0;
+  border-radius: var(--radius-pill);
+  background-color: transparent;
+  color: var(--muted);
+  font-family: var(--font-sans);
+  font-size: var(--text-11);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-label);
+  cursor: pointer;
+  transition: background-color var(--motion-hover) ease, color var(--motion-hover) ease;
+}
+
+.preview-locale__option:hover {
+  background-color: var(--faint);
+  color: var(--fg);
+}
+
+.preview-locale__option:active {
+  background-color: var(--faint);
+  color: var(--fg);
+  transform: scale(0.97);
+}
+
+.preview-locale__option:focus-visible {
+  outline: var(--outline-width) solid var(--accent);
+  outline-offset: var(--outline-offset);
+}
+
+.preview-locale__option[aria-pressed="true"] {
+  background-color: var(--accent-soft);
+  color: var(--accent);
+}
+
+.preview-locale__divider {
+  align-self: center;
+  inline-size: var(--border-width);
+  block-size: var(--space-12);
+  background-color: var(--border);
+}
+
 /* ---------- sections ---------- */
 
 .section {

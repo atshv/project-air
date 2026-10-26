@@ -1,6 +1,7 @@
 // P0-20 live connection demo for the static design preview: two cards, a curved
 // edge snapped to invisible side-midpoint anchors (P0-23/P0-25) and preview-only
-// zoom controls (P0-24). P0-26 adds the preview-only toolbar selection state.
+// zoom controls (P0-24). P0-26 adds the preview-only toolbar selection state and
+// P0-27 the DE/EN locale controller (locale JSON over HTTP, no build step).
 // Plain DOM, pointer events and one SVG path: no dependencies, no engine, no data.
 // Card positions, edge anchors and zoom maths use the world layer, which equals
 // the demo surface on desktop and is the grid row below the toolbar strip in the
@@ -20,6 +21,185 @@
   var ZOOM_MAX = 1.5;
   var ZOOM_STEP = 0.1;
   var SCALE_PRECISION = 10;
+
+  var LOCALE_STORAGE_KEY = "preview-locale";
+  var LOCALE_DEFAULT = "en";
+  var LOCALE_LANGUAGES = ["en", "de"];
+  var LOCALE_ASSET_QUERY = "v";
+  // English fallbacks for the status strings when the locale file cannot be loaded.
+  var STATUS_FALLBACK = {
+    "demo.status.card": "Card {label} at column {column}, row {row}.",
+    "demo.status.zoom": "Zoom {percent} percent.",
+    "demo.status.reset": "Both cards returned to their start positions.",
+    "demo.status.tool": "Tool {label} selected. Preview only: no canvas action.",
+  };
+  var localeMessages = null;
+  // Language whose messages are currently applied; null means the page shows the
+  // English markup fallback only. Never change the switch without changing this.
+  var appliedLocale = null;
+
+  // The bundled script URL carries the cache-busting version (?v=P0-27); the
+  // locale files use the same query so a bump never serves stale translations.
+  function readAssetVersion() {
+    var script = document.currentScript;
+    if (!(script instanceof HTMLScriptElement) || script.src === "") return "";
+    try {
+      return new URL(script.src).searchParams.get(LOCALE_ASSET_QUERY) || "";
+    } catch (error) {
+      return "";
+    }
+  }
+
+  var assetVersion = readAssetVersion();
+
+  function interpolate(text, params) {
+    return text.replace(/\{(\w+)\}/g, function (match, name) {
+      return Object.prototype.hasOwnProperty.call(params, name) ? String(params[name]) : match;
+    });
+  }
+
+  // Translated status text for the demo; falls back to English when no locale
+  // file is available (the static text then keeps its English fallback markup).
+  function translate(key, params) {
+    var text = null;
+    if (localeMessages !== null && typeof localeMessages[key] === "string") {
+      text = localeMessages[key];
+    } else if (typeof STATUS_FALLBACK[key] === "string") {
+      text = STATUS_FALLBACK[key];
+    }
+    if (text === null) return "";
+    return interpolate(text, params || {});
+  }
+
+  function applyLocale(messages, lang) {
+    document.documentElement.lang = lang;
+    var texts = document.querySelectorAll("[data-i18n]");
+    for (var t = 0; t < texts.length; t += 1) {
+      var textKey = texts[t].getAttribute("data-i18n");
+      if (typeof messages[textKey] === "string") texts[t].textContent = messages[textKey];
+    }
+    var htmlNodes = document.querySelectorAll("[data-i18n-html]");
+    for (var h = 0; h < htmlNodes.length; h += 1) {
+      var htmlKey = htmlNodes[h].getAttribute("data-i18n-html");
+      if (typeof messages[htmlKey] === "string") htmlNodes[h].innerHTML = messages[htmlKey];
+    }
+    var attributeNodes = document.querySelectorAll("[data-i18n-attr]");
+    for (var a = 0; a < attributeNodes.length; a += 1) {
+      var spec = attributeNodes[a].getAttribute("data-i18n-attr") || "";
+      var entries = spec.split(/\s+/);
+      for (var e = 0; e < entries.length; e += 1) {
+        var parts = entries[e].split(":");
+        var attribute = parts[0];
+        var attributeKey = parts[1] || attributeNodes[a].getAttribute("data-i18n");
+        if (attribute !== "" && attributeKey && typeof messages[attributeKey] === "string") {
+          attributeNodes[a].setAttribute(attribute, messages[attributeKey]);
+        }
+      }
+    }
+  }
+
+  function updateLocaleSwitch(lang) {
+    var options = document.querySelectorAll("[data-preview-locale]");
+    for (var o = 0; o < options.length; o += 1) {
+      var active = options[o].getAttribute("data-preview-locale") === lang;
+      options[o].setAttribute("aria-pressed", active ? "true" : "false");
+    }
+  }
+
+  function readStoredLocale() {
+    try {
+      var value = window.localStorage.getItem(LOCALE_STORAGE_KEY);
+      return typeof value === "string" ? value : null;
+    } catch (error) {
+      return null;
+    }
+  }
+
+  function storeLocale(lang) {
+    try {
+      window.localStorage.setItem(LOCALE_STORAGE_KEY, lang);
+    } catch (error) {
+      // Storage can be unavailable (private mode, file://); the switch still works.
+    }
+  }
+
+  function localeUrl(lang) {
+    var query = assetVersion === "" ? "" : "?" + LOCALE_ASSET_QUERY + "=" + encodeURIComponent(assetVersion);
+    return "locales/" + lang + ".json" + query;
+  }
+
+  function fetchLocale(lang) {
+    return window.fetch(localeUrl(lang)).then(function (response) {
+      if (!response.ok) throw new Error("locale " + lang + ": HTTP " + response.status);
+      return response.json();
+    });
+  }
+
+  function clearStatus() {
+    var status = document.querySelector("[data-demo-status]");
+    if (status !== null) status.textContent = "";
+  }
+
+  function markEnglishFallback() {
+    localeMessages = null;
+    appliedLocale = null;
+    document.documentElement.lang = LOCALE_DEFAULT;
+    updateLocaleSwitch(LOCALE_DEFAULT);
+  }
+
+  function activateLocale(lang, persist) {
+    if (LOCALE_LANGUAGES.indexOf(lang) === -1) lang = LOCALE_DEFAULT;
+    if (appliedLocale === lang) {
+      if (persist) storeLocale(lang);
+      return Promise.resolve(lang);
+    }
+    return fetchLocale(lang)
+      .then(function (messages) {
+        localeMessages = messages;
+        appliedLocale = lang;
+        applyLocale(messages, lang);
+        updateLocaleSwitch(lang);
+        if (persist) storeLocale(lang);
+        clearStatus();
+        return lang;
+      })
+      .catch(function () {
+        // A failed load keeps the language and the toggle state that are really
+        // applied; the switch never flips on its own.
+        if (appliedLocale !== null) return appliedLocale;
+        if (lang === LOCALE_DEFAULT) {
+          markEnglishFallback();
+          return LOCALE_DEFAULT;
+        }
+        // Nothing was applied yet: settle on the English markup fallback once.
+        return fetchLocale(LOCALE_DEFAULT)
+          .then(function (messages) {
+            localeMessages = messages;
+            appliedLocale = LOCALE_DEFAULT;
+            applyLocale(messages, LOCALE_DEFAULT);
+            updateLocaleSwitch(LOCALE_DEFAULT);
+            return LOCALE_DEFAULT;
+          })
+          .catch(function () {
+            markEnglishFallback();
+            return LOCALE_DEFAULT;
+          });
+      });
+  }
+
+  function setupLocaleSwitcher() {
+    var group = document.querySelector("[data-preview-locale-group]");
+    if (group === null) return;
+    var options = group.querySelectorAll("[data-preview-locale]");
+    for (var o = 0; o < options.length; o += 1) {
+      (function (option) {
+        option.addEventListener("click", function () {
+          var lang = option.getAttribute("data-preview-locale");
+          if (lang !== null) activateLocale(lang, true);
+        });
+      })(options[o]);
+    }
+  }
 
   function readPixelToken(name, fallback) {
     var value = getComputedStyle(document.documentElement).getPropertyValue(name);
@@ -198,12 +378,18 @@
       if (status === null) return;
       var column = Math.round(card.x / grid) + 1;
       var row = Math.round(card.y / grid) + 1;
-      status.textContent = "Card " + card.label + " at column " + column + ", row " + row + ".";
+      status.textContent = translate("demo.status.card", {
+        label: card.label,
+        column: column,
+        row: row,
+      });
     }
 
     function announceZoom() {
       if (status === null) return;
-      status.textContent = "Zoom " + Math.round(scale * 100) + " percent.";
+      status.textContent = translate("demo.status.zoom", {
+        percent: Math.round(scale * 100),
+      });
     }
 
     function applyZoom() {
@@ -263,7 +449,7 @@
         place(cards[i]);
       }
       drawEdge();
-      if (status !== null) status.textContent = "Both cards returned to their start positions.";
+      if (status !== null) status.textContent = translate("demo.status.reset");
     }
 
     function onPointerDown(card, event) {
@@ -402,9 +588,9 @@
         );
       }
       if (status !== null) {
-        status.textContent =
-          "Tool " + (tool.getAttribute("data-label") || "") +
-          " selected. Preview only: no canvas action.";
+        status.textContent = translate("demo.status.tool", {
+          label: tool.getAttribute("data-label") || "",
+        });
       }
     }
 
@@ -423,6 +609,10 @@
       setupToolbar(demos[i]);
       setupDemo(demos[i]);
     }
+    setupLocaleSwitcher();
+    var stored = readStoredLocale();
+    var initial = LOCALE_LANGUAGES.indexOf(stored) === -1 || stored === null ? LOCALE_DEFAULT : stored;
+    activateLocale(initial, false);
   }
 
   if (document.readyState === "loading") {

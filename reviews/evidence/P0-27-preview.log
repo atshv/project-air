@@ -1,0 +1,278 @@
+# P0-27 — bilingual preview with DE/EN switch and cache-busted assets: manual evidence
+
+- Date: 2026-10-26 (Europe/Zurich)
+- Worktree: `/Users/rasulatashev/Desktop/KI Projekte/Project air-P0-27` (branch `task/P0-27`, slot 2,
+  base `f1749e8`)
+- Changed: `apps/web/preview/index.html`, `apps/web/preview/preview.css`,
+  `apps/web/preview/preview.js`, `apps/web/preview/README.md`,
+  `apps/web/preview/locales/en.json` (new), `apps/web/preview/locales/de.json` (new);
+  `.changes/P0-27-bilingual-preview.md`
+- Evidence and screenshots were re-shot after the review FAIL (blocker A1, seven minors). The
+  superseded first commit (`eb4e9ce`) was replaced by one commit on `f1749e8`; the superseded gate
+  records were removed.
+
+## Rework after the review (blocker A1 and the seven minors)
+
+**A1 blocker — untranslated captions.** The five `code.token-caption` captions of the component
+section and the type/border captions still rendered English words in German. Eight locale keys were
+added in both files and wired with `data-i18n`; code, token names and units stay literal and the
+sentence around them is German:
+
+| Key | English | German |
+| --- | --- | --- |
+| `components.captionBlock` | `--radius-lg · --card · grows in height` | `--radius-lg · --card · wächst in der Höhe` |
+| `components.captionZone` | `--radius-lg · tone colour · dashed border` | `--radius-lg · Tonfarbe · gestrichelter Rahmen` |
+| `components.captionConnection` | `edge · --tone-d · 1.5 px` | `Verbindung · --tone-d · 1.5 px` |
+| `components.captionSidePanel` | `400 px · --header-height · serif title` | `400 px · --header-height · Titel in Serif` |
+| `components.captionToolbar` | `48 px bar · 36 px buttons · 20 px icons` | `48-px-Leiste · 36-px-Knöpfe · 20-px-Symbole` |
+| `type.captionLineHeight` | `--font-sans · --text-13 · line-height --line-height` | `… · Zeilenhöhe --line-height` |
+| `type.captionTooltip` | `Tooltip · --text-12 · --weight-medium` | `Kurzhinweis · --text-12 · --weight-medium` |
+| `space.captionOutlineWidth` | `--outline-width 2 px + offset` | `--outline-width 2 px + Versatz` |
+
+The DOM coverage probe below now reports **0 mismatches and 0 uncovered English text/attributes** in
+German: every `data-i18n*` hook equals the German value, every visible text node is either covered or
+an identifier/token/unit value, and no `aria-label`/`alt`/`title`/`data-label` is left untranslated.
+
+**Minor 1 — switch target size.** Each option is now a 32 × 32 px minimum target
+(`min-inline-size`/`min-block-size: --click-target`) with 8 px horizontal padding (`--space-8`,
+measured 33 × 32 px); the pill around both options is 70 × 34 px (32 px option plus the two 1 px
+`--border` borders). README and this log carry the measured sizes, not the brief's 8 × 12 px padding
+claim.
+
+**Minor 2 — fallback/toggle consistency.** `preview.js` tracks the language that is really applied.
+A failed locale load no longer touches the page: requesting `en.json` while German is active leaves
+the page German on `DE`, requesting `de.json` while English is active leaves it English on `EN`. Only
+on the first load, when nothing has been applied yet, the page settles once on the English markup
+fallback (or on `locales/en.json` when it loads), so the switch never shows a language the page does
+not display. No retry loop, no console error.
+
+**Minor 3 — README.** Stale "English aria-label/alt" claims removed; the real fallback behaviour is
+documented; the "hard reload may be needed for an already-cached `index.html`" wording was added to
+the cache-bust section; `tokens.css` is versioned too (`tokens.css?v=P0-27`) and the icon SVGs are
+explicitly documented as stable/unversioned; the last-change rule now says the line follows the
+`P0-*` preview tasks (P0-19 … P0-27, P1-07) while the engine tasks `P4-*` run in parallel and do not
+move it.
+
+**Minor 4 — DE desktop screenshot.** The 1440 × 900 desktop captures are taken after scrolling the
+page so the **whole demo surface** is visible (surface top 210, bottom 570 inside the 900 px
+viewport); no card, photo or toolbar pixel is clipped. The layout itself is unchanged.
+
+**Minor 5 — glossary.** German terms now follow `docs/i18n/glossary.md`: Zeitstrahl (not Zeitachse),
+Seitenpanel (not Seitenleiste), Leinwand (not Canvas) — checked by script (`banned glossary terms in
+de: []`).
+
+## Port and server
+
+Slot values (`.polier-slot`): `web=4200` for slot 2; the port is read from `.polier-slot`, never
+hard-coded. Only this task's server and Chrome were started and both were stopped afterwards.
+
+```sh
+cd "/Users/rasulatashev/Desktop/KI Projekte/Project air-P0-27"
+PORT=$(python3 -c "import json;print(json.load(open('.polier-slot'))['ports']['web'])")
+python3 -m http.server "$PORT" --bind 127.0.0.1
+```
+
+Served the **repository root** so the relative token, icon, image and locale paths resolve. The
+locales are fetched relative to the page, so the switch needs HTTP; from `file://` the page keeps the
+English fallback (`<html lang="en">`).
+
+## HTTP status and sizes (final files)
+
+```
+$ curl -s -o /dev/null -w '%{http_code} %{size_download}\n' http://127.0.0.1:4200/apps/web/preview/
+200 68979
+$ curl -s -o /dev/null -w '%{http_code} %{size_download}\n' "http://127.0.0.1:4200/apps/web/preview/preview.css?v=P0-27"
+200 38128
+$ curl -s -o /dev/null -w '%{http_code} %{size_download}\n' "http://127.0.0.1:4200/apps/web/preview/preview.js?v=P0-27"
+200 20977
+$ curl -s -o /dev/null -w '%{http_code} %{size_download}\n' "http://127.0.0.1:4200/apps/web/preview/locales/en.json?v=P0-27"
+200 18902
+$ curl -s -o /dev/null -w '%{http_code} %{size_download}\n' "http://127.0.0.1:4200/apps/web/preview/locales/de.json?v=P0-27"
+200 20247
+$ curl -s -o /dev/null -w '%{http_code} %{size_download}\n' "http://127.0.0.1:4200/packages/ui-kit/tokens.css?v=P0-27"
+200 2295
+$ curl -s -o /dev/null -w '%{http_code} %{size_download}\n' http://127.0.0.1:4200/apps/web/preview/assets/demo-zone-image.webp
+200 74494
+$ curl -s -o /dev/null -w '%{http_code} %{size_download}\n' http://127.0.0.1:4200/packages/ui-kit/icons/note.svg
+200 298
+```
+
+The HTTP sizes equal the byte sizes on disk (`stat -f '%z'`): `index.html` 68979, `preview.css` 38128,
+`preview.js` 20977, `locales/en.json` 18902, `locales/de.json` 20247. The only 404 in the server log
+is the browser's automatic `GET /favicon.ico`.
+
+## Cache-busting check
+
+```
+$ curl -s http://127.0.0.1:4200/apps/web/preview/ | grep -nE '(tokens\.css|preview\.(css|js))\?v='
+7:    <link rel="stylesheet" href="../../../packages/ui-kit/tokens.css?v=P0-27" />
+8:    <link rel="stylesheet" href="preview.css?v=P0-27" />
+9:    <script src="preview.js?v=P0-27" defer></script>
+```
+
+- All three asset URLs (shared token stylesheet, preview stylesheet, preview script) carry
+  `?v=P0-27` and return `200` with the current byte sizes; a browser that cached an older stylesheet
+  requests a new URL and gets the current files.
+- `preview.js` reads the `v` query of its own script URL and appends it to the locale requests
+  (`locales/en.json?v=P0-27`, `locales/de.json?v=P0-27`, both `200`), so one bump covers the
+  translations too.
+- The icon SVGs keep stable, unversioned URLs (they only change with design-system tasks, which bump
+  this version anyway).
+- The README documents the bump rule and the one case the version query cannot fix: an already
+  cached `index.html` (hard reload needed once).
+
+## Bilingual check (CDP, real clicks, reloads and blocked locale files)
+
+Chrome for Testing 156 with CDP device metrics (Chrome clamps `--window-size` below ~500 px); a
+temporary out-of-repo helper drove it (`Emulation.setDeviceMetricsOverride`, `Page.navigate`,
+`Runtime.evaluate` for real `click()`/`localStorage`/DOM reads, `Network.setBlockedURLs` for the
+missing-locale cases, `Page.captureScreenshot`); it was removed after the run.
+
+```
+desktop 1440x900, initial load (no stored locale):
+  lang=en, switch aria-pressed DE=false EN=true, every locale hook matches en.json
+  options: DE 33x32, EN 33x32; pill 70x34; page 1440/1440 horizontalOverflow=false
+click DE:
+  lang=de, switch DE=true EN=false, h1 "Project air Designsystem",
+  "Letzte Änderung: P0-27 — Zweisprachige Vorschau mit DE/EN-Umschalter und Cache-Busting",
+  switch label "Sprache", toolbar data-label "Notiz", zone body "Zoneninhalt, statische Vorschau.",
+  image alt German, captionBlock "… wächst in der Höhe", captionToolbar
+  "48-px-Leiste · 36-px-Knöpfe · 20-px-Symbole", captionOutline "--outline-width 2 px + Versatz",
+  captionLineHeight "… Zeilenhöhe --line-height", sidebar header "Seitenpanel-Kopf",
+  timeline tool "Zeitstrahl"; page 1440/1440 horizontalOverflow=false; no window/console errors
+reload with DE stored: lang=de, DE aria-pressed=true (localStorage.preview-locale persists)
+fallback A — German applied, en.json blocked, click EN:
+  lang=de, switch DE=true EN=false, page stays German, no errors (toggle never flips alone)
+fallback B — DE stored, de.json blocked on first load:
+  lang=en, switch EN=true, page falls back once to the English markup/locale, no errors
+single missing file never produces a retry loop; all six viewport runs report errors: []
+```
+
+## Locale coverage probe (all `data-i18n*` hooks and attributes in DE)
+
+The probe compares every hook with `locales/de.json` and lists visible text outside the hooks:
+
+```
+hooks checked: 162 data-i18n + 25 data-i18n-html + 79 data-i18n-attr
+mismatches: 0
+uncovered English text nodes: 0   (remaining text outside hooks is identifiers/tokens/units:
+                                   operation names, sync message names, token values, radius labels)
+untranslated aria-label/alt/title/data-label: 0
+```
+
+## Locale consistency check (key parity, glossary, style)
+
+```sh
+node /tmp/p027-check.mjs
+```
+
+```
+html keys: 252
+en keys: 256 de keys: 256
+key sets identical: true
+only in en: []
+only in de: []
+html keys missing in en: []
+html keys missing in de: []
+keys only used by preview.js (not in html): [ 'demo.status.card', 'demo.status.reset',
+  'demo.status.tool', 'demo.status.zoom' ]
+sharp-s in de: []
+exclamation in de: []
+banned glossary terms in de: []      (Zeitachse, Seitenleiste, Canvas)
+de values identical to en: 18        (proper names, token/spec literals such as "Version 0.0.1")
+```
+
+252 `data-i18n*` keys are referenced from `index.html`; the four extra keys are the translated demo
+status strings in `preview.js`. Both files contain exactly the same keys; German copy is du-form,
+calm, without exclamation marks, always `ss`, and follows the glossary (Zeitstrahl, Seitenpanel,
+Leinwand, Werkzeugleiste, Board). German text exists only in `locales/de.json`; the `language-check`
+gate is green.
+
+## Screenshots
+
+```sh
+node /tmp/p027-cdp2.mjs "http://127.0.0.1:4200/apps/web/preview/" "reviews/evidence"
+```
+
+| File | Size | Content |
+| --- | --- | --- |
+| `reviews/evidence/P0-27-desktop-en.png` | PNG 1440 × 900, 161634 bytes | desktop, English, scrolled so the whole demo surface (top 210, bottom 570) is visible |
+| `reviews/evidence/P0-27-desktop-de.png` | PNG 1440 × 900, 173809 bytes | desktop, German, same full-surface framing |
+| `reviews/evidence/P0-27-mobile-en.png` | PNG 390 × 844, 90010 bytes | mobile, English, masthead with the switch |
+| `reviews/evidence/P0-27-mobile-de.png` | PNG 390 × 844, 96348 bytes | mobile, German, masthead with the switch |
+| `reviews/evidence/P0-27-1426x583-de.png` | PNG 2852 × 1166, 268008 bytes | owner viewport 1426 × 583 CSS px at DPR 2, German, whole demo surface (top 12, bottom 372) |
+
+At 390 × 844 the switch is 70 × 34 px at x 304..374 inside the masthead meta row; page
+`scrollWidth == clientWidth == 390`, no horizontal overflow, no overlap with the meta text (first meta
+item ends at x 214).
+
+## Owner viewport (1426 × 583 CSS px, DPR 2, fresh CSS)
+
+The owner's screenshot showed the P0-26 demo with unstyled toolbar squares and overlapping zone text —
+new markup against a cached old stylesheet. The versioned URLs load the current stylesheet; the
+capture proves the current design at the owner's viewport:
+
+```
+CSS viewport 1426x583, devicePixelRatio 2, screenshot 2852x1166, German, scrolled to the demo
+  surface top 12, bottom 372 (inside the 583 px viewport), page 1426/1426 horizontalOverflow=false
+  toolbar 427 x 54 at x 500..927 (pill radius, --surface, 1 px --border, --shadow,
+           36 x 36 buttons with 20 px mask icons, note tool selected)
+  zone 274 x 275 at x 576..850 with notepad 240 x 89 and image window 240 x 140 (photo cover)
+  cardA 176 x 123 at x 178..354, cardB 176 x 123 at x 1010..1186, zoom 44 x 116 at x 158..202
+  overlaps between toolbar, zone, cards and zoom pill: none
+```
+
+## Demo behaviour unchanged (German active, real DOM events)
+
+```
+ArrowRight on card A: +16 px; pointer drag on card B: +40 px; zoom-in click: scale(1.1) with the
+German status "Vergrösserung 110 Prozent."; fit click: scale(1); toolbar click on "palette": only its
+aria-pressed is true, status "Werkzeug Palette ausgewählt. Nur Vorschau: keine Aktion auf der
+Zeichenfläche."; Home: both cards back at their home positions; the curved edge is drawn.
+```
+
+## Masthead meta line
+
+```
+Version 0.0.1 · unreleased · Last change: P0-27 — Bilingual preview with DE/EN switch and cache-busted assets · 2026-10-26 22:15 (Europe/Zurich)
+```
+
+- Version: first `##` heading of `CHANGELOG.md` (`## 0.0.1 – unreleased`), unchanged.
+- Last change: `.changes/P0-27-bilingual-preview.md`; the line uses the task title from `board.json` /
+  `tasks/P0-27.md` and is translated in German through `masthead.lastChange` /
+  `masthead.lastChangeTime`.
+- Date/time: modification time of that entry in `Europe/Zurich` (`stat` → 2026-10-26 22:15). The
+  entry was written **before** the stamp and not modified afterwards (the rework did not touch it).
+- Tasks line includes P0-27; the version line still reads `0.0.1` / `unreleased`.
+
+## Gates
+
+```sh
+cd "/Users/rasulatashev/Desktop/KI Projekte/Project air-P0-27"
+export POLIER=/Users/rasulatashev/Desktop/Polier-main
+python3 "$POLIER/tools/gate.py" --task P0-27 --name board-check --shell "python3 $POLIER/tools/check.py ."
+python3 "$POLIER/tools/gate.py" --task P0-27 --name design-check --shell "node tools/design-check/index.mjs ."
+python3 "$POLIER/tools/gate.py" --task P0-27 --name language-check --shell "node tools/language-check/index.mjs ."
+python3 "$POLIER/tools/gate.py" --task P0-27 --name changelog-entry --shell "node tools/release/check-changes.mjs --task P0-27 --base main"
+```
+
+| Gate | Result | Record |
+| --- | --- | --- |
+| `board-check` | PASS (exit 0) | `reviews/evidence/P0-27-board-check-20261026T213641Z.json` |
+| `design-check` | PASS (exit 0, 0 findings) | `reviews/evidence/P0-27-design-check-20261026T213644Z.json` |
+| `language-check` | PASS (exit 0, `language-check: OK`) | `reviews/evidence/P0-27-language-check-20261026T213644Z.json` |
+| `changelog-entry` | PASS (exit 0, `.changes/P0-27-bilingual-preview.md`) | `reviews/evidence/P0-27-changelog-entry-20261026T213644Z.json` |
+
+`board-check` ran **first**, after `git reset --soft f1749e8` and before the commit, so the records
+reference `f1749e8` (in the branch history). `check.py` exits 0 with pre-existing board warnings only;
+`board.json`, `STATUS.md`, `CHANGELOG.md`, `apps/web/messages/` and the package manifests were not
+edited.
+
+## Notes
+
+- German copy lives only in `locales/de.json`; `language-check` scans `.html`/`.css`/`.js` and is
+  green, and the JSON is outside its scan roots by design.
+- `localStorage` unavailable (private mode) or a missing locale file keeps the page on the language
+  that is really applied; the switch still works for the session and logs no errors.
+- Chrome for Testing requests `/favicon.ico`; that is the only server-log 404 and not a preview
+  resource.

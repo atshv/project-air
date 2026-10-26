@@ -130,6 +130,10 @@
   - P4-02: Screenshots 1440x900/390x844 + serve/capture log (HTTP 200, SwiftShader capture); test-kit suite 12/12; four gates green after the owner-approved design-check test fix 32c8f28.
   - P4-02: Two review rounds; minors fixed (serve-log consistency, per-zone block assertions). Deviation: Node v26.12.1 vs the .nvmrc pin.
 - `P4-25` Zones as containers I: contract parent reference (L08)
+- `P0-28` Zone detach interaction: drag notepad and photo out and back
+  - P0-27: Closed P0-27: preview is EN/DE with a top-right DE|EN switch (33x32), 256-key locale JSONs covering all visible text/aria/alt, html lang + localStorage + safe fallback; German style/glossary checked.
+  - P0-27: Cache-busting: tokens.css/preview.css/preview.js ?v=P0-27 + versioned locale fetches; README bump/hard-reload rule; owner 1426x583 DPR2 render proves fresh CSS fixes the stale-layout failure.
+  - P0-27: Gates board-check/design-check/language-check/changelog-entry green; evidence desktop/mobile EN+DE + owner shot + log; one commit.
 
 ## Done
 
@@ -174,11 +178,11 @@
 - [x] `P4-02` Engine playground: interactive sample board and stage shell — status: `done` — owner: —
 - [x] `P4-03` Engine-core perf gate and L01 basis — status: `done` — owner: —
 - [x] `P0-26` Toolbar and zone with notepad and image window in the preview — status: `done` — owner: —
+- [x] `P0-27` Bilingual preview with DE/EN switch and cache-busted assets — status: `done` — owner: —
 
 ## In progress
 
 - [ ] `P4-04` Visual gate with reference images — status: `in_progress` — owner: lead
-- [ ] `P0-27` Bilingual preview with DE/EN switch and cache-busted assets — status: `in_progress` — owner: —
 
 ## Blocked / failed
 
@@ -215,13 +219,6 @@
 - [ ] `P4-27` Zones as containers II: engine membership and zone move (L08) — status: `pending` — owner: —
 - [ ] `P4-28` L01 final proof, two-backend reference images and stage showcase — status: `pending` — owner: —
 - [ ] `P0-28` Zone detach interaction: drag notepad and photo out and back — status: `pending` — owner: —
-
-<!-- polier:claims -->
-## Claims
-
-- `P0-27` in progress by dsh since 2026-10-26T21:10:33+00:00 — worktree: /Users/rasulatashev/Desktop/KI Projekte/Project air-P0-27 · slot 2
-
-<!-- /polier:claims -->
 
 ## Decisions
 

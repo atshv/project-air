@@ -3,41 +3,66 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Project air design preview — static design preview</title>
-    <link rel="stylesheet" href="../../../packages/ui-kit/tokens.css" />
-    <link rel="stylesheet" href="preview.css" />
-    <script src="preview.js" defer></script>
+    <title data-i18n="page.projectAirDesignPreviewStatic">Project air design preview — static design preview</title>
+    <link rel="stylesheet" href="../../../packages/ui-kit/tokens.css?v=P0-27" />
+    <link rel="stylesheet" href="preview.css?v=P0-27" />
+    <script src="preview.js?v=P0-27" defer></script>
   </head>
   <body>
     <main class="page">
       <header class="masthead">
-        <span class="badge">static design preview</span>
-        <h1>Project air design system</h1>
-        <p class="lead">
+        <span class="badge" data-i18n="masthead.staticDesignPreview">static design preview</span>
+        <h1 data-i18n="masthead.projectAirDesignSystem">Project air design system</h1>
+        <p class="lead" data-i18n="masthead.aStaticDesignPreviewOf">
           A static design preview of the Project air canvas design system: tokens, type, icons,
           component states, the contract 0.1.0 overview and a sample board, plus a small live
           connection demo with a preview-only toolbar and a zone. This page is not the product —
           there is no engine, no data and no server; the demo at the top is illustrative only.
         </p>
         <p class="masthead__version" data-preview-meta>
-          <span data-preview-version>Version 0.0.1</span>
-          <span data-preview-status>unreleased</span>
-          <span data-preview-last-change>Last change: P0-26 — Toolbar and zone with notepad and image window in the preview</span>
-          <span data-preview-last-change-time>2026-10-26 20:40 (Europe/Zurich)</span>
+          <span data-preview-version data-i18n="masthead.version">Version 0.0.1</span>
+          <span data-preview-status data-i18n="masthead.unreleased">unreleased</span>
+          <span data-preview-last-change data-i18n="masthead.lastChange">Last change: P0-27 — Bilingual preview with DE/EN switch and cache-busted assets</span>
+          <span data-preview-last-change-time data-i18n="masthead.lastChangeTime">2026-10-26 22:15 (Europe/Zurich)</span>
         </p>
         <div class="masthead__meta">
-          <span>Tokens: <code>packages/ui-kit/tokens.css</code></span>
-          <span>Icons: <code>packages/ui-kit/icons/</code></span>
-          <span>Demo: <code>preview.js</code></span>
-          <span>Tasks: P0-19, P0-20, P0-21, P0-22, P0-23, P0-24, P0-25, P0-26, P1-07</span>
+          <span data-i18n-html="masthead.tokensPackagesUiKitTokens">Tokens: <code>packages/ui-kit/tokens.css</code></span>
+          <span data-i18n-html="masthead.iconsPackagesUiKitIcons">Icons: <code>packages/ui-kit/icons/</code></span>
+          <span data-i18n-html="masthead.demoPreviewJs">Demo: <code>preview.js</code></span>
+          <span data-i18n="masthead.tasks">Tasks: P0-19, P0-20, P0-21, P0-22, P0-23, P0-24, P0-25, P0-26, P0-27, P1-07</span>
+          <div
+            class="preview-locale"
+            role="group"
+            aria-label="Language"
+            data-i18n-attr="aria-label:locale.group"
+            data-preview-locale-group
+          >
+            <button
+              class="preview-locale__option"
+              type="button"
+              data-preview-locale="de"
+              aria-label="German"
+              data-i18n-attr="aria-label:locale.german"
+              aria-pressed="false"
+            >DE</button>
+            <span class="preview-locale__divider" aria-hidden="true"></span>
+            <button
+              class="preview-locale__option"
+              type="button"
+              data-preview-locale="en"
+              aria-label="English"
+              data-i18n-attr="aria-label:locale.english"
+              aria-pressed="true"
+            >EN</button>
+          </div>
         </div>
       </header>
 
       <section class="section" aria-labelledby="demo">
         <div class="section__head">
-          <span class="eyebrow">01 — Interactive demo</span>
-          <h2 id="demo">Live connection demo</h2>
-          <p class="section__intro">
+          <span class="eyebrow" data-i18n="demo.eyebrow">01 — Interactive demo</span>
+          <h2 id="demo" data-i18n="demo.liveConnectionDemo">Live connection demo</h2>
+          <p class="section__intro" data-i18n-html="demo.twoNoteCardsAndOne">
             Two note cards and one connection, plus a preview-only toolbar and a static zone.
             Drag a card with mouse, pen or finger — the whole card is the handle — or focus a card
             and use the arrow keys (16 px per step, <kbd>Home</kbd> resets both).
@@ -46,17 +71,17 @@
         </div>
         <div class="demo" data-demo>
           <noscript>
-            <p class="demo__noscript">
+            <p class="demo__noscript" data-i18n="demo.theInteractiveDemoNeedsJavaScript">
               The interactive demo needs JavaScript. The rest of this page is static and works
               without it.
             </p>
           </noscript>
-          <p class="demo__hint" id="demo-hint">
+          <p class="demo__hint" id="demo-hint" data-i18n="demo.aClickWithoutMovementUnder">
             A click without movement (under 4 px) selects the card; the four side-midpoint anchors
             are invisible geometry and the edge snaps to the nearest pair. Toolbar, zone and zoom
             pill are preview-only: a tool click only selects it and changes nothing on the canvas.
           </p>
-          <p class="demo__legend token-caption">
+          <p class="demo__legend token-caption" data-i18n="demo.toolbarPreviewOnlyZoneNotepad">
             toolbar · preview-only · zone · notepad + image window · curve · --tone-d · 1.5 px
           </p>
           <div class="demo__surface" data-demo-surface>
@@ -65,36 +90,36 @@
               role="group"
               aria-label="Demo toolbar, preview only: selecting a tool changes nothing on the canvas"
               data-demo-toolbar
-            >
-              <button class="demo-toolbar__button" type="button" data-demo-tool="note" aria-label="Note tool" data-label="Note" aria-pressed="true">
+             data-i18n-attr="aria-label:demo.demoToolbarPreviewOnlySelecting">
+              <button class="demo-toolbar__button" type="button" data-demo-tool="note" aria-label="Note tool" data-label="Note" aria-pressed="true" data-i18n-attr="aria-label:demo.noteTool data-label:demo.note">
                 <span class="icon icon--note" aria-hidden="true"></span>
               </button>
-              <button class="demo-toolbar__button" type="button" data-demo-tool="source" aria-label="Link tool" data-label="Link" aria-pressed="false">
+              <button class="demo-toolbar__button" type="button" data-demo-tool="source" aria-label="Link tool" data-label="Link" aria-pressed="false" data-i18n-attr="aria-label:demo.linkTool data-label:demo.link">
                 <span class="icon icon--source" aria-hidden="true"></span>
               </button>
-              <button class="demo-toolbar__button" type="button" data-demo-tool="image" aria-label="Image tool" data-label="Image" aria-pressed="false">
+              <button class="demo-toolbar__button" type="button" data-demo-tool="image" aria-label="Image tool" data-label="Image" aria-pressed="false" data-i18n-attr="aria-label:demo.imageTool data-label:demo.image">
                 <span class="icon icon--image" aria-hidden="true"></span>
               </button>
-              <button class="demo-toolbar__button" type="button" data-demo-tool="file" aria-label="File tool" data-label="File" aria-pressed="false">
+              <button class="demo-toolbar__button" type="button" data-demo-tool="file" aria-label="File tool" data-label="File" aria-pressed="false" data-i18n-attr="aria-label:demo.fileTool data-label:demo.file">
                 <span class="icon icon--file" aria-hidden="true"></span>
               </button>
               <span class="demo-toolbar__divider" aria-hidden="true"></span>
-              <button class="demo-toolbar__button" type="button" data-demo-tool="zone" aria-label="Zone tool" data-label="Zone" aria-pressed="false">
+              <button class="demo-toolbar__button" type="button" data-demo-tool="zone" aria-label="Zone tool" data-label="Zone" aria-pressed="false" data-i18n-attr="aria-label:demo.zoneTool data-label:demo.zone">
                 <span class="icon icon--zone" aria-hidden="true"></span>
               </button>
-              <button class="demo-toolbar__button" type="button" data-demo-tool="checklist" aria-label="Checklist tool" data-label="Checklist" aria-pressed="false">
+              <button class="demo-toolbar__button" type="button" data-demo-tool="checklist" aria-label="Checklist tool" data-label="Checklist" aria-pressed="false" data-i18n-attr="aria-label:demo.checklistTool data-label:demo.checklist">
                 <span class="icon icon--checklist" aria-hidden="true"></span>
               </button>
-              <button class="demo-toolbar__button" type="button" data-demo-tool="palette" aria-label="Palette tool" data-label="Palette" aria-pressed="false">
+              <button class="demo-toolbar__button" type="button" data-demo-tool="palette" aria-label="Palette tool" data-label="Palette" aria-pressed="false" data-i18n-attr="aria-label:demo.paletteTool data-label:demo.palette">
                 <span class="icon icon--palette" aria-hidden="true"></span>
               </button>
-              <button class="demo-toolbar__button" type="button" data-demo-tool="columns" aria-label="Columns tool" data-label="Columns" aria-pressed="false">
+              <button class="demo-toolbar__button" type="button" data-demo-tool="columns" aria-label="Columns tool" data-label="Columns" aria-pressed="false" data-i18n-attr="aria-label:demo.columnsTool data-label:demo.columns">
                 <span class="icon icon--columns" aria-hidden="true"></span>
               </button>
-              <button class="demo-toolbar__button" type="button" data-demo-tool="timeline" aria-label="Timeline tool" data-label="Timeline" aria-pressed="false">
+              <button class="demo-toolbar__button" type="button" data-demo-tool="timeline" aria-label="Timeline tool" data-label="Timeline" aria-pressed="false" data-i18n-attr="aria-label:demo.timelineTool data-label:demo.timeline">
                 <span class="icon icon--timeline" aria-hidden="true"></span>
               </button>
-              <button class="demo-toolbar__button" type="button" data-demo-tool="table" aria-label="Table tool" data-label="Table" aria-pressed="false">
+              <button class="demo-toolbar__button" type="button" data-demo-tool="table" aria-label="Table tool" data-label="Table" aria-pressed="false" data-i18n-attr="aria-label:demo.tableTool data-label:demo.table">
                 <span class="icon icon--table" aria-hidden="true"></span>
               </button>
             </div>
@@ -109,15 +134,15 @@
                 role="group"
                 aria-label="Static preview zone with a notepad and an image window"
                 data-demo-zone
-              >
+               data-i18n-attr="aria-label:demo.staticPreviewZoneWithA">
                 <div class="demo-zone__notepad">
-                  <span class="type-label">Note</span>
-                  <h3 class="demo-zone__notepad-title">Moodboard</h3>
-                  <p class="demo-zone__notepad-body">Zone content, static preview.</p>
+                  <span class="type-label" data-i18n="demo.note">Note</span>
+                  <h3 class="demo-zone__notepad-title" data-i18n="demo.moodboard">Moodboard</h3>
+                  <p class="demo-zone__notepad-body" data-i18n="demo.zoneContentStaticPreview">Zone content, static preview.</p>
                 </div>
                 <figure class="demo-zone__window">
                   <figcaption class="demo-zone__window-bar">
-                    <span class="demo-zone__window-title">Photo</span>
+                    <span class="demo-zone__window-title" data-i18n="demo.photo">Photo</span>
                   </figcaption>
                   <img
                     class="demo-zone__window-image"
@@ -125,7 +150,7 @@
                     alt="Owner-supplied demo photo: a lake shore with pine trees and boulders below snowy mountains."
                     width="1135"
                     height="829"
-                  />
+                   data-i18n-attr="alt:demo.ownerSuppliedDemoPhotoA"/>
                 </figure>
               </div>
               <article
@@ -133,34 +158,34 @@
                 data-demo-card="a"
                 tabindex="0"
                 aria-label="Draggable note card A. Arrow keys move it by 16 pixels, Home resets both cards."
-              >
+               data-i18n-attr="aria-label:demo.draggableNoteCardAArrow">
                 <div class="note-card__head">
-                  <span class="type-label">Note A</span>
+                  <span class="type-label" data-i18n="demo.noteA">Note A</span>
                 </div>
-                <h3 class="note-card__title">Design law</h3>
-                <p class="note-card__body">Content first, quiet chrome.</p>
+                <h3 class="note-card__title" data-i18n="demo.designLaw">Design law</h3>
+                <p class="note-card__body" data-i18n="demo.contentFirstQuietChrome">Content first, quiet chrome.</p>
               </article>
               <article
                 class="note-card demo-card"
                 data-demo-card="b"
                 tabindex="0"
                 aria-label="Draggable note card B. Arrow keys move it by 16 pixels, Home resets both cards."
-              >
+               data-i18n-attr="aria-label:demo.draggableNoteCardBArrow">
                 <div class="note-card__head">
-                  <span class="type-label">Note B</span>
+                  <span class="type-label" data-i18n="demo.noteB">Note B</span>
                 </div>
-                <h3 class="note-card__title">Token source</h3>
-                <p class="note-card__body">One source for CSS and C++.</p>
+                <h3 class="note-card__title" data-i18n="demo.tokenSource">Token source</h3>
+                <p class="note-card__body" data-i18n="demo.oneSourceForCSSAnd">One source for CSS and C++.</p>
               </article>
             </div>
-            <div class="demo-zoom" role="group" aria-label="Demo zoom controls" data-demo-zoom>
-              <button class="demo-zoom__button" type="button" data-demo-zoom-in aria-label="Zoom in" data-label="Zoom in">
+            <div class="demo-zoom" role="group" aria-label="Demo zoom controls" data-demo-zoom data-i18n-attr="aria-label:demo.demoZoomControls">
+              <button class="demo-zoom__button" type="button" data-demo-zoom-in aria-label="Zoom in" data-label="Zoom in" data-i18n-attr="aria-label:demo.zoomIn data-label:demo.zoomIn">
                 <span class="demo-zoom__glyph demo-zoom__glyph--plus" aria-hidden="true"></span>
               </button>
-              <button class="demo-zoom__button" type="button" data-demo-zoom-out aria-label="Zoom out" data-label="Zoom out">
+              <button class="demo-zoom__button" type="button" data-demo-zoom-out aria-label="Zoom out" data-label="Zoom out" data-i18n-attr="aria-label:demo.zoomOut data-label:demo.zoomOut">
                 <span class="demo-zoom__glyph demo-zoom__glyph--minus" aria-hidden="true"></span>
               </button>
-              <button class="demo-zoom__button" type="button" data-demo-zoom-fit aria-label="Fit to view" data-label="Fit to view">
+              <button class="demo-zoom__button" type="button" data-demo-zoom-fit aria-label="Fit to view" data-label="Fit to view" data-i18n-attr="aria-label:demo.fitToView data-label:demo.fitToView">
                 <span class="demo-zoom__glyph demo-zoom__glyph--fit" aria-hidden="true"></span>
               </button>
             </div>
@@ -182,9 +207,9 @@
         data-contract-parity-invalid="45"
       >
         <div class="section__head">
-          <span class="eyebrow">02 — Contract</span>
-          <h2 id="contract">Contract 0.1.0 — the shared language</h2>
-          <p class="section__intro">
+          <span class="eyebrow" data-i18n="contract.eyebrow">02 — Contract</span>
+          <h2 id="contract" data-i18n="contract.contract010The">Contract 0.1.0 — the shared language</h2>
+          <p class="section__intro" data-i18n-html="contract.everythingTheEngineTheBackend">
             Everything the engine, the backend and the web exchange is versioned JSON Schema in
             <code>packages/contracts</code>: board content, its operations with exactly one inverse
             each, the WebSocket sync protocol and the REST API resources and errors, with valid and
@@ -198,69 +223,69 @@
 
         <dl class="contract-facts">
           <div class="contract-fact">
-            <dt class="contract-label">Version</dt>
+            <dt class="contract-label" data-i18n="contract.version">Version</dt>
             <dd class="contract-fact__value">0.1.0</dd>
-            <dd class="contract-fact__note">logical; the tag waits for the remote phase</dd>
+            <dd class="contract-fact__note" data-i18n="contract.logicalTheTagWaitsFor">logical; the tag waits for the remote phase</dd>
           </div>
           <div class="contract-fact">
-            <dt class="contract-label">Schema files</dt>
+            <dt class="contract-label" data-i18n="contract.schemaFiles">Schema files</dt>
             <dd class="contract-fact__value">16</dd>
-            <dd class="contract-fact__note">10 board content, 1 sync, 5 REST API</dd>
+            <dd class="contract-fact__note" data-i18n="contract.text10BoardContent1Sync">10 board content, 1 sync, 5 REST API</dd>
           </div>
           <div class="contract-fact">
-            <dt class="contract-label">Operation types</dt>
+            <dt class="contract-label" data-i18n="contract.operationTypes">Operation types</dt>
             <dd class="contract-fact__value">19</dd>
-            <dd class="contract-fact__note">one gesture, one inverse (AD-1)</dd>
+            <dd class="contract-fact__note" data-i18n="contract.oneGestureOneInverseAD">one gesture, one inverse (AD-1)</dd>
           </div>
           <div class="contract-fact">
-            <dt class="contract-label">Sync message types</dt>
+            <dt class="contract-label" data-i18n="contract.syncMessageTypes">Sync message types</dt>
             <dd class="contract-fact__value">6 + 6</dd>
-            <dd class="contract-fact__note">client to server, server to client</dd>
+            <dd class="contract-fact__note" data-i18n="contract.clientToServerServerTo">client to server, server to client</dd>
           </div>
           <div class="contract-fact">
-            <dt class="contract-label">Error codes</dt>
+            <dt class="contract-label" data-i18n="contract.errorCodes">Error codes</dt>
             <dd class="contract-fact__value">7</dd>
-            <dd class="contract-fact__note">stable wire codes with message keys</dd>
+            <dd class="contract-fact__note" data-i18n="contract.stableWireCodesWithMessage">stable wire codes with message keys</dd>
           </div>
           <div class="contract-fact">
-            <dt class="contract-label">Parity fixtures</dt>
+            <dt class="contract-label" data-i18n="contract.parityFixtures">Parity fixtures</dt>
             <dd class="contract-fact__value">77</dd>
-            <dd class="contract-fact__note">32 valid, 45 invalid</dd>
+            <dd class="contract-fact__note" data-i18n="contract.text32Valid45Invalid">32 valid, 45 invalid</dd>
           </div>
         </dl>
 
         <div class="contract-blocks">
           <div class="contract-block">
-            <h3 class="contract-block__title">Schema families and files</h3>
+            <h3 class="contract-block__title" data-i18n="contract.schemaFamiliesAndFiles">Schema families and files</h3>
             <ul class="contract-families">
               <li class="contract-family">
-                <span class="contract-family__name">Board content</span>
+                <span class="contract-family__name" data-i18n="contract.boardContent">Board content</span>
                 <code class="contract-family__path">schemas/*.schema.json</code>
-                <span class="contract-family__note">
+                <span class="contract-family__note" data-i18n-html="contract.theCodegenInputSchemasAnd">
                   The codegen input schemas and the root
                   <code>board-content.schema.json</code>; corpus <code>fixtures/</code>.
                 </span>
               </li>
               <li class="contract-family">
-                <span class="contract-family__name">Sync protocol</span>
+                <span class="contract-family__name" data-i18n="contract.syncProtocol">Sync protocol</span>
                 <code class="contract-family__path">schemas/sync/sync.schema.json</code>
-                <span class="contract-family__note">
+                <span class="contract-family__note" data-i18n-html="contract.oneClosedOneOfEnvelopeFor">
                   One closed <code>oneOf</code> envelope for the WebSocket messages; corpus
                   <code>fixtures-sync/</code>.
                 </span>
               </li>
               <li class="contract-family">
-                <span class="contract-family__name">REST API</span>
+                <span class="contract-family__name" data-i18n="contract.rESTAPI">REST API</span>
                 <code class="contract-family__path">schemas/api/*.schema.json</code>
-                <span class="contract-family__note">
+                <span class="contract-family__note" data-i18n-html="contract.closedEnvelopesForTheFour">
                   Closed envelopes for the four resources (workspace, board, note, card) and one
                   error envelope; corpus <code>fixtures-api/</code>.
                 </span>
               </li>
               <li class="contract-family">
-                <span class="contract-family__name">Gate specimens</span>
+                <span class="contract-family__name" data-i18n="contract.gateSpecimens">Gate specimens</span>
                 <code class="contract-family__path">fixtures-gate/</code>
-                <span class="contract-family__note">
+                <span class="contract-family__note" data-i18n-html="contract.twoDirectPolierSpecimensCopy">
                   Two direct Polier specimens copy the canonical board-content fixtures, because the
                   Polier <code>contracts</code> gate only reads <code>valid/*.json</code> and
                   <code>invalid/*.json</code>; a unit test enforces the copies.
@@ -270,12 +295,12 @@
           </div>
 
           <div class="contract-block">
-            <h3 class="contract-block__title">Operation types</h3>
-            <p class="contract-block__note">
+            <h3 class="contract-block__title" data-i18n="contract.operationTypes">Operation types</h3>
+            <p class="contract-block__note" data-i18n-html="contract.aD1EveryChangeTo">
               AD-1: every change to board content is one operation with exactly one inverse, and
               <code>group</code> is ordered and never nested.
             </p>
-            <ul class="contract-chips" aria-label="Operation types of contract 0.1.0">
+            <ul class="contract-chips" aria-label="Operation types of contract 0.1.0" data-i18n-attr="aria-label:contract.operationTypesOfContract0">
               <li class="contract-chip">createNote</li>
               <li class="contract-chip">updateNote</li>
               <li class="contract-chip">deleteNote</li>
@@ -299,11 +324,11 @@
           </div>
 
           <div class="contract-block">
-            <h3 class="contract-block__title">Sync message types</h3>
+            <h3 class="contract-block__title" data-i18n="contract.syncMessageTypes">Sync message types</h3>
             <div class="contract-sync">
               <div class="contract-sync__group">
-                <span class="contract-label">Client to server</span>
-                <ul class="contract-chips" aria-label="Client to server messages">
+                <span class="contract-label" data-i18n="contract.clientToServer">Client to server</span>
+                <ul class="contract-chips" aria-label="Client to server messages" data-i18n-attr="aria-label:contract.clientToServerMessages">
                   <li class="contract-chip">hello</li>
                   <li class="contract-chip">joinBoard</li>
                   <li class="contract-chip">leaveBoard</li>
@@ -313,8 +338,8 @@
                 </ul>
               </div>
               <div class="contract-sync__group">
-                <span class="contract-label">Server to client</span>
-                <ul class="contract-chips" aria-label="Server to client messages">
+                <span class="contract-label" data-i18n="contract.serverToClient">Server to client</span>
+                <ul class="contract-chips" aria-label="Server to client messages" data-i18n-attr="aria-label:contract.serverToClientMessages">
                   <li class="contract-chip">welcome</li>
                   <li class="contract-chip">ack</li>
                   <li class="contract-chip">operationBatch</li>
@@ -324,15 +349,15 @@
                 </ul>
               </div>
             </div>
-            <p class="contract-block__note">
+            <p class="contract-block__note" data-i18n-html="contract.aDurableAckCoversEvery">
               A durable <code>ack</code> covers every operation id of its batch (AD-2); presence is
               ephemeral and carries no operations.
             </p>
           </div>
 
           <div class="contract-block">
-            <h3 class="contract-block__title">Error codes and message keys</h3>
-            <p class="contract-block__note">
+            <h3 class="contract-block__title" data-i18n="contract.errorCodesAndMessageKeys">Error codes and message keys</h3>
+            <p class="contract-block__note" data-i18n-html="contract.theWireCodeStaysLanguage">
               The wire code stays language-neutral; the required <code>messageKey</code> is
               <code>errors.&lt;camelCase&gt;</code>, so the user text comes from the translation
               files (AD-8).
@@ -370,14 +395,14 @@
           </div>
 
           <div class="contract-block contract-block--proof">
-            <h3 class="contract-block__title">Fixture proof and codegen</h3>
-            <p class="contract-block__note">
+            <h3 class="contract-block__title" data-i18n="contract.fixtureProofAndCodegen">Fixture proof and codegen</h3>
+            <p class="contract-block__note" data-i18n-html="contract.everyFixtureInTheParity">
               Every fixture in the parity corpus is reduced to one canonical line by
               <code>test/parity/canonical.ts</code>; <code>test/cpp/parity.cpp</code> reads the same
               wrappers with <code>generated/contract.h</code>, and the unit suite asserts that the
               TypeScript and C++ line sets are identical — a tampered line is detected.
             </p>
-            <p class="contract-block__note">
+            <p class="contract-block__note" data-i18n-html="contract.codegenMjsDeterministicallyGeneratedThe">
               <code>codegen.mjs</code> deterministically generated the committed
               <code>generated/types.ts</code> and <code>generated/contract.h</code>; hand edits fail
               the <code>codegen</code> gate on a diff, so the types cannot drift from the schemas.
@@ -385,12 +410,12 @@
           </div>
         </div>
 
-        <p class="contract-cadence">
+        <p class="contract-cadence" data-i18n-html="contract.demoCadenceThisOverviewIs">
           Demo cadence: this overview is kept current in the same task as every contract or preview
           change, and the live two-note demo above stays permanently
           (<a href="../../../docs/quality.md">docs/quality.md</a>).
         </p>
-        <p class="contract-cadence">
+        <p class="contract-cadence" data-i18n-html="contract.readTheFullContractIn">
           Read the full contract in <a href="../../../docs/contracts.md">docs/contracts.md</a> and
           the decision in <a href="../../../docs/adr/ADR-0005-contract.md">ADR-0005 — Contract and
           versions</a>.
@@ -399,9 +424,9 @@
 
       <section class="section" aria-labelledby="colours">
         <div class="section__head">
-          <span class="eyebrow">03 — Colour</span>
-          <h2 id="colours">Colour tokens</h2>
-          <p class="section__intro">
+          <span class="eyebrow" data-i18n="colours.eyebrow">03 — Colour</span>
+          <h2 id="colours" data-i18n="colours.colourTokens">Colour tokens</h2>
+          <p class="section__intro" data-i18n-html="colours.everySwatchReadsAGenerated">
             Every swatch reads a generated custom property from the design tokens. Translucent
             tokens are shown over <code>--card</code> so their effect is visible. No raw colour
             values appear in this preview.
@@ -411,101 +436,101 @@
           <li class="swatch">
             <span class="swatch__chip swatch--bg" aria-hidden="true"></span>
             <code class="swatch__name">--bg</code>
-            <span class="swatch__use">Page background</span>
+            <span class="swatch__use" data-i18n="colours.pageBackground">Page background</span>
           </li>
           <li class="swatch">
             <span class="swatch__chip swatch--canvas" aria-hidden="true"></span>
             <code class="swatch__name">--canvas</code>
-            <span class="swatch__use">Canvas surface</span>
+            <span class="swatch__use" data-i18n="colours.canvasSurface">Canvas surface</span>
           </li>
           <li class="swatch">
             <span class="swatch__chip swatch--surface" aria-hidden="true"></span>
             <code class="swatch__name">--surface</code>
-            <span class="swatch__use">Panels, bars, menus</span>
+            <span class="swatch__use" data-i18n="colours.panelsBarsMenus">Panels, bars, menus</span>
           </li>
           <li class="swatch">
             <span class="swatch__chip swatch--card" aria-hidden="true"></span>
             <code class="swatch__name">--card</code>
-            <span class="swatch__use">Cards and blocks</span>
+            <span class="swatch__use" data-i18n="colours.cardsAndBlocks">Cards and blocks</span>
           </li>
           <li class="swatch">
             <span class="swatch__chip swatch--fg" aria-hidden="true"></span>
             <code class="swatch__name">--fg</code>
-            <span class="swatch__use">Main text</span>
+            <span class="swatch__use" data-i18n="colours.mainText">Main text</span>
           </li>
           <li class="swatch">
             <span class="swatch__chip swatch--muted" aria-hidden="true"></span>
             <code class="swatch__name">--muted</code>
-            <span class="swatch__use">Secondary text</span>
+            <span class="swatch__use" data-i18n="colours.secondaryText">Secondary text</span>
           </li>
           <li class="swatch">
             <span class="swatch__chip swatch--faint" aria-hidden="true"></span>
             <code class="swatch__name">--faint</code>
-            <span class="swatch__use">Hover surface</span>
+            <span class="swatch__use" data-i18n="colours.hoverSurface">Hover surface</span>
           </li>
           <li class="swatch">
             <span class="swatch__chip swatch--border" aria-hidden="true"></span>
             <code class="swatch__name">--border</code>
-            <span class="swatch__use">Dividers, resting borders</span>
+            <span class="swatch__use" data-i18n="colours.dividersRestingBorders">Dividers, resting borders</span>
           </li>
           <li class="swatch">
             <span class="swatch__chip swatch--border-strong" aria-hidden="true"></span>
             <code class="swatch__name">--border-strong</code>
-            <span class="swatch__use">Hover borders, fields</span>
+            <span class="swatch__use" data-i18n="colours.hoverBordersFields">Hover borders, fields</span>
           </li>
           <li class="swatch">
             <span class="swatch__chip swatch--accent" aria-hidden="true"></span>
             <code class="swatch__name">--accent</code>
-            <span class="swatch__use">Selection, focus, active tool</span>
+            <span class="swatch__use" data-i18n="colours.selectionFocusActiveTool">Selection, focus, active tool</span>
           </li>
           <li class="swatch">
             <span class="swatch__chip swatch--accent-soft" aria-hidden="true"></span>
             <code class="swatch__name">--accent-soft</code>
-            <span class="swatch__use">Selection ring</span>
+            <span class="swatch__use" data-i18n="colours.selectionRing">Selection ring</span>
           </li>
           <li class="swatch">
             <span class="swatch__chip swatch--accent-line" aria-hidden="true"></span>
             <code class="swatch__name">--accent-line</code>
-            <span class="swatch__use">Accent line</span>
+            <span class="swatch__use" data-i18n="colours.accentLine">Accent line</span>
           </li>
           <li class="swatch">
             <span class="swatch__chip swatch--danger" aria-hidden="true"></span>
             <code class="swatch__name">--danger</code>
-            <span class="swatch__use">Errors</span>
+            <span class="swatch__use" data-i18n="colours.errors">Errors</span>
           </li>
           <li class="swatch">
             <span class="swatch__chip swatch--tone-a" aria-hidden="true"></span>
             <code class="swatch__name">--tone-a</code>
-            <span class="swatch__use">Zone and palette tone</span>
+            <span class="swatch__use" data-i18n="colours.zoneAndPaletteTone">Zone and palette tone</span>
           </li>
           <li class="swatch">
             <span class="swatch__chip swatch--tone-b" aria-hidden="true"></span>
             <code class="swatch__name">--tone-b</code>
-            <span class="swatch__use">Zone and palette tone</span>
+            <span class="swatch__use" data-i18n="colours.zoneAndPaletteTone">Zone and palette tone</span>
           </li>
           <li class="swatch">
             <span class="swatch__chip swatch--tone-c" aria-hidden="true"></span>
             <code class="swatch__name">--tone-c</code>
-            <span class="swatch__use">Zone and palette tone</span>
+            <span class="swatch__use" data-i18n="colours.zoneAndPaletteTone">Zone and palette tone</span>
           </li>
           <li class="swatch">
             <span class="swatch__chip swatch--tone-d" aria-hidden="true"></span>
             <code class="swatch__name">--tone-d</code>
-            <span class="swatch__use">Zone and palette tone</span>
+            <span class="swatch__use" data-i18n="colours.zoneAndPaletteTone">Zone and palette tone</span>
           </li>
           <li class="swatch">
             <span class="swatch__chip swatch--tone-e" aria-hidden="true"></span>
             <code class="swatch__name">--tone-e</code>
-            <span class="swatch__use">Zone and palette tone</span>
+            <span class="swatch__use" data-i18n="colours.zoneAndPaletteTone">Zone and palette tone</span>
           </li>
         </ul>
       </section>
 
       <section class="section" aria-labelledby="type">
         <div class="section__head">
-          <span class="eyebrow">04 — Typography</span>
-          <h2 id="type">Typography scale</h2>
-          <p class="section__intro">
+          <span class="eyebrow" data-i18n="type.eyebrow">04 — Typography</span>
+          <h2 id="type" data-i18n="type.typographyScale">Typography scale</h2>
+          <p class="section__intro" data-i18n-html="type.serifForBoardPanelAnd">
             Serif for board, panel and empty-state titles, sans for everything else. Sizes come from
             <code>--text-28</code> to <code>--text-11</code>; weights are regular, medium and
             semibold. No font files are loaded — the token stacks fall back to locally installed
@@ -514,45 +539,45 @@
         </div>
         <div class="type-list">
           <div class="type-row">
-            <p class="type-serif-28">Board title</p>
+            <p class="type-serif-28" data-i18n="type.boardTitle">Board title</p>
             <code class="token-caption">--font-serif · --text-28 · --weight-regular</code>
           </div>
           <div class="type-row">
-            <p class="type-serif-24">Panel title</p>
+            <p class="type-serif-24" data-i18n="type.panelTitle">Panel title</p>
             <code class="token-caption">--font-serif · --text-24 · --weight-regular</code>
           </div>
           <div class="type-row">
-            <p class="type-serif-22">Empty state</p>
+            <p class="type-serif-22" data-i18n="type.emptyState">Empty state</p>
             <code class="token-caption">--font-serif · --text-22 · --weight-regular</code>
           </div>
           <div class="type-row">
-            <p class="type-sans-15">Card title</p>
+            <p class="type-sans-15" data-i18n="type.cardTitle">Card title</p>
             <code class="token-caption">--font-sans · --text-15 · --weight-semibold</code>
           </div>
           <div class="type-row">
-            <p class="type-sans-13">
+            <p class="type-sans-13" data-i18n="type.bodyTextInCardsAnd">
               Body text in cards and blocks. Content is the brightest thing on screen; bars and
               buttons step back.
             </p>
-            <code class="token-caption">--font-sans · --text-13 · line-height --line-height</code>
+            <code class="token-caption" data-i18n="type.captionLineHeight">--font-sans · --text-13 · line-height --line-height</code>
           </div>
           <div class="type-row">
-            <span class="type-label">Note</span>
+            <span class="type-label" data-i18n="type.note">Note</span>
             <code class="token-caption">--font-sans · --text-11 · --tracking-label</code>
           </div>
           <div class="type-row">
-            <p class="type-sans-12">Status and hints, for example “Saved” or “Saving …”.</p>
+            <p class="type-sans-12" data-i18n="type.statusAndHintsForExample">Status and hints, for example “Saved” or “Saving …”.</p>
             <code class="token-caption">--font-sans · --text-12 · --muted</code>
           </div>
           <div class="type-row">
-            <span class="type-tooltip-sample">Move card</span>
-            <code class="token-caption">Tooltip · --text-12 · --weight-medium</code>
+            <span class="type-tooltip-sample" data-i18n="type.moveCard">Move card</span>
+            <code class="token-caption" data-i18n="type.captionTooltip">Tooltip · --text-12 · --weight-medium</code>
           </div>
           <div class="type-row">
             <div class="weights">
-              <span class="weight-regular">Regular 400</span>
-              <span class="weight-medium">Medium 500</span>
-              <span class="weight-semibold">Semibold 600</span>
+              <span class="weight-regular" data-i18n="type.regular400">Regular 400</span>
+              <span class="weight-medium" data-i18n="type.medium500">Medium 500</span>
+              <span class="weight-semibold" data-i18n="type.semibold600">Semibold 600</span>
             </div>
             <code class="token-caption">--weight-regular · --weight-medium · --weight-semibold</code>
           </div>
@@ -561,9 +586,9 @@
 
       <section class="section" aria-labelledby="space">
         <div class="section__head">
-          <span class="eyebrow">05 — Space, radii, shadows, borders</span>
-          <h2 id="space">Spacing and surfaces</h2>
-          <p class="section__intro">
+          <span class="eyebrow" data-i18n="space.eyebrow">05 — Space, radii, shadows, borders</span>
+          <h2 id="space" data-i18n="space.spacingAndSurfaces">Spacing and surfaces</h2>
+          <p class="section__intro" data-i18n="space.a4PxGrid4">
             A 4 px grid: 4, 8, 12, 16, 24, 32 and 48. Radii are 10, 14, 20, a 6 px tooltip radius
             and a pill; surfaces use the two token shadows only.
           </p>
@@ -607,7 +632,7 @@
         </div>
         <div class="detail-grid">
           <div class="detail-card">
-            <h3>Radii</h3>
+            <h3 data-i18n="space.radii">Radii</h3>
             <div class="radii">
               <span class="radius-tile radius-tile--sm">sm</span>
               <span class="radius-tile radius-tile--md">md</span>
@@ -618,23 +643,23 @@
             <code class="token-caption">--radius-sm / -md / -lg / -tooltip / -pill</code>
           </div>
           <div class="detail-card">
-            <h3>Shadows</h3>
+            <h3 data-i18n="space.shadows">Shadows</h3>
             <div class="shadow-tiles">
               <span class="shadow-tile shadow-tile--card">--card-shadow</span>
               <span class="shadow-tile shadow-tile--shadow">--shadow</span>
             </div>
           </div>
           <div class="detail-card">
-            <h3>Border widths</h3>
+            <h3 data-i18n="space.borderWidths">Border widths</h3>
             <div class="border-tiles">
               <span class="border-tile border-tile--thin">--border-width 1 px</span>
               <span class="border-tile border-tile--strong">--border-width-strong 1.5 px</span>
-              <span class="border-tile border-tile--focus">--outline-width 2 px + offset</span>
+              <span class="border-tile border-tile--focus" data-i18n="space.captionOutlineWidth">--outline-width 2 px + offset</span>
             </div>
           </div>
           <div class="detail-card">
-            <h3>Sizes</h3>
-            <p class="type-sans-12">
+            <h3 data-i18n="space.sizes">Sizes</h3>
+            <p class="type-sans-12" data-i18n-html="space.headerHeaderHeight40Px">
               Header <code>--header-height</code> 40 px · click target
               <code>--click-target</code> 32 px · bar button <code>--button-bar</code> 36 px ·
               toolbar icon <code>--icon-bar</code> 20 px · card action
@@ -647,9 +672,9 @@
 
       <section class="section" aria-labelledby="icons">
         <div class="section__head">
-          <span class="eyebrow">06 — Icons</span>
-          <h2 id="icons">Toolbar icons</h2>
-          <p class="section__intro">
+          <span class="eyebrow" data-i18n="icons.eyebrow">06 — Icons</span>
+          <h2 id="icons" data-i18n="icons.toolbarIcons">Toolbar icons</h2>
+          <p class="section__intro" data-i18n-html="icons.theTenIconsShipAs">
             The ten icons ship as SVG files in <code>packages/ui-kit/icons/</code>, drawn on a 24
             grid with a 1.6 stroke and <code>currentColor</code>. Each tile shows the 20 px icon in
             a 36 px bar button and the 16 px icon in a 28 px card button; the file is loaded
@@ -659,10 +684,10 @@
         <ul class="icon-grid">
           <li class="icon-tile">
             <div class="icon-tile__row">
-              <button class="tool-btn" type="button" aria-label="Checklist" data-label="Checklist">
+              <button class="tool-btn" type="button" aria-label="Checklist" data-label="Checklist" data-i18n-attr="aria-label:icons.checklist data-label:icons.checklist">
                 <span class="icon icon--checklist" aria-hidden="true"></span>
               </button>
-              <button class="tool-btn tool-btn--card" type="button" aria-label="Checklist" data-label="Checklist">
+              <button class="tool-btn tool-btn--card" type="button" aria-label="Checklist" data-label="Checklist" data-i18n-attr="aria-label:icons.checklist data-label:icons.checklist">
                 <span class="icon icon--checklist icon--card" aria-hidden="true"></span>
               </button>
             </div>
@@ -670,10 +695,10 @@
           </li>
           <li class="icon-tile">
             <div class="icon-tile__row">
-              <button class="tool-btn" type="button" aria-label="Columns" data-label="Columns">
+              <button class="tool-btn" type="button" aria-label="Columns" data-label="Columns" data-i18n-attr="aria-label:icons.columns data-label:icons.columns">
                 <span class="icon icon--columns" aria-hidden="true"></span>
               </button>
-              <button class="tool-btn tool-btn--card" type="button" aria-label="Columns" data-label="Columns">
+              <button class="tool-btn tool-btn--card" type="button" aria-label="Columns" data-label="Columns" data-i18n-attr="aria-label:icons.columns data-label:icons.columns">
                 <span class="icon icon--columns icon--card" aria-hidden="true"></span>
               </button>
             </div>
@@ -681,10 +706,10 @@
           </li>
           <li class="icon-tile">
             <div class="icon-tile__row">
-              <button class="tool-btn" type="button" aria-label="File" data-label="File">
+              <button class="tool-btn" type="button" aria-label="File" data-label="File" data-i18n-attr="aria-label:icons.file data-label:icons.file">
                 <span class="icon icon--file" aria-hidden="true"></span>
               </button>
-              <button class="tool-btn tool-btn--card" type="button" aria-label="File" data-label="File">
+              <button class="tool-btn tool-btn--card" type="button" aria-label="File" data-label="File" data-i18n-attr="aria-label:icons.file data-label:icons.file">
                 <span class="icon icon--file icon--card" aria-hidden="true"></span>
               </button>
             </div>
@@ -692,10 +717,10 @@
           </li>
           <li class="icon-tile">
             <div class="icon-tile__row">
-              <button class="tool-btn" type="button" aria-label="Image" data-label="Image">
+              <button class="tool-btn" type="button" aria-label="Image" data-label="Image" data-i18n-attr="aria-label:icons.image data-label:icons.image">
                 <span class="icon icon--image" aria-hidden="true"></span>
               </button>
-              <button class="tool-btn tool-btn--card" type="button" aria-label="Image" data-label="Image">
+              <button class="tool-btn tool-btn--card" type="button" aria-label="Image" data-label="Image" data-i18n-attr="aria-label:icons.image data-label:icons.image">
                 <span class="icon icon--image icon--card" aria-hidden="true"></span>
               </button>
             </div>
@@ -703,10 +728,10 @@
           </li>
           <li class="icon-tile">
             <div class="icon-tile__row">
-              <button class="tool-btn" type="button" aria-label="Note" data-label="Note">
+              <button class="tool-btn" type="button" aria-label="Note" data-label="Note" data-i18n-attr="aria-label:icons.note data-label:icons.note">
                 <span class="icon icon--note" aria-hidden="true"></span>
               </button>
-              <button class="tool-btn tool-btn--card" type="button" aria-label="Note" data-label="Note">
+              <button class="tool-btn tool-btn--card" type="button" aria-label="Note" data-label="Note" data-i18n-attr="aria-label:icons.note data-label:icons.note">
                 <span class="icon icon--note icon--card" aria-hidden="true"></span>
               </button>
             </div>
@@ -714,10 +739,10 @@
           </li>
           <li class="icon-tile">
             <div class="icon-tile__row">
-              <button class="tool-btn" type="button" aria-label="Palette" data-label="Palette">
+              <button class="tool-btn" type="button" aria-label="Palette" data-label="Palette" data-i18n-attr="aria-label:icons.palette data-label:icons.palette">
                 <span class="icon icon--palette" aria-hidden="true"></span>
               </button>
-              <button class="tool-btn tool-btn--card" type="button" aria-label="Palette" data-label="Palette">
+              <button class="tool-btn tool-btn--card" type="button" aria-label="Palette" data-label="Palette" data-i18n-attr="aria-label:icons.palette data-label:icons.palette">
                 <span class="icon icon--palette icon--card" aria-hidden="true"></span>
               </button>
             </div>
@@ -725,10 +750,10 @@
           </li>
           <li class="icon-tile">
             <div class="icon-tile__row">
-              <button class="tool-btn" type="button" aria-label="Source" data-label="Source">
+              <button class="tool-btn" type="button" aria-label="Source" data-label="Source" data-i18n-attr="aria-label:icons.source data-label:icons.source">
                 <span class="icon icon--source" aria-hidden="true"></span>
               </button>
-              <button class="tool-btn tool-btn--card" type="button" aria-label="Source" data-label="Source">
+              <button class="tool-btn tool-btn--card" type="button" aria-label="Source" data-label="Source" data-i18n-attr="aria-label:icons.source data-label:icons.source">
                 <span class="icon icon--source icon--card" aria-hidden="true"></span>
               </button>
             </div>
@@ -736,10 +761,10 @@
           </li>
           <li class="icon-tile">
             <div class="icon-tile__row">
-              <button class="tool-btn" type="button" aria-label="Table" data-label="Table">
+              <button class="tool-btn" type="button" aria-label="Table" data-label="Table" data-i18n-attr="aria-label:icons.table data-label:icons.table">
                 <span class="icon icon--table" aria-hidden="true"></span>
               </button>
-              <button class="tool-btn tool-btn--card" type="button" aria-label="Table" data-label="Table">
+              <button class="tool-btn tool-btn--card" type="button" aria-label="Table" data-label="Table" data-i18n-attr="aria-label:icons.table data-label:icons.table">
                 <span class="icon icon--table icon--card" aria-hidden="true"></span>
               </button>
             </div>
@@ -747,10 +772,10 @@
           </li>
           <li class="icon-tile">
             <div class="icon-tile__row">
-              <button class="tool-btn" type="button" aria-label="Timeline" data-label="Timeline">
+              <button class="tool-btn" type="button" aria-label="Timeline" data-label="Timeline" data-i18n-attr="aria-label:icons.timeline data-label:icons.timeline">
                 <span class="icon icon--timeline" aria-hidden="true"></span>
               </button>
-              <button class="tool-btn tool-btn--card" type="button" aria-label="Timeline" data-label="Timeline">
+              <button class="tool-btn tool-btn--card" type="button" aria-label="Timeline" data-label="Timeline" data-i18n-attr="aria-label:icons.timeline data-label:icons.timeline">
                 <span class="icon icon--timeline icon--card" aria-hidden="true"></span>
               </button>
             </div>
@@ -758,10 +783,10 @@
           </li>
           <li class="icon-tile">
             <div class="icon-tile__row">
-              <button class="tool-btn" type="button" aria-label="Zone" data-label="Zone">
+              <button class="tool-btn" type="button" aria-label="Zone" data-label="Zone" data-i18n-attr="aria-label:icons.zone data-label:icons.zone">
                 <span class="icon icon--zone" aria-hidden="true"></span>
               </button>
-              <button class="tool-btn tool-btn--card" type="button" aria-label="Zone" data-label="Zone">
+              <button class="tool-btn tool-btn--card" type="button" aria-label="Zone" data-label="Zone" data-i18n-attr="aria-label:icons.zone data-label:icons.zone">
                 <span class="icon icon--zone icon--card" aria-hidden="true"></span>
               </button>
             </div>
@@ -772,9 +797,9 @@
 
       <section class="section" aria-labelledby="states">
         <div class="section__head">
-          <span class="eyebrow">07 — States</span>
-          <h2 id="states">Component states</h2>
-          <p class="section__intro">
+          <span class="eyebrow" data-i18n="states.eyebrow">07 — States</span>
+          <h2 id="states" data-i18n="states.componentStates">Component states</h2>
+          <p class="section__intro" data-i18n="states.everyInteractiveElementHasRest">
             Every interactive element has rest, hover, pressed, keyboard focus and disabled; cards
             and blocks also have selected. The samples below show each state side by side; the
             buttons are real buttons, so native hover, press and focus work too.
@@ -782,73 +807,73 @@
         </div>
         <div class="state-grid">
           <figure class="state">
-            <button class="tool-btn" type="button" aria-label="Rest state" data-label="Rest">
+            <button class="tool-btn" type="button" aria-label="Rest state" data-label="Rest" data-i18n-attr="aria-label:states.restState data-label:states.rest2">
               <span class="icon icon--note" aria-hidden="true"></span>
             </button>
-            <figcaption>rest</figcaption>
+            <figcaption data-i18n="states.rest">rest</figcaption>
           </figure>
           <figure class="state">
-            <button class="tool-btn is-hover" type="button" aria-label="Hover state" data-label="Hover">
+            <button class="tool-btn is-hover" type="button" aria-label="Hover state" data-label="Hover" data-i18n-attr="aria-label:states.hoverState data-label:states.hover2">
               <span class="icon icon--note" aria-hidden="true"></span>
             </button>
-            <figcaption>hover</figcaption>
+            <figcaption data-i18n="states.hover">hover</figcaption>
           </figure>
           <figure class="state">
-            <button class="tool-btn is-focus" type="button" aria-label="Focus state" data-label="Focus">
+            <button class="tool-btn is-focus" type="button" aria-label="Focus state" data-label="Focus" data-i18n-attr="aria-label:states.focusState data-label:states.focus2">
               <span class="icon icon--note" aria-hidden="true"></span>
             </button>
-            <figcaption>focus</figcaption>
+            <figcaption data-i18n="states.focus">focus</figcaption>
           </figure>
           <figure class="state">
-            <button class="tool-btn is-pressed" type="button" aria-label="Pressed state" data-label="Pressed">
+            <button class="tool-btn is-pressed" type="button" aria-label="Pressed state" data-label="Pressed" data-i18n-attr="aria-label:states.pressedState data-label:states.pressed2">
               <span class="icon icon--note" aria-hidden="true"></span>
             </button>
-            <figcaption>pressed</figcaption>
+            <figcaption data-i18n="states.pressed">pressed</figcaption>
           </figure>
           <figure class="state">
-            <button class="tool-btn is-active" type="button" aria-label="Active tool" data-label="Active">
+            <button class="tool-btn is-active" type="button" aria-label="Active tool" data-label="Active" data-i18n-attr="aria-label:states.activeTool2 data-label:states.active">
               <span class="icon icon--palette" aria-hidden="true"></span>
             </button>
-            <figcaption>active tool</figcaption>
+            <figcaption data-i18n="states.activeTool">active tool</figcaption>
           </figure>
           <figure class="state">
-            <button class="tool-btn is-disabled" type="button" aria-label="Disabled state" data-label="Disabled">
+            <button class="tool-btn is-disabled" type="button" aria-label="Disabled state" data-label="Disabled" data-i18n-attr="aria-label:states.disabledState data-label:states.disabled2">
               <span class="icon icon--note" aria-hidden="true"></span>
             </button>
-            <figcaption>disabled</figcaption>
+            <figcaption data-i18n="states.disabled">disabled</figcaption>
           </figure>
         </div>
-        <p class="state-note">
+        <p class="state-note" data-i18n-html="states.focusIsA2Px">
           Focus is a 2 px <code>--accent</code> outline with 2 px offset; pressed adds
           <code>scale(0.97)</code>; disabled is opacity 0.4 without hover.
         </p>
         <div class="detail-grid">
           <div class="detail-card">
-            <h3>Selected note card</h3>
+            <h3 data-i18n="states.selectedNoteCard">Selected note card</h3>
             <article class="note-card is-selected">
               <div class="note-card__head">
-                <span class="type-label">Note</span>
-                <button class="tool-btn tool-btn--card card-action" type="button" aria-label="Open note" data-label="Open note">
+                <span class="type-label" data-i18n="states.note">Note</span>
+                <button class="tool-btn tool-btn--card card-action" type="button" aria-label="Open note" data-label="Open note" data-i18n-attr="aria-label:states.openNote data-label:states.openNote">
                   <span class="icon icon--file icon--card" aria-hidden="true"></span>
                 </button>
               </div>
-              <h3 class="note-card__title">Selected state</h3>
-              <p class="note-card__body">
+              <h3 class="note-card__title" data-i18n="states.selectedState">Selected state</h3>
+              <p class="note-card__body" data-i18n-html="states.text15PxAccentBorder">
                 1.5 px <code>--accent</code> border with a 3 px <code>--accent-soft</code> ring.
               </p>
             </article>
           </div>
           <div class="detail-card">
-            <h3>Rest note card</h3>
+            <h3 data-i18n="states.restNoteCard">Rest note card</h3>
             <article class="note-card">
               <div class="note-card__head">
-                <span class="type-label">Note</span>
-                <button class="tool-btn tool-btn--card card-action" type="button" aria-label="Open note" data-label="Open note">
+                <span class="type-label" data-i18n="states.note">Note</span>
+                <button class="tool-btn tool-btn--card card-action" type="button" aria-label="Open note" data-label="Open note" data-i18n-attr="aria-label:states.openNote data-label:states.openNote">
                   <span class="icon icon--file icon--card" aria-hidden="true"></span>
                 </button>
               </div>
-              <h3 class="note-card__title">Rest state</h3>
-              <p class="note-card__body">
+              <h3 class="note-card__title" data-i18n="states.restState">Rest state</h3>
+              <p class="note-card__body" data-i18n-html="states.text1PxBorderStrongBorder">
                 1 px <code>--border-strong</code> border with <code>--card-shadow</code>; the card
                 action is invisible until hover or focus.
               </p>
@@ -859,9 +884,9 @@
 
       <section class="section" aria-labelledby="components">
         <div class="section__head">
-          <span class="eyebrow">08 — Components</span>
-          <h2 id="components">Canvas components</h2>
-          <p class="section__intro">
+          <span class="eyebrow" data-i18n="components.eyebrow">08 — Components</span>
+          <h2 id="components" data-i18n="components.canvasComponents">Canvas components</h2>
+          <p class="section__intro" data-i18n="components.oneExampleEachOfA">
             One example each of a note card, a block, a zone, a connection, a side-panel header and
             the toolbar arrangement. These are static markup, not engine objects.
           </p>
@@ -869,56 +894,56 @@
         <div class="component-grid">
           <div class="component">
             <div class="component__label">
-              <h3>Note card</h3>
+              <h3 data-i18n="components.noteCard">Note card</h3>
               <code class="token-caption">--radius-md · --card · --card-shadow</code>
             </div>
             <article class="note-card">
               <div class="note-card__head">
-                <span class="type-label">Note</span>
-                <button class="tool-btn tool-btn--card card-action" type="button" aria-label="Open note" data-label="Open note">
+                <span class="type-label" data-i18n="components.note">Note</span>
+                <button class="tool-btn tool-btn--card card-action" type="button" aria-label="Open note" data-label="Open note" data-i18n-attr="aria-label:components.openNote data-label:components.openNote">
                   <span class="icon icon--file icon--card" aria-hidden="true"></span>
                 </button>
               </div>
-              <h3 class="note-card__title">Calm surface, quiet chrome</h3>
-              <p class="note-card__body">
+              <h3 class="note-card__title" data-i18n="components.calmSurfaceQuietChrome">Calm surface, quiet chrome</h3>
+              <p class="note-card__body" data-i18n="components.thePersonSContentIs">
                 The person’s content is the brightest thing on screen; bars, frames and buttons step
                 back.
               </p>
-              <p class="note-card__body note-card__body--muted">Body text can also be muted.</p>
+              <p class="note-card__body note-card__body--muted" data-i18n="components.bodyTextCanAlsoBe">Body text can also be muted.</p>
             </article>
           </div>
 
           <div class="component">
             <div class="component__label">
-              <h3>Block</h3>
-              <code class="token-caption">--radius-lg · --card · grows in height</code>
+              <h3 data-i18n="components.block">Block</h3>
+              <code class="token-caption" data-i18n="components.captionBlock">--radius-lg · --card · grows in height</code>
             </div>
-            <section class="block" aria-label="Checklist block example">
+            <section class="block" aria-label="Checklist block example" data-i18n-attr="aria-label:components.checklistBlockExample">
               <header class="block__head">
                 <span class="icon icon--checklist icon--card" aria-hidden="true"></span>
-                <h3>Checklist</h3>
-                <span class="type-label">Block</span>
+                <h3 data-i18n="components.checklist">Checklist</h3>
+                <span class="type-label" data-i18n="components.block">Block</span>
               </header>
               <ul class="block__list">
-                <li>Tokens regenerated from one source</li>
-                <li>Icons drawn on a 24 grid</li>
-                <li>States defined before components</li>
-                <li>No inner scrollbar — the block grows</li>
+                <li data-i18n="components.tokensRegeneratedFromOneSource">Tokens regenerated from one source</li>
+                <li data-i18n="components.iconsDrawnOnA24">Icons drawn on a 24 grid</li>
+                <li data-i18n="components.statesDefinedBeforeComponents">States defined before components</li>
+                <li data-i18n="components.noInnerScrollbarTheBlock">No inner scrollbar — the block grows</li>
               </ul>
             </section>
           </div>
 
           <div class="component">
             <div class="component__label">
-              <h3>Zone</h3>
-              <code class="token-caption">--radius-lg · tone colour · dashed border</code>
+              <h3 data-i18n="components.zone">Zone</h3>
+              <code class="token-caption" data-i18n="components.captionZone">--radius-lg · tone colour · dashed border</code>
             </div>
-            <section class="zone" aria-label="Zone example">
+            <section class="zone" aria-label="Zone example" data-i18n-attr="aria-label:components.zoneExample">
               <header class="zone__head">
                 <span class="zone__dot" aria-hidden="true"></span>
-                <h3>Research</h3>
+                <h3 data-i18n="components.research">Research</h3>
               </header>
-              <p class="zone__hint">
+              <p class="zone__hint" data-i18n="components.theZoneHeaderNamesThe">
                 The zone header names the group; content starts below the header.
               </p>
             </section>
@@ -926,16 +951,16 @@
 
           <div class="component">
             <div class="component__label">
-              <h3>Connection</h3>
-              <code class="token-caption">edge · --tone-d · 1.5 px</code>
+              <h3 data-i18n="components.connection">Connection</h3>
+              <code class="token-caption" data-i18n="components.captionConnection">edge · --tone-d · 1.5 px</code>
             </div>
             <figure class="connection">
-              <svg viewBox="0 0 480 120" role="img" aria-label="Connection between two items">
+              <svg viewBox="0 0 480 120" role="img" aria-label="Connection between two items" data-i18n-attr="aria-label:components.connectionBetweenTwoItems">
                 <path class="connection__line" d="M 32 60 C 160 60, 200 24, 344 24" />
                 <circle class="connection__dot" cx="32" cy="60" r="5" />
                 <circle class="connection__dot" cx="344" cy="24" r="5" />
               </svg>
-              <figcaption class="token-caption">
+              <figcaption class="token-caption" data-i18n="components.connectionsJoinRelatedNotesAcross">
                 Connections join related notes across zones.
               </figcaption>
             </figure>
@@ -943,62 +968,62 @@
 
           <div class="component">
             <div class="component__label">
-              <h3>Side-panel header</h3>
-              <code class="token-caption">400 px · --header-height · serif title</code>
+              <h3 data-i18n="components.sidePanelHeader">Side-panel header</h3>
+              <code class="token-caption" data-i18n="components.captionSidePanel">400 px · --header-height · serif title</code>
             </div>
-            <aside class="panel" aria-label="Side panel example">
+            <aside class="panel" aria-label="Side panel example" data-i18n-attr="aria-label:components.sidePanelExample">
               <header class="panel__head">
-                <h3 class="panel__title">Note</h3>
-                <span class="panel__status">Saved</span>
+                <h3 class="panel__title" data-i18n="components.note">Note</h3>
+                <span class="panel__status" data-i18n="components.saved">Saved</span>
               </header>
               <div class="panel__body">
-                <p>Panel title uses the serif stack at 22 px; the status slot keeps a fixed height.</p>
-                <p class="panel__meta">Updated just now</p>
+                <p data-i18n="components.panelTitleUsesTheSerif">Panel title uses the serif stack at 22 px; the status slot keeps a fixed height.</p>
+                <p class="panel__meta" data-i18n="components.updatedJustNow">Updated just now</p>
               </div>
             </aside>
           </div>
 
           <div class="component">
             <div class="component__label">
-              <h3>Toolbar</h3>
-              <code class="token-caption">48 px bar · 36 px buttons · 20 px icons</code>
+              <h3 data-i18n="components.toolbar">Toolbar</h3>
+              <code class="token-caption" data-i18n="components.captionToolbar">48 px bar · 36 px buttons · 20 px icons</code>
             </div>
             <div class="toolbar-wrap">
-              <div class="toolbar" role="toolbar" aria-label="Canvas toolbar example">
-                <button class="tool-btn" type="button" aria-label="Note" data-label="Note">
+              <div class="toolbar" role="toolbar" aria-label="Canvas toolbar example" data-i18n-attr="aria-label:components.canvasToolbarExample">
+                <button class="tool-btn" type="button" aria-label="Note" data-label="Note" data-i18n-attr="aria-label:components.note data-label:components.note">
                   <span class="icon icon--note" aria-hidden="true"></span>
                 </button>
-                <button class="tool-btn" type="button" aria-label="Checklist" data-label="Checklist">
+                <button class="tool-btn" type="button" aria-label="Checklist" data-label="Checklist" data-i18n-attr="aria-label:components.checklist data-label:components.checklist">
                   <span class="icon icon--checklist" aria-hidden="true"></span>
                 </button>
-                <button class="tool-btn" type="button" aria-label="Table" data-label="Table">
+                <button class="tool-btn" type="button" aria-label="Table" data-label="Table" data-i18n-attr="aria-label:components.table data-label:components.table">
                   <span class="icon icon--table" aria-hidden="true"></span>
                 </button>
-                <button class="tool-btn" type="button" aria-label="Timeline" data-label="Timeline">
+                <button class="tool-btn" type="button" aria-label="Timeline" data-label="Timeline" data-i18n-attr="aria-label:components.timeline data-label:components.timeline">
                   <span class="icon icon--timeline" aria-hidden="true"></span>
                 </button>
                 <span class="toolbar__divider" aria-hidden="true"></span>
-                <button class="tool-btn is-active" type="button" aria-label="Palette" data-label="Palette">
+                <button class="tool-btn is-active" type="button" aria-label="Palette" data-label="Palette" data-i18n-attr="aria-label:components.palette data-label:components.palette">
                   <span class="icon icon--palette" aria-hidden="true"></span>
                 </button>
-                <button class="tool-btn" type="button" aria-label="Columns" data-label="Columns">
+                <button class="tool-btn" type="button" aria-label="Columns" data-label="Columns" data-i18n-attr="aria-label:components.columns data-label:components.columns">
                   <span class="icon icon--columns" aria-hidden="true"></span>
                 </button>
                 <span class="toolbar__divider" aria-hidden="true"></span>
-                <button class="tool-btn" type="button" aria-label="Zone" data-label="Zone">
+                <button class="tool-btn" type="button" aria-label="Zone" data-label="Zone" data-i18n-attr="aria-label:components.zone data-label:components.zone">
                   <span class="icon icon--zone" aria-hidden="true"></span>
                 </button>
-                <button class="tool-btn" type="button" aria-label="Source" data-label="Source">
+                <button class="tool-btn" type="button" aria-label="Source" data-label="Source" data-i18n-attr="aria-label:components.source data-label:components.source">
                   <span class="icon icon--source" aria-hidden="true"></span>
                 </button>
-                <button class="tool-btn" type="button" aria-label="File" data-label="File">
+                <button class="tool-btn" type="button" aria-label="File" data-label="File" data-i18n-attr="aria-label:components.file data-label:components.file">
                   <span class="icon icon--file" aria-hidden="true"></span>
                 </button>
-                <button class="tool-btn" type="button" aria-label="Image" data-label="Image">
+                <button class="tool-btn" type="button" aria-label="Image" data-label="Image" data-i18n-attr="aria-label:components.image data-label:components.image">
                   <span class="icon icon--image" aria-hidden="true"></span>
                 </button>
               </div>
-              <p class="token-caption">
+              <p class="token-caption" data-i18n="components.groupsAreSeparatedByA">
                 Groups are separated by a divider; only one filled accent tool appears at a time.
               </p>
             </div>
@@ -1008,90 +1033,90 @@
 
       <section class="section" aria-labelledby="board">
         <div class="section__head">
-          <span class="eyebrow">09 — Sample board</span>
-          <h2 id="board">Sample board composition</h2>
+          <span class="eyebrow" data-i18n="board.eyebrow">09 — Sample board</span>
+          <h2 id="board" data-i18n="board.sampleBoardComposition">Sample board composition</h2>
           <div class="board-label">
-            <span class="badge">static design preview</span>
-            <span class="board-note">
+            <span class="badge" data-i18n="board.staticDesignPreview">static design preview</span>
+            <span class="board-note" data-i18n="board.zonesNoteCardsABlock">
               Zones, note cards, a block and a connection, arranged to show the intended look. No
               engine, no data, nothing is draggable or saved.
             </span>
           </div>
         </div>
-        <div class="board" aria-label="Sample board composition, static preview">
-          <section class="board__zone" aria-label="Zone Research, static preview">
+        <div class="board" aria-label="Sample board composition, static preview" data-i18n-attr="aria-label:board.sampleBoardCompositionStaticPreview">
+          <section class="board__zone" aria-label="Zone Research, static preview" data-i18n-attr="aria-label:board.zoneResearchStaticPreview">
             <header class="zone__head">
               <span class="zone__dot" aria-hidden="true"></span>
-              <h3>Research</h3>
+              <h3 data-i18n="board.research">Research</h3>
             </header>
             <div class="board__cards">
               <article class="note-card note-card--compact">
                 <div class="note-card__head">
-                  <span class="type-label">Note</span>
-                  <button class="tool-btn tool-btn--card card-action" type="button" aria-label="Open note" data-label="Open note">
+                  <span class="type-label" data-i18n="board.note">Note</span>
+                  <button class="tool-btn tool-btn--card card-action" type="button" aria-label="Open note" data-label="Open note" data-i18n-attr="aria-label:board.openNote data-label:board.openNote">
                     <span class="icon icon--file icon--card" aria-hidden="true"></span>
                   </button>
                 </div>
-                <h3 class="note-card__title">Design law</h3>
-                <p class="note-card__body">One accent, quiet chrome, content first.</p>
+                <h3 class="note-card__title" data-i18n="board.designLaw">Design law</h3>
+                <p class="note-card__body" data-i18n="board.oneAccentQuietChromeContent">One accent, quiet chrome, content first.</p>
               </article>
               <article class="note-card note-card--compact is-selected">
                 <div class="note-card__head">
-                  <span class="type-label">Note</span>
-                  <button class="tool-btn tool-btn--card card-action" type="button" aria-label="Open note" data-label="Open note">
+                  <span class="type-label" data-i18n="board.note">Note</span>
+                  <button class="tool-btn tool-btn--card card-action" type="button" aria-label="Open note" data-label="Open note" data-i18n-attr="aria-label:board.openNote data-label:board.openNote">
                     <span class="icon icon--file icon--card" aria-hidden="true"></span>
                   </button>
                 </div>
-                <h3 class="note-card__title">Token source</h3>
-                <p class="note-card__body">CSS custom properties and a C++ header from one file.</p>
+                <h3 class="note-card__title" data-i18n="board.tokenSource">Token source</h3>
+                <p class="note-card__body" data-i18n="board.cSSCustomPropertiesAndA">CSS custom properties and a C++ header from one file.</p>
               </article>
             </div>
-            <section class="block" aria-label="Checklist block, static preview">
+            <section class="block" aria-label="Checklist block, static preview" data-i18n-attr="aria-label:board.checklistBlockStaticPreview">
               <header class="block__head">
                 <span class="icon icon--checklist icon--card" aria-hidden="true"></span>
-                <h3>Open points</h3>
-                <span class="type-label">Block</span>
+                <h3 data-i18n="board.openPoints">Open points</h3>
+                <span class="type-label" data-i18n="board.block">Block</span>
               </header>
               <ul class="block__list">
-                <li>Review the type scale</li>
-                <li>Approve the tone colours</li>
+                <li data-i18n="board.reviewTheTypeScale">Review the type scale</li>
+                <li data-i18n="board.approveTheToneColours">Approve the tone colours</li>
               </ul>
             </section>
           </section>
 
-          <figure class="board__link" aria-label="Connection between the two zones, static preview">
-            <svg viewBox="0 0 48 400" preserveAspectRatio="none" role="img" aria-label="Connection line between the Research and Ideas zones">
+          <figure class="board__link" aria-label="Connection between the two zones, static preview" data-i18n-attr="aria-label:board.connectionBetweenTheTwoZones">
+            <svg viewBox="0 0 48 400" preserveAspectRatio="none" role="img" aria-label="Connection line between the Research and Ideas zones" data-i18n-attr="aria-label:board.connectionLineBetweenTheResearch">
               <path class="connection__line" d="M 0 150 C 24 150, 24 268, 48 268" />
               <circle class="connection__dot" cx="3" cy="150" r="3" />
               <circle class="connection__dot" cx="45" cy="268" r="3" />
             </svg>
           </figure>
 
-          <section class="board__zone board__zone--b" aria-label="Zone Ideas, static preview">
+          <section class="board__zone board__zone--b" aria-label="Zone Ideas, static preview" data-i18n-attr="aria-label:board.zoneIdeasStaticPreview">
             <header class="zone__head">
               <span class="zone__dot zone__dot--b" aria-hidden="true"></span>
-              <h3>Ideas</h3>
+              <h3 data-i18n="board.ideas">Ideas</h3>
             </header>
             <div class="board__cards">
               <article class="note-card note-card--compact">
                 <div class="note-card__head">
-                  <span class="type-label">Note</span>
-                  <button class="tool-btn tool-btn--card card-action" type="button" aria-label="Open note" data-label="Open note">
+                  <span class="type-label" data-i18n="board.note">Note</span>
+                  <button class="tool-btn tool-btn--card card-action" type="button" aria-label="Open note" data-label="Open note" data-i18n-attr="aria-label:board.openNote data-label:board.openNote">
                     <span class="icon icon--file icon--card" aria-hidden="true"></span>
                   </button>
                 </div>
-                <h3 class="note-card__title">Weekly review</h3>
-                <p class="note-card__body">Notes become reusable knowledge with backlinks.</p>
+                <h3 class="note-card__title" data-i18n="board.weeklyReview">Weekly review</h3>
+                <p class="note-card__body" data-i18n="board.notesBecomeReusableKnowledgeWith">Notes become reusable knowledge with backlinks.</p>
               </article>
               <article class="note-card note-card--compact">
                 <div class="note-card__head">
-                  <span class="type-label">Note</span>
-                  <button class="tool-btn tool-btn--card card-action" type="button" aria-label="Open note" data-label="Open note">
+                  <span class="type-label" data-i18n="board.note">Note</span>
+                  <button class="tool-btn tool-btn--card card-action" type="button" aria-label="Open note" data-label="Open note" data-i18n-attr="aria-label:board.openNote data-label:board.openNote">
                     <span class="icon icon--file icon--card" aria-hidden="true"></span>
                   </button>
                 </div>
-                <h3 class="note-card__title">Small demo</h3>
-                <p class="note-card__body">A static sample board, not a product feature.</p>
+                <h3 class="note-card__title" data-i18n="board.smallDemo">Small demo</h3>
+                <p class="note-card__body" data-i18n="board.aStaticSampleBoardNot">A static sample board, not a product feature.</p>
               </article>
             </div>
           </section>
@@ -1099,12 +1124,12 @@
       </section>
 
       <footer class="footer">
-        <p>
+        <p data-i18n-html="footer.thisIsAStaticDesign">
           <strong>This is a static design preview, not the product.</strong> It has no engine, no
           data, no server and no build step; it exists so the design system can be reviewed between
           milestones. The connection demo is a pointer-event sketch, not the engine.
         </p>
-        <p>
+        <p data-i18n-html="footer.colourSpacingRadiusTypographyMotion">
           Colour, spacing, radius, typography, motion, shadow and layer values come only from
           <code>packages/ui-kit/tokens.css</code>; icons come from
           <code>packages/ui-kit/icons/</code>. Both are linked relatively and served from the

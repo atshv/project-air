@@ -1,4 +1,4 @@
-# Design preview (P0-19, P0-20, P0-21, P0-22, P0-23, P0-24, P0-25, P0-26, P1-07)
+# Design preview (P0-19, P0-20, P0-21, P0-22, P0-23, P0-24, P0-25, P0-26, P0-27, P1-07)
 
 A design preview of the Project air design system. It is **not the product**: there is no engine,
 no data, no server and no build step. It exists so the owner can see the look and feel between
@@ -8,16 +8,19 @@ and contract documentation.
 ## Version and last change
 
 The masthead identifies which build the preview represents. The line is static in `index.html` with
-stable `data-preview-*` hooks — no runtime parsing and no fetch — and its two values come from:
+stable `data-preview-*` hooks — no runtime parsing of `CHANGELOG.md` or the `.changes/` folder — and
+its two values come from:
 
 - **Version** — the first `##` heading of [`CHANGELOG.md`](../../../CHANGELOG.md), currently
   `0.0.1 – unreleased`; the status word comes from the same heading. `CHANGELOG.md` is the display
   source and currently agrees with the root `package.json` version `0.0.1`.
-- **Last change** — the newest entry in `.changes/` by highest task id, currently
-  `.changes/P0-26-toolbar-zone-demo.md`; the line shows the task id and that task's title from
-  `board.json` / the task brief: `P0-26 — Toolbar and zone with notepad and image window in the
-  preview`. If several files exist for the highest task id, the most recent one is used; the
-  `.changes/README.md` and `.changes/TEMPLATE.md` files do not count as entries.
+- **Last change** — the newest preview change entry, currently
+  `.changes/P0-27-bilingual-preview.md`; the line shows the task id and that task's title from
+  `board.json` / the task brief: `P0-27 — Bilingual preview with DE/EN switch and cache-busted
+  assets`. The line follows the `P0-*` preview tasks (P0-19 … P0-27, P1-07); the engine tasks
+  (`P4-*`) and the other stages run in parallel and do not move it, so "highest numeric id" alone is
+  not the rule. If several files exist for the same preview task, the most recent one is used;
+  `.changes/README.md` and `.changes/TEMPLATE.md` do not count as entries.
 - **Date and time** — the file modification time of that newest `.changes` entry (the moment the task
   wrote it), formatted as `YYYY-MM-DD HH:MM` in `Europe/Zurich`; it is static text in `index.html`
   (`data-preview-last-change-time`) and is not parsed at runtime.
@@ -42,7 +45,10 @@ task.
 - A **static zone** with a notepad and a small image window that shows the owner-supplied demo
   photo. The zone is static demo content — no upload, no file handling and no canvas action.
 - A floating **zoom pill** in the demo (preview-only): zoom in, zoom out and fit stacked vertically,
-  drawn with CSS shapes and labelled in English.
+  drawn with CSS shapes and labels from the locale files.
+- A **DE/EN switch** at the top right of the masthead: the whole page (all text, `aria-label`s,
+  `alt` texts and the document title) switches between English and German, the choice persists in
+  `localStorage`, and `<html lang>` follows the switch.
 - Colour swatches with their token names (`--bg` … `--tone-e`), including the translucent tokens over
   `--card`.
 - The typography scale (serif and sans, 28/24/22/15/13/12/11 px, weights, line height, type label).
@@ -59,10 +65,11 @@ All colour, spacing, radius, typography, motion, shadow and layer values are rea
 `var(--…)` from the generated [`packages/ui-kit/tokens.css`](../../../packages/ui-kit/tokens.css); the
 preview files contain no raw colour values and no new tokens. Icons are loaded from
 [`packages/ui-kit/icons/`](../../../packages/ui-kit/icons/). There are no external fonts, no CDNs, no
-remote images and no framework. The old "no images" rule has exactly one documented exception: the
-local, owner-supplied demo photo `assets/demo-zone-image.webp` in the static zone (1135 × 829 WebP,
-about 74 KB). It is a relative local path, not a data URI and not a remote URL, and it is the only
-image in the preview.
+remote images and no framework, and no build step: the bilingual texts are plain JSON files that
+`preview.js` fetches over HTTP (`locales/en.json`, `locales/de.json`). The old "no images" rule has
+exactly one documented exception: the local, owner-supplied demo photo
+`assets/demo-zone-image.webp` in the static zone (1135 × 829 WebP, about 74 KB). It is a relative
+local path, not a data URI and not a remote URL, and it is the only image in the preview.
 
 ## The interactive demo
 
@@ -90,7 +97,8 @@ design system updates the demo and refreshes its screenshot in `reviews/evidence
   of the demo surface — a 44 px container with `--radius-md`, `--surface` background, a 1 px
   `--border` outline, 4 px padding and three stacked 36 px segments (zoom in, zoom out, fit) separated
   by 1 px `--border` rules. The `+`, `−` and fit-corner glyphs are drawn with CSS shapes only; every
-  segment has an English `aria-label` plus a CSS tooltip (`Zoom in`, `Zoom out`, `Fit to view`) and
+  segment has an `aria-label` from the locale files plus a CSS tooltip (`Zoom in`, `Zoom out`,
+  `Fit to view` in English; `Vergrössern`, `Verkleinern`, `Alles anzeigen` in German) and
   follows the design states (hover `--faint`, pressed `scale(0.97)`, `--accent` focus outline,
   disabled at 0.4 opacity). Zoom scales a world layer between 50 % and 150 % in 10 % steps; segments
   are disabled at the limits, and fit returns to 100 % so both cards (clamped in world space) are
@@ -126,7 +134,8 @@ Both are **preview-only**: no toolbar action touches the canvas, and the zone is
   `--faint` background with the icon in `--fg` and a `--border-strong` border, focus-visible a 2 px
   `--accent` outline, pressed `scale(0.97)`, and selected `aria-pressed="true"` with an
   `--accent-soft` background, an `--accent-line` border and an `--accent` icon. Every button has an
-  English `aria-label` plus a `data-label` tooltip (never the native `title` attribute).
+  `aria-label` and a `data-label` tooltip from the locale files (never the native `title`
+  attribute).
 - **Toolbar selection** — clicking or pressing a tool flips `aria-pressed` and names the tool in the
   demo status line; the note tool is selected in the markup. Nothing else changes: the cards, the
   edge and the zoom scale stay where they are.
@@ -134,7 +143,8 @@ Both are **preview-only**: no toolbar action touches the canvas, and the zone is
   border and `--radius-md`. It contains a 240 px notepad (`--surface`, 1 px `--border-strong`,
   `--radius-sm`, `--text-15` title, `--text-13` body) and a 240 × 140 px image window with a 32 px
   title bar, a 1 px `--border` border, `--radius-md` and the photo as `object-fit: cover` with a
-  small `--radius-sm`. The image has an English `alt` text and intrinsic `width`/`height`; when the
+  small `--radius-sm`. The image has a translated `alt` text (English fallback in the markup) and
+  intrinsic `width`/`height`; when the
   local asset is missing the fixed window box keeps its size and shows the `--canvas` placeholder
   background, so nothing shifts.
 - **Layers** — the zone uses `--layer-blocks` (an existing entry of
@@ -154,6 +164,75 @@ Both are **preview-only**: no toolbar action touches the canvas, and the zone is
   measure the world layer instead of the surface, so the edge stays exactly on the anchors in both
   layouts; on desktop the world layer and the surface are identical and the demo behaves exactly as
   before.
+
+## Bilingual preview and the DE/EN switch (P0-27)
+
+The page is bilingual: English is the markup fallback and German comes from a locale file, so the
+preview renders English before any script runs and still works without JavaScript.
+
+- **Locale files** — [`locales/en.json`](locales/en.json) and [`locales/de.json`](locales/de.json)
+  hold every visible string and every translated attribute, grouped by page section in
+  lowerCamelCase keys (`masthead.*`, `demo.*`, `contract.*`, `colours.*`, `type.*`, `space.*`,
+  `icons.*`, `states.*`, `components.*`, `board.*`, `footer.*`, `locale.*`). Both files have exactly
+  the same key set; a key that exists in only one file is a bug. German follows
+  [`docs/i18n/style-de.md`](../../../docs/i18n/style-de.md) and the terms of
+  [`docs/i18n/glossary.md`](../../../docs/i18n/glossary.md) (Leinwand for canvas, Seitenpanel for
+  side panel, Zeitstrahl for timeline, Werkzeugleiste for toolbar, Board stays Board): du-form,
+  calm, no exclamation marks, always `ss`, never the sharp-s character, and no German string lives
+  in `index.html`, `preview.css` or `preview.js` (the `language-check` gate enforces that).
+- **Markup hooks** — `data-i18n="<key>"` replaces the element's text, `data-i18n-html="<key>"`
+  replaces its inner HTML (for sentences that contain inline `<code>`, `<kbd>`, `<strong>` or links),
+  and `data-i18n-attr="aria-label:<key> alt:<key>"` sets attributes. The English text stays in the
+  markup as the no-JavaScript and fetch-failure fallback.
+- **Controller** — `preview.js` fetches `locales/<lang>.json` relative to the page, applies the
+  strings and attributes, sets `<html lang>`, marks the active switch option with `aria-pressed` and
+  stores the choice in `localStorage.preview-locale` (default `en`). A failed load never changes the
+  page on its own: the language and the toggle state stay exactly as they are actually applied
+  (requesting German while `de.json` is unavailable leaves an English page on `EN`, and requesting
+  English while `en.json` is unavailable leaves a German page on `DE`). Only on the first load,
+  when nothing has been applied yet, does the page settle once on the English markup fallback (or on
+  `locales/en.json` when that file loads), so the switch never shows a language the page does not
+  display. There is no retry loop and no console error.
+- **Switch** — a compact segmented `DE │ EN` pill at the top right of the masthead meta row. Each
+  option is a real button and a 32 × 32 px target (`min-inline-size` and `min-block-size`
+  `--click-target`, measured 33 × 32 px) with 8 px horizontal padding (`--space-8`); the pill around
+  the two options is 34 px high (the 32 px option plus the two 1 px `--border` borders) and 70 px
+  wide, with `--radius-pill`, `--surface` background, rest `--muted`, hover `--faint`, pressed
+  `scale(0.97)`,
+  focus-visible `--accent` outline and selected (`aria-pressed="true"`) `--accent-soft` background
+  with `--accent` text. The group and both options have translated `aria-label`s, and the pill fits
+  at 390 px without horizontal overflow.
+- **Status line** — the demo status texts (card position, zoom, reset, selected tool) are also
+  translated, via `demo.status.*` keys with `{label}`, `{column}`, `{row}` and `{percent}`
+  placeholders; switching the language clears the status line so no mixed-language sentence stays on
+  screen.
+
+## Cache-busted preview assets (P0-27)
+
+A changed preview must never be rendered with cached CSS or JavaScript — the owner once saw the new
+P0-26 markup with the old stylesheet and a broken-looking demo. The preview therefore ships its
+assets with a version query:
+
+```html
+<link rel="stylesheet" href="../../../packages/ui-kit/tokens.css?v=P0-27" />
+<link rel="stylesheet" href="preview.css?v=P0-27" />
+<script src="preview.js?v=P0-27" defer></script>
+```
+
+- **Bump rule:** every task that changes a file in `apps/web/preview/` — or the shared
+  `packages/ui-kit/tokens.css` it links — bumps the `?v=` value on the three links above to its task
+  id in the same task (so a commit always has one version). The browser then requests a URL it has
+  never cached and gets the current files, which also covers a changed design system that would
+  otherwise be served from the cached token stylesheet.
+- The locale files reuse the script's version automatically: `preview.js` reads the `v` query of its
+  own script URL and appends it to the locale request (`locales/de.json?v=P0-27`), so one bump
+  covers the translations as well.
+- The icon SVGs are referenced from `preview.css` and keep stable, unversioned URLs; they only
+  change with a design-system task, and every such task bumps the preview version anyway.
+- The version query fixes the case the owner hit — new markup with an old cached stylesheet or
+  script. It does not fix an already cached `index.html`: if the HTML document itself comes from the
+  cache, the browser keeps the old markup and the old `?v=` values, so a hard reload is needed once.
+  After that the new `?v=` URLs are fetched normally.
 
 ## The contract overview
 
@@ -191,7 +270,9 @@ fetch, no build step and no framework — so it also renders from `file://`. Eve
 | --- | --- |
 | `index.html` | The page, including the demo markup. |
 | `preview.css` | Layout only; every visual value is a token. |
-| `preview.js` | The dependency-free pointer and keyboard demo, plus the toolbar selection state. |
+| `preview.js` | The dependency-free pointer and keyboard demo, the toolbar selection state and the DE/EN locale controller. |
+| `locales/en.json` | English strings and translated attributes for the whole page. |
+| `locales/de.json` | German strings and translated attributes, same key set as `en.json`. |
 | `assets/demo-zone-image.webp` | The single owner-supplied demo photo in the static zone. |
 | `README.md` | This file. |
 
@@ -201,12 +282,15 @@ Serve the **repository root**, not this folder, so the relative token and icon p
 the slot's `web` port from `.polier-slot` (never hard-code it), then:
 
 ```sh
-cd "/Users/rasulatashev/Desktop/KI Projekte/Project air-P0-26"
+cd "/Users/rasulatashev/Desktop/KI Projekte/Project air-P0-27"
 PORT=$(python3 -c "import json; print(json.load(open('.polier-slot'))['ports']['web'])")
 python3 -m http.server "$PORT" --bind 127.0.0.1
 ```
 
-Open `http://127.0.0.1:<port>/apps/web/preview/` in a browser. Check it with:
+Open `http://127.0.0.1:<port>/apps/web/preview/` in a browser. The page must be served over HTTP for
+the DE/EN switch: `fetch` cannot read the locale files from `file://`, so a page opened from disk
+stays on the English fallback (`<html lang="en">`, the switch still shows both options). Check it
+with:
 
 ```sh
 curl -s -o /dev/null -w '%{http_code}\n' "http://127.0.0.1:$PORT/apps/web/preview/"
@@ -231,8 +315,12 @@ Committed evidence lives in `reviews/evidence/`: `P0-19-desktop.png` (1440×900)
 `P0-26-mobile.png` (390×844, top with the refreshed masthead),
 `P0-26-mobile-demo.png` (390 wide, taller capture that shows the wrapped toolbar and the zone),
 `P0-26-mid-768.png` (768×900, the compact layout at a mid width),
-`P0-26-toolbar-states.png` (1440×900, tool hover, focus, pressed and selected states with tooltips)
+`P0-26-toolbar-states.png` (1440×900, tool hover, focus, pressed and selected states with tooltips),
+`P0-27-desktop-en.png` / `P0-27-desktop-de.png` (1440×900, English and German, scrolled so the
+whole demo surface with both cards and the photo is visible),
+`P0-27-mobile-en.png` / `P0-27-mobile-de.png` (390×844, English and German) and
+`P0-27-1426x583-de.png` (1426 × 583 CSS px at DPR 2, German, the owner's viewport with fresh CSS)
 and the `P0-19-preview.log` / `P0-20-preview.log` / `P0-21-preview.log` / `P0-22-preview.log` /
 `P0-23-preview.log` / `P0-24-preview.log` / `P0-25-preview.log` / `P0-26-preview.log` /
-`P1-07-preview.log` files with the exact serve, curl and screenshot commands. The page has no
-horizontal overflow at 1440×900 or 390×844.
+`P0-27-preview.log` / `P1-07-preview.log` files with the exact serve, curl and screenshot commands.
+The page has no horizontal overflow at 1440×900, 390×844 or the owner's 1426 × 583 viewport.

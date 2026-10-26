@@ -4524,12 +4524,17 @@
       ]
     },
     {
-      "status": "in_progress",
+      "status": "done",
       "stage": "foundation",
       "parallel_group": null,
       "owner": null,
       "round": 0,
-      "evidence": [],
+      "evidence": [
+        "reviews/evidence/P0-27-board-check-20261026T213641Z.json",
+        "reviews/evidence/P0-27-design-check-20261026T213644Z.json",
+        "reviews/evidence/P0-27-language-check-20261026T213644Z.json",
+        "reviews/evidence/P0-27-changelog-entry-20261026T213644Z.json"
+      ],
       "scope_write_forbidden": [
         "reference/"
       ],
@@ -4572,7 +4577,12 @@
         "changelog-entry"
       ],
       "branch": "task/P0-27",
-      "worktree": "../Project air-P0-27"
+      "worktree": null,
+      "handoff": [
+        "Closed P0-27: preview is EN/DE with a top-right DE|EN switch (33x32), 256-key locale JSONs covering all visible text/aria/alt, html lang + localStorage + safe fallback; German style/glossary checked.",
+        "Cache-busting: tokens.css/preview.css/preview.js ?v=P0-27 + versioned locale fetches; README bump/hard-reload rule; owner 1426x583 DPR2 render proves fresh CSS fixes the stale-layout failure.",
+        "Gates board-check/design-check/language-check/changelog-entry green; evidence desktop/mobile EN+DE + owner shot + log; one commit."
+      ]
     },
     {
       "status": "pending",

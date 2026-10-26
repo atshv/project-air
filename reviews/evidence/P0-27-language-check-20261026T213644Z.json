@@ -1,0 +1,17 @@
+{
+  "task": "P0-27",
+  "gate": "language-check",
+  "command": "node tools/language-check/index.mjs .",
+  "exit_code": 0,
+  "result": "pass",
+  "slot": null,
+  "exclusive": [],
+  "lock_wait_s": 0.0,
+  "lock_warning": null,
+  "started": "2026-10-26T21:36:44+00:00",
+  "finished": "2026-10-26T21:36:44+00:00",
+  "commit": "f1749e8b56a75b953116968207a5f70fa9faa6d0",
+  "dirty": true,
+  "log": "P0-27-language-check-20261026T213644Z.log",
+  "log_sha256": "e5d83f75dafad1f4f7383e82565ea5055e9be1b2773a76d0a76e82eb8e5ddaed"
+}
