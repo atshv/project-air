@@ -1,0 +1,5 @@
+$ node tools/release/check-changes.mjs --task P0-28 --base main
+[exit 0]
+
+check-changes: task P0-28, base main, 17 changed path(s), 6 code path(s)
+changelog-entry: OK (.changes/P0-28-zone-detach.md)

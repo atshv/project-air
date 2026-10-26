@@ -1,0 +1,244 @@
+# P0-28 — zone detach interaction: drag notepad and photo out and back: manual evidence
+
+- Date: 2026-10-26 (Europe/Zurich)
+- Worktree: `/Users/rasulatashev/Desktop/KI Projekte/Project air-P0-28` (branch `task/P0-28`, slot 2,
+  base: P0-27 merged, `0811a16`)
+- Changed: `apps/web/preview/index.html`, `apps/web/preview/preview.css`,
+  `apps/web/preview/preview.js`, `apps/web/preview/README.md`,
+  `apps/web/preview/locales/en.json`, `apps/web/preview/locales/de.json`;
+  `.changes/P0-28-zone-detach.md`
+- The notepad and the photo window can be dragged out of the zone onto the canvas (progressive detach
+  over 28 screen px, 8 px docking hysteresis), stay free and edge-less, and dock back into their
+  measured slots with the transition in reverse. Assets are versioned `?v=P0-28`; the new hint,
+  legend, status and item strings are in both locale files.
+- This file and the four screenshots were refreshed after the review PASS with two minor fixes; the
+  superseded first commit (`ac76a29`) was replaced by one commit on `0811a16`, and the superseded
+  gate records were removed.
+
+## Rework after the review (two minor fixes)
+
+**Photo window clipped its own ring and shadow (owner-visible while dragging).** `.demo-zone__window`
+carried `overflow: hidden`, which clipped the item's `::before` ring and `::after` card shadow: after
+the first drag the window lost its 1 px border (also after re-docking) and its border fade/shadow
+never rendered, while the notepad kept both. The clipping now lives on a new inner wrapper
+(`.demo-zone__window-inner`, which keeps the 32 px title bar, the image and the rounded corners) and
+the zone item itself no longer clips, so its ring and shadow render like the notepad's. Verified in
+the browser:
+
+```
+docked / redocked window: overflow visible, ::before ring opacity 1 (rgba(255,255,255,0.08)),
+                          ::after shadow opacity 0 (--card-shadow present, not clipped)
+mid-detach (0.50):        ring opacity 0.5, shadow opacity 0.5 (window), same as the notepad
+detached (1.00):          ring opacity 0, shadow opacity 1 with the full --card-shadow visible
+notepad (unchanged):      ring 1 / 0.5 / 0, shadow 0 / 0.5 / 1 at the same progress values
+```
+
+**README wording.** "fades its border in (1 → 0)" now reads "fades its border out (1 → 0)".
+
+## Port and server
+
+Slot values (`.polier-slot`): `web=4200` for slot 2; the port is read from `.polier-slot`, never
+hard-coded. Only this task's server and Chrome were started and both were stopped afterwards.
+
+```sh
+cd "/Users/rasulatashev/Desktop/KI Projekte/Project air-P0-28"
+PORT=$(python3 -c "import json;print(json.load(open('.polier-slot'))['ports']['web'])")
+python3 -m http.server "$PORT" --bind 127.0.0.1
+```
+
+Served the **repository root** so the relative token, icon, image and locale paths resolve.
+
+## HTTP status and sizes (final files)
+
+```
+$ curl -s -o /dev/null -w '%{http_code} %{size_download}\n' http://127.0.0.1:4200/apps/web/preview/
+200 69774
+$ curl -s -o /dev/null -w '%{http_code} %{size_download}\n' "http://127.0.0.1:4200/apps/web/preview/preview.css?v=P0-28"
+200 40429
+$ curl -s -o /dev/null -w '%{http_code} %{size_download}\n' "http://127.0.0.1:4200/apps/web/preview/preview.js?v=P0-28"
+200 32804
+$ curl -s -o /dev/null -w '%{http_code} %{size_download}\n' "http://127.0.0.1:4200/apps/web/preview/locales/en.json?v=P0-28"
+200 19316
+$ curl -s -o /dev/null -w '%{http_code} %{size_download}\n' "http://127.0.0.1:4200/apps/web/preview/locales/de.json?v=P0-28"
+200 20727
+$ curl -s -o /dev/null -w '%{http_code} %{size_download}\n' "http://127.0.0.1:4200/packages/ui-kit/tokens.css?v=P0-28"
+200 2295
+$ curl -s -o /dev/null -w '%{http_code} %{size_download}\n' http://127.0.0.1:4200/apps/web/preview/assets/demo-zone-image.webp
+200 74494
+$ curl -s -o /dev/null -w '%{http_code} %{size_download}\n' http://127.0.0.1:4200/packages/ui-kit/icons/note.svg
+200 298
+```
+
+The HTTP sizes equal the byte sizes on disk (`stat -f '%z'`): `index.html` 69774, `preview.css` 40429,
+`preview.js` 32804, `locales/en.json` 19316, `locales/de.json` 20727. The only 404 in the server log
+is the browser's automatic `GET /favicon.ico`.
+
+## Cache-busting check
+
+```
+$ curl -s http://127.0.0.1:4200/apps/web/preview/ | grep -nE '(tokens\.css|preview\.(css|js))\?v='
+7:    <link rel="stylesheet" href="../../../packages/ui-kit/tokens.css?v=P0-28" />
+8:    <link rel="stylesheet" href="preview.css?v=P0-28" />
+9:    <script src="preview.js?v=P0-28" defer></script>
+```
+
+All three asset URLs carry `?v=P0-28` and return `200` with the current byte sizes; the locale fetch
+inherits the script's version (`locales/en.json?v=P0-28`, `locales/de.json?v=P0-28`, both `200`).
+The README keeps the bump rule and the hard-reload caveat for an already cached `index.html`.
+
+## Interaction check (CDP pointer events, real layout measurements)
+
+Chrome for Testing 156 with CDP device metrics; a temporary out-of-repo helper drove it
+(`Emulation.setDeviceMetricsOverride`, `Page.navigate`, `Page.captureScreenshot`,
+`Emulation.setEmulatedMedia`, and real `PointerEvent`/`KeyboardEvent` dispatch inside the page); it
+was removed after the run. Screenshots are scrolled so the whole demo surface is visible.
+
+```sh
+node /tmp/p028-cdp.mjs "http://127.0.0.1:4200/apps/web/preview/" "reviews/evidence"
+```
+
+### Threshold and hysteresis (screen px outside the zone edge, 1440 × 900)
+
+```
+pointer outside | state    | data-detach-progress | item x (world)
+10 px           | docked   | 0.29                 | 501.2
+20 px           | docked   | 0.80                 | 574.3
+27 px           | docked   | 1.00                 | 608.1
+29 px           | detached | 1.00                 | 610.6   <- detach at 28 px
+20 px (back)    | detached | 1.00                 | 601.6   <- hysteresis keeps the state
+12 px (back)    | detached | 1.00                 | 593.6
+6 px (back)     | docked   | 0.12                 | 515.0   <- dock below 8 px
+```
+
+- Detach needs **28 screen px** of pointer travel outside the zone edge; docking again needs at most
+  **8 px** (hysteresis band 8–28 px, so a wobble at the edge cannot flicker).
+- Release halfway (`ZONE_RELEASE_DISTANCE` 18 px) settles to the nearest state: a mid-detach release
+  at 14 px settled back to the docked slot (item back at 447 / 90.5).
+- At 50 % progress (14 px outside) the computed style is `matrix(1.01, 0, 0, 1.01, …)`, the border
+  overlay opacity is 0.5 and the `--card-shadow` overlay opacity is 0.5.
+
+### Detached, redocked, zoom, cancel, second pointer
+
+```
+detached (both items out, free):
+  notepad state=detached progress=1.00 transform=(112, 224) scale 1.02 grid-snapped
+  window  state=detached progress=1.00 transform=(800,  64) scale 1.02 grid-snapped
+  border overlay opacity 0 (faded), --card-shadow overlay opacity 1
+  slots stay in the zone card: notepad 240 x 89 at (447, 90.5), window 240 x 140 at (447, 191.5)
+redocked:
+  both items state=docked progress=0.00, transforms (447, 90.5) and (447, 191.5) — the exact slots
+  status: "Image window docked back in the zone."
+detached status: "Image window detached — free on the canvas."
+zoom 150 % (screen-pixel thresholds):
+  14 screen px outside -> progress 0.53 (0.5 in screen px; a world-pixel threshold would read 0.75)
+  40 screen px outside -> detached, clamped inside the world (rect 913..1280 on the 1440 viewport)
+pointer cancel during a detach drag: settles detached (state=detached, progress 1.00)
+second pointer during a notepad drag: ignored — the window stayed docked, only the notepad moved
+```
+
+### Reduced motion (`Emulation.setEmulatedMedia` prefers-reduced-motion: reduce)
+
+```
+dragging detached: transform matrix(1, 0, 0, 1, 80, 239.5) — no 1.02 scale,
+                   ::before opacity 0 (no border animation), ::after opacity 0 (no shadow animation)
+settled:           transform matrix(1, 0, 0, 1, 80, 240) and the state stays detached
+redock still works: state=docked, at the slot, transition duration 0 s
+```
+
+### Edge and z-order DOM probe (every state)
+
+```
+document.querySelectorAll(".demo__edge").length = 1 in docked, mid-detach, detached, redocked,
+  zoomed, reduced-motion and mobile states
+edge path unchanged since docked: true in every state (zone items never change the edge)
+edge endpoints: start inside card A, end inside card B (world rect + 10 px tolerance) in every state
+  -> detached zone items are never edge-connected; the A/B edge stays the only connection
+items: is-docked / is-dragging / is-detached classes, data-zone-state and data-detach-progress
+ring/shadow (after the review fix): both items overflow visible; ::before ring opacity 1 docked and
+  redocked, 0.5 at progress 0.50, 0 detached; ::after --card-shadow opacity 0 docked, 0.5 at 0.50,
+  1 detached — the photo window behaves exactly like the notepad
+z-order from tokens only: docked items --layer-blocks, dragging/detached --layer-dragged-or-selected,
+  card --layer-blocks; toolbar and zoom pill --layer-canvas-chrome (design-check: no numeric z-index)
+no horizontal page overflow in any state (1440 x 1440 or 390 x 390)
+```
+
+### Existing demo unchanged (EN and DE)
+
+```
+ArrowRight on card A: +16 px; edge path changed by the card move and restored exactly by Home;
+zoom-in: scale(1.1), fit: scale(1); toolbar click on "palette": only its aria-pressed is true;
+DE/EN switch: lang=de, masthead "Letzte Änderung: P0-28 — Zonenablösung: Notizblock und Foto
+  herausziehen und wieder andocken", hint and legend translated, status lines translate
+  ("Notizblock herausgelöst — frei auf der Leinwand." / "… wieder in der Zone angedockt."),
+  dock positions re-measured after the locale switch (items still at 447 / 90.5 and 447 / 191.5)
+mobile 390 x 844: no horizontal overflow (390 / 390); detach reaches progress 1.00 with the same
+  behaviour, redock returns to the measured slots (58 / 283.5 and 58 / 384.5)
+window/console errors: [] in every run
+```
+
+## Locale check
+
+```
+html keys: 252 en: 260 de: 260
+key sets identical: true (only in en/de: none, no html key missing in either file)
+new keys: demo.item.notepad, demo.item.window, demo.status.detached, demo.status.docked;
+  hint, legend, intro and masthead values updated in both files
+sharp-s in de: []   exclamation in de: []
+language-check: OK
+```
+
+## Screenshots
+
+| File | Size | Content |
+| --- | --- | --- |
+| `reviews/evidence/P0-28-docked.png` | PNG 1440 × 900, 169792 bytes | both items docked in the zone (photo window with its 1 px border), full demo surface visible |
+| `reviews/evidence/P0-28-mid-detach.png` | PNG 1440 × 900, 169689 bytes | photo window dragged 14 px past the zone edge, detach progress 0.50 (scale 1.01, fading border, growing shadow — now visible on the window too) |
+| `reviews/evidence/P0-28-detached.png` | PNG 1440 × 900, 173663 bytes | both items free on the canvas with their card shadow, empty dock slots, the A/B edge unchanged |
+| `reviews/evidence/P0-28-redocked.png` | PNG 1440 × 900, 172358 bytes | both items docked back in their measured slots (photo window border restored) |
+
+## Masthead meta line
+
+```
+Version 0.0.1 · unreleased · Last change: P0-28 — Zone detach interaction: drag notepad and photo out and back · 2026-10-26 22:57 (Europe/Zurich)
+```
+
+- Version: first `##` heading of `CHANGELOG.md` (`## 0.0.1 – unreleased`), unchanged.
+- Last change: `.changes/P0-28-zone-detach.md`; the title comes from `board.json` /
+  `tasks/P0-28.md`; translated in German through `masthead.lastChange` / `masthead.lastChangeTime`.
+- Date/time: modification time of the entry in `Europe/Zurich` (`stat` → 2026-10-26 22:57); the entry
+  was written before the stamp and not modified afterwards.
+- Tasks line includes P0-28; the version line still reads `0.0.1` / `unreleased`.
+
+## Gates
+
+```sh
+cd "/Users/rasulatashev/Desktop/KI Projekte/Project air-P0-28"
+export POLIER=/Users/rasulatashev/Desktop/Polier-main
+python3 "$POLIER/tools/gate.py" --task P0-28 --name board-check --shell "python3 $POLIER/tools/check.py ."
+python3 "$POLIER/tools/gate.py" --task P0-28 --name design-check --shell "node tools/design-check/index.mjs ."
+python3 "$POLIER/tools/gate.py" --task P0-28 --name changelog-entry --shell "node tools/release/check-changes.mjs --task P0-28 --base main"
+node tools/language-check/index.mjs .
+```
+
+| Gate | Result | Record |
+| --- | --- | --- |
+| `board-check` | PASS (exit 0) | `reviews/evidence/P0-28-board-check-20261026T222025Z.json` |
+| `design-check` | PASS (exit 0, 0 findings) | `reviews/evidence/P0-28-design-check-20261026T222027Z.json` |
+| `changelog-entry` | PASS (exit 0, `.changes/P0-28-zone-detach.md`) | `reviews/evidence/P0-28-changelog-entry-20261026T222027Z.json` |
+
+`board-check` ran **first**, before any `pnpm` command (no install was needed). `check.py` exits 0
+with pre-existing board warnings only; `board.json`, `STATUS.md`, `CHANGELOG.md`,
+`apps/web/messages/` and the package manifests were not edited. `language-check` reports
+`language-check: OK`.
+
+## Notes
+
+- Dock slots are measured from the initial zone layout on the first drag (the items are replaced by
+  equally sized slots and moved into the zone container), never hard-coded; they are re-measured on
+  resize, locale switch and content reflow via `ResizeObserver`.
+- Thresholds are screen pixels (`ZONE_DETACH_DISTANCE = 28`, `ZONE_DOCK_DISTANCE = 8`,
+  `ZONE_RELEASE_DISTANCE = 18`) and behave identically at 50 %, 100 % and 150 % zoom; the movement
+  threshold reuses `--drag-threshold` (4 px).
+- Motion: `--motion-panel` for the dock settle, `--motion-hover`/`--shadow`/`--card-shadow` tokens
+  only; `prefers-reduced-motion` removes scale and shadow animation and the settle transition.
+- German copy lives only in `locales/de.json`; `language-check` stays green.

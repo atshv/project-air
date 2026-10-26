@@ -21,6 +21,15 @@
   var ZOOM_MAX = 1.5;
   var ZOOM_STEP = 0.1;
   var SCALE_PRECISION = 10;
+  // Zone detach (P0-28): distances are screen pixels, so the behaviour is the
+  // same at every zoom level. Detach needs 28 px of pointer travel outside the
+  // zone edge (progress 0 -> 1); it docks again below 8 px (hysteresis, so a
+  // wobble at the edge cannot flicker). A release halfway uses the nearest
+  // state: farther than 18 px outside means detached.
+  var ZONE_DETACH_DISTANCE = 28;
+  var ZONE_DOCK_DISTANCE = 8;
+  var ZONE_RELEASE_DISTANCE = 18;
+  var ZONE_SETTLE_TIMEOUT = 240;
 
   var LOCALE_STORAGE_KEY = "preview-locale";
   var LOCALE_DEFAULT = "en";
@@ -32,6 +41,10 @@
     "demo.status.zoom": "Zoom {percent} percent.",
     "demo.status.reset": "Both cards returned to their start positions.",
     "demo.status.tool": "Tool {label} selected. Preview only: no canvas action.",
+    "demo.status.detached": "{item} detached — free on the canvas.",
+    "demo.status.docked": "{item} docked back in the zone.",
+    "demo.item.notepad": "Notepad",
+    "demo.item.window": "Image window",
   };
   var localeMessages = null;
   // Language whose messages are currently applied; null means the page shows the
@@ -438,6 +451,7 @@
       place(cards[1]);
       applyZoom();
       drawEdge();
+      syncZoneGeometry();
       demo.classList.add("is-ready");
     }
 
@@ -557,6 +571,301 @@
     });
     zoomFit.addEventListener("click", function () {
       fitView();
+    });
+
+    // ---------- zone detach (P0-28) ----------
+
+    var zone = surface.querySelector("[data-demo-zone]");
+    var zoneCard = zone === null ? null : zone.querySelector("[data-demo-zone-card]");
+    var zoneItems = [];
+    var zonePointer = null;
+    var zoneGeometryReady = false;
+    var zoneObserver = null;
+    var zoneSettleTimer = null;
+
+    if (zone !== null && zoneCard !== null) {
+      var zoneElements = zone.querySelectorAll("[data-zone-item]");
+      for (var zoneIndex = 0; zoneIndex < zoneElements.length; zoneIndex += 1) {
+        var zoneElement = zoneElements[zoneIndex];
+        if (!(zoneElement instanceof HTMLElement)) continue;
+        zoneItems.push({
+          element: zoneElement,
+          key: zoneElement.getAttribute("data-zone-item") || "item",
+          slot: null,
+          dockX: 0,
+          dockY: 0,
+          width: 0,
+          height: 0,
+          x: 0,
+          y: 0,
+          progress: 0,
+        });
+      }
+    }
+
+    function zoneItemLabel(item) {
+      return translate("demo.item." + item.key) || item.key;
+    }
+
+    function announceZoneItem(item, detached) {
+      if (status === null) return;
+      status.textContent = translate(detached ? "demo.status.detached" : "demo.status.docked", {
+        item: zoneItemLabel(item),
+      });
+    }
+
+    function worldRectOf(element) {
+      var worldRect = world.getBoundingClientRect();
+      var rect = element.getBoundingClientRect();
+      return {
+        x: (rect.left - worldRect.left) / scale,
+        y: (rect.top - worldRect.top) / scale,
+        w: rect.width / scale,
+        h: rect.height / scale,
+      };
+    }
+
+    function setZoneItemState(item, state) {
+      item.element.classList.toggle("is-docked", state === "docked");
+      item.element.classList.toggle("is-detached", state === "detached");
+      item.element.setAttribute("data-zone-state", state);
+    }
+
+    function placeZoneItem(item) {
+      item.element.style.setProperty("--zone-item-x", item.x.toFixed(1) + "px");
+      item.element.style.setProperty("--zone-item-y", item.y.toFixed(1) + "px");
+      item.element.style.setProperty("--detach-progress", item.progress.toFixed(3));
+      item.element.setAttribute("data-detach-progress", item.progress.toFixed(2));
+    }
+
+    function clampToBounds(item, x, y, bounds) {
+      var maxX = Math.max(bounds.x, bounds.x + bounds.w - item.width);
+      var maxY = Math.max(bounds.y, bounds.y + bounds.h - item.height);
+      return { x: clamp(x, bounds.x, maxX), y: clamp(y, bounds.y, maxY) };
+    }
+
+    function worldBounds() {
+      return { x: 0, y: 0, w: world.clientWidth, h: world.clientHeight };
+    }
+
+    function syncZoneGeometry() {
+      if (!zoneGeometryReady) return;
+      var index;
+      for (index = 0; index < zoneItems.length; index += 1) {
+        var measured = zoneItems[index];
+        measured.width = measured.element.offsetWidth;
+        measured.height = measured.element.offsetHeight;
+        if (measured.slot !== null) {
+          measured.slot.style.inlineSize = measured.width + "px";
+          measured.slot.style.blockSize = measured.height + "px";
+        }
+      }
+      for (index = 0; index < zoneItems.length; index += 1) {
+        var entry = zoneItems[index];
+        if (entry.slot === null) continue;
+        var slotRect = worldRectOf(entry.slot);
+        entry.dockX = slotRect.x;
+        entry.dockY = slotRect.y;
+        var dragging = zonePointer !== null && zonePointer.item === entry;
+        if (entry.element.classList.contains("is-detached")) {
+          var clampedFree = clampToBounds(entry, entry.x, entry.y, worldBounds());
+          entry.x = clampedFree.x;
+          entry.y = clampedFree.y;
+          placeZoneItem(entry);
+        } else if (!dragging) {
+          entry.x = entry.dockX;
+          entry.y = entry.dockY;
+          placeZoneItem(entry);
+        }
+      }
+    }
+
+    // The items start in the zone card grid. On the first drag they are replaced
+    // by equally sized dock slots and moved into the zone container, so they can
+    // leave the zone; their world coordinates are measured from those slots (the
+    // dock position is never hard-coded).
+    function ensureZoneGeometry() {
+      if (zoneGeometryReady || zoneItems.length === 0) return;
+      var index;
+      for (index = 0; index < zoneItems.length; index += 1) {
+        var item = zoneItems[index];
+        item.width = item.element.offsetWidth;
+        item.height = item.element.offsetHeight;
+      }
+      for (index = 0; index < zoneItems.length; index += 1) {
+        var entry = zoneItems[index];
+        var slot = document.createElement("span");
+        slot.className = "demo-zone__slot";
+        slot.setAttribute("data-zone-slot", entry.key);
+        slot.setAttribute("aria-hidden", "true");
+        slot.style.inlineSize = entry.width + "px";
+        slot.style.blockSize = entry.height + "px";
+        entry.element.parentNode.insertBefore(slot, entry.element);
+        entry.slot = slot;
+        zone.appendChild(entry.element);
+        entry.element.classList.add("is-floating", "is-docked");
+        entry.element.style.setProperty("--detach-progress", "0");
+        setZoneItemState(entry, "docked");
+      }
+      zoneGeometryReady = true;
+      syncZoneGeometry();
+      if (zoneObserver === null && typeof window.ResizeObserver === "function") {
+        zoneObserver = new window.ResizeObserver(function () {
+          if (zonePointer === null) syncZoneGeometry();
+        });
+        for (var observed = 0; observed < zoneItems.length; observed += 1) {
+          zoneObserver.observe(zoneItems[observed].element);
+        }
+      }
+    }
+
+    function pointerOutsideZone(clientX, clientY) {
+      var rect = zoneCard.getBoundingClientRect();
+      var dx = Math.max(rect.left - clientX, 0, clientX - rect.right);
+      var dy = Math.max(rect.top - clientY, 0, clientY - rect.bottom);
+      return Math.hypot(dx, dy);
+    }
+
+    function zoneWorldPoint(event) {
+      var worldRect = world.getBoundingClientRect();
+      return {
+        x: (event.clientX - worldRect.left) / scale,
+        y: (event.clientY - worldRect.top) / scale,
+      };
+    }
+
+    function detachProgress(distance) {
+      var value = clamp(distance / ZONE_DETACH_DISTANCE, 0, 1);
+      return value * value * (3 - 2 * value);
+    }
+
+    function onZoneItemPointerDown(item, event) {
+      if (zonePointer !== null) return;
+      if (event.pointerType === "mouse" && event.button !== 0) return;
+      var target = event.target;
+      if (target instanceof Element && target.closest("button, a, input, textarea, select")) {
+        return;
+      }
+      event.preventDefault();
+      ensureZoneGeometry();
+      var point = zoneWorldPoint(event);
+      zonePointer = {
+        pointerId: event.pointerId,
+        item: item,
+        grabX: point.x - item.x,
+        grabY: point.y - item.y,
+        startClientX: event.clientX,
+        startClientY: event.clientY,
+        startedDetached: item.element.classList.contains("is-detached"),
+        active: false,
+      };
+      item.element.classList.remove("is-settling");
+      item.element.classList.add("is-dragging");
+      try {
+        item.element.setPointerCapture(event.pointerId);
+      } catch (error) {
+        // Pointer capture is best effort; the drag keeps working without it.
+      }
+    }
+
+    function onZoneItemPointerMove(item, event) {
+      var drag = zonePointer;
+      if (drag === null || drag.item !== item || drag.pointerId !== event.pointerId) return;
+      if (!drag.active) {
+        if (Math.hypot(event.clientX - drag.startClientX, event.clientY - drag.startClientY) < threshold) {
+          return;
+        }
+        drag.active = true;
+      }
+      item.element.classList.remove("is-settling");
+      var point = zoneWorldPoint(event);
+      var distance = pointerOutsideZone(event.clientX, event.clientY);
+      var progress = detachProgress(distance);
+      var detached = item.element.classList.contains("is-detached");
+      if (!detached && distance >= ZONE_DETACH_DISTANCE) {
+        detached = true;
+        setZoneItemState(item, "detached");
+      } else if (detached && distance <= ZONE_DOCK_DISTANCE) {
+        detached = false;
+        setZoneItemState(item, "docked");
+        item.x = item.dockX;
+        item.y = item.dockY;
+        drag.grabX = point.x - item.x;
+        drag.grabY = point.y - item.y;
+        item.element.classList.add("is-settling");
+      }
+      var targetX = point.x - drag.grabX;
+      var targetY = point.y - drag.grabY;
+      var position;
+      if (detached) {
+        item.progress = 1;
+        position = clampToBounds(item, targetX, targetY, worldBounds());
+      } else {
+        item.progress = progress;
+        var inside = clampToBounds(item, targetX, targetY, worldRectOf(zoneCard));
+        var free = clampToBounds(item, targetX, targetY, worldBounds());
+        position = {
+          x: inside.x + (free.x - inside.x) * progress,
+          y: inside.y + (free.y - inside.y) * progress,
+        };
+      }
+      item.x = position.x;
+      item.y = position.y;
+      placeZoneItem(item);
+    }
+
+    function settleZoneItem(item, detached) {
+      item.element.classList.remove("is-dragging");
+      if (detached) {
+        var snapped = clampToBounds(item, snap(item.x), snap(item.y), worldBounds());
+        item.x = snapped.x;
+        item.y = snapped.y;
+        item.progress = 1;
+        setZoneItemState(item, "detached");
+      } else {
+        item.x = item.dockX;
+        item.y = item.dockY;
+        item.progress = 0;
+        setZoneItemState(item, "docked");
+      }
+      item.element.classList.add("is-settling");
+      placeZoneItem(item);
+      window.clearTimeout(zoneSettleTimer);
+      zoneSettleTimer = window.setTimeout(function () {
+        item.element.classList.remove("is-settling");
+      }, ZONE_SETTLE_TIMEOUT);
+    }
+
+    function onZoneItemPointerEnd(item, event, cancelled) {
+      var drag = zonePointer;
+      if (drag === null || drag.item !== item || drag.pointerId !== event.pointerId) return;
+      zonePointer = null;
+      item.element.classList.remove("is-dragging");
+      if (!drag.active) {
+        item.element.classList.remove("is-settling");
+        placeZoneItem(item);
+        return;
+      }
+      var detached = cancelled
+        ? item.element.classList.contains("is-detached")
+        : pointerOutsideZone(event.clientX, event.clientY) > ZONE_RELEASE_DISTANCE;
+      settleZoneItem(item, detached);
+      if (detached !== drag.startedDetached) announceZoneItem(item, detached);
+    }
+
+    zoneItems.forEach(function (item) {
+      item.element.addEventListener("pointerdown", function (event) {
+        onZoneItemPointerDown(item, event);
+      });
+      item.element.addEventListener("pointermove", function (event) {
+        onZoneItemPointerMove(item, event);
+      });
+      item.element.addEventListener("pointerup", function (event) {
+        onZoneItemPointerEnd(item, event, false);
+      });
+      item.element.addEventListener("pointercancel", function (event) {
+        onZoneItemPointerEnd(item, event, true);
+      });
     });
 
     window.addEventListener("resize", function () {

@@ -4585,12 +4585,16 @@
       ]
     },
     {
-      "status": "in_progress",
+      "status": "done",
       "stage": "foundation",
       "parallel_group": null,
       "owner": null,
       "round": 0,
-      "evidence": [],
+      "evidence": [
+        "reviews/evidence/P0-28-board-check-20261026T222025Z.json",
+        "reviews/evidence/P0-28-design-check-20261026T222027Z.json",
+        "reviews/evidence/P0-28-changelog-entry-20261026T222027Z.json"
+      ],
       "scope_write_forbidden": [
         "reference/"
       ],
@@ -4630,7 +4634,12 @@
         "changelog-entry"
       ],
       "branch": "task/P0-28",
-      "worktree": "../Project air-P0-28"
+      "worktree": null,
+      "handoff": [
+        "Closed P0-28: notepad and photo window drag out of the zone and back; detach eases over 28 screen px (scale/border/shadow), free items clamp+grid-snap, 8 px dock hysteresis, measured slots.",
+        "Detached items are never edge-connected (one .demo__edge, A/B endpoints unchanged); reduced-motion honoured; cards/zoom/toolbar/switch unchanged; en/de strings; assets ?v=P0-28.",
+        "Gates board-check/design-check/changelog-entry green + language-check OK; evidence docked/mid/detached/redocked + log; review pass with two minors fixed (photo ring/shadow clipping, README wording)."
+      ]
     }
   ],
   "decisions": [

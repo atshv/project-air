@@ -1,4 +1,4 @@
-# Design preview (P0-19, P0-20, P0-21, P0-22, P0-23, P0-24, P0-25, P0-26, P0-27, P1-07)
+# Design preview (P0-19, P0-20, P0-21, P0-22, P0-23, P0-24, P0-25, P0-26, P0-27, P0-28, P1-07)
 
 A design preview of the Project air design system. It is **not the product**: there is no engine,
 no data, no server and no build step. It exists so the owner can see the look and feel between
@@ -15,9 +15,9 @@ its two values come from:
   `0.0.1 – unreleased`; the status word comes from the same heading. `CHANGELOG.md` is the display
   source and currently agrees with the root `package.json` version `0.0.1`.
 - **Last change** — the newest preview change entry, currently
-  `.changes/P0-27-bilingual-preview.md`; the line shows the task id and that task's title from
-  `board.json` / the task brief: `P0-27 — Bilingual preview with DE/EN switch and cache-busted
-  assets`. The line follows the `P0-*` preview tasks (P0-19 … P0-27, P1-07); the engine tasks
+  `.changes/P0-28-zone-detach.md`; the line shows the task id and that task's title from
+  `board.json` / the task brief: `P0-28 — Zone detach interaction: drag notepad and photo out and
+  back`. The line follows the `P0-*` preview tasks (P0-19 … P0-28, P1-07); the engine tasks
   (`P4-*`) and the other stages run in parallel and do not move it, so "highest numeric id" alone is
   not the rule. If several files exist for the same preview task, the most recent one is used;
   `.changes/README.md` and `.changes/TEMPLATE.md` do not count as entries.
@@ -42,8 +42,9 @@ task.
 - A **top-centre floating toolbar** (preview-only) with the ten tools note (selected initially),
   link, image, file │ zone, checklist, palette, columns, timeline and table, using the ui-kit icon
   files through the existing `.icon--*` mask classes.
-- A **static zone** with a notepad and a small image window that shows the owner-supplied demo
-  photo. The zone is static demo content — no upload, no file handling and no canvas action.
+- A **zone** with a notepad and a small image window that shows the owner-supplied demo photo. Both
+  items can be dragged out of the zone onto the canvas and docked back (P0-28). There is no upload,
+  no file handling and nothing is saved.
 - A floating **zoom pill** in the demo (preview-only): zoom in, zoom out and fit stacked vertically,
   drawn with CSS shapes and labels from the locale files.
 - A **DE/EN switch** at the top right of the masthead: the whole page (all text, `aria-label`s,
@@ -139,7 +140,7 @@ Both are **preview-only**: no toolbar action touches the canvas, and the zone is
 - **Toolbar selection** — clicking or pressing a tool flips `aria-pressed` and names the tool in the
   demo status line; the note tool is selected in the markup. Nothing else changes: the cards, the
   edge and the zoom scale stay where they are.
-- **Zone** — a static zone at the centre of the canvas with a `--card` background, a 1 px `--border`
+- **Zone** — a static zone card at the centre of the canvas with a `--card` background, a 1 px `--border`
   border and `--radius-md`. It contains a 240 px notepad (`--surface`, 1 px `--border-strong`,
   `--radius-sm`, `--text-15` title, `--text-13` body) and a 240 × 140 px image window with a 32 px
   title bar, a 1 px `--border` border, `--radius-md` and the photo as `object-fit: cover` with a
@@ -164,6 +165,39 @@ Both are **preview-only**: no toolbar action touches the canvas, and the zone is
   measure the world layer instead of the surface, so the edge stays exactly on the anchors in both
   layouts; on desktop the world layer and the surface are identical and the demo behaves exactly as
   before.
+
+## Zone detach interaction (P0-28)
+
+The notepad and the photo window are draggable canvas objects, not static decoration:
+
+- **Dock slots** — on the first drag the script measures both items in the zone grid, replaces them
+  with equally sized dock slots and moves them into the zone container, positioned in world
+  coordinates. Dock positions are measured from those slots (never hard-coded) and re-measured on
+  resize, locale switch and content reflow (`ResizeObserver`), so a re-dock always restores the
+  original slot exactly.
+- **Drag** — pointer events with `setPointerCapture`, one active drag, mouse, pen and touch; the
+  same 4 px movement threshold (`--drag-threshold`) as the cards starts it. While the pointer is
+  inside the zone the item follows it, clamped to the zone.
+- **Detach progress 0 → 1** — the pointer distance outside the zone edge drives a smoothstep
+  progress over **28 screen px** (screen pixels, so it behaves the same at every zoom level). The
+  progress scales the item 1 → 1.02 (`transform`, no layout thrash), fades its border out
+  (1 → 0) and grows the `--card-shadow` (0 → 1). At progress 1 the item is released into canvas
+  space, clamped to the demo surface and snapped to the 16 px canvas grid on release.
+- **Hysteresis** — detaching needs at least 28 px outside the zone edge, docking again needs at most
+  **8 px**; the band in between keeps the current state, so a wobble at the edge cannot flicker.
+  Releasing mid-detach settles to the nearest state: farther than 18 px outside stays detached,
+  otherwise the item settles back into its slot.
+- **Docking back** — dragging the item toward the zone reverses the progress and it settles into its
+  measured slot with a short `--motion-panel` transition; other content does not move.
+- **No edge** — detached items are free objects. The demo keeps exactly one edge element
+  (`.demo__edge`, cards A ↕ B) and its path never changes when a zone item moves; zone items are
+  never connected.
+- **Z-order** — docked items sit at `--layer-blocks`, a dragged or detached item at
+  `--layer-dragged-or-selected` (above the note cards) and below the canvas chrome
+  (`--layer-canvas-chrome`: toolbar and zoom pill); no numeric z-index.
+- **Reduced motion** — under `prefers-reduced-motion: reduce` the scale and shadow animation are
+  removed and the settle transition is immediate; the state change still happens, it just does not
+  animate.
 
 ## Bilingual preview and the DE/EN switch (P0-27)
 
@@ -214,9 +248,9 @@ P0-26 markup with the old stylesheet and a broken-looking demo. The preview ther
 assets with a version query:
 
 ```html
-<link rel="stylesheet" href="../../../packages/ui-kit/tokens.css?v=P0-27" />
-<link rel="stylesheet" href="preview.css?v=P0-27" />
-<script src="preview.js?v=P0-27" defer></script>
+<link rel="stylesheet" href="../../../packages/ui-kit/tokens.css?v=P0-28" />
+<link rel="stylesheet" href="preview.css?v=P0-28" />
+<script src="preview.js?v=P0-28" defer></script>
 ```
 
 - **Bump rule:** every task that changes a file in `apps/web/preview/` — or the shared
@@ -225,7 +259,7 @@ assets with a version query:
   never cached and gets the current files, which also covers a changed design system that would
   otherwise be served from the cached token stylesheet.
 - The locale files reuse the script's version automatically: `preview.js` reads the `v` query of its
-  own script URL and appends it to the locale request (`locales/de.json?v=P0-27`), so one bump
+  own script URL and appends it to the locale request (`locales/de.json?v=P0-28`), so one bump
   covers the translations as well.
 - The icon SVGs are referenced from `preview.css` and keep stable, unversioned URLs; they only
   change with a design-system task, and every such task bumps the preview version anyway.
@@ -282,7 +316,7 @@ Serve the **repository root**, not this folder, so the relative token and icon p
 the slot's `web` port from `.polier-slot` (never hard-code it), then:
 
 ```sh
-cd "/Users/rasulatashev/Desktop/KI Projekte/Project air-P0-27"
+cd "/Users/rasulatashev/Desktop/KI Projekte/Project air-P0-28"
 PORT=$(python3 -c "import json; print(json.load(open('.polier-slot'))['ports']['web'])")
 python3 -m http.server "$PORT" --bind 127.0.0.1
 ```
@@ -319,8 +353,13 @@ Committed evidence lives in `reviews/evidence/`: `P0-19-desktop.png` (1440×900)
 `P0-27-desktop-en.png` / `P0-27-desktop-de.png` (1440×900, English and German, scrolled so the
 whole demo surface with both cards and the photo is visible),
 `P0-27-mobile-en.png` / `P0-27-mobile-de.png` (390×844, English and German) and
-`P0-27-1426x583-de.png` (1426 × 583 CSS px at DPR 2, German, the owner's viewport with fresh CSS)
-and the `P0-19-preview.log` / `P0-20-preview.log` / `P0-21-preview.log` / `P0-22-preview.log` /
+`P0-27-1426x583-de.png` (1426 × 583 CSS px at DPR 2, German, the owner's viewport with fresh CSS),
+`P0-28-docked.png` (1440×900, both zone items docked),
+`P0-28-mid-detach.png` (1440×900, the notepad at about 50 % detach progress),
+`P0-28-detached.png` (1440×900, both items free on the canvas, no edge),
+`P0-28-redocked.png` (1440×900, both items back in their slots) and the
+`P0-19-preview.log` / `P0-20-preview.log` / `P0-21-preview.log` / `P0-22-preview.log` /
 `P0-23-preview.log` / `P0-24-preview.log` / `P0-25-preview.log` / `P0-26-preview.log` /
-`P0-27-preview.log` / `P1-07-preview.log` files with the exact serve, curl and screenshot commands.
-The page has no horizontal overflow at 1440×900, 390×844 or the owner's 1426 × 583 viewport.
+`P0-27-preview.log` / `P0-28-preview.log` / `P1-07-preview.log` files with the exact serve, curl and
+screenshot commands. The page has no horizontal overflow at 1440×900, 390×844 or the owner's
+1426 × 583 viewport.

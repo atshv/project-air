@@ -1,0 +1,17 @@
+{
+  "task": "P0-28",
+  "gate": "changelog-entry",
+  "command": "node tools/release/check-changes.mjs --task P0-28 --base main",
+  "exit_code": 0,
+  "result": "pass",
+  "slot": null,
+  "exclusive": [],
+  "lock_wait_s": 0.0,
+  "lock_warning": null,
+  "started": "2026-10-26T22:20:27+00:00",
+  "finished": "2026-10-26T22:20:27+00:00",
+  "commit": "0811a16cb04a8918dd85cb8fd8ec25c5452c0489",
+  "dirty": true,
+  "log": "P0-28-changelog-entry-20261026T222027Z.log",
+  "log_sha256": "a398cfd7461cdb81f608ee15e493dfa28a9cb5c77c33ddd2b7193873d88f6f7e"
+}

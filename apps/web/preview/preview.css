@@ -1100,6 +1100,13 @@ button {
 
 .demo-zone {
   position: absolute;
+  inset: 0;
+  pointer-events: none;
+  user-select: none;
+}
+
+.demo-zone__card {
+  position: absolute;
   inset-block-start: 50%;
   inset-inline-start: 50%;
   z-index: var(--layer-blocks);
@@ -1110,9 +1117,81 @@ button {
   border: var(--border-width) solid var(--border);
   border-radius: var(--radius-md);
   background-color: var(--card);
-  pointer-events: none;
-  user-select: none;
   transform: translate(-50%, -50%);
+}
+
+/* The two zone items start in the card grid (docked). On the first drag the
+   script replaces them with measured dock slots and moves them into the zone
+   container, where they are positioned in world coordinates and can leave the
+   zone. --detach-progress (0..1) drives the subtle scale, shadow and border
+   fade; positions are transform-based so the drag never thrashes layout. */
+.demo-zone__item {
+  pointer-events: auto;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+}
+
+.demo-zone__slot {
+  display: block;
+}
+
+.demo-zone__item.is-floating {
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline-start: 0;
+  z-index: var(--layer-blocks);
+  border-color: transparent;
+  transform: translate3d(var(--zone-item-x, 0px), var(--zone-item-y, 0px), 0)
+    scale(calc(1 + 0.02 * var(--detach-progress, 0)));
+}
+
+.demo-zone__item.is-floating::before {
+  content: "";
+  position: absolute;
+  inset: calc(-1 * var(--border-width));
+  border: var(--border-width) solid var(--border-strong);
+  border-radius: inherit;
+  opacity: calc(1 - var(--detach-progress, 0));
+  pointer-events: none;
+}
+
+.demo-zone__item.is-floating::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  box-shadow: var(--card-shadow);
+  opacity: var(--detach-progress, 0);
+  pointer-events: none;
+}
+
+.demo-zone__item.is-floating.demo-zone__window::before {
+  border-color: var(--border);
+}
+
+.demo-zone__item.is-floating.is-dragging,
+.demo-zone__item.is-floating.is-detached {
+  z-index: var(--layer-dragged-or-selected);
+  cursor: grabbing;
+}
+
+.demo-zone__item.is-settling {
+  transition: transform var(--motion-panel) ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .demo-zone__item.is-floating {
+    transform: translate3d(var(--zone-item-x, 0px), var(--zone-item-y, 0px), 0);
+  }
+
+  .demo-zone__item.is-floating::after {
+    opacity: 0;
+  }
+
+  .demo-zone__item.is-settling {
+    transition: none;
+  }
 }
 
 .demo-zone__notepad {
@@ -1140,15 +1219,23 @@ button {
 }
 
 .demo-zone__window {
-  display: grid;
-  grid-template-rows: var(--space-32) 1fr;
   inline-size: 240px;
   block-size: 140px;
   margin: 0;
-  overflow: hidden;
   border: var(--border-width) solid var(--border);
   border-radius: var(--radius-md);
   background-color: var(--surface);
+}
+
+/* The clipping lives on an inner wrapper: the zone item itself must not clip,
+   so its ring (::before) and card shadow (::after) stay visible while it is
+   dragged and after it is detached. */
+.demo-zone__window-inner {
+  display: grid;
+  grid-template-rows: var(--space-32) 1fr;
+  block-size: 100%;
+  overflow: hidden;
+  border-radius: calc(var(--radius-md) - var(--border-width));
 }
 
 .demo-zone__window-bar {
