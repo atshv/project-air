@@ -3049,7 +3049,7 @@
       "satisfies": [
         "D10"
       ],
-      "status": "pending",
+      "status": "in_progress",
       "depends_on": [
         "P4-02"
       ],
@@ -3065,7 +3065,9 @@
         "docs/gates/",
         "docs/quality.md",
         "reviews/evidence/",
-        ".changes/"
+        ".changes/",
+        "apps/engine-playground/main.js",
+        "docs/engine.md"
       ],
       "scope_read": [
         "ARCHITECTURE.md",
@@ -3091,9 +3093,9 @@
         "board-check",
         "visual"
       ],
-      "owner": null,
+      "owner": "lead",
       "branch": "task/P4-04",
-      "worktree": null,
+      "worktree": "/private/tmp/air-P4-04",
       "round": 0,
       "evidence": [],
       "scope_write_forbidden": [
