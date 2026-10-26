@@ -17,8 +17,10 @@ instead of hard-coded ports. The scene builders and their tests are the first co
 
 - Deterministic scene builders in `src/scenes.ts`: `buildSampleScene()` (500 note cards, 50 zones
   with 2–4 contained blocks each, all five zone tones, world 9600×5408 px), `buildStressScene(count)`
-  (default 10,000, valid 0 … 50,000), `buildScene(name)` and `createSeededRandom(seed)`. Scenes are
-  plain engine rectangles with `id`, geometry, `tone` and `layer` plus metadata.
+  (default 10,000, valid 0 … 50,000), `buildEngineCoreScene()` (10,000 mixed board objects: 9,200
+  cards, 200 zones and 600 blocks, world 19200×10816 px), `buildScene(name)` and
+  `createSeededRandom(seed)`. Scenes are plain engine rectangles with `id`, geometry, `tone` and
+  `layer` plus metadata.
 - A fake sync server, a login helper and a port lookup helper.
 
 ## Invariants

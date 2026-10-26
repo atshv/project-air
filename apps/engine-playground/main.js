@@ -7,6 +7,13 @@
 // Modes (query parameters)
 //   (default) / ?scene=sample      sample board: 500 cards, 50 zones with blocks
 //   ?scene=stress&count=<n>        stress scene, default 10,000 objects (max 50,000)
+//   ?scene=engine-core             engine-core board: 10,000 mixed board objects
+//   ?perf=engine-core&scene=<name>&samples=<n>&warmup=<n>[&verifyCulling=1]
+//                                  engine-core perf measurement driven by
+//                                  packages/engine/test/perf/run-perf.mjs: one
+//                                  deterministic pan/zoom camera path, one
+//                                  setCamera per frame, frame intervals after
+//                                  the warm-up, optional culling verification
 //   ?bench=<n>&samples=<n>&warmup=<n>
 //                                  benchmark loop kept unchanged for
 //                                  packages/engine/test/perf/run-perf.mjs
@@ -19,6 +26,11 @@
 // engine failed to start ({ ok: false, error }), so harnesses can wait for it
 // instead of sleeping. window.__enginePlayground.pause() stops the loop for a
 // deterministic capture and getState() reports the current view.
+//
+// Perf hook: window.__enginePerf exists in `?perf=engine-core` mode and reports
+// the scene counts, warm-up and sample counts, frame intervals, the sampled
+// cameras, the document load count and (in verify mode) the per-frame
+// command-buffer instance count next to the visible set computed from geometry.
 
 import { createEngine, EngineError } from "@project-air/engine";
 
@@ -63,9 +75,24 @@ const LAYERS = ["zones", "blocks", "note-cards"];
 const MINIMUM_ZOOM = 0.1;
 const MAXIMUM_ZOOM = 8;
 
+// Engine-core perf mode: one zoom cycle from the fit zoom to six times the fit
+// zoom and back, plus one left-to-right pan sweep. Constants mirrored in
+// docs/gates/perf.md and packages/engine/test/perf/run-perf.mjs.
+const PERF_SCENARIO = "engine-core";
+const PERF_ZOOM_CYCLE_FACTOR = 6;
+const PERF_DEFAULT_SCENE = "engine-core";
+
+// Counts the document loads: the perf harness asserts that the camera path
+// moves the view (setCamera) without replacing the document or rebuilding the
+// document's spatial index.
+let documentLoads = 0;
+
 const query = new URLSearchParams(window.location.search);
 const benchQuery = query.get("bench");
 const benchmarkRequested = benchQuery !== null;
+const perfQuery = query.get("perf");
+const perfRequested = perfQuery === "engine-core" && !benchmarkRequested;
+const verifyCullingRequested = perfRequested && query.get("verifyCulling") === "1";
 const requestedCount = clampInteger(parseInteger(benchQuery, COLUMNS * ROWS), 0, 1000000);
 const warmupFrames = clampInteger(parseInteger(query.get("warmup"), 120), 0, 10000);
 const sampleFrames = clampInteger(parseInteger(query.get("samples"), 600), 1, 10000);
@@ -173,7 +200,11 @@ async function loadScene() {
   // the test-kit bundle.
   const testKit = await import("@project-air/test-kit");
   const requestedScene = query.get("scene");
-  const name = testKit.isSceneName(requestedScene) ? requestedScene : "sample";
+  const name = testKit.isSceneName(requestedScene)
+    ? requestedScene
+    : perfRequested
+      ? PERF_DEFAULT_SCENE
+      : "sample";
   const count = clampInteger(
     parseInteger(query.get("count"), testKit.STRESS_DEFAULT_OBJECT_COUNT),
     0,
@@ -393,6 +424,186 @@ function startBenchmark(engine, benchmarkState) {
   window.requestAnimationFrame(frame);
 }
 
+// Engine-core perf mode. The camera path is a pure function of the frame index:
+// one zoom cycle (fit zoom -> fit zoom * 6 -> fit zoom, a sine over the whole
+// run) and one horizontal pan sweep across the reachable document range, with
+// the view vertically centred. Every frame calls exactly one setCamera and then
+// renders; the document is loaded once before the loop, so the spatial index is
+// never rebuilt by the measurement itself.
+function startEngineCoreMeasurement(engine, loaded) {
+  const bounds = canvas.getBoundingClientRect();
+  const cssWidth = Math.max(1, Math.round(bounds.width));
+  const cssHeight = Math.max(1, Math.round(bounds.height));
+  const fitZoom = clampNumber(
+    Math.min(cssWidth / loaded.world.width, cssHeight / loaded.world.height),
+    zoomRange.minimumZoom,
+    zoomRange.maximumZoom,
+  );
+  const maximumZoom = clampNumber(
+    fitZoom * PERF_ZOOM_CYCLE_FACTOR,
+    zoomRange.minimumZoom,
+    zoomRange.maximumZoom,
+  );
+  const totalFrames = warmupFrames + sampleFrames;
+  const perfState = {
+    status: "warming-up",
+    scenario: PERF_SCENARIO,
+    scene: loaded.name,
+    counts: { ...loaded.counts },
+    objectCount: loaded.counts.total,
+    world: { ...loaded.world },
+    warmup: warmupFrames,
+    samples: sampleFrames,
+    totalFrames,
+    frameTimesMs: [],
+    cameras: [],
+    documentLoads,
+    renderer: readRendererString(),
+    canvas: {
+      cssWidth,
+      cssHeight,
+      pixelWidth: canvas.width,
+      pixelHeight: canvas.height,
+      devicePixelRatio: window.devicePixelRatio || 1,
+    },
+    cameraPath: {
+      fitZoom,
+      maximumZoom,
+      zoomCycleFactor: PERF_ZOOM_CYCLE_FACTOR,
+      oneSetCameraPerFrame: true,
+      description:
+        "one zoom cycle fitZoom -> fitZoom * 6 -> fitZoom (sine over the run) plus one left-to-right pan sweep, view vertically centred",
+    },
+    verifyCulling: verifyCullingRequested,
+    culling: null,
+    framesRendered: 0,
+  };
+  globalThis.__enginePerf = perfState;
+  fpsNode.textContent = "measuring";
+  captionNode.textContent = sceneCaption(loaded);
+  hudVisibleNode.textContent = "0";
+
+  let renderedFrames = 0;
+  let previousTimestamp = 0;
+  // The culling proof replays a representative subset of the sampled cameras,
+  // not every frame: an object allocated per frame would add GC work to the
+  // measurement it is supposed to observe.
+  const cullingCameraStride = Math.max(1, Math.floor(sampleFrames / 100));
+  const frame = (timestamp) => {
+    const t = totalFrames <= 1 ? 0 : renderedFrames / (totalFrames - 1);
+    camera.zoom = clampNumber(
+      fitZoom + (maximumZoom - fitZoom) * Math.sin(Math.PI * t),
+      zoomRange.minimumZoom,
+      zoomRange.maximumZoom,
+    );
+    const reachableX = Math.max(0, loaded.world.width - cssWidth / camera.zoom);
+    const reachableY = Math.max(0, loaded.world.height - cssHeight / camera.zoom);
+    camera.panX = reachableX * t;
+    camera.panY = reachableY / 2;
+    try {
+      engine.setCamera(camera);
+      engine.renderFrame();
+    } catch (error) {
+      state.stopped = true;
+      perfState.status = "error";
+      perfState.error = String(error);
+      showError(error);
+      settleReady({ ok: false, error: String(error) });
+      return;
+    }
+    renderedFrames += 1;
+    perfState.framesRendered = renderedFrames;
+    // Discard the warm-up frames; sample the interval between rendered frames.
+    if (renderedFrames > warmupFrames) {
+      if (previousTimestamp !== 0) {
+        perfState.frameTimesMs.push(timestamp - previousTimestamp);
+        if (verifyCullingRequested && perfState.frameTimesMs.length % cullingCameraStride === 0) {
+          perfState.cameras.push({ panX: camera.panX, panY: camera.panY, zoom: camera.zoom });
+        }
+      }
+      if (perfState.frameTimesMs.length >= sampleFrames) {
+        finishEngineCoreMeasurement(engine, loaded, perfState, cssWidth, cssHeight);
+        return;
+      }
+    }
+    previousTimestamp = timestamp;
+    window.requestAnimationFrame(frame);
+  };
+  window.requestAnimationFrame(frame);
+}
+
+function finishEngineCoreMeasurement(engine, loaded, perfState, cssWidth, cssHeight) {
+  perfState.status = "verifying";
+  if (verifyCullingRequested) {
+    perfState.culling = verifyCullingAgainstVisibleSet(engine, loaded, perfState, cssWidth, cssHeight);
+  }
+  perfState.status = "done";
+  perfState.finishedAt = Date.now();
+  console.log(
+    `PERF_SCENARIO ${JSON.stringify({
+      status: "done",
+      scenario: PERF_SCENARIO,
+      scene: perfState.scene,
+      samples: perfState.frameTimesMs.length,
+    })}`,
+  );
+}
+
+// Replays the sampled cameras off the measured path and compares the engine's
+// command-buffer instance count with the visible set computed independently from
+// the scene geometry and the camera's world bounds (the engine's inclusive-edge
+// intersection rule in packages/engine/include/engine/geometry.h). It proves two
+// things for the L01 final proof: every frame draws exactly the visible objects,
+// and at least one frame draws fewer than the document, so offscreen content is
+// culled instead of drawn.
+function verifyCullingAgainstVisibleSet(engine, loaded, perfState, cssWidth, cssHeight) {
+  let mismatches = 0;
+  let culledFrames = 0;
+  let minimumInstances = Number.POSITIVE_INFINITY;
+  let maximumInstances = 0;
+  for (const sampleCamera of perfState.cameras) {
+    const visible = {
+      x: sampleCamera.panX,
+      y: sampleCamera.panY,
+      width: cssWidth / sampleCamera.zoom,
+      height: cssHeight / sampleCamera.zoom,
+    };
+    let expected = 0;
+    for (const object of loaded.objects) {
+      if (
+        object.x <= visible.x + visible.width &&
+        visible.x <= object.x + object.width &&
+        object.y <= visible.y + visible.height &&
+        visible.y <= object.y + object.height
+      ) {
+        expected += 1;
+      }
+    }
+    engine.setCamera(sampleCamera);
+    const actual = engine.visibleInstanceCount();
+    if (actual !== expected) {
+      mismatches += 1;
+    }
+    if (actual < perfState.objectCount) {
+      culledFrames += 1;
+    }
+    minimumInstances = Math.min(minimumInstances, actual);
+    maximumInstances = Math.max(maximumInstances, actual);
+  }
+  return {
+    framesChecked: perfState.cameras.length,
+    mismatches,
+    expectedEqualsCommandBuffer: mismatches === 0,
+    documentSize: perfState.objectCount,
+    minInstances: Number.isFinite(minimumInstances) ? minimumInstances : 0,
+    maxInstances: maximumInstances,
+    culledFrames,
+    drawsFewerThanDocument: culledFrames > 0,
+    method:
+      "brute-force inclusive bounds intersection of every scene object against the camera's visible world bounds, compared with engine.visibleInstanceCount() for each sampled camera",
+  };
+}
+
 async function start() {
   try {
     const loaded = await loadScene();
@@ -407,6 +618,7 @@ async function start() {
 
     const engine = await createEngine(canvas);
     engine.loadRectangles(loaded.objects);
+    documentLoads += 1;
     hudBackendNode.textContent = state.backend;
 
     const benchmarkState = benchmarkRequested
@@ -511,6 +723,18 @@ async function start() {
         visibleCount: 0,
       });
       startBenchmark(engine, benchmarkState);
+      return;
+    }
+
+    if (perfRequested) {
+      settleReady({
+        ok: true,
+        scene: state.scene,
+        counts: { ...state.counts },
+        objectCount: state.objectCount,
+        visibleCount: 0,
+      });
+      startEngineCoreMeasurement(engine, loaded);
       return;
     }
 

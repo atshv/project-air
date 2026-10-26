@@ -14,7 +14,7 @@
 // structurally. `docs/engine.md` records the scene contract.
 
 /** Scene names accepted by the playground's `?scene=` query. */
-export type SceneName = "sample" | "stress";
+export type SceneName = "sample" | "stress" | "engine-core";
 
 /** Engine tone names; `neutral` is the card surface, `tone-a` … `tone-e` are the zone tones. */
 export type SceneTone = "neutral" | "tone-a" | "tone-b" | "tone-c" | "tone-d" | "tone-e";
@@ -95,6 +95,24 @@ export interface Scene {
 /** Sample board: exactly 500 note cards and 50 zones with contained blocks. */
 export const SAMPLE_CARD_COUNT = 500;
 export const SAMPLE_ZONE_COUNT = 50;
+/**
+ * Engine-core interactive board: exactly 10,000 mixed board objects (9,200
+ * cards, 200 zones and 600 blocks). This is the L01/D10 target document for the
+ * `perf` gate, not a rectangle grid.
+ */
+export const ENGINE_CORE_CARD_COUNT = 9200;
+export const ENGINE_CORE_ZONE_COUNT = 200;
+export const ENGINE_CORE_BLOCK_COUNT = 600;
+export const ENGINE_CORE_OBJECT_COUNT =
+  ENGINE_CORE_CARD_COUNT + ENGINE_CORE_ZONE_COUNT + ENGINE_CORE_BLOCK_COUNT;
+/**
+ * Engine-core world in contract pixels, multiples of the 16 px canvas grid. The
+ * sample board's zone sizes repeat on a 20 x 10 zone grid; the fit zoom at
+ * 1440x900 clamps to the engine's 0.1 minimum, so the interactive camera path
+ * starts at the clamp and zooms in from there.
+ */
+export const ENGINE_CORE_WORLD: SceneWorld = { width: 19200, height: 10816 };
+
 /** Stress scene: default object count and the maximum document size of the engine. */
 export const STRESS_DEFAULT_OBJECT_COUNT = 10000;
 export const MAX_SCENE_OBJECT_COUNT = 50000;
@@ -107,6 +125,7 @@ export const SAMPLE_WORLD: SceneWorld = { width: 9600, height: 5408 };
 
 const SAMPLE_SEED = 20261025;
 const STRESS_SEED = 20261026;
+const ENGINE_CORE_SEED = 20261027;
 
 // Mirrors of engine values, not design values: `tokens::canvas_grid` and the
 // provisional camera clamp in docs/engine.md.
@@ -131,6 +150,14 @@ const OUTSIDE_COLUMNS = 20;
 const OUTSIDE_ROWS = 12;
 const CARD_PADDING = 32;
 const SNAP_MARGIN = 16;
+
+// Engine-core board layout: the sample board's zone pattern on a 20 x 10 grid.
+// Every zone gets exactly three blocks and eight contained cards, which fixes
+// the document at 200 zones + 600 blocks + 9,200 cards = 10,000 objects.
+const ENGINE_CORE_ZONE_COLUMNS = 20;
+const ENGINE_CORE_ZONE_ROWS = 10;
+const ENGINE_CORE_BLOCKS_PER_ZONE = 3;
+const ENGINE_CORE_CARDS_PER_ZONE = 8;
 
 /**
  * Mulberry32 seeded PRNG: 32-bit integer arithmetic only, so the sequence is
@@ -312,6 +339,155 @@ export function buildSampleScene(): Scene {
 }
 
 /**
+ * Builds the engine-core interactive board: exactly 10,000 objects (9,200 note
+ * cards, 200 zones with three contained blocks each = 600 blocks) on an organic
+ * board, not a rectangle grid. Zones repeat the sample board's jittered sizes and
+ * positions on a 20 x 10 zone grid; every zone carries three blocks and eight
+ * cards, the remaining cards are free cards spread over the world. Used by the
+ * `perf` gate (`--scenario engine-core`) for the 10,000-object pan/zoom target.
+ */
+export function buildEngineCoreScene(): Scene {
+  const random = createSeededRandom(ENGINE_CORE_SEED);
+  const zones: SceneObject[] = [];
+  const blocks: SceneObject[] = [];
+  const cards: SceneObject[] = [];
+
+  const zoneColumns = ENGINE_CORE_ZONE_COLUMNS;
+  const cellWidth = ENGINE_CORE_WORLD.width / zoneColumns;
+  const cellHeight = ENGINE_CORE_WORLD.height / ENGINE_CORE_ZONE_ROWS;
+  const toneOffset = randomInteger(random, 0, TONE_NAMES.length - 1);
+  for (let index = 0; index < ENGINE_CORE_ZONE_COUNT; index += 1) {
+    const column = index % zoneColumns;
+    const row = Math.floor(index / zoneColumns);
+    const width = snapToGrid(480 + random() * 340);
+    const height = snapToGrid(560 + random() * 420);
+    const rawX = snapToGrid(column * cellWidth + 32 + random() * 320);
+    const rawY = snapToGrid(row * cellHeight + 32 + random() * 300);
+    zones.push({
+      id: idOf("zone", index),
+      kind: "zone",
+      x: clamp(rawX, 0, ENGINE_CORE_WORLD.width - 32 - width),
+      y: clamp(rawY, 0, ENGINE_CORE_WORLD.height - 32 - height),
+      width,
+      height,
+      tone: toneAt(index + toneOffset),
+      layer: "zones",
+      parent: null,
+    });
+  }
+
+  // Exactly three blocks per zone in the zone's top band, above the card slots.
+  let blockIndex = 0;
+  for (const zone of zones) {
+    for (let index = 0; index < ENGINE_CORE_BLOCKS_PER_ZONE; index += 1) {
+      const width = snapToGrid(56 + random() * 80);
+      const height = snapToGrid(48 + random() * 40);
+      const rawX = snapToGrid(
+        zone.x + ZONE_PADDING + random() * Math.max(0, zone.width - 2 * ZONE_PADDING - width),
+      );
+      const rawY = snapToGrid(
+        zone.y + ZONE_PADDING + random() * Math.max(0, BLOCK_BAND_HEIGHT - height),
+      );
+      blocks.push({
+        id: idOf("block", blockIndex),
+        kind: "block",
+        x: clamp(rawX, zone.x + ZONE_PADDING, zone.x + zone.width - ZONE_PADDING - width),
+        y: clamp(rawY, zone.y + ZONE_PADDING, zone.y + ZONE_PADDING + BLOCK_BAND_HEIGHT - height),
+        width,
+        height,
+        tone: "neutral",
+        layer: "blocks",
+        parent: zone.id,
+      });
+      blockIndex += 1;
+    }
+  }
+
+  // Eight cards per zone in the sample board's jittered 2 x 4 slot grid; every
+  // seventeenth card straddles the zone edge so the card-over-zone order shows.
+  for (const zone of zones) {
+    const slotWidth = (zone.width - 2 * CARD_PADDING - (CARD_COLUMNS - 1) * CARD_GAP) / CARD_COLUMNS;
+    const cardsHeight = zone.height - CARDS_TOP_OFFSET - CARD_PADDING;
+    const slotHeight = (cardsHeight - (CARD_ROWS - 1) * CARD_GAP) / CARD_ROWS;
+    const maximumHeight = Math.floor(slotHeight / CANVAS_GRID) * CANVAS_GRID;
+    const maximumWidth = Math.floor(slotWidth / CANVAS_GRID) * CANVAS_GRID;
+    for (let index = 0; index < ENGINE_CORE_CARDS_PER_ZONE; index += 1) {
+      const column = index % CARD_COLUMNS;
+      const row = Math.floor(index / CARD_COLUMNS);
+      const width = Math.min(snapToGrid(112 + random() * 96), maximumWidth);
+      const height = Math.min(snapToGrid(64 + random() * 64), maximumHeight);
+      const slotX =
+        zone.x +
+        CARD_PADDING +
+        column * (slotWidth + CARD_GAP) +
+        random() * Math.max(0, slotWidth - width);
+      const slotY =
+        zone.y +
+        CARDS_TOP_OFFSET +
+        row * (slotHeight + CARD_GAP) +
+        random() * Math.max(0, slotHeight - height);
+      const straddlesZoneEdge = cards.length % 17 === 0;
+      const rawX = straddlesZoneEdge
+        ? snapToGrid(zone.x + zone.width - width / 2)
+        : snapToGrid(slotX);
+      const rawY = snapToGrid(slotY);
+      cards.push({
+        id: idOf("card", cards.length),
+        kind: "card",
+        x: clamp(rawX, SNAP_MARGIN, ENGINE_CORE_WORLD.width - SNAP_MARGIN - width),
+        y: clamp(rawY, zone.y + CARDS_TOP_OFFSET, zone.y + zone.height - CARD_PADDING - height),
+        width,
+        height,
+        tone: "neutral",
+        layer: "note-cards",
+        parent: zone.id,
+      });
+    }
+  }
+
+  // The remaining cards are free cards at deterministic jittered positions over
+  // the whole world, so the board reads as a populated board and not as a grid.
+  const freeCardCount = ENGINE_CORE_CARD_COUNT - cards.length;
+  if (freeCardCount < 0) {
+    throw new RangeError("engine-core scene zone cards exceed the card count");
+  }
+  for (let index = 0; index < freeCardCount; index += 1) {
+    const width = snapToGrid(160 + random() * 128);
+    const height = snapToGrid(80 + random() * 112);
+    const rawX = snapToGrid(16 + random() * Math.max(0, ENGINE_CORE_WORLD.width - 32 - width));
+    const rawY = snapToGrid(16 + random() * Math.max(0, ENGINE_CORE_WORLD.height - 32 - height));
+    cards.push({
+      id: idOf("card", cards.length),
+      kind: "card",
+      x: clamp(rawX, SNAP_MARGIN, ENGINE_CORE_WORLD.width - SNAP_MARGIN - width),
+      y: clamp(rawY, SNAP_MARGIN, ENGINE_CORE_WORLD.height - SNAP_MARGIN - height),
+      width,
+      height,
+      tone: "neutral",
+      layer: "note-cards",
+      parent: null,
+    });
+  }
+
+  const objects: readonly SceneObject[] = [...zones, ...blocks, ...cards];
+  return {
+    objects,
+    metadata: {
+      name: "engine-core",
+      seed: ENGINE_CORE_SEED,
+      world: ENGINE_CORE_WORLD,
+      counts: countObjects(objects),
+      bounds: boundsOf(objects),
+      fit: {
+        desktop: fitViewport(ENGINE_CORE_WORLD, 1440, 900),
+        mobile: fitViewport(ENGINE_CORE_WORLD, 390, 844),
+      },
+      camera: { minimumZoom: MINIMUM_ZOOM, maximumZoom: MAXIMUM_ZOOM },
+    },
+  };
+}
+
+/**
  * Builds the stress scene: `count` rectangles (default 10,000) on a tight grid,
  * cycling through layers and tones. Used by the perf and visual harnesses.
  */
@@ -361,6 +537,9 @@ export function buildScene(
   name: SceneName,
   options: { readonly count?: number } = {},
 ): Scene {
+  if (name === "engine-core") {
+    return buildEngineCoreScene();
+  }
   if (name === "stress") {
     return buildStressScene(options.count ?? STRESS_DEFAULT_OBJECT_COUNT);
   }
@@ -369,7 +548,7 @@ export function buildScene(
 
 /** Narrows a query parameter to a scene name. */
 export function isSceneName(value: string | null): value is SceneName {
-  return value === "sample" || value === "stress";
+  return value === "sample" || value === "stress" || value === "engine-core";
 }
 
 function idOf(prefix: "card" | "zone" | "block" | "stress", index: number, padding = 4): string {

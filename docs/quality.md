@@ -73,7 +73,7 @@ task from the project's manifests; until then the gate cannot pass.
 | `wasm-build` | `bash packages/engine/tools/build-wasm.sh && node packages/engine/tools/wasm-smoke.mjs` | exit 0, `engine.wasm` and `engine.js` written, Node smoke passes |
 | `wasm-size` | `node packages/engine/tools/wasm-size.mjs` | exit 0, gzip size <= 307200 bytes (300 KiB); P2-04 records the measured size |
 | `perf-baseline` | `node packages/engine/test/perf/run-perf.mjs` | exit 0, p95 frame time <= 16.7 ms at 50,000 rectangles, real GPU renderer recorded, JSON evidence written (exclusive; see `docs/gates/perf.md`) |
-| `perf` | `node packages/engine/test/perf/run-perf.mjs --scenario engine-core` | exit 0, 10,000 objects p95 <= 16.7 ms with continuous pan/zoom and no frame interval above 16.7 ms, 500 cards + 50 zones final proof < 50 ms, within basis + 10 %, real GPU recorded (exclusive; see `docs/gates/perf.md`) |
+| `perf` | `node packages/engine/test/perf/run-perf.mjs --scenario engine-core` | exit 0, 10,000 objects p95 <= 16.7 ms with continuous pan/zoom and no frame interval above 16.7 ms, 500 cards + 50 zones final proof < 50 ms with the culling proof (>= 50 sampled cameras, 0 mismatches), p50/p95/p99/mean within basis + 10 % while the maximum frame duration is a 50 ms-bounded observation, real GPU recorded (exclusive; see `docs/gates/perf.md`) |
 | `db-migrate` | `node services/platform/dist/db/migrate.js` | exit 0, migrations applied to the slot database |
 | `api-tests` | `node --test services/platform/test/api/*.test.mjs` | exit 0, every route has an allow and a deny case |
 | `rls-tests` | `node --test services/platform/test/rls/*.test.mjs` | exit 0, a second account sees nothing (exclusive) |

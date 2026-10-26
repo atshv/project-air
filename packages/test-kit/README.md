@@ -16,6 +16,9 @@ the engine playground and the engine gates.
 - `buildSampleScene()` — the sample board: 500 note cards, 50 zones with 2–4 contained blocks each,
   all five zone tones, geometry on the 16 px canvas grid in a 9600×5408 px world.
 - `buildStressScene(count)` — N objects on a tight grid, default 10,000, valid 0 … 50,000.
+- `buildEngineCoreScene()` — the engine-core perf board: 10,000 mixed board objects (9,200 cards,
+  200 zones with three contained blocks each, 600 blocks) in a 19200×10816 px world, used by the
+  `perf` gate (`?scene=engine-core`).
 - `buildScene(name, options)` / `isSceneName(value)` — the scene dispatch used by the playground.
 
 ## Commands

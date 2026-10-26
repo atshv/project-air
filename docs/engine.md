@@ -100,7 +100,7 @@ behind. The same `SpatialIndex::ensureCurrent` guard is covered by the native su
 
 - **Native build + tests:** `cmake -S packages/engine -B packages/engine/build -DCMAKE_BUILD_TYPE=Debug && cmake --build packages/engine/build --parallel && ctest --test-dir packages/engine/build --output-on-failure` (suites `engine_unit_tests`, `engine_core_tests`).
 - **WASM:** `bash packages/engine/tools/build-wasm.sh` then `node packages/engine/tools/wasm-smoke.mjs`; size: `node packages/engine/tools/wasm-size.mjs` (budget 307,200 B gzip). The wrapper keeps the Emscripten cache under `build-wasm/.emscripten-cache` unless `EM_CACHE` is set, so a read-only package cache (sandboxed agents) or a shared user cache cannot break the build.
-- **Performance:** `node packages/engine/test/perf/run-perf.mjs` (exclusive `perf-baseline`, 50,000 rectangles, p95 ≤ 16.7 ms; report [docs/engine/perf-baseline.md](engine/perf-baseline.md)).
+- **Performance:** `node packages/engine/test/perf/run-perf.mjs` (exclusive `perf-baseline`, 50,000 rectangles, p95 ≤ 16.7 ms) and `node packages/engine/test/perf/run-perf.mjs --scenario engine-core` (the `perf` stage gate: 10,000-object interactive run plus the L01 basis/final proof; report [docs/engine/perf-baseline.md](engine/perf-baseline.md), gate catalogue [docs/gates/perf.md](gates/perf.md)).
 - **Bridge:** `pnpm --filter @project-air/engine run build|typecheck|lint`. Pins: CMake 4.4.4, Emscripten 6.0.13 in [docs/versions.md](versions.md); gates in [docs/gates/cpp-cmake.md](gates/cpp-cmake.md), [docs/gates/wasm-emscripten.md](gates/wasm-emscripten.md), [docs/gates/perf.md](gates/perf.md).
 
 ## Scenes and the playground
@@ -113,18 +113,24 @@ the view moves.
 | --- | --- | --- |
 | sample (default) | `?scene=sample` | 500 note cards, 50 zones with 2–4 contained blocks each, all five zone tones, world 9600×5408 px |
 | stress | `?scene=stress` | N objects on a tight grid, `?count=N` default 10,000, valid 0 … 50,000 |
+| engine-core (perf) | `?scene=engine-core` / `?perf=engine-core` | 10,000 mixed board objects (9,200 cards, 200 zones, 600 blocks), world 19,200×10,816 px; the document of the `perf` gate |
 | benchmark | `?bench=50000&samples=600&warmup=120` | unchanged 50,000-rectangle perf document for `packages/engine/test/perf/run-perf.mjs` |
 
-- **Scene builders:** `packages/test-kit` (`@project-air/test-kit`) builds both scenes with a seeded
+- **Scene builders:** `packages/test-kit` (`@project-air/test-kit`) builds all scenes with a seeded
   PRNG and no ambient randomness or clock: ids `card-0001`/`zone-0001`/`block-0001` (stress:
   `stress-00001`), geometry on the 16 px canvas grid, the engine's tone and layer names, and
   metadata (world, bounds, counts, seed, fit at 1440×900 and 390×844). Scenes are pure functions of
   their arguments, so every machine gets identical objects and bounds;
-  `pnpm --filter @project-air/test-kit test` proves determinism, the 500/50 counts and the
-  10,000/0/50,000 stress sizes.
+  `pnpm --filter @project-air/test-kit test` proves determinism, the 500/50 counts, the engine-core
+  10,000-object mix and the 10,000/0/50,000 stress sizes.
 - **Fit and clamp:** the sample world is 9600×5408 px. The fit zoom is clamped to the engine camera
   range 0.1 … 8: the raw fit is **0.15** at 1440×900 (desktop) and **0.040625** at 390×844, so a
   narrow viewport clamps to **0.1** and crops the board instead of zooming further out.
+- **Perf mode:** `?perf=engine-core&scene=<name>&samples=<n>&warmup=<n>[&verifyCulling=1]` loads
+  the scene once and then calls exactly one `setCamera` and one `renderFrame` per frame along the
+  documented camera path (one zoom cycle fit × 6 and back, one left-to-right pan sweep); the harness
+  asserts the scene counts, warm-up and sample counts, a single document load and, for the L01 final,
+  the culled command-buffer size against an independent visible-set check.
 - **Interaction:** demo-level pointer-drag pan and wheel or two-pointer pinch zoom around the
   pointer; both only call `setCamera`, so the scene data never changes. L15 (P4-24) owns the final
   trackpad defaults.

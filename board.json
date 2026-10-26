@@ -2979,7 +2979,7 @@
       "satisfies": [
         "D10"
       ],
-      "status": "in_progress",
+      "status": "done",
       "depends_on": [
         "P4-02"
       ],
@@ -3024,13 +3024,21 @@
         "board-check",
         "perf"
       ],
-      "owner": "lead",
+      "owner": null,
       "branch": "task/P4-03",
-      "worktree": "/private/tmp/air-P4-03",
+      "worktree": null,
       "round": 0,
-      "evidence": [],
+      "evidence": [
+        "reviews/evidence/P4-03-board-check-20261026T064034Z.json",
+        "reviews/evidence/P4-03-perf-20261026T063948Z.json"
+      ],
       "scope_write_forbidden": [
         "reference/"
+      ],
+      "handoff": [
+        "Closed P4-03: `perf` gate `--scenario engine-core` (10,000 objects, p95 0.20 ms, 0 intervals > 16.7 ms, ANGLE Metal M2) and the L01 basis/final (694 objects, max 1.10 ms < 50 ms).",
+        "Culling proof enforced (>= 50 sampled cameras, 0 mismatches, 99/100 culled); p50/p95/p99/mean within basis + 10 %, max is a documented 50 ms-bounded observation (L01 wording deviation).",
+        "Sandbox deviation: local --no-sandbox for Chrome in the headless harness (documented, never shipped). Lead added the engine-core scene row to docs/engine.md."
       ]
     },
     {

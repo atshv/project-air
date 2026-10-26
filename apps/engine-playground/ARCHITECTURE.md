@@ -17,12 +17,18 @@ engine-core tasks.
 
 ## Outputs
 
-- The sample board (500 cards, 50 zones with blocks) and the stress scene (N objects, default
-  10,000) drawn from `packages/test-kit` sources.
+- The sample board (500 cards, 50 zones with blocks), the stress scene (N objects, default
+  10,000) and the engine-core board (10,000 mixed board objects) drawn from `packages/test-kit`
+  sources.
 - An objects/visible/FPS/backend HUD, demo-level pointer pan and wheel/pinch zoom, and
   `window.__enginePlayground` with `ready`, `pause` and `getState` for the perf and visual harnesses.
 - The unchanged benchmark mode (`?bench=…`, `window.__engineBenchmark`, `PERF_RESULT`) for
   `packages/engine/test/perf/run-perf.mjs`.
+- The engine-core measurement mode (`?perf=engine-core&scene=<engine-core|sample>`, plus
+  `warmup`, `samples` and optional `verifyCulling`): a deterministic camera path with one
+  `setCamera` per frame, frame intervals after the warm-up and (`verifyCulling`) the
+  command-buffer instance count next to the visible set computed from geometry. It exposes
+  `window.__enginePerf` for `run-perf.mjs` and never changes the document.
 
 ## Invariants
 

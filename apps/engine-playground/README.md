@@ -32,6 +32,8 @@ Emscripten module through an import map.
   cards and 50 zones with contained blocks.
 - `?scene=stress` — the stress scene, 10,000 objects by default; `&count=N` sets any count from 0
   to 50,000.
+- `?scene=engine-core` — the engine-core perf board from `packages/test-kit`: 10,000 mixed board
+  objects (9,200 cards, 200 zones with three blocks each).
 - Pointer drag pans; wheel or two-pointer pinch zooms around the pointer. The scene data never
   changes; the HUD shows objects, visible instances, FPS and backend.
 
@@ -44,6 +46,16 @@ exposes `window.__engineBenchmark` (`status`, `count`, `warmup`, `samples`, `fra
 `renderer`, `canvas`) and logs one `PERF_RESULT` JSON line when done. The
 `packages/engine/test/perf/run-perf.mjs` harness drives this mode; its `--display-locked` flag runs
 the same page with the normal 60 Hz display clock as a control observation (no vsync-unlock flags).
+
+### Engine-core measurement mode
+
+`?perf=engine-core&scene=<engine-core|sample>&warmup=<n>&samples=<n>[&verifyCulling=1]` replaces the
+demo loop with the deterministic measurement used by the `perf` gate: one `setCamera` per frame along
+one zoom cycle plus one pan sweep, frame intervals collected after the warm-up, and (with
+`verifyCulling`) the engine's command-buffer instance count compared with the visible set computed
+from the scene geometry. The page exposes `window.__enginePerf` with the scene counts, warm-up and
+sample counts, frame intervals, sampled cameras (culling checkpoints), document loads and the
+culling result. `packages/engine/test/perf/run-perf.mjs --scenario engine-core` drives it.
 
 The page must be served over HTTP: WASM does not load from `file://`. The import map maps the package
 names `@project-air/engine` and `@project-air/test-kit` to the compiled artefacts; the test-kit
