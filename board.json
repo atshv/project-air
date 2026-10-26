@@ -4522,6 +4522,105 @@
         "Responsive: compact viewport <=900 px uses a two-row grid (toolbar row + 864 px world, no overlaps 390-1440); desktop >=901 px floats the toolbar over the 360 px canvas; demo interactions unchanged.",
         "Evidence: P0-26-desktop.png 1440x900, mid-768.png, mobile.png, mobile-demo.png, toolbar-states.png, preview.log; gates board-check, design-check, changelog-entry green; masthead P0-26."
       ]
+    },
+    {
+      "status": "pending",
+      "stage": "foundation",
+      "parallel_group": null,
+      "owner": null,
+      "round": 0,
+      "evidence": [],
+      "scope_write_forbidden": [
+        "reference/"
+      ],
+      "id": "P0-27",
+      "title": "Bilingual preview with DE/EN switch and cache-busted assets",
+      "goal": "The whole design preview is available in English and German with a themed top-right DE/EN switch, every visible string coming from locale files, and the preview assets are cache-busted so a changed preview is never shown with stale CSS/JS.",
+      "why": "The owner asked for a bilingual preview; a stale CSS cache produced a broken-looking demo (new markup with old styles), so asset versioning and a documented reload rule are part of the fix.",
+      "satisfies": [
+        "D3"
+      ],
+      "depends_on": [
+        "P0-26"
+      ],
+      "complexity": 6,
+      "scope_write": [
+        "apps/web/preview/",
+        ".changes/"
+      ],
+      "scope_read": [
+        "ARCHITECTURE.md",
+        "AGENTS.md",
+        "STATUS.md",
+        "docs/module-map.md",
+        "docs/quality.md",
+        "docs/design-rules.md",
+        "docs/i18n/style-de.md",
+        "apps/web/preview/",
+        "packages/ui-kit/tokens.css"
+      ],
+      "acceptance": [
+        "A1",
+        "A2",
+        "A3",
+        "A4"
+      ],
+      "gates": [
+        "board-check",
+        "design-check",
+        "language-check",
+        "changelog-entry"
+      ],
+      "branch": "task/P0-27",
+      "worktree": null
+    },
+    {
+      "status": "pending",
+      "stage": "foundation",
+      "parallel_group": null,
+      "owner": null,
+      "round": 0,
+      "evidence": [],
+      "scope_write_forbidden": [
+        "reference/"
+      ],
+      "id": "P0-28",
+      "title": "Zone detach interaction: drag notepad and photo out and back",
+      "goal": "The notepad and the image window can be dragged out of the zone onto the canvas with a subtle progressive detach animation, stay free and edge-less while outside, and dock back into the zone when dragged inside again.",
+      "why": "The owner wants the zone contents to behave like canvas objects that can be pulled out and put back; the animation makes the state change legible without jumps.",
+      "satisfies": [
+        "D3"
+      ],
+      "depends_on": [
+        "P0-27"
+      ],
+      "complexity": 5,
+      "scope_write": [
+        "apps/web/preview/",
+        ".changes/"
+      ],
+      "scope_read": [
+        "ARCHITECTURE.md",
+        "AGENTS.md",
+        "STATUS.md",
+        "docs/module-map.md",
+        "docs/quality.md",
+        "docs/design-rules.md",
+        "apps/web/preview/"
+      ],
+      "acceptance": [
+        "A1",
+        "A2",
+        "A3",
+        "A4"
+      ],
+      "gates": [
+        "board-check",
+        "design-check",
+        "changelog-entry"
+      ],
+      "branch": "task/P0-28",
+      "worktree": null
     }
   ],
   "decisions": [

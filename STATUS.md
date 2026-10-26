@@ -12,7 +12,7 @@
 - Owner decision: `continue`
 - Exit gates: `board-check`, `install`, `boundaries`, `dev-setup`, `compose-config`, `tokens-codegen`, `design-check`, `language-check`, `changelog-entry`, `ci-local`, `polier-version`
 - Exit criteria: Every packages[] folder exists with a README and an ARCHITECTURE.md; package map and versions are filled in.; A fresh clone installs reproducibly with the committed lockfile; root lint, typecheck, test and build pass.; Two worktrees run install, lint, typecheck and tests side by side without port or database collision; tools/dev/setup and teardown create and remove the slot database and bucket and refuse slot 0.; design-check, language-check, changelog-entry and boundaries reject a violating change locally; every code change carries a .changes entry.; The CI workflow is authored and proven locally (actionlint + act) and local sessions use Polier at the board's generator_version; the real GitHub run, branch protection, hosting and releases are deferred to the remote stage after hardening (ADR-0003).; A runnable design preview page exists with desktop and mobile screenshots and a live two-note connection demo (P0-19, P0-20).
-- Tasks: P0-03, P0-04, P0-06, P0-07, P0-08, P0-09, P0-10, P0-11, P0-12, P0-13, P0-14, P0-18, P0-19, P0-20, P0-21, P0-22, P0-23, P0-24, P0-25, P0-26
+- Tasks: P0-03, P0-04, P0-06, P0-07, P0-08, P0-09, P0-10, P0-11, P0-12, P0-13, P0-14, P0-18, P0-19, P0-20, P0-21, P0-22, P0-23, P0-24, P0-25, P0-26, P0-27, P0-28
 
 ### Stage 2 — `contract` Contract
 
@@ -130,6 +130,10 @@
   - P4-02: Screenshots 1440x900/390x844 + serve/capture log (HTTP 200, SwiftShader capture); test-kit suite 12/12; four gates green after the owner-approved design-check test fix 32c8f28.
   - P4-02: Two review rounds; minors fixed (serve-log consistency, per-zone block assertions). Deviation: Node v26.12.1 vs the .nvmrc pin.
 - `P4-25` Zones as containers I: contract parent reference (L08)
+- `P0-27` Bilingual preview with DE/EN switch and cache-busted assets
+  - P0-26: Closed P0-26: preview demo gets a top-centre ten-tool toolbar (note active, link via source.svg, divider, aria-pressed) and a static zone with notepad + image window (owner photo); tokens only.
+  - P0-26: Responsive: compact viewport <=900 px uses a two-row grid (toolbar row + 864 px world, no overlaps 390-1440); desktop >=901 px floats the toolbar over the 360 px canvas; demo interactions unchanged.
+  - P0-26: Evidence: P0-26-desktop.png 1440x900, mid-768.png, mobile.png, mobile-demo.png, toolbar-states.png, preview.log; gates board-check, design-check, changelog-entry green; masthead P0-26.
 
 ## Done
 
@@ -213,6 +217,8 @@
 - [ ] `P4-26` Zones as containers II: platform migration and containment (L08) — status: `pending` — owner: —
 - [ ] `P4-27` Zones as containers II: engine membership and zone move (L08) — status: `pending` — owner: —
 - [ ] `P4-28` L01 final proof, two-backend reference images and stage showcase — status: `pending` — owner: —
+- [ ] `P0-27` Bilingual preview with DE/EN switch and cache-busted assets — status: `pending` — owner: —
+- [ ] `P0-28` Zone detach interaction: drag notepad and photo out and back — status: `pending` — owner: —
 
 ## Decisions
 
