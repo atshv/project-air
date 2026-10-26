@@ -79,7 +79,54 @@ test("the clean fixture has no findings", () => {
 test("the repository itself is clean", () => {
   const result = checkProject(REPO_ROOT);
   assert.deepEqual(result.findings, []);
-  assert.equal(result.skipped.length, 0);
+  // Values the scanner cannot judge automatically are informational skips, not
+  // findings. They are listed explicitly so a new skip still fails this test:
+  // percentage centring and a calc() offset built from a spacing token are
+  // legitimate CSS and have been reviewed once (P0-24/P0-25 preview zoom pill).
+  assert.deepEqual(
+    result.skipped.map(({ file, line, rule, property, value, reason }) => ({
+      file,
+      line,
+      rule,
+      property,
+      value,
+      reason,
+    })),
+    [
+      {
+        file: "apps/web/preview/preview.css",
+        line: 1016,
+        rule: RULES.OFF_GRID_SPACING,
+        property: "inset-block-start",
+        value: "50%",
+        reason: "non-px unit",
+      },
+      {
+        file: "apps/web/preview/preview.css",
+        line: 1017,
+        rule: RULES.OFF_GRID_SPACING,
+        property: "inset-inline-start",
+        value: "50%",
+        reason: "non-px unit",
+      },
+      {
+        file: "apps/web/preview/preview.css",
+        line: 1059,
+        rule: RULES.OFF_GRID_SPACING,
+        property: "inset-block-start",
+        value: "50%",
+        reason: "non-px unit",
+      },
+      {
+        file: "apps/web/preview/preview.css",
+        line: 1060,
+        rule: RULES.OFF_GRID_SPACING,
+        property: "inset-inline-start",
+        value: "calc(100% + var(--space-8))",
+        reason: "function value (calc() etc.)",
+      },
+    ],
+  );
 });
 
 test("raw colours are reported; var() and currentColor are allowed", () => {
