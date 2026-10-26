@@ -1,7 +1,10 @@
 // P0-20 live connection demo for the static design preview: two cards, a curved
 // edge snapped to invisible side-midpoint anchors (P0-23/P0-25) and preview-only
-// zoom controls (P0-24). Plain DOM, pointer events and one SVG path: no
-// dependencies, no engine, no data.
+// zoom controls (P0-24). P0-26 adds the preview-only toolbar selection state.
+// Plain DOM, pointer events and one SVG path: no dependencies, no engine, no data.
+// Card positions, edge anchors and zoom maths use the world layer, which equals
+// the demo surface on desktop and is the grid row below the toolbar strip in the
+// compact layout.
 
 (function () {
   "use strict";
@@ -115,8 +118,8 @@
 
     function limitsFor(card) {
       return {
-        x: Math.max(0, surface.clientWidth - card.element.offsetWidth),
-        y: Math.max(0, surface.clientHeight - card.element.offsetHeight),
+        x: Math.max(0, world.clientWidth - card.element.offsetWidth),
+        y: Math.max(0, world.clientHeight - card.element.offsetHeight),
       };
     }
 
@@ -174,7 +177,7 @@
       };
       edge.setAttribute(
         "viewBox",
-        "0 0 " + surface.clientWidth + " " + surface.clientHeight,
+        "0 0 " + world.clientWidth + " " + world.clientHeight,
       );
       edgePath.setAttribute(
         "d",
@@ -382,9 +385,44 @@
     layout();
   }
 
+  // Preview-only toolbar: selecting a tool only flips aria-pressed; it never
+  // changes the canvas. The note tool is the initial selection in the markup.
+  function setupToolbar(demo) {
+    var toolbar = demo.querySelector("[data-demo-toolbar]");
+    if (toolbar === null) return;
+    var tools = toolbar.querySelectorAll("[data-demo-tool]");
+    if (tools.length === 0) return;
+    var status = demo.querySelector("[data-demo-status]");
+
+    function selectTool(tool) {
+      for (var index = 0; index < tools.length; index += 1) {
+        tools[index].setAttribute(
+          "aria-pressed",
+          tools[index] === tool ? "true" : "false",
+        );
+      }
+      if (status !== null) {
+        status.textContent =
+          "Tool " + (tool.getAttribute("data-label") || "") +
+          " selected. Preview only: no canvas action.";
+      }
+    }
+
+    for (var index = 0; index < tools.length; index += 1) {
+      var tool = tools[index];
+      tool.addEventListener("click", function (event) {
+        var pressed = event.currentTarget;
+        if (pressed instanceof Element) selectTool(pressed);
+      });
+    }
+  }
+
   function init() {
     var demos = document.querySelectorAll("[data-demo]");
-    for (var i = 0; i < demos.length; i += 1) setupDemo(demos[i]);
+    for (var i = 0; i < demos.length; i += 1) {
+      setupToolbar(demos[i]);
+      setupDemo(demos[i]);
+    }
   }
 
   if (document.readyState === "loading") {

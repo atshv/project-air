@@ -1,0 +1,22 @@
+$ python3 /Users/rasulatashev/Desktop/Polier-main/tools/check.py .
+[exit 0]
+
+WARN: budgets.status overridden to 1900 words (reason: Eleven stages with exit criteria, the remote stage and eighteen owner questions are listed in STATUS.md during foundation; shrinks as questions are answered and tasks finish.)
+WARN: STATUS.md: 2510 words (target max. 1900); it is read in every session
+WARN: P0-02: context pack is about 32336 tokens (warning at 15000); trim scope_read, split the task or shorten the base files
+WARN: P4-04: context pack is about 39888 tokens (warning at 15000); trim scope_read, split the task or shorten the base files
+WARN: P4-05: context pack is about 69197 tokens (warning at 15000); trim scope_read, split the task or shorten the base files
+WARN: P4-06: context pack is about 82358 tokens (warning at 15000); trim scope_read, split the task or shorten the base files
+WARN: P4-07: context pack is about 81438 tokens (warning at 15000); trim scope_read, split the task or shorten the base files
+WARN: P0-26: context pack is about 85094 tokens (warning at 15000); trim scope_read, split the task or shorten the base files
+WARN: P4-01: record reviews/evidence/P4-01-board-check-20261025T204541Z.json was made on commit b9f5e85a3b, which is not in HEAD's history
+WARN: P4-01: record reviews/evidence/P4-01-boundaries-20261025T204546Z.json was made on commit b9f5e85a3b, which is not in HEAD's history
+WARN: P4-01: record reviews/evidence/P4-01-cpp-unit-20261025T204549Z.json was made on commit b9f5e85a3b, which is not in HEAD's history
+WARN: P4-01: record reviews/evidence/P4-01-typecheck-20261025T204550Z.json was made on commit b9f5e85a3b, which is not in HEAD's history
+WARN: P4-01: record reviews/evidence/P4-01-wasm-build-20261025T204553Z.json was made on commit b9f5e85a3b, which is not in HEAD's history
+WARN: P4-01: record reviews/evidence/P4-01-wasm-size-20261025T204557Z.json was made on commit b9f5e85a3b, which is not in HEAD's history
+WARN: P4-02: record reviews/evidence/P4-02-board-check-20261026T055538Z.json was made on commit 824fb6e2f0, which is not in HEAD's history
+WARN: P4-02: record reviews/evidence/P4-02-boundaries-20261026T055544Z.json was made on commit 824fb6e2f0, which is not in HEAD's history
+WARN: P4-02: record reviews/evidence/P4-02-design-check-20261026T055545Z.json was made on commit 824fb6e2f0, which is not in HEAD's history
+WARN: P4-02: record reviews/evidence/P4-02-unit-20261026T055547Z.json was made on commit 824fb6e2f0, which is not in HEAD's history
+OK: /Users/rasulatashev/Desktop/KI Projekte/Project air-P0-26 passes the mandatory checks. (18 warning(s))

@@ -1,4 +1,4 @@
-# Design preview (P0-19, P0-20, P0-21, P0-22, P0-23, P0-24, P0-25, P1-07)
+# Design preview (P0-19, P0-20, P0-21, P0-22, P0-23, P0-24, P0-25, P0-26, P1-07)
 
 A design preview of the Project air design system. It is **not the product**: there is no engine,
 no data, no server and no build step. It exists so the owner can see the look and feel between
@@ -14,10 +14,10 @@ stable `data-preview-*` hooks — no runtime parsing and no fetch — and its tw
   `0.0.1 – unreleased`; the status word comes from the same heading. `CHANGELOG.md` is the display
   source and currently agrees with the root `package.json` version `0.0.1`.
 - **Last change** — the newest entry in `.changes/` by highest task id, currently
-  `.changes/P1-07-contract-overview.md`; the line shows the task id and that task's title from
-  `board.json` / the task brief: `P1-07 — Contract overview in the preview`. If several files exist
-  for the highest task id, the most recent one is used; the `.changes/README.md` and
-  `.changes/TEMPLATE.md` files do not count as entries.
+  `.changes/P0-26-toolbar-zone-demo.md`; the line shows the task id and that task's title from
+  `board.json` / the task brief: `P0-26 — Toolbar and zone with notepad and image window in the
+  preview`. If several files exist for the highest task id, the most recent one is used; the
+  `.changes/README.md` and `.changes/TEMPLATE.md` files do not count as entries.
 - **Date and time** — the file modification time of that newest `.changes` entry (the moment the task
   wrote it), formatted as `YYYY-MM-DD HH:MM` in `Europe/Zurich`; it is static text in `index.html`
   (`data-preview-last-change-time`) and is not parsed at runtime.
@@ -36,6 +36,11 @@ task.
 - An **interactive connection demo**: two note cards joined by one curved edge. Drag a card with
   mouse, pen or finger, or focus a card and use the arrow keys (16 px per step); `Home` resets both
   cards. Clearly labelled “interactive demo — not the engine; no data, no server”.
+- A **top-centre floating toolbar** (preview-only) with the ten tools note (selected initially),
+  link, image, file │ zone, checklist, palette, columns, timeline and table, using the ui-kit icon
+  files through the existing `.icon--*` mask classes.
+- A **static zone** with a notepad and a small image window that shows the owner-supplied demo
+  photo. The zone is static demo content — no upload, no file handling and no canvas action.
 - A floating **zoom pill** in the demo (preview-only): zoom in, zoom out and fit stacked vertically,
   drawn with CSS shapes and labelled in English.
 - Colour swatches with their token names (`--bg` … `--tone-e`), including the translucent tokens over
@@ -54,7 +59,10 @@ All colour, spacing, radius, typography, motion, shadow and layer values are rea
 `var(--…)` from the generated [`packages/ui-kit/tokens.css`](../../../packages/ui-kit/tokens.css); the
 preview files contain no raw colour values and no new tokens. Icons are loaded from
 [`packages/ui-kit/icons/`](../../../packages/ui-kit/icons/). There are no external fonts, no CDNs, no
-images and no framework.
+remote images and no framework. The old "no images" rule has exactly one documented exception: the
+local, owner-supplied demo photo `assets/demo-zone-image.webp` in the static zone (1135 × 829 WebP,
+about 74 KB). It is a relative local path, not a data URI and not a remote URL, and it is the only
+image in the preview.
 
 ## The interactive demo
 
@@ -101,6 +109,52 @@ design system updates the demo and refreshes its screenshot in `reviews/evidence
   resets the demo. The dot grid is drawn from tokens (`--border`, `--canvas`, `--canvas-grid`).
   `prefers-reduced-motion: reduce` disables the remaining transitions.
 
+## The preview toolbar and zone (P0-26)
+
+The demo also carries the canvas chrome and one zone/content composition from the design system.
+Both are **preview-only**: no toolbar action touches the canvas, and the zone is static demo content
+(no upload, no file handling, no engine).
+
+- **Toolbar** — one floating pill at the top centre, 12 px (`--space-12`) from the surface edge, with
+  a `--surface` background, a 1 px `--border` border, `--radius-pill`, `--shadow`, 8 px padding
+  (`--space-8`) and 4 px gap (`--space-4`). Ten 36 × 36 buttons (`--button-bar`) with 20 px icons
+  (`--icon-bar`) in the owner's order: note (selected first), link (`source.svg`), image, file │
+  zone, checklist, palette, columns, timeline and table; the 1 × 20 px group divider after "file"
+  uses `--border-width` and `--icon-bar`. The icons are the ui-kit SVGs through the existing
+  `.icon--*` mask classes, so they only ever take token colours through `currentColor`.
+- **Toolbar states** — every button has all design states: rest `--muted` on transparent, hover
+  `--faint` background with the icon in `--fg` and a `--border-strong` border, focus-visible a 2 px
+  `--accent` outline, pressed `scale(0.97)`, and selected `aria-pressed="true"` with an
+  `--accent-soft` background, an `--accent-line` border and an `--accent` icon. Every button has an
+  English `aria-label` plus a `data-label` tooltip (never the native `title` attribute).
+- **Toolbar selection** — clicking or pressing a tool flips `aria-pressed` and names the tool in the
+  demo status line; the note tool is selected in the markup. Nothing else changes: the cards, the
+  edge and the zoom scale stay where they are.
+- **Zone** — a static zone at the centre of the canvas with a `--card` background, a 1 px `--border`
+  border and `--radius-md`. It contains a 240 px notepad (`--surface`, 1 px `--border-strong`,
+  `--radius-sm`, `--text-15` title, `--text-13` body) and a 240 × 140 px image window with a 32 px
+  title bar, a 1 px `--border` border, `--radius-md` and the photo as `object-fit: cover` with a
+  small `--radius-sm`. The image has an English `alt` text and intrinsic `width`/`height`; when the
+  local asset is missing the fixed window box keeps its size and shows the `--canvas` placeholder
+  background, so nothing shifts.
+- **Layers** — the zone uses `--layer-blocks` (an existing entry of
+  `packages/ui-kit/layers.ts`, no numeric z-index): above the canvas background and the connecting
+  edge, below the note cards (`--layer-note-cards`), the dragged/selected card and the canvas chrome
+  (`--layer-canvas-chrome`: toolbar and zoom pill). The connection therefore passes behind the zone,
+  as the layer model says.
+- **Compact viewports (viewport at most 900 px)** — the surface becomes a two-row grid: the
+  toolbar keeps the top centre as its own row (one row, or two wrapped rows when the viewport is
+  narrower than about 461 px) and the world layer fills the rest, so both cards keep their
+  4 %/5 % and 90 %/90 % home positions of the world and stay clear of the toolbar, the zone and the
+  zoom pill. The surface grows to `--canvas-grid` × 54 because the zone needs the vertical room
+  between the two card homes. From a 901 px viewport the toolbar floats over the canvas again. A width matrix of 390, 480, 520, 521, 600, 700,
+  768, 860, 900, 901, 1000, 1200 and 1440 px shows no overlap between toolbar, zone, cards and zoom
+  pill and no horizontal page overflow; the measurement is in
+  `reviews/evidence/P0-26-preview.log`. The card geometry, the edge anchors and the zoom maths
+  measure the world layer instead of the surface, so the edge stays exactly on the anchors in both
+  layouts; on desktop the world layer and the surface are identical and the demo behaves exactly as
+  before.
+
 ## The contract overview
 
 The **Contract 0.1.0 — the shared language** section (second section, after the demo) makes the
@@ -137,7 +191,8 @@ fetch, no build step and no framework — so it also renders from `file://`. Eve
 | --- | --- |
 | `index.html` | The page, including the demo markup. |
 | `preview.css` | Layout only; every visual value is a token. |
-| `preview.js` | The dependency-free pointer and keyboard demo. |
+| `preview.js` | The dependency-free pointer and keyboard demo, plus the toolbar selection state. |
+| `assets/demo-zone-image.webp` | The single owner-supplied demo photo in the static zone. |
 | `README.md` | This file. |
 
 ## Serve locally
@@ -146,7 +201,7 @@ Serve the **repository root**, not this folder, so the relative token and icon p
 the slot's `web` port from `.polier-slot` (never hard-code it), then:
 
 ```sh
-cd "/Users/rasulatashev/Desktop/KI Projekte/Project air-P1-07"
+cd "/Users/rasulatashev/Desktop/KI Projekte/Project air-P0-26"
 PORT=$(python3 -c "import json; print(json.load(open('.polier-slot'))['ports']['web'])")
 python3 -m http.server "$PORT" --bind 127.0.0.1
 ```
@@ -171,8 +226,13 @@ Committed evidence lives in `reviews/evidence/`: `P0-19-desktop.png` (1440×900)
 `P0-25-demo.png` (1440×900, the grouped zoom pill and dot-free cards),
 `P1-07-desktop.png` (1440×900, top with the refreshed masthead and the demo),
 `P1-07-mobile.png` (390×844, top with the refreshed masthead),
-`P1-07-contract.png` (1440 wide, the contract overview section) and the
-`P0-19-preview.log` / `P0-20-preview.log` / `P0-21-preview.log` / `P0-22-preview.log` /
-`P0-23-preview.log` / `P0-24-preview.log` / `P0-25-preview.log` / `P1-07-preview.log` files with the
-exact serve, curl and screenshot commands. The page has no horizontal overflow at 1440×900 or
-390×844.
+`P1-07-contract.png` (1440 wide, the contract overview section),
+`P0-26-desktop.png` (1440×900, the demo with the toolbar, the zone and the refreshed masthead),
+`P0-26-mobile.png` (390×844, top with the refreshed masthead),
+`P0-26-mobile-demo.png` (390 wide, taller capture that shows the wrapped toolbar and the zone),
+`P0-26-mid-768.png` (768×900, the compact layout at a mid width),
+`P0-26-toolbar-states.png` (1440×900, tool hover, focus, pressed and selected states with tooltips)
+and the `P0-19-preview.log` / `P0-20-preview.log` / `P0-21-preview.log` / `P0-22-preview.log` /
+`P0-23-preview.log` / `P0-24-preview.log` / `P0-25-preview.log` / `P0-26-preview.log` /
+`P1-07-preview.log` files with the exact serve, curl and screenshot commands. The page has no
+horizontal overflow at 1440×900 or 390×844.

@@ -173,11 +173,11 @@
 - [x] `P4-01` Engine document: stable ids, incremental mutations, hit testing and spatial queries — status: `done` — owner: —
 - [x] `P4-02` Engine playground: interactive sample board and stage shell — status: `done` — owner: —
 - [x] `P4-03` Engine-core perf gate and L01 basis — status: `done` — owner: —
+- [x] `P0-26` Toolbar and zone with notepad and image window in the preview — status: `done` — owner: —
 
 ## In progress
 
 - [ ] `P4-04` Visual gate with reference images — status: `in_progress` — owner: lead
-- [ ] `P0-26` Toolbar and zone with notepad and image window in the preview — status: `in_progress` — owner: —
 
 ## Blocked / failed
 
@@ -213,13 +213,6 @@
 - [ ] `P4-26` Zones as containers II: platform migration and containment (L08) — status: `pending` — owner: —
 - [ ] `P4-27` Zones as containers II: engine membership and zone move (L08) — status: `pending` — owner: —
 - [ ] `P4-28` L01 final proof, two-backend reference images and stage showcase — status: `pending` — owner: —
-
-<!-- polier:claims -->
-## Claims
-
-- `P0-26` in progress by dsh since 2026-10-26T19:38:37+00:00 — worktree: /Users/rasulatashev/Desktop/KI Projekte/Project air-P0-26 · slot 2
-
-<!-- /polier:claims -->
 
 ## Decisions
 

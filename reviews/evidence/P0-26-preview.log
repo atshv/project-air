@@ -1,0 +1,301 @@
+# P0-26 — toolbar and zone with notepad and image window in the preview: manual evidence
+
+- Date: 2026-10-26 (Europe/Zurich)
+- Worktree: `/Users/rasulatashev/Desktop/KI Projekte/Project air-P0-26` (branch `task/P0-26`, slot 2)
+- Changed: `apps/web/preview/index.html`, `apps/web/preview/preview.css`,
+  `apps/web/preview/preview.js`, `apps/web/preview/README.md`,
+  `apps/web/preview/assets/demo-zone-image.webp` (new); `.changes/P0-26-toolbar-zone-demo.md`
+- Added in the demo: a top-centre floating **toolbar** (preview-only, ten tools, note selected
+  initially) and a static **zone** with a notepad and a small image window that shows the
+  owner-supplied photo. The two draggable cards keep their 4 %/5 % and 90 %/90 % home positions,
+  the edge and the zoom pill are unchanged, and the masthead points to P0-26.
+- This file and the screenshots were re-shot after the review FAIL (blocker F1) and now include the
+  responsive width matrix and the mid-width evidence. The superseded first commit (`f3dc565`) was
+  replaced by the rework commit; the superseded gate records were removed.
+
+## Rework after the review (F1 blocker, F2 minor)
+
+**F1 (responsive layout).** The first version switched layouts at `max-width: 520px`, which was
+above the real toolbar wrap (the toolbar needs 427 px, so it wraps only below ~451 px of surface
+width) and far below the width where the toolbar stops touching card A's home (~832 px of surface
+width) and the zone stops touching card B (~740 px). Between 521 px and ~890 px the demo therefore
+had two real overlaps.
+
+The rework replaces the breakpoint pair with one consistent compact range:
+
+- `@media (max-width: 900px)` (surface width up to 900 px) turns `.demo__surface` into a two-row grid
+  (`grid-template-columns: minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr)`) and moves the
+  toolbar into the first row (`position: static; justify-self: center; margin-block: var(--space-12)`).
+  The row height follows the real toolbar height, so the single-row toolbar (54 px) and the wrapped
+  two-row toolbar (94 px) both reserve exactly the right strip — no extra breakpoint and no magic
+  offset. `.demo__world` becomes the second row (`position: relative; inset: auto`) and the surface
+  grows to `--canvas-grid` × 54 (864 px) so the zone has vertical room between the two card homes.
+- The desktop arrangement is kept unchanged from 901 px (surface 853 px and wider): the toolbar
+  floats over the canvas at the top centre and the zone sits at the canvas centre.
+- The zone keeps the already-working 390 px placement (absolute, centred in the world layer,
+  `margin-block-start: var(--space-32)`); in the compact range the vertical gap to both card homes
+  comes from the taller world, in the desktop range from the horizontal separation.
+- `preview.js` measures the world layer instead of the surface for the card clamp and the edge
+  `viewBox` (identical on desktop: world 1134 × 358 inside a 1136 × 360 surface border box).
+
+**F2 (log sizes).** The first log quoted HTTP sizes captured before the final HTML edit
+(`56115` for `index.html`). All HTTP sizes below were re-measured against the committed files and
+match the byte sizes on disk.
+
+## Port and server
+
+Slot values (`python3 "$POLIER/tools/slot.py" show`, and `.polier-slot`): `web=4200` for slot 2. The
+port is read from `.polier-slot`, never hard-coded. The server was started and stopped by this task
+only; nothing else was started or stopped.
+
+```sh
+cd "/Users/rasulatashev/Desktop/KI Projekte/Project air-P0-26"
+PORT=$(python3 -c "import json;print(json.load(open('.polier-slot'))['ports']['web'])")
+python3 -m http.server "$PORT" --bind 127.0.0.1
+```
+
+Served the **repository root** so the relative token, icon and image paths resolve
+(`../../../packages/ui-kit/...`, `assets/demo-zone-image.webp`).
+
+## HTTP status and sizes (final files)
+
+```
+$ curl -s -o /dev/null -w '%{http_code} %{size_download}\n' http://127.0.0.1:4200/apps/web/preview/
+200 56211
+$ curl -s -o /dev/null -w '%{http_code} %{size_download}\n' http://127.0.0.1:4200/apps/web/preview/preview.css
+200 36634
+$ curl -s -o /dev/null -w '%{http_code} %{size_download}\n' http://127.0.0.1:4200/apps/web/preview/preview.js
+200 14011
+$ curl -s -o /dev/null -w '%{http_code} %{size_download}\n' http://127.0.0.1:4200/apps/web/preview/assets/demo-zone-image.webp
+200 74494
+$ curl -s -o /dev/null -w '%{http_code} %{size_download}\n' http://127.0.0.1:4200/packages/ui-kit/tokens.css
+200 2295
+$ curl -s -o /dev/null -w '%{http_code} %{size_download}\n' http://127.0.0.1:4200/packages/ui-kit/icons/source.svg
+200 333
+```
+
+The sizes equal the byte sizes on disk (`stat -f '%z'`: `index.html` 56211, `preview.css` 36634,
+`preview.js` 14011, `demo-zone-image.webp` 74494). The server log contains no 404 for any page
+resource; the single 404 of the run is the browser's automatic `GET /favicon.ico` (Chrome for Testing
+requests it, the preview has no favicon and does not need one). No image or icon request failed.
+
+## Screenshots
+
+Chrome for Testing:
+`/Users/rasulatashev/Library/Caches/ms-playwright/chromium-1248/chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing`
+(version 156.0.8078.4).
+
+`--window-size=390,844` is clamped by Chrome to a wider window (Chrome's minimum window width), so
+every viewport in this run was rendered through the Chrome DevTools Protocol with real device-metrics
+emulation instead of a command-line window. A temporary, out-of-repo helper drove the protocol; it is
+not part of the deliverable and was removed after the run.
+
+```sh
+CHROME="/Users/rasulatashev/Library/Caches/ms-playwright/chromium-1248/chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing"
+"$CHROME" --headless=new --disable-gpu --hide-scrollbars \
+  --remote-debugging-port=9333 --user-data-dir=/tmp/p026-chrome-profile about:blank &
+
+cd "/Users/rasulatashev/Desktop/KI Projekte/Project air-P0-26"
+node /tmp/p026-cdp2.mjs "http://127.0.0.1:4200/apps/web/preview/" "reviews/evidence"
+```
+
+The helper used only built-in Node APIs (`fetch` + the global `WebSocket`) and these CDP calls:
+
+| Step | CDP call |
+| --- | --- |
+| enable | `Page.enable`, `Runtime.enable`, `DOM.enable`, `CSS.enable` |
+| views | `Emulation.setDeviceMetricsOverride {width, height, deviceScaleFactor: 1, mobile: width < 500}` |
+| load | `Page.navigate` to the URL above, wait for `Page.loadEventFired`, then 500 ms |
+| capture | `Page.captureScreenshot {format: "png", fromSurface: true}` (base64 written to the file) |
+| states | `DOM.getDocument` + `DOM.querySelector` + `CSS.forcePseudoState` with `["hover"]`, `["focus", "focus-visible"]` and `["active"]`, then 600 ms and the same capture call |
+| mid width | 768 × 900 metrics, `window.scrollTo(0, surfaceTop + scrollY - 18)`, then the same capture call |
+
+Result sizes (`sips -g pixelWidth -g pixelHeight`, `stat -f '%z'`):
+
+- `reviews/evidence/P0-26-desktop.png` — PNG 1440 × 900, 164709 bytes (the desktop layout: the whole
+  demo surface is inside the viewport)
+- `reviews/evidence/P0-26-mid-768.png` — PNG 768 × 900, 75878 bytes (the compact layout at a mid
+  width, scrolled so the whole 864 px demo surface fits the viewport: surface top 18, bottom 882)
+- `reviews/evidence/P0-26-mobile.png` — PNG 390 × 844, 92087 bytes (top of the page: masthead with the
+  P0-26 line; the 844 px viewport cannot show the 864 px compact demo surface)
+- `reviews/evidence/P0-26-mobile-demo.png` — PNG 390 × 1800, 159324 bytes (the taller 390-wide
+  capture that shows the wrapped toolbar, the zone and the zoom pill at 390 px)
+- `reviews/evidence/P0-26-toolbar-states.png` — PNG 1440 × 900, 168455 bytes (hover on "Image",
+  focus-visible on "File", pressed on "Zone", selected "Note", both tooltips visible)
+
+## Responsive width matrix (real layout measurements)
+
+Every width was loaded fresh at a 900 px viewport (`mobile: true` below 500 px) and measured with
+`getBoundingClientRect` plus the live card transforms. `World layer` is the layer the cards live on
+(second grid row in the compact range, the whole surface on desktop); `Cards at home` compares the
+live card transforms with the 4 %/5 % and 90 %/90 % home formula on that world layer.
+
+| Viewport | Surface | Toolbar rows | World layer | Overlaps | Page h-overflow | Cards at home |
+| --- | --- | --- | --- | --- | --- | --- |
+| 390 | 358 × 864 | 2 | 356 × 744 | none | False | True / True |
+| 400 | 368 × 864 | 2 | 366 × 744 | none | False | True / True |
+| 430 | 398 × 864 | 2 | 396 × 744 | none | False | True / True |
+| 450 | 418 × 864 | 2 | 416 × 744 | none | False | True / True |
+| 480 | 448 × 864 | 1 | 446 × 784 | none | False | True / True |
+| 500 | 468 × 864 | 1 | 466 × 784 | none | False | True / True |
+| 520 | 488 × 864 | 1 | 486 × 784 | none | False | True / True |
+| 521 | 489 × 864 | 1 | 487 × 784 | none | False | True / True |
+| 600 | 568 × 864 | 1 | 566 × 784 | none | False | True / True |
+| 700 | 668 × 864 | 1 | 666 × 784 | none | False | True / True |
+| 768 | 720 × 864 | 1 | 718 × 784 | none | False | True / True |
+| 860 | 812 × 864 | 1 | 810 × 784 | none | False | True / True |
+| 900 | 852 × 864 | 1 | 850 × 784 | none | False | True / True |
+| 901 | 853 × 360 | 1 | 851 × 358 | none | False | True / True |
+| 1000 | 952 × 360 | 1 | 950 × 358 | none | False | True / True |
+| 1200 | 1136 × 360 | 1 | 1134 × 358 | none | False | True / True |
+| 1440 | 1136 × 360 | 1 | 1134 × 358 | none | False | True / True |
+
+What the matrix proves:
+
+- **Zero overlaps** between the toolbar and the zone, the toolbar and either card, the zone and either
+  card, the zone and the zoom pill, each card and the zoom pill, and the two cards — at every width from
+  390 px to 1440 px, including both sides of the layout switch (900 / 901 px) and the toolbar wrap
+  boundary (450 / 480 px).
+- **No horizontal page overflow** at any width (`scrollWidth == clientWidth == bodyScrollWidth`).
+- **The cards keep their home positions** of the world layer: 4 %/5 % for card A and 90 %/90 % for
+  card B, snapped to the 16 px canvas grid, at every width.
+- **Layout switch:** compact (two-row grid, surface 864 px tall, world layer below the toolbar row)
+  up to a 900 px viewport; desktop (360 px surface, toolbar floating over the canvas) from 901 px.
+  The boundary rows show the reason for the switch: at 900 px the compact world is 850 × 784 and the
+  toolbar sits in its own row; at 901 px the desktop surface is 853 × 360 and the toolbar (237…664)
+  clears card A (57…233) by 4 px horizontally while the zone (314…588) clears card B (633…809).
+
+Measured detail for the three captured widths:
+
+```
+390:  surface 358x864, toolbar 356x94 (2 rows) at y 816, world 356x744 from y 922,
+      zone 274x275 (y 1189), cardA 176x123 (y 954), cardB 176x123 (y 1482), zoom 44x116 (y 1538)
+768:  surface 720x864, toolbar 427x54 (1 row) at y 607, world 718x784 from y 673,
+      zone 274x275 (y 960), cardA 176x123 (y 705), cardB 176x123 (y 1265), zoom 44x116 (y 1329)
+900:  surface 852x864, toolbar 427x54 at y 590, world 850x784 from y 656,
+      zone 274x275 (y 943), cardA 176x123 (y 688), cardB 176x123 (y 1248), zoom 44x116 (y 1312)
+901:  surface 853x360, toolbar 427x54 at y 590, world 851x358 from y 578,
+      zone 274x275 (y 652), cardA 176x123 (y 594), cardB 176x123 (y 786), zoom 44x116 (y 808)
+1440: surface 1136x360, toolbar 427x54 at y 549, world 1134x358 from y 537,
+      zone 274x275 (y 610), cardA 176x123 (y 553), cardB 176x123 (y 745), zoom 44x116 (y 767)
+```
+
+## Existing demo behaviour unchanged (real DOM events)
+
+The same interaction sequence ran at a mobile (390), a compact (768) and the desktop (1440) width:
+
+```
+390:  ArrowRight +16 px; pointer drag moved card B by +20 px and stopped at the world-edge clamp
+      (home x 160, limit x 180 -> +20 of the +40 requested, i.e. clamping still works);
+      edge redrawn, viewBox "0 0 356 744"; zoom-in scale(1.1); fit scale(1); Home back to
+      a 17/954, b 177/1482
+768:  ArrowRight +16 px; drag +40 px; edge redrawn, viewBox "0 0 718 784"; zoom-in 1.1; fit 1;
+      Home back to a 41/705, b 505/1265
+1440: ArrowRight +16 px; drag +40 px; edge redrawn, viewBox "0 0 1134 358"; zoom-in 1.1; fit 1;
+      Home back to a 185/553, b 1017/745
+```
+
+Toolbar click (1440, desktop): clicking "palette" sets only its `aria-pressed` to `true`, the status
+line reads `Tool Palette selected. Preview only: no canvas action.`, and the cards stay exactly where
+they were. Tab order is toolbar note…table, card A, card B, zoom in/out/fit, then the static
+component samples.
+
+## Toolbar and zone properties (computed styles)
+
+```
+toolbar: border-radius 9999px (--radius-pill), background rgb(26, 29, 26) (--surface),
+         padding 8px (--space-8), gap 4px (--space-4), border 1px (--border), box-shadow --shadow,
+         z-index 8 (--layer-canvas-chrome); compact: static grid row, margin-block --space-12,
+         single row 54 px / wrapped 94 px
+button:  36x36 (--button-bar), border-radius 14px (--radius-md), icon 20x20 (--icon-bar)
+divider: 1px x 20px (--border-width x --icon-bar), background rgba(255,255,255,0.08) (--border)
+zone:    background rgb(32, 36, 32) (--card), border-radius 14px (--radius-md), z-index 4 (--layer-blocks)
+image:   object-fit cover, border-radius 10px (--radius-sm), natural size 1135x829, src
+         assets/demo-zone-image.webp (relative local path, not a data URI and not a remote URL)
+```
+
+Tool order and initial selection (`data-demo-tool` / `aria-label` / `data-label` / `aria-pressed`):
+
+```
+note        Note tool        Note        true    <- selected initially
+source      Link tool        Link        false   (source.svg)
+image       Image tool       Image       false
+file        File tool        File        false
+[divider]
+zone        Zone tool        Zone        false
+checklist   Checklist tool   Checklist   false
+palette     Palette tool     Palette     false
+columns     Columns tool     Columns     false
+timeline    Timeline tool    Timeline    false
+table       Table tool       Table       false
+```
+
+All ten icons use the existing `.icon--*` mask classes (`mask-image` resolved for every button, no
+`none`), so they only take token colours through `currentColor`. Every button has an English
+`aria-label` and a `data-label` tooltip; no native `title` attribute.
+
+## States (CDP `CSS.forcePseudoState`)
+
+```
+rest    (Timeline): background transparent, color --muted, border transparent
+hover   (Image):    background --faint, color --fg, border --border-strong, tooltip "Image" opacity 1
+focus   (File):     outline 2px solid rgb(143,191,175) (--accent), tooltip "File" opacity 1
+pressed (Zone):     background --faint, color --fg, transform matrix(0.97, ...) (scale(0.97))
+selected(Note):     background --accent-soft, color --accent, border --accent-line
+```
+
+## Masthead meta line
+
+```
+Version 0.0.1 · unreleased · Last change: P0-26 — Toolbar and zone with notepad and image window in the preview · 2026-10-26 20:40 (Europe/Zurich)
+```
+
+- Version: first `##` heading of `CHANGELOG.md` (`## 0.0.1 – unreleased`), unchanged.
+- Last change: newest `.changes/` entry by highest task id — `.changes/P0-26-toolbar-zone-demo.md`;
+  the line uses the task title from `board.json` / `tasks/P0-26.md`.
+- Date/time: modification time of that entry in `Europe/Zurich` (`YYYY-MM-DD HH:MM`; `stat` →
+  2026-10-26 20:40), static text in `index.html` (`data-preview-last-change-time`). The entry was
+  written **before** the stamp and not modified afterwards (the rework did not touch it).
+- Tasks line: `P0-19 … P0-25, P0-26, P1-07`; version line still `0.0.1` / `unreleased`.
+
+## Values and rules
+
+`grep -nE '#[0-9a-fA-F]{3,8}|rgba?\(|hsla?\(' apps/web/preview/{index.html,preview.css,preview.js}`
+returns nothing, so there are no raw colours; every visual value is a `var(--…)` token from
+`packages/ui-kit/tokens.css`. There are no new tokens, no off-grid spacing and no numeric z-index in
+the new code (the only numeric `z-index: 2` in `preview.css` is the pre-existing sample-board zone, not
+part of this change). The toolbar and zone use the layer tokens `--layer-canvas-chrome` and
+`--layer-blocks` from `packages/ui-kit/layers.ts`. No external fonts, CDNs or remote images; the one
+local owner-supplied photo is the documented exception to the old "no images" note in the README.
+English UI text only. `node tools/language-check/index.mjs .` reports `language-check: OK`.
+
+## Gates
+
+```sh
+cd "/Users/rasulatashev/Desktop/KI Projekte/Project air-P0-26"
+export POLIER=/Users/rasulatashev/Desktop/Polier-main
+python3 "$POLIER/tools/gate.py" --task P0-26 --name board-check --shell "python3 $POLIER/tools/check.py ."
+python3 "$POLIER/tools/gate.py" --task P0-26 --name design-check --shell "node tools/design-check/index.mjs ."
+python3 "$POLIER/tools/gate.py" --task P0-26 --name changelog-entry --shell "node tools/release/check-changes.mjs --task P0-26 --base main"
+```
+
+| Gate | Result | Record |
+| --- | --- | --- |
+| `board-check` | PASS (exit 0) | `reviews/evidence/P0-26-board-check-20261026T200345Z.json` |
+| `design-check` | PASS (exit 0, 0 findings) | `reviews/evidence/P0-26-design-check-20261026T200347Z.json` |
+| `changelog-entry` | PASS (exit 0, `.changes/P0-26-toolbar-zone-demo.md`) | `reviews/evidence/P0-26-changelog-entry-20261026T200347Z.json` |
+
+`board-check` ran **first**, before any `pnpm` command (no install was needed: the preview has no
+build step). `check.py` exits 0 with pre-existing board warnings only (context-pack budgets for
+several tasks, the `budgets.status` override and P4-01/P4-02 evidence records from other branches);
+`board.json`, `STATUS.md` and `CHANGELOG.md` are lead-owned and were not edited.
+
+## Notes
+
+- The 390 × 844 capture cannot show the whole compact demo surface because the masthead and the
+  section head come first on the page; the tall 390 × 1800 capture is the mobile demo proof and the
+  768 × 900 capture is the compact-layout proof, as noted above.
+- Chrome for Testing requests `/favicon.ico` automatically; that is the only 404 in the server log and
+  it is not a preview resource.
+- The toolbar, zone and static image are preview-only; the README says so next to every new part and
+  the demo hint and status text repeat it.

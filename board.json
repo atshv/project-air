@@ -4466,7 +4466,7 @@
       "satisfies": [
         "D3"
       ],
-      "status": "in_progress",
+      "status": "done",
       "depends_on": [
         "P0-25"
       ],
@@ -4506,13 +4506,22 @@
       ],
       "owner": null,
       "branch": "task/P0-26",
-      "worktree": "../Project air-P0-26",
+      "worktree": null,
       "round": 0,
-      "evidence": [],
+      "evidence": [
+        "reviews/evidence/P0-26-board-check-20261026T202046Z.json",
+        "reviews/evidence/P0-26-design-check-20261026T200347Z.json",
+        "reviews/evidence/P0-26-changelog-entry-20261026T200347Z.json"
+      ],
       "scope_write_forbidden": [
         "reference/"
       ],
-      "exclusive": []
+      "exclusive": [],
+      "handoff": [
+        "Closed P0-26: preview demo gets a top-centre ten-tool toolbar (note active, link via source.svg, divider, aria-pressed) and a static zone with notepad + image window (owner photo); tokens only.",
+        "Responsive: compact viewport <=900 px uses a two-row grid (toolbar row + 864 px world, no overlaps 390-1440); desktop >=901 px floats the toolbar over the 360 px canvas; demo interactions unchanged.",
+        "Evidence: P0-26-desktop.png 1440x900, mid-768.png, mobile.png, mobile-demo.png, toolbar-states.png, preview.log; gates board-check, design-check, changelog-entry green; masthead P0-26."
+      ]
     }
   ],
   "decisions": [

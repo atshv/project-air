@@ -1,0 +1,5 @@
+$ node tools/release/check-changes.mjs --task P0-26 --base main
+[exit 0]
+
+check-changes: task P0-26, base main, 20 changed path(s), 5 code path(s)
+changelog-entry: OK (.changes/P0-26-toolbar-zone-demo.md)

@@ -16,20 +16,20 @@
         <p class="lead">
           A static design preview of the Project air canvas design system: tokens, type, icons,
           component states, the contract 0.1.0 overview and a sample board, plus a small live
-          connection demo. This page is not the product — there is no engine, no data and no
-          server; the demo at the top is illustrative only.
+          connection demo with a preview-only toolbar and a zone. This page is not the product —
+          there is no engine, no data and no server; the demo at the top is illustrative only.
         </p>
         <p class="masthead__version" data-preview-meta>
           <span data-preview-version>Version 0.0.1</span>
           <span data-preview-status>unreleased</span>
-          <span data-preview-last-change>Last change: P1-07 — Contract overview in the preview</span>
-          <span data-preview-last-change-time>2026-10-25 13:57 (Europe/Zurich)</span>
+          <span data-preview-last-change>Last change: P0-26 — Toolbar and zone with notepad and image window in the preview</span>
+          <span data-preview-last-change-time>2026-10-26 20:40 (Europe/Zurich)</span>
         </p>
         <div class="masthead__meta">
           <span>Tokens: <code>packages/ui-kit/tokens.css</code></span>
           <span>Icons: <code>packages/ui-kit/icons/</code></span>
           <span>Demo: <code>preview.js</code></span>
-          <span>Tasks: P0-19, P0-20, P0-21, P0-22, P0-23, P0-24, P0-25, P1-07</span>
+          <span>Tasks: P0-19, P0-20, P0-21, P0-22, P0-23, P0-24, P0-25, P0-26, P1-07</span>
         </div>
       </header>
 
@@ -38,9 +38,10 @@
           <span class="eyebrow">01 — Interactive demo</span>
           <h2 id="demo">Live connection demo</h2>
           <p class="section__intro">
-            Two note cards and one connection. Drag a card with mouse, pen or finger — the whole card
-            is the handle — or focus a card and use the arrow keys (16 px per step, <kbd>Home</kbd>
-            resets both). <strong>interactive demo — not the engine; no data, no server</strong>.
+            Two note cards and one connection, plus a preview-only toolbar and a static zone.
+            Drag a card with mouse, pen or finger — the whole card is the handle — or focus a card
+            and use the arrow keys (16 px per step, <kbd>Home</kbd> resets both).
+            <strong>interactive demo — not the engine; no data, no server</strong>.
           </p>
         </div>
         <div class="demo" data-demo>
@@ -51,45 +52,106 @@
             </p>
           </noscript>
           <p class="demo__hint" id="demo-hint">
-            A click without movement (under 4 px) selects the card but does not move it. The four
-            anchor points at the card's side midpoints are invisible geometry; the edge is a curve
-            that snaps between the nearest pair. The zoom pill at the bottom left is preview-only
-            (50 % to 150 %); the product zoom control will use ui-kit icons later.
+            A click without movement (under 4 px) selects the card; the four side-midpoint anchors
+            are invisible geometry and the edge snaps to the nearest pair. Toolbar, zone and zoom
+            pill are preview-only: a tool click only selects it and changes nothing on the canvas.
           </p>
           <p class="demo__legend token-caption">
-            curve · --tone-d · 1.5 px · anchors · invisible geometry
+            toolbar · preview-only · zone · notepad + image window · curve · --tone-d · 1.5 px
           </p>
           <div class="demo__surface" data-demo-surface>
+            <div
+              class="demo-toolbar"
+              role="group"
+              aria-label="Demo toolbar, preview only: selecting a tool changes nothing on the canvas"
+              data-demo-toolbar
+            >
+              <button class="demo-toolbar__button" type="button" data-demo-tool="note" aria-label="Note tool" data-label="Note" aria-pressed="true">
+                <span class="icon icon--note" aria-hidden="true"></span>
+              </button>
+              <button class="demo-toolbar__button" type="button" data-demo-tool="source" aria-label="Link tool" data-label="Link" aria-pressed="false">
+                <span class="icon icon--source" aria-hidden="true"></span>
+              </button>
+              <button class="demo-toolbar__button" type="button" data-demo-tool="image" aria-label="Image tool" data-label="Image" aria-pressed="false">
+                <span class="icon icon--image" aria-hidden="true"></span>
+              </button>
+              <button class="demo-toolbar__button" type="button" data-demo-tool="file" aria-label="File tool" data-label="File" aria-pressed="false">
+                <span class="icon icon--file" aria-hidden="true"></span>
+              </button>
+              <span class="demo-toolbar__divider" aria-hidden="true"></span>
+              <button class="demo-toolbar__button" type="button" data-demo-tool="zone" aria-label="Zone tool" data-label="Zone" aria-pressed="false">
+                <span class="icon icon--zone" aria-hidden="true"></span>
+              </button>
+              <button class="demo-toolbar__button" type="button" data-demo-tool="checklist" aria-label="Checklist tool" data-label="Checklist" aria-pressed="false">
+                <span class="icon icon--checklist" aria-hidden="true"></span>
+              </button>
+              <button class="demo-toolbar__button" type="button" data-demo-tool="palette" aria-label="Palette tool" data-label="Palette" aria-pressed="false">
+                <span class="icon icon--palette" aria-hidden="true"></span>
+              </button>
+              <button class="demo-toolbar__button" type="button" data-demo-tool="columns" aria-label="Columns tool" data-label="Columns" aria-pressed="false">
+                <span class="icon icon--columns" aria-hidden="true"></span>
+              </button>
+              <button class="demo-toolbar__button" type="button" data-demo-tool="timeline" aria-label="Timeline tool" data-label="Timeline" aria-pressed="false">
+                <span class="icon icon--timeline" aria-hidden="true"></span>
+              </button>
+              <button class="demo-toolbar__button" type="button" data-demo-tool="table" aria-label="Table tool" data-label="Table" aria-pressed="false">
+                <span class="icon icon--table" aria-hidden="true"></span>
+              </button>
+            </div>
             <div class="demo__world" data-demo-world>
               <svg class="demo__edge" data-demo-edge aria-hidden="true" focusable="false">
                 <path class="demo__edge-curve" data-demo-edge-path d="" />
                 <circle class="demo__edge-dot" data-demo-edge-dot cx="0" cy="0" r="1.5" />
                 <circle class="demo__edge-dot" data-demo-edge-dot cx="0" cy="0" r="1.5" />
               </svg>
-            <article
-              class="note-card demo-card"
-              data-demo-card="a"
-              tabindex="0"
-              aria-label="Draggable note card A. Arrow keys move it by 16 pixels, Home resets both cards."
-            >
-              <div class="note-card__head">
-                <span class="type-label">Note A</span>
+              <div
+                class="demo-zone"
+                role="group"
+                aria-label="Static preview zone with a notepad and an image window"
+                data-demo-zone
+              >
+                <div class="demo-zone__notepad">
+                  <span class="type-label">Note</span>
+                  <h3 class="demo-zone__notepad-title">Moodboard</h3>
+                  <p class="demo-zone__notepad-body">Zone content, static preview.</p>
+                </div>
+                <figure class="demo-zone__window">
+                  <figcaption class="demo-zone__window-bar">
+                    <span class="demo-zone__window-title">Photo</span>
+                  </figcaption>
+                  <img
+                    class="demo-zone__window-image"
+                    src="assets/demo-zone-image.webp"
+                    alt="Owner-supplied demo photo: a lake shore with pine trees and boulders below snowy mountains."
+                    width="1135"
+                    height="829"
+                  />
+                </figure>
               </div>
-              <h3 class="note-card__title">Design law</h3>
-              <p class="note-card__body">Content first, quiet chrome.</p>
-            </article>
-            <article
-              class="note-card demo-card"
-              data-demo-card="b"
-              tabindex="0"
-              aria-label="Draggable note card B. Arrow keys move it by 16 pixels, Home resets both cards."
-            >
-              <div class="note-card__head">
-                <span class="type-label">Note B</span>
-              </div>
-              <h3 class="note-card__title">Token source</h3>
-              <p class="note-card__body">One source for CSS and C++.</p>
-            </article>
+              <article
+                class="note-card demo-card"
+                data-demo-card="a"
+                tabindex="0"
+                aria-label="Draggable note card A. Arrow keys move it by 16 pixels, Home resets both cards."
+              >
+                <div class="note-card__head">
+                  <span class="type-label">Note A</span>
+                </div>
+                <h3 class="note-card__title">Design law</h3>
+                <p class="note-card__body">Content first, quiet chrome.</p>
+              </article>
+              <article
+                class="note-card demo-card"
+                data-demo-card="b"
+                tabindex="0"
+                aria-label="Draggable note card B. Arrow keys move it by 16 pixels, Home resets both cards."
+              >
+                <div class="note-card__head">
+                  <span class="type-label">Note B</span>
+                </div>
+                <h3 class="note-card__title">Token source</h3>
+                <p class="note-card__body">One source for CSS and C++.</p>
+              </article>
             </div>
             <div class="demo-zoom" role="group" aria-label="Demo zoom controls" data-demo-zoom>
               <button class="demo-zoom__button" type="button" data-demo-zoom-in aria-label="Zoom in" data-label="Zoom in">

@@ -938,6 +938,214 @@ button {
   font-size: var(--text-12);
 }
 
+/* ---------- demo toolbar (preview-only) ---------- */
+
+.demo-toolbar {
+  position: absolute;
+  inset-block-start: var(--space-12);
+  inset-inline-start: 50%;
+  z-index: var(--layer-canvas-chrome);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-4);
+  inline-size: max-content;
+  max-inline-size: calc(100% - var(--space-24));
+  padding: var(--space-8);
+  border: var(--border-width) solid var(--border);
+  border-radius: var(--radius-pill);
+  background-color: var(--surface);
+  box-shadow: var(--shadow);
+  transform: translateX(-50%);
+}
+
+.demo-toolbar__button {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: var(--button-bar);
+  block-size: var(--button-bar);
+  padding: 0;
+  border: var(--border-width) solid transparent;
+  border-radius: var(--radius-md);
+  background-color: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  transition: background-color var(--motion-hover) ease, color var(--motion-hover) ease,
+    border-color var(--motion-hover) ease;
+}
+
+.demo-toolbar__button:hover {
+  border-color: var(--border-strong);
+  background-color: var(--faint);
+  color: var(--fg);
+}
+
+.demo-toolbar__button:active {
+  border-color: var(--border-strong);
+  background-color: var(--faint);
+  color: var(--fg);
+  transform: scale(0.97);
+}
+
+.demo-toolbar__button:focus-visible {
+  outline: var(--outline-width) solid var(--accent);
+  outline-offset: var(--outline-offset);
+}
+
+.demo-toolbar__button[aria-pressed="true"] {
+  border-color: var(--accent-line);
+  background-color: var(--accent-soft);
+  color: var(--accent);
+}
+
+.demo-toolbar__divider {
+  flex: none;
+  align-self: center;
+  inline-size: var(--border-width);
+  block-size: var(--icon-bar);
+  margin-inline: var(--space-4);
+  background-color: var(--border);
+}
+
+.demo-toolbar__button::after {
+  content: attr(data-label);
+  position: absolute;
+  inset-block-start: calc(100% + var(--space-8));
+  inset-inline-start: 50%;
+  z-index: var(--layer-context-menu);
+  padding: var(--space-4) var(--space-8);
+  border: var(--border-width) solid var(--border);
+  border-radius: var(--radius-tooltip);
+  background-color: var(--surface);
+  color: var(--fg);
+  font-size: var(--text-12);
+  font-weight: var(--weight-medium);
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(-50%);
+  transition: opacity var(--motion-fade) ease var(--motion-tooltip);
+}
+
+.demo-toolbar__button:hover::after,
+.demo-toolbar__button:focus-visible::after {
+  opacity: 1;
+}
+
+/* ---------- demo zone with notepad and image window (static preview) ---------- */
+
+.demo-zone {
+  position: absolute;
+  inset-block-start: 50%;
+  inset-inline-start: 50%;
+  z-index: var(--layer-blocks);
+  display: grid;
+  gap: var(--space-12);
+  margin-block-start: var(--space-32);
+  padding: var(--space-16);
+  border: var(--border-width) solid var(--border);
+  border-radius: var(--radius-md);
+  background-color: var(--card);
+  pointer-events: none;
+  user-select: none;
+  transform: translate(-50%, -50%);
+}
+
+.demo-zone__notepad {
+  display: grid;
+  gap: var(--space-4);
+  inline-size: 240px;
+  padding: var(--space-12);
+  border: var(--border-width) solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  background-color: var(--surface);
+}
+
+.demo-zone__notepad-title {
+  color: var(--fg);
+  font-family: var(--font-sans);
+  font-size: var(--text-15);
+  font-weight: var(--weight-semibold);
+  line-height: var(--line-height);
+}
+
+.demo-zone__notepad-body {
+  color: var(--muted);
+  font-size: var(--text-13);
+  line-height: var(--line-height);
+}
+
+.demo-zone__window {
+  display: grid;
+  grid-template-rows: var(--space-32) 1fr;
+  inline-size: 240px;
+  block-size: 140px;
+  margin: 0;
+  overflow: hidden;
+  border: var(--border-width) solid var(--border);
+  border-radius: var(--radius-md);
+  background-color: var(--surface);
+}
+
+.demo-zone__window-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+  padding-inline: var(--space-12);
+  border-block-end: var(--border-width) solid var(--border);
+  background-color: var(--surface);
+}
+
+.demo-zone__window-title {
+  color: var(--muted);
+  font-size: var(--text-12);
+  font-weight: var(--weight-medium);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.demo-zone__window-image {
+  display: block;
+  inline-size: 100%;
+  block-size: 100%;
+  border-radius: var(--radius-sm);
+  background-color: var(--canvas);
+  object-fit: cover;
+}
+
+/* Compact viewports (surface narrower than 901 px): the toolbar leaves the canvas
+   centre and becomes the first grid row of the surface, so the world layer starts
+   right below it and the cards keep their 4 % / 5 % and 90 % / 90 % home positions
+   of the world without ever meeting the toolbar. The surface grows because the
+   zone needs vertical room between the two card homes. The grid row follows the
+   real toolbar height, so the single-row and the wrapped toolbar both fit without
+   any additional breakpoint. From 901 px the toolbar floats over the canvas. */
+@media (max-width: 900px) {
+  .demo__surface {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto minmax(0, 1fr);
+    block-size: calc(var(--canvas-grid) * 54);
+  }
+
+  .demo-toolbar {
+    position: static;
+    justify-self: center;
+    max-inline-size: 100%;
+    margin-block: var(--space-12);
+    transform: none;
+  }
+
+  .demo__world {
+    position: relative;
+    inset: auto;
+  }
+}
+
 /* ---------- demo zoom control (preview-only) ---------- */
 
 .demo-zoom {
