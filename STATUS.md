@@ -12,7 +12,7 @@
 - Owner decision: `continue`
 - Exit gates: `board-check`, `install`, `boundaries`, `dev-setup`, `compose-config`, `tokens-codegen`, `design-check`, `language-check`, `changelog-entry`, `ci-local`, `polier-version`
 - Exit criteria: Every packages[] folder exists with a README and an ARCHITECTURE.md; package map and versions are filled in.; A fresh clone installs reproducibly with the committed lockfile; root lint, typecheck, test and build pass.; Two worktrees run install, lint, typecheck and tests side by side without port or database collision; tools/dev/setup and teardown create and remove the slot database and bucket and refuse slot 0.; design-check, language-check, changelog-entry and boundaries reject a violating change locally; every code change carries a .changes entry.; The CI workflow is authored and proven locally (actionlint + act) and local sessions use Polier at the board's generator_version; the real GitHub run, branch protection, hosting and releases are deferred to the remote stage after hardening (ADR-0003).; A runnable design preview page exists with desktop and mobile screenshots and a live two-note connection demo (P0-19, P0-20).
-- Tasks: P0-03, P0-04, P0-06, P0-07, P0-08, P0-09, P0-10, P0-11, P0-12, P0-13, P0-14, P0-18, P0-19, P0-20, P0-21, P0-22, P0-23, P0-24, P0-25
+- Tasks: P0-03, P0-04, P0-06, P0-07, P0-08, P0-09, P0-10, P0-11, P0-12, P0-13, P0-14, P0-18, P0-19, P0-20, P0-21, P0-22, P0-23, P0-24, P0-25, P0-26
 
 ### Stage 2 — `contract` Contract
 
@@ -177,6 +177,7 @@
 ## In progress
 
 - [ ] `P4-04` Visual gate with reference images — status: `in_progress` — owner: lead
+- [ ] `P0-26` Toolbar and zone with notepad and image window in the preview — status: `in_progress` — owner: —
 
 ## Blocked / failed
 
@@ -216,7 +217,7 @@
 <!-- polier:claims -->
 ## Claims
 
-- `P4-04` in progress by dsh since 2026-10-26T06:46:47+00:00 — worktree: /private/tmp/air-P4-04 · slot 1
+- `P0-26` in progress by dsh since 2026-10-26T19:38:37+00:00 — worktree: /Users/rasulatashev/Desktop/KI Projekte/Project air-P0-26 · slot 2
 
 <!-- /polier:claims -->
 

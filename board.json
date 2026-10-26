@@ -4457,6 +4457,62 @@
       "scope_write_forbidden": [
         "reference/"
       ]
+    },
+    {
+      "id": "P0-26",
+      "title": "Toolbar and zone with notepad and image window in the preview",
+      "goal": "The live preview demo gets a top-centre floating toolbar matching the design system and a static zone containing a notepad and a small image window with the owner-provided demo photo, updated with screenshots and the masthead last-change line.",
+      "why": "The owner asked for a visible design step in the preview (demo cadence); the toolbar and zone/content composition are part of the canvas design language.",
+      "satisfies": [
+        "D3"
+      ],
+      "status": "in_progress",
+      "depends_on": [
+        "P0-25"
+      ],
+      "complexity": 3,
+      "stage": "foundation",
+      "parallel_group": null,
+      "scope_write": [
+        "apps/web/preview/",
+        ".changes/"
+      ],
+      "scope_read": [
+        "ARCHITECTURE.md",
+        "AGENTS.md",
+        "STATUS.md",
+        "docs/module-map.md",
+        "docs/quality.md",
+        "docs/design-rules.md",
+        "docs/design-rules.md",
+        "apps/web/preview/",
+        "packages/ui-kit/icons/",
+        "packages/ui-kit/tokens.css",
+        "packages/ui-kit/tokens.json",
+        "docs/quality.md",
+        "CHANGELOG.md",
+        "board.json"
+      ],
+      "acceptance": [
+        "A1",
+        "A2",
+        "A3",
+        "A4"
+      ],
+      "gates": [
+        "board-check",
+        "design-check",
+        "changelog-entry"
+      ],
+      "owner": null,
+      "branch": "task/P0-26",
+      "worktree": "../Project air-P0-26",
+      "round": 0,
+      "evidence": [],
+      "scope_write_forbidden": [
+        "reference/"
+      ],
+      "exclusive": []
     }
   ],
   "decisions": [
