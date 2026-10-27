@@ -949,7 +949,7 @@ button {
 
 .demo__surface {
   position: relative;
-  block-size: 360px;
+  block-size: calc(var(--canvas-grid) * 30);
   overflow: hidden;
   border: var(--border-width) solid var(--border);
   border-radius: var(--radius-lg);
@@ -1096,9 +1096,15 @@ button {
   opacity: 1;
 }
 
-/* ---------- demo zone with notepad and image window (static preview) ---------- */
+/* ---------- demo zone with notepad and image window (preview-only) ---------- */
 
+/* One motion language for the whole zone (P0-31): every settle (dock, detach,
+   reorder, group, frame resize) uses the same ease-out curve without overshoot,
+   colour and opacity changes use the fade token. Only transform, translate,
+   scale and opacity animate; the frame resizes through a FLIP scale. */
 .demo-zone {
+  --demo-settle: calc(var(--motion-panel) + var(--motion-hover));
+  --demo-ease: cubic-bezier(0.2, 0, 0, 1);
   position: absolute;
   inset: 0;
   pointer-events: none;
@@ -1109,7 +1115,7 @@ button {
   position: absolute;
   inset-block-start: 50%;
   inset-inline-start: 50%;
-  z-index: var(--layer-blocks);
+  z-index: var(--layer-zones);
   display: grid;
   gap: var(--space-12);
   margin-block-start: var(--space-32);
@@ -1117,76 +1123,85 @@ button {
   border: var(--border-width) solid var(--border);
   border-radius: var(--radius-md);
   background-color: var(--card);
-  opacity: 1;
-  --zone-scale: 1;
-  transform: translate(-50%, -50%) scale(var(--zone-scale));
-  transition: opacity var(--motion-panel) cubic-bezier(0.22, 1.08, 0.36, 1),
-    transform var(--motion-panel) cubic-bezier(0.22, 1.08, 0.36, 1);
+  transform: translate(-50%, -50%);
 }
 
-/* A grouped zone is pinned in world coordinates around the union of the two
-   items and lays its dock slots out side by side (or stacked on narrow
-   surfaces). */
+/* Script-driven frame: positioned in world coordinates, sized by the script and
+   scaled from the top-left corner for the FLIP resize. The items are no longer
+   its children; it only draws the zone around them. */
 .demo-zone__card.is-positioned {
+  display: block;
   inset-block-start: 0;
   inset-inline-start: 0;
   margin-block-start: 0;
-  inline-size: var(--zone-w, auto);
-  block-size: var(--zone-h, auto);
-  transform: translate3d(var(--zone-x, 0px), var(--zone-y, 0px), 0) scale(var(--zone-scale));
-  transition: opacity var(--motion-panel) cubic-bezier(0.22, 1.08, 0.36, 1),
-    transform var(--motion-panel) cubic-bezier(0.22, 1.08, 0.36, 1),
-    inline-size var(--motion-panel) cubic-bezier(0.22, 1.08, 0.36, 1),
-    block-size var(--motion-panel) cubic-bezier(0.22, 1.08, 0.36, 1);
+  padding: 0;
+  transform-origin: 0 0;
+  transform: translate3d(var(--zone-x, 0px), var(--zone-y, 0px), 0)
+    scale(var(--zone-sx, 1), var(--zone-sy, 1));
+  transition: transform var(--demo-settle) var(--demo-ease),
+    opacity var(--demo-settle) var(--demo-ease),
+    border-color var(--motion-fade) ease,
+    background-color var(--motion-fade) ease,
+    visibility 0s linear 0s;
 }
 
-/* Re-fit on resize/locale changes must land instantly, not animate. */
-.demo-zone__card.is-resizing {
-  transition: none;
+/* The drag would dock here: the frame border lifts a little. */
+.demo-zone__card.is-positioned.is-target {
+  border-color: var(--border-strong);
 }
 
-.demo-zone__card.is-horizontal {
-  grid-auto-flow: column;
-  align-items: start;
+/* Preview frames: dashed and unfilled for a zone that a release would form
+   (ghost) or remove (emptying, also dimmed). */
+.demo-zone__card.is-positioned.is-ghost {
+  border-style: dashed;
+  border-color: var(--border-strong);
+  background-color: transparent;
 }
 
-/* Drop hint while dragging: a subtle outline on the target (zone or other item),
-   never a layout change. */
-.demo-zone__card.is-drop-target {
-  outline: var(--border-width-strong) solid var(--border-strong);
-  outline-offset: var(--space-4);
+.demo-zone__card.is-positioned.is-emptying {
+  opacity: 0.6;
 }
 
-.demo-zone__item.is-drop-target {
-  outline: var(--border-width-strong) solid var(--border-strong);
-  outline-offset: var(--space-4);
-}
-
-/* The zone is empty (both items detached): it fades and shrinks out, then stays
-   hidden from pointer and tab flow. is-entering is the first frame of a new
-   grouped zone. */
-.demo-zone__card.is-leaving,
-.demo-zone__card.is-collapsed {
+/* Empty zone: fades out first, then leaves the pointer and tab flow. */
+.demo-zone__card.is-positioned.is-collapsed {
   opacity: 0;
-  --zone-scale: 0.96;
-}
-
-.demo-zone__card.is-collapsed {
   visibility: hidden;
   pointer-events: none;
+  transition: transform var(--demo-settle) var(--demo-ease),
+    opacity var(--demo-settle) var(--demo-ease),
+    visibility 0s linear var(--demo-settle);
 }
 
-.demo-zone__card.is-entering {
+/* Landing slot while a drag would dock or group: a recessed dashed well of the
+   item's size that glides between slots. */
+.demo-zone__placeholder {
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline-start: 0;
+  z-index: var(--layer-blocks);
+  border: var(--border-width) dashed var(--border-strong);
+  border-radius: var(--radius-md);
+  background-color: var(--canvas);
   opacity: 0;
-  --zone-scale: 0.96;
-  transition: none;
+  pointer-events: none;
+  transform: translate3d(var(--placeholder-x, 0px), var(--placeholder-y, 0px), 0);
+  transition: transform var(--demo-settle) var(--demo-ease), opacity var(--motion-fade) ease;
 }
 
-/* The two zone items start in the card grid (docked). On the first drag the
-   script replaces them with measured dock slots and moves them into the zone
-   container, where they are positioned in world coordinates and can leave the
-   zone. --detach-progress (0..1) drives the subtle scale, shadow and border
-   fade; positions are transform-based so the drag never thrashes layout. */
+.demo-zone__placeholder[data-zone-item-for="notepad"] {
+  border-radius: var(--radius-sm);
+}
+
+.demo-zone__placeholder.is-visible {
+  opacity: 1;
+}
+
+/* The two zone items start in the card grid (the no-script look). The first
+   layout pass moves them onto the zone layer, where translate places them in
+   world coordinates. While dragged they follow the pointer without transition
+   and lift (slight scale, stronger shadow); on release translate settles with
+   the shared curve. --detach-progress (0..1) fades the docked ring into the
+   free card shadow. */
 .demo-zone__item {
   pointer-events: auto;
   cursor: grab;
@@ -1194,18 +1209,17 @@ button {
   user-select: none;
 }
 
-.demo-zone__slot {
-  display: block;
-}
-
 .demo-zone__item.is-floating {
+  --lift: 0;
   position: absolute;
   inset-block-start: 0;
   inset-inline-start: 0;
   z-index: var(--layer-blocks);
   border-color: transparent;
-  transform: translate3d(var(--zone-item-x, 0px), var(--zone-item-y, 0px), 0)
-    scale(calc(1 + 0.03 * var(--detach-progress, 0)));
+  translate: var(--zone-item-x, 0px) var(--zone-item-y, 0px);
+  scale: calc(1 + 0.02 * var(--lift));
+  transition: translate var(--demo-settle) var(--demo-ease),
+    scale var(--motion-fade) ease;
 }
 
 .demo-zone__item.is-floating::before {
@@ -1216,6 +1230,7 @@ button {
   border-radius: inherit;
   opacity: calc(1 - var(--detach-progress, 0));
   pointer-events: none;
+  transition: opacity var(--motion-fade) ease;
 }
 
 .demo-zone__item.is-floating::after {
@@ -1224,43 +1239,56 @@ button {
   inset: 0;
   border-radius: inherit;
   box-shadow: var(--card-shadow);
-  opacity: var(--detach-progress, 0);
+  opacity: max(var(--detach-progress, 0), var(--lift));
   pointer-events: none;
+  transition: opacity var(--motion-fade) ease;
 }
 
 .demo-zone__item.is-floating.demo-zone__window::before {
   border-color: var(--border);
 }
 
-.demo-zone__item.is-floating.is-dragging,
-.demo-zone__item.is-floating.is-detached {
+/* The last touched item is the selected one and stays at the top (design law
+   §8), so a drop near a note card or onto the other item never hides it. */
+.demo-zone__item.is-floating.is-selected {
   z-index: var(--layer-dragged-or-selected);
-  cursor: grabbing;
 }
 
-.demo-zone__item.is-settling {
-  transition: transform var(--motion-panel) cubic-bezier(0.22, 1.12, 0.36, 1);
+.demo-zone__item.is-floating.is-dragging {
+  --lift: 1;
+  z-index: var(--layer-dragged-or-selected);
+  cursor: grabbing;
+  transition: scale var(--motion-fade) ease;
+}
+
+.demo-zone__item.is-floating.is-dragging::after {
+  box-shadow: var(--shadow);
+}
+
+/* Resize, locale reflow and the first layout pass land without motion. */
+.demo-zone.is-instant .demo-zone__card.is-positioned,
+.demo-zone.is-instant .demo-zone__item.is-floating,
+.demo-zone.is-instant .demo-zone__item.is-floating::before,
+.demo-zone.is-instant .demo-zone__item.is-floating::after,
+.demo-zone.is-instant .demo-zone__placeholder,
+.demo-zone__card.is-positioned.is-instant,
+.demo-zone__placeholder.is-instant {
+  transition: none;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .demo-zone__card,
   .demo-zone__card.is-positioned,
-  .demo-zone__card.is-entering,
+  .demo-zone__card.is-positioned.is-collapsed,
+  .demo-zone__placeholder,
   .demo-zone__item.is-floating,
-  .demo-zone__item.is-settling {
+  .demo-zone__item.is-floating.is-dragging,
+  .demo-zone__item.is-floating::before,
+  .demo-zone__item.is-floating::after {
     transition: none;
   }
 
   .demo-zone__item.is-floating {
-    transform: translate3d(var(--zone-item-x, 0px), var(--zone-item-y, 0px), 0);
-  }
-
-  .demo-zone__item.is-floating::after {
-    opacity: 0;
-  }
-
-  .demo-zone__item.is-settling {
-    transition: none;
+    scale: none;
   }
 }
 

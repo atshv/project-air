@@ -4,9 +4,9 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title data-i18n="page.projectAirDesignPreviewStatic">Project air design preview — static design preview</title>
-    <link rel="stylesheet" href="../../../packages/ui-kit/tokens.css?v=P0-30" />
-    <link rel="stylesheet" href="preview.css?v=P0-30" />
-    <script src="preview.js?v=P0-30" defer></script>
+    <link rel="stylesheet" href="../../../packages/ui-kit/tokens.css?v=P0-31" />
+    <link rel="stylesheet" href="preview.css?v=P0-31" />
+    <script src="preview.js?v=P0-31" defer></script>
   </head>
   <body>
     <main class="page">
@@ -22,14 +22,14 @@
         <p class="masthead__version" data-preview-meta>
           <span data-preview-version data-i18n="masthead.version">Version 0.0.1</span>
           <span data-preview-status data-i18n="masthead.unreleased">unreleased</span>
-          <span data-preview-last-change data-i18n="masthead.lastChange">Last change: P0-30 — Flexible zone layout, less magnetic drag and smaller controls</span>
-          <span data-preview-last-change-time data-i18n="masthead.lastChangeTime">2026-10-27 11:12 (Europe/Zurich)</span>
+          <span data-preview-last-change data-i18n="masthead.lastChange">Last change: P0-31 — Refined live demo: smooth merge/split and calm motion</span>
+          <span data-preview-last-change-time data-i18n="masthead.lastChangeTime">2026-10-27 20:17 (Europe/Zurich)</span>
         </p>
         <div class="masthead__meta">
           <span data-i18n-html="masthead.tokensPackagesUiKitTokens">Tokens: <code>packages/ui-kit/tokens.css</code></span>
           <span data-i18n-html="masthead.iconsPackagesUiKitIcons">Icons: <code>packages/ui-kit/icons/</code></span>
           <span data-i18n-html="masthead.demoPreviewJs">Demo: <code>preview.js</code></span>
-          <span data-i18n="masthead.tasks">Tasks: P0-19, P0-20, P0-21, P0-22, P0-23, P0-24, P0-25, P0-26, P0-27, P0-28, P0-29, P0-30, P1-07</span>
+          <span data-i18n="masthead.tasks">Tasks: P0-19, P0-20, P0-21, P0-22, P0-23, P0-24, P0-25, P0-26, P0-27, P0-28, P0-29, P0-30, P0-31, P1-07</span>
           <div
             class="preview-locale"
             role="group"
@@ -81,20 +81,23 @@
             </p>
           </noscript>
           <p class="demo__hint" id="demo-hint" data-i18n="demo.aClickWithoutMovementUnder">
-            A click without movement (under 4 px) selects the card; the four side-midpoint anchors
-            are invisible geometry and the edge snaps to the nearest pair. Drag the notepad or the
-            photo: it follows the pointer one to one, nothing snaps mid-drag, and a subtle outline
-            marks the drop target. Release over the other free item to group them into a zone,
-            release inside a zone to dock (above/below stacks, left/right places side by side), and
-            release further out to keep the item free — the spring settle runs after the release.
-            Drag a docked item inside the zone over the other one to reorder or swap it. When both
-            items are out the empty zone fades away; toolbar, zone and zoom pill are preview-only: a
-            tool click only selects it and changes nothing on the canvas.
+            A click without movement (under 4 px) selects the card; the four
+            side-midpoint anchors are invisible geometry and the edge snaps to the
+            nearest pair. Drag the notepad or the photo: it follows the pointer one to
+            one and the zone shows what a release would do — a dashed slot where the
+            item lands, the other item making room, the frame shrinking around the
+            remaining item when you pull one out. Release over the other free item to
+            group both into a new zone (above/below stacks, left/right places side by
+            side); release away from the zone to keep the item free. Nothing is
+            committed before the release, and every settle uses the same calm ease-out.
+            When both items are out the empty zone fades away; toolbar, zone and zoom
+            pill are preview-only: a tool click only selects it and changes nothing on
+            the canvas.
           </p>
           <p class="demo__legend token-caption" data-i18n="demo.toolbarPreviewOnlyZoneNotepad">
-            toolbar · preview-only · drag 1:1 · release to dock/group · above/below = stacked ·
-            left/right = side by side · drag inside = reorder · both out: zone fades · curve ·
-            --tone-d · 1.5 px
+            toolbar · preview-only · drag 1:1 · dashed slot = landing place · release
+            commits · above/below = stacked · left/right = side by side · drag inside =
+            reorder · both out: zone fades · curve · --tone-d · 1.5 px
           </p>
           <div class="demo__surface" data-demo-surface>
             <div

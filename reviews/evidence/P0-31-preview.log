@@ -1,0 +1,99 @@
+# P0-31 — refined live demo: smooth merge/split and calm motion: evidence
+
+- Date: 2026-10-27 (Europe/Zurich)
+- Worktree: `/Users/rasulatashev/Desktop/KI Projekte/Project air-P0-31` (branch `task/P0-31`, slot 2)
+- Changed: `apps/web/preview/index.html`, `preview.css`, `preview.js`, `README.md`,
+  `locales/en.json`, `locales/de.json`, `.changes/P0-31-demo-refine.md` and `reviews/evidence/`
+- Owner request: refine the whole live demo, especially pulling the zone items apart and together and
+  the animations; the preview is not bound to the brief word/token budgets.
+
+## Port and server
+
+Slot values from `.polier-slot` (`web=4200` for slot 2). Only this task's static server was started.
+
+```sh
+cd "/Users/rasulatashev/Desktop/KI Projekte/Project air-P0-31"
+python3 -m http.server 4200 --bind 127.0.0.1
+```
+
+## HTTP status and sizes (final files)
+
+All asset URLs carry `?v=P0-31`; HTTP 200 for the page, `preview.css`, `preview.js`, both locale
+files and `tokens.css`; HTTP sizes equal the on-disk sizes:
+
+```
+index.html         70752
+preview.css        44684
+preview.js         58003
+locales/en.json    20614
+locales/de.json    22259
+```
+
+## Interaction run (CDP, real mouse input)
+
+A temporary out-of-repo helper drove Chrome for Testing (Playwright chromium-1248, headless) through
+CDP: `Emulation.setDeviceMetricsOverride` (1440×900 and 390×844, DPR 1),
+`Emulation.setEmulatedMedia` (reduced motion), `Input.dispatchMouseEvent` (real pointer events
+with capture), `Runtime.evaluate` (state read-out only) and `Page.captureScreenshot`. It was kept
+outside the repository. State lines: frame mode / orientation / x,y,w,h (world px), landing slot,
+item state@x,y and detach progress, edge count and the status line.
+
+```
+desktop 1440x900 start: frame=solid vertical 430,133.7,274,275 slot=off notepad=docked@447,150.7 p0.00 window=docked@447,251.7 p0.00 edges=1 status=""
+1:1 tracking: pointer +120 px -> item centre +120.0 px; frame=target vertical 430,133.7,274,275 slot=on notepad=docked@447,150.7 p0.00 window=docked@567,251.7 p0.00 dragging edges=1 status=""
+pull-out mid-drag: frame=solid vertical 430,133.7,274,123 slot=off notepad=docked@447,150.7 p0.00 window=docked@827,271.7 p1.00 dragging edges=1 status=""
+pull-out release: frame=solid vertical 430,133.7,274,123 slot=off notepad=docked@447,150.7 p0.00 window=detached@832,272 p1.00 edges=1 status="Image window detached — free on the canvas."
+back over the zone mid-drag: frame=target vertical 430,133.7,274,275 slot=on notepad=docked@447,150.7 p0.00 window=detached@532,162 p0.00 dragging edges=1 status="Image window detached — free on the canvas."
+dock release: frame=solid vertical 430,133.7,274,275 slot=off notepad=docked@447,150.7 p0.00 window=docked@447,251.7 p0.00 edges=1 status="Image window docked back in the zone."
+reorder mid-drag (other item made room): frame=target vertical 430,133.7,274,275 slot=on notepad=docked@447,302.7 p0.00 window=docked@447,61.7 p0.02 dragging edges=1 status="Image window docked back in the zone."
+reorder release: frame=solid vertical 430,133.7,274,275 slot=off notepad=docked@447,302.7 p0.00 window=docked@447,150.7 p0.00 edges=1 status="Order changed inside the zone."
+side-by-side mid-drag: frame=target horizontal 430,285.7,526,174 slot=on notepad=docked@447,302.7 p0.00 window=docked@697,302.7 p0.00 dragging edges=1 status="Order changed inside the zone."
+side-by-side release: frame=solid horizontal 430,285.7,526,174 slot=off notepad=docked@447,302.7 p0.00 window=docked@699,302.7 p0.00 edges=1 status="Orientation changed inside the zone."
+photo out: frame=solid vertical 430,285.7,274,123 slot=off notepad=docked@447,302.7 p0.00 window=detached@894,336 p1.00 edges=1 status="Image window detached — free on the canvas."
+last item out mid-drag: frame=emptying vertical 430,285.7,274,123 slot=off notepad=docked@67,382.7 p1.00 dragging window=detached@894,336 p1.00 edges=1 status="Image window detached — free on the canvas."
+collapse release: frame=emptying/collapsed vertical 430,285.7,274,123 slot=off notepad=detached@64,384 p1.00 window=detached@894,336 p1.00 edges=1 status="Zone hidden — drag the two items together to form a new zone."
+group mid-drag: frame=ghost vertical 860,203,274,275 slot=on notepad=detached@874,291.7 p1.00 dragging window=detached@894,336 p1.00 edges=1 status="Zone hidden — drag the two items together to form a new zone."
+moved away from the other item (ghost gone): frame=ghost/collapsed horizontal 608,304,526,174 slot=off notepad=detached@554,291.7 p1.00 dragging window=detached@894,336 p1.00 edges=1 status="Zone hidden — drag the two items together to form a new zone."
+group release: frame=solid vertical 860,203,274,275 slot=off notepad=docked@877,220 p0.00 window=docked@877,321 p0.00 edges=1 status="Items grouped stacked into a new zone."
+resized to 390x844: frame=solid vertical 82,392.5,274,275 slot=off notepad=docked@99,409.5 p0.00 window=docked@99,510.5 p0.00 edges=1 status="Items grouped stacked into a new zone." overflow=0
+mobile 390x844 start: frame=solid vertical 41,266.7,274,275 slot=off notepad=docked@58,283.7 p0.00 window=docked@58,384.7 p0.00 edges=1 status="" overflow=0
+reduced motion transitions: item=0s frame=0s slot=0s
+reduced motion detach (immediately after release): frame=solid vertical 430,133.7,274,123 slot=off notepad=docked@447,150.7 p0.00 window=detached@832,272 p1.00 edges=1 status="Image window detached — free on the canvas."
+motion: item=translate 0.3s cubic-bezier(0.2, 0, 0, 1), scale 0.15s
+motion: frame=transform 0.3s cubic-bezier(0.2, 0, 0, 1), opacity 0.3s cubic-bezier(0.2, 0, 0, 1), border-color 0.15s, background-color 0.15s, visibility linear
+```
+
+Reading of the run:
+
+- **1:1 tracking** — pointer +120 px moves the item centre by exactly +120 px.
+- **Pull out** — mid-drag the frame already shrinks to the notepad (274×123) and the notepad keeps
+  its place; release commits the detach.
+- **Dock back** — over the zone the frame grows back, the landing slot shows, the drop on top of the
+  notepad keeps the stacked orientation (overlap rule).
+- **Reorder** — dragging the photo up past the notepad moves the notepad down (makes room) while the
+  frame stays; release: "Order changed inside the zone."
+- **Side by side** — dragging the photo beside the notepad switches to horizontal; the notepad stays
+  where it was and the frame re-forms around it; release: "Orientation changed inside the zone."
+- **Emptying / collapse** — pulling the last item out dims the frame (dashed); release fades it out
+  (collapsed) and announces the hidden zone.
+- **Group** — the notepad over the photo shows a dashed ghost frame around the photo (which does not
+  move; clamped at the right edge); moving away removes it, coming back shows it again; release forms
+  the zone: "Items grouped stacked into a new zone."
+- **Resize** — 1440 → 390: the zone keeps its relative place, stays inside, no horizontal overflow.
+- **Reduced motion** — all zone transitions compute to 0s; a detach lands at once.
+- **Motion** — items: `translate 0.3s cubic-bezier(0.2, 0, 0, 1)`, lift `scale 0.15s`; frame:
+  `transform 0.3s cubic-bezier(0.2, 0, 0, 1)` (FLIP resize), opacity, no width/height transition,
+  no overshoot.
+- **Edge** — exactly one edge element in every state.
+
+## Screenshots
+
+`P0-31-docked.png`, `P0-31-pull-out.png`, `P0-31-landing-slot.png`, `P0-31-reorder.png`,
+`P0-31-side-by-side.png`, `P0-31-emptying.png`, `P0-31-ghost.png`, `P0-31-grouped.png`
+(1440×900) and `P0-31-mobile.png` (390×844).
+
+## Checks
+
+`node tools/design-check/index.mjs .` exit 0, `node tools/language-check/index.mjs .` OK,
+`node tools/release/check-changes.mjs --task P0-31 --base main` OK; `node --check preview.js` OK;
+en/de locale keys identical (266 each).
