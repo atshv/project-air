@@ -19,10 +19,11 @@ the harness and this catalogue in the same task.
 | --- | --- |
 | Viewports | `desktop` 1440x900 and `mobile` 390x844, device pixel ratio 1 |
 | Viewport emulation | DevTools protocol `Emulation.setDeviceMetricsOverride`; the decoded screenshot size and `window.innerWidth/innerHeight` are asserted against the viewport, never trusted |
-| Scenes | `sample-at-rest`, `sample-zoom-in`, `sample-zoom-out`, `engine-core-at-rest`, `one-card-fit` |
+| Scenes | `sample-at-rest`, `sample-zoom-in`, `sample-zoom-out`, `engine-core-at-rest`, `one-card-fit`, `layers-at-rest`, `layers-front` |
 | `sample` document | `buildSampleScene()` from `packages/test-kit`: 500 cards, 50 zones, 144 blocks = 694 objects, world 9600x5408 px |
 | `engine-core` document | `buildEngineCoreScene()` from `packages/test-kit`: 9,200 cards, 200 zones, 600 blocks = 10,000 objects, world 19,200x10,816 px |
 | `one-card-fit` document | `buildStressScene(1)` from `packages/test-kit`: one card, world 64x22 px; the scene runs the L19 fit action before the capture (P4-07) |
+| `layers` document | `buildLayersScene()` from `packages/test-kit`: 2 zones, 2 blocks, 4 cards, world 1024x576 px, loaded as contract objects with `?store=off`; `layers-front` adds `&front=card-0001` (one `reorder` through the seam, P4-06) |
 | Camera anchor | the centre of the sample board's `zone-0001`, world (648, 664) |
 | `sample-zoom-in` camera | anchor at zoom 0.5, the L19 dot-grid boundary (grid visible at and above 0.5) |
 | `sample-zoom-out` camera | anchor at the engine camera minimum zoom 0.1 |
@@ -37,7 +38,7 @@ the harness and this catalogue in the same task.
 | Gate record | `reviews/evidence/<task-id>-visual-<timestamp>.json` + `.log` (written by `gate.py`, named after the running task) |
 | Reference machine | Mac mini M2, macOS 27.2 (Darwin 27.2.0), Chrome for Testing 156.0.8078.4, ANGLE Metal — a documented proxy, not the MacBook Air M1 reference device; the environment recorded in the capture record supersedes this prose |
 
-### Committed reference set (P4-04, extended by P4-07)
+### Committed reference set (P4-04, extended by P4-07 and P4-06)
 
 | Scene | Desktop | Mobile |
 | --- | --- | --- |
@@ -46,12 +47,16 @@ the harness and this catalogue in the same task.
 | `sample-zoom-out` | `sample-zoom-out-desktop-webgl2.png` | `sample-zoom-out-mobile-webgl2.png` |
 | `engine-core-at-rest` | `engine-core-at-rest-desktop-webgl2.png` | `engine-core-at-rest-mobile-webgl2.png` |
 | `one-card-fit` (P4-07) | `one-card-fit-desktop-webgl2.png` | `one-card-fit-mobile-webgl2.png` |
+| `layers-at-rest` (P4-06) | `layers-at-rest-desktop-webgl2.png` | `layers-at-rest-mobile-webgl2.png` |
+| `layers-front` (P4-06) | `layers-front-desktop-webgl2.png` | `layers-front-mobile-webgl2.png` |
 
 P4-07 re-ran the two `sample-zoom-in` captures through the documented `--update` review path because
 the L19 dot grid is visible at the 0.5 boundary (canvas catalogue L19, "hides below zoom 0.5"). Only
 the **desktop** image changed; the mobile 0.5 view is fully covered by board content, so the grid
 behind the opaque cards and zones adds no visible pixel and that image is byte-identical. Every other
-P4-04 image is unchanged, and the two `one-card-fit` images are a reviewed addition.
+P4-04 image is unchanged, and the two `one-card-fit` images are a reviewed addition. P4-06 adds the
+four `layers-*` images as a reviewed addition (L13 order and the front state); no existing image
+changed.
 
 ## `visual` — engine-core stage gate (P4-04)
 

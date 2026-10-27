@@ -14,7 +14,7 @@
 // structurally. `docs/engine.md` records the scene contract.
 
 /** Scene names accepted by the playground's `?scene=` query. */
-export type SceneName = "sample" | "stress" | "engine-core";
+export type SceneName = "sample" | "stress" | "engine-core" | "layers";
 
 /** Engine tone names; `neutral` is the card surface, `tone-a` … `tone-e` are the zone tones. */
 export type SceneTone = "neutral" | "tone-a" | "tone-b" | "tone-c" | "tone-d" | "tone-e";
@@ -38,6 +38,12 @@ export interface SceneObject {
   readonly layer: SceneLayer;
   /** Containing zone id for blocks and cards that sit in a zone; null for zones and free cards. */
   readonly parent: string | null;
+  /**
+   * Contract fractional index (`z`) for scenes loaded as contract objects (the
+   * `layers` scene). Rectangle scenes leave it out: their packed load orders by
+   * array position.
+   */
+  readonly z?: string;
 }
 
 /** World size in contract pixels. */
@@ -122,6 +128,9 @@ export const MAX_SCENE_OBJECT_COUNT = 50000;
  * stays on the grid.
  */
 export const SAMPLE_WORLD: SceneWorld = { width: 9600, height: 5408 };
+
+/** Layers scene (L13): a small world on the 16 px grid, close to 16:9. */
+export const LAYERS_WORLD: SceneWorld = { width: 1024, height: 576 };
 
 const SAMPLE_SEED = 20261025;
 const STRESS_SEED = 20261026;
@@ -532,6 +541,39 @@ export function buildStressScene(count: number = STRESS_DEFAULT_OBJECT_COUNT): S
   };
 }
 
+/**
+ * Builds the L13 layers scene: two overlapping zones, two blocks and four note
+ * cards whose fractional keys deliberately contradict the design layers (the
+ * zone has the greatest key, a card the least), two cards that share a key (the
+ * later one draws on top) and one free card over a zone corner. The playground
+ * loads it as contract objects through the document port, so the stored `z`
+ * decides the order inside each layer and "bring to front" is one `reorder`.
+ */
+export function buildLayersScene(): Scene {
+  const objects: readonly SceneObject[] = [
+    { id: "zone-0001", kind: "zone", x: 64, y: 64, width: 448, height: 320, tone: "tone-b", layer: "zones", parent: null, z: "zz" },
+    { id: "zone-0002", kind: "zone", x: 352, y: 160, width: 416, height: 320, tone: "tone-d", layer: "zones", parent: null, z: "zzz" },
+    { id: "block-0001", kind: "block", x: 112, y: 128, width: 256, height: 160, tone: "neutral", layer: "blocks", parent: "zone-0001", z: "z" },
+    { id: "block-0002", kind: "block", x: 544, y: 336, width: 288, height: 176, tone: "neutral", layer: "blocks", parent: "zone-0002", z: "a0" },
+    { id: "card-0001", kind: "card", x: 160, y: 176, width: 224, height: 128, tone: "tone-a", layer: "note-cards", parent: "zone-0001", z: "0" },
+    { id: "card-0002", kind: "card", x: 288, y: 224, width: 224, height: 128, tone: "tone-c", layer: "note-cards", parent: "zone-0001", z: "a1" },
+    { id: "card-0003", kind: "card", x: 416, y: 272, width: 224, height: 128, tone: "tone-e", layer: "note-cards", parent: "zone-0002", z: "a1" },
+    { id: "card-0004", kind: "card", x: 704, y: 64, width: 224, height: 128, tone: "neutral", layer: "note-cards", parent: null, z: "a2" },
+  ];
+  return {
+    objects,
+    metadata: {
+      name: "layers",
+      seed: 0,
+      world: LAYERS_WORLD,
+      counts: countObjects(objects),
+      bounds: boundsOf(objects),
+      fit: { desktop: fitViewport(LAYERS_WORLD, 1440, 900), mobile: fitViewport(LAYERS_WORLD, 390, 844) },
+      camera: { minimumZoom: MINIMUM_ZOOM, maximumZoom: MAXIMUM_ZOOM },
+    },
+  };
+}
+
 /** Builds a scene by name; `count` only applies to the stress scene. */
 export function buildScene(
   name: SceneName,
@@ -543,12 +585,15 @@ export function buildScene(
   if (name === "stress") {
     return buildStressScene(options.count ?? STRESS_DEFAULT_OBJECT_COUNT);
   }
+  if (name === "layers") {
+    return buildLayersScene();
+  }
   return buildSampleScene();
 }
 
 /** Narrows a query parameter to a scene name. */
 export function isSceneName(value: string | null): value is SceneName {
-  return value === "sample" || value === "stress" || value === "engine-core";
+  return value === "sample" || value === "stress" || value === "engine-core" || value === "layers";
 }
 
 function idOf(prefix: "card" | "zone" | "block" | "stress", index: number, padding = 4): string {

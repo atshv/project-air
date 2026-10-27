@@ -163,6 +163,25 @@ const SCENE_DEFINITIONS = [
     fitAction: true,
     camera: "L19 fit action of the one-card world: centred, 100 % zoom, dot grid visible",
   },
+  {
+    // L13 (P4-06): zones < blocks < note cards although the stored keys say the
+    // opposite; two cards share a key and the later one is on top. Loaded as
+    // contract objects through the document port; storage is ignored.
+    name: "layers-at-rest",
+    scene: "layers",
+    view: null,
+    extra: { store: "off" },
+    camera: "playground initial camera (plain world-centred fit) of the layers world",
+  },
+  {
+    // L13 (P4-06): the lowest card brought to the front of its layer with one
+    // reorder operation through the P4-05 seam; it never rises above its layer.
+    name: "layers-front",
+    scene: "layers",
+    view: null,
+    extra: { store: "off", front: "card-0001" },
+    camera: "playground initial camera (plain world-centred fit) of the layers world",
+  },
 ];
 
 const PAGE_TIMEOUT_MS = 30000;
@@ -712,7 +731,12 @@ function readSlotPort(service = "playground") {
   return port;
 }
 
+// The logic layer's browser build (P4-06): the layers scene applies its front
+// operation through the seam, so the copied page needs the whole directory.
+const LOGIC_BUILD_DIR = "packages/engine/dist/logic";
+
 const REQUIRED_ARTEFACTS = [
+  `${LOGIC_BUILD_DIR}/packages/engine/src/logic/operations.js`,
   "apps/engine-playground/index.html",
   "apps/engine-playground/main.js",
   "apps/engine-playground/playground.css",
@@ -748,6 +772,7 @@ function copyArtefacts(tempRoot) {
     mkdirSync(join(destination, ".."), { recursive: true });
     cpSync(join(REPO_ROOT, relative), destination);
   }
+  cpSync(join(REPO_ROOT, LOGIC_BUILD_DIR), join(tempRoot, LOGIC_BUILD_DIR), { recursive: true });
 }
 
 function contentType(path) {
@@ -1060,6 +1085,7 @@ function sceneDefinitions(testKit) {
   const byName = new Map([
     ["sample", sample],
     ["engine-core", engineCore],
+    ["layers", testKit.buildLayersScene()],
   ]);
   return SCENE_DEFINITIONS.map((definition) => {
     const scene =
@@ -1078,6 +1104,7 @@ function sceneDefinitions(testKit) {
             zoom: definition.view.zoom,
           };
     const count = definition.count ?? null;
+    const extra = definition.extra ?? {};
     return {
       name: definition.name,
       scene: definition.scene,
@@ -1094,6 +1121,9 @@ function sceneDefinitions(testKit) {
         }
         if (view !== null) {
           parameters.set("view", `${view.worldX},${view.worldY},${view.zoom}`);
+        }
+        for (const [key, value] of Object.entries(extra)) {
+          parameters.set(key, value);
         }
         return `${baseUrl}?${parameters.toString()}`;
       },

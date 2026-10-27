@@ -1,0 +1,36 @@
+# P4-06 — layers and draw order (L13): front and reload evidence
+
+- Date: 2026-10-27 (Europe/Zurich) · worktree `../Project air-P4-06` (branch `task/P4-06`, slot 2,
+  playground port 4260)
+- Method: out-of-repo CDP helper, Chrome for Testing 156 (Playwright chromium-1248, headless,
+  1440×900, DPR 1) against `python3 -m http.server 4260` from the worktree root; artefacts from
+  `bash packages/engine/tools/build-wasm.sh`, `pnpm --filter @project-air/engine run build`,
+  `pnpm --filter @project-air/test-kit run build`.
+
+## Run (`?scene=layers`, storage cleared first)
+
+```
+before: {"zone-0001":"zz","zone-0002":"zzz","block-0001":"z","block-0002":"a0","card-0001":"0","card-0002":"a1","card-0003":"a1","card-0004":"a2"}
+front operation: {"id":"0192f0c1-7000-7000-8000-000000010000","boardId":"0192f0c1-7000-7000-8000-00000000b0a1","actorId":"0192f0c1-7000-7000-8000-00000000ac01","createdAt":"2026-10-27T12:00:00Z","type":"reorder","payload":{"itemId":"0192f0c1-7000-7000-8000-000000000604","z":"a3"},"inverse":{"boardId":"0192f0c1-7000-7000-8000-00000000b0a1","type":"reorder","payload":{"itemId":"0192f0c1-7000-7000-8000-000000000604","z":"0"}}}
+after reload: {"zone-0001":"zz","zone-0002":"zzz","block-0001":"z","block-0002":"a0","card-0001":"a3","card-0002":"a1","card-0003":"a1","card-0004":"a2"}
+second front after reload (expect null): null
+```
+
+- `P4-06-front-before.png` — at rest: zones < blocks < cards although the zone keys (`zz`, `zzz`)
+  sort after every card key; `card-0002`/`card-0003` share `a1`, the later one is on top.
+- `P4-06-front-after.png` — after one `reorder` (`card-0001`: `0` → `a3`, inverse `a3` → `0`): the
+  green card is on top of the other cards and stays in the note-card layer (zones and blocks unchanged).
+- `P4-06-reload-after.png` — after a reload the stored keys reproduce the order: the canvas pixels
+  equal `P4-06-front-after.png`; the only 54 differing pixels (x 1103–1109, y 706–716) are the HUD
+  frame counter (1 vs 2 rendered frames). A second front after the reload builds no operation.
+- Edge cases checked in the browser: a store with an invalid key and an unknown id loads the
+  scene defaults without an error; a second front on the top card is a no-op.
+
+## Gates and suites
+
+- `boundaries`, `cpp-unit` (engine_unit_tests + engine_core_tests incl. `layerOrderAndFront`),
+  `typecheck`, `visual` (14 captures, 0 differing pixels; the four `layers-*` references are a
+  reviewed addition, every existing reference unchanged) — records in this folder.
+- `pnpm --filter @project-air/engine test` 40/40 (9 new in `test/layers.test.mjs`),
+  `pnpm --filter @project-air/test-kit test` 25/25 (3 new), `pnpm lint` green.
+- `board-check` runs last on a tree without `node_modules/` (the check scans it).

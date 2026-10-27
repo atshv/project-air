@@ -51,6 +51,7 @@ const LABELS: Readonly<Partial<Record<Operation["type"], string>>> = {
   resizeCard: "Resize card",
   resizeZone: "Resize zone",
   resizeBlock: "Resize block",
+  reorder: "Bring to front",
 };
 
 /** English hint label of one operation; groups name their object count. */

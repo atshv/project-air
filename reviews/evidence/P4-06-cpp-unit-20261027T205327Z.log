@@ -1,0 +1,26 @@
+$ cmake -S packages/engine -B packages/engine/build -DCMAKE_BUILD_TYPE=Debug && cmake --build packages/engine/build --parallel && ctest --test-dir packages/engine/build --output-on-failure
+[exit 0]
+
+-- Configuring done (0.1s)
+-- Generating done (0.0s)
+-- Build files have been written to: /Users/rasulatashev/Desktop/KI Projekte/Project air-P4-06/packages/engine/build
+[  9%] Building CXX object CMakeFiles/air_engine_objects.dir/src/spatial.cpp.o
+[ 18%] Building CXX object CMakeFiles/air_engine_objects.dir/src/render.cpp.o
+[ 27%] Building CXX object CMakeFiles/air_engine_objects.dir/src/doc.cpp.o
+[ 54%] Built target air_engine_objects
+[ 63%] Linking CXX static library libair_engine.a
+[ 63%] Built target air_engine
+[ 72%] Linking CXX executable engine_unit_tests
+[ 81%] Building CXX object CMakeFiles/engine_core_tests.dir/test/engine_core_test.cpp.o
+[ 90%] Built target engine_unit_tests
+[100%] Linking CXX executable engine_core_tests
+[100%] Built target engine_core_tests
+Test project /Users/rasulatashev/Desktop/KI Projekte/Project air-P4-06/packages/engine/build
+    Start 1: engine_unit_tests
+1/2 Test #1: engine_unit_tests ................   Passed    0.20 sec
+    Start 2: engine_core_tests
+2/2 Test #2: engine_core_tests ................   Passed    0.60 sec
+
+100% tests passed out of 2
+
+Total Test time (real) =   0.81 sec

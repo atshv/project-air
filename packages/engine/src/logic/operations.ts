@@ -26,6 +26,7 @@ import type {
 } from "../../../contracts/generated/types.ts";
 import type { BoardObjectFor, BoardObjectKind, DocumentPort } from "./document-port.ts";
 import type {
+  BringToFrontGesture,
   CreateBlockDraft,
   CreateCardDraft,
   CreateObjectDraft,
@@ -104,6 +105,40 @@ function assertFractionalIndex(value: string, label: string): void {
   if (!FRACTIONAL_INDEX.test(value)) {
     throw new OperationError(`${label} must be a 1-64 character fractional index, got ${JSON.stringify(value)}`);
   }
+}
+
+// Fractional index keys for the contract's `z` field (P4-06, L13). A `z` value
+// is 1-64 characters of [0-9A-Za-z] and orders lexicographically: the engine
+// compares the strings byte by byte (doc.cpp), never as numbers, so a key can
+// grow past any float precision. The alphabet is in ASCII order, so "the next
+// character" in it is also the next byte value the engine's comparison sees.
+const FRACTIONAL_INDEX_ALPHABET = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+const FRACTIONAL_INDEX_MAXIMUM_LENGTH = 64;
+
+/** Lexicographic comparison exactly as the engine's draw order applies it. */
+export function compareFractionalIndex(left: string, right: string): number {
+  return left < right ? -1 : left > right ? 1 : 0;
+}
+
+/**
+ * A short key strictly greater than `key`:
+ * the rightmost character that is not the last alphabet letter is raised by one
+ * and everything after it is dropped ("a9z" -> "aA"); a key made only of "z"
+ * gets a "1" appended ("zz" -> "zz1"). Keys therefore grow by at most one
+ * character per call, and only after a run of "z".
+ */
+export function keyAfter(key: string): string {
+  assertFractionalIndex(key, "fractional index");
+  for (let index = key.length - 1; index >= 0; index -= 1) {
+    const position = FRACTIONAL_INDEX_ALPHABET.indexOf(key.charAt(index));
+    if (position < FRACTIONAL_INDEX_ALPHABET.length - 1) {
+      return key.slice(0, index) + FRACTIONAL_INDEX_ALPHABET.charAt(position + 1);
+    }
+  }
+  if (key.length >= FRACTIONAL_INDEX_MAXIMUM_LENGTH) {
+    throw new OperationError("no fractional index above a 64-character run of z exists");
+  }
+  return `${key}1`;
 }
 
 function assertFiniteNumber(value: number, label: string): void {
@@ -519,6 +554,46 @@ function buildDragSingle(
   return operation === null ? null : { operation, inverse: operation.inverse };
 }
 
+// L13: the last moved or selected object is on top of its layer. Its `z` moves
+// just above the highest key of its layer neighbours (one `reorder` operation,
+// the inverse carries the previous key), so the order is stored through the
+// contract and a reload shows the same front object. An object that already
+// draws strictly above every neighbour yields no operation.
+function buildBringToFront(
+  port: DocumentPort,
+  context: OperationContext,
+  gesture: BringToFrontGesture,
+): OperationPair | null {
+  const object = requiredObject(port, gesture.objectKind, gesture.objectId);
+  let highest: string | null = null;
+  let neighbours = 0;
+  let skippedSelf = false;
+  for (const z of port.zIndices(gesture.objectKind)) {
+    // The object's own key appears once in its layer; any further equal key is
+    // a neighbour that would win the insertion-order tie.
+    if (!skippedSelf && z === object.z) {
+      skippedSelf = true;
+      continue;
+    }
+    neighbours += 1;
+    if (highest === null || compareFractionalIndex(z, highest) > 0) {
+      highest = z;
+    }
+  }
+  if (neighbours === 0 || highest === null || compareFractionalIndex(object.z, highest) > 0) {
+    return null;
+  }
+  const z = keyAfter(highest);
+  assertFractionalIndex(z, `${gesture.objectKind} z`);
+  const operation = makeOperation(
+    context,
+    "reorder",
+    { itemId: object.id, z },
+    makeInverse(context, "reorder", { itemId: object.id, z: object.z }),
+  );
+  return { operation, inverse: operation.inverse };
+}
+
 /**
  * Converts one gesture result into exactly one contract operation with its
  * inverse, or `null` when the gesture changes nothing. Unknown objects, invalid
@@ -549,6 +624,8 @@ export function buildOperation(
       const operation = buildNudgeOperation(port, context, gesture);
       return operation === null ? null : { operation, inverse: operation.inverse };
     }
+    case "bring-to-front":
+      return buildBringToFront(port, context, gesture);
   }
 }
 
@@ -625,6 +702,16 @@ function applyChange(port: DocumentPort, change: Operation | OperationInverse): 
       for (const child of change.payload.children) {
         applyChange(port, child);
       }
+      return;
+    }
+    case "reorder": {
+      // The payload names only the item; its kind decides the design layer,
+      // which a reorder never changes (L13, design rule §8).
+      const kind = port.kindOf(change.payload.itemId);
+      if (kind === undefined) {
+        throw new OperationError(`the document contains no item ${change.payload.itemId}`);
+      }
+      port.updateZ(kind, change.payload.itemId, change.payload.z);
       return;
     }
     case "createNote":

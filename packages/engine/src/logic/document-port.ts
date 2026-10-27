@@ -9,7 +9,7 @@
 
 import type { Block, Card, Zone } from "../../../contracts/generated/types.ts";
 import type { Engine, EngineRectangle } from "../bridge/engine.ts";
-import type { LayerName } from "../bridge/engine.ts";
+import type { LayerName, ToneName } from "../bridge/engine.ts";
 import { OperationError } from "./operations.ts";
 
 /** The three board-object kinds the engine holds a working copy of. */
@@ -47,6 +47,23 @@ export interface DocumentPort {
   remove(kind: BoardObjectKind, id: string): void;
   /** Sets the fractional z index of one object; unknown ids are rejected. */
   updateZ(kind: BoardObjectKind, id: string, z: string): void;
+  /**
+   * The kind of the object with this contract id, or `undefined`. A `reorder`
+   * payload names only the item id (card, block or zone), so applying it needs
+   * this lookup.
+   */
+  kindOf(id: string): BoardObjectKind | undefined;
+  /**
+   * The `z` values of every object of one kind, i.e. of one design layer (cards
+   * = note cards, blocks, zones). Order is unspecified; callers compare the keys.
+   */
+  zIndices(kind: BoardObjectKind): readonly string[];
+}
+
+/** The browser adapter also maps an engine handle (from `hitTest`) back to its object. */
+export interface EngineDocumentPort extends DocumentPort {
+  /** The object drawn at an engine handle, or `undefined` for a miss or a stale handle. */
+  objectAt(handle: number): { readonly kind: BoardObjectKind; readonly id: string } | undefined;
 }
 
 /** In-memory port plus a canonical byte snapshot for the round-trip tests. */
@@ -130,6 +147,12 @@ export function createInMemoryDocument(): InMemoryDocument {
     updateZ(kind: BoardObjectKind, id: string, z: string): void {
       required(kind, id).z = z;
     },
+    kindOf(id: string): BoardObjectKind | undefined {
+      return cards.has(id) ? "card" : zones.has(id) ? "zone" : blocks.has(id) ? "block" : undefined;
+    },
+    zIndices(kind: BoardObjectKind): readonly string[] {
+      return [...bucket(kind).values()].map((object) => object.z);
+    },
     snapshot(): string {
       return JSON.stringify({
         blocks: [...blocks.values()].sort(compareIds),
@@ -158,13 +181,24 @@ interface StoredObject<T> {
   readonly object: T;
 }
 
+/** Optional projection choices of the browser adapter. */
+export interface EngineDocumentPortOptions {
+  /**
+   * Tone of an object when it is added. Tones are not contract data, so the
+   * scene that loads the objects owns the choice (P4-02); without a selector
+   * every object is projected with the neutral tone.
+   */
+  readonly toneOf?: (kind: BoardObjectKind, id: string) => ToneName;
+}
+
 /**
  * Browser adapter over the typed WASM bridge. Contract UUIDs are mapped to the
  * engine's live slot handles here; the C ABI never sees a UUID (P4-01, P4-02).
- * Tones are not contract data, so every object is projected with the neutral
- * tone; the renderer/scene owns tone selection (P4-02).
  */
-export function createEngineDocumentPort(backend: EngineDocumentBackend): DocumentPort {
+export function createEngineDocumentPort(
+  backend: EngineDocumentBackend,
+  options: EngineDocumentPortOptions = {},
+): EngineDocumentPort {
   const cards = new Map<string, StoredObject<Card>>();
   const zones = new Map<string, StoredObject<Zone>>();
   const blocks = new Map<string, StoredObject<Block>>();
@@ -204,7 +238,7 @@ export function createEngineDocumentPort(backend: EngineDocumentBackend): Docume
         width: object.width,
         height: object.height,
         layer: LAYERS[kind],
-        tone: "neutral",
+        tone: options.toneOf === undefined ? "neutral" : options.toneOf(kind, object.id),
       };
       const slot = backend.addRectangle(rectangle);
       // The engine rectangle carries geometry, layer and tone; the fractional z
@@ -243,6 +277,25 @@ export function createEngineDocumentPort(backend: EngineDocumentBackend): Docume
       const stored = required(kind, id);
       backend.updateZ(stored.slot, z);
       stored.object.z = z;
+    },
+    kindOf(id: string): BoardObjectKind | undefined {
+      return cards.has(id) ? "card" : zones.has(id) ? "zone" : blocks.has(id) ? "block" : undefined;
+    },
+    zIndices(kind: BoardObjectKind): readonly string[] {
+      return [...bucket(kind).values()].map((stored) => stored.object.z);
+    },
+    objectAt(handle: number): { readonly kind: BoardObjectKind; readonly id: string } | undefined {
+      if (!Number.isInteger(handle) || handle < 0) {
+        return undefined;
+      }
+      for (const kind of ["card", "block", "zone"] as const) {
+        for (const [id, stored] of bucket(kind)) {
+          if (stored.slot === handle) {
+            return { kind, id };
+          }
+        }
+      }
+      return undefined;
     },
   };
 }

@@ -181,6 +181,7 @@
 - [x] `P4-03` Engine-core perf gate and L01 basis — status: `done` — owner: —
 - [x] `P4-04` Visual gate with reference images — status: `done` — owner: —
 - [x] `P4-05` Gesture-to-operation seam and undo history core — status: `done` — owner: —
+- [x] `P4-06` Layers and draw order (L13) — status: `done` — owner: —
 - [x] `P4-07` Canvas feel: fit, dot grid and idle drawing (L19) — status: `done` — owner: —
 - [x] `P4-25` Contract 0.2.0: zone parent reference and reorder (z) operation (L08/L13) — status: `done` — owner: —
 - [x] `P4-26` Zones as containers II: platform migration and containment (L08) — status: `done` — owner: —
@@ -194,7 +195,6 @@
 
 ## In progress
 
-- [ ] `P4-06` Layers and draw order (L13) — status: `in_progress` — owner: —
 - [ ] `P4-08` Text atlas and glyph texture pipeline (L02) — status: `in_progress` — owner: —
 
 ## Blocked / failed

@@ -3192,7 +3192,7 @@
       "satisfies": [
         "D10"
       ],
-      "status": "in_progress",
+      "status": "done",
       "depends_on": [
         "P4-02",
         "P4-05",
@@ -3238,11 +3238,22 @@
       ],
       "owner": null,
       "branch": "task/P4-06",
-      "worktree": "../Project air-P4-06",
+      "worktree": null,
       "round": 0,
-      "evidence": [],
+      "evidence": [
+        "reviews/evidence/P4-06-board-check-20261027T205557Z.json",
+        "reviews/evidence/P4-06-boundaries-20261027T205326Z.json",
+        "reviews/evidence/P4-06-cpp-unit-20261027T205327Z.json",
+        "reviews/evidence/P4-06-typecheck-20261027T205333Z.json",
+        "reviews/evidence/P4-06-visual-20261027T205514Z.json"
+      ],
       "scope_write_forbidden": [
         "reference/"
+      ],
+      "handoff": [
+        "Closed P4-06: draw order layer > fractional z (byte-wise) > insertion; bring-to-front is one contract reorder via the seam (keyAfter, inverse = old key); reload keeps order.",
+        "Port: kindOf/zIndices, adapter toneOf + objectAt; logic browser build dist/logic (tsconfig.logic.json); test-kit layers scene; playground ?scene=layers click-to-front, localStorage.",
+        "Gates board-check/boundaries/cpp-unit/visual (14 captures, +4 layers refs)/typecheck; native layerOrderAndFront, 9 Node + 3 test-kit tests; docs engine.md, visual-diff.md."
       ]
     },
     {

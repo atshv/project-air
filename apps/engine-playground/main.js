@@ -8,6 +8,12 @@
 //   (default) / ?scene=sample      sample board: 500 cards, 50 zones with blocks
 //   ?scene=stress&count=<n>        stress scene, default 10,000 objects (max 50,000)
 //   ?scene=engine-core             engine-core board: 10,000 mixed board objects
+//   ?scene=layers[&front=<id>][&store=off]
+//                                  L13 layers scene loaded as contract objects through
+//                                  the document port; a click brings an object to the
+//                                  front of its layer (one reorder operation), the keys
+//                                  persist in localStorage, ?front applies one front
+//                                  gesture at start, ?store=off ignores the storage
 //   ?perf=engine-core&scene=<name>&samples=<n>&warmup=<n>[&verifyCulling=1]
 //                                  engine-core perf measurement driven by
 //                                  packages/engine/test/perf/run-perf.mjs: one
@@ -96,6 +102,17 @@ const MAXIMUM_ZOOM = 8;
 const PERF_SCENARIO = "engine-core";
 const PERF_ZOOM_CYCLE_FACTOR = 6;
 const PERF_DEFAULT_SCENE = "engine-core";
+
+// L13 layers scene (P4-06). The scene objects become contract entities with
+// deterministic UUIDv7 ids, are added through the logic layer's document port and
+// every "bring to front" is one `reorder` operation built and applied by the
+// P4-05 seam; the page never writes a z value itself. The resulting keys are
+// stored per scene object id, so a reload re-reads them.
+const LAYERS_STORAGE_KEY = "engine-playground:layers:z";
+const LAYERS_UUID_PREFIX = "0192f0c1-7000-7000-8000-";
+const LAYERS_TIMESTAMP = "2026-10-27T12:00:00Z";
+const FRACTIONAL_INDEX = /^[0-9A-Za-z]{1,64}$/;
+const TAP_SLOP = 4;
 
 // Counts the document loads: the perf harness asserts that the camera path
 // moves the view (setCamera) without replacing the document or rebuilding the
@@ -275,6 +292,9 @@ async function loadScene() {
 }
 
 function sceneCaption(loaded) {
+  if (loaded.name === "layers") {
+    return `${loaded.counts.total} objects — zones, blocks and note cards whose stored z contradicts the layers. Click an object to bring it to the front of its layer; reload keeps the order.`;
+  }
   if (loaded.name === "benchmark") {
     return `Benchmark document: ${loaded.counts.total} rectangles.`;
   }
@@ -307,12 +327,134 @@ function screenPointOf(event) {
   return { x: event.clientX - bounds.left, y: event.clientY - bounds.top };
 }
 
+function layersUuid(sequence) {
+  return `${LAYERS_UUID_PREFIX}${sequence.toString(16).padStart(12, "0")}`;
+}
+
+function readStoredKeys() {
+  if (query.get("store") === "off") {
+    return {};
+  }
+  try {
+    const parsed = JSON.parse(window.localStorage.getItem(LAYERS_STORAGE_KEY) ?? "{}");
+    return parsed !== null && typeof parsed === "object" ? parsed : {};
+  } catch {
+    return {};
+  }
+}
+
+function writeStoredKeys(keys) {
+  if (query.get("store") === "off") {
+    return;
+  }
+  try {
+    window.localStorage.setItem(LAYERS_STORAGE_KEY, JSON.stringify(keys));
+  } catch {
+    // Storage can be unavailable (private mode); the order then lasts one session.
+  }
+}
+
+// Builds the contract entity of one scene object; the stored key wins when it is
+// a valid fractional index, so an outdated or broken store never breaks the load.
+function layersEntity(object, index, uuidOf, storedKeys) {
+  const stored = storedKeys[object.id];
+  const base = {
+    id: uuidOf.get(object.id),
+    boardId: layersUuid(0xb0a1),
+    x: object.x,
+    y: object.y,
+    width: object.width,
+    height: object.height,
+    z: typeof stored === "string" && FRACTIONAL_INDEX.test(stored) ? stored : object.z,
+    createdAt: LAYERS_TIMESTAMP,
+    updatedAt: LAYERS_TIMESTAMP,
+  };
+  const zoneId = object.parent === null ? {} : { zoneId: uuidOf.get(object.parent) };
+  if (object.kind === "zone") {
+    return { ...base, title: object.id };
+  }
+  if (object.kind === "block") {
+    return { ...base, ...zoneId, type: "checklist" };
+  }
+  return { ...base, ...zoneId, noteId: layersUuid(0x700 + index) };
+}
+
+async function loadLayersDocument(engine, loaded) {
+  const [{ applyOperation, buildOperation }, { createEngineDocumentPort }, { createHistory }] =
+    await Promise.all([
+      import("@project-air/engine/logic/operations.js"),
+      import("@project-air/engine/logic/document-port.js"),
+      import("@project-air/engine/logic/history.js"),
+    ]);
+  const uuidOf = new Map(loaded.objects.map((object, index) => [object.id, layersUuid(0x600 + index)]));
+  const sceneIdOf = new Map([...uuidOf].map(([sceneId, uuid]) => [uuid, sceneId]));
+  const toneOf = new Map(loaded.objects.map((object) => [uuidOf.get(object.id), object.tone]));
+  const port = createEngineDocumentPort(engine, { toneOf: (kind, id) => toneOf.get(id) ?? "neutral" });
+  const storedKeys = readStoredKeys();
+  loaded.objects.forEach((object, index) => {
+    port.add(object.kind, layersEntity(object, index, uuidOf, storedKeys));
+  });
+  const history = createHistory(port);
+  let operationCount = 0;
+  const context = {
+    boardId: layersUuid(0xb0a1),
+    actorId: layersUuid(0xac01),
+    createOperationId: () => layersUuid(0x10000 + operationCount),
+    now: () => LAYERS_TIMESTAMP,
+  };
+  const keys = () =>
+    Object.fromEntries(
+      loaded.objects.map((object) => [object.id, port.read(object.kind, uuidOf.get(object.id))?.z ?? object.z]),
+    );
+  const front = (sceneId) => {
+    const object = loaded.objects.find((candidate) => candidate.id === sceneId);
+    if (object === undefined) {
+      return null;
+    }
+    const pair = buildOperation(port, context, {
+      kind: "bring-to-front",
+      objectKind: object.kind,
+      objectId: uuidOf.get(sceneId),
+    });
+    if (pair === null) {
+      return null;
+    }
+    operationCount += 1;
+    applyOperation(port, pair.operation);
+    history.push(pair.operation, pair.inverse);
+    writeStoredKeys(keys());
+    // A document change requests exactly one frame (on-demand rendering, L19),
+    // whichever path (click, ?front, evidence hook) brought the object forward.
+    onDemand.request();
+    return pair.operation;
+  };
+  const frontAt = (screenX, screenY) => {
+    const hit = port.objectAt(engine.hitTest(screenX, screenY));
+    return hit === undefined ? null : front(sceneIdOf.get(hit.id));
+  };
+  // Evidence hook: the browser run reads the keys and drives the same front path.
+  globalThis.__engineLayers = {
+    keys,
+    front,
+    frontAt,
+    undo: () => {
+      const undone = history.undo();
+      writeStoredKeys(keys());
+      onDemand.request();
+      return undone;
+    },
+  };
+  return { front, frontAt };
+}
+
 // Pointer drag pan and wheel/pinch zoom for the demo. L15 (P4-24) refines the
 // exact trackpad defaults later; this is the basic demo behaviour.
-function installInteraction(engine) {
+function installInteraction(engine, onTap = null) {
   const pointers = new Map();
   let lastPointer = null;
   let pinch = null;
+  // A press that moves less than the 4 px drag threshold is a tap, not a pan.
+  let tap = null;
 
   const applyCamera = () => {
     engine.setCamera(camera);
@@ -349,9 +491,11 @@ function installInteraction(engine) {
     canvas.setPointerCapture(event.pointerId);
     if (pointers.size === 1) {
       lastPointer = point;
+      tap = { x: point.x, y: point.y };
       canvas.classList.add("is-dragging");
       return;
     }
+    tap = null;
     const [first, second] = [...pointers.values()];
     if (first === undefined || second === undefined) {
       return;
@@ -389,6 +533,9 @@ function installInteraction(engine) {
       applyCamera();
       return;
     }
+    if (tap !== null && Math.hypot(point.x - tap.x, point.y - tap.y) >= TAP_SLOP) {
+      tap = null;
+    }
     if (pointers.size === 1 && lastPointer !== null) {
       camera.panX -= (point.x - lastPointer.x) / camera.zoom;
       camera.panY -= (point.y - lastPointer.y) / camera.zoom;
@@ -405,6 +552,10 @@ function installInteraction(engine) {
     if (canvas.hasPointerCapture(event.pointerId)) {
       canvas.releasePointerCapture(event.pointerId);
     }
+    if (tap !== null && event.type === "pointerup" && onTap !== null && pointers.size === 0) {
+      onTap(tap.x, tap.y);
+    }
+    tap = null;
     pinch = null;
     if (pointers.size === 0) {
       lastPointer = null;
@@ -688,7 +839,10 @@ async function start() {
     hudZonesNode.textContent = String(loaded.counts.zones);
 
     const engine = await createEngine(canvas);
-    engine.loadRectangles(loaded.objects);
+    const layers = loaded.name === "layers" ? await loadLayersDocument(engine, loaded) : null;
+    if (layers === null) {
+      engine.loadRectangles(loaded.objects);
+    }
     documentLoads += 1;
     hudBackendNode.textContent = state.backend;
 
@@ -865,7 +1019,18 @@ async function start() {
     }
 
     captionNode.textContent = sceneCaption(loaded);
-    installInteraction(engine);
+    const requestedFront = query.get("front");
+    if (layers !== null && requestedFront !== null) {
+      layers.front(requestedFront);
+    }
+    installInteraction(
+      engine,
+      layers === null
+        ? null
+        : (screenX, screenY) => {
+            layers.frontAt(screenX, screenY);
+          },
+    );
     installFitKey();
     // One frame is requested by the initial resize; a document or camera change
     // after that only requests a frame when it actually happens.

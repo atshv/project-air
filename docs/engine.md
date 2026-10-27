@@ -56,8 +56,9 @@ no `fetch`, no WASM import at runtime, so it runs unchanged in Node.
   built operation is validated against `operation.schema.json` in the unit suite; the layer never
   invents a parallel operation shape.
 
-Deliberately not built here: the fractional-z `reorder` operation exists since contract 0.2.0
-(P4-25), so a later engine task (L13/P4-06) can build that gesture through this seam; `updateNote`
+The `reorder` operation (contract 0.2.0, P4-25) is built by the `bring-to-front` gesture (P4-06) and
+applied through `DocumentPort.kindOf` + `updateZ`, because its payload names only the item; the port's
+`zIndices(kind)` lists one layer's keys. Deliberately not built here: `updateNote`
 edits note content that the engine working copy does not hold; `updateBlock` changes only zone
 membership, which belongs to P4-23/24; zone deletion gestures and membership also belong to L08 and
 P4-23/24. The seam applies `deleteZone` with policy `delete` as the exactly one inverse of a zone
@@ -78,7 +79,17 @@ source scan proves no DOM or network use in the logic layer.
   interaction value, not a UI token.
 - **Fractional `z`** is the contract's string. Order is layer (design rule §8 → `tokens::layer_*`:
   zones 2, blocks 4, note cards 5), then `z` lexicographically, then insertion order, so equal `z`
-  keeps insertion order.
+  keeps insertion order. The layer always wins: a zone with the greatest key still draws below a card
+  with the least. Keys are compared byte by byte, never parsed, so keys that are equal as doubles keep
+  their order. The edge layer (3) is reserved and not drawn by the engine; chrome layers stay DOM.
+- **Front of the layer (L13, P4-06).** "The last moved or selected element is on top of its layer"
+  is stored, not computed: the `bring-to-front` gesture becomes exactly one contract `reorder`
+  operation through the seam whose `z` is `keyAfter(highest key of the other objects of the same
+  kind)` (the rightmost non-`z` character is raised by one and the rest dropped; a run of `z` gets a
+  `1` appended), and whose inverse carries the previous key. An object already strictly on top, or
+  alone in its layer, yields no operation; an equal key counts as a neighbour because insertion order
+  would win the tie. A reload from the stored keys shows the same order, and the inverse restores the
+  byte-identical command buffer. Collisions are not nudged (Q15).
 - **Instance layout (24 bytes, `static_assert`):**
 
   | Offset | Field | Meaning |
@@ -207,6 +218,7 @@ the view moves.
 | sample (default) | `?scene=sample` | 500 note cards, 50 zones with 2–4 contained blocks each, all five zone tones, world 9600×5408 px |
 | stress | `?scene=stress` | N objects on a tight grid, `?count=N` default 10,000, valid 0 … 50,000 |
 | engine-core (perf) | `?scene=engine-core` / `?perf=engine-core` | 10,000 mixed board objects (9,200 cards, 200 zones, 600 blocks), world 19,200×10,816 px; the document of the `perf` gate |
+| layers (L13) | `?scene=layers[&front=<id>][&store=off]` | 2 zones, 2 blocks, 4 cards, world 1024×576 px, keys that contradict the layers; loaded as contract objects through the document port (browser build `packages/engine/dist/logic/`), a click brings an object to the front with one `reorder`, keys persist in `localStorage` (`store=off` ignores them), `front=<id>` applies one front gesture at start |
 | benchmark | `?bench=50000&samples=600&warmup=120` | unchanged 50,000-rectangle perf document for `packages/engine/test/perf/run-perf.mjs` |
 
 - **Scene builders:** `packages/test-kit` (`@project-air/test-kit`) builds all scenes with a seeded

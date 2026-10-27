@@ -1269,6 +1269,124 @@ void packedLoadAndSpatialGuard() {
 
 }  // namespace
 
+// L13 (P4-06): design rule §8 says "Zones … Blocks … Note cards … Element just
+// dragged or selected (temporarily at the top of its layer)". The layer always
+// wins over the fractional z; inside a layer the greater key wins and equal keys
+// keep insertion order; bringing an object to the front is one z change (the
+// contract `reorder`), and its inverse restores the byte-identical frame.
+void layerOrderAndFront() {
+  test::section("L13: layers beat z, z orders a layer, front + inverse, reload");
+  Document document;
+  // Deliberately inverted keys: the zone has the greatest key, the card the least.
+  const ObjectId zone = addObjectWithId(
+      document, makeRectangle(0.0, 0.0, 400.0, 300.0, "zzzz", Layer::zones, Tone::toneB));
+  const ObjectId block = addObjectWithId(
+      document, makeRectangle(40.0, 40.0, 200.0, 120.0, "z", Layer::blocks, Tone::toneD));
+  const ObjectId cardLow = addObjectWithId(
+      document, makeRectangle(60.0, 60.0, 160.0, 96.0, "0", Layer::noteCards, Tone::toneA));
+  const ObjectId cardMid = addObjectWithId(
+      document, makeRectangle(120.0, 90.0, 160.0, 96.0, "a1", Layer::noteCards, Tone::toneC));
+  const ObjectId cardTie = addObjectWithId(
+      document, makeRectangle(180.0, 120.0, 160.0, 96.0, "a1", Layer::noteCards, Tone::toneE));
+  const std::vector<std::uint32_t> expected = {slotOf(document, zone), slotOf(document, block),
+                                               slotOf(document, cardLow), slotOf(document, cardMid),
+                                               slotOf(document, cardTie)};
+  test::expect(document.drawOrder() == expected,
+               "zone < block < cards regardless of z; within cards z then insertion order");
+
+  // Keys that a float parse would merge stay ordered (lexicographic compare).
+  Document precision;
+  const ObjectId high = addObjectWithId(
+      precision, makeRectangle(0.0, 0.0, 10.0, 10.0, "1" + std::string(30, '0') + "2"));
+  const ObjectId low = addObjectWithId(
+      precision, makeRectangle(0.0, 0.0, 10.0, 10.0, "1" + std::string(30, '0') + "1"));
+  const std::vector<std::uint32_t> precisionOrder = {slotOf(precision, low),
+                                                     slotOf(precision, high)};
+  test::expect(precision.drawOrder() == precisionOrder,
+               "keys equal as doubles still order by their last character");
+
+  // Front: the low card gets a key above "a1" (the seam's keyAfter("a1") = "a2").
+  Camera camera;
+  SpatialIndex spatial;
+  spatial.rebuild(document);
+  CommandBuffer buffer;
+  const std::vector<std::uint8_t> baseline = captureBytes(buffer, document, camera, spatial);
+  test::expect(buffer.size() == 5, "the layered frame draws five objects");
+  Status status = document.updateZ(cardLow, "a2");
+  test::expect(status.ok, "the front z is accepted");
+  spatial.syncVersion(document);
+  const std::vector<std::uint32_t>& fronted = document.drawOrder();
+  test::expect(!fronted.empty() && fronted.back() == slotOf(document, cardLow),
+               "the fronted card draws last, on top of its layer");
+  test::expect(fronted.size() == 5 && fronted[0] == slotOf(document, zone) &&
+                   fronted[1] == slotOf(document, block),
+               "bringing a card to the front never lifts it out of its layer");
+  const std::vector<std::uint8_t> front = captureBytes(buffer, document, camera, spatial);
+  test::expect(front != baseline, "the front operation changes the command buffer");
+  HitResult hit;
+  const Status hitStatus = buffer.hitTest(document, camera, spatial, 800.0, 600.0, {130.0, 100.0}, hit);
+  test::expect(hitStatus.ok && hit.found && hit.objectId == cardLow,
+               "the fronted card wins the hit test where cards overlap");
+
+  // Reload: the stored keys alone reproduce the front order and the same frame.
+  project_air::contracts::BoardContent stored{};
+  for (const std::uint32_t slot : document.drawOrder()) {
+    const Rectangle& rectangle = document.rectangles()[slot];
+    if (rectangle.layer == Layer::zones) {
+      project_air::contracts::Zone entity{};
+      entity.x = rectangle.x;
+      entity.y = rectangle.y;
+      entity.width = rectangle.width;
+      entity.height = rectangle.height;
+      entity.z = rectangle.z;
+      stored.zones.push_back(entity);
+    } else if (rectangle.layer == Layer::blocks) {
+      project_air::contracts::Block entity{};
+      entity.x = rectangle.x;
+      entity.y = rectangle.y;
+      entity.width = rectangle.width;
+      entity.height = rectangle.height;
+      entity.z = rectangle.z;
+      stored.blocks.push_back(entity);
+    } else {
+      project_air::contracts::Card entity{};
+      entity.x = rectangle.x;
+      entity.y = rectangle.y;
+      entity.width = rectangle.width;
+      entity.height = rectangle.height;
+      entity.z = rectangle.z;
+      stored.cards.push_back(entity);
+    }
+  }
+  Document reloaded;
+  status = reloaded.addBoardContent(stored);
+  test::expect(status.ok && reloaded.size() == 5, "the stored state reloads");
+  const std::vector<std::uint32_t>& reloadedOrder = reloaded.drawOrder();
+  bool sameOrder = reloadedOrder.size() == fronted.size();
+  for (std::size_t rank = 0; sameOrder && rank < reloadedOrder.size(); ++rank) {
+    const Rectangle& left = reloaded.rectangles()[reloadedOrder[rank]];
+    const Rectangle& right = document.rectangles()[fronted[rank]];
+    sameOrder = left.x == right.x && left.y == right.y && left.z == right.z &&
+                left.layer == right.layer;
+  }
+  test::expect(sameOrder, "a reload from the stored z shows the same front order");
+
+  // Inverse: the previous key restores the byte-identical command buffer.
+  status = document.updateZ(cardLow, "0");
+  test::expect(status.ok, "the inverse z is accepted");
+  spatial.syncVersion(document);
+  test::expect(document.drawOrder() == expected, "the inverse restores the draw order");
+  expectSameBytes(captureBytes(buffer, document, camera, spatial), baseline,
+                  "front and its inverse restore the byte-identical command buffer");
+
+  // Edge cases: an object alone in its layer, and a single-layer document.
+  Document lone;
+  const ObjectId only = addObjectWithId(lone, makeRectangle(0.0, 0.0, 10.0, 10.0, "a0",
+                                                            Layer::blocks));
+  status = lone.updateZ(only, "a1");
+  test::expect(status.ok && lone.drawOrder().size() == 1, "fronting the only object is harmless");
+}
+
 int main() {
   std::printf("engine_core_tests\n");
   cameraRoundTrip();
@@ -1288,6 +1406,7 @@ int main() {
   commandBufferHitTesting();
   spatialPointAndBoundsQueries();
   packedLoadAndSpatialGuard();
+  layerOrderAndFront();
 
   if (test::failures != 0) {
     std::fprintf(stderr, "engine_core_tests: %d check(s) failed\n", test::failures);

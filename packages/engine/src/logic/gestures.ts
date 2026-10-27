@@ -113,6 +113,17 @@ export interface KeyboardNudgeGesture {
   readonly delta: WorldPoint;
 }
 
+/**
+ * Brings one object to the front of its design layer (L13): the last moved or
+ * selected object draws above its layer neighbours. Converted into exactly one
+ * contract `reorder` operation; the layer itself never changes (design rule §8).
+ */
+export interface BringToFrontGesture {
+  readonly kind: "bring-to-front";
+  readonly objectKind: BoardObjectKind;
+  readonly objectId: string;
+}
+
 /** Every content gesture the logic layer converts into a contract operation. */
 export type GestureResult =
   | DragSingleGesture
@@ -120,4 +131,5 @@ export type GestureResult =
   | ResizeGesture
   | CreateGesture
   | DeleteGesture
-  | KeyboardNudgeGesture;
+  | KeyboardNudgeGesture
+  | BringToFrontGesture;

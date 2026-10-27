@@ -13,7 +13,7 @@ Static page, no build step; it imports the compiled bridge, the compiled test-ki
 Emscripten module through an import map.
 
 1. `pnpm install --frozen-lockfile` (workspace root)
-2. `pnpm --filter @project-air/engine run build` (bridge to `packages/engine/dist/`)
+2. `pnpm --filter @project-air/engine run build` (bridge and logic layer to `packages/engine/dist/`)
 3. `pnpm --filter @project-air/test-kit run build` (scenes to `packages/test-kit/dist/`)
 4. `bash packages/engine/tools/build-wasm.sh` (module to `packages/engine/build-wasm/`)
 5. Serve the repository root on the slot's playground port, for example
@@ -34,6 +34,12 @@ Emscripten module through an import map.
   to 50,000.
 - `?scene=engine-core` — the engine-core perf board from `packages/test-kit`: 10,000 mixed board
   objects (9,200 cards, 200 zones with three blocks each).
+- `?scene=layers` — the L13 layers scene (P4-06): 2 zones, 2 blocks and 4 cards whose stored keys
+  contradict the layers. It is loaded as contract objects through the engine's document port (the
+  logic build `packages/engine/dist/logic/`, produced by step 2); a click (under 4 px of movement)
+  brings the object to the front of its layer with exactly one `reorder` operation through the
+  gesture seam, the keys persist in `localStorage` so a reload keeps the order, `&front=<scene id>`
+  applies one front gesture at start and `&store=off` ignores the storage (the visual gate uses it).
 - Pointer drag pans; wheel or two-pointer pinch zooms around the pointer; `f` runs the L19 fit action
   ("show all": at most 100 %, L02 top padding, dot grid at and above zoom 0.5). The scene never
   changes. The HUD shows objects, visible instances, the rendered-frame counter and the backend.
