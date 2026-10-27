@@ -130,10 +130,6 @@
   - P4-02: Screenshots 1440x900/390x844 + serve/capture log (HTTP 200, SwiftShader capture); test-kit suite 12/12; four gates green after the owner-approved design-check test fix 32c8f28.
   - P4-02: Two review rounds; minors fixed (serve-log consistency, per-zone block assertions). Deviation: Node v26.12.1 vs the .nvmrc pin.
 - `P4-25` Zones as containers I: contract parent reference (L08)
-- `P0-29` Zone collapse, re-grouping and smaller zoom controls
-  - P0-28: Closed P0-28: notepad and photo window drag out of the zone and back; detach eases over 28 screen px (scale/border/shadow), free items clamp+grid-snap, 8 px dock hysteresis, measured slots.
-  - P0-28: Detached items are never edge-connected (one .demo__edge, A/B endpoints unchanged); reduced-motion honoured; cards/zoom/toolbar/switch unchanged; en/de strings; assets ?v=P0-28.
-  - P0-28: Gates board-check/design-check/changelog-entry green + language-check OK; evidence docked/mid/detached/redocked + log; review pass with two minors fixed (photo ring/shadow clipping, README wording).
 
 ## Done
 
@@ -184,6 +180,7 @@
 ## In progress
 
 - [ ] `P4-04` Visual gate with reference images — status: `in_progress` — owner: lead
+- [ ] `P0-29` Zone collapse, re-grouping and smaller zoom controls — status: `in_progress` — owner: —
 
 ## Blocked / failed
 
@@ -219,7 +216,13 @@
 - [ ] `P4-26` Zones as containers II: platform migration and containment (L08) — status: `pending` — owner: —
 - [ ] `P4-27` Zones as containers II: engine membership and zone move (L08) — status: `pending` — owner: —
 - [ ] `P4-28` L01 final proof, two-backend reference images and stage showcase — status: `pending` — owner: —
-- [ ] `P0-29` Zone collapse, re-grouping and smaller zoom controls — status: `pending` — owner: —
+
+<!-- polier:claims -->
+## Claims
+
+- `P0-29` in progress by dsh since 2026-10-27T06:50:53+00:00 — worktree: /Users/rasulatashev/Desktop/KI Projekte/Project air-P0-29 · slot 2
+
+<!-- /polier:claims -->
 
 ## Decisions
 
