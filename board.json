@@ -3713,7 +3713,7 @@
       "satisfies": [
         "D10"
       ],
-      "status": "pending",
+      "status": "in_progress",
       "depends_on": [
         "P4-05",
         "P4-10"
@@ -3754,9 +3754,9 @@
         "visual",
         "unit"
       ],
-      "owner": null,
+      "owner": "lead",
       "branch": "task/P4-14",
-      "worktree": null,
+      "worktree": "/private/tmp/air-P4-14",
       "round": 0,
       "evidence": [],
       "scope_write_forbidden": [
