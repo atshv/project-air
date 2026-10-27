@@ -55,14 +55,14 @@ no `fetch`, no WASM import at runtime, so it runs unchanged in Node.
   built operation is validated against `operation.schema.json` in the unit suite; the layer never
   invents a parallel operation shape.
 
-Deliberately not built here: z-order changes have no operation in contract 0.1.0, so there is no
-builder for them yet (P4-25 adds the fractional-z `reorder` operation with contract 0.2.0);
-`updateNote` edits note content that the engine working copy does not hold; `updateBlock` changes
-only zone membership, which belongs to P4-23/24; zone deletion gestures and membership also belong
-to L08 and P4-23/24. The seam does apply `deleteZone` with policy `delete` as the exactly one
-inverse of a zone creation, which is how undoing a create works; policy `keep` (reparenting) is
-rejected until L08. `payload-move-zone` is read as the moved zone id (the valid fixture and its
-inverse rely on it), while the schema description calls the field the parent zone.
+Deliberately not built here: the fractional-z `reorder` operation exists since contract 0.2.0
+(P4-25), so a later engine task (L13/P4-06) can build that gesture through this seam; `updateNote`
+edits note content that the engine working copy does not hold; `updateBlock` changes only zone
+membership, which belongs to P4-23/24; zone deletion gestures and membership also belong to L08 and
+P4-23/24. The seam applies `deleteZone` with policy `delete` as the exactly one inverse of a zone
+creation, which is how undoing a create works; policy `keep` (reparenting) is rejected until L08.
+`payload-move-zone` is read as the moved zone id, matching the valid fixture and the corrected 0.2.0
+schema description.
 
 The suite runs with `pnpm --filter @project-air/engine test` (`node --test test/*.test.mjs`): one
 gesture is one operation, a group drag is one operation, an inverse restores a byte-identical fake

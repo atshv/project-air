@@ -1,5 +1,5 @@
 /**
- * Typed errors of the platform API (contract 0.1.0).
+ * Typed errors of the platform API (contract 0.2.0).
  *
  * `code`, `messageKey` and `requestId` are never swallowed: the SDK exposes the
  * exact contract error so callers (and tests) can assert on them.

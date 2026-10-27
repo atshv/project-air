@@ -1,5 +1,5 @@
 /**
- * Generated contract types used by the SDK (contract 0.1.0).
+ * Generated contract types used by the SDK (contract 0.2.0).
  *
  * The SDK may import `packages/contracts` (board.json -> may_import); only the
  * generated types are used, so the import is type-only and erased at runtime.

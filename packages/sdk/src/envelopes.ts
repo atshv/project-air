@@ -1,5 +1,5 @@
 /**
- * Envelope parsing and error mapping of the platform API (contract 0.1.0).
+ * Envelope parsing and error mapping of the platform API (contract 0.2.0).
  *
  * Success envelopes: list `{requestId, items, nextCursor}`, single
  * `{requestId, <resource>}`, delete `{requestId, deletedId}`.

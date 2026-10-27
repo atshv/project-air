@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
-  "description": "Typed, dependency-free client for the platform HTTP API of contract 0.1.0: workspaces, boards, notes and cards with the generated contract types and typed API errors.",
+  "description": "Typed, dependency-free client for the platform HTTP API of contract 0.2.0: workspaces, boards, notes and cards with the generated contract types and typed API errors.",
   "exports": {
     ".": {
       "import": "./dist/sdk/src/index.js"
