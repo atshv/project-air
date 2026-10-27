@@ -4455,7 +4455,8 @@
         "P4-23",
         "P4-24",
         "P4-27",
-        "P4-29"
+        "P4-29",
+        "P4-30"
       ],
       "complexity": 5,
       "stage": "engine-core",
@@ -4938,8 +4939,8 @@
     },
     {
       "id": "P4-29",
-      "title": "Zone interaction parity with the live demo (L08)",
-      "goal": "The engine zones behave like the live design demo (P0-28 to P0-32): members are arranged stacked or side by side, dragging shows the release preview (landing slot, room-making, shrinking and ghost frames), the release commits one operation, an empty zone is removed, two free objects dropped onto each other form a new zone, every zone shows its editable title in a 40 px header, and every settle uses one calm ease-out.",
+      "title": "Zone parity with the live demo I: arrangement and release preview (L08)",
+      "goal": "Engine zone members are arranged stacked or side by side like the live demo, dragging shows the release preview (landing slot, room-making, shrinking frame) and the release commits exactly one operation; one calm ease-out settle.",
       "why": "Owner decision 2026-10-27: the engine must work the way the live demo shows it.",
       "satisfies": [
         "D10"
@@ -4947,10 +4948,69 @@
       "status": "pending",
       "depends_on": [
         "P4-27",
-        "P4-23",
         "P4-10"
       ],
-      "complexity": 8,
+      "complexity": 6,
+      "stage": "engine-core",
+      "parallel_group": null,
+      "scope_write": [
+        "packages/engine/",
+        "apps/engine-playground/",
+        "docs/adr/",
+        "docs/engine.md",
+        ".changes/"
+      ],
+      "scope_read": [
+        "ARCHITECTURE.md",
+        "AGENTS.md",
+        "STATUS.md",
+        "docs/module-map.md",
+        "docs/quality.md",
+        "docs/design-rules.md",
+        "docs/canvas-acceptance.md",
+        "docs/engine.md",
+        "packages/engine/",
+        "packages/contracts/generated/types.ts",
+        "packages/ui-kit/tokens.h",
+        "apps/engine-playground/",
+        "docs/contracts.md",
+        "apps/web/preview/",
+        "docs/adr/ADR-0010-zone-containers.md"
+      ],
+      "acceptance": [
+        "A1",
+        "A2"
+      ],
+      "gates": [
+        "board-check",
+        "boundaries",
+        "cpp-unit",
+        "visual",
+        "typecheck"
+      ],
+      "owner": null,
+      "branch": "task/P4-29",
+      "worktree": null,
+      "round": 0,
+      "evidence": [],
+      "scope_write_forbidden": [
+        "reference/"
+      ]
+    },
+    {
+      "id": "P4-30",
+      "title": "Zone parity with the live demo II: lifecycle and names (L08)",
+      "goal": "Like the live demo: two free objects dropped onto each other form a new zone (ghost preview, default title), an emptied zone is removed as one undoable operation, and every zone shows its title in a 40 px header with inline rename; ADR-0010 amended.",
+      "why": "Owner decision 2026-10-27: the engine must work the way the live demo shows it.",
+      "satisfies": [
+        "D10"
+      ],
+      "status": "pending",
+      "depends_on": [
+        "P4-29",
+        "P4-23"
+      ],
+      "complexity": 6,
       "stage": "engine-core",
       "parallel_group": null,
       "scope_write": [
@@ -4980,8 +5040,7 @@
       "acceptance": [
         "A1",
         "A2",
-        "A3",
-        "A4"
+        "A3"
       ],
       "gates": [
         "board-check",
@@ -4991,7 +5050,7 @@
         "typecheck"
       ],
       "owner": null,
-      "branch": "task/P4-29",
+      "branch": "task/P4-30",
       "worktree": null,
       "round": 0,
       "evidence": [],
