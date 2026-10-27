@@ -3467,7 +3467,7 @@
     {
       "id": "P4-10",
       "title": "Titles, previews and visible quality (L02)",
-      "goal": "Card titles render single-line with ellipsis at 15 px/600 from tokens, block and zone headers are 40 px, zones offset their content below the header, blocks grow instead of scrolling and delete affordances stay quiet; the visible defects are evidenced before and after with reference images.",
+      "goal": "Card and zone titles render single-line with an ellipsis at 15 px/600 from tokens with sharp zoom re-rasterisation, block and zone headers are 40 px with their content below the header, blocks grow instead of scrolling internally, delete affordances stay quiet at rest, and the perf and idle measurements are re-run after the text binding.",
       "why": "L02 engine entry: nothing on the canvas may look cut off, doubled or random.",
       "satisfies": [
         "D10"
@@ -3505,14 +3505,16 @@
       "acceptance": [
         "A1",
         "A2",
-        "A3"
+        "A3",
+        "A4"
       ],
       "gates": [
         "board-check",
         "boundaries",
         "cpp-unit",
         "visual",
-        "design-check"
+        "design-check",
+        "perf"
       ],
       "owner": "lead",
       "branch": "task/P4-10",
