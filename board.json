@@ -3118,7 +3118,7 @@
       "satisfies": [
         "D10"
       ],
-      "status": "in_progress",
+      "status": "done",
       "depends_on": [
         "P4-01"
       ],
@@ -3159,13 +3159,23 @@
         "typecheck",
         "unit"
       ],
-      "owner": "lead",
+      "owner": null,
       "branch": "task/P4-05",
-      "worktree": "/private/tmp/air-P4-05",
+      "worktree": null,
       "round": 0,
-      "evidence": [],
+      "evidence": [
+        "reviews/evidence/P4-05-board-check-20261027T194123Z.json",
+        "reviews/evidence/P4-05-boundaries-20261027T194116Z.json",
+        "reviews/evidence/P4-05-typecheck-20261027T194116Z.json",
+        "reviews/evidence/P4-05-unit-20261027T194119Z.json"
+      ],
       "scope_write_forbidden": [
         "reference/"
+      ],
+      "handoff": [
+        "Closed P4-05: engine TS logic layer (gestures, operations, port, history); one gesture = one contract operation with inverse, group drag = one group operation; 31 tests validate.",
+        "Undo/redo depth 20 with redo-clear and describe() labels; fake + bridge adapter byte-identical round trips; create builders validate geometry, port read is isolated, adapter projects z.",
+        "Two review rounds, four minors fixed. The z-order gesture awaits the contract 0.2.0 reorder operation (P4-25); the moveZone description is corrected there."
       ]
     },
     {

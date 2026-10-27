@@ -4,12 +4,12 @@
 
 ## Purpose
 
-Draws the canvas and processes gestures. It ships `engine.wasm` behind a thin TypeScript bridge (`createEngine(canvas, options)`) and knows neither network, database nor accounts: it receives operations and emits operations, plus events such as "operation created", "object clicked" and "selection changed". Gesture logic lives in C++; input is collected and normalised in JS.
+Draws the canvas and processes gestures. It ships `engine.wasm` behind a thin TypeScript bridge (`createEngine(canvas, options)`) and knows neither network, database nor accounts: it receives and emits operations and events such as "operation created", "object clicked" and "selection changed".
 
 ## Inputs
 
 - Operations and normalised input events (mouse, trackpad, touch, keyboard) from the host app.
-- Generated C++ code from `packages/contracts`; the generated token header from `packages/ui-kit`.
+- Generated `packages/contracts` C++ code and the `packages/ui-kit` token header.
 - A canvas element, with WebGPU and a WebGL2 fallback.
 
 ## Outputs
@@ -17,6 +17,17 @@ Draws the canvas and processes gestures. It ships `engine.wasm` behind a thin Ty
 - `engine.wasm` plus the TypeScript bridge `createEngine(canvas, options)`.
 - Events: operation created, object clicked, selection changed.
 - Rendered frames and an accessibility/test mirror of the visible objects.
+
+## TypeScript layers
+
+`src/` follows UI → logic → data (`docs/module-map.md`). The logic layer
+(`src/logic/`) holds the gesture-result union (`gestures.ts`), the
+gesture-to-operation builders with exactly one inverse (`operations.ts`), the
+session undo/redo stack (`history.ts`) and the narrow document port
+(`document-port.ts`). Logic writes only through the injected port — never the
+WASM module, DOM or network — and every gesture goes through `history`, so input
+code never writes the document directly (AD-1). Data is the bridge plus the
+port's browser adapter; tests use the in-memory fake.
 
 ## Invariants
 
@@ -27,23 +38,18 @@ Draws the canvas and processes gestures. It ships `engine.wasm` behind a thin Ty
 
 ## Allowed imports
 
-Exactly these workspace packages, copied from `board.json` -> `packages[]` -> `may_import`: `packages/contracts`, `packages/ui-kit`.
+`packages/contracts` and `packages/ui-kit` (`board.json` -> `packages[]` -> `may_import`).
 
 ## Commands
 
 Pinned toolchain: CMake 4.4.4 + Emscripten 6.0.13, C++20
 ([docs/versions.md](../../docs/versions.md)); the engine builds with CMake, not pnpm.
 
-- **Native build and unit test:**
-  `cmake -S packages/engine -B packages/engine/build -DCMAKE_BUILD_TYPE=Debug && cmake --build packages/engine/build --parallel && ctest --test-dir packages/engine/build --output-on-failure`
-- **WebAssembly build:** `bash packages/engine/tools/build-wasm.sh` from the repository root; the
-  wrapper prepends the Homebrew Emscripten `PATH` (or trusts the CI emsdk) and runs the `emcmake`
-  configure plus build.
-- **Targets:** the `air_engine` library, the core modules `doc`, `camera`, `spatial`, `render` and
-  the WASM-only `render_gl` WebGL2 renderer, the CTest suites `engine_unit_tests` and
-  `engine_core_tests`, and the WASM module `build-wasm/engine.js` plus `engine.wasm`.
-- **TypeScript bridge:** `pnpm --filter @project-air/engine run build` compiles
-  `src/bridge/engine.ts`; `node packages/engine/tools/wasm-size.mjs` enforces the gzip budget.
+- **Native and WASM:** native build, CTest suites `engine_unit_tests`/`engine_core_tests` and the
+  WASM module use the commands in [docs/engine.md](../../docs/engine.md#build-and-check-commands).
+- **TypeScript:** `pnpm --filter @project-air/engine run build|typecheck|lint|test`; `tsconfig.json`
+  typechecks all of `src/` and `tsconfig.build.json` emits only the bridge to
+  `dist/bridge/engine.js`; the package entry stays unchanged.
 - **Gate catalogue:** [docs/gates/cpp-cmake.md](../../docs/gates/cpp-cmake.md) and
   [docs/gates/wasm-emscripten.md](../../docs/gates/wasm-emscripten.md).
 
@@ -52,5 +58,6 @@ are included read-only; the engine never copies or edits them.
 
 ## References
 
-- Root architecture and the `AD-1` … `AD-10` table: [ARCHITECTURE.md](../../ARCHITECTURE.md)
-- Package map: [docs/module-map.md](../../docs/module-map.md)
+- Root architecture and `AD-1` … `AD-10`: [ARCHITECTURE.md](../../ARCHITECTURE.md)
+- Package map, layer rule and modules: [docs/module-map.md](../../docs/module-map.md) ·
+  [docs/engine.md](../../docs/engine.md)

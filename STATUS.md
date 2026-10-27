@@ -176,6 +176,7 @@
 - [x] `P4-02` Engine playground: interactive sample board and stage shell — status: `done` — owner: —
 - [x] `P4-03` Engine-core perf gate and L01 basis — status: `done` — owner: —
 - [x] `P4-04` Visual gate with reference images — status: `done` — owner: —
+- [x] `P4-05` Gesture-to-operation seam and undo history core — status: `done` — owner: —
 - [x] `P0-26` Toolbar and zone with notepad and image window in the preview — status: `done` — owner: —
 - [x] `P0-27` Bilingual preview with DE/EN switch and cache-busted assets — status: `done` — owner: —
 - [x] `P0-28` Zone detach interaction: drag notepad and photo out and back — status: `done` — owner: —
@@ -185,7 +186,6 @@
 
 ## In progress
 
-- [ ] `P4-05` Gesture-to-operation seam and undo history core — status: `in_progress` — owner: lead
 - [ ] `P4-25` Contract 0.2.0: zone parent reference and reorder (z) operation (L08/L13) — status: `in_progress` — owner: lead
 
 ## Blocked / failed
@@ -220,13 +220,6 @@
 - [ ] `P4-26` Zones as containers II: platform migration and containment (L08) — status: `pending` — owner: —
 - [ ] `P4-27` Zones as containers II: engine membership and zone move (L08) — status: `pending` — owner: —
 - [ ] `P4-28` L01 final proof, two-backend reference images and stage showcase — status: `pending` — owner: —
-
-<!-- polier:claims -->
-## Claims
-
-- `P4-25` in progress by dsh since 2026-10-27T19:32:30+00:00 — worktree: /private/tmp/air-P4-25 · slot 2
-
-<!-- /polier:claims -->
 
 ## Decisions
 

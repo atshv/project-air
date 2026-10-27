@@ -1,0 +1,17 @@
+{
+  "task": "P4-05",
+  "gate": "typecheck",
+  "command": "pnpm typecheck",
+  "exit_code": 0,
+  "result": "pass",
+  "slot": 1,
+  "exclusive": [],
+  "lock_wait_s": 0.0,
+  "lock_warning": null,
+  "started": "2026-10-27T19:41:16+00:00",
+  "finished": "2026-10-27T19:41:17+00:00",
+  "commit": "b82da697389ffcef588ebcd368745182061259b9",
+  "dirty": true,
+  "log": "P4-05-typecheck-20261027T194116Z.log",
+  "log_sha256": "1e3895cefda094946f305c10a09181057211fb752cdf43de2936ad7b7429c7f4"
+}

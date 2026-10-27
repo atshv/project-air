@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
-  "description": "C++20 canvas engine compiled to WebAssembly with the thin TypeScript bridge createEngine(canvas, options).",
+  "description": "C++20 canvas engine compiled to WebAssembly with the thin TypeScript bridge createEngine(canvas, options) and the gesture-to-operation logic layer.",
   "main": "./dist/bridge/engine.js",
   "types": "./dist/bridge/engine.d.ts",
   "exports": {
@@ -13,8 +13,9 @@
     }
   },
   "scripts": {
-    "build": "tsc --project tsconfig.json",
+    "build": "tsc --project tsconfig.build.json",
     "typecheck": "tsc --noEmit --project tsconfig.json",
-    "lint": "eslint --max-warnings=0 ."
+    "lint": "eslint --max-warnings=0 .",
+    "test": "node --test test/*.test.mjs"
   }
 }

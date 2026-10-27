@@ -24,6 +24,51 @@ across the C ABI). The C API exports `engine_create`, `engine_resize`, `engine_s
 `engine_remove_object`, `engine_hit_test`, `engine_visible_instance_count`, `engine_render_frame`
 and `engine_last_error`; the TypeScript bridge exposes the same surface as typed methods.
 
+## Gesture logic layers (TypeScript)
+
+Next to the C++ core, `packages/engine/src/` follows the package layer rule UI → logic → data
+(`docs/module-map.md`). The host app is the UI layer; data is the bridge (`src/bridge/engine.ts`)
+plus the document port's browser adapter; the logic layer (`src/logic/`) is pure TypeScript: no DOM,
+no `fetch`, no WASM import at runtime, so it runs unchanged in Node.
+
+| File | Purpose |
+| --- | --- |
+| `src/logic/gestures.ts` | typed gesture-result union: drag single, drag group, resize, create, delete, keyboard-nudge series |
+| `src/logic/operations.ts` | builds exactly one contract operation with its inverse per gesture; applies operations and inverses through the port |
+| `src/logic/document-port.ts` | narrow data port (read, add, move, resize, remove, update z) with a pure in-memory fake for tests and a bridge adapter that maps contract UUIDs to engine slot handles |
+| `src/logic/history.ts` | session undo/redo stack, depth 20, `push(operation, inverse)`, redo cleared on a new operation, `describe()` hint label |
+
+- **One gesture = one operation (AD-1).** A single drag becomes one `moveCard`/`moveBlock`/`moveZone`;
+  a multiple-selection drag becomes one `group` operation whose children are the per-object moves,
+  never per-object history entries. A resize becomes `resize*`, a create becomes `create*`, deleting a
+  card or block becomes `delete*`, and a keyboard-nudge series is one move with the accumulated delta.
+- **Inverses come from the working copy, not the gesture.** Current positions, sizes, entities and
+  fractional `z` values are read through the port, so an undo restores what the engine actually held
+  and a byte-identical snapshot round trip is testable in Node.
+- **No direct document writes.** Input code applies the operation through the port and pushes the
+  pair into `history`; `undo()` applies the stored inverse, `redo()` re-applies the operation and a
+  new operation clears the redo branch.
+- **No-ops and rejections.** An empty or unchanged gesture produces no operation and no history
+  entry; unknown or malformed ids, duplicate group members and sizes below the contract minimums
+  throw `OperationError` and leave the working copy untouched.
+- **Contract only.** Operation shapes come from `packages/contracts/generated/types.ts` and every
+  built operation is validated against `operation.schema.json` in the unit suite; the layer never
+  invents a parallel operation shape.
+
+Deliberately not built here: z-order changes have no operation in contract 0.1.0, so there is no
+builder for them yet (P4-25 adds the fractional-z `reorder` operation with contract 0.2.0);
+`updateNote` edits note content that the engine working copy does not hold; `updateBlock` changes
+only zone membership, which belongs to P4-23/24; zone deletion gestures and membership also belong
+to L08 and P4-23/24. The seam does apply `deleteZone` with policy `delete` as the exactly one
+inverse of a zone creation, which is how undoing a create works; policy `keep` (reparenting) is
+rejected until L08. `payload-move-zone` is read as the moved zone id (the valid fixture and its
+inverse rely on it), while the schema description calls the field the parent zone.
+
+The suite runs with `pnpm --filter @project-air/engine test` (`node --test test/*.test.mjs`): one
+gesture is one operation, a group drag is one operation, an inverse restores a byte-identical fake
+snapshot, undo/redo depth and redo-clear semantics hold, invalid or unknown ids are rejected, and a
+source scan proves no DOM or network use in the logic layer.
+
 ## Coordinates, order and the command buffer
 
 - **World space** is the contract's board space in pixels; the 16 px world/canvas grid is
@@ -102,7 +147,7 @@ behind. The same `SpatialIndex::ensureCurrent` guard is covered by the native su
 - **WASM:** `bash packages/engine/tools/build-wasm.sh` then `node packages/engine/tools/wasm-smoke.mjs`; size: `node packages/engine/tools/wasm-size.mjs` (budget 307,200 B gzip). The wrapper keeps the Emscripten cache under `build-wasm/.emscripten-cache` unless `EM_CACHE` is set, so a read-only package cache (sandboxed agents) or a shared user cache cannot break the build.
 - **Performance:** `node packages/engine/test/perf/run-perf.mjs` (exclusive `perf-baseline`, 50,000 rectangles, p95 ≤ 16.7 ms) and `node packages/engine/test/perf/run-perf.mjs --scenario engine-core` (the `perf` stage gate: 10,000-object interactive run plus the L01 basis/final proof; report [docs/engine/perf-baseline.md](engine/perf-baseline.md), gate catalogue [docs/gates/perf.md](gates/perf.md)).
 - **Visual:** `node packages/engine/test/visual/run-visual.mjs` (the `visual` stage gate: four deterministic scenes at 1440×900 and 390×844 against the committed reference images under `reviews/evidence/visual-baselines/`; `--update` writes baselines as a reviewed update, never a gate pass; catalogue [docs/gates/visual-diff.md](gates/visual-diff.md)).
-- **Bridge:** `pnpm --filter @project-air/engine run build|typecheck|lint`. Pins: CMake 4.4.4, Emscripten 6.0.13 in [docs/versions.md](versions.md); gates in [docs/gates/cpp-cmake.md](gates/cpp-cmake.md), [docs/gates/wasm-emscripten.md](gates/wasm-emscripten.md), [docs/gates/perf.md](gates/perf.md).
+- **Bridge and logic:** `pnpm --filter @project-air/engine run build|typecheck|lint|test`. `tsconfig.json` typechecks all of `src/`; `tsconfig.build.json` emits only the bridge, so the package entry stays `dist/bridge/engine.js`. Pins: CMake 4.4.4, Emscripten 6.0.13 in [docs/versions.md](versions.md); gates in [docs/gates/cpp-cmake.md](gates/cpp-cmake.md), [docs/gates/wasm-emscripten.md](gates/wasm-emscripten.md), [docs/gates/perf.md](gates/perf.md).
 
 ## Scenes and the playground
 
@@ -179,10 +224,12 @@ behaviours are not implemented.
 - **Measurement shape:** frame production (unlocked display, no per-frame GPU sync/fence), not GPU
   completion, long tasks while panning/zooming, or the L01 final proof (500 cards + 50 zones, no long
   task > 50 ms).
-- **Canvas behaviours:** the playground has demo-level pan/zoom over a fixed scene; gestures,
-  selection, editing, snapping, zone membership, undo, keyboard, text, images, edges, cursors and the
-  accessibility mirror are not implemented. Hit testing exists at the document/command-buffer level
-  (P4-01); interaction policy, selection state and overlays are not.
+- **Canvas behaviours:** the playground has demo-level pan/zoom over a fixed scene; gesture input
+  handling, selection, editing, snapping, zone membership, the undo UI, keyboard input, text, images,
+  edges, cursors and the accessibility mirror are not implemented. The gesture-to-operation seam and
+  the undo history core exist behind the TypeScript logic layer (P4-05) but are not wired to input
+  yet. Hit testing exists at the document/command-buffer level (P4-01); interaction policy,
+  selection state and overlays are not.
 - **Contracts of the mutation API:** the `ObjectId` stays inside the C++ core for now; the C ABI
   addresses live objects by their document slot index, and the bridge owns the contract-UUID mapping
   that a later task may expose.
