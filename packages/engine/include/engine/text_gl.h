@@ -55,6 +55,27 @@ AIR_ENGINE_RENDER_GL_API int engine_text_add_box_run(double x, double y, int rol
 // Removes every glyph run. Returns 1 on success, 0 before engine_create.
 AIR_ENGINE_RENDER_GL_API int engine_text_clear_runs();
 
-// Glyph quads the current runs, atlas, camera and viewport draw (>= 0), or -1 on
-// failure; builds the glyph buffer without drawing.
+// Binds the presentation text of the live object at document slot `index`
+// (text_binding.h, L02/P4-10): a title drawn single-line with an ellipsis at
+// 15 px/600 from tokens and a short preview wrapped and clipped inside the
+// object. The document stores no text (AD-4); the entry is keyed by the object's
+// stable id and is dropped when the document instance changes. A null pointer
+// with a count of 0 clears that object's binding. Returns 1 on success, 0 on
+// failure.
+AIR_ENGINE_RENDER_GL_API int engine_text_bind_object(int index, const unsigned int* title,
+                                                     int title_count,
+                                                     const unsigned int* preview,
+                                                     int preview_count);
+
+// Drops every bound title/preview. Returns 1 on success, 0 before engine_create.
+AIR_ENGINE_RENDER_GL_API int engine_text_clear_bindings();
+
+// Height (world px) the object needs so its bound preview is not clipped: the
+// L02 header/inset chrome plus the laid-out preview plus the bottom padding —
+// the value a block grows to instead of gaining an inner scrollbar. The atlas
+// must be loaded for a non-empty preview. Returns 1 on success, 0 on failure.
+AIR_ENGINE_RENDER_GL_API int engine_text_required_height(int index, double* out);
+
+// Glyph quads the current runs, bindings, atlas, camera and viewport draw (>= 0),
+// or -1 on failure; builds the glyph buffer without drawing.
 AIR_ENGINE_RENDER_GL_API int engine_visible_glyph_count();

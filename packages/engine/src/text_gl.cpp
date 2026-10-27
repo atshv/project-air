@@ -4,6 +4,7 @@
 #include <cstdint>
 
 #include "engine/text.h"
+#include "engine/text_binding.h"
 
 #if defined(__EMSCRIPTEN__)
 #include "renderer_internal.h"
@@ -127,7 +128,74 @@ void main() {
 }
 )";
 
-GLuint compileGlyphShader(GLenum type, const char* source) {
+// L02 header chrome (P4-10): the same unit-quad instancing as the glyph pass, but
+// with a per-instance tint, so the 40 px header band (tokens::faint) and its rule
+// (tokens::border) come straight from the generated token header. Chrome is drawn
+// before the glyphs of the frame; it never enters the object command buffer.
+constexpr const char* kChromeVertexShader = R"(#version 300 es
+layout(location = 0) in vec2 a_corner;
+layout(location = 1) in vec4 a_rect;
+layout(location = 2) in vec4 a_tint;
+uniform vec2 u_resolution;
+out vec4 v_tint;
+void main() {
+  vec2 position = a_rect.xy + a_corner * a_rect.zw;
+  vec2 clip = vec2(position.x / u_resolution.x * 2.0 - 1.0,
+                   1.0 - position.y / u_resolution.y * 2.0);
+  gl_Position = vec4(clip, 0.0, 1.0);
+  v_tint = a_tint;
+}
+)";
+
+constexpr const char* kChromeFragmentShader = R"(#version 300 es
+precision mediump float;
+in vec4 v_tint;
+out vec4 out_color;
+void main() {
+  out_color = v_tint;
+}
+)";
+
+// One instanced chrome quad: screen-space rectangle plus the straight-alpha tint
+// resolved from tokens.h (32 bytes, the glyph-pass seam).
+struct ChromeGpuInstance {
+  float x{0.0F};
+  float y{0.0F};
+  float width{0.0F};
+  float height{0.0F};
+  float red{0.0F};
+  float green{0.0F};
+  float blue{0.0F};
+  float alpha{0.0F};
+};
+static_assert(sizeof(ChromeGpuInstance) == 32, "chrome GPU instance layout is the seam");
+
+// Performance constant, not a design value: header chrome is bounded by the
+// number of visible zone/block titles a viewport can bind.
+constexpr std::size_t kMaxChromeInstances = 4096;
+
+// Key of the last visible binding set: the binding is rebuilt only when the
+// document, the camera, the viewport or the binding set changed.
+struct BindingSyncKey {
+  std::uint64_t documentInstance{0};
+  std::uint32_t documentVersion{0};
+  double panX{0.0};
+  double panY{0.0};
+  double zoom{0.0};
+  int cssWidth{0};
+  int cssHeight{0};
+  std::uint64_t bindingsGeneration{0};
+};
+
+bool sameKey(const BindingSyncKey& left, const BindingSyncKey& right) {
+  return left.documentInstance == right.documentInstance &&
+         left.documentVersion == right.documentVersion && left.panX == right.panX &&
+         left.panY == right.panY && left.zoom == right.zoom && left.cssWidth == right.cssWidth &&
+         left.cssHeight == right.cssHeight &&
+         left.bindingsGeneration == right.bindingsGeneration;
+}
+
+GLuint compileShader(GLenum type, const char* source, const char* label) {
   const GLuint shader = glCreateShader(type);
   glShaderSource(shader, 1, &source, nullptr);
   glCompileShader(shader);
@@ -135,7 +203,7 @@ GLuint compileGlyphShader(GLenum type, const char* source) {
   glGetShaderiv(shader, GL_COMPILE_STATUS, &compiled);
   if (compiled == GL_FALSE) {
     glDeleteShader(shader);
-    detail::setLastError("glyph shader compile failed");
+    detail::setLastError(label);
     return 0;
   }
   return shader;
@@ -151,11 +219,18 @@ class TextPass {
       detail::setLastError("generated fg token is not an rgba colour");
       return false;
     }
-    const GLuint vertexShader = compileGlyphShader(GL_VERTEX_SHADER, kGlyphVertexShader);
+    if (!detail::parseRgbaToken(tokens::faint, chromeBandColor_) ||
+        !detail::parseRgbaToken(tokens::border, chromeRuleColor_)) {
+      detail::setLastError("generated faint/border tokens are not rgba colours");
+      return false;
+    }
+    const GLuint vertexShader =
+        compileShader(GL_VERTEX_SHADER, kGlyphVertexShader, "glyph shader compile failed");
     if (vertexShader == 0) {
       return false;
     }
-    const GLuint fragmentShader = compileGlyphShader(GL_FRAGMENT_SHADER, kGlyphFragmentShader);
+    const GLuint fragmentShader = compileShader(GL_FRAGMENT_SHADER, kGlyphFragmentShader,
+                                                  "glyph shader compile failed");
     if (fragmentShader == 0) {
       glDeleteShader(vertexShader);
       return false;
@@ -190,6 +265,10 @@ class TextPass {
     GLint maxTextureSize = 0;
     glGetIntegerv(GL_MAX_TEXTURE_SIZE, &maxTextureSize);
     max_texture_size_ = maxTextureSize > 0 ? maxTextureSize : 0;
+
+    if (!buildChromeProgram() || !buildChromeBuffers()) {
+      return false;
+    }
 
     const GLfloat quad[8] = {0.0F, 0.0F, 1.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F};
     glGenBuffers(1, &quad_buffer_);
@@ -309,45 +388,120 @@ class TextPass {
     return 1;
   }
 
+  int bindObject(int index, const unsigned int* title, int titleCount,
+                 const unsigned int* preview, int previewCount) {
+    if (!created_) {
+      detail::setLastError("engine_create must be called before engine_text_bind_object");
+      return 0;
+    }
+    if (index < 0 || titleCount < 0 || previewCount < 0) {
+      detail::setLastError("object index and code point counts must not be negative");
+      return 0;
+    }
+    const detail::FrameView view = detail::frameView();
+    if (!view.created || view.document == nullptr) {
+      detail::setLastError("engine_create must be called before engine_text_bind_object");
+      return 0;
+    }
+    if (static_cast<std::size_t>(index) >= view.document->slotCount() ||
+        !view.document->isLive(static_cast<std::uint32_t>(index))) {
+      detail::setLastError("object index is out of range or removed");
+      return 0;
+    }
+    static_assert(sizeof(unsigned int) == sizeof(std::uint32_t), "code points are 32-bit");
+    const Status status = bindings_.set(
+        *view.document, static_cast<std::uint32_t>(index),
+        reinterpret_cast<const std::uint32_t*>(title), static_cast<std::uint32_t>(titleCount),
+        reinterpret_cast<const std::uint32_t*>(preview), static_cast<std::uint32_t>(previewCount));
+    if (!status) {
+      detail::setLastError(status.reason);
+      return 0;
+    }
+    // A new binding invalidates the cached visible binding set.
+    bindingsGeneration_ += 1;
+    return 1;
+  }
+
+  int clearBindings() {
+    if (!created_) {
+      detail::setLastError("engine_create must be called before engine_text_clear_bindings");
+      return 0;
+    }
+    bindings_.clear();
+    bindingsGeneration_ += 1;
+    return 1;
+  }
+
+  int requiredHeight(int index, double* out) {
+    if (!created_) {
+      detail::setLastError("engine_create must be called before engine_text_required_height");
+      return 0;
+    }
+    if (out == nullptr) {
+      detail::setLastError("required height needs an output pointer");
+      return 0;
+    }
+    const detail::FrameView view = detail::frameView();
+    if (!view.created || view.document == nullptr) {
+      detail::setLastError("engine_create must be called before engine_text_required_height");
+      return 0;
+    }
+    if (index < 0 || static_cast<std::size_t>(index) >= view.document->slotCount() ||
+        !view.document->isLive(static_cast<std::uint32_t>(index))) {
+      detail::setLastError("object index is out of range or removed");
+      return 0;
+    }
+    const Rectangle& rectangle =
+        view.document->rectangles()[static_cast<std::uint32_t>(index)];
+    const ObjectText* text = bindings_.find(rectangle.id);
+    const std::uint32_t* preview = text == nullptr ? nullptr : text->preview.data();
+    const auto previewCount =
+        text == nullptr ? 0U : static_cast<std::uint32_t>(text->preview.size());
+    double height = 0.0;
+    const Status status = textRequiredHeight(atlas_, rectangle, preview, previewCount, height);
+    if (!status) {
+      detail::setLastError(status.reason);
+      return 0;
+    }
+    *out = height;
+    return 1;
+  }
+
   int visibleGlyphCount() {
     if (!buildGlyphs()) {
       return -1;
     }
-    return static_cast<int>(glyphs_.size());
+    int total = static_cast<int>(glyphs_.size());
+    const detail::FrameView view = detail::frameView();
+    if (!syncBindings(view) || !buildBoundGlyphs(view)) {
+      return -1;
+    }
+    total += static_cast<int>(boundGlyphs_.size());
+    return total;
   }
 
   bool draw() {
-    // No runs: nothing is built, bound or uploaded, so a text-free frame keeps
-    // the measured cost of the object pass alone.
-    if (runs_.runs().empty() || !atlas_.ready()) {
-      return true;
-    }
-    if (!buildGlyphs()) {
-      return false;
-    }
-    if (glyphs_.empty()) {
+    // No runs and no bindings: nothing is built, bound or uploaded, so a
+    // text-free frame keeps the measured cost of the object pass alone.
+    if (!atlas_.ready() || (runs_.runs().empty() && bindings_.empty())) {
       return true;
     }
     const detail::FrameView view = detail::frameView();
-    const GLfloat uniforms[8] = {static_cast<GLfloat>(view.cssWidth),
-                                 static_cast<GLfloat>(view.cssHeight),
-                                 0.0F,
-                                 0.0F,
-                                 tint_[0],
-                                 tint_[1],
-                                 tint_[2],
-                                 tint_[3]};
+    if (runs_.runs().empty()) {
+      glyphs_.clear();
+    } else if (!buildGlyphs()) {
+      return false;
+    }
+    if (!syncBindings(view) || !buildBoundGlyphs(view)) {
+      return false;
+    }
+    if (glyphs_.empty() && boundGlyphs_.empty() && chromeGpu_.empty()) {
+      return true;
+    }
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glUseProgram(program_);
-    glUniform4fv(glyph_uniform_, 2, uniforms);
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, texture_);
-    glBindVertexArray(vertex_array_);
-    glBindBuffer(GL_ARRAY_BUFFER, instance_buffer_);
-    glBufferSubData(GL_ARRAY_BUFFER, 0, static_cast<GLsizeiptr>(glyphs_.byteSize()),
-                    glyphs_.bytes());
-    glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, static_cast<GLsizei>(glyphs_.size()));
+    drawChrome(view);
+    drawGlyphBuffers(view);
     glDisable(GL_BLEND);
     return true;
   }
@@ -373,9 +527,212 @@ class TextPass {
     return true;
   }
 
+  // Rebuilds the visible binding runs only when the document, the camera, the
+  // viewport or the binding set changed, so a still frame costs nothing and a
+  // pan/zoom rebinds exactly once per change.
+  bool syncBindings(const detail::FrameView& view) {
+    if (bindings_.empty()) {
+      boundRuns_.clear();
+      boundGlyphs_.clear();
+      chrome_.clear();
+      chromeGpu_.clear();
+      bindingSyncValid_ = false;
+      return true;
+    }
+    if (view.document == nullptr || view.spatial == nullptr || view.camera == nullptr ||
+        view.cssWidth <= 0 || view.cssHeight <= 0) {
+      detail::setLastError("engine_resize must be called before binding text");
+      return false;
+    }
+    const BindingSyncKey key{view.document->instanceId(),
+                             view.document->version(),
+                             view.camera->panX(),
+                             view.camera->panY(),
+                             view.camera->zoom(),
+                             view.cssWidth,
+                             view.cssHeight,
+                             bindingsGeneration_};
+    if (bindingSyncValid_ && sameKey(key, bindingSyncKey_)) {
+      return true;
+    }
+    const Status status = bindings_.bindVisible(
+        *view.document, *view.camera, *view.spatial, static_cast<double>(view.cssWidth),
+        static_cast<double>(view.cssHeight), boundRuns_, chrome_);
+    if (!status) {
+      detail::setLastError(status.reason);
+      return false;
+    }
+    bindingSyncKey_ = key;
+    bindingSyncValid_ = true;
+    buildChromeInstances();
+    return true;
+  }
+
+  bool buildBoundGlyphs(const detail::FrameView& view) {
+    if (boundRuns_.runs().empty() || !atlas_.ready()) {
+      boundGlyphs_.clear();
+      return true;
+    }
+    if (view.camera == nullptr) {
+      detail::setLastError("engine_create must be called before drawing text");
+      return false;
+    }
+    const Status status =
+        boundGlyphs_.build(boundRuns_, atlas_, *view.camera, static_cast<double>(view.cssWidth),
+                           static_cast<double>(view.cssHeight));
+    if (!status) {
+      detail::setLastError(status.reason);
+      return false;
+    }
+    return true;
+  }
+
+  // Chrome is resolved from tokens.h once and kept as GPU instances; the binding
+  // sync already produced the screen-space quads, so a frame only uploads them.
+  void buildChromeInstances() {
+    chromeGpu_.clear();
+    for (const ChromeInstance& instance : chrome_) {
+      if (chromeGpu_.size() >= kMaxChromeInstances) {
+        break;
+      }
+      const float* color =
+          instance.kind == kChromeHeaderRule ? chromeRuleColor_ : chromeBandColor_;
+      ChromeGpuInstance gpu;
+      gpu.x = instance.x;
+      gpu.y = instance.y;
+      gpu.width = instance.width;
+      gpu.height = instance.height;
+      gpu.red = color[0];
+      gpu.green = color[1];
+      gpu.blue = color[2];
+      gpu.alpha = color[3];
+      chromeGpu_.push_back(gpu);
+    }
+  }
+
+  void drawChrome(const detail::FrameView& view) {
+    if (chromeGpu_.empty()) {
+      return;
+    }
+    glUseProgram(chrome_program_);
+    glUniform2f(chrome_resolution_uniform_, static_cast<GLfloat>(view.cssWidth),
+                static_cast<GLfloat>(view.cssHeight));
+    glBindVertexArray(chrome_vertex_array_);
+    glBindBuffer(GL_ARRAY_BUFFER, chrome_instance_buffer_);
+    glBufferSubData(GL_ARRAY_BUFFER, 0,
+                    static_cast<GLsizeiptr>(chromeGpu_.size() * sizeof(ChromeGpuInstance)),
+                    chromeGpu_.data());
+    glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, static_cast<GLsizei>(chromeGpu_.size()));
+  }
+
+  void drawGlyphBuffers(const detail::FrameView& view) {
+    if (glyphs_.empty() && boundGlyphs_.empty()) {
+      return;
+    }
+    const GLfloat uniforms[8] = {static_cast<GLfloat>(view.cssWidth),
+                                 static_cast<GLfloat>(view.cssHeight),
+                                 0.0F,
+                                 0.0F,
+                                 tint_[0],
+                                 tint_[1],
+                                 tint_[2],
+                                 tint_[3]};
+    glUseProgram(program_);
+    glUniform4fv(glyph_uniform_, 2, uniforms);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, texture_);
+    glBindVertexArray(vertex_array_);
+    glBindBuffer(GL_ARRAY_BUFFER, instance_buffer_);
+    drawGlyphBuffer(glyphs_);
+    drawGlyphBuffer(boundGlyphs_);
+  }
+
+  void drawGlyphBuffer(const GlyphBuffer& buffer) {
+    if (buffer.empty()) {
+      return;
+    }
+    glBufferSubData(GL_ARRAY_BUFFER, 0, static_cast<GLsizeiptr>(buffer.byteSize()),
+                    buffer.bytes());
+    glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, static_cast<GLsizei>(buffer.size()));
+  }
+
+  bool buildChromeProgram() {
+    const GLuint vertexShader =
+        compileShader(GL_VERTEX_SHADER, kChromeVertexShader, "chrome shader compile failed");
+    if (vertexShader == 0) {
+      return false;
+    }
+    const GLuint fragmentShader =
+        compileShader(GL_FRAGMENT_SHADER, kChromeFragmentShader, "chrome shader compile failed");
+    if (fragmentShader == 0) {
+      glDeleteShader(vertexShader);
+      return false;
+    }
+    chrome_program_ = glCreateProgram();
+    glAttachShader(chrome_program_, vertexShader);
+    glAttachShader(chrome_program_, fragmentShader);
+    glLinkProgram(chrome_program_);
+    glDeleteShader(vertexShader);
+    glDeleteShader(fragmentShader);
+    GLint linked = 0;
+    glGetProgramiv(chrome_program_, GL_LINK_STATUS, &linked);
+    if (linked == GL_FALSE) {
+      GLsizei length = 0;
+      char log[1024] = {};
+      glGetProgramInfoLog(chrome_program_, static_cast<GLsizei>(sizeof(log)), &length, log);
+      const std::string reason = std::string("chrome shader link failed: ") + log;
+      detail::setLastError(reason.c_str());
+      return false;
+    }
+    chrome_resolution_uniform_ = glGetUniformLocation(chrome_program_, "u_resolution");
+    if (chrome_resolution_uniform_ < 0) {
+      detail::setLastError("chrome shader uniform was not found");
+      return false;
+    }
+    return true;
+  }
+
+  bool buildChromeBuffers() {
+    const GLfloat quad[8] = {0.0F, 0.0F, 1.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F};
+    glGenBuffers(1, &chrome_quad_buffer_);
+    glBindBuffer(GL_ARRAY_BUFFER, chrome_quad_buffer_);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(quad), quad, GL_STATIC_DRAW);
+    glGenBuffers(1, &chrome_instance_buffer_);
+    glBindBuffer(GL_ARRAY_BUFFER, chrome_instance_buffer_);
+    glBufferData(GL_ARRAY_BUFFER,
+                 static_cast<GLsizeiptr>(kMaxChromeInstances * sizeof(ChromeGpuInstance)),
+                 nullptr, GL_DYNAMIC_DRAW);
+    glGenVertexArrays(1, &chrome_vertex_array_);
+    glBindVertexArray(chrome_vertex_array_);
+    glBindBuffer(GL_ARRAY_BUFFER, chrome_quad_buffer_);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, nullptr);
+    glBindBuffer(GL_ARRAY_BUFFER, chrome_instance_buffer_);
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE,
+                          static_cast<GLsizei>(sizeof(ChromeGpuInstance)),
+                          reinterpret_cast<const void*>(offsetof(ChromeGpuInstance, x)));
+    glVertexAttribDivisor(1, 1);
+    glEnableVertexAttribArray(2);
+    glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE,
+                          static_cast<GLsizei>(sizeof(ChromeGpuInstance)),
+                          reinterpret_cast<const void*>(offsetof(ChromeGpuInstance, red)));
+    glVertexAttribDivisor(2, 1);
+    glBindVertexArray(0);
+    return true;
+  }
+
   GlyphAtlas atlas_;
   TextRuns runs_;
   GlyphBuffer glyphs_;
+  TextBindings bindings_;
+  TextRuns boundRuns_;
+  GlyphBuffer boundGlyphs_;
+  std::vector<ChromeInstance> chrome_;
+  std::vector<ChromeGpuInstance> chromeGpu_;
+  BindingSyncKey bindingSyncKey_{};
+  bool bindingSyncValid_{false};
+  std::uint64_t bindingsGeneration_{0};
   GLuint program_{0};
   GLuint vertex_array_{0};
   GLuint quad_buffer_{0};
@@ -384,6 +741,13 @@ class TextPass {
   GLint glyph_uniform_{-1};
   int max_texture_size_{0};
   float tint_[4] = {};
+  GLuint chrome_program_{0};
+  GLuint chrome_vertex_array_{0};
+  GLuint chrome_quad_buffer_{0};
+  GLuint chrome_instance_buffer_{0};
+  GLint chrome_resolution_uniform_{-1};
+  float chromeBandColor_[4] = {};
+  float chromeRuleColor_[4] = {};
   bool created_{false};
 };
 
@@ -423,6 +787,21 @@ AIR_ENGINE_RENDER_GL_API int engine_text_add_box_run(double x, double y, int rol
 }
 
 AIR_ENGINE_RENDER_GL_API int engine_text_clear_runs() { return air::engine::g_text.clearRuns(); }
+
+AIR_ENGINE_RENDER_GL_API int engine_text_bind_object(int index, const unsigned int* title,
+                                                     int title_count,
+                                                     const unsigned int* preview,
+                                                     int preview_count) {
+  return air::engine::g_text.bindObject(index, title, title_count, preview, preview_count);
+}
+
+AIR_ENGINE_RENDER_GL_API int engine_text_clear_bindings() {
+  return air::engine::g_text.clearBindings();
+}
+
+AIR_ENGINE_RENDER_GL_API int engine_text_required_height(int index, double* out) {
+  return air::engine::g_text.requiredHeight(index, out);
+}
 
 AIR_ENGINE_RENDER_GL_API int engine_visible_glyph_count() {
   return air::engine::g_text.visibleGlyphCount();
@@ -473,6 +852,26 @@ AIR_ENGINE_RENDER_GL_API int engine_text_add_box_run(double x, double y, int rol
 }
 
 AIR_ENGINE_RENDER_GL_API int engine_text_clear_runs() { return 0; }
+
+AIR_ENGINE_RENDER_GL_API int engine_text_bind_object(int index, const unsigned int* title,
+                                                     int title_count,
+                                                     const unsigned int* preview,
+                                                     int preview_count) {
+  (void)index;
+  (void)title;
+  (void)title_count;
+  (void)preview;
+  (void)preview_count;
+  return 0;
+}
+
+AIR_ENGINE_RENDER_GL_API int engine_text_clear_bindings() { return 0; }
+
+AIR_ENGINE_RENDER_GL_API int engine_text_required_height(int index, double* out) {
+  (void)index;
+  (void)out;
+  return 0;
+}
 
 AIR_ENGINE_RENDER_GL_API int engine_visible_glyph_count() { return -1; }
 

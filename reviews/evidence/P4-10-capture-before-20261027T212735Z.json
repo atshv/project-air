@@ -1,0 +1,233 @@
+{
+  "task": "P4-10",
+  "mode": "before",
+  "startedAt": "2026-10-27T21:27:28.593Z",
+  "chrome": "/Users/rasulatashev/Library/Caches/ms-playwright/chromium-1248/chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing",
+  "flags": [
+    "--headless=new",
+    "--use-angle=metal",
+    "--enable-gpu",
+    "--hide-scrollbars",
+    "--disable-frame-rate-limit",
+    "--disable-gpu-vsync",
+    "--no-first-run",
+    "--no-default-browser-check",
+    "--disable-background-timer-throttling",
+    "--disable-renderer-backgrounding",
+    "--disable-backgrounding-occluded-windows",
+    "--window-size=1440,900",
+    "--no-sandbox"
+  ],
+  "viewports": {
+    "desktop": {
+      "name": "desktop",
+      "width": 1440,
+      "height": 900,
+      "mobile": false
+    },
+    "mobile": {
+      "name": "mobile",
+      "width": 390,
+      "height": 844,
+      "mobile": true
+    }
+  },
+  "shots": [
+    {
+      "mode": "before",
+      "file": "reviews/evidence/P4-10-before-titles-desktop.png",
+      "url": "http://127.0.0.1:4160/apps/engine-playground/?scene=layers&store=off&view=512,288,1",
+      "viewport": {
+        "name": "desktop",
+        "width": 1440,
+        "height": 900
+      },
+      "note": "P4-09 playground: the layers board without bound titles, headers or previews",
+      "ready": {
+        "ok": true,
+        "scene": "layers",
+        "counts": {
+          "zones": 2,
+          "blocks": 2,
+          "cards": 4,
+          "total": 8
+        },
+        "objectCount": 8,
+        "visibleCount": 8
+      },
+      "camera": {
+        "panX": -13,
+        "panY": -7.5,
+        "zoom": 1
+      },
+      "textAtlas": null,
+      "textBindings": null,
+      "pageError": "",
+      "hover": null,
+      "tabPressed": false,
+      "affordance": {
+        "deleteControls": 0,
+        "visibleControls": 0,
+        "minOpacity": null,
+        "iconCharacters": [],
+        "iconSvgs": 0,
+        "activeElement": {
+          "tag": "body",
+          "label": null
+        }
+      },
+      "sha256": "a7bee3496e6fbe4cca0de6323cbd5287b7f72583c204d228f4b3f58e6e96b2fc"
+    },
+    {
+      "mode": "before",
+      "file": "reviews/evidence/P4-10-before-titles-zoom200-desktop.png",
+      "url": "http://127.0.0.1:4160/apps/engine-playground/?scene=layers&store=off&view=512,288,2",
+      "viewport": {
+        "name": "desktop",
+        "width": 1440,
+        "height": 900
+      },
+      "note": "P4-09 playground at 200 %: no title text, no 40 px header, no zone inset",
+      "ready": {
+        "ok": true,
+        "scene": "layers",
+        "counts": {
+          "zones": 2,
+          "blocks": 2,
+          "cards": 4,
+          "total": 8
+        },
+        "objectCount": 8,
+        "visibleCount": 8
+      },
+      "camera": {
+        "panX": 249.5,
+        "panY": 140.25,
+        "zoom": 2
+      },
+      "textAtlas": null,
+      "textBindings": null,
+      "pageError": "",
+      "hover": null,
+      "tabPressed": false,
+      "affordance": {
+        "deleteControls": 0,
+        "visibleControls": 0,
+        "minOpacity": null,
+        "iconCharacters": [],
+        "iconSvgs": 0,
+        "activeElement": {
+          "tag": "body",
+          "label": null
+        }
+      },
+      "sha256": "7506dd57d54dc27c86d926af33119821b6f9fef58798b701bb14edaa9c903860"
+    },
+    {
+      "mode": "before",
+      "file": "reviews/evidence/P4-10-before-floating-text-desktop.png",
+      "url": "http://127.0.0.1:4160/apps/engine-playground/?scene=stress&count=0&text=layout&view=272,112,1",
+      "viewport": {
+        "name": "desktop",
+        "width": 1440,
+        "height": 900
+      },
+      "note": "P4-09 `?text=layout`: text floats at world coordinates, not bound to an object",
+      "ready": {
+        "ok": true,
+        "scene": "stress",
+        "counts": {
+          "zones": 0,
+          "blocks": 0,
+          "cards": 0,
+          "total": 0
+        },
+        "objectCount": 0,
+        "visibleCount": 0
+      },
+      "camera": {
+        "panX": -253,
+        "panY": -183.5,
+        "zoom": 1
+      },
+      "textAtlas": {
+        "width": 512,
+        "height": 512,
+        "rasterScale": 1,
+        "glyphCount": 404,
+        "maxTextureSize": 16384
+      },
+      "textBindings": null,
+      "pageError": "",
+      "hover": null,
+      "tabPressed": false,
+      "affordance": {
+        "deleteControls": 0,
+        "visibleControls": 0,
+        "minOpacity": null,
+        "iconCharacters": [],
+        "iconSvgs": 0,
+        "activeElement": {
+          "tag": "body",
+          "label": null
+        }
+      },
+      "sha256": "f9e34c0963db8b335cdb54c85655f37d3b3f22fc4a820f6bd57ac0ba44166810"
+    },
+    {
+      "mode": "before",
+      "file": "reviews/evidence/P4-10-before-delete-hover-desktop.png",
+      "url": "http://127.0.0.1:4160/apps/engine-playground/?scene=layers&store=off&view=512,288,1",
+      "viewport": {
+        "name": "desktop",
+        "width": 1440,
+        "height": 900
+      },
+      "note": "P4-09 playground hovered over card-0002: no delete affordance exists",
+      "ready": {
+        "ok": true,
+        "scene": "layers",
+        "counts": {
+          "zones": 2,
+          "blocks": 2,
+          "cards": 4,
+          "total": 8
+        },
+        "objectCount": 8,
+        "visibleCount": 8
+      },
+      "camera": {
+        "panX": -13,
+        "panY": -7.5,
+        "zoom": 1
+      },
+      "textAtlas": null,
+      "textBindings": null,
+      "pageError": "",
+      "hover": {
+        "world": {
+          "x": 400,
+          "y": 288
+        },
+        "screen": {
+          "x": 608,
+          "y": 391.296875
+        }
+      },
+      "tabPressed": false,
+      "affordance": {
+        "deleteControls": 0,
+        "visibleControls": 0,
+        "minOpacity": null,
+        "iconCharacters": [],
+        "iconSvgs": 0,
+        "activeElement": {
+          "tag": "body",
+          "label": null
+        }
+      },
+      "sha256": "a7bee3496e6fbe4cca0de6323cbd5287b7f72583c204d228f4b3f58e6e96b2fc"
+    }
+  ],
+  "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M2, Unspecified Version)"
+}

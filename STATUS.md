@@ -121,6 +121,14 @@
 
 ## Ready now
 
+- `P4-11` WebGPU render pipeline behind the command buffer
+  - P4-06: Closed P4-06: draw order layer > fractional z (byte-wise) > insertion; bring-to-front is one contract reorder via the seam (keyAfter, inverse = old key); reload keeps order.
+  - P4-06: Port: kindOf/zIndices, adapter toneOf + objectAt; logic browser build dist/logic (tsconfig.logic.json); test-kit layers scene; playground ?scene=layers click-to-front, localStorage.
+  - P4-06: Gates board-check/boundaries/cpp-unit/visual (14 captures, +4 layers refs)/typecheck; native layerOrderAndFront, 9 Node + 3 test-kit tests; docs engine.md, visual-diff.md.
+- `P4-14` Dragging versus editing (L03)
+  - P4-05: Closed P4-05: engine TS logic layer (gestures, operations, port, history); one gesture = one contract operation with inverse, group drag = one group operation; 31 tests validate.
+  - P4-05: Undo/redo depth 20 with redo-clear and describe() labels; fake + bridge adapter byte-identical round trips; create builders validate geometry, port read is isolated, adapter projects z.
+  - P4-05: Two review rounds, four minors fixed. The z-order gesture awaits the contract 0.2.0 reorder operation (P4-25); the moveZone description is corrected there.
 - `P4-19` Placement of new objects (L20)
   - P4-05: Closed P4-05: engine TS logic layer (gestures, operations, port, history); one gesture = one contract operation with inverse, group drag = one group operation; 31 tests validate.
   - P4-05: Undo/redo depth 20 with redo-clear and describe() labels; fake + bridge adapter byte-identical round trips; create builders validate geometry, port read is isolated, adapter projects z.
@@ -185,6 +193,7 @@
 - [x] `P4-07` Canvas feel: fit, dot grid and idle drawing (L19) — status: `done` — owner: —
 - [x] `P4-08` Text atlas and glyph texture pipeline (L02) — status: `done` — owner: —
 - [x] `P4-09` Glyph layout, text instances and ellipsis (L02) — status: `done` — owner: —
+- [x] `P4-10` Titles, previews and visible quality (L02) — status: `done` — owner: —
 - [x] `P4-25` Contract 0.2.0: zone parent reference and reorder (z) operation (L08/L13) — status: `done` — owner: —
 - [x] `P4-26` Zones as containers II: platform migration and containment (L08) — status: `done` — owner: —
 - [x] `P0-26` Toolbar and zone with notepad and image window in the preview — status: `done` — owner: —
@@ -197,7 +206,7 @@
 
 ## In progress
 
-- [ ] `P4-10` Titles, previews and visible quality (L02) — status: `in_progress` — owner: lead
+- none
 
 ## Blocked / failed
 
@@ -231,7 +240,7 @@
 <!-- polier:claims -->
 ## Claims
 
-- `P4-10` in progress by dsh since 2026-10-27T21:16:36+00:00 — worktree: /private/tmp/air-P4-10 · slot 1
+- `P4-10` in progress by dsh since 2026-10-27T21:41:26+00:00 — worktree: /private/tmp/air-P4-10 · slot 1
 
 <!-- /polier:claims -->
 

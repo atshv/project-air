@@ -19,12 +19,14 @@ the harness and this catalogue in the same task.
 | --- | --- |
 | Viewports | `desktop` 1440x900 and `mobile` 390x844, device pixel ratio 1 |
 | Viewport emulation | DevTools protocol `Emulation.setDeviceMetricsOverride`; the decoded screenshot size and `window.innerWidth/innerHeight` are asserted against the viewport, never trusted |
-| Scenes | `sample-at-rest`, `sample-zoom-in`, `sample-zoom-out`, `engine-core-at-rest`, `one-card-fit`, `layers-at-rest`, `layers-front`, `text-layout` |
+| Scenes | `sample-at-rest`, `sample-zoom-in`, `sample-zoom-out`, `engine-core-at-rest`, `one-card-fit`, `layers-at-rest`, `layers-front`, `text-layout`, `text-titles`, `text-titles-zoom-200` |
 | `sample` document | `buildSampleScene()` from `packages/test-kit`: 500 cards, 50 zones, 144 blocks = 694 objects, world 9600x5408 px |
 | `engine-core` document | `buildEngineCoreScene()` from `packages/test-kit`: 9,200 cards, 200 zones, 600 blocks = 10,000 objects, world 19,200x10,816 px |
 | `one-card-fit` document | `buildStressScene(1)` from `packages/test-kit`: one card, world 64x22 px; the scene runs the L19 fit action before the capture (P4-07) |
 | `layers` document | `buildLayersScene()` from `packages/test-kit`: 2 zones, 2 blocks, 4 cards, world 1024x576 px, loaded as contract objects with `?store=off`; `layers-front` adds `&front=card-0001` (one `reorder` through the seam, P4-06) |
-| `text-layout` document | `buildStressScene(0)` (empty world) plus the playground's `?text=layout` runs (P4-09): world (272, 112) at zoom 1 — the atlas raster scale; zoom re-rasterisation arrives with P4-10 |
+| `text-layout` document | `buildStressScene(0)` (empty world) plus the playground's `?text=layout` runs (P4-09): world (272, 112) at zoom 1 — the atlas raster scale; the P4-10 zoom buckets keep this reference byte-identical at 100 % |
+| `text-titles` document | the playground's page-owned titles gallery (`?text=titles`, P4-10): 2 zones, 2 blocks, 4 cards, world 1024x576 px, no test-kit scene; world (512, 288) at zoom 1 — the 100 % atlas raster scale and the committed text reference |
+| `text-titles-zoom-200` document | the same gallery at world (512, 240) at zoom 2: the zoom bucket re-rasterises the atlas at raster scale 2 for the 200 % capture (the pixel-crispness proof) |
 | Camera anchor | the centre of the sample board's `zone-0001`, world (648, 664) |
 | `sample-zoom-in` camera | anchor at zoom 0.5, the L19 dot-grid boundary (grid visible at and above 0.5) |
 | `sample-zoom-out` camera | anchor at the engine camera minimum zoom 0.1 |
@@ -51,6 +53,8 @@ the harness and this catalogue in the same task.
 | `layers-at-rest` (P4-06) | `layers-at-rest-desktop-webgl2.png` | `layers-at-rest-mobile-webgl2.png` |
 | `layers-front` (P4-06) | `layers-front-desktop-webgl2.png` | `layers-front-mobile-webgl2.png` |
 | `text-layout` (P4-09) | `text-layout-desktop-webgl2.png` | `text-layout-mobile-webgl2.png` |
+| `text-titles` (P4-10) | `text-titles-desktop-webgl2.png` | `text-titles-mobile-webgl2.png` |
+| `text-titles-zoom-200` (P4-10) | `text-titles-zoom-200-desktop-webgl2.png` | `text-titles-zoom-200-mobile-webgl2.png` |
 
 P4-07 re-ran the two `sample-zoom-in` captures through the documented `--update` review path because
 the L19 dot grid is visible at the 0.5 boundary (canvas catalogue L19, "hides below zoom 0.5"). Only
@@ -58,7 +62,9 @@ the **desktop** image changed; the mobile 0.5 view is fully covered by board con
 behind the opaque cards and zones adds no visible pixel and that image is byte-identical. Every other
 P4-04 image is unchanged, and the two `one-card-fit` images are a reviewed addition. P4-06 adds the
 four `layers-*` images as a reviewed addition (L13 order and the front state); no existing image
-changed.
+changed. P4-09 adds the two `text-layout` images as a reviewed addition. P4-10 adds the four
+`text-titles*` images (the titles gallery at 100 % and 200 %, L02) as a reviewed addition through
+`--update`; every pre-existing image stayed 0-diff in the same task's gate run.
 
 ## `visual` — engine-core stage gate (P4-04)
 
@@ -70,12 +76,13 @@ before it fails. The harness starts and stops its own static server and browser 
 `ports.playground` from `.polier-slot`, copies the built playground, bridge, test-kit bundle and WASM
 into a temporary folder, and removes that folder.
 
-- **States:** the five named scenes above, each served with `?scene=sample`, `?scene=engine-core` or
-  `?scene=stress&count=1` and, for the zoom states, the deterministic
-  `?view=<worldX>,<worldY>,<zoom>` camera hook. The `one-card-fit` scene runs the playground's L19 fit
-  action after the ready hook and asserts that the fit rendered a frame. Each scene waits for the
-  engine's ready hook, pauses the scheduler, hides the volatile rendered-frame HUD item and captures
-  the canvas plus the playground chrome.
+- **States:** the ten named scenes above, each served with `?scene=sample`, `?scene=engine-core` or
+  `?scene=stress&count=1`, the P4-09/P4-10 text scenes with `?text=layout`/`?text=titles` and, for the
+  zoom states, the deterministic `?view=<worldX>,<worldY>,<zoom>` camera hook. The `one-card-fit`
+  scene runs the playground's L19 fit action after the ready hook and asserts that the fit rendered a
+  frame; the page-owned `text-titles` scene declares its expected counts and world explicitly (it is
+  not built by the test-kit). Each scene waits for the engine's ready hook, pauses the scheduler,
+  hides the volatile rendered-frame HUD item and captures the canvas plus the playground chrome.
 - **Camera determinism:** the at-rest scenes use the page's initial camera. The zoom states use the
   documented read-only view hook, which only calls `setCamera`; the harness asserts the effective
   camera (zoom and pan) against the requested state, so a broken hook is a capture failure, not a
@@ -170,6 +177,16 @@ compares against, so an update needs a reviewer who saw both the old and the new
 
 ### Baseline history
 
+- **2026-10-27 — P4-10 L02 titles gallery: two scenes added as a reviewed addition.** The `visual`
+  gate gained the page-owned `text-titles` scene (2 zones, 2 blocks, 4 cards at world 1024x576,
+  captured at 100 %) and `text-titles-zoom-200` (the same gallery at 200 %, so the zoom bucket's
+  raster-scale-2 atlas is part of the reference set). The four images were written through the
+  documented `--update` review path and reviewed with P4-10; every pre-existing reference image was
+  0-diff in the same task's gate run, and the P4-09 `text-layout` images are byte-identical because
+  the 100 % bucket keeps raster scale 1 and the P4-10 binding adds no text to that scene. The
+  titles scene runs only with `?text=titles`, so no other scene, the benchmark or a perf document
+  carries text. The capture record stores `textAtlas.rasterScale` per capture (1 at 100 %, 2 at
+  200 %) next to the camera, so the bucket is evidenced by numbers and pixels.
 - **2026-10-27 — P4-07 L19 dot grid: the `sample-zoom-in` captures were re-run.** The canvas
   catalogue defines the grid as hidden below zoom 0.5, so the at-0.5 captures changed when the grid
   was added. The update went through the documented `--update` review path and was reviewed with

@@ -44,6 +44,46 @@ export interface TextAtlasRequest {
   readonly devicePixelRatio: number;
 }
 
+/**
+ * Zoom buckets of the runtime atlas (L02 sharp zoom, P4-10). The atlas is
+ * rasterised at the smallest power-of-two zoom level at or above the camera
+ * zoom, so text is sharp at the bucket and up to 2x supersampled between
+ * buckets; the camera clamp 0.1 ... 8 is mirrored by the first and last bucket.
+ */
+export const MIN_ATLAS_ZOOM_BUCKET = 0.25;
+export const MAX_ATLAS_ZOOM_BUCKET = 4;
+/**
+ * Highest raster scale of one atlas (`kMaxDevicePixelRatio` of text.h is 8, but a
+ * 4x atlas already covers the 200 % case at DPR 1 and 2 with bounded memory; a
+ * larger scale would only grow the texture quadratically).
+ */
+export const MAX_ATLAS_RASTER_SCALE = 4;
+
+/**
+ * Smallest power-of-two zoom bucket at or above `zoom`, clamped to the documented
+ * bucket range. The result is one of 0.25, 0.5, 1, 2 or 4, so a session rebuilds
+ * the atlas at most five times and never on a plain pan or at an unchanged zoom.
+ */
+export function atlasZoomBucket(zoom: number): number {
+  const safeZoom = Number.isFinite(zoom) && zoom > 0 ? zoom : 1;
+  const clamped = Math.min(
+    Math.max(safeZoom, MIN_ATLAS_ZOOM_BUCKET),
+    MAX_ATLAS_ZOOM_BUCKET,
+  );
+  return Math.min(MAX_ATLAS_ZOOM_BUCKET, Math.pow(2, Math.ceil(Math.log2(clamped))));
+}
+
+/**
+ * Raster scale of the atlas for a device pixel ratio and camera zoom: the bucket
+ * times the DPR, capped at {@link MAX_ATLAS_RASTER_SCALE}. Only this scale
+ * changes between zoom buckets; the P4-09 layout stays in CSS px and therefore
+ * identical, so a line never re-breaks when the atlas is re-rasterised.
+ */
+export function atlasRasterScale(devicePixelRatio: number, zoom: number): number {
+  const ratio = Number.isFinite(devicePixelRatio) && devicePixelRatio > 0 ? devicePixelRatio : 1;
+  return Math.min(MAX_ATLAS_RASTER_SCALE, atlasZoomBucket(zoom) * ratio);
+}
+
 /** The core calls the rasteriser needs; implemented by the WebGL bridge. */
 export interface TextAtlasPort {
   style(role: number): TextRoleStyle;

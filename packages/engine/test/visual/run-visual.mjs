@@ -193,6 +193,32 @@ const SCENE_DEFINITIONS = [
     extra: { text: "layout" },
     camera: "world (272, 112) at zoom 1 (the atlas raster scale; zoom re-rasterisation is P4-10)",
   },
+  {
+    // L02 (P4-10): the playground's deterministic titles gallery (2 zones, 2
+    // blocks, 4 cards). Zone names and card titles are ellipsis runs at 15 px/600,
+    // block previews wrap and clip, the block grows to its preview height, the
+    // zone content starts at the 40 + 16 px inset and the header chrome marks the
+    // 40 px band. Captured at 100 %, the atlas raster scale of zoom 1.
+    name: "text-titles",
+    scene: "titles",
+    view: { worldX: 512, worldY: 288, zoom: 1 },
+    extra: { text: "titles" },
+    expectedCounts: { zones: 2, blocks: 2, cards: 4, total: 8 },
+    expectedWorld: { width: 1024, height: 576 },
+    camera: "titles gallery centred at world (512, 288) at zoom 1 (100 %)",
+  },
+  {
+    // L02 (P4-10): the same gallery zoomed to 200 % — the zoom bucket re-rasterises
+    // the atlas at twice the CSS resolution, so text stays sharp instead of
+    // upscaling the 100 % atlas.
+    name: "text-titles-zoom-200",
+    scene: "titles",
+    view: { worldX: 512, worldY: 240, zoom: 2 },
+    extra: { text: "titles" },
+    expectedCounts: { zones: 2, blocks: 2, cards: 4, total: 8 },
+    expectedWorld: { width: 1024, height: 576 },
+    camera: "titles gallery header at world (512, 240) at zoom 2 (200 %, the sharp bucket)",
+  },
 ];
 
 const PAGE_TIMEOUT_MS = 30000;
@@ -1101,11 +1127,16 @@ function sceneDefinitions(testKit) {
     ["layers", testKit.buildLayersScene()],
   ]);
   return SCENE_DEFINITIONS.map((definition) => {
-    const scene =
-      definition.scene === "stress"
+    // A page-owned scene (the P4-10 titles gallery) is not built by the test-kit;
+    // it carries its expected counts and world explicitly, so the harness still
+    // asserts the document the page reports.
+    const pageOwned = definition.expectedCounts !== undefined;
+    const scene = pageOwned
+      ? null
+      : definition.scene === "stress"
         ? testKit.buildStressScene(definition.count)
         : byName.get(definition.scene);
-    if (scene === undefined) {
+    if (!pageOwned && scene === undefined) {
       fail(`unknown scene "${definition.scene}" in the visual scene list`);
     }
     const view =
@@ -1125,8 +1156,8 @@ function sceneDefinitions(testKit) {
       count,
       view,
       fitAction: definition.fitAction === true,
-      counts: { ...scene.metadata.counts },
-      world: { ...scene.metadata.world },
+      counts: { ...(definition.expectedCounts ?? scene.metadata.counts) },
+      world: { ...(definition.expectedWorld ?? scene.metadata.world) },
       camera: definition.camera,
       url: (baseUrl) => {
         const parameters = new URLSearchParams({ scene: definition.scene });

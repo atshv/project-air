@@ -8,6 +8,7 @@
 // reports (see text-atlas.ts) and uploaded to the core in one call.
 
 import {
+  atlasRasterScale,
   codePointsOf,
   defaultCodePoints,
   METRICS_STRIDE,
@@ -91,6 +92,14 @@ export interface EngineTextRun {
   readonly box?: EngineTextBox;
 }
 
+/** Presentation text of one object (L02/P4-10): a title and a short preview. */
+export interface EngineObjectText {
+  /** Single-line title; cut with an ellipsis at the token 15 px / 600 title role. */
+  readonly title?: string;
+  /** Short preview; wrapped inside the object and clipped to its own height. */
+  readonly preview?: string;
+}
+
 /** Result of `buildTextAtlas`: the uploaded atlas size and raster scale. */
 export interface EngineTextAtlas {
   readonly width: number;
@@ -155,7 +164,31 @@ export interface Engine {
    */
   addTextRun(run: EngineTextRun): void;
   clearTextRuns(): void;
-  /** Glyph quads the current runs, atlas, camera and viewport draw. */
+  /**
+   * Binds presentation text to the live object at slot `index` (L02/P4-10): the
+   * title is drawn in one line with an ellipsis at the token title typography and
+   * the preview is wrapped and clipped inside the object. The text stays
+   * presentation input — the engine document keeps no note content (AD-4) — and
+   * is keyed by the object's stable id, so a reload drops it. Only visible
+   * objects are laid out. Empty strings clear that object's text.
+   */
+  bindObjectText(index: number, text: EngineObjectText): void;
+  /** Drops every bound title and preview. */
+  clearObjectText(): void;
+  /**
+   * Height in world px the object needs so its bound preview is not clipped: the
+   * L02 header/inset chrome plus the laid-out preview plus the bottom padding. A
+   * block grows to this height instead of gaining an inner scrollbar. Requires a
+   * built atlas for a non-empty preview.
+   */
+  requiredTextHeight(index: number): number;
+  /**
+   * Atlas zoom bucket of the current camera (P4-10): the atlas re-rasterises only
+   * when `setCamera`/`resize` cross a bucket, so text stays sharp when zooming in
+   * with a bounded number of rebuilds.
+   */
+  atlasRasterScale(): number;
+  /** Glyph quads the current runs, bindings, atlas, camera and viewport draw. */
   visibleGlyphCount(): number;
   renderFrame(): void;
   lastError(): string;
@@ -293,7 +326,8 @@ class WebGlEngine implements Engine {
   readonly #module: EngineModule;
   #disposed = false;
   #devicePixelRatio = 1;
-  #atlasRatio: number | null = null;
+  #zoom = 1;
+  #atlasRasterScale: number | null = null;
 
   constructor(module: EngineModule, canvas: HTMLCanvasElement) {
     this.#module = module;
@@ -452,6 +486,15 @@ class WebGlEngine implements Engine {
       camera.panY,
       camera.zoom,
     ]);
+    this.#zoom = camera.zoom;
+    // L02 sharp zoom (P4-10): a zoom bucket change re-rasterises the atlas once;
+    // panning and a zoom inside the same bucket do not touch it.
+    if (this.#atlasRasterScale !== null) {
+      const rasterScale = atlasRasterScale(this.#devicePixelRatio, this.#zoom);
+      if (rasterScale !== this.#atlasRasterScale) {
+        this.buildTextAtlas();
+      }
+    }
   }
 
   resize(cssWidth: number, cssHeight: number, devicePixelRatio: number): void {
@@ -464,10 +507,14 @@ class WebGlEngine implements Engine {
       devicePixelRatio,
     ]);
     this.#devicePixelRatio = devicePixelRatio;
-    // ADR-0009: the atlas follows the device pixel ratio, so text stays crisp
-    // when a window moves to another display.
-    if (this.#atlasRatio !== null && this.#atlasRatio !== devicePixelRatio) {
-      this.buildTextAtlas();
+    // ADR-0009: the atlas follows the device pixel ratio; with the P4-10 zoom
+    // bucket it follows the bucket too, so text stays crisp when a window moves
+    // to another display or the camera crosses a bucket.
+    if (this.#atlasRasterScale !== null) {
+      const rasterScale = atlasRasterScale(this.#devicePixelRatio, this.#zoom);
+      if (rasterScale !== this.#atlasRasterScale) {
+        this.buildTextAtlas();
+      }
     }
   }
 
@@ -481,7 +528,10 @@ class WebGlEngine implements Engine {
       style: (role) => this.#textStyle(role),
       plan: (request) => this.#planAtlas(request, maxTextureSize),
     };
-    const atlas = rasterizeTextAtlas(port, defaultCodePoints(), this.#devicePixelRatio);
+    // L02 sharp zoom: the raster scale is the DPR times the current zoom bucket,
+    // so the 200 % view samples a 2x atlas instead of the blurry 1x one.
+    const rasterScale = atlasRasterScale(this.#devicePixelRatio, this.#zoom);
+    const atlas = rasterizeTextAtlas(port, defaultCodePoints(), rasterScale);
     const module = this.#module;
     const pixelPointer = module._malloc(atlas.pixels.byteLength);
     const metricsPointer = module._malloc(atlas.metrics.byteLength);
@@ -512,7 +562,7 @@ class WebGlEngine implements Engine {
         module._free(metricsPointer);
       }
     }
-    this.#atlasRatio = this.#devicePixelRatio;
+    this.#atlasRasterScale = rasterScale;
     return {
       width: atlas.plan.width,
       height: atlas.plan.height,
@@ -569,6 +619,73 @@ class WebGlEngine implements Engine {
   clearTextRuns(): void {
     this.#assertUsable("clearTextRuns");
     this.#requireOk("engine_text_clear_runs", [], []);
+  }
+
+  bindObjectText(index: number, text: EngineObjectText): void {
+    this.#assertUsable("bindObjectText");
+    if (!Number.isInteger(index) || index < 0) {
+      throw new EngineError("bindObjectText needs a non-negative integer slot index");
+    }
+    const title = Uint32Array.from(codePointsOf(text.title ?? ""));
+    const preview = Uint32Array.from(codePointsOf(text.preview ?? ""));
+    const module = this.#module;
+    // One element is allocated per string so the pointer is never null; an empty
+    // string still crosses the ABI with count 0 and clears that object's text.
+    const titlePointer = module._malloc(Math.max(1, title.length) * Uint32Array.BYTES_PER_ELEMENT);
+    const previewPointer = module._malloc(
+      Math.max(1, preview.length) * Uint32Array.BYTES_PER_ELEMENT,
+    );
+    try {
+      if (titlePointer === 0 || previewPointer === 0) {
+        throw new EngineError("engine_text_bind_object: could not allocate the code points");
+      }
+      module.HEAPU32.set(title, titlePointer / Uint32Array.BYTES_PER_ELEMENT);
+      module.HEAPU32.set(preview, previewPointer / Uint32Array.BYTES_PER_ELEMENT);
+      this.#requireOk(
+        "engine_text_bind_object",
+        ["number", "number", "number", "number", "number"],
+        [index, titlePointer, title.length, previewPointer, preview.length],
+      );
+    } finally {
+      if (titlePointer !== 0) {
+        module._free(titlePointer);
+      }
+      if (previewPointer !== 0) {
+        module._free(previewPointer);
+      }
+    }
+  }
+
+  clearObjectText(): void {
+    this.#assertUsable("clearObjectText");
+    this.#requireOk("engine_text_clear_bindings", [], []);
+  }
+
+  requiredTextHeight(index: number): number {
+    this.#assertUsable("requiredTextHeight");
+    if (!Number.isInteger(index) || index < 0) {
+      throw new EngineError("requiredTextHeight needs a non-negative integer slot index");
+    }
+    const pointer = this.#module._malloc(Float64Array.BYTES_PER_ELEMENT);
+    if (pointer === 0) {
+      throw new EngineError("engine_text_required_height: could not allocate the result buffer");
+    }
+    try {
+      this.#requireOk("engine_text_required_height", ["number", "number"], [index, pointer]);
+      const offset = pointer / Float64Array.BYTES_PER_ELEMENT;
+      const height = this.#module.HEAPF64[offset];
+      if (height === undefined) {
+        throw new EngineError("engine_text_required_height: the result buffer was not readable");
+      }
+      return height;
+    } finally {
+      this.#module._free(pointer);
+    }
+  }
+
+  atlasRasterScale(): number {
+    this.#assertUsable("atlasRasterScale");
+    return atlasRasterScale(this.#devicePixelRatio, this.#zoom);
   }
 
   visibleGlyphCount(): number {

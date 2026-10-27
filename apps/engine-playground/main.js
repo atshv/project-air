@@ -35,6 +35,19 @@
 //                                  box and a wrapped preview clipped to three
 //                                  lines; combine with ?scene=stress&count=0
 //                                  &view=272,112,2 (the visual scene does).
+//   ?text=titles                   P4-10 titles/previews demo: the page-owned
+//                                  deterministic gallery (2 zones, 2 blocks,
+//                                  4 cards) with zone names, ellipsis card
+//                                  titles, wrapped/clipped block previews, the
+//                                  40 px header chrome, a block grown to its
+//                                  preview height and one quiet DOM delete
+//                                  affordance per object (28 px hit, 16 px icon,
+//                                  invisible at rest, visible on hover, focus and
+//                                  selection). Off by default, so the scenes,
+//                                  baselines and perf runs stay unchanged; the
+//                                  visual scenes are ?text=titles&view=512,288,1
+//                                  (100 %) and ?text=titles&view=512,240,2
+//                                  (200 %).
 //
 // Interaction: pointer drag pans, wheel or two-pointer pinch zooms around the
 // pointer, and `f` ("show all", L19) fits the board through the engine's fit
@@ -140,6 +153,8 @@ const verifyCullingRequested = perfRequested && query.get("verifyCulling") === "
 const textDemoRequested = query.get("text") === "1" && !benchmarkRequested && !perfRequested;
 const textLayoutRequested =
   query.get("text") === "layout" && !benchmarkRequested && !perfRequested;
+const titlesRequested =
+  query.get("text") === "titles" && !benchmarkRequested && !perfRequested;
 const requestedCount = clampInteger(parseInteger(benchQuery, COLUMNS * ROWS), 0, 1000000);
 const warmupFrames = clampInteger(parseInteger(query.get("warmup"), 120), 0, 10000);
 const sampleFrames = clampInteger(parseInteger(query.get("samples"), 600), 1, 10000);
@@ -163,6 +178,9 @@ let world = { width: 1, height: 1 };
 // (non-benchmark, non-perf) mode; the benchmark and perf loops stay continuous.
 let framesRendered = 0;
 let frameScheduled = false;
+// Set by the `?text=titles` scene: positions the DOM delete affordances next to
+// their objects after every rendered frame.
+let titlesOverlay = null;
 let pendingFrameHandle = 0;
 const onDemand = {
   active: false,
@@ -269,7 +287,358 @@ function createScene(count) {
   };
 }
 
+// L02 (P4-10) demo gallery of the `?text=titles` scene. The caller owns the
+// text: the engine document stores no note content and no operation carries it
+// (AD-4). The gallery is a deterministic demo board — no test-kit scene and no
+// board state — laid out on the 16 px grid so the L02 rules are visible without
+// overlapping content: 40 px zone/block headers with the title centred in them,
+// zone content inset 40 + 16 px, a growing block preview, one normal and one cut
+// title, one empty preview and the empty-preview edge case. Latin-1 letters
+// (äöüé) exercise the atlas. Every value is a token-derived world geometry; the
+// presentation text never changes the document; positions are on the 16 px grid
+// and every chrome dimension comes from the engine's token geometry.
+const GALLERY_WORLD = { width: 1024, height: 576 };
+
+/** Deterministic titles gallery of the `?text=titles` scene. */
+function buildTitlesGallery() {
+  const objects = [
+    {
+      id: "zone-0001",
+      kind: "zone",
+      x: 32,
+      y: 32,
+      width: 448,
+      height: 368,
+      tone: "tone-b",
+      layer: "zones",
+      title: "Sommer am Walensee",
+      preview: "",
+    },
+    {
+      id: "zone-0002",
+      kind: "zone",
+      x: 496,
+      y: 32,
+      width: 448,
+      height: 368,
+      tone: "tone-d",
+      layer: "zones",
+      title: "Wanderung an den Walensee mit \u00dcbernachtung im Berghaus am See",
+      preview: "",
+    },
+    {
+      id: "block-0001",
+      kind: "block",
+      x: 48,
+      y: 88,
+      width: 416,
+      height: 96,
+      tone: "neutral",
+      layer: "blocks",
+      title: "Packliste",
+      preview:
+        "Zelt, Schlafsack, Isomatte, Kocher, Wasser, Caf\u00e9, Tee und eine warme Jacke f\u00fcr die Nacht am See. Am Morgen Fr\u00fchst\u00fcck am Ufer, danach gemeinsam aufr\u00e4umen und die R\u00fcckfahrt planen.",
+    },
+    {
+      id: "block-0002",
+      kind: "block",
+      x: 512,
+      y: 88,
+      width: 416,
+      height: 96,
+      tone: "neutral",
+      layer: "blocks",
+      title: "Ablauf",
+      preview:
+        "Treffpunkt am Bahnhof um neun Uhr, danach gemeinsam zum Ufer. Picknick mitbringen und bei Regen ins Caf\u00e9 am Hafen.",
+    },
+    {
+      id: "card-0001",
+      kind: "card",
+      x: 48,
+      y: 256,
+      width: 200,
+      height: 112,
+      tone: "tone-a",
+      layer: "note-cards",
+      title: "Moodboard",
+      preview: "Fotos, Farben und Referenzen f\u00fcr die Reise.",
+    },
+    {
+      id: "card-0002",
+      kind: "card",
+      x: 264,
+      y: 256,
+      width: 200,
+      height: 112,
+      tone: "tone-c",
+      layer: "note-cards",
+      title: "Ausflug an den Walensee mit \u00dcbernachtung",
+      preview:
+        "Am Ufer entlang bis zur Br\u00fccke, dann zur\u00fcck \u00fcber den Hof. Bei Regen ins Caf\u00e9 am Hafen.",
+    },
+    {
+      id: "card-0003",
+      kind: "card",
+      x: 512,
+      y: 256,
+      width: 200,
+      height: 112,
+      tone: "tone-e",
+      layer: "note-cards",
+      title: "Caf\u00e9-Notizen f\u00fcr die Reise",
+      preview: "",
+    },
+    {
+      id: "card-0004",
+      kind: "card",
+      x: 728,
+      y: 256,
+      width: 200,
+      height: 112,
+      tone: "neutral",
+      layer: "note-cards",
+      title: "Ideen",
+      preview: "Kurz und gut.",
+    },
+  ];
+  const counts = { zones: 0, blocks: 0, cards: 0 };
+  for (const object of objects) {
+    if (object.kind === "zone") counts.zones += 1;
+    else if (object.kind === "block") counts.blocks += 1;
+    else counts.cards += 1;
+  }
+  return {
+    name: "titles",
+    objects,
+    world: GALLERY_WORLD,
+    counts: { ...counts, total: objects.length },
+    camera: { minimumZoom: MINIMUM_ZOOM, maximumZoom: MAXIMUM_ZOOM },
+  };
+}
+
+// The delete affordance is DOM chrome (ADR-0009), never a canvas glyph and never a
+// character: the icon is an inline SVG in the ui-kit icon style (24 grid, stroke
+// 1.6, currentColor, round caps). packages/ui-kit/icons has no delete entry yet;
+// adding one would change packages/ui-kit/tests/icons.test.mjs, which is outside
+// this task's write scope (board scope_write for P4-10).
+const DELETE_ICON = [
+  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"',
+  ' stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">',
+  '<path d="M5 7h14"/><path d="M9 7V4.5h6V7"/><path d="M6.5 7l1 12.5h9L17.5 7"/></svg>',
+].join("");
+
+// Reads a px design token from the generated CSS custom properties instead of
+// duplicating the value in code (AD-7, design rule §13).
+function readTokenPixels(names) {
+  const styles = getComputedStyle(document.documentElement);
+  const values = {};
+  for (const name of names) {
+    const raw = styles.getPropertyValue(`--${name}`).trim();
+    const value = Number.parseFloat(raw);
+    if (!Number.isFinite(value)) {
+      throw new Error(`engine-playground: token --${name} is missing or not a pixel value`);
+    }
+    values[name] = value;
+  }
+  return values;
+}
+
+/**
+ * Binds the gallery's presentation text through the engine's P4-10 binding (L02),
+ * grows the blocks to their preview height and installs one quiet DOM delete
+ * affordance per object in the overlay. Returns the overlay controller, or null
+ * when the page has no overlay element.
+ */
+function installTitles(engine, loaded) {
+  const overlay = document.querySelector("#overlay");
+  if (!(overlay instanceof HTMLElement)) {
+    return null;
+  }
+  state.textAtlas = engine.buildTextAtlas();
+  const tokens = readTokenPixels(["button-card", "space-8"]);
+  const objects = loaded.objects.map((object, slot) => ({
+    id: object.id,
+    kind: object.kind,
+    slot,
+    x: object.x,
+    y: object.y,
+    width: object.width,
+    height: object.height,
+    storedHeight: object.height,
+    title: object.title,
+    preview: object.preview,
+    removed: false,
+  }));
+  for (const object of objects) {
+    engine.bindObjectText(object.slot, { title: object.title, preview: object.preview });
+  }
+  // L02: a block grows to its preview height instead of gaining an inner
+  // scrollbar. The height comes from the engine, which knows the token chrome and
+  // the laid-out preview; the caller only applies it.
+  for (const object of objects) {
+    if (object.kind !== "block") {
+      continue;
+    }
+    const required = engine.requiredTextHeight(object.slot);
+    if (required > object.height) {
+      // L02: grow the block to the preview height; the geometry write stays a
+      // caller-side presentation change, the document stores no text (AD-4).
+      engine.updateGeometry(object.slot, {
+        x: object.x,
+        y: object.y,
+        width: object.width,
+        height: required,
+      });
+      object.height = required;
+    }
+  }
+
+  const actions = new Map();
+  for (const object of objects) {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "object-action";
+    button.dataset.objectId = object.id;
+    button.setAttribute("aria-label", "Delete");
+    button.setAttribute("data-label", "Delete");
+    button.innerHTML = DELETE_ICON;
+    button.addEventListener("pointerdown", (event) => {
+      event.stopPropagation();
+    });
+    button.addEventListener("click", (event) => {
+      event.stopPropagation();
+      remove(object);
+    });
+    // The overlay is a sibling above the canvas, so moving onto a revealed
+    // affordance fires the canvas `pointerleave`. Keep the object hovered from
+    // here instead, otherwise the button would hide under the pointer the moment
+    // it becomes clickable (the canvas pointerleave below ignores this target).
+    button.addEventListener("pointerenter", () => {
+      setHovered(object.id);
+    });
+    button.addEventListener("pointerleave", () => {
+      setHovered(null);
+    });
+    overlay.append(button);
+    actions.set(object.id, { object, button });
+  }
+
+  let hovered = null;
+  let selected = null;
+
+  const apply = () => {
+    for (const [id, action] of actions) {
+      action.button.classList.toggle(
+        "is-visible",
+        action.object.removed !== true && (hovered === id || selected === id),
+      );
+      action.button.hidden = action.object.removed === true;
+    }
+  };
+
+  // The overlay sits exactly over the canvas; object world geometry is mapped
+  // with the page's own camera, so a button follows its object on pan and zoom.
+  const updatePositions = () => {
+    const bounds = canvas.getBoundingClientRect();
+    const engineWidth = Math.max(1, Math.round(bounds.width));
+    const contentScale = canvas.clientWidth > 0 ? canvas.clientWidth / engineWidth : 1;
+    for (const action of actions.values()) {
+      if (action.object.removed === true) {
+        continue;
+      }
+      const object = action.object;
+      const right = (object.x + object.width - camera.panX) * camera.zoom;
+      const top = (object.y - camera.panY) * camera.zoom;
+      action.button.style.left = `${
+        canvas.clientLeft + right * contentScale - tokens["button-card"] - tokens["space-8"]
+      }px`;
+      action.button.style.top = `${canvas.clientTop + top * contentScale + tokens["space-8"]}px`;
+    }
+  };
+
+  const remove = (object) => {
+    if (object.removed === true) {
+      return;
+    }
+    object.removed = true;
+    engine.removeObject(object.slot);
+    if (hovered === object.id) {
+      hovered = null;
+    }
+    if (selected === object.id) {
+      selected = null;
+    }
+    apply();
+    onDemand.request();
+  };
+
+  const objectIdAt = (screenX, screenY) => {
+    const index = engine.hitTest(screenX, screenY);
+    const object = objects.find((candidate) => candidate.slot === index);
+    return object === undefined || object.removed === true ? null : object.id;
+  };
+
+  const setHovered = (id) => {
+    if (hovered === id) {
+      return;
+    }
+    hovered = id;
+    apply();
+  };
+
+  const tap = (screenX, screenY) => {
+    const id = objectIdAt(screenX, screenY);
+    selected = selected === id ? null : id;
+    apply();
+  };
+
+  canvas.addEventListener("pointermove", (event) => {
+    if (event.buttons !== 0) {
+      return;
+    }
+    const point = screenPointOf(event);
+    setHovered(objectIdAt(point.x, point.y));
+  });
+  canvas.addEventListener("pointerleave", (event) => {
+    const related = event.relatedTarget;
+    if (related instanceof Element && related.closest(".object-action") !== null) {
+      // The pointer moved onto the revealed affordance: the control keeps the
+      // object hovered and its own pointerleave clears the state.
+      return;
+    }
+    setHovered(null);
+  });
+
+  // Evidence hook: the capture tool reads the binding, atlas and affordance state
+  // next to the images so the numbers and the pixels agree.
+  globalThis.__engineTitles = {
+    summary: () => ({
+      mode: "titles",
+      objects: objects.length,
+      boundTitles: objects.filter((object) => object.title.length > 0).length,
+      boundPreviews: objects.filter((object) => object.preview.length > 0).length,
+      grownBlocks: objects.filter(
+        (object) => object.kind === "block" && object.height > object.storedHeight,
+      ).length,
+      atlas: state.textAtlas === null ? null : { ...state.textAtlas },
+      hovered,
+      selected,
+      deleteControls: [...actions.values()].filter((action) => action.object.removed !== true)
+        .length,
+    }),
+  };
+
+  updatePositions();
+  return { update: updatePositions, tap, remove };
+}
+
 async function loadScene() {
+  if (titlesRequested) {
+    // The titles gallery is the playground's own deterministic demo board; it
+    // needs no test-kit bundle, so the scene works in a harness copy as well.
+    return buildTitlesGallery();
+  }
   if (benchmarkRequested && benchmarkScene !== null) {
     return {
       name: "benchmark",
@@ -309,6 +678,9 @@ async function loadScene() {
 }
 
 function sceneCaption(loaded) {
+  if (titlesRequested) {
+    return `${loaded.counts.total} objects — zone names, card titles cut with an ellipsis and block previews bound to the visible objects; blocks grow to their preview height and the delete affordance appears on hover, focus or selection.`;
+  }
   if (loaded.name === "layers") {
     return `${loaded.counts.total} objects — zones, blocks and note cards whose stored z contradicts the layers. Click an object to bring it to the front of its layer; reload keeps the order.`;
   }
@@ -856,7 +1228,12 @@ async function start() {
     hudZonesNode.textContent = String(loaded.counts.zones);
 
     const engine = await createEngine(canvas);
-    const layers = loaded.name === "layers" ? await loadLayersDocument(engine, loaded) : null;
+    // The titles scene draws the scene as plain rectangles: its presentation text
+    // is bound in the caller, not through the contract seam (AD-4).
+    const layers =
+      loaded.name === "layers" && !titlesRequested
+        ? await loadLayersDocument(engine, loaded)
+        : null;
     if (layers === null) {
       engine.loadRectangles(loaded.objects);
     }
@@ -958,6 +1335,7 @@ async function start() {
         return;
       }
       framesRendered += 1;
+      titlesOverlay?.update();
       writeHud(timestamp);
     };
     const requestFrame = () => {
@@ -1035,6 +1413,10 @@ async function start() {
       onDemand.request();
     }
 
+    if (titlesRequested) {
+      titlesOverlay = installTitles(engine, loaded);
+    }
+
     if (textDemoRequested) {
       // Sample board content, not UI text: Latin-1 letters exercise the atlas and
       // U+4E2D is outside the default glyph set, so it draws the placeholder box.
@@ -1099,11 +1481,15 @@ async function start() {
     }
     installInteraction(
       engine,
-      layers === null
-        ? null
-        : (screenX, screenY) => {
+      layers !== null
+        ? (screenX, screenY) => {
             layers.frontAt(screenX, screenY);
-          },
+          }
+        : titlesOverlay === null
+          ? null
+          : (screenX, screenY) => {
+              titlesOverlay.tap(screenX, screenY);
+            },
     );
     installFitKey();
     // One frame is requested by the initial resize; a document or camera change

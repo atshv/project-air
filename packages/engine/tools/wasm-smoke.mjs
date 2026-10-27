@@ -7,9 +7,11 @@
 // CommonJS by the build wrapper), verifies that engine_create fails cleanly when
 // no WebGL2 canvas exists (0 plus a message on engine_last_error) and that the
 // rectangle load before a successful create keeps reporting the pre-create error.
-// P4-08: the pure text calls (token style, font family, atlas plan with the
+// P4-08/P4-09: the pure text calls (token style, font family, atlas plan with the
 // texture-limit fallback) answer without a renderer, while the atlas upload and
-// the glyph runs fail cleanly before engine_create.
+// the glyph runs fail cleanly before engine_create. P4-10 adds the binding calls
+// (bind object text, clear bindings, required preview height) to the same
+// pre-create failure check.
 // Exit codes: 0 pass, 1 failure.
 //
 // The GPU path itself is covered by the playground and the headless screenshot.
@@ -129,9 +131,35 @@ if (boxRunResult !== 0 || !boxRunError.includes("engine_create")) {
   fail(`engine_text_add_box_run before create -> ${boxRunResult}, error: ${boxRunError}`);
 }
 
+// P4-10: the binding exports exist and fail cleanly before engine_create.
+const bindResult = module.ccall(
+  "engine_text_bind_object",
+  "number",
+  ["number", "number", "number", "number", "number"],
+  [0, 0, 0, 0, 0],
+);
+const bindError = lastError();
+if (bindResult !== 0 || !bindError.includes("engine_create")) {
+  fail(`engine_text_bind_object before create -> ${bindResult}, error: ${bindError}`);
+}
+const clearBindingsResult = module.ccall("engine_text_clear_bindings", "number", [], []);
+if (clearBindingsResult !== 0 || !lastError().includes("engine_create")) {
+  fail(`engine_text_clear_bindings before create -> ${clearBindingsResult}`);
+}
+const requiredResult = module.ccall(
+  "engine_text_required_height",
+  "number",
+  ["number", "number"],
+  [0, 0],
+);
+if (requiredResult !== 0 || !lastError().includes("engine_create")) {
+  fail(`engine_text_required_height before create -> ${requiredResult}`);
+}
+
 console.log(`wasm-smoke: engine_create without WebGL2 -> 0, error: ${createError}`);
 console.log(`wasm-smoke: text plan fallback at DPR 3 / 512 px -> scale ${plan[6]}, ${plan[0]}x${plan[1]}`);
 console.log(`wasm-smoke: engine_text_load_atlas before create -> 0, error: ${atlasError}`);
 console.log(`wasm-smoke: engine_load_rectangles before create -> 0, error: ${loadError}`);
 console.log(`wasm-smoke: engine_text_add_box_run before create -> 0, error: ${boxRunError}`);
+console.log(`wasm-smoke: engine_text_bind_object before create -> 0, error: ${bindError}`);
 console.log("wasm-smoke: OK");

@@ -7,15 +7,21 @@
 #if defined(__EMSCRIPTEN__)
 
 #include "engine/camera.h"
+#include "engine/doc.h"
+#include "engine/spatial.h"
 
 namespace air::engine::detail {
 
 // Renderer state the glyph pass reads; created == false before engine_create.
+// The document and its spatial index point into the renderer's working copy: the
+// P4-10 binding needs them to cull presentation text with the object.
 struct FrameView {
   bool created{false};
   const Camera* camera{nullptr};
   int cssWidth{0};
   int cssHeight{0};
+  const Document* document{nullptr};
+  const SpatialIndex* spatial{nullptr};
 };
 
 // Implemented in render_gl.cpp.

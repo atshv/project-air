@@ -25,6 +25,9 @@ Emscripten module through an import map.
    — the helper reads the playground port from `.polier-slot`, emulates 1440×900 and 390×844, waits
    for `window.__enginePlayground.ready`, pauses the loop and prints layout, HUD and state it
    captured. `CHROME_PATH` overrides the browser, `PLAYGROUND_URL` the page URL.
+7. L02 before/after evidence (P4-10): `node apps/engine-playground/tools/capture-titles.mjs --mode before|after|all`
+   starts its own server and browser on the slot port and writes the before/after PNGs plus a JSON
+   record with the camera, atlas raster scale, binding and affordance state per shot.
 
 ### Scenes
 
@@ -43,6 +46,15 @@ Emscripten module through an import map.
 - `?text=layout` — the P4-09 text layout demo (use with `?scene=stress&count=0&view=272,112,1`): a
   title that fits, a title cut with an ellipsis, a zone-name box and a wrapped preview clipped to
   three lines, laid out inside the engine; the `text-layout` visual scene.
+- `?text=titles` — the P4-10 L02 titles gallery: the page-owned deterministic demo board (2 zones,
+  2 blocks, 4 cards, world 1024×576) with a zone name, a cut zone name, ellipsis card titles,
+  wrapped/clipped block previews, the 40 px header band with its rule, a block grown to its preview
+  height and one quiet DOM delete affordance per object (28 px hit, 16 px icon, invisible at rest,
+  visible on object hover, keyboard focus — `Tab` — and selection; no character icon). The gallery
+  is presentation only: the engine document stores no text and the page needs no test-kit bundle.
+  Use `?view=<worldX>,<worldY>,<zoom>` for a deterministic camera; zoom buckets 25/50/100/200/400 %
+  re-rasterise the atlas so text stays sharp when zooming in. The `text-titles` and
+  `text-titles-zoom-200` visual scenes use it at 100 % and 200 %.
 - Pointer drag pans; wheel or two-pointer pinch zooms around the pointer; `f` runs the L19 fit action
   ("show all": at most 100 %, L02 top padding, dot grid at and above zoom 0.5). The scene never
   changes. The HUD shows objects, visible instances, the rendered-frame counter and the backend.

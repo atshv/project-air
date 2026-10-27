@@ -17,7 +17,8 @@ the network (AD-2), and reads the contract and tokens from generated headers.
 | `render` | `render.h`, `render.cpp` | Deterministic command buffer: culling, stable order, 24-byte instances, empty-on-failure `Status`; command-buffer hit testing | document + camera + viewport + index → instances, hit result | camera, doc, spatial, status, `tokens.h` |
 | `render_gl` | `render_gl.h`, `render_gl.cpp` | WebGL2 instanced renderer (per-instance attributes, one `drawArraysInstanced`, inline GLSL 300 es) plus the exported C API; native stubs | command buffer / mutation and hit-test calls → pixels / C ABI results | render, camera, doc, spatial, `tokens.h`, GLES3, Emscripten |
 | `text` | `text.h`, `text.cpp` | L02 runtime glyph atlas: token text styles, atlas plan with the texture-limit fallback, validated glyph table with a placeholder per role, glyph runs and the 32-byte glyph command buffer | token typography / glyph count, cell, DPR, texture limit / RGBA pixels + packed metrics / runs + camera → plan, CSS-px glyph metrics, glyph quads | camera, geometry, status, `tokens.h` |
-| `text_gl` | `text_gl.h`, `text_gl.cpp` | Text C ABI (pure style/plan calls in both builds) and the WebGL2 glyph pass: atlas texture upload, one instanced glyph draw after the object pass | C ABI calls / glyph buffer → texture, pixels | text, `tokens.h`, GLES3 |
+| `text_gl` | `text_gl.h`, `text_gl.cpp` | Text C ABI (pure style/plan calls in both builds), the WebGL2 glyph pass (atlas texture upload, one instanced glyph draw after the object pass) and, since P4-10, the bound title/preview runs and the header-chrome pass | C ABI calls / glyph buffer / bound text → texture, pixels | text, text_binding, `tokens.h`, GLES3 |
+| `text_binding` | `text_binding.h`, `text_binding.cpp` | L02 (P4-10) presentation binding: caller-supplied titles and previews bound to visible objects (ellipsis titles, wrapped/clipped previews), the 40 px header/inset chrome geometry, block growth, header chrome quads | document + camera + viewport + index + caller text → runs, chrome quads, required preview height | doc, spatial, text, geometry, status, `tokens.h` |
 | C ABI | `engine.h`, `engine.cpp` | `air_engine_version()` and compile-time checks of `kContractVersion`/`tokens.h` | – → version string | `contract.h`, `tokens.h` |
 
 Support headers: `geometry.h` (`Point`, `Bounds`) and `status.h` (`Status`; no exceptions
@@ -26,8 +27,10 @@ across the C ABI). The C API exports `engine_create`, `engine_resize`, `engine_s
 `engine_remove_object`, `engine_hit_test`, `engine_visible_instance_count`, `engine_render_frame`,
 `engine_fit_view`, the text calls `engine_text_style`, `engine_text_font_family`,
 `engine_text_plan_atlas`, `engine_text_max_texture_size`, `engine_text_load_atlas`,
-`engine_text_add_run`, `engine_text_clear_runs`, `engine_visible_glyph_count` (P4-08) and
-`engine_last_error`; the TypeScript bridge exposes the same surface as typed methods.
+`engine_text_add_run`, `engine_text_add_box_run`, `engine_text_clear_runs`,
+`engine_visible_glyph_count` (P4-08/P4-09), the binding calls `engine_text_bind_object`,
+`engine_text_clear_bindings`, `engine_text_required_height` (P4-10) and `engine_last_error`; the
+TypeScript bridge exposes the same surface as typed methods.
 
 ## Gesture logic layers (TypeScript)
 
@@ -145,9 +148,10 @@ source scan proves no DOM or network use in the logic layer.
   frames. `?bench=…` and `?perf=engine-core` keep their continuous requestAnimationFrame loops
   unchanged, because the perf gate measures frame production. The HUD "Frames" item,
   `window.__enginePlayground.frameCount()` and `getState().framesRendered` expose the counter; the
-  `f` key and `window.__enginePlayground.fit()` run the L19 fit action. The browser record
-  `reviews/evidence/P4-07-idle-<timestamp>.json` proves that one idle second renders zero frames and
-  that a camera change, a resize and the benchmark loop still render. The playground's initial
+  `f` key and `window.__enginePlayground.fit()` run the L19 fit action. The idle harness's browser
+  record `reviews/evidence/<task-id>-idle-<timestamp>.json` (the P4-10 re-run is
+  `P4-10-idle-<timestamp>.json`; P4-07 is the harness origin) proves that one idle second renders
+  zero frames and that a camera change, a resize and the benchmark loop still render. The playground's initial
   camera stays the P4-04 at-rest view (plain world-centred fit, clamped to `0.1 … 8`); L17/P4-22
   will use the L19 helper for the initial and restored view.
 
@@ -209,22 +213,128 @@ in the repository or the bundle.
   dash, single and double quotes incl. „ and ‚, the bullet and U+2026 — with OffscreenCanvas
   (fallback: a detached `<canvas>`) as white coverage on transparent pixels, one uniform cell per
   glyph (`measureText` boxes rounded outward), and uploads pixels and packed metrics in a single
-  call; it returns size, raster scale, glyph count and the texture limit. After the first build,
-  `resize` rebuilds the atlas whenever the device pixel ratio changes (zoom-bucket re-rasterisation
-  is P4-10). `addTextRun({ x, y, text, role, flow, box })` passes the string's code points (a lone surrogate
-  stays its own code unit and draws the placeholder); `clearTextRuns()` and `visibleGlyphCount()`
-  complete the surface.
+  call; it returns size, raster scale, glyph count and the texture limit. `addTextRun({ x, y, text,
+  role, flow, box })` passes the string's code points (a lone surrogate stays its own code unit and
+  draws the placeholder); `clearTextRuns()` and `visibleGlyphCount()` complete the surface.
 - **Playground.** `?text=1` (e.g. `?text=1&view=200,64,2`) builds the atlas and draws a title and
   a body run with Latin-1 letters and one missing glyph; `getState().textAtlas` reports the atlas.
   Off by default, so scenes, `visual` baselines and perf documents are unchanged. `?text=layout`
   (P4-09, with `?scene=stress&count=0&view=272,112,1`) shows a fitting title, a title cut with an
   ellipsis, a zone-name box with an em dash and a wrapped preview clipped to three lines; it is the
-  `text-layout` visual scene. The browser harnesses (visual, perf, idle) copy
-  `dist/bridge/text-atlas.js` next to `engine.js` since P4-09 (P4-08 added the import).
+  `text-layout` visual scene. `?text=titles` (P4-10, below) is the titles gallery. The browser
+  harnesses (visual, perf, idle) copy `dist/bridge/text-atlas.js` next to `engine.js` since P4-09
+  (P4-08 added the import).
 - **Tests.** `engine_text_tests` (CTest) covers token styles, the plan at DPR 1/2/3, the fallback
   and its failures, upload validation and atomicity, DPR-independent CSS metrics, the placeholder,
   run validation and the glyph buffer (placement, zoom, culling, determinism, atlas replacement);
   `wasm-smoke` checks the pure text calls and the pre-create failures in the WebAssembly build.
+
+## Titles, previews and L02 chrome (P4-10)
+
+The binding module turns the P4-09 layout into what L02 asks the canvas to show: titles bound to
+objects, previews clipped inside them, 40 px headers and a block that grows instead of scrolling.
+It is **presentation input**, not board state (AD-4): the caller supplies the text, the document and
+the operation seam keep none, and a reload drops the binding.
+
+- **Binding store.** `TextBindings::set(document, slot, title, preview)` binds the text of the live
+  object at a document slot. Entries are keyed by the document's stable `ObjectId`, so they can never
+  match another object after a reload, and the store drops every entry as soon as the document
+  instance changes (a different document instance never accumulates stale entries). The C ABI is
+  `engine_text_bind_object(index, title, titleCount, preview, previewCount)` and
+  `engine_text_clear_bindings()`; the bridge wraps them as `bindObjectText(index, { title, preview })`
+  and `clearObjectText()`.
+- **Culling with the object.** `TextBindings::bindVisible` fills the bound run store only for objects
+  that are visible in the viewport: the camera's visible world bounds query the spatial index, the
+  exact bounds are filtered and the title/preview boxes come from the object's own geometry. Two
+  guards keep a full board bounded: an object whose on-screen height is smaller than one title line
+  binds no text (text at that size would be unreadable), and a documented run budget (2,048 runs)
+  stops a viewport from exhausting the P4-09 run/glyph limits. Text is therefore bound in world
+  space and culled with the object, never per DOM node; the glyph buffer still culls quads.
+- **Header and inset geometry (tokens only).** Zones and blocks carry a 40 px header band
+  (`tokens::header_height`) with the title centred in it and a 1 px rule (`tokens::border_width`) at
+  the band's bottom edge; their content starts at the `40 + 16` px inset
+  (`header_height + space_16`), and the preview box is the remaining height minus the bottom
+  `space_16` — so a preview is clipped to its own block, never scrolled. A card has no band: its
+  title starts at `space_16` from the top, and its preview follows the title line box plus
+  `space_8`. Every title box reserves the quiet delete affordance width (`button_card + space_8`), so
+  a title never runs under the control that appears on hover, focus or selection. An object shorter
+  than its header keeps the band inside its own height and drops the rule.
+- **Title and preview flows.** A zone name and a card/block title are one `ellipsis` run at the token
+  title role (`font_sans`, `text_15`, `weight_semibold`, L02 15 px/600); the preview is one `wrap`
+  run in the body role (`text_13`, `weight_regular`) with its box as the clip. Empty text draws
+  nothing (and an empty title or preview is a valid binding). The layout is computed in CSS px from
+  the atlas metrics, so the line breaks are independent of the device pixel ratio and of the zoom.
+- **Blocks grow.** `TextBindings`/`engine_text_required_height` reports the height a block needs for
+  its bound preview: the inset above the preview plus the **unclipped** laid-out preview height plus
+  the bottom padding. The playground applies it with `updateGeometry`, so the block's own height
+  grows to the content instead of gaining an inner scrollbar; the document still stores no text and
+  the value is a presentation-derived geometry input, not a board operation.
+- **Header chrome class.** A visible zone/block with a bound title emits two chrome quads, not
+  object instances: the header band tinted with `tokens::faint` and the rule with `tokens::border`.
+  They are drawn in the glyph pass (before the glyphs of the frame) through a small instanced
+  program with a per-instance tint, so the object command buffer and its instance counts are
+  unchanged (the perf/count path stays exactly the document's objects). Chrome is dropped when a
+  higher-layer visible object covers the band, so a card on top of a zone header is never overpainted.
+- **DPR-independent binding.** The binding emits world-space runs and screen-space chrome quads; the
+  atlas raster scale follows the device pixel ratio times the zoom bucket (below), while the CSS
+  metrics divide it out again. `engine_binding_tests` builds DPR 1 and DPR 2 atlases of the same CSS
+  typography and gets identical placements and box geometry.
+- **Tests.** `engine_binding_tests` (CTest, a fourth suite) covers the header geometry (40 px band,
+  rule at the boundary, title centred), the zone content inset (`40 + 16`), the card title/preview
+  stack, the ellipsis title placement and box overflow, the preview clip (`floor(height / line
+  height)` visible lines), the required height and the grown block, culling (visible/far/zoomed-out
+  and an empty viewport), the header chrome and its occlusion, DPR independence and determinism, and
+  input validation (unknown slot, code point above U+10FFFF, null pointers with a count, empty text).
+  `wasm-smoke` checks the pre-create failures of the new C ABI.
+
+### Zoom bucket and sharp text (P4-10)
+
+P4-08 rebuilt the atlas on a device-pixel-ratio change only, so zooming in upscaled the 100 % atlas
+and text blurred at 200 %. Since P4-10 the bridge picks a **zoom bucket**: the smallest power of two
+at or above the camera zoom, clamped to 25 %, 50 %, 100 %, 200 % and 400 % (`atlasZoomBucket`), and
+the atlas raster scale is `min(devicePixelRatio × bucket, 4)` (`atlasRasterScale`,
+`MAX_ATLAS_RASTER_SCALE`). Only the raster scale changes between buckets — the P4-09 layout stays in
+CSS px — so a line never re-breaks and the metrics stay DPR-independent. `setCamera` and `resize`
+rebuild the atlas only when the resulting scale changes, so a session re-rasterises at most five
+times (fewer at a device pixel ratio above 1, where the cap repeats a scale) and a plain pan or a
+zoom inside a bucket touches nothing. The bucket is documented as interaction/performance geometry,
+not a design value; the 400 % cap bounds the atlas at 4× the CSS resolution (4096² at the worst
+cell size is avoided by the plan's texture-limit/halving path). The visual reference set captures the
+titles gallery at **100 %** (raster scale 1, the committed text reference) and at **200 %** (raster
+scale 2, `text-titles-zoom-200`), where the glyphs now sample twice the CSS resolution; the capture
+records store the atlas `rasterScale` next to the camera, so the bucket is evidenced by numbers and
+pixels.
+
+### L02 defects and their before/after evidence
+
+The engine-owned L02 defects are evidenced by `apps/engine-playground/tools/capture-titles.mjs` in
+`reviews/evidence/` before and after the binding (the before shots are the same build with
+`?text=titles` off — the P4-09 presentation — and the after shots are the titles gallery; the
+capture records store the camera, atlas raster scale and affordance state next to every image):
+
+| L02 defect (engine-owned) | Before | After |
+| --- | --- | --- |
+| Card title absent, or cut off / no ellipsis | `P4-10-before-titles-desktop.png` (bare cards) | `P4-10-after-titles-desktop.png`: one `ellipsis` title per card at 15 px/600, cut with U+2026 (`Ausflug an den …`, `Café-Notizen fü…`) |
+| Title cut at the wrong width (CSS vs device px) | `P4-10-before-titles-zoom200-desktop.png` | `P4-10-after-titles-zoom200-desktop.png`: the title box is world/CSS px wide, so the cut lands inside the card at 100 % and 200 % |
+| No 40 px header; header height not visible | `P4-10-before-titles-desktop.png` | `P4-10-after-titles-desktop.png`: the `faint` band and its `border` rule mark the 40 px header on both zones and blocks |
+| Zone content under the header | `P4-10-before-titles-desktop.png` (no header to inset from) | `P4-10-after-titles-desktop.png`: the blocks start at the `40 + 16` px inset, directly below the rule |
+| Inner scrollbar / clipped block preview | `P4-10-before-titles-desktop.png` (no preview) | `P4-10-after-titles-desktop.png`: both blocks grew to the preview height and show every wrapped line — no scroll area exists |
+| Delete affordance absent, or loud / character icon | `P4-10-before-delete-hover-desktop.png` (nothing appears) | `P4-10-after-delete-rest-desktop.png` (invisible at rest), `-hover-`/`-selection-` (visible on object hover and on selection) and `-focus-desktop.png` (visible on `Tab`, `aria-label` "Delete", inline stroke SVG — `iconCharacters: []` in the record) |
+| Floating / doubled text not bound to an object | `P4-10-before-floating-text-desktop.png` (`?text=layout`: runs at world coordinates, no object ownership) | `P4-10-after-titles-desktop.png`: exactly one title run and at most one preview run per visible object, bound and culled with it |
+| Blurry text when zooming in (owner note at 200 %) | `P4-10-before-titles-zoom200-desktop.png` (no text) | `P4-10-after-titles-zoom200-desktop.png`: the atlas re-rasterises at raster scale 2 for the 200 % bucket (records: `textAtlas.rasterScale` 1 → 2) |
+
+### Visual references and the perf/idle path
+
+The `text-titles` scenes are the reviewed 100 % and 200 % additions to the committed WebGL2
+reference set (desktop 1440×900 and mobile 390×844); every pre-existing reference image stayed
+0-diff in the P4-10 gate run, and the `text-layout` 100 % reference is byte-identical because zoom 1
+selects the same raster scale it always used. The scenes run only with `?text=titles`, so the
+benchmark and perf documents stay textless. After the binding, the P4-10 `perf` gate still reports
+10,000 objects at p95 0.2 ms with 0 frame intervals above 16.7 ms, every enforced metric within the
+committed basis + 10 %, and the idle harness still shows zero rendered frames in idle seconds; the
+records are `reviews/evidence/P4-10-perf-*.json` and the idle record written by `run-idle.mjs`. A
+frame without an atlas or a binding returns from the glyph pass before any GL state is touched, so
+the perf path keeps its measured cost.
 
 ## Object identity and mutations
 
@@ -276,14 +386,15 @@ behind. The same `SpatialIndex::ensureCurrent` guard is covered by the native su
 
 ## Build and check commands
 
-- **Native build + tests:** `cmake -S packages/engine -B packages/engine/build -DCMAKE_BUILD_TYPE=Debug && cmake --build packages/engine/build --parallel && ctest --test-dir packages/engine/build --output-on-failure` (suites `engine_unit_tests`, `engine_core_tests`, `engine_text_tests`).
+- **Native build + tests:** `cmake -S packages/engine -B packages/engine/build -DCMAKE_BUILD_TYPE=Debug && cmake --build packages/engine/build --parallel && ctest --test-dir packages/engine/build --output-on-failure` (suites `engine_unit_tests`, `engine_core_tests`, `engine_text_tests`, `engine_binding_tests`).
 - **WASM:** `bash packages/engine/tools/build-wasm.sh` then `node packages/engine/tools/wasm-smoke.mjs`; size: `node packages/engine/tools/wasm-size.mjs` (budget 307,200 B gzip). The wrapper keeps the Emscripten cache under `build-wasm/.emscripten-cache` unless `EM_CACHE` is set, so a read-only package cache (sandboxed agents) or a shared user cache cannot break the build.
 - **Performance:** `node packages/engine/test/perf/run-perf.mjs` (exclusive `perf-baseline`, 50,000 rectangles, p95 ≤ 16.7 ms) and `node packages/engine/test/perf/run-perf.mjs --scenario engine-core` (the `perf` stage gate: 10,000-object interactive run plus the L01 basis/final proof; report [docs/engine/perf-baseline.md](engine/perf-baseline.md), gate catalogue [docs/gates/perf.md](gates/perf.md)).
-- **Visual:** `node packages/engine/test/visual/run-visual.mjs` (the `visual` stage gate: five
+- **Visual:** `node packages/engine/test/visual/run-visual.mjs` (the `visual` stage gate: ten
   deterministic scenes at 1440×900 and 390×844 against the committed reference images under
   `reviews/evidence/visual-baselines/`; the L19 `one-card-fit` scene runs the fit action and shows the
-  dot grid at 100 %; `--update` writes baselines as a reviewed update, never a gate pass; catalogue
-  [docs/gates/visual-diff.md](gates/visual-diff.md)).
+  dot grid at 100 %; since P4-10 the `text-titles` and `text-titles-zoom-200` scenes capture the
+  titles gallery at 100 % and 200 %; `--update` writes baselines as a reviewed update, never a gate
+  pass; catalogue `docs/gates/visual-diff.md`).
 - **Bridge and logic:** `pnpm --filter @project-air/engine run build|typecheck|lint|test`. `tsconfig.json` typechecks all of `src/`; `tsconfig.build.json` emits only the bridge, so the package entry stays `dist/bridge/engine.js`. Pins: CMake 4.4.4, Emscripten 6.0.13 in [docs/versions.md](versions.md); gates in [docs/gates/cpp-cmake.md](gates/cpp-cmake.md), [docs/gates/wasm-emscripten.md](gates/wasm-emscripten.md), [docs/gates/perf.md](gates/perf.md).
 
 ## Scenes and the playground
@@ -298,6 +409,7 @@ the view moves.
 | stress | `?scene=stress` | N objects on a tight grid, `?count=N` default 10,000, valid 0 … 50,000 |
 | engine-core (perf) | `?scene=engine-core` / `?perf=engine-core` | 10,000 mixed board objects (9,200 cards, 200 zones, 600 blocks), world 19,200×10,816 px; the document of the `perf` gate |
 | layers (L13) | `?scene=layers[&front=<id>][&store=off]` | 2 zones, 2 blocks, 4 cards, world 1024×576 px, keys that contradict the layers; loaded as contract objects through the document port (browser build `packages/engine/dist/logic/`), a click brings an object to the front with one `reorder`, keys persist in `localStorage` (`store=off` ignores them), `front=<id>` applies one front gesture at start |
+| titles (L02, P4-10) | `?text=titles[&view=<x>,<y>,<zoom>]` | the playground's own deterministic titles gallery, 2 zones, 2 blocks, 4 cards, world 1024×576 px: zone names, ellipsis card titles, wrapped/clipped previews, 40 px headers with the band chrome, the grown block and the quiet DOM delete affordance. The gallery is page-owned (no test-kit scene and no board state); `?scene=` is ignored in this mode. The `text-titles` and `text-titles-zoom-200` visual scenes use it at 100 % and 200 % |
 | benchmark | `?bench=50000&samples=600&warmup=120` | unchanged 50,000-rectangle perf document for `packages/engine/test/perf/run-perf.mjs` |
 
 - **Scene builders:** `packages/test-kit` (`@project-air/test-kit`) builds all scenes with a seeded
@@ -306,7 +418,9 @@ the view moves.
   metadata (world, bounds, counts, seed, fit at 1440×900 and 390×844). Scenes are pure functions of
   their arguments, so every machine gets identical objects and bounds;
   `pnpm --filter @project-air/test-kit test` proves determinism, the 500/50 counts, the engine-core
-  10,000-object mix and the 10,000/0/50,000 stress sizes.
+  10,000-object mix and the 10,000/0/50,000 stress sizes. The `?text=titles` gallery is built by the
+  playground itself (a pure array in `main.js`), so it needs no test-kit bundle and carries its own
+  expected counts; the visual harness declares those counts explicitly for the page-owned scene.
 - **Fit and clamp:** the sample world is 9600×5408 px. The **initial** camera is fitted with the
   pre-L19 plain rule and clamped to the engine camera range 0.1 … 8: the raw fit is **0.15** at
   1440×900 (desktop) and **0.040625** at 390×844, so a narrow viewport clamps to **0.1** and crops
@@ -335,8 +449,30 @@ the view moves.
   drawn and the HUD is filled (`{ ok: true, scene, counts, objectCount, visibleCount }`) or with
   `{ ok: false, error }` when the engine failed. `window.__enginePlayground.pause()` stops the
   scheduler for a capture, `fit()` runs the L19 fit action, `frameCount()` reports the rendered-frame
-  counter and `getState()` reports scene, counts, visible instances, rendered frames, backend and
-  camera.
+  counter and `getState()` reports scene, counts, visible instances, rendered frames, backend, camera
+  and (in the titles scene) the atlas. `?text=titles` also exposes `window.__engineTitles.summary()`
+  with the bound title/preview count, the grown-block count, the atlas, the hovered/selected object
+  and the affordance count for the evidence tool.
+- **Titles scene chrome (P4-10).** `?text=titles` binds the gallery text through
+  `bindObjectText`, grows the blocks with `requiredTextHeight` and puts one DOM delete affordance per
+  object in the overlay `#overlay` above the canvas: a 28 px button (`--button-card`) with a 16 px
+  inline-SVG icon (`--icon-card`, 24 grid, stroke 1.6, `currentColor`), `opacity: 0` and
+  `pointer-events: none` at rest — an invisible control is never a click target — and visible with
+  pointer events enabled on object hover, keyboard focus and selection; `Tab` reaches every button
+  and the focus outline is never removed. The capture record proves the rule with
+  `invisibleHitTests: 0`: `elementFromPoint` at the corner of every invisible button hits the
+  canvas, not the button. The icon is an inline SVG in the overlay because
+  `packages/ui-kit/icons/` has no delete entry and adding one would change
+  `packages/ui-kit/tests/icons.test.mjs`, which is outside this task's write scope; it is still a
+  stroke icon and never a character, emoji or native tooltip.
+  The canvas owns the object geometry and the bound text; the overlay owns only the affordance —
+  it holds no board state (ADR-0009). In the other modes the overlay stays empty, so the reference
+  images and the perf documents are unchanged.
+- **Evidence capture:** `node apps/engine-playground/tools/capture-titles.mjs --mode before|after|all`
+  starts its own server and browser on the slot port, waits for the ready hook and writes the
+  before/after PNGs plus `reviews/evidence/P4-10-capture-<mode>-<timestamp>.json` with the camera,
+  atlas raster scale, binding and affordance state (including the pointer-events/hit-test check)
+  of every shot.
 - **Serve:** from the repository root, `python3 -m http.server <slot playground port> --bind
   127.0.0.1`, then open `http://127.0.0.1:<port>/apps/engine-playground/?scene=sample`; the port is
   `ports.playground` from `.polier-slot`, never hard-coded in the page.
@@ -360,8 +496,14 @@ fixtures — the deterministic 500-card/50-zone sample board and the stress scen
 proof, the `perf` gate and the reference images remain with P4-03, P4-04 and P4-28 (board Q18).
 **L19 — Canvas feel** is delivered by P4-07: the fit helper, the dot grid and on-demand drawing are
 documented above, with native fit/grid tests, the `visual` reference image `one-card-fit` and the
-`P4-07-idle-*` browser record. Other engine-owned entries — L02, L03, L07, L08, L10–L18, L20 —
-belong to those stages; their interaction behaviours are not implemented.
+`P4-07-idle-*` browser record (re-run for P4-10 as `P4-10-idle-*`). **L02 — Visible quality** is
+delivered by P4-08, P4-09 and P4-10 for
+the engine-owned part: the runtime atlas, the layout flows and, since P4-10, the title/preview
+binding, the 40 px header geometry with the zone content inset, the grown block, the quiet delete
+affordance in the DOM overlay and the sharp zoom buckets, with native binding tests, the
+`text-titles` reference images and the `P4-10` capture records. The remaining engine-owned entries —
+L03, L07, L08, L10–L18, L20 — belong to those stages; their interaction behaviours are not
+implemented.
 
 ## What the spike does not prove yet
 
@@ -372,8 +514,11 @@ belong to those stages; their interaction behaviours are not implemented.
   task > 50 ms).
 - **Canvas behaviours:** the playground has demo-level pan/zoom over a fixed scene plus the L19 fit
   action and dot grid; gesture input handling, selection, editing, snapping, zone membership, the
-  undo UI, keyboard input, text layout (the P4-08 atlas draws advance-placed runs only), images, edges, cursors and the accessibility mirror are not
-  implemented. The gesture-to-operation seam and the undo history core exist behind the TypeScript
+  undo UI, keyboard input, title editing (L09 owns it), images, edges, cursors and the accessibility
+  mirror are not implemented. Text is presentation input: titles and previews are bound to visible
+  objects by the caller (P4-10), but the engine document still stores no note content, and a
+  title/preview that overlaps a higher-layer object is not clipped per pixel (the titles scene and
+  its reference images place the gallery without overlap). The gesture-to-operation seam and the undo history core exist behind the TypeScript
   logic layer (P4-05) but are not wired to input yet. Hit testing exists at the
   document/command-buffer level (P4-01); interaction policy, selection state and overlays are not.
   The initial and restored viewport (L17/P4-22) still uses the pre-L19 plain fit; only the fit action

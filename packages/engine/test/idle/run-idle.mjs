@@ -1,7 +1,12 @@
 #!/usr/bin/env node
 // Idle-rendering evidence for the engine playground (P4-07 / L19).
 //
-//   node packages/engine/test/idle/run-idle.mjs
+//   node packages/engine/test/idle/run-idle.mjs [--task <task-id>]
+//
+//   `--task <task-id>` names the evidence file and its `task` field after the
+//   task that runs the harness (default P4-07, the harness's origin), the same
+//   convention as run-perf.mjs and run-visual.mjs, so a later task's re-run never
+//   masquerades as P4-07 evidence.
 //
 // The playground draws only on change (camera, document, resize) and stops
 // requestAnimationFrame while idle, so an idle canvas produces no frames. This
@@ -18,7 +23,8 @@
 //      sample one second; its frame counter must advance, proving the benchmark
 //      loop is still continuous and that the idle result is not a broken page.
 //
-// The record is written to reviews/evidence/P4-07-idle-<timestamp>.json. Exit
+// The record is written to reviews/evidence/<task-id>-idle-<timestamp>.json
+// (`P4-07` is the default). Exit
 // codes: 0 pass, 1 assertion failed, 3 infra (missing artefacts, no Chrome, port
 // busy, page not ready). The tool starts and stops only its own server and
 // browser and removes its temporary folder.
@@ -46,8 +52,12 @@ import { fileURLToPath } from "node:url";
 const REPO_ROOT = fileURLToPath(new URL("../../../../", import.meta.url));
 const EVIDENCE_DIR = join(REPO_ROOT, "reviews", "evidence");
 const HARNESS_RELATIVE = "packages/engine/test/idle/run-idle.mjs";
-const TASK = "P4-07";
+const DEFAULT_TASK = "P4-07";
 const GATE = "idle";
+
+// Evidence prefix/`task` field; `--task <id>` overrides it for a task that runs
+// the harness, so its record does not masquerade as the P4-07 origin.
+let evidenceTask = DEFAULT_TASK;
 
 // The measurement contract mirrored in docs/engine.md: one whole idle second.
 const IDLE_WINDOW_MS = 1000;
@@ -463,10 +473,23 @@ async function idleWindow(send, label) {
   };
 }
 
+function parseTaskArgument(args) {
+  const index = args.indexOf("--task");
+  if (index < 0) {
+    return;
+  }
+  const task = args[index + 1];
+  if (task === undefined || task.startsWith("--") || !/^[A-Za-z0-9_.-]+$/.test(task)) {
+    fail("--task needs a task id such as P4-10");
+  }
+  evidenceTask = task;
+}
+
 async function run() {
+  parseTaskArgument(process.argv.slice(2));
   const startedAt = new Date();
   const slug = timestampSlug(startedAt);
-  const command = `node ${HARNESS_RELATIVE}`;
+  const command = `node ${HARNESS_RELATIVE} --task ${evidenceTask}`;
   ensureArtefacts();
   const port = readSlotPort("playground");
   const baseUrl = `http://127.0.0.1:${port}/apps/engine-playground/`;
@@ -474,7 +497,7 @@ async function run() {
   const benchmarkUrl = `${baseUrl}?bench=${BENCH_CONTROL_RECTANGLES}&samples=${BENCH_CONTROL_SAMPLES}&warmup=0`;
   const stderrLines = [];
   const record = {
-    task: TASK,
+    task: evidenceTask,
     gate: GATE,
     command,
     timestamp: startedAt.toISOString(),
@@ -715,7 +738,7 @@ async function run() {
   record.chromeStderr = stderrLines;
   record.exitCode = exitCode;
   mkdirSync(EVIDENCE_DIR, { recursive: true });
-  const relative = join("reviews", "evidence", `${TASK}-idle-${slug}.json`);
+  const relative = join("reviews", "evidence", `${evidenceTask}-idle-${slug}.json`);
   writeFileSync(join(REPO_ROOT, relative), `${JSON.stringify(record, null, 2)}\n`);
   console.log(`evidence: ${relative}`);
   process.exitCode = exitCode;

@@ -56,8 +56,86 @@ body {
 }
 
 .canvas-wrap {
+  position: relative;
   width: 100%;
   min-width: 0;
+}
+
+/* L02 (P4-10) DOM overlay: chrome only, no board state (ADR-0009). The overlay
+   covers the canvas but lets every pointer event through except the affordances
+   themselves, so the engine keeps owning pan, zoom and hit testing. */
+.overlay {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+/* Quiet delete affordance (design rule §6, L02): 28 px hit area with a 16 px
+   icon in the ui-kit stroke style, invisible at rest and visible on hover, on
+   keyboard focus and on selection; never a character or emoji as the icon. */
+.object-action {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--button-card);
+  height: var(--button-card);
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background-color: transparent;
+  color: var(--muted);
+  opacity: 0;
+  /* Invisible at rest is not a click target: a click or tap in the 28 px corner
+     belongs to the canvas (select/pan), never to a hidden delete. The rule below
+     enables pointer events again as soon as the affordance is revealed. */
+  pointer-events: none;
+  cursor: pointer;
+  transition:
+    opacity var(--motion-hover) ease,
+    background-color var(--motion-hover) ease,
+    color var(--motion-hover) ease;
+}
+
+.object-action[hidden] {
+  display: none;
+}
+
+.object-action svg {
+  display: block;
+  width: var(--icon-card);
+  height: var(--icon-card);
+}
+
+/* Hover appearance (design rule §6): surface --faint and the icon from --muted to
+   --fg. The same look marks the affordance when the object is hovered, focused or
+   selected, so the quiet control reads as a button in every reveal state. */
+.object-action:hover,
+.object-action:focus-visible,
+.object-action.is-visible {
+  /* `:hover`/`:focus-visible`/`.is-visible` are the reveal states; only then is
+     the control a pointer target. Keyboard activation (Tab then Enter/Space) is
+     independent of `pointer-events`, so Tab reachability is unchanged. */
+  opacity: 1;
+  pointer-events: auto;
+  background-color: var(--faint);
+  color: var(--fg);
+}
+
+.object-action:active {
+  transform: scale(0.97);
+}
+
+.object-action:focus-visible {
+  outline: var(--outline-width) solid var(--accent);
+  outline-offset: var(--outline-offset);
+}
+
+@media (hover: none) {
+  .object-action.is-visible {
+    opacity: 1;
+  }
 }
 
 .canvas {

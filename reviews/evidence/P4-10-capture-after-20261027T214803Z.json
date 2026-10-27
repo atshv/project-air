@@ -1,0 +1,616 @@
+{
+  "task": "P4-10",
+  "mode": "after",
+  "startedAt": "2026-10-27T21:47:57.123Z",
+  "chrome": "/Users/rasulatashev/Library/Caches/ms-playwright/chromium-1248/chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing",
+  "flags": [
+    "--headless=new",
+    "--use-angle=metal",
+    "--enable-gpu",
+    "--hide-scrollbars",
+    "--disable-frame-rate-limit",
+    "--disable-gpu-vsync",
+    "--no-first-run",
+    "--no-default-browser-check",
+    "--disable-background-timer-throttling",
+    "--disable-renderer-backgrounding",
+    "--disable-backgrounding-occluded-windows",
+    "--window-size=1440,900",
+    "--no-sandbox"
+  ],
+  "viewports": {
+    "desktop": {
+      "name": "desktop",
+      "width": 1440,
+      "height": 900,
+      "mobile": false
+    },
+    "mobile": {
+      "name": "mobile",
+      "width": 390,
+      "height": 844,
+      "mobile": true
+    }
+  },
+  "shots": [
+    {
+      "mode": "after",
+      "file": "reviews/evidence/P4-10-after-titles-desktop.png",
+      "url": "http://127.0.0.1:4160/apps/engine-playground/?text=titles&view=512,288,1",
+      "viewport": {
+        "name": "desktop",
+        "width": 1440,
+        "height": 900
+      },
+      "note": "P4-10 at 100 %: ellipsis titles, 40 px headers, zone inset, grown block",
+      "ready": {
+        "ok": true,
+        "scene": "titles",
+        "counts": {
+          "zones": 2,
+          "blocks": 2,
+          "cards": 4,
+          "total": 8
+        },
+        "objectCount": 8,
+        "visibleCount": 8
+      },
+      "camera": {
+        "panX": -13,
+        "panY": -7.5,
+        "zoom": 1
+      },
+      "textAtlas": {
+        "width": 512,
+        "height": 512,
+        "rasterScale": 1,
+        "glyphCount": 404,
+        "maxTextureSize": 16384
+      },
+      "textBindings": {
+        "mode": "titles",
+        "objects": 8,
+        "boundTitles": 8,
+        "boundPreviews": 5,
+        "grownBlocks": 2,
+        "atlas": {
+          "width": 512,
+          "height": 512,
+          "rasterScale": 1,
+          "glyphCount": 404,
+          "maxTextureSize": 16384
+        },
+        "hovered": null,
+        "selected": null,
+        "deleteControls": 8
+      },
+      "pageError": "",
+      "hover": null,
+      "click": null,
+      "tabPressed": false,
+      "affordance": {
+        "deleteControls": 8,
+        "visibleControls": 0,
+        "minOpacity": 0,
+        "pointerEvents": [
+          "none",
+          "none",
+          "none",
+          "none",
+          "none",
+          "none",
+          "none",
+          "none"
+        ],
+        "invisibleHitTests": 0,
+        "invisiblePassThrough": true,
+        "iconCharacters": [],
+        "iconSvgs": 8,
+        "activeElement": {
+          "tag": "body",
+          "label": null
+        }
+      },
+      "sha256": "5c3abe886680509ecebde005073b44600844d864dc9934e2ee77d044a1487a84"
+    },
+    {
+      "mode": "after",
+      "file": "reviews/evidence/P4-10-after-titles-zoom200-desktop.png",
+      "url": "http://127.0.0.1:4160/apps/engine-playground/?text=titles&view=512,240,2",
+      "viewport": {
+        "name": "desktop",
+        "width": 1440,
+        "height": 900
+      },
+      "note": "P4-10 at 200 %: the zoom bucket re-rasterises the atlas, text stays sharp",
+      "ready": {
+        "ok": true,
+        "scene": "titles",
+        "counts": {
+          "zones": 2,
+          "blocks": 2,
+          "cards": 4,
+          "total": 8
+        },
+        "objectCount": 8,
+        "visibleCount": 7
+      },
+      "camera": {
+        "panX": 249.5,
+        "panY": 92.25,
+        "zoom": 2
+      },
+      "textAtlas": {
+        "width": 1024,
+        "height": 1024,
+        "rasterScale": 2,
+        "glyphCount": 404,
+        "maxTextureSize": 16384
+      },
+      "textBindings": {
+        "mode": "titles",
+        "objects": 8,
+        "boundTitles": 8,
+        "boundPreviews": 5,
+        "grownBlocks": 2,
+        "atlas": {
+          "width": 1024,
+          "height": 1024,
+          "rasterScale": 2,
+          "glyphCount": 404,
+          "maxTextureSize": 16384
+        },
+        "hovered": null,
+        "selected": null,
+        "deleteControls": 8
+      },
+      "pageError": "",
+      "hover": null,
+      "click": null,
+      "tabPressed": false,
+      "affordance": {
+        "deleteControls": 8,
+        "visibleControls": 0,
+        "minOpacity": 0,
+        "pointerEvents": [
+          "none",
+          "none",
+          "none",
+          "none",
+          "none",
+          "none",
+          "none",
+          "none"
+        ],
+        "invisibleHitTests": 0,
+        "invisiblePassThrough": true,
+        "iconCharacters": [],
+        "iconSvgs": 8,
+        "activeElement": {
+          "tag": "body",
+          "label": null
+        }
+      },
+      "sha256": "953c6b6b13f48c2459c6343c41b90c9c3e80dec903f5461f9fb099d061dd56f5"
+    },
+    {
+      "mode": "after",
+      "file": "reviews/evidence/P4-10-after-titles-mobile.png",
+      "url": "http://127.0.0.1:4160/apps/engine-playground/?text=titles&view=512,288,1",
+      "viewport": {
+        "name": "mobile",
+        "width": 390,
+        "height": 844
+      },
+      "note": "P4-10 at 390 x 844: bound titles and the quiet affordance on a narrow viewport",
+      "ready": {
+        "ok": true,
+        "scene": "titles",
+        "counts": {
+          "zones": 2,
+          "blocks": 2,
+          "cards": 4,
+          "total": 8
+        },
+        "objectCount": 8,
+        "visibleCount": 6
+      },
+      "camera": {
+        "panX": 366,
+        "panY": 206,
+        "zoom": 1
+      },
+      "textAtlas": {
+        "width": 512,
+        "height": 512,
+        "rasterScale": 1,
+        "glyphCount": 404,
+        "maxTextureSize": 16384
+      },
+      "textBindings": {
+        "mode": "titles",
+        "objects": 8,
+        "boundTitles": 8,
+        "boundPreviews": 5,
+        "grownBlocks": 2,
+        "atlas": {
+          "width": 512,
+          "height": 512,
+          "rasterScale": 1,
+          "glyphCount": 404,
+          "maxTextureSize": 16384
+        },
+        "hovered": null,
+        "selected": null,
+        "deleteControls": 8
+      },
+      "pageError": "",
+      "hover": null,
+      "click": null,
+      "tabPressed": false,
+      "affordance": {
+        "deleteControls": 8,
+        "visibleControls": 0,
+        "minOpacity": 0,
+        "pointerEvents": [
+          "none",
+          "none",
+          "none",
+          "none",
+          "none",
+          "none",
+          "none",
+          "none"
+        ],
+        "invisibleHitTests": 0,
+        "invisiblePassThrough": true,
+        "iconCharacters": [],
+        "iconSvgs": 8,
+        "activeElement": {
+          "tag": "body",
+          "label": null
+        }
+      },
+      "sha256": "7a3b87c28bdae2c6e92f385dbddab835f97359c8605283508e0809b6e7991dd7"
+    },
+    {
+      "mode": "after",
+      "file": "reviews/evidence/P4-10-after-delete-rest-desktop.png",
+      "url": "http://127.0.0.1:4160/apps/engine-playground/?text=titles&view=512,288,1",
+      "viewport": {
+        "name": "desktop",
+        "width": 1440,
+        "height": 900
+      },
+      "note": "P4-10 delete affordance at rest: invisible, no character icon",
+      "ready": {
+        "ok": true,
+        "scene": "titles",
+        "counts": {
+          "zones": 2,
+          "blocks": 2,
+          "cards": 4,
+          "total": 8
+        },
+        "objectCount": 8,
+        "visibleCount": 8
+      },
+      "camera": {
+        "panX": -13,
+        "panY": -7.5,
+        "zoom": 1
+      },
+      "textAtlas": {
+        "width": 512,
+        "height": 512,
+        "rasterScale": 1,
+        "glyphCount": 404,
+        "maxTextureSize": 16384
+      },
+      "textBindings": {
+        "mode": "titles",
+        "objects": 8,
+        "boundTitles": 8,
+        "boundPreviews": 5,
+        "grownBlocks": 2,
+        "atlas": {
+          "width": 512,
+          "height": 512,
+          "rasterScale": 1,
+          "glyphCount": 404,
+          "maxTextureSize": 16384
+        },
+        "hovered": null,
+        "selected": null,
+        "deleteControls": 8
+      },
+      "pageError": "",
+      "hover": null,
+      "click": null,
+      "tabPressed": false,
+      "affordance": {
+        "deleteControls": 8,
+        "visibleControls": 0,
+        "minOpacity": 0,
+        "pointerEvents": [
+          "none",
+          "none",
+          "none",
+          "none",
+          "none",
+          "none",
+          "none",
+          "none"
+        ],
+        "invisibleHitTests": 0,
+        "invisiblePassThrough": true,
+        "iconCharacters": [],
+        "iconSvgs": 8,
+        "activeElement": {
+          "tag": "body",
+          "label": null
+        }
+      },
+      "sha256": "5c3abe886680509ecebde005073b44600844d864dc9934e2ee77d044a1487a84"
+    },
+    {
+      "mode": "after",
+      "file": "reviews/evidence/P4-10-after-delete-selection-desktop.png",
+      "url": "http://127.0.0.1:4160/apps/engine-playground/?text=titles&view=512,288,1",
+      "viewport": {
+        "name": "desktop",
+        "width": 1440,
+        "height": 900
+      },
+      "note": "P4-10 delete affordance visible after a tap selects card-0002",
+      "ready": {
+        "ok": true,
+        "scene": "titles",
+        "counts": {
+          "zones": 2,
+          "blocks": 2,
+          "cards": 4,
+          "total": 8
+        },
+        "objectCount": 8,
+        "visibleCount": 8
+      },
+      "camera": {
+        "panX": -13,
+        "panY": -7.5,
+        "zoom": 1
+      },
+      "textAtlas": {
+        "width": 512,
+        "height": 512,
+        "rasterScale": 1,
+        "glyphCount": 404,
+        "maxTextureSize": 16384
+      },
+      "textBindings": {
+        "mode": "titles",
+        "objects": 8,
+        "boundTitles": 8,
+        "boundPreviews": 5,
+        "grownBlocks": 2,
+        "atlas": {
+          "width": 512,
+          "height": 512,
+          "rasterScale": 1,
+          "glyphCount": 404,
+          "maxTextureSize": 16384
+        },
+        "hovered": null,
+        "selected": "card-0002",
+        "deleteControls": 8
+      },
+      "pageError": "",
+      "hover": null,
+      "click": {
+        "world": {
+          "x": 400,
+          "y": 288
+        },
+        "screen": {
+          "x": 608,
+          "y": 391.296875
+        }
+      },
+      "tabPressed": false,
+      "affordance": {
+        "deleteControls": 8,
+        "visibleControls": 1,
+        "minOpacity": 0,
+        "pointerEvents": [
+          "none",
+          "none",
+          "none",
+          "none",
+          "none",
+          "auto",
+          "none",
+          "none"
+        ],
+        "invisibleHitTests": 0,
+        "invisiblePassThrough": true,
+        "iconCharacters": [],
+        "iconSvgs": 8,
+        "activeElement": {
+          "tag": "body",
+          "label": null
+        }
+      },
+      "sha256": "375e70bac0ec9b3ad25d04e465dec5644a7fb9207b57915b4e85a92027667912"
+    },
+    {
+      "mode": "after",
+      "file": "reviews/evidence/P4-10-after-delete-hover-desktop.png",
+      "url": "http://127.0.0.1:4160/apps/engine-playground/?text=titles&view=512,288,1",
+      "viewport": {
+        "name": "desktop",
+        "width": 1440,
+        "height": 900
+      },
+      "note": "P4-10 delete affordance visible while the card is hovered",
+      "ready": {
+        "ok": true,
+        "scene": "titles",
+        "counts": {
+          "zones": 2,
+          "blocks": 2,
+          "cards": 4,
+          "total": 8
+        },
+        "objectCount": 8,
+        "visibleCount": 8
+      },
+      "camera": {
+        "panX": -13,
+        "panY": -7.5,
+        "zoom": 1
+      },
+      "textAtlas": {
+        "width": 512,
+        "height": 512,
+        "rasterScale": 1,
+        "glyphCount": 404,
+        "maxTextureSize": 16384
+      },
+      "textBindings": {
+        "mode": "titles",
+        "objects": 8,
+        "boundTitles": 8,
+        "boundPreviews": 5,
+        "grownBlocks": 2,
+        "atlas": {
+          "width": 512,
+          "height": 512,
+          "rasterScale": 1,
+          "glyphCount": 404,
+          "maxTextureSize": 16384
+        },
+        "hovered": "card-0002",
+        "selected": null,
+        "deleteControls": 8
+      },
+      "pageError": "",
+      "hover": {
+        "world": {
+          "x": 400,
+          "y": 288
+        },
+        "screen": {
+          "x": 608,
+          "y": 391.296875
+        }
+      },
+      "click": null,
+      "tabPressed": false,
+      "affordance": {
+        "deleteControls": 8,
+        "visibleControls": 1,
+        "minOpacity": 0,
+        "pointerEvents": [
+          "none",
+          "none",
+          "none",
+          "none",
+          "none",
+          "auto",
+          "none",
+          "none"
+        ],
+        "invisibleHitTests": 0,
+        "invisiblePassThrough": true,
+        "iconCharacters": [],
+        "iconSvgs": 8,
+        "activeElement": {
+          "tag": "body",
+          "label": null
+        }
+      },
+      "sha256": "375e70bac0ec9b3ad25d04e465dec5644a7fb9207b57915b4e85a92027667912"
+    },
+    {
+      "mode": "after",
+      "file": "reviews/evidence/P4-10-after-delete-focus-desktop.png",
+      "url": "http://127.0.0.1:4160/apps/engine-playground/?text=titles&view=512,288,1",
+      "viewport": {
+        "name": "desktop",
+        "width": 1440,
+        "height": 900
+      },
+      "note": "P4-10 delete affordance visible on keyboard focus after Tab",
+      "ready": {
+        "ok": true,
+        "scene": "titles",
+        "counts": {
+          "zones": 2,
+          "blocks": 2,
+          "cards": 4,
+          "total": 8
+        },
+        "objectCount": 8,
+        "visibleCount": 8
+      },
+      "camera": {
+        "panX": -13,
+        "panY": -7.5,
+        "zoom": 1
+      },
+      "textAtlas": {
+        "width": 512,
+        "height": 512,
+        "rasterScale": 1,
+        "glyphCount": 404,
+        "maxTextureSize": 16384
+      },
+      "textBindings": {
+        "mode": "titles",
+        "objects": 8,
+        "boundTitles": 8,
+        "boundPreviews": 5,
+        "grownBlocks": 2,
+        "atlas": {
+          "width": 512,
+          "height": 512,
+          "rasterScale": 1,
+          "glyphCount": 404,
+          "maxTextureSize": 16384
+        },
+        "hovered": null,
+        "selected": null,
+        "deleteControls": 8
+      },
+      "pageError": "",
+      "hover": null,
+      "click": null,
+      "tabPressed": true,
+      "affordance": {
+        "deleteControls": 8,
+        "visibleControls": 1,
+        "minOpacity": 0,
+        "pointerEvents": [
+          "auto",
+          "none",
+          "none",
+          "none",
+          "none",
+          "none",
+          "none",
+          "none"
+        ],
+        "invisibleHitTests": 0,
+        "invisiblePassThrough": true,
+        "iconCharacters": [],
+        "iconSvgs": 8,
+        "activeElement": {
+          "tag": "button",
+          "label": "Delete"
+        }
+      },
+      "sha256": "1077b6a52aabaf8804f1493f6f98ea0f21b79c3bfa211e9b0314bb4ac3dc8d8a"
+    }
+  ],
+  "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M2, Unspecified Version)"
+}

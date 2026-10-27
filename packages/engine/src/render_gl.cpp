@@ -492,7 +492,7 @@ class Renderer {
   const char* lastError() const { return g_last_error.c_str(); }
 
   detail::FrameView frameView() const {
-    return detail::FrameView{created_, &camera_, css_width_, css_height_};
+    return detail::FrameView{created_, &camera_, css_width_, css_height_, &document_, &spatial_};
   }
 
  private:

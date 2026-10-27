@@ -1,6 +1,6 @@
 # Handoff — Project air, new session
 
-**As of:** 2026-10-27 22:30 (Europe/Zurich) · **Repository:** `/Users/rasulatashev/Desktop/KI Projekte/Project air` · **Base branch:** `main` · **Pushed:** `origin/main` now tracks `main` (owner request 2026-10-25, after the stage-5 plan); the remote commit `30626f0` (branding fix in `reference/`) was merged first with `fccf5c5`. The remote stage (`P0-02` branch protection, CI, release) is still pending.
+**As of:** 2026-10-27 22:55 (Europe/Zurich) · **Repository:** `/Users/rasulatashev/Desktop/KI Projekte/Project air` · **Base branch:** `main` · **Pushed:** `origin/main` now tracks `main` (owner request 2026-10-25, after the stage-5 plan); the remote commit `30626f0` (branding fix in `reference/`) was merged first with `fccf5c5`. The remote stage (`P0-02` branch protection, CI, release) is still pending.
 
 Read `AGENTS.md`, `ARCHITECTURE.md`, `STATUS.md`, `docs/module-map.md` and the task brief before working. Polier is pinned to v1.0.0: `export POLIER=/Users/rasulatashev/Desktop/Polier-main` then `bash tools/polier.sh --check`.
 
@@ -11,28 +11,28 @@ Read `AGENTS.md`, `ARCHITECTURE.md`, `STATUS.md`, `docs/module-map.md` and the t
 - **Stage 3 Engine spike:** complete, owner decision `continue`; C++20 core (doc/camera/spatial/render command buffer), WebGL2 instanced renderer, TS bridge `@project-air/engine`, `apps/engine-playground`, ADR-0006 + `docs/engine.md`; CMake 4.4.4 + Emscripten 6.0.13; WASM 49,925 B raw / 21,806 B gzip. Measured on the Mac mini M2 8 GB proxy: p95 2.00 ms (556 fps unlocked frame production), display-locked control p95 16.80 ms. **D8 caveat:** the MacBook Air M1 8 GB reference is unproven — re-measure before treating the hardware target as met.
 - **Stage 4 Backend core:** complete, owner decision `continue`; tasks `P3-01` … `P3-06` done. `services/platform` + `services/auth`, self-hosted Ory Kratos v26.2.0 (ADR-0007; `identity` profile, Mailpit courier, test-session mode for tests, admin API bound to localhost), PostgreSQL migrations `0001`–`0004` with RLS and contract-valid account-id mapping, 20 `/v1` contract routes + `GET /v1/session`, typed SDK `@project-air/sdk`, `api-tests` 32, `rls-tests` 7, platform unit 74, acceptance script `PASS backend-core acceptance`; ADR-0008 (API/session model).
 - **Stage 5 Engine core:** in progress, owner decision `continue`; 30 tasks (28 planned + `P4-29`/`P4-30`
-  live-demo zone parity). **Done and merged:** `P4-01` (engine document/hit testing), `P4-02`
-  (test-kit scenes/playground), `P4-03` (perf gate + L01 basis), `P4-04` (visual gate), `P4-05`
-  (gesture/undo seam), `P4-06` (L13 layers), `P4-07` (L19 fit/grid/idle), `P4-08` (text atlas),
-  `P4-09` (glyph layout/ellipsis), `P4-25` (contract 0.2.0), `P4-26` (DB containment). **Submitted,
-  awaiting review/merge:** `P4-10` (L02 titles for cards *and* zones, 40 px headers, zoom-bucket sharp
-  text incl. 200 %, reviewed reference at 100 %, plus `perf` and idle re-tests) as commit `bb52df9` in
-  `/tmp/air-P4-10` (branch `task/P4-10`, rebase on current `main`; evidence in `reviews/evidence/`;
-  gates board-check/boundaries/cpp-unit/visual/design-check/perf pass). **Next chain to the zone demo:**
-  `P4-14` (L03) → `P4-15` (L07) → `P4-16` (L10) → `P4-23` (L18) → `P4-27` (L08 engine membership/move) →
-  `P4-29` → `P4-30` (zone parity I/II) → `P4-28` (L01 final proof + `visual-final`/`perf-final` +
-  showcase). **All briefs for that chain exist now** (`P4-14/15/16/23/27/28/29/30`). Exit gates:
-  `cpp-unit` green; `visual-final`/`perf-final` only pass in `P4-28`.
+  live-demo zone parity). **Done and merged:** `P4-01` … `P4-09`, `P4-10` (L02 titles for cards *and*
+  zones, 40 px header chrome, zone content inset, zoom-bucket sharp text incl. 200 %, grown blocks,
+  quiet DOM delete affordance, perf and idle re-tests; review `reviews/P4-10.md` — pass with minors,
+  three fixed before the merge, three follow-ups below), `P4-25` (contract 0.2.0), `P4-26` (DB
+  containment). **Next chain to the zone demo:** `P4-14` (L03) → `P4-15` (L07) → `P4-16` (L10) →
+  `P4-23` (L18) → `P4-27` (L08 engine membership/move) → `P4-29` → `P4-30` (zone parity I/II) →
+  `P4-28` (L01 final proof + `visual-final`/`perf-final` + showcase). All chain briefs exist
+  (`P4-14/15/16/23/27/28/29/30`). Exit gates: `cpp-unit` green; `visual-final`/`perf-final` only pass
+  in `P4-28`, and P4-28's "two backends" part still needs `P4-11`…`P4-13` (WebGPU) plus
+  `P4-19/21/22/24`, which are NOT in the current chain — record that as an open point in P4-28, never
+  as a silent pass.
 - **Other sessions/repo state:** a second DSH/Claude session works in the same checkouts and produced
   `P4-06`/`P4-08`/`P4-09`/`P4-26`; coordinate via claims/`in_progress` in `board.json`. Commit race
   documented above (`eff284b` carries the P4-07 content, `b4938dc` its bookkeeping). `origin/main` is
   pushed at `64ea426` (check `git log`).
-- **Done overall:** 49 of 71 tasks. Open: the rest of stage 5 plus the remote-phase tasks `P0-02`,
-  `P0-15`, `P0-16`, `P0-17` (stage remote, after hardening) and the planning of the later stages
-  (realtime, web-app, value, hardening).
+- **Done overall:** 50 of 71 tasks. Open: the rest of stage 5 (the chain above plus `P4-11`…`P4-13`
+  WebGPU, `P4-17`/`P4-18` resize/auto-pan, `P4-19`…`P4-24` placement/keyboard/undo/view/trackpad)
+  plus the remote-phase tasks `P0-02`, `P0-15`, `P0-16`, `P0-17` (after hardening) and the planning
+  of the later stages (realtime, web-app, value, hardening).
 - **Preview:** `apps/web/preview/` has the permanent Contract 0.1.0 overview as section 02 and the live demo: top-centre ten-tool toolbar and a zone with notepad + image window (P0-26), **bilingual EN/DE with a themed top-right switch** via `apps/web/preview/locales/{en,de}.json` (all visible text/aria/alt; 260 identical keys; `<html lang>`, localStorage persistence, safe fallback) (P0-27), **zone items that can be dragged out onto the canvas and docked back** with a 28 px progressive detach animation, 8 px dock hysteresis, grid-snap, no edge connection, reduced-motion (P0-28); **when both items are out the empty zone fades/scales away and becomes hidden/inert, and dragging the two free items together (≥25 % overlap or ≤48 px centres) groups them into a newly animated zone** that re-orients/re-fits on resize, plus refined spring motion and a smaller zoom pill (36×104, 32 px buttons) (P0-29); **zone layout follows the drop (side by side or stacked), docked items can be reordered/swapped inside the zone, drags track the pointer 1:1 with commit-on-release (no magnetism) and the +/−/fit controls are smaller (32×96 pill, 28 px painted, 32 px hit, 12 px glyphs)** (P0-30). **Cache rule:** every preview change bumps `?v=` on `tokens.css`/`preview.css`/`preview.js` in `index.html`; locale fetches inherit the script version. A cached `index.html` may still need one hard reload (an old HTML document cannot reference the new CSS). Demo-cadence baseline screenshots: `P0-27-*` (desktop/mobile EN+DE, owner 1426×583 DPR2) `P0-28-*` (docked/mid-detach/detached/redocked) `P0-29-*` (zone fading/overlap/grouped/zoom/mobile/resize/toolbar) and `P0-30-*` (horizontal/vertical/swapped/drop-hint/controls/masthead/zoom-150).
 - **Checks:** `check.py` exit 0 (2 warnings: `budgets.status` override, P0-02 context pack), `boundaries.py` exit 0, `contracts.py check` exit 0, `design-check` exit 0, `language-check` OK, contract unit suite 88/88, engine CTest 2/2, `codegen`/`wasm-*` clean; DB suites need a Polier slot (they cannot run in the main checkout).
-- **Reviews:** `reviews/P1-04.md` … `reviews/P3-06.md` committed; verdicts and findings are in the files.
+- **Reviews:** `reviews/P1-04.md` … `reviews/P4-10.md` committed; verdicts and findings are in the files.
 
 ## Backend-core follow-ups (recorded, not blockers)
 
@@ -42,6 +42,21 @@ Read `AGENTS.md`, `ARCHITECTURE.md`, `STATUS.md`, `docs/module-map.md` and the t
 - RLS suite imports the API test helper for the reset; move the reset helper to `test/helpers/` before parallel suites.
 - Production database roles: the Compose superuser owns the schema; production needs a dedicated non-superuser table owner and a BYPASSRLS owner for the SECURITY DEFINER helpers (documented in 0003/0004/ADR-0008).
 - Kratos hardening: admin API needs a network/proxy boundary (it has no built-in auth), 24 h sessions vs ADR-0007's short-lived sessions, committed fallback cookie/cipher secrets and the slot-1 browser URLs in `kratos.yml` need cleanup, 405/413/415 use the nearest contract codes, no `cache-control: no-store` yet, and the `.env` loader for the auth process is documented only in READMEs.
+
+## Engine-core follow-ups (recorded, not blockers)
+
+- **Bound text is not depth-ordered (P4-10 review finding 1).** Bound titles/previews draw in one
+  glyph pass after the object pass, so on an overlapping board a back card's title can overpaint a
+  front card. The `text-titles` gallery is non-overlapping and `docs/engine.md` discloses the
+  limitation; depth-sort bound runs by document draw order in a follow-up engine task before L02/L13
+  can be called fully green.
+- **Delete affordance presentation (P4-10 review findings 3–4).** The 28 px delete button is an
+  inline SVG in the playground, not an icon in `packages/ui-kit/icons/`, and its label is hardcoded
+  English (AD-8 wants translation files). The playground has no message catalogue yet; move both in
+  L09/web-app when the affordance enters `apps/web`.
+- **`perf-final`/`visual-final` prerequisites.** `visual-final` names WebGL2 *and* WebGPU reference
+  images, but WebGPU (`P4-11`…`P4-13`) is still open; P4-28 must record the missing backend instead
+  of claiming two-backend proof (see the note in the stage-5 state above).
 
 ## Contract open points (documented in `docs/contracts.md`)
 
@@ -58,12 +73,19 @@ Read `AGENTS.md`, `ARCHITECTURE.md`, `STATUS.md`, `docs/module-map.md` and the t
 - Board-check must run **before** `pnpm install` (it scans `node_modules/`).
 - Engine toolchain: Apple clang plus CMake 4.4.4/Emscripten 6.0.13 via Homebrew (pinned in `docs/versions.md`); always build WASM through `bash packages/engine/tools/build-wasm.sh`.
 - Perf measurement: Chrome for Testing 156.0.8078.4 from the Playwright cache with `--headless=new --use-angle=metal --enable-gpu` (real ANGLE Metal GPU); the harness rejects software renderers.
-- DSH sessions: Chrome does not start inside the default workspace sandbox (sandbox init denied). The `perf`/`visual` gates need a one-shot wider approval or a run outside that sandbox; never replace the evidence with a screenshot from another build.
+- DSH sessions: Chrome for Testing starts inside the workspace sandbox when the harness passes its own `--user-data-dir` and `--no-sandbox` (the perf/visual/idle harnesses do); the P4-10 run produced real ANGLE Metal evidence this way. Never replace evidence with a screenshot from another build.
 - Disk: ~19 GiB free (freed during the backend stage). Still clean `node_modules/`, build dirs, `dist/` and `/tmp` after each task.
 
 ## Next steps
 
-1. **First resume `P4-04`** (visual gate): the task is implemented and committed in `/private/tmp/air-P4-04` but unreviewed/unmerged, and the board still lists it `in_progress`; get an independent review, merge, mark done, then finish the worktree. Then continue **stage 5 engine-core** in waves: (1) `P4-05` operation/undo seam; (1) `P4-06` L13, `P4-07` L19, `P4-08`/`P4-09` L02 text atlas + glyph layout, `P4-10` L02 titles/visible quality, `P4-11`/`P4-12` WebGPU pipeline + fallback, `P4-13` WebGPU switch + two-backend visual; (2) `P4-14` L03, `P4-15` L07, `P4-16` L10, `P4-17` L14, `P4-18` L16, `P4-19` L20, `P4-20` L12, `P4-21` L11, `P4-22` L17, `P4-23` L18, `P4-24` L15 desktop; (3) `P4-25`/`P4-26`/`P4-27` L08 contract, database, engine; (4) `P4-28` L01 final proof + stage showcase. Only the next briefs exist (JIT, `P4-01` … `P4-05`).
+1. **Continue the stage-5 chain** sequentially, one worktree per task under `/tmp/air-<ID>`: `P4-14`
+   (L03 drag/edit separation) → `P4-15` (L07 snapping) → `P4-16` (L10 multi-selection) → `P4-23` (L18
+   DOM overlay/inline comfort) → `P4-27` (L08 engine membership + zone move) → `P4-29` → `P4-30`
+   (live-demo zone parity, refine their JIT briefs against the P4-27 engine API) → `P4-28` (L01 final
+   proof + stage showcase). All briefs exist and pass `check.py`; P4-10 is merged and its review is
+   `reviews/P4-10.md`. Still open outside the chain: `P4-11`…`P4-13` (WebGPU), `P4-17` resize,
+   `P4-18` auto-pan, `P4-19` placement, `P4-20` keyboard/context menu, `P4-21` undo/redo, `P4-22`
+   remember view, `P4-24` trackpad/wheel.
 2. Then realtime (Q4), web-app (first real client of `packages/sdk`, fix its packaging first), value (imports/AI, Q8), hardening (M1 reference measurement, images, a11y mirror, touch), and only at the very end the remote phase (`P0-02`, `P0-15`, `P0-16`, `P0-17`, GitHub/CI/branch protection/release, ADR-0003).
 3. Before any contract change: bump the version in `board.contracts[]`, every schema `$id` and the root `contractVersion` in the same task, add valid+invalid fixtures, regenerate codegen, keep TS/C++ parity green, update `docs/contracts.md`, run the `contracts` gate. The first one is the zones parent reference in `P4-23` (0.1.0 -> 0.2.0).
 4. Keep the demo cadence: every preview or design-system change updates the Contract overview, the live demo and its screenshots in the same task; the engine playground showcase comes with `P4-02` and `P4-25`.
@@ -105,12 +127,8 @@ Rules: one commit per task (`<ID>: <title>`), change entry in `.changes/` (`pnpm
 ## New session prompt
 
 > Lies `AGENTS.md`, `ARCHITECTURE.md`, `STATUS.md`, `docs/module-map.md`, `docs/canvas-acceptance.md`
-> und `HANDOFF.md`. Stage 5 (`engine-core`) läuft: `P4-01`…`P4-09`, `P4-25`, `P4-26` sind gemerged,
-> `P4-10` (L02 Titel für Karten **und** Zonen, 40-px-Kopfzeile, scharfer Text beim Zoomen über
-> Zoom-Buckets, Referenzbild bei 100 %, Perf- und Idle-Re-Test) läuft in `/tmp/air-P4-10`.
-> Prüfe `git log`, `board.json` und `list_agents`/Claims, übernimm den laufenden Task oder starte nach
-> seinem Merge die Kette `P4-14` → `P4-15` → `P4-16` → `P4-23` → `P4-27` → `P4-29` → `P4-30` → `P4-28`
-> (Briefs JIT schreiben; `P4-29`/`P4-30` haben Briefs). Lokal arbeiten; `main` wird gepusht, nichts
-> ohne Freigabe pushen/mergen/taggen. Worktrees unter `/tmp/air-<ID>` (DSH-Sandbox), Slot aus
-> `.polier-slot`, `board-check` vor `pnpm install`, Chrome-Gates mit `--no-sandbox`, Evidenz in
-> `reviews/evidence/`, ein Commit pro Task.
+> und `HANDOFF.md`. Stage 5 (`engine-core`) läuft: `P4-01`…`P4-10`, `P4-25`, `P4-26` sind gemerged,
+> die Kette `P4-14` → `P4-15` → `P4-16` → `P4-23` → `P4-27` → `P4-29` → `P4-30` → `P4-28` ist als
+> Nächstes dran (alle Briefs existieren). Lokal arbeiten; nichts ohne Freigabe pushen/mergen/taggen.
+> Worktrees unter `/tmp/air-<ID>` (DSH-Sandbox), Slot aus `.polier-slot`, `board-check` vor
+> `pnpm install`, Chrome-Gates mit `--no-sandbox`, Evidenz in `reviews/evidence/`, ein Commit pro Task.
