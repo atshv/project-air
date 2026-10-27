@@ -130,10 +130,6 @@
   - P4-02: Screenshots 1440x900/390x844 + serve/capture log (HTTP 200, SwiftShader capture); test-kit suite 12/12; four gates green after the owner-approved design-check test fix 32c8f28.
   - P4-02: Two review rounds; minors fixed (serve-log consistency, per-zone block assertions). Deviation: Node v26.12.1 vs the .nvmrc pin.
 - `P4-25` Zones as containers I: contract parent reference (L08)
-- `P0-31` Refined live demo: smooth merge/split and calm motion
-  - P0-30: Closed P0-30: zone layout horizontal (526x174) or vertical (274x275) chosen by drop placement, animated resize; docked items reorder/swap and flip orientation inside the zone (hysteresis).
-  - P0-30: Less magnetic: 1:1 pointer tracking, no mid-drag dock/group, drop hint, commit on release (detach/dock/reorder/group); collapse/resize refit kept; edge stays A/B only; reduced motion instant.
-  - P0-30: Controls smaller (32x96, 28px painted, 32x32 hit, 12px glyphs); masthead P0-30 EN+DE; ?v=P0-30; gates board-check/design-check/changelog-entry; evidence horizontal/vertical/swapped/controls.
 
 ## Done
 
@@ -186,6 +182,7 @@
 ## In progress
 
 - [ ] `P4-04` Visual gate with reference images — status: `in_progress` — owner: lead
+- [ ] `P0-31` Refined live demo: smooth merge/split and calm motion — status: `in_progress` — owner: —
 
 ## Blocked / failed
 
@@ -221,7 +218,13 @@
 - [ ] `P4-26` Zones as containers II: platform migration and containment (L08) — status: `pending` — owner: —
 - [ ] `P4-27` Zones as containers II: engine membership and zone move (L08) — status: `pending` — owner: —
 - [ ] `P4-28` L01 final proof, two-backend reference images and stage showcase — status: `pending` — owner: —
-- [ ] `P0-31` Refined live demo: smooth merge/split and calm motion — status: `pending` — owner: —
+
+<!-- polier:claims -->
+## Claims
+
+- `P0-31` in progress by dsh since 2026-10-27T19:03:36+00:00 — worktree: /Users/rasulatashev/Desktop/KI Projekte/Project air-P0-31 · slot 2
+
+<!-- /polier:claims -->
 
 ## Decisions
 
