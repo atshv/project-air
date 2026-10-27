@@ -183,6 +183,7 @@
 - [x] `P4-05` Gesture-to-operation seam and undo history core — status: `done` — owner: —
 - [x] `P4-07` Canvas feel: fit, dot grid and idle drawing (L19) — status: `done` — owner: —
 - [x] `P4-25` Contract 0.2.0: zone parent reference and reorder (z) operation (L08/L13) — status: `done` — owner: —
+- [x] `P4-26` Zones as containers II: platform migration and containment (L08) — status: `done` — owner: —
 - [x] `P0-26` Toolbar and zone with notepad and image window in the preview — status: `done` — owner: —
 - [x] `P0-27` Bilingual preview with DE/EN switch and cache-busted assets — status: `done` — owner: —
 - [x] `P0-28` Zone detach interaction: drag notepad and photo out and back — status: `done` — owner: —
@@ -195,7 +196,6 @@
 
 - [ ] `P4-06` Layers and draw order (L13) — status: `in_progress` — owner: —
 - [ ] `P4-08` Text atlas and glyph texture pipeline (L02) — status: `in_progress` — owner: —
-- [ ] `P4-26` Zones as containers II: platform migration and containment (L08) — status: `in_progress` — owner: —
 
 ## Blocked / failed
 
@@ -231,9 +231,7 @@
 <!-- polier:claims -->
 ## Claims
 
-- `P4-06` in progress by dsh since 2026-10-27T20:43:14+00:00 — worktree: /Users/rasulatashev/Desktop/KI Projekte/Project air-P4-06 · slot 2
 - `P4-08` in progress by dsh since 2026-10-27T20:47:31+00:00 — worktree: /Users/rasulatashev/Desktop/KI Projekte/Project air-P4-08 · slot 1
-- `P4-26` in progress by dsh since 2026-10-27T20:48:02+00:00 — worktree: /Users/rasulatashev/Desktop/KI Projekte/Project air-P4-26 · slot 3
 
 <!-- /polier:claims -->
 

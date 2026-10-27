@@ -149,7 +149,7 @@ test("row-level security is enabled and forced on every application table", asyn
   );
   assert.deepEqual(
     tables.rows.map((row) => row.relname),
-    ["boards", "cards", "notes", "profiles", "workspace_members", "workspaces"],
+    ["boards", "cards", "notes", "profiles", "workspace_members", "workspaces", "zones"],
   );
   for (const row of tables.rows) {
     assert.equal(row.relrowsecurity, true, `${row.relname} has RLS enabled`);
@@ -282,5 +282,63 @@ test("a reused connection does not inherit the previous account", async () => {
     await connection.query("ROLLBACK");
   } finally {
     await connection.end();
+  }
+});
+
+test("P4-26: zones follow the board's isolation and a card cannot join a foreign zone", async () => {
+  const ALICE_ZONE = "0192f0a5-7000-7000-8000-0000000000a1";
+  const BOB_ZONE = "0192f0a5-7000-7000-8000-0000000000b1";
+  const zoneInsert =
+    "INSERT INTO app.zones (id, board_id, title, x, y, width, height, z) VALUES ($1, $2, 'Zone', 0, 0, 480, 320, 'a0')";
+  await owner.query(zoneInsert, [ALICE_ZONE, ALICE_BOARD]);
+  await owner.query(zoneInsert, [BOB_ZONE, BOB_BOARD]);
+  try {
+    await asAccount(appUser, ALICE, async () => {
+      assert.deepEqual(await idsOf(appUser, "SELECT id FROM app.zones"), [ALICE_ZONE]);
+      assert.deepEqual(await idsOf(appUser, "SELECT id FROM app.zones WHERE id = $1", [BOB_ZONE]), []);
+      await expectStatementRejected(appUser, zoneInsert, ["0192f0a5-7000-7000-8000-0000000000a2", BOB_BOARD], /row-level security/);
+      assert.equal((await appUser.query("UPDATE app.zones SET title = 'Taken' WHERE id = $1", [BOB_ZONE])).rowCount, 0);
+      assert.equal((await appUser.query("DELETE FROM app.zones WHERE id = $1", [BOB_ZONE])).rowCount, 0);
+      await expectStatementRejected(
+        appUser,
+        `INSERT INTO app.cards (id, board_id, note_id, zone_id, x, y, width, height, z)
+         VALUES (gen_random_uuid(), $1, $2, $3, 0, 0, 240, 120, 'a1')`,
+        [ALICE_BOARD, ALICE_NOTE, BOB_ZONE],
+        /cards_zone_fkey/,
+      );
+
+      // Own zone: write, place a card, delete the zone; the card stays on the board.
+      const ownZone = "0192f0a5-7000-7000-8000-0000000000a3";
+      await appUser.query(zoneInsert, [ownZone, ALICE_BOARD]);
+      const card = (
+        await appUser.query(
+          `INSERT INTO app.cards (id, board_id, note_id, zone_id, x, y, width, height, z)
+           VALUES (gen_random_uuid(), $1, $2, $3, 0, 0, 240, 120, 'a1') RETURNING id`,
+          [ALICE_BOARD, ALICE_NOTE, ownZone],
+        )
+      ).rows[0].id;
+      assert.equal((await appUser.query("DELETE FROM app.zones WHERE id = $1", [ownZone])).rowCount, 1);
+      const kept = (await appUser.query("SELECT zone_id FROM app.cards WHERE id = $1", [card])).rows[0];
+      assert.equal(kept.zone_id, null);
+    });
+
+    await asAccount(appUser, BOB, async () => {
+      assert.deepEqual(await idsOf(appUser, "SELECT id FROM app.zones"), [BOB_ZONE]);
+    });
+
+    // A reader of Alice's workspace sees her zone but cannot write it.
+    await owner.query("INSERT INTO app.workspace_members (workspace_id, account_id, role) VALUES ($1, $2, 'reader')", [
+      ALICE_WORKSPACE,
+      BOB,
+    ]);
+    await asAccount(appUser, BOB, async () => {
+      assert.deepEqual(await idsOf(appUser, "SELECT id FROM app.zones"), [ALICE_ZONE, BOB_ZONE].sort());
+      await expectStatementRejected(appUser, zoneInsert, ["0192f0a5-7000-7000-8000-0000000000a4", ALICE_BOARD], /row-level security/);
+      assert.equal((await appUser.query("UPDATE app.zones SET title = 'Read only' WHERE id = $1", [ALICE_ZONE])).rowCount, 0);
+      assert.equal((await appUser.query("DELETE FROM app.zones WHERE id = $1", [ALICE_ZONE])).rowCount, 0);
+    });
+  } finally {
+    await owner.query("DELETE FROM app.workspace_members WHERE workspace_id = $1 AND account_id = $2", [ALICE_WORKSPACE, BOB]);
+    await owner.query("DELETE FROM app.zones WHERE id = ANY($1::uuid[])", [[ALICE_ZONE, BOB_ZONE]]);
   }
 });

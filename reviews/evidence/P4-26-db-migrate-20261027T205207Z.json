@@ -1,0 +1,19 @@
+{
+  "task": "P4-26",
+  "gate": "db-migrate",
+  "command": "export DATABASE_URL=\"$(cd services/platform && node --input-type=module -e \"import {databaseUrl} from \\\"./test/helpers/slot.mjs\\\"; process.stdout.write(databaseUrl())\")\" && node services/platform/src/db/migrate.ts && node services/platform/src/db/migrate.ts",
+  "exit_code": 0,
+  "result": "pass",
+  "slot": null,
+  "exclusive": [
+    "db"
+  ],
+  "lock_wait_s": 0.0,
+  "lock_warning": null,
+  "started": "2026-10-27T20:52:07+00:00",
+  "finished": "2026-10-27T20:52:08+00:00",
+  "commit": "776a5ace067a98cb9c184b69bc5b5bcb599c8229",
+  "dirty": true,
+  "log": "P4-26-db-migrate-20261027T205207Z.log",
+  "log_sha256": "d0d5cf31b6b143d9b8b84575424d546f491314d947eb9af3f72d439c1155572e"
+}

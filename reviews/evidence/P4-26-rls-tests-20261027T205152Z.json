@@ -1,0 +1,19 @@
+{
+  "task": "P4-26",
+  "gate": "rls-tests",
+  "command": "node --test services/platform/test/rls/*.test.mjs",
+  "exit_code": 0,
+  "result": "pass",
+  "slot": null,
+  "exclusive": [
+    "db"
+  ],
+  "lock_wait_s": 0.0,
+  "lock_warning": null,
+  "started": "2026-10-27T20:51:52+00:00",
+  "finished": "2026-10-27T20:51:52+00:00",
+  "commit": "776a5ace067a98cb9c184b69bc5b5bcb599c8229",
+  "dirty": true,
+  "log": "P4-26-rls-tests-20261027T205152Z.log",
+  "log_sha256": "e64dbe275a7378baa7a74c36caefb98d4a1d72d093623364e0a16e55801896a1"
+}

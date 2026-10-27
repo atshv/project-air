@@ -4343,7 +4343,7 @@
       "satisfies": [
         "D10"
       ],
-      "status": "in_progress",
+      "status": "done",
       "depends_on": [
         "P4-25"
       ],
@@ -4385,11 +4385,23 @@
       ],
       "owner": null,
       "branch": "task/P4-26",
-      "worktree": "../Project air-P4-26",
+      "worktree": null,
       "round": 0,
-      "evidence": [],
+      "evidence": [
+        "reviews/evidence/P4-26-api-tests-20261027T205150Z.json",
+        "reviews/evidence/P4-26-board-check-20261027T205513Z.json",
+        "reviews/evidence/P4-26-boundaries-20261027T205142Z.json",
+        "reviews/evidence/P4-26-db-migrate-20261027T205207Z.json",
+        "reviews/evidence/P4-26-rls-tests-20261027T205152Z.json",
+        "reviews/evidence/P4-26-unit-20261027T205148Z.json"
+      ],
       "scope_write_forbidden": [
         "reference/"
+      ],
+      "handoff": [
+        "Closed P4-26: migration 0005 adds app.zones (contract fields, no parent column) and the composite key cards(board_id,zone_id)->zones(board_id,id) ON DELETE SET NULL (zone_id).",
+        "Zones carry the card RLS matrix; zones.board_id immutable; API answers 400 VALIDATION for a non-zone/foreign parent. unit 83+56, api 33, rls 8 green; review pass.",
+        "Follow-ups: no zone REST routes in contract 0.2.0 (sync later); blocks get the same key with block storage; ON DELETE SET NULL does not bump cards.updated_at (P4-27)."
       ]
     },
     {

@@ -1,0 +1,177 @@
+$ pnpm --filter ./services/platform --filter ./services/auth test
+[exit 0]
+
+Scope: 2 of 11 workspace projects
+services/auth test$ node --test test/*.test.mjs
+services/platform test$ node --test --test-concurrency=1 test/*.test.mjs test/migrations/*.test.mjs
+services/platform test: ✔ parses a complete environment (2.22275ms)
+services/platform test: ✔ defaults NODE_ENV, LOG_LEVEL and HOST (0.163834ms)
+services/platform test: ✔ a missing DATABASE_URL fails fast (0.231167ms)
+services/platform test: ✔ the app_user connection is required and must be a PostgreSQL URL (0.143542ms)
+services/platform test: ✔ the auth service URL is required and must be http(s) (0.135625ms)
+services/platform test: ✔ port, NODE_ENV, LOG_LEVEL and HOST are validated (0.153125ms)
+services/auth test: ✔ parses a complete environment and normalises the Kratos URLs (4.6115ms)
+services/auth test: ✔ defaults NODE_ENV, LOG_LEVEL and HOST (0.214416ms)
+services/auth test: ✔ AUTH_PORT is required and must be a valid port number (0.72175ms)
+services/auth test: ✔ secrets are required, long enough and never echoed (0.537375ms)
+services/auth test: ✔ the Kratos URLs are required http(s) URLs (12.996167ms)
+services/auth test: ✔ a missing or invalid DATABASE_URL fails fast (0.158625ms)
+services/auth test: ✔ NODE_ENV and LOG_LEVEL reject unknown values (3.814084ms)
+services/auth test: ✔ the test-session mode is opt-in and impossible in production (0.209333ms)
+services/auth test: ✔ liveness answers 200 while the database is down (47.974834ms)
+services/auth test: ✔ readiness answers 200 when the database ping succeeds (4.184792ms)
+services/auth test: ✔ readiness includes the Kratos check when wired (8.500417ms)
+services/auth test: ✔ readiness answers 503 when the database ping fails (1.891709ms)
+services/auth test: ✔ readiness answers 503 when the database is unreachable (8.622708ms)
+services/auth test: ✔ creates an identity through the Kratos admin API and returns its id (32.982334ms)
+services/auth test: ✔ a missing or wrong admin token is 401 AUTH_REQUIRED (5.8215ms)
+services/auth test: ✔ an invalid invitation body is 400 VALIDATION with field details (2.270916ms)
+services/auth test: ✔ a duplicate e-mail is 409 CONFLICT (3.766292ms)
+services/auth test: ✔ a Kratos failure is a 503 INTERNAL (10.902ms)
+services/auth test: ✔ whoami returns the mapped identity and forwards the cookie (56.125709ms)
+services/auth test: ✔ whoami returns null for a missing or expired session (3.970125ms)
+services/auth test: ✔ whoami rejects an unexpected Kratos status (5.16575ms)
+services/auth test: ✔ createIdentity sends the traits and returns the identity (6.010667ms)
+services/auth test: ✔ createIdentity maps a duplicate e-mail to conflict (3.953542ms)
+services/auth test: ✔ createRecoveryLink and listIdentities call the admin API (2.923334ms)
+services/auth test: ✔ the public flow clients return id and action (5.472917ms)
+services/auth test: ✔ ready is true for a healthy Kratos and false for 503 or a closed port (2.923459ms)
+services/auth test: ✔ a slow Kratos times out as unavailable (52.447791ms)
+services/auth test: ✔ an invalid JSON body is a bad_response error (0.720083ms)
+services/platform test: ✔ liveness answers 200 while the database is down (14.31025ms)
+services/platform test: ✔ readiness answers 200 when the database ping succeeds (3.943458ms)
+services/platform test: ✔ readiness answers 503 INTERNAL when the database ping fails (2.409458ms)
+services/platform test: ✔ readiness answers 503 when the database is unreachable (2.84125ms)
+services/auth test: ✔ loads the migrations in file-name order with SHA-256 checksums (22.643542ms)
+services/auth test: ✔ returns the success envelope with a UUIDv7 request id in the header (84.002208ms)
+services/auth test: ✔ keeps a valid UUIDv7 client request id and replaces anything else (6.811042ms)
+services/auth test: ✔ parses the query string (5.323125ms)
+services/auth test: ✔ returns the contract error envelope for an unknown path (7.300458ms)
+services/auth test: ✔ returns 405 with an Allow header for a known path and the wrong method (1.703083ms)
+services/auth test: ✔ reads a JSON body and wraps the result (3.00625ms)
+services/auth test: ✔ rejects invalid JSON with a VALIDATION envelope (4.050292ms)
+services/auth test: ✔ rejects a non-JSON content type with 415 (1.604625ms)
+services/auth test: ✔ rejects a body above the limit with 413 (3.308167ms)
+services/auth test: ✔ a custom status and headers are preserved (1.938583ms)
+services/auth test: ✔ an empty handler result is a 204 without a body (1.040917ms)
+services/auth test: ✔ an unexpected error becomes a generic INTERNAL envelope (1.218333ms)
+services/auth test: ✔ a valid Kratos session returns the account id, e-mail and display name (28.225ms)
+services/auth test: ✔ no session cookie is 401 AUTH_REQUIRED (1.68225ms)
+services/auth test: ✔ an invalid or expired Kratos session is 401 AUTH_REQUIRED (2.930625ms)
+services/auth test: ✔ an error response from Kratos is a 503 INTERNAL (3.777333ms)
+services/auth test: ✔ an unreachable Kratos is a 503 INTERNAL (2.942917ms)
+services/auth test: ✔ POST /test/session mints a session that GET /session accepts (22.423917ms)
+services/auth test: ✔ a tampered or expired test session is 401, never 500 (3.9235ms)
+services/auth test: ✔ POST /test/session validates its body (5.371125ms)
+services/auth test: ✔ without test mode the test-session route does not exist and the header is ignored (3.465209ms)
+services/auth test: ✔ mints the documented three-part token and verifies it (1.635084ms)
+services/auth test: ✔ rejects a tampered signature and another secret (0.226542ms)
+services/auth test: ✔ rejects an expired token (0.114542ms)
+services/auth test: ✔ rejects malformed tokens (0.093958ms)
+services/auth test: ✔ rejects an invalid account id and an out-of-range TTL (0.343583ms)
+services/auth test: ✔ the header name and the deterministic test profile are stable (0.140167ms)
+services/auth test: ℹ tests 56
+services/auth test: ℹ suites 0
+services/auth test: ℹ pass 56
+services/auth test: ℹ fail 0
+services/auth test: ℹ cancelled 0
+services/auth test: ℹ skipped 0
+services/auth test: ℹ todo 0
+services/auth test: ℹ duration_ms 791.580167
+services/auth test: Done
+services/platform test: ▶ migration runner
+services/platform test:   ✔ loads the migrations in file-name order with SHA-256 checksums (3.376916ms)
+services/platform test: {"time":"2026-10-27T20:51:49.578Z","level":"info","message":"migrations complete","applied":0,"skipped":5}
+services/platform test:   ✔ applies the migrations once and records versions in schema_migrations (48.838708ms)
+services/platform test: {"time":"2026-10-27T20:51:49.598Z","level":"info","message":"migrations complete","applied":0,"skipped":5}
+services/platform test:   ✔ a second run is a no-op (9.707292ms)
+services/platform test:   ✔ fails when an applied migration changed (12.906584ms)
+services/platform test:   ✔ fails when an applied migration disappeared (8.672709ms)
+services/platform test: ✔ migration runner (84.500917ms)
+services/platform test: {"time":"2026-10-27T20:51:49.810Z","level":"info","message":"migrations complete","applied":0,"skipped":5}
+services/platform test: ✔ F1: a note cannot be moved to another workspace, even by a writer of both (65.870916ms)
+services/platform test: ✔ F1: a board cannot be moved to another workspace, even by a writer of both (3.118917ms)
+services/platform test: ✔ F2: a member cannot be promoted to the owner role (2.824334ms)
+services/platform test: ✔ F2: an owner membership row cannot be inserted directly (2.7545ms)
+services/platform test: ✔ F5: as app_user, creating a workspace creates exactly one owner row (3.260583ms)
+services/platform test: ✔ F2: the owner of a workspace cannot be deleted, a member can (2.575208ms)
+services/platform test: ✔ F4: a malformed app.account_id yields no rows instead of an error (14.48275ms)
+services/platform test: ✔ F6: the contract minimum lengths are enforced (2.639583ms)
+services/platform test: ✔ F3: the helpers are executable by app_user only (3.738334ms)
+services/platform test: ✔ P3-06: the identity mapping helper returns one account id and the index is unique (2.678542ms)
+services/platform test: ✔ F3: the note/board helper does not answer for a foreign workspace (2.16725ms)
+services/platform test: {"time":"2026-10-27T20:51:50.078Z","level":"info","message":"migrations complete","applied":0,"skipped":5}
+services/platform test: ✔ returns null and no rows when app.account_id is unset (57.03475ms)
+services/platform test: ✔ does not leak app.account_id into the next transaction (3.911875ms)
+services/platform test: ✔ a member sees only rows of their own workspaces (7.210416ms)
+services/platform test: ✔ the owner sees the membership list of their workspace only (3.676375ms)
+services/platform test: ✔ an account cannot insert rows into a foreign workspace (5.418375ms)
+services/platform test: ✔ an account cannot create a workspace for somebody else (1.570334ms)
+services/platform test: ✔ an owner can write, delete and manage membership (5.97275ms)
+services/platform test: ✔ an editor can write but cannot manage the workspace (5.662709ms)
+services/platform test: ✔ an editor cannot claim board ownership for somebody else (1.56825ms)
+services/platform test: ✔ a reader can only read (4.56275ms)
+services/platform test: ✔ a card cannot attach a note from a foreign workspace (1.782375ms)
+services/platform test: ✔ the owner membership row cannot be changed or removed (2.996667ms)
+services/platform test: ✔ profiles are visible and writable only for the owning account (2.301208ms)
+services/platform test: {"time":"2026-10-27T20:51:50.476Z","level":"info","message":"migrations complete","applied":0,"skipped":5}
+services/platform test: {"time":"2026-10-27T20:51:50.508Z","level":"info","message":"migrations complete","applied":0,"skipped":5}
+services/platform test: ✔ applies the migrations once and records every version with its checksum (56.567416ms)
+services/platform test: ✔ creates the six application tables with the expected columns and types (4.443667ms)
+services/platform test: ✔ uses the contract enums for roles and board visibility (1.116125ms)
+services/platform test: ✔ has the primary keys, check constraints, foreign-key delete rules and indexes (4.060083ms)
+services/platform test: ✔ enables and forces row-level security on every table (0.764541ms)
+services/platform test: ✔ has a policy for every operation of the permission matrix, bound to app_user (2.319333ms)
+services/platform test: ✔ gives app_user CRUD grants but no superuser, bypass or table ownership (10.671042ms)
+services/platform test: ✔ creating a workspace creates the owner membership atomically (1.963416ms)
+services/platform test: ▶ rejects invalid rows
+services/platform test:   ✔ an orphan board (0.79575ms)
+services/platform test:   ✔ a workspace with a missing owner profile (0.717208ms)
+services/platform test:   ✔ a card without a note (0.720208ms)
+services/platform test:   ✔ a card with a note from another workspace (2.142125ms)
+services/platform test:   ✔ a card below the minimum size (0.442917ms)
+services/platform test:   ✔ a card with an invalid fractional z (0.521333ms)
+services/platform test:   ✔ a note title above the contract limit (0.39825ms)
+services/platform test:   ✔ a workspace name above the contract limit (0.409833ms)
+services/platform test:   ✔ a display name above the contract limit (0.502375ms)
+services/platform test:   ✔ an unknown locale (0.463541ms)
+services/platform test:   ✔ a duplicate membership (0.539625ms)
+services/platform test:   ✔ removing or demoting the owner membership (1.14125ms)
+services/platform test:   ✔ transferring workspace ownership (0.614875ms)
+services/platform test:   ✔ deleting a note that still has cards (0.71ms)
+services/platform test:   ✔ deleting a board cascades its cards and keeps the note (3.738708ms)
+services/platform test:   ✔ deleting a workspace cascades every child row (3.815833ms)
+services/platform test: ✔ rejects invalid rows (18.848958ms)
+services/platform test: {"time":"2026-10-27T20:51:50.571Z","level":"info","message":"migration applied","version":"0004_account_mapping","name":"0004_account_mapping.sql"}
+services/platform test: {"time":"2026-10-27T20:51:50.571Z","level":"info","message":"migrations complete","applied":1,"skipped":4}
+services/platform test: ✔ P3-06: migration 0004 backfills the mapping only for legacy non-v7 account ids (19.955834ms)
+services/platform test: ▶ P4-26: a card parent is a zone of the same board, and zones are not nested
+services/platform test:   ✔ zones carry no parent column and the card key is composite with SET NULL (zone_id) (4.630125ms)
+services/platform test:   ✔ a card in a zone of its own board is accepted (2.187167ms)
+services/platform test:   ✔ a zone of another board, an unknown id and a card id are rejected (3.776583ms)
+services/platform test:   ✔ deleting a zone keeps its cards on the board (1.989625ms)
+services/platform test:   ✔ deleting a board cascades its zones and zoned cards (2.370084ms)
+services/platform test:   ✔ a zone cannot move to another board (1.481792ms)
+services/platform test:   ✔ the contract zone limits are enforced (1.113292ms)
+services/platform test: ✔ P4-26: a card parent is a zone of the same board, and zones are not nested (18.112416ms)
+services/platform test: {"time":"2026-10-27T20:51:50.616Z","level":"info","message":"migration applied","version":"0005_zone_containers","name":"0005_zone_containers.sql"}
+services/platform test: {"time":"2026-10-27T20:51:50.616Z","level":"info","message":"migrations complete","applied":1,"skipped":4}
+services/platform test: {"time":"2026-10-27T20:51:50.625Z","level":"info","message":"migrations complete","applied":0,"skipped":5}
+services/platform test: ✔ P4-26: migration 0005 upgrades a 0004 database and drops unresolvable parents (34.116125ms)
+services/platform test: ✔ wraps `data` in {requestId, data} and mirrors the UUIDv7 id in the header (13.94325ms)
+services/platform test: ✔ sends a `body` envelope unchanged and matches path parameters (1.745791ms)
+services/platform test: ✔ keeps a valid UUIDv7 client request id and replaces anything else (2.50725ms)
+services/platform test: ✔ returns 404 for an unknown path and 405 for a known path with a wrong method (1.491416ms)
+services/platform test: ✔ reads a JSON body and wraps the result (2.101583ms)
+services/platform test: ✔ rejects invalid JSON, non-JSON content types and oversized bodies (2.653416ms)
+services/platform test: ✔ a custom status and headers are preserved, and an empty result is 204 (1.271166ms)
+services/platform test: ✔ an unexpected error becomes a generic INTERNAL envelope (0.978333ms)
+services/platform test: ℹ tests 83
+services/platform test: ℹ suites 0
+services/platform test: ℹ pass 83
+services/platform test: ℹ fail 0
+services/platform test: ℹ cancelled 0
+services/platform test: ℹ skipped 0
+services/platform test: ℹ todo 0
+services/platform test: ℹ duration_ms 2107.638625
+services/platform test: Done

@@ -1,0 +1,12 @@
+$ export DATABASE_URL="$(cd services/platform && node --input-type=module -e "import {databaseUrl} from \"./test/helpers/slot.mjs\"; process.stdout.write(databaseUrl())")" && node services/platform/src/db/migrate.ts && node services/platform/src/db/migrate.ts
+[exit 0]
+
+{"time":"2026-10-27T20:52:08.317Z","level":"info","message":"migration applied","version":"0001_app_schema","name":"0001_app_schema.sql"}
+{"time":"2026-10-27T20:52:08.351Z","level":"info","message":"migration applied","version":"0002_workspace_schema","name":"0002_workspace_schema.sql"}
+{"time":"2026-10-27T20:52:08.365Z","level":"info","message":"migration applied","version":"0003_rls_policies","name":"0003_rls_policies.sql"}
+{"time":"2026-10-27T20:52:08.369Z","level":"info","message":"migration applied","version":"0004_account_mapping","name":"0004_account_mapping.sql"}
+{"time":"2026-10-27T20:52:08.379Z","level":"info","message":"migration applied","version":"0005_zone_containers","name":"0005_zone_containers.sql"}
+{"time":"2026-10-27T20:52:08.379Z","level":"info","message":"migrations complete","applied":5,"skipped":0}
+{"time":"2026-10-27T20:52:08.383Z","level":"info","message":"migrate: done","applied":5,"skipped":0}
+{"time":"2026-10-27T20:52:08.589Z","level":"info","message":"migrations complete","applied":0,"skipped":5}
+{"time":"2026-10-27T20:52:08.593Z","level":"info","message":"migrate: done","applied":0,"skipped":5}

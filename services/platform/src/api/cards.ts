@@ -4,8 +4,11 @@
  * A card is a note placement (AD-4). Read = any member of the board's
  * workspace, create/update/delete = owner/editor. The note must live in the
  * board's own workspace; the database trigger and RLS enforce the same rule.
+ * A non-null `zoneId` must name a zone of the card's own board (ADR-0010); the
+ * composite foreign key from 0005 enforces the same rule at rest.
  */
 
+import { constraintOf, sqlStateOf } from "../db/errors.ts";
 import { notFound, validationFailed } from "../http/errors.ts";
 import { createUuid } from "../http/request-id.ts";
 import type { Router } from "../http/router.ts";
@@ -27,6 +30,7 @@ import {
 } from "./validation.ts";
 
 const Z_PATTERN = /^[0-9A-Za-z]{1,64}$/;
+const ZONE_KEY = "cards_zone_fkey";
 
 interface CardCreate {
   readonly boardId: string;
@@ -146,11 +150,15 @@ export function registerCardRoutes(router: Router, dependencies: ApiDependencies
       }
       await requireBoardWriter(client, boardId);
       await requireNoteOfBoard(client, card.noteId, boardId);
-      const result = await client.query<CardRow>(
-        `INSERT INTO app.cards (id, board_id, note_id, zone_id, x, y, width, height, z)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
-         RETURNING ${CARD_COLUMNS}`,
-        [createUuid(), boardId, card.noteId, card.zoneId, card.x, card.y, card.width, card.height, card.z],
+      await requireZoneOfBoard(client, card.zoneId, boardId, "card.zoneId");
+      const result = await withZoneKey(
+        "card.zoneId",
+        client.query<CardRow>(
+          `INSERT INTO app.cards (id, board_id, note_id, zone_id, x, y, width, height, z)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+           RETURNING ${CARD_COLUMNS}`,
+          [createUuid(), boardId, card.noteId, card.zoneId, card.x, card.y, card.width, card.height, card.z],
+        ),
       );
       const row = result.rows[0];
       if (row === undefined) {
@@ -196,6 +204,9 @@ export function registerCardRoutes(router: Router, dependencies: ApiDependencies
         throw notFound("the card does not exist");
       }
       await requireBoardWriter(client, card.board_id);
+      if (changes.zoneId !== undefined) {
+        await requireZoneOfBoard(client, changes.zoneId, card.board_id, "changes.zoneId");
+      }
       const assignments: string[] = [];
       const values: unknown[] = [cardId];
       if (changes.zoneId !== undefined) {
@@ -223,9 +234,12 @@ export function registerCardRoutes(router: Router, dependencies: ApiDependencies
         assignments.push(`z = $${values.length}`);
       }
       assignments.push("updated_at = now()");
-      const result = await client.query<CardRow>(
-        `UPDATE app.cards SET ${assignments.join(", ")} WHERE id = $1 RETURNING ${CARD_COLUMNS}`,
-        values,
+      const result = await withZoneKey(
+        "changes.zoneId",
+        client.query<CardRow>(
+          `UPDATE app.cards SET ${assignments.join(", ")} WHERE id = $1 RETURNING ${CARD_COLUMNS}`,
+          values,
+        ),
       );
       const row = result.rows[0];
       if (row === undefined) {
@@ -280,5 +294,39 @@ async function requireNoteOfBoard(
   const boardRow = board.rows[0];
   if (boardRow === undefined || boardRow.workspace_id !== noteRow.workspace_id) {
     throw validationFailed(["card.noteId"]);
+  }
+}
+
+/**
+ * A non-null parent must be a zone of the board. The lookup runs through RLS,
+ * so an unknown and a foreign zone fail alike and reveal nothing.
+ */
+async function requireZoneOfBoard(
+  client: import("pg").PoolClient,
+  zoneId: string | null,
+  boardId: string,
+  field: string,
+): Promise<void> {
+  if (zoneId === null) {
+    return;
+  }
+  const zone = await client.query<{ id: string }>("SELECT id FROM app.zones WHERE id = $1 AND board_id = $2", [
+    zoneId,
+    boardId,
+  ]);
+  if (zone.rows[0] === undefined) {
+    throw validationFailed([field]);
+  }
+}
+
+/** Maps a zone-key violation (e.g. the zone was deleted meanwhile) to the same 422. */
+async function withZoneKey<T>(field: string, query: Promise<T>): Promise<T> {
+  try {
+    return await query;
+  } catch (error) {
+    if (sqlStateOf(error) === "23503" && constraintOf(error) === ZONE_KEY) {
+      throw validationFailed([field]);
+    }
+    throw error;
   }
 }

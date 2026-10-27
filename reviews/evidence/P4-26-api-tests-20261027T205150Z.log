@@ -1,0 +1,56 @@
+$ node --test services/platform/test/api/*.test.mjs
+[exit 0]
+
+{"time":"2026-10-27T20:51:51.317Z","level":"info","message":"migration applied","version":"0001_app_schema","name":"0001_app_schema.sql"}
+{"time":"2026-10-27T20:51:51.338Z","level":"info","message":"migration applied","version":"0002_workspace_schema","name":"0002_workspace_schema.sql"}
+{"time":"2026-10-27T20:51:51.351Z","level":"info","message":"migration applied","version":"0003_rls_policies","name":"0003_rls_policies.sql"}
+{"time":"2026-10-27T20:51:51.354Z","level":"info","message":"migration applied","version":"0004_account_mapping","name":"0004_account_mapping.sql"}
+{"time":"2026-10-27T20:51:51.360Z","level":"info","message":"migration applied","version":"0005_zone_containers","name":"0005_zone_containers.sql"}
+{"time":"2026-10-27T20:51:51.360Z","level":"info","message":"migrations complete","applied":5,"skipped":0}
+✔ GET /v1/workspaces: member list with pagination envelope and no leak (440.970958ms)
+✔ POST /v1/workspaces: create with contract envelope; invalid or spoofed bodies denied (10.090667ms)
+✔ GET /v1/workspaces/:id: member read; foreign and malformed ids are NOT_FOUND (13.428333ms)
+✔ PATCH /v1/workspaces/:id: owner/editor may rename; reader and non-member are denied (15.672458ms)
+✔ DELETE /v1/workspaces/:id: owner deletes; editor and non-member are denied (17.204458ms)
+✔ GET /v1/workspaces/:id/boards: members list; non-member is NOT_FOUND (6.6515ms)
+✔ POST /v1/workspaces/:id/boards: editor creates; reader, non-member and invalid bodies denied (11.208791ms)
+✔ GET /v1/boards/:id: member read; foreign id is NOT_FOUND (10.074917ms)
+✔ PATCH /v1/boards/:id: editor updates; reader, non-member and invalid changes denied (11.750917ms)
+✔ DELETE /v1/boards/:id: editor deletes; reader and non-member are denied (13.470167ms)
+✔ GET /v1/workspaces/:id/notes: members list; non-member is NOT_FOUND (6.554625ms)
+✔ POST /v1/workspaces/:id/notes: editor creates; reader and oversize titles denied (8.848ms)
+✔ GET /v1/notes/:id: member read; foreign id is NOT_FOUND (6.473ms)
+✔ PATCH /v1/notes/:id: editor updates; reader and non-member are denied (9.609792ms)
+✔ DELETE /v1/notes/:id: editor deletes; note with cards is CONFLICT; reader denied (14.082583ms)
+✔ GET /v1/boards/:id/cards: members list; non-member is NOT_FOUND (6.9595ms)
+✔ POST /v1/boards/:id/cards: editor creates; reader, foreign and invalid cards denied (17.662041ms)
+✔ GET /v1/cards/:id: member read; foreign id is NOT_FOUND (8.171334ms)
+✔ PATCH /v1/cards/:id: editor updates geometry/z; reader, foreign and invalid values denied (12.479083ms)
+✔ DELETE /v1/cards/:id: editor deletes; reader and non-member are denied (16.214042ms)
+✔ cursor pagination: stable pages, limit 1-100 and malformed cursors (25.057542ms)
+✔ list requestId: the query envelope value is echoed in the response (3.800042ms)
+✔ P3-06: GET /v1/session returns the resolved UUIDv7 account id only (7.202209ms)
+✔ P3-06/F2: a UUIDv4 identity maps to one UUIDv7 account and contract-valid resources (40.149916ms)
+✔ P3-06/F2: concurrent first requests for one v4 identity create a single profile (31.746ms)
+✔ P3-06/F2: a UUIDv7 session id is the account id directly (no mapping row) (9.868291ms)
+✔ session handling: missing/invalid sessions are 401 and an unreachable auth service is 503 (8.657ms)
+✔ F1: the start-up guard refuses an APP_DATABASE_URL role with SUPERUSER or BYPASSRLS (7.351458ms)
+✔ F1: a mutation error envelope echoes the body requestId (5.492041ms)
+✔ F1/F7: a GET error envelope echoes the query requestId (5.406125ms)
+✔ F6: malformed cursors are VALIDATION with details.fields ['cursor'], never INTERNAL (4.764334ms)
+✔ F3: details.fields are deduplicated, capped and never echo user text (6.108083ms)
+✔ P4-26: card zoneId names a zone of the card's board; other parents are denied (112.620792ms)
+{"time":"2026-10-27T20:51:52.223Z","level":"info","message":"migration applied","version":"0001_app_schema","name":"0001_app_schema.sql"}
+{"time":"2026-10-27T20:51:52.240Z","level":"info","message":"migration applied","version":"0002_workspace_schema","name":"0002_workspace_schema.sql"}
+{"time":"2026-10-27T20:51:52.246Z","level":"info","message":"migration applied","version":"0003_rls_policies","name":"0003_rls_policies.sql"}
+{"time":"2026-10-27T20:51:52.248Z","level":"info","message":"migration applied","version":"0004_account_mapping","name":"0004_account_mapping.sql"}
+{"time":"2026-10-27T20:51:52.253Z","level":"info","message":"migration applied","version":"0005_zone_containers","name":"0005_zone_containers.sql"}
+{"time":"2026-10-27T20:51:52.253Z","level":"info","message":"migrations complete","applied":5,"skipped":0}
+ℹ tests 33
+ℹ suites 0
+ℹ pass 33
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1202.121583

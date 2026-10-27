@@ -966,3 +966,67 @@ test("F3: details.fields are deduplicated, capped and never echo user text", asy
   expectError(emptyZ, 400, "VALIDATION", "errors.validation");
   assert.deepEqual(emptyZ.body.details.fields, ["card.z"]);
 });
+
+test("P4-26: card zoneId names a zone of the card's board; other parents are denied", async () => {
+  // Contract 0.2.0 has no zone REST routes yet, so zones are seeded as the slot owner.
+  const insertZone = async (boardId) => {
+    const id = newId();
+    await ownerQuery(
+      "INSERT INTO app.zones (id, board_id, title, x, y, width, height, z) VALUES ($1, $2, 'Zone', 0, 0, 480, 320, 'a0')",
+      [id, boardId],
+    );
+    return id;
+  };
+  const zone = await insertZone(ids.board);
+  const secondZone = await insertZone(ids.board);
+  const otherBoard = (await createBoard(sessions.alice, ids.workspace, "Board two", ALICE)).id;
+  const otherBoardZone = await insertZone(otherBoard);
+  const foreignZone = await insertZone(ids.foreignBoard);
+
+  const zoned = await createCard(sessions.bob, ids.board, ids.note, { zoneId: zone, z: "b0" });
+  assert.equal(zoned.zoneId, zone);
+  const read = await request(sessions.carol, "GET", `/v1/cards/${zoned.id}`);
+  assert.equal(read.status, 200);
+  assert.equal(read.body.card.zoneId, zone);
+
+  const patch = (session, changes) =>
+    request(session, "PATCH", `/v1/cards/${zoned.id}`, { requestId: newId(), cardId: zoned.id, changes });
+  const moved = await patch(sessions.bob, { zoneId: secondZone });
+  assert.equal(moved.status, 200, JSON.stringify(moved.body));
+  assert.equal(moved.body.card.zoneId, secondZone);
+  const out = await patch(sessions.bob, { zoneId: null });
+  assert.equal(out.status, 200, JSON.stringify(out.body));
+  assert.equal(out.body.card.zoneId, null);
+  const back = await patch(sessions.alice, { zoneId: zone });
+  assert.equal(back.status, 200, JSON.stringify(back.body));
+  assert.equal(back.body.card.zoneId, zone);
+  const geometryOnly = await patch(sessions.alice, { x: 5 });
+  assert.equal(geometryOnly.body.card.zoneId, zone, "a PATCH without zoneId keeps the parent");
+
+  for (const parent of [otherBoardZone, foreignZone, ids.card, newId()]) {
+    const created = await request(sessions.bob, "POST", `/v1/boards/${ids.board}/cards`, {
+      requestId: newId(),
+      card: { boardId: ids.board, noteId: ids.note, zoneId: parent, x: 0, y: 0, width: 240, height: 120, z: "b1" },
+    });
+    expectError(created, 400, "VALIDATION", "errors.validation");
+    assert.deepEqual(created.body.details.fields, ["card.zoneId"]);
+
+    const updated = await patch(sessions.bob, { zoneId: parent });
+    expectError(updated, 400, "VALIDATION", "errors.validation");
+    assert.deepEqual(updated.body.details.fields, ["changes.zoneId"]);
+  }
+
+  expectError(await patch(sessions.carol, { zoneId: null }), 403, "FORBIDDEN", "errors.forbidden");
+  expectError(await patch(sessions.dave, { zoneId: zone }), 404, "NOT_FOUND", "errors.notFound");
+  const unchanged = await request(sessions.alice, "GET", `/v1/cards/${zoned.id}`);
+  assert.equal(unchanged.body.card.zoneId, zone, "denied writes leave the parent unchanged");
+
+  // Deleting the zone keeps the card on the board (ADR-0010 "keep content").
+  await ownerQuery("DELETE FROM app.zones WHERE id = $1", [zone]);
+  const kept = await request(sessions.alice, "GET", `/v1/cards/${zoned.id}`);
+  assert.equal(kept.status, 200);
+  assert.equal(kept.body.card.zoneId, null);
+  const deletedZone = await patch(sessions.alice, { zoneId: zone });
+  expectError(deletedZone, 400, "VALIDATION", "errors.validation");
+  assert.deepEqual(deletedZone.body.details.fields, ["changes.zoneId"]);
+});

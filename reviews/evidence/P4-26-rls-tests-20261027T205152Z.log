@@ -1,0 +1,31 @@
+$ node --test services/platform/test/rls/*.test.mjs
+[exit 0]
+
+{"time":"2026-10-27T20:51:52.728Z","level":"info","message":"migration applied","version":"0001_app_schema","name":"0001_app_schema.sql"}
+{"time":"2026-10-27T20:51:52.747Z","level":"info","message":"migration applied","version":"0002_workspace_schema","name":"0002_workspace_schema.sql"}
+{"time":"2026-10-27T20:51:52.754Z","level":"info","message":"migration applied","version":"0003_rls_policies","name":"0003_rls_policies.sql"}
+{"time":"2026-10-27T20:51:52.757Z","level":"info","message":"migration applied","version":"0004_account_mapping","name":"0004_account_mapping.sql"}
+{"time":"2026-10-27T20:51:52.762Z","level":"info","message":"migration applied","version":"0005_zone_containers","name":"0005_zone_containers.sql"}
+{"time":"2026-10-27T20:51:52.762Z","level":"info","message":"migrations complete","applied":5,"skipped":0}
+✔ connects as the restricted app_user role with no bypass and no ownership (122.227375ms)
+✔ row-level security is enabled and forced on every application table (1.50525ms)
+✔ account A sees only its rows; account B sees only its rows (8.848167ms)
+✔ joins and pagination on a foreign table do not leak rows (4.45175ms)
+✔ cross-workspace writes fail for the app role (9.706542ms)
+✔ no app.account_id means zero rows, not all rows (11.667125ms)
+✔ a reused connection does not inherit the previous account (12.214292ms)
+✔ P4-26: zones follow the board's isolation and a card cannot join a foreign zone (16.225833ms)
+{"time":"2026-10-27T20:51:52.895Z","level":"info","message":"migration applied","version":"0001_app_schema","name":"0001_app_schema.sql"}
+{"time":"2026-10-27T20:51:52.911Z","level":"info","message":"migration applied","version":"0002_workspace_schema","name":"0002_workspace_schema.sql"}
+{"time":"2026-10-27T20:51:52.917Z","level":"info","message":"migration applied","version":"0003_rls_policies","name":"0003_rls_policies.sql"}
+{"time":"2026-10-27T20:51:52.919Z","level":"info","message":"migration applied","version":"0004_account_mapping","name":"0004_account_mapping.sql"}
+{"time":"2026-10-27T20:51:52.924Z","level":"info","message":"migration applied","version":"0005_zone_containers","name":"0005_zone_containers.sql"}
+{"time":"2026-10-27T20:51:52.924Z","level":"info","message":"migrations complete","applied":5,"skipped":0}
+ℹ tests 8
+ℹ suites 0
+ℹ pass 8
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 447.386959

@@ -31,6 +31,7 @@ const EXPECTED_COLUMNS = {
   boards: ["id", "workspace_id", "owner_account_id", "title", "visibility", "archived", "created_at", "updated_at"],
   notes: ["id", "workspace_id", "title", "created_at", "updated_at"],
   cards: ["id", "board_id", "note_id", "zone_id", "x", "y", "width", "height", "z", "created_at", "updated_at"],
+  zones: ["id", "board_id", "title", "x", "y", "width", "height", "z", "created_at", "updated_at"],
 };
 
 const EXPECTED_TYPES = {
@@ -66,6 +67,16 @@ const EXPECTED_TYPES = {
   "cards.z": "text",
   "cards.created_at": "timestamp with time zone",
   "cards.updated_at": "timestamp with time zone",
+  "zones.id": "uuid",
+  "zones.board_id": "uuid",
+  "zones.title": "text",
+  "zones.x": "double precision",
+  "zones.y": "double precision",
+  "zones.width": "double precision",
+  "zones.height": "double precision",
+  "zones.z": "text",
+  "zones.created_at": "timestamp with time zone",
+  "zones.updated_at": "timestamp with time zone",
 };
 
 const EXPECTED_POLICY_COMMANDS = {
@@ -92,6 +103,10 @@ const EXPECTED_POLICY_COMMANDS = {
   cards_insert_writer: "INSERT",
   cards_update_writer: "UPDATE",
   cards_delete_writer: "DELETE",
+  zones_select_member: "SELECT",
+  zones_insert_writer: "INSERT",
+  zones_update_writer: "UPDATE",
+  zones_delete_writer: "DELETE",
 };
 
 const EXPECTED_FOREIGN_KEYS = [
@@ -103,6 +118,8 @@ const EXPECTED_FOREIGN_KEYS = [
   ["notes_workspace_id_fkey", "notes", "workspaces", "c"],
   ["cards_board_id_fkey", "cards", "boards", "c"],
   ["cards_note_id_fkey", "cards", "notes", "r"],
+  ["cards_zone_fkey", "cards", "zones", "n"],
+  ["zones_board_id_fkey", "zones", "boards", "c"],
 ];
 
 const EXPECTED_INDEXES = [
@@ -115,6 +132,8 @@ const EXPECTED_INDEXES = [
   "cards_note_id_idx",
   "cards_zone_id_idx",
   "profiles_kratos_identity_id_key",
+  "zones_board_id_z_idx",
+  "zones_board_id_id_key",
 ];
 
 let owner;
@@ -174,7 +193,13 @@ test("applies the migrations once and records every version with its checksum", 
   const files = await loadMigrations(migrationsDir);
   assert.deepEqual(
     files.map((file) => file.version),
-    ["0001_app_schema", "0002_workspace_schema", "0003_rls_policies", "0004_account_mapping"],
+    [
+      "0001_app_schema",
+      "0002_workspace_schema",
+      "0003_rls_policies",
+      "0004_account_mapping",
+      "0005_zone_containers",
+    ],
   );
 
   const rows = (await owner.query("SELECT version, name, checksum FROM schema_migrations ORDER BY version")).rows;
@@ -264,7 +289,15 @@ test("has the primary keys, check constraints, foreign-key delete rules and inde
   const primaryKeys = constraints.filter((constraint) => constraint.contype === "p").map((row) => row.conname);
   assert.deepEqual(
     primaryKeys.sort(),
-    ["boards_pkey", "cards_pkey", "notes_pkey", "profiles_pkey", "workspace_members_pkey", "workspaces_pkey"],
+    [
+      "boards_pkey",
+      "cards_pkey",
+      "notes_pkey",
+      "profiles_pkey",
+      "workspace_members_pkey",
+      "workspaces_pkey",
+      "zones_pkey",
+    ],
   );
 
   const checks = constraints.filter((constraint) => constraint.contype === "c").map((row) => row.conname);
@@ -276,6 +309,9 @@ test("has the primary keys, check constraints, foreign-key delete rules and inde
     "notes_title_length",
     "cards_minimum_size",
     "cards_z_format",
+    "zones_title_length",
+    "zones_minimum_size",
+    "zones_z_format",
   ]) {
     assert.ok(checks.includes(expected), `missing check constraint ${expected}`);
   }
@@ -618,5 +654,164 @@ test("P3-06: migration 0004 backfills the mapping only for legacy non-v7 account
     assert.equal(modern.kratos_identity_id, null, "a v7 account id stays unmapped");
   } finally {
     await owner.query("DELETE FROM app.profiles WHERE account_id = ANY($1::uuid[])", [[legacyV4, modernV7]]);
+  }
+});
+
+test("P4-26: a card parent is a zone of the same board, and zones are not nested", async (t) => {
+  const query = owner.query.bind(owner);
+  const insertZone = (id, boardId) =>
+    query(
+      "INSERT INTO app.zones (id, board_id, title, x, y, width, height, z) VALUES ($1, $2, 'Zone', 0, 0, 480, 320, 'a0')",
+      [id, boardId],
+    );
+  const insertCard = (id, boardId, zoneId) =>
+    query(
+      "INSERT INTO app.cards (id, board_id, note_id, zone_id, x, y, width, height, z) VALUES ($1, $2, $3, $4, 0, 0, 240, 120, 'a1')",
+      [id, boardId, fixtures.note, zoneId],
+    );
+
+  await t.test("zones carry no parent column and the card key is composite with SET NULL (zone_id)", async () => {
+    const columns = (
+      await query(
+        "SELECT column_name FROM information_schema.columns WHERE table_schema = 'app' AND table_name = 'zones'",
+      )
+    ).rows.map((row) => row.column_name);
+    assert.equal(columns.includes("zone_id"), false, "a zone cannot live in a zone");
+    const key = (
+      await query(
+        "SELECT pg_get_constraintdef(oid) AS definition FROM pg_constraint WHERE conname = 'cards_zone_fkey'",
+      )
+    ).rows[0];
+    assert.match(key.definition, /FOREIGN KEY \(board_id, zone_id\) REFERENCES app\.zones\(board_id, id\)/);
+    assert.match(key.definition, /ON DELETE SET NULL \(zone_id\)/);
+  });
+
+  await t.test("a card in a zone of its own board is accepted", async () => {
+    await inRollback(owner, async () => {
+      const zone = newId();
+      const card = newId();
+      await insertZone(zone, fixtures.board);
+      await insertCard(card, fixtures.board, zone);
+      const row = (await query("SELECT zone_id FROM app.cards WHERE id = $1", [card])).rows[0];
+      assert.equal(row.zone_id, zone);
+    });
+  });
+
+  await t.test("a zone of another board, an unknown id and a card id are rejected", async () => {
+    await inRollback(owner, async () => {
+      const otherBoard = newId();
+      const otherZone = newId();
+      await query("INSERT INTO app.boards (id, workspace_id, owner_account_id, title) VALUES ($1, $2, $3, 'Other')", [
+        otherBoard,
+        fixtures.workspace,
+        fixtures.alice,
+      ]);
+      await insertZone(otherZone, otherBoard);
+      await query("SAVEPOINT probe");
+      for (const parent of [otherZone, newId(), fixtures.card]) {
+        await expectSqlState(insertCard(newId(), fixtures.board, parent), "23503");
+        await query("ROLLBACK TO SAVEPOINT probe");
+      }
+      await expectSqlState(
+        query("UPDATE app.cards SET zone_id = $1 WHERE id = $2", [otherZone, fixtures.card]),
+        "23503",
+      );
+    });
+  });
+
+  await t.test("deleting a zone keeps its cards on the board", async () => {
+    await inRollback(owner, async () => {
+      const zone = newId();
+      const card = newId();
+      await insertZone(zone, fixtures.board);
+      await insertCard(card, fixtures.board, zone);
+      await query("DELETE FROM app.zones WHERE id = $1", [zone]);
+      const row = (await query("SELECT board_id, zone_id FROM app.cards WHERE id = $1", [card])).rows[0];
+      assert.deepEqual(row, { board_id: fixtures.board, zone_id: null });
+    });
+  });
+
+  await t.test("deleting a board cascades its zones and zoned cards", async () => {
+    await inRollback(owner, async () => {
+      const board = newId();
+      const zone = newId();
+      const card = newId();
+      await query("INSERT INTO app.boards (id, workspace_id, owner_account_id, title) VALUES ($1, $2, $3, 'Doomed')", [
+        board,
+        fixtures.workspace,
+        fixtures.alice,
+      ]);
+      await insertZone(zone, board);
+      await insertCard(card, board, zone);
+      await query("DELETE FROM app.boards WHERE id = $1", [board]);
+      assert.equal(Number((await query("SELECT count(*) FROM app.zones WHERE id = $1", [zone])).rows[0].count), 0);
+      assert.equal(Number((await query("SELECT count(*) FROM app.cards WHERE id = $1", [card])).rows[0].count), 0);
+    });
+  });
+
+  await t.test("a zone cannot move to another board", async () => {
+    await inRollback(owner, async () => {
+      const otherBoard = newId();
+      const zone = newId();
+      await query("INSERT INTO app.boards (id, workspace_id, owner_account_id, title) VALUES ($1, $2, $3, 'Other')", [
+        otherBoard,
+        fixtures.workspace,
+        fixtures.alice,
+      ]);
+      await insertZone(zone, fixtures.board);
+      await assert.rejects(
+        query("UPDATE app.zones SET board_id = $1 WHERE id = $2", [otherBoard, zone]),
+        /moving a zone to another board/,
+      );
+    });
+  });
+
+  await t.test("the contract zone limits are enforced", async () => {
+    await expectSqlState(
+      query(
+        "INSERT INTO app.zones (id, board_id, title, x, y, width, height, z) VALUES ($1, $2, 'Small', 0, 0, 255, 192, 'a0')",
+        [newId(), fixtures.board],
+      ),
+      "23514",
+    );
+    await expectSqlState(
+      query(
+        "INSERT INTO app.zones (id, board_id, title, x, y, width, height, z) VALUES ($1, $2, '', 0, 0, 480, 320, 'a0')",
+        [newId(), fixtures.board],
+      ),
+      "23514",
+    );
+    await expectSqlState(
+      query(
+        "INSERT INTO app.zones (id, board_id, title, x, y, width, height, z) VALUES ($1, $2, 'Bad z', 0, 0, 480, 320, 'a-0')",
+        [newId(), fixtures.board],
+      ),
+      "23514",
+    );
+  });
+});
+
+test("P4-26: migration 0005 upgrades a 0004 database and drops unresolvable parents", async () => {
+  const legacyCard = newId();
+  const legacyZone = newId();
+  try {
+    // Rewind only 0005, keep a 0004-era card whose zone_id names no zone, then
+    // let the runner apply 0005 again.
+    await owner.query("DELETE FROM schema_migrations WHERE version = '0005_zone_containers'");
+    await owner.query("DROP TABLE app.zones CASCADE");
+    await owner.query("DROP FUNCTION app.protect_zone_board()");
+    await owner.query(
+      "INSERT INTO app.cards (id, board_id, note_id, zone_id, x, y, width, height, z) VALUES ($1, $2, $3, $4, 0, 0, 240, 120, 'a2')",
+      [legacyCard, fixtures.board, fixtures.note, legacyZone],
+    );
+
+    const rerun = await applyMigrations();
+    assert.deepEqual(rerun.applied, ["0005_zone_containers"]);
+    const row = (await owner.query("SELECT zone_id FROM app.cards WHERE id = $1", [legacyCard])).rows[0];
+    assert.equal(row.zone_id, null, "a legacy parent that cannot resolve becomes board level");
+    const again = await applyMigrations();
+    assert.deepEqual(again.applied, []);
+  } finally {
+    await owner.query("DELETE FROM app.cards WHERE id = $1", [legacyCard]);
   }
 });

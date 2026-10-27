@@ -23,6 +23,7 @@ export const APPLICATION_TABLES = Object.freeze([
   "boards",
   "notes",
   "cards",
+  "zones",
 ]);
 
 export async function connect(connectionString) {

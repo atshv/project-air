@@ -69,6 +69,9 @@ Contract: [packages/contracts](../../packages/contracts/README.md) `0.1.0`
   optional `?requestId=` (or the `x-request-id` header).
 - Validation is explicit (no library): ADR-0004 lengths, page size 1–100, opaque cursor over
   `(created_at, id)`, UUIDv7 ids, card geometry/z limits. `details.fields` names the invalid paths.
+- A card `zoneId` must name a zone of the card's own board (ADR-0010); any other parent is a
+  `VALIDATION` error on `card.zoneId`/`changes.zoneId`. Zones are stored since migration 0005
+  (composite key, deleting a zone keeps its cards on the board); contract 0.2.0 has no zone routes.
 
 ## Migrations
 
