@@ -1,0 +1,1229 @@
+{
+  "task": "P4-04",
+  "gate": "visual",
+  "mode": "update",
+  "command": "node packages/engine/test/visual/run-visual.mjs --update",
+  "timestamp": "2026-10-27T19:09:33.935Z",
+  "partial": false,
+  "backend": "webgl2",
+  "backendLabel": "WebGL2",
+  "tolerance": {
+    "maxDifferingPixels": 0,
+    "maxDifferingPixelRatio": 0,
+    "maxChannelDelta": 0,
+    "policy": "default exact match (0 differing pixels); an antialiasing allowance must be documented in docs/gates/visual-diff.md and approved in review"
+  },
+  "viewports": [
+    {
+      "name": "desktop",
+      "width": 1440,
+      "height": 900,
+      "devicePixelRatio": 1
+    },
+    {
+      "name": "mobile",
+      "width": 390,
+      "height": 844,
+      "devicePixelRatio": 1
+    }
+  ],
+  "scenes": [
+    {
+      "name": "sample-at-rest",
+      "scene": "sample",
+      "camera": "playground fit camera (world centred, clamped to 0.1 … 8)",
+      "view": null,
+      "expectedCounts": {
+        "zones": 50,
+        "blocks": 144,
+        "cards": 500,
+        "total": 694
+      },
+      "world": {
+        "width": 9600,
+        "height": 5408
+      }
+    },
+    {
+      "name": "sample-zoom-in",
+      "scene": "sample",
+      "camera": "centre of zone-0001 at zoom 0.5",
+      "view": {
+        "worldX": 648,
+        "worldY": 664,
+        "zoom": 0.5
+      },
+      "expectedCounts": {
+        "zones": 50,
+        "blocks": 144,
+        "cards": 500,
+        "total": 694
+      },
+      "world": {
+        "width": 9600,
+        "height": 5408
+      }
+    },
+    {
+      "name": "sample-zoom-out",
+      "scene": "sample",
+      "camera": "centre of zone-0001 at the engine minimum zoom 0.1",
+      "view": {
+        "worldX": 648,
+        "worldY": 664,
+        "zoom": 0.1
+      },
+      "expectedCounts": {
+        "zones": 50,
+        "blocks": 144,
+        "cards": 500,
+        "total": 694
+      },
+      "world": {
+        "width": 9600,
+        "height": 5408
+      }
+    },
+    {
+      "name": "engine-core-at-rest",
+      "scene": "engine-core",
+      "camera": "playground fit camera (world centred, clamped to 0.1 … 8)",
+      "view": null,
+      "expectedCounts": {
+        "zones": 200,
+        "blocks": 600,
+        "cards": 9200,
+        "total": 10000
+      },
+      "world": {
+        "width": 19200,
+        "height": 10816
+      }
+    }
+  ],
+  "baselineDirectory": "reviews/evidence/visual-baselines",
+  "hardware": {
+    "model": "Apple M2",
+    "logicalCores": 8,
+    "memoryGiB": 8,
+    "arch": "arm64",
+    "os": {
+      "type": "Darwin",
+      "release": "27.2.0",
+      "version": "Darwin Kernel Version 27.2.0: Wed Oct 14 23:48:16 PDT 2026; root:xnu-13432.41.4~25/RELEASE_ARM64_T8112"
+    },
+    "node": "v26.12.1"
+  },
+  "build": {
+    "profile": "Release",
+    "wasmRawBytes": 65849,
+    "wasmGzipBytes": 27969,
+    "engineJsBytes": 25066,
+    "bridgeBytes": 9146,
+    "testKitBytes": 22559
+  },
+  "browser": {
+    "product": "Chrome/156.0.8078.4",
+    "revision": "@f842f52ef39fd97b449eb27cff414bf05a98ddce",
+    "executable": "/Users/rasulatashev/Library/Caches/ms-playwright/chromium-1248/chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing",
+    "source": "local Playwright cache default",
+    "flags": [
+      "--headless=new",
+      "--use-angle=metal",
+      "--enable-gpu",
+      "--hide-scrollbars",
+      "--disable-frame-rate-limit",
+      "--disable-gpu-vsync",
+      "--no-first-run",
+      "--no-default-browser-check",
+      "--disable-background-timer-throttling",
+      "--disable-renderer-backgrounding",
+      "--disable-backgrounding-occluded-windows",
+      "--window-size=1440,900",
+      "--no-sandbox"
+    ]
+  },
+  "gpu": {
+    "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M2, Unspecified Version)",
+    "software": false,
+    "identified": true,
+    "policy": "fail-closed: renderer must match ANGLE (...) plus a known GPU hint and must not be software"
+  },
+  "port": 4160,
+  "captures": [
+    {
+      "scene": "sample-at-rest",
+      "sceneId": "sample",
+      "viewport": "desktop",
+      "viewportSize": "1440x900",
+      "backend": "webgl2",
+      "backendLabel": "WebGL2",
+      "url": "http://127.0.0.1:4160/apps/engine-playground/?scene=sample",
+      "ready": {
+        "scene": "sample",
+        "objectCount": 694,
+        "visibleCount": 694
+      },
+      "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M2, Unspecified Version)",
+      "capturedWidth": 1440,
+      "capturedHeight": 900,
+      "layout": {
+        "state": {
+          "scene": "sample",
+          "counts": {
+            "zones": 50,
+            "blocks": 144,
+            "cards": 500,
+            "total": 694
+          },
+          "objectCount": 694,
+          "visibleCount": 694,
+          "fps": 1102.7996259867846,
+          "backend": "WebGL2",
+          "camera": {
+            "panX": -4.060913705583516,
+            "panY": 0,
+            "zoom": 0.10928254437869822
+          }
+        },
+        "inner": {
+          "width": 1440,
+          "height": 900
+        },
+        "devicePixelRatio": 1,
+        "canvas": {
+          "cssWidth": 1050,
+          "cssHeight": 591,
+          "pixelWidth": 1050,
+          "pixelHeight": 591
+        },
+        "hud": {
+          "objects": "694",
+          "cards": "500",
+          "zones": "50",
+          "visible": "694",
+          "backend": "WebGL2"
+        },
+        "caption": "694 objects — 500 cards, 50 zones, 144 blocks. Drag to pan, scroll or pinch to zoom.",
+        "error": "",
+        "errorHidden": true,
+        "overflowX": false
+      },
+      "assertions": {
+        "screenshotSize": {
+          "passed": true,
+          "expected": "1440x900",
+          "actual": "1440x900"
+        },
+        "window": {
+          "passed": true,
+          "expected": "1440x900",
+          "actual": "1440x900"
+        },
+        "devicePixelRatio": {
+          "passed": true,
+          "expected": 1,
+          "actual": 1
+        },
+        "scene": {
+          "passed": true,
+          "expected": "sample",
+          "actual": "sample"
+        },
+        "objectCount": {
+          "passed": true,
+          "expected": 694,
+          "actual": 694
+        },
+        "counts": {
+          "passed": true,
+          "expected": {
+            "cards": 500,
+            "zones": 50,
+            "blocks": 144
+          },
+          "actual": {
+            "zones": 50,
+            "blocks": 144,
+            "cards": 500,
+            "total": 694
+          }
+        },
+        "camera": {
+          "passed": true,
+          "expected": "playground fit camera",
+          "actual": {
+            "panX": -4.060913705583516,
+            "panY": 0,
+            "zoom": 0.10928254437869822
+          }
+        },
+        "pageError": {
+          "passed": true,
+          "expected": "",
+          "actual": ""
+        }
+      },
+      "baseline": {
+        "path": "reviews/evidence/visual-baselines/sample-at-rest-desktop-webgl2.png",
+        "written": true,
+        "sha256": "9c4e015c7ab60985950283f1ff9450fc948cc8a992614b965bc17a429c52e710",
+        "bytes": 67906
+      },
+      "comparison": null,
+      "diffPng": null,
+      "baselineName": "sample-at-rest-desktop-webgl2.png"
+    },
+    {
+      "scene": "sample-at-rest",
+      "sceneId": "sample",
+      "viewport": "mobile",
+      "viewportSize": "390x844",
+      "backend": "webgl2",
+      "backendLabel": "WebGL2",
+      "url": "http://127.0.0.1:4160/apps/engine-playground/?scene=sample",
+      "ready": {
+        "scene": "sample",
+        "objectCount": 694,
+        "visibleCount": 84
+      },
+      "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M2, Unspecified Version)",
+      "capturedWidth": 390,
+      "capturedHeight": 844,
+      "layout": {
+        "state": {
+          "scene": "sample",
+          "counts": {
+            "zones": 50,
+            "blocks": 144,
+            "cards": 500,
+            "total": 694
+          },
+          "objectCount": 694,
+          "visibleCount": 84,
+          "fps": 739.7044234709084,
+          "backend": "WebGL2",
+          "camera": {
+            "panX": 3340,
+            "panY": 1884,
+            "zoom": 0.1
+          }
+        },
+        "inner": {
+          "width": 390,
+          "height": 844
+        },
+        "devicePixelRatio": 1,
+        "canvas": {
+          "cssWidth": 292,
+          "cssHeight": 164,
+          "pixelWidth": 292,
+          "pixelHeight": 164
+        },
+        "hud": {
+          "objects": "694",
+          "cards": "500",
+          "zones": "50",
+          "visible": "84",
+          "backend": "WebGL2"
+        },
+        "caption": "694 objects — 500 cards, 50 zones, 144 blocks. Drag to pan, scroll or pinch to zoom.",
+        "error": "",
+        "errorHidden": true,
+        "overflowX": false
+      },
+      "assertions": {
+        "screenshotSize": {
+          "passed": true,
+          "expected": "390x844",
+          "actual": "390x844"
+        },
+        "window": {
+          "passed": true,
+          "expected": "390x844",
+          "actual": "390x844"
+        },
+        "devicePixelRatio": {
+          "passed": true,
+          "expected": 1,
+          "actual": 1
+        },
+        "scene": {
+          "passed": true,
+          "expected": "sample",
+          "actual": "sample"
+        },
+        "objectCount": {
+          "passed": true,
+          "expected": 694,
+          "actual": 694
+        },
+        "counts": {
+          "passed": true,
+          "expected": {
+            "cards": 500,
+            "zones": 50,
+            "blocks": 144
+          },
+          "actual": {
+            "zones": 50,
+            "blocks": 144,
+            "cards": 500,
+            "total": 694
+          }
+        },
+        "camera": {
+          "passed": true,
+          "expected": "playground fit camera",
+          "actual": {
+            "panX": 3340,
+            "panY": 1884,
+            "zoom": 0.1
+          }
+        },
+        "pageError": {
+          "passed": true,
+          "expected": "",
+          "actual": ""
+        }
+      },
+      "baseline": {
+        "path": "reviews/evidence/visual-baselines/sample-at-rest-mobile-webgl2.png",
+        "written": true,
+        "sha256": "764c17fb8f475561e3943d011cc5ba8c322de245514cdf59e8789ce7f48e08d0",
+        "bytes": 28361
+      },
+      "comparison": null,
+      "diffPng": null,
+      "baselineName": "sample-at-rest-mobile-webgl2.png"
+    },
+    {
+      "scene": "sample-zoom-in",
+      "sceneId": "sample",
+      "viewport": "desktop",
+      "viewportSize": "1440x900",
+      "backend": "webgl2",
+      "backendLabel": "WebGL2",
+      "url": "http://127.0.0.1:4160/apps/engine-playground/?scene=sample&view=648%2C664%2C0.5",
+      "ready": {
+        "scene": "sample",
+        "objectCount": 694,
+        "visibleCount": 36
+      },
+      "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M2, Unspecified Version)",
+      "capturedWidth": 1440,
+      "capturedHeight": 900,
+      "layout": {
+        "state": {
+          "scene": "sample",
+          "counts": {
+            "zones": 50,
+            "blocks": 144,
+            "cards": 500,
+            "total": 694
+          },
+          "objectCount": 694,
+          "visibleCount": 36,
+          "fps": 3026.2763513018663,
+          "backend": "WebGL2",
+          "camera": {
+            "panX": -402,
+            "panY": 73,
+            "zoom": 0.5
+          }
+        },
+        "inner": {
+          "width": 1440,
+          "height": 900
+        },
+        "devicePixelRatio": 1,
+        "canvas": {
+          "cssWidth": 1050,
+          "cssHeight": 591,
+          "pixelWidth": 1050,
+          "pixelHeight": 591
+        },
+        "hud": {
+          "objects": "694",
+          "cards": "500",
+          "zones": "50",
+          "visible": "36",
+          "backend": "WebGL2"
+        },
+        "caption": "694 objects — 500 cards, 50 zones, 144 blocks. Drag to pan, scroll or pinch to zoom.",
+        "error": "",
+        "errorHidden": true,
+        "overflowX": false
+      },
+      "assertions": {
+        "screenshotSize": {
+          "passed": true,
+          "expected": "1440x900",
+          "actual": "1440x900"
+        },
+        "window": {
+          "passed": true,
+          "expected": "1440x900",
+          "actual": "1440x900"
+        },
+        "devicePixelRatio": {
+          "passed": true,
+          "expected": 1,
+          "actual": 1
+        },
+        "scene": {
+          "passed": true,
+          "expected": "sample",
+          "actual": "sample"
+        },
+        "objectCount": {
+          "passed": true,
+          "expected": 694,
+          "actual": 694
+        },
+        "counts": {
+          "passed": true,
+          "expected": {
+            "cards": 500,
+            "zones": 50,
+            "blocks": 144
+          },
+          "actual": {
+            "zones": 50,
+            "blocks": 144,
+            "cards": 500,
+            "total": 694
+          }
+        },
+        "camera": {
+          "passed": true,
+          "expected": {
+            "zoom": 0.5,
+            "panX": -402,
+            "panY": 73
+          },
+          "actual": {
+            "panX": -402,
+            "panY": 73,
+            "zoom": 0.5
+          },
+          "source": "?view=648,664,0.5"
+        },
+        "pageError": {
+          "passed": true,
+          "expected": "",
+          "actual": ""
+        }
+      },
+      "baseline": {
+        "path": "reviews/evidence/visual-baselines/sample-zoom-in-desktop-webgl2.png",
+        "written": true,
+        "sha256": "1bb5d52864e6dde07f41b45f3c5b9bc322331aa3c3b56f0ca022ef544db4115d",
+        "bytes": 31954
+      },
+      "comparison": null,
+      "diffPng": null,
+      "baselineName": "sample-zoom-in-desktop-webgl2.png"
+    },
+    {
+      "scene": "sample-zoom-in",
+      "sceneId": "sample",
+      "viewport": "mobile",
+      "viewportSize": "390x844",
+      "backend": "webgl2",
+      "backendLabel": "WebGL2",
+      "url": "http://127.0.0.1:4160/apps/engine-playground/?scene=sample&view=648%2C664%2C0.5",
+      "ready": {
+        "scene": "sample",
+        "objectCount": 694,
+        "visibleCount": 6
+      },
+      "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M2, Unspecified Version)",
+      "capturedWidth": 390,
+      "capturedHeight": 844,
+      "layout": {
+        "state": {
+          "scene": "sample",
+          "counts": {
+            "zones": 50,
+            "blocks": 144,
+            "cards": 500,
+            "total": 694
+          },
+          "objectCount": 694,
+          "visibleCount": 6,
+          "fps": 737.992116403621,
+          "backend": "WebGL2",
+          "camera": {
+            "panX": 356,
+            "panY": 500,
+            "zoom": 0.5
+          }
+        },
+        "inner": {
+          "width": 390,
+          "height": 844
+        },
+        "devicePixelRatio": 1,
+        "canvas": {
+          "cssWidth": 292,
+          "cssHeight": 164,
+          "pixelWidth": 292,
+          "pixelHeight": 164
+        },
+        "hud": {
+          "objects": "694",
+          "cards": "500",
+          "zones": "50",
+          "visible": "6",
+          "backend": "WebGL2"
+        },
+        "caption": "694 objects — 500 cards, 50 zones, 144 blocks. Drag to pan, scroll or pinch to zoom.",
+        "error": "",
+        "errorHidden": true,
+        "overflowX": false
+      },
+      "assertions": {
+        "screenshotSize": {
+          "passed": true,
+          "expected": "390x844",
+          "actual": "390x844"
+        },
+        "window": {
+          "passed": true,
+          "expected": "390x844",
+          "actual": "390x844"
+        },
+        "devicePixelRatio": {
+          "passed": true,
+          "expected": 1,
+          "actual": 1
+        },
+        "scene": {
+          "passed": true,
+          "expected": "sample",
+          "actual": "sample"
+        },
+        "objectCount": {
+          "passed": true,
+          "expected": 694,
+          "actual": 694
+        },
+        "counts": {
+          "passed": true,
+          "expected": {
+            "cards": 500,
+            "zones": 50,
+            "blocks": 144
+          },
+          "actual": {
+            "zones": 50,
+            "blocks": 144,
+            "cards": 500,
+            "total": 694
+          }
+        },
+        "camera": {
+          "passed": true,
+          "expected": {
+            "zoom": 0.5,
+            "panX": 356,
+            "panY": 500
+          },
+          "actual": {
+            "panX": 356,
+            "panY": 500,
+            "zoom": 0.5
+          },
+          "source": "?view=648,664,0.5"
+        },
+        "pageError": {
+          "passed": true,
+          "expected": "",
+          "actual": ""
+        }
+      },
+      "baseline": {
+        "path": "reviews/evidence/visual-baselines/sample-zoom-in-mobile-webgl2.png",
+        "written": true,
+        "sha256": "55a2db9de0b39f0bdeb2d5080cf9a088caeebd8b3ece5ad569f0701b2e5d74cf",
+        "bytes": 24739
+      },
+      "comparison": null,
+      "diffPng": null,
+      "baselineName": "sample-zoom-in-mobile-webgl2.png"
+    },
+    {
+      "scene": "sample-zoom-out",
+      "sceneId": "sample",
+      "viewport": "desktop",
+      "viewportSize": "1440x900",
+      "backend": "webgl2",
+      "backendLabel": "WebGL2",
+      "url": "http://127.0.0.1:4160/apps/engine-playground/?scene=sample&view=648%2C664%2C0.1",
+      "ready": {
+        "scene": "sample",
+        "objectCount": 694,
+        "visibleCount": 297
+      },
+      "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M2, Unspecified Version)",
+      "capturedWidth": 1440,
+      "capturedHeight": 900,
+      "layout": {
+        "state": {
+          "scene": "sample",
+          "counts": {
+            "zones": 50,
+            "blocks": 144,
+            "cards": 500,
+            "total": 694
+          },
+          "objectCount": 694,
+          "visibleCount": 297,
+          "fps": 3017.9820179730327,
+          "backend": "WebGL2",
+          "camera": {
+            "panX": -4602,
+            "panY": -2291,
+            "zoom": 0.1
+          }
+        },
+        "inner": {
+          "width": 1440,
+          "height": 900
+        },
+        "devicePixelRatio": 1,
+        "canvas": {
+          "cssWidth": 1050,
+          "cssHeight": 591,
+          "pixelWidth": 1050,
+          "pixelHeight": 591
+        },
+        "hud": {
+          "objects": "694",
+          "cards": "500",
+          "zones": "50",
+          "visible": "297",
+          "backend": "WebGL2"
+        },
+        "caption": "694 objects — 500 cards, 50 zones, 144 blocks. Drag to pan, scroll or pinch to zoom.",
+        "error": "",
+        "errorHidden": true,
+        "overflowX": false
+      },
+      "assertions": {
+        "screenshotSize": {
+          "passed": true,
+          "expected": "1440x900",
+          "actual": "1440x900"
+        },
+        "window": {
+          "passed": true,
+          "expected": "1440x900",
+          "actual": "1440x900"
+        },
+        "devicePixelRatio": {
+          "passed": true,
+          "expected": 1,
+          "actual": 1
+        },
+        "scene": {
+          "passed": true,
+          "expected": "sample",
+          "actual": "sample"
+        },
+        "objectCount": {
+          "passed": true,
+          "expected": 694,
+          "actual": 694
+        },
+        "counts": {
+          "passed": true,
+          "expected": {
+            "cards": 500,
+            "zones": 50,
+            "blocks": 144
+          },
+          "actual": {
+            "zones": 50,
+            "blocks": 144,
+            "cards": 500,
+            "total": 694
+          }
+        },
+        "camera": {
+          "passed": true,
+          "expected": {
+            "zoom": 0.1,
+            "panX": -4602,
+            "panY": -2291
+          },
+          "actual": {
+            "panX": -4602,
+            "panY": -2291,
+            "zoom": 0.1
+          },
+          "source": "?view=648,664,0.1"
+        },
+        "pageError": {
+          "passed": true,
+          "expected": "",
+          "actual": ""
+        }
+      },
+      "baseline": {
+        "path": "reviews/evidence/visual-baselines/sample-zoom-out-desktop-webgl2.png",
+        "written": true,
+        "sha256": "aeb095bd998850fe9d48e00f2106a30e87c8693bb1d5c720d3722ecfe1cb980f",
+        "bytes": 45660
+      },
+      "comparison": null,
+      "diffPng": null,
+      "baselineName": "sample-zoom-out-desktop-webgl2.png"
+    },
+    {
+      "scene": "sample-zoom-out",
+      "sceneId": "sample",
+      "viewport": "mobile",
+      "viewportSize": "390x844",
+      "backend": "webgl2",
+      "backendLabel": "WebGL2",
+      "url": "http://127.0.0.1:4160/apps/engine-playground/?scene=sample&view=648%2C664%2C0.1",
+      "ready": {
+        "scene": "sample",
+        "objectCount": 694,
+        "visibleCount": 43
+      },
+      "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M2, Unspecified Version)",
+      "capturedWidth": 390,
+      "capturedHeight": 844,
+      "layout": {
+        "state": {
+          "scene": "sample",
+          "counts": {
+            "zones": 50,
+            "blocks": 144,
+            "cards": 500,
+            "total": 694
+          },
+          "objectCount": 694,
+          "visibleCount": 43,
+          "fps": 739.5065055989807,
+          "backend": "WebGL2",
+          "camera": {
+            "panX": -812,
+            "panY": -156,
+            "zoom": 0.1
+          }
+        },
+        "inner": {
+          "width": 390,
+          "height": 844
+        },
+        "devicePixelRatio": 1,
+        "canvas": {
+          "cssWidth": 292,
+          "cssHeight": 164,
+          "pixelWidth": 292,
+          "pixelHeight": 164
+        },
+        "hud": {
+          "objects": "694",
+          "cards": "500",
+          "zones": "50",
+          "visible": "43",
+          "backend": "WebGL2"
+        },
+        "caption": "694 objects — 500 cards, 50 zones, 144 blocks. Drag to pan, scroll or pinch to zoom.",
+        "error": "",
+        "errorHidden": true,
+        "overflowX": false
+      },
+      "assertions": {
+        "screenshotSize": {
+          "passed": true,
+          "expected": "390x844",
+          "actual": "390x844"
+        },
+        "window": {
+          "passed": true,
+          "expected": "390x844",
+          "actual": "390x844"
+        },
+        "devicePixelRatio": {
+          "passed": true,
+          "expected": 1,
+          "actual": 1
+        },
+        "scene": {
+          "passed": true,
+          "expected": "sample",
+          "actual": "sample"
+        },
+        "objectCount": {
+          "passed": true,
+          "expected": 694,
+          "actual": 694
+        },
+        "counts": {
+          "passed": true,
+          "expected": {
+            "cards": 500,
+            "zones": 50,
+            "blocks": 144
+          },
+          "actual": {
+            "zones": 50,
+            "blocks": 144,
+            "cards": 500,
+            "total": 694
+          }
+        },
+        "camera": {
+          "passed": true,
+          "expected": {
+            "zoom": 0.1,
+            "panX": -812,
+            "panY": -156
+          },
+          "actual": {
+            "panX": -812,
+            "panY": -156,
+            "zoom": 0.1
+          },
+          "source": "?view=648,664,0.1"
+        },
+        "pageError": {
+          "passed": true,
+          "expected": "",
+          "actual": ""
+        }
+      },
+      "baseline": {
+        "path": "reviews/evidence/visual-baselines/sample-zoom-out-mobile-webgl2.png",
+        "written": true,
+        "sha256": "1e3b72ade02c81c7ece8bfc67f193d8f20d5131eea66be703b73ed82aaf7e21c",
+        "bytes": 26312
+      },
+      "comparison": null,
+      "diffPng": null,
+      "baselineName": "sample-zoom-out-mobile-webgl2.png"
+    },
+    {
+      "scene": "engine-core-at-rest",
+      "sceneId": "engine-core",
+      "viewport": "desktop",
+      "viewportSize": "1440x900",
+      "backend": "webgl2",
+      "backendLabel": "WebGL2",
+      "url": "http://127.0.0.1:4160/apps/engine-playground/?scene=engine-core",
+      "ready": {
+        "scene": "engine-core",
+        "objectCount": 10000,
+        "visibleCount": 3279
+      },
+      "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M2, Unspecified Version)",
+      "capturedWidth": 1440,
+      "capturedHeight": 900,
+      "layout": {
+        "state": {
+          "scene": "engine-core",
+          "counts": {
+            "zones": 200,
+            "blocks": 600,
+            "cards": 9200,
+            "total": 10000
+          },
+          "objectCount": 10000,
+          "visibleCount": 3279,
+          "fps": 926.7026163316121,
+          "backend": "WebGL2",
+          "camera": {
+            "panX": 4350,
+            "panY": 2453,
+            "zoom": 0.1
+          }
+        },
+        "inner": {
+          "width": 1440,
+          "height": 900
+        },
+        "devicePixelRatio": 1,
+        "canvas": {
+          "cssWidth": 1050,
+          "cssHeight": 591,
+          "pixelWidth": 1050,
+          "pixelHeight": 591
+        },
+        "hud": {
+          "objects": "10000",
+          "cards": "9200",
+          "zones": "200",
+          "visible": "3279",
+          "backend": "WebGL2"
+        },
+        "caption": "10000 objects — 9200 cards, 200 zones, 600 blocks. Drag to pan, scroll or pinch to zoom.",
+        "error": "",
+        "errorHidden": true,
+        "overflowX": false
+      },
+      "assertions": {
+        "screenshotSize": {
+          "passed": true,
+          "expected": "1440x900",
+          "actual": "1440x900"
+        },
+        "window": {
+          "passed": true,
+          "expected": "1440x900",
+          "actual": "1440x900"
+        },
+        "devicePixelRatio": {
+          "passed": true,
+          "expected": 1,
+          "actual": 1
+        },
+        "scene": {
+          "passed": true,
+          "expected": "engine-core",
+          "actual": "engine-core"
+        },
+        "objectCount": {
+          "passed": true,
+          "expected": 10000,
+          "actual": 10000
+        },
+        "counts": {
+          "passed": true,
+          "expected": {
+            "cards": 9200,
+            "zones": 200,
+            "blocks": 600
+          },
+          "actual": {
+            "zones": 200,
+            "blocks": 600,
+            "cards": 9200,
+            "total": 10000
+          }
+        },
+        "camera": {
+          "passed": true,
+          "expected": "playground fit camera",
+          "actual": {
+            "panX": 4350,
+            "panY": 2453,
+            "zoom": 0.1
+          }
+        },
+        "pageError": {
+          "passed": true,
+          "expected": "",
+          "actual": ""
+        }
+      },
+      "baseline": {
+        "path": "reviews/evidence/visual-baselines/engine-core-at-rest-desktop-webgl2.png",
+        "written": true,
+        "sha256": "726c432362c53a69771660724f35bdf166170863ea61559e7198dec582de7ca4",
+        "bytes": 109283
+      },
+      "comparison": null,
+      "diffPng": null,
+      "baselineName": "engine-core-at-rest-desktop-webgl2.png"
+    },
+    {
+      "scene": "engine-core-at-rest",
+      "sceneId": "engine-core",
+      "viewport": "mobile",
+      "viewportSize": "390x844",
+      "backend": "webgl2",
+      "backendLabel": "WebGL2",
+      "url": "http://127.0.0.1:4160/apps/engine-playground/?scene=engine-core",
+      "ready": {
+        "scene": "engine-core",
+        "objectCount": 10000,
+        "visibleCount": 311
+      },
+      "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M2, Unspecified Version)",
+      "capturedWidth": 390,
+      "capturedHeight": 844,
+      "layout": {
+        "state": {
+          "scene": "engine-core",
+          "counts": {
+            "zones": 200,
+            "blocks": 600,
+            "cards": 9200,
+            "total": 10000
+          },
+          "objectCount": 10000,
+          "visibleCount": 311,
+          "fps": 742.8008860442496,
+          "backend": "WebGL2",
+          "camera": {
+            "panX": 8140,
+            "panY": 4588,
+            "zoom": 0.1
+          }
+        },
+        "inner": {
+          "width": 390,
+          "height": 844
+        },
+        "devicePixelRatio": 1,
+        "canvas": {
+          "cssWidth": 292,
+          "cssHeight": 164,
+          "pixelWidth": 292,
+          "pixelHeight": 164
+        },
+        "hud": {
+          "objects": "10000",
+          "cards": "9200",
+          "zones": "200",
+          "visible": "311",
+          "backend": "WebGL2"
+        },
+        "caption": "10000 objects — 9200 cards, 200 zones, 600 blocks. Drag to pan, scroll or pinch to zoom.",
+        "error": "",
+        "errorHidden": true,
+        "overflowX": false
+      },
+      "assertions": {
+        "screenshotSize": {
+          "passed": true,
+          "expected": "390x844",
+          "actual": "390x844"
+        },
+        "window": {
+          "passed": true,
+          "expected": "390x844",
+          "actual": "390x844"
+        },
+        "devicePixelRatio": {
+          "passed": true,
+          "expected": 1,
+          "actual": 1
+        },
+        "scene": {
+          "passed": true,
+          "expected": "engine-core",
+          "actual": "engine-core"
+        },
+        "objectCount": {
+          "passed": true,
+          "expected": 10000,
+          "actual": 10000
+        },
+        "counts": {
+          "passed": true,
+          "expected": {
+            "cards": 9200,
+            "zones": 200,
+            "blocks": 600
+          },
+          "actual": {
+            "zones": 200,
+            "blocks": 600,
+            "cards": 9200,
+            "total": 10000
+          }
+        },
+        "camera": {
+          "passed": true,
+          "expected": "playground fit camera",
+          "actual": {
+            "panX": 8140,
+            "panY": 4588,
+            "zoom": 0.1
+          }
+        },
+        "pageError": {
+          "passed": true,
+          "expected": "",
+          "actual": ""
+        }
+      },
+      "baseline": {
+        "path": "reviews/evidence/visual-baselines/engine-core-at-rest-mobile-webgl2.png",
+        "written": true,
+        "sha256": "2f37b709f3a1d8154cd9abf74956cbccf65c0097a0c08e8000dbaedddec2489b",
+        "bytes": 31730
+      },
+      "comparison": null,
+      "diffPng": null,
+      "baselineName": "engine-core-at-rest-mobile-webgl2.png"
+    }
+  ],
+  "failures": [],
+  "updates": [
+    {
+      "scene": "sample-at-rest",
+      "viewport": "desktop",
+      "backend": "webgl2",
+      "baseline": "reviews/evidence/visual-baselines/sample-at-rest-desktop-webgl2.png"
+    },
+    {
+      "scene": "sample-at-rest",
+      "viewport": "mobile",
+      "backend": "webgl2",
+      "baseline": "reviews/evidence/visual-baselines/sample-at-rest-mobile-webgl2.png"
+    },
+    {
+      "scene": "sample-zoom-in",
+      "viewport": "desktop",
+      "backend": "webgl2",
+      "baseline": "reviews/evidence/visual-baselines/sample-zoom-in-desktop-webgl2.png"
+    },
+    {
+      "scene": "sample-zoom-in",
+      "viewport": "mobile",
+      "backend": "webgl2",
+      "baseline": "reviews/evidence/visual-baselines/sample-zoom-in-mobile-webgl2.png"
+    },
+    {
+      "scene": "sample-zoom-out",
+      "viewport": "desktop",
+      "backend": "webgl2",
+      "baseline": "reviews/evidence/visual-baselines/sample-zoom-out-desktop-webgl2.png"
+    },
+    {
+      "scene": "sample-zoom-out",
+      "viewport": "mobile",
+      "backend": "webgl2",
+      "baseline": "reviews/evidence/visual-baselines/sample-zoom-out-mobile-webgl2.png"
+    },
+    {
+      "scene": "engine-core-at-rest",
+      "viewport": "desktop",
+      "backend": "webgl2",
+      "baseline": "reviews/evidence/visual-baselines/engine-core-at-rest-desktop-webgl2.png"
+    },
+    {
+      "scene": "engine-core-at-rest",
+      "viewport": "mobile",
+      "backend": "webgl2",
+      "baseline": "reviews/evidence/visual-baselines/engine-core-at-rest-mobile-webgl2.png"
+    }
+  ],
+  "missingBaselines": [],
+  "pageErrors": [],
+  "chromeStderr": [
+    "[1027/200934.273613:ERROR:third_party/crashpad/crashpad/util/file/file_io_posix.cc:208] open /Users/rasulatashev/Library/Application Support/Google/Chrome for Testing/Crashpad/settings.dat: Operation not permitted (1)",
+    "[1027/200934.276764:ERROR:third_party/crashpad/crashpad/util/file/file_io_posix.cc:208] open /Users/rasulatashev/Library/Application Support/Google/Chrome for Testing/Crashpad/settings.dat: Operation not permitted (1)",
+    "[18041:2387913:1027/200934.772921:ERROR:third_party/crashpad/crashpad/util/file/file_io_posix.cc:208] open /Users/rasulatashev/Library/Application Support/Google/Chrome for Testing/Crashpad/settings.dat: Operation not permitted (1)",
+    "DevTools listening on ws://127.0.0.1:49231/devtools/browser/3f82362a-8dd5-4393-a08d-b43b39d86c0e",
+    "[18049:2387967:1027/200935.844493:ERROR:ui/display/mac/cv_display_link_mac.mm:188] CVDisplayLinkCreateWithCGDisplay failed. CVReturn: -6670",
+    "[18049:2387967:1027/200935.848263:ERROR:ui/display/mac/cv_display_link_mac.mm:188] CVDisplayLinkCreateWithCGDisplay failed. CVReturn: -6670",
+    "[18049:2387967:1027/200935.848393:ERROR:ui/display/mac/cv_display_link_mac.mm:188] CVDisplayLinkCreateWithCGDisplay failed. CVReturn: -6670",
+    "[18049:2387967:1027/200935.848778:ERROR:ui/display/mac/cv_display_link_mac.mm:188] CVDisplayLinkCreateWithCGDisplay failed. CVReturn: -6670",
+    "[18049:2387967:1027/200935.848900:ERROR:ui/display/mac/cv_display_link_mac.mm:188] CVDisplayLinkCreateWithCGDisplay failed. CVReturn: -6670",
+    "[18049:2387967:1027/200937.389831:ERROR:ui/display/mac/cv_display_link_mac.mm:188] CVDisplayLinkCreateWithCGDisplay failed. CVReturn: -6670"
+  ],
+  "finishedAt": "2026-10-27T19:10:08.617Z",
+  "durationMs": 34682,
+  "result": "update",
+  "resultReason": "reference images written for review (8); an update is an explicit review action and never a gate pass",
+  "exitCode": 0
+}

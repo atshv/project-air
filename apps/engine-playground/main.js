@@ -27,6 +27,11 @@
 // instead of sleeping. window.__enginePlayground.pause() stops the loop for a
 // deterministic capture and getState() reports the current view.
 //
+// View hook: `?view=<worldX>,<worldY>,<zoom>` places the given world point at the
+// canvas centre at the given zoom (clamped to the engine camera range) for
+// deterministic reference-image captures. It only calls setCamera; the scene data
+// never changes. Without the parameter the page keeps its fit camera.
+//
 // Perf hook: window.__enginePerf exists in `?perf=engine-core` mode and reports
 // the scene counts, warm-up and sample counts, frame intervals, the sampled
 // cameras, the document load count and (in verify mode) the per-frame
@@ -157,6 +162,23 @@ function clampInteger(value, minimum, maximum) {
 
 function clampNumber(value, minimum, maximum) {
   return Math.min(Math.max(value, minimum), maximum);
+}
+
+// Parses the deterministic capture camera `?view=<worldX>,<worldY>,<zoom>`.
+// Returns null when the parameter is absent; invalid values fail closed instead
+// of silently falling back to the fit camera, so a wrong view can never become a
+// plausible reference image.
+function parseViewQuery(raw) {
+  if (raw === null) {
+    return null;
+  }
+  const parts = raw.split(",").map((part) => Number(part));
+  if (parts.length !== 3 || !parts.every((value) => Number.isFinite(value))) {
+    throw new Error(
+      `engine-playground: invalid ?view="${raw}"; expected "<worldX>,<worldY>,<zoom>"`,
+    );
+  }
+  return { worldX: parts[0], worldY: parts[1], zoom: parts[2] };
 }
 
 function createScene(count) {
@@ -736,6 +758,17 @@ async function start() {
       });
       startEngineCoreMeasurement(engine, loaded);
       return;
+    }
+
+    const requestedView = parseViewQuery(query.get("view"));
+    if (requestedView !== null) {
+      const bounds = canvas.getBoundingClientRect();
+      const cssWidth = Math.max(1, Math.round(bounds.width));
+      const cssHeight = Math.max(1, Math.round(bounds.height));
+      camera.zoom = clampNumber(requestedView.zoom, zoomRange.minimumZoom, zoomRange.maximumZoom);
+      camera.panX = requestedView.worldX - cssWidth / camera.zoom / 2;
+      camera.panY = requestedView.worldY - cssHeight / camera.zoom / 2;
+      engine.setCamera(camera);
     }
 
     captionNode.textContent = sceneCaption(loaded);

@@ -101,6 +101,7 @@ behind. The same `SpatialIndex::ensureCurrent` guard is covered by the native su
 - **Native build + tests:** `cmake -S packages/engine -B packages/engine/build -DCMAKE_BUILD_TYPE=Debug && cmake --build packages/engine/build --parallel && ctest --test-dir packages/engine/build --output-on-failure` (suites `engine_unit_tests`, `engine_core_tests`).
 - **WASM:** `bash packages/engine/tools/build-wasm.sh` then `node packages/engine/tools/wasm-smoke.mjs`; size: `node packages/engine/tools/wasm-size.mjs` (budget 307,200 B gzip). The wrapper keeps the Emscripten cache under `build-wasm/.emscripten-cache` unless `EM_CACHE` is set, so a read-only package cache (sandboxed agents) or a shared user cache cannot break the build.
 - **Performance:** `node packages/engine/test/perf/run-perf.mjs` (exclusive `perf-baseline`, 50,000 rectangles, p95 ≤ 16.7 ms) and `node packages/engine/test/perf/run-perf.mjs --scenario engine-core` (the `perf` stage gate: 10,000-object interactive run plus the L01 basis/final proof; report [docs/engine/perf-baseline.md](engine/perf-baseline.md), gate catalogue [docs/gates/perf.md](gates/perf.md)).
+- **Visual:** `node packages/engine/test/visual/run-visual.mjs` (the `visual` stage gate: four deterministic scenes at 1440×900 and 390×844 against the committed reference images under `reviews/evidence/visual-baselines/`; `--update` writes baselines as a reviewed update, never a gate pass; catalogue [docs/gates/visual-diff.md](gates/visual-diff.md)).
 - **Bridge:** `pnpm --filter @project-air/engine run build|typecheck|lint`. Pins: CMake 4.4.4, Emscripten 6.0.13 in [docs/versions.md](versions.md); gates in [docs/gates/cpp-cmake.md](gates/cpp-cmake.md), [docs/gates/wasm-emscripten.md](gates/wasm-emscripten.md), [docs/gates/perf.md](gates/perf.md).
 
 ## Scenes and the playground
@@ -134,6 +135,12 @@ the view moves.
 - **Interaction:** demo-level pointer-drag pan and wheel or two-pointer pinch zoom around the
   pointer; both only call `setCamera`, so the scene data never changes. L15 (P4-24) owns the final
   trackpad defaults.
+- **View hook:** `?view=<worldX>,<worldY>,<zoom>` places that world point at the canvas centre at
+  that zoom (clamped to the camera range) and only calls `setCamera`; the document and its spatial
+  index never change. It is the deterministic camera state for the visual gate
+  (`packages/engine/test/visual/run-visual.mjs`); without the parameter the page keeps its fit
+  camera, and an invalid value fails closed with the engine error instead of falling back to a
+  different view.
 - **HUD:** object, card and zone counts, visible instances, FPS and active backend (`WebGL2` today)
   in DOM chrome below the canvas, not an overlay; the text updates once per second so it adds no
   per-frame layout work to the measured frame.

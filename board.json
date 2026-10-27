@@ -3049,7 +3049,7 @@
       "satisfies": [
         "D10"
       ],
-      "status": "in_progress",
+      "status": "done",
       "depends_on": [
         "P4-02"
       ],
@@ -3093,13 +3093,21 @@
         "board-check",
         "visual"
       ],
-      "owner": "lead",
+      "owner": null,
       "branch": "task/P4-04",
-      "worktree": "/private/tmp/air-P4-04",
+      "worktree": null,
       "round": 0,
-      "evidence": [],
+      "evidence": [
+        "reviews/evidence/P4-04-board-check-20261027T190838Z.json",
+        "reviews/evidence/P4-04-visual-20261027T191012Z.json"
+      ],
       "scope_write_forbidden": [
         "reference/"
+      ],
+      "handoff": [
+        "Closed P4-04: dependency-free visual gate, 8 committed baselines (4 scenes x 2 viewports, WebGL2), 0 differing pixels on ANGLE Metal M2; fail-closed renderer and exact viewports.",
+        "Baselines regenerated once after the OS move Darwin 25.5.0 -> 27.2.0 (text AA only, geometry unchanged), documented under 'Baseline history'; --update is a review action, never a pass.",
+        "Deterministic ?view= camera hook; gate log prints URL + camera; board-check + visual green. Stage-exit final gates are perf-final/visual-final, run by P4-28."
       ]
     },
     {

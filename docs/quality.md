@@ -80,7 +80,7 @@ task from the project's manifests; until then the gate cannot pass.
 | `rls-tests` | `node --test services/platform/test/rls/*.test.mjs` | exit 0, a second account sees nothing (exclusive) |
 | `crdt-convergence` | `[VERIFY: stage realtime]` | exit 0, 10,000 rounds without divergence |
 | `load` | see `docs/gates/load.md` `[VERIFY: stage realtime]` | exit 0 (exclusive) |
-| `visual` | `node packages/engine/test/visual/run-visual.mjs` | exit 0, every reference image at 1440x900 and 390x844 within tolerance for WebGL2 and WebGPU (see `docs/gates/visual-diff.md`) |
+| `visual` | `node packages/engine/test/visual/run-visual.mjs` | exit 0, every committed WebGL2 reference image at 1440x900 and 390x844 within tolerance, real GPU recorded, capture record and diff PNGs under `reviews/evidence/` (exclusive; WebGPU reference images follow with P4-11 — see `docs/gates/visual-diff.md`) |
 | `visual-final` | `node packages/engine/test/visual/run-visual.mjs` | exit 0, the stage-exit final reference-image proof recorded by P4-28: every reference image at 1440x900 and 390x844 within tolerance for WebGL2 and WebGPU (see `docs/gates/visual-diff.md`) |
 | `e2e` | see `docs/gates/playwright.md` `[VERIFY: stage web-app]` | exit 0 (exclusive) |
 | `import-tests` | `[VERIFY: stage value]` | exit 0 |

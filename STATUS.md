@@ -129,6 +129,13 @@
   - P4-02: Closed P4-02: deterministic test-kit scenes (500 cards/50 zones/144 blocks, 10k stress), interactive playground with pan/zoom, HUD, ready hook; benchmark mode preserved.
   - P4-02: Screenshots 1440x900/390x844 + serve/capture log (HTTP 200, SwiftShader capture); test-kit suite 12/12; four gates green after the owner-approved design-check test fix 32c8f28.
   - P4-02: Two review rounds; minors fixed (serve-log consistency, per-zone block assertions). Deviation: Node v26.12.1 vs the .nvmrc pin.
+- `P4-08` Text atlas and glyph texture pipeline (L02)
+  - P4-02: Closed P4-02: deterministic test-kit scenes (500 cards/50 zones/144 blocks, 10k stress), interactive playground with pan/zoom, HUD, ready hook; benchmark mode preserved.
+  - P4-02: Screenshots 1440x900/390x844 + serve/capture log (HTTP 200, SwiftShader capture); test-kit suite 12/12; four gates green after the owner-approved design-check test fix 32c8f28.
+  - P4-02: Two review rounds; minors fixed (serve-log consistency, per-zone block assertions). Deviation: Node v26.12.1 vs the .nvmrc pin.
+  - P4-04: Closed P4-04: dependency-free visual gate, 8 committed baselines (4 scenes x 2 viewports, WebGL2), 0 differing pixels on ANGLE Metal M2; fail-closed renderer and exact viewports.
+  - P4-04: Baselines regenerated once after the OS move Darwin 25.5.0 -> 27.2.0 (text AA only, geometry unchanged), documented under 'Baseline history'; --update is a review action, never a pass.
+  - P4-04: Deterministic ?view= camera hook; gate log prints URL + camera; board-check + visual green. Stage-exit final gates are perf-final/visual-final, run by P4-28.
 - `P4-25` Zones as containers I: contract parent reference (L08)
 
 ## Done
@@ -173,6 +180,7 @@
 - [x] `P4-01` Engine document: stable ids, incremental mutations, hit testing and spatial queries — status: `done` — owner: —
 - [x] `P4-02` Engine playground: interactive sample board and stage shell — status: `done` — owner: —
 - [x] `P4-03` Engine-core perf gate and L01 basis — status: `done` — owner: —
+- [x] `P4-04` Visual gate with reference images — status: `done` — owner: —
 - [x] `P0-26` Toolbar and zone with notepad and image window in the preview — status: `done` — owner: —
 - [x] `P0-27` Bilingual preview with DE/EN switch and cache-busted assets — status: `done` — owner: —
 - [x] `P0-28` Zone detach interaction: drag notepad and photo out and back — status: `done` — owner: —
@@ -181,7 +189,6 @@
 
 ## In progress
 
-- [ ] `P4-04` Visual gate with reference images — status: `in_progress` — owner: lead
 - [ ] `P0-31` Refined live demo: smooth merge/split and calm motion — status: `in_progress` — owner: —
 
 ## Blocked / failed
@@ -218,13 +225,6 @@
 - [ ] `P4-26` Zones as containers II: platform migration and containment (L08) — status: `pending` — owner: —
 - [ ] `P4-27` Zones as containers II: engine membership and zone move (L08) — status: `pending` — owner: —
 - [ ] `P4-28` L01 final proof, two-backend reference images and stage showcase — status: `pending` — owner: —
-
-<!-- polier:claims -->
-## Claims
-
-- `P0-31` in progress by dsh since 2026-10-27T19:03:36+00:00 — worktree: /Users/rasulatashev/Desktop/KI Projekte/Project air-P0-31 · slot 2
-
-<!-- /polier:claims -->
 
 ## Decisions
 

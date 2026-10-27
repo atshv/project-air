@@ -12,15 +12,15 @@ Read `AGENTS.md`, `ARCHITECTURE.md`, `STATUS.md`, `docs/module-map.md` and the t
 - **Stage 4 Backend core:** complete, owner decision `continue`; tasks `P3-01` … `P3-06` done. `services/platform` + `services/auth`, self-hosted Ory Kratos v26.2.0 (ADR-0007; `identity` profile, Mailpit courier, test-session mode for tests, admin API bound to localhost), PostgreSQL migrations `0001`–`0004` with RLS and contract-valid account-id mapping, 20 `/v1` contract routes + `GET /v1/session`, typed SDK `@project-air/sdk`, `api-tests` 32, `rls-tests` 7, platform unit 74, acceptance script `PASS backend-core acceptance`; ADR-0008 (API/session model).
 - **Stage 5 Engine core:** planned and in progress, owner decision `continue`; 28 tasks `P4-01` …
   `P4-28` in five waves (measurement/gates, drawing + WebGPU, interaction, zones, final proof);
-  `P4-01` (engine document, hit testing), `P4-02` (test-kit scenes, interactive playground) and
-  `P4-03` (perf gate + L01 basis) are done and merged. **`P4-04` (visual gate) is in progress and
-  blocked on nothing:** its worktree is at `/private/tmp/air-P4-04` (branch `task/P4-04`, commit
-  `692529c`, visual gate PASS, clean), but it still needs an independent review and the merge; the
-  previous session stopped there. Briefs are written through `P4-07` (JIT). Stage target: 10,000 objects at 60 fps, no frame above 16 ms while
+  `P4-01` (engine document, hit testing), `P4-02` (test-kit scenes, interactive playground),
+  `P4-03` (perf gate + L01 basis) and `P4-04` (visual gate) are done and merged; `P4-05` (gesture
+  operations + undo history) is next. Briefs are written through `P4-07` (JIT). The stage exit is
+  proven by the final gates `perf-final` and `visual-final`, run by `P4-28`; the early `perf`/`visual`
+  records are task gates, so the stage stays open until the final proof. Stage target: 10,000 objects at 60 fps, no frame above 16 ms while
   panning/zooming (`perf`, M2 proxy), engine entries L01–L03, L07, L08, L10–L14, L16–L20 and the
   desktop part of L15, WebGPU behind the command buffer as second backend, reference images green
   (`visual`, both viewports, both backends). ADR-0009 (text/overlay strategy) is recorded.
-- **Done overall:** 45 of 69 tasks. Open: the rest of stage 5 plus the remote-phase tasks `P0-02`,
+- **Done overall:** 46 of 69 tasks. Open: the rest of stage 5 plus the remote-phase tasks `P0-02`,
   `P0-15`, `P0-16`, `P0-17` (stage remote, after hardening) and the planning of the later stages
   (realtime, web-app, value, hardening).
 - **Preview:** `apps/web/preview/` has the permanent Contract 0.1.0 overview as section 02 and the live demo: top-centre ten-tool toolbar and a zone with notepad + image window (P0-26), **bilingual EN/DE with a themed top-right switch** via `apps/web/preview/locales/{en,de}.json` (all visible text/aria/alt; 260 identical keys; `<html lang>`, localStorage persistence, safe fallback) (P0-27), **zone items that can be dragged out onto the canvas and docked back** with a 28 px progressive detach animation, 8 px dock hysteresis, grid-snap, no edge connection, reduced-motion (P0-28); **when both items are out the empty zone fades/scales away and becomes hidden/inert, and dragging the two free items together (≥25 % overlap or ≤48 px centres) groups them into a newly animated zone** that re-orients/re-fits on resize, plus refined spring motion and a smaller zoom pill (36×104, 32 px buttons) (P0-29); **zone layout follows the drop (side by side or stacked), docked items can be reordered/swapped inside the zone, drags track the pointer 1:1 with commit-on-release (no magnetism) and the +/−/fit controls are smaller (32×96 pill, 28 px painted, 32 px hit, 12 px glyphs)** (P0-30). **Cache rule:** every preview change bumps `?v=` on `tokens.css`/`preview.css`/`preview.js` in `index.html`; locale fetches inherit the script version. A cached `index.html` may still need one hard reload (an old HTML document cannot reference the new CSS). Demo-cadence baseline screenshots: `P0-27-*` (desktop/mobile EN+DE, owner 1426×583 DPR2) `P0-28-*` (docked/mid-detach/detached/redocked) `P0-29-*` (zone fading/overlap/grouped/zoom/mobile/resize/toolbar) and `P0-30-*` (horizontal/vertical/swapped/drop-hint/controls/masthead/zoom-150).
