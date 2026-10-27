@@ -4640,6 +4640,58 @@
         "Detached items are never edge-connected (one .demo__edge, A/B endpoints unchanged); reduced-motion honoured; cards/zoom/toolbar/switch unchanged; en/de strings; assets ?v=P0-28.",
         "Gates board-check/design-check/changelog-entry green + language-check OK; evidence docked/mid/detached/redocked + log; review pass with two minors fixed (photo ring/shadow clipping, README wording)."
       ]
+    },
+    {
+      "id": "P0-29",
+      "title": "Zone collapse, re-grouping and smaller zoom controls",
+      "goal": "When both zone items are pulled out the zone disappears with an animation; dragging the two free items over each other groups them into a new zone; the detach/dock/group motion feels smoother; the zoom +/- controls are smaller.",
+      "why": "The owner asked for the zone to vanish once empty, for dragging the photo and notepad together to re-form a zone, for nicer motion and smaller zoom buttons.",
+      "satisfies": [
+        "D3"
+      ],
+      "status": "pending",
+      "depends_on": [
+        "P0-28"
+      ],
+      "complexity": 6,
+      "stage": "foundation",
+      "parallel_group": null,
+      "owner": null,
+      "round": 0,
+      "scope_write": [
+        "apps/web/preview/",
+        ".changes/"
+      ],
+      "scope_read": [
+        "ARCHITECTURE.md",
+        "AGENTS.md",
+        "STATUS.md",
+        "docs/module-map.md",
+        "docs/quality.md",
+        "docs/design-rules.md",
+        "docs/i18n/style-de.md",
+        "docs/i18n/glossary.md",
+        "apps/web/preview/",
+        "packages/ui-kit/tokens.css",
+        "packages/ui-kit/layers.ts"
+      ],
+      "acceptance": [
+        "A1",
+        "A2",
+        "A3",
+        "A4"
+      ],
+      "gates": [
+        "board-check",
+        "design-check",
+        "changelog-entry"
+      ],
+      "branch": "task/P0-29",
+      "worktree": null,
+      "evidence": [],
+      "scope_write_forbidden": [
+        "reference/"
+      ]
     }
   ],
   "decisions": [
