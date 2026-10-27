@@ -3118,7 +3118,7 @@
       "satisfies": [
         "D10"
       ],
-      "status": "pending",
+      "status": "in_progress",
       "depends_on": [
         "P4-01"
       ],
@@ -3127,7 +3127,8 @@
       "parallel_group": null,
       "scope_write": [
         "packages/engine/",
-        ".changes/"
+        ".changes/",
+        "docs/engine.md"
       ],
       "scope_read": [
         "ARCHITECTURE.md",
@@ -3158,9 +3159,9 @@
         "typecheck",
         "unit"
       ],
-      "owner": null,
+      "owner": "lead",
       "branch": "task/P4-05",
-      "worktree": null,
+      "worktree": "/private/tmp/air-P4-05",
       "round": 0,
       "evidence": [],
       "scope_write_forbidden": [

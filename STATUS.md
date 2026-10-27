@@ -121,10 +121,6 @@
 
 ## Ready now
 
-- `P4-05` Gesture-to-operation seam and undo history core
-  - P4-01: Closed P4-01: engine document with stable ObjectIds (never reused), tombstones, incremental add/move/resize/z/remove, atomic packed loads, incremental spatial index and command-buffer hit testing.
-  - P4-01: 6 C ABI exports + typed bridge methods; docs/engine.md updated; WASM 27,981 B gzip; cpp-unit 2/2. Two review rounds, all findings fixed; review in reviews/P4-01.md.
-  - P4-01: Deviations: Node v26.12.1 vs the .nvmrc pin (pins untouched); build-wasm.sh defaults EM_CACHE to build-wasm/.emscripten-cache because the Homebrew cache is read-only in the sandbox.
 - `P4-07` Canvas feel: fit, dot grid and idle drawing (L19)
   - P4-02: Closed P4-02: deterministic test-kit scenes (500 cards/50 zones/144 blocks, 10k stress), interactive playground with pan/zoom, HUD, ready hook; benchmark mode preserved.
   - P4-02: Screenshots 1440x900/390x844 + serve/capture log (HTTP 200, SwiftShader capture); test-kit suite 12/12; four gates green after the owner-approved design-check test fix 32c8f28.
@@ -189,6 +185,7 @@
 
 ## In progress
 
+- [ ] `P4-05` Gesture-to-operation seam and undo history core — status: `in_progress` — owner: lead
 - [ ] `P0-31` Refined live demo: smooth merge/split and calm motion — status: `in_progress` — owner: —
 
 ## Blocked / failed
@@ -201,7 +198,6 @@
 - [ ] `P0-15` Release command and tag-based CI release — status: `pending` — owner: —
 - [ ] `P0-16` Dependency updates and Polier update check — status: `pending` — owner: —
 - [ ] `P0-17` RELEASING.md and release 0.0.1 — status: `pending` — owner: —
-- [ ] `P4-05` Gesture-to-operation seam and undo history core — status: `pending` — owner: —
 - [ ] `P4-06` Layers and draw order (L13) — status: `pending` — owner: —
 - [ ] `P4-07` Canvas feel: fit, dot grid and idle drawing (L19) — status: `pending` — owner: —
 - [ ] `P4-08` Text atlas and glyph texture pipeline (L02) — status: `pending` — owner: —
@@ -225,6 +221,13 @@
 - [ ] `P4-26` Zones as containers II: platform migration and containment (L08) — status: `pending` — owner: —
 - [ ] `P4-27` Zones as containers II: engine membership and zone move (L08) — status: `pending` — owner: —
 - [ ] `P4-28` L01 final proof, two-backend reference images and stage showcase — status: `pending` — owner: —
+
+<!-- polier:claims -->
+## Claims
+
+- `P4-05` in progress by dsh since 2026-10-27T19:16:30+00:00 — worktree: /private/tmp/air-P4-05 · slot 1
+
+<!-- /polier:claims -->
 
 ## Decisions
 
