@@ -3204,7 +3204,8 @@
       "scope_write": [
         "packages/engine/",
         "apps/engine-playground/",
-        ".changes/"
+        ".changes/",
+        "packages/test-kit/"
       ],
       "scope_read": [
         "ARCHITECTURE.md",
