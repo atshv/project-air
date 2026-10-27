@@ -3,7 +3,7 @@
   "gate": "visual",
   "mode": "gate",
   "command": "node packages/engine/test/visual/run-visual.mjs --task P4-10",
-  "timestamp": "2026-10-27T21:48:16.232Z",
+  "timestamp": "2026-10-27T21:54:38.718Z",
   "partial": false,
   "backend": "webgl2",
   "backendLabel": "WebGL2",
@@ -277,7 +277,7 @@
     "identified": true,
     "policy": "fail-closed: renderer must match ANGLE (...) plus a known GPU hint and must not be software"
   },
-  "port": 4160,
+  "port": 4060,
   "captures": [
     {
       "scene": "sample-at-rest",
@@ -286,7 +286,7 @@
       "viewportSize": "1440x900",
       "backend": "webgl2",
       "backendLabel": "WebGL2",
-      "url": "http://127.0.0.1:4160/apps/engine-playground/?scene=sample",
+      "url": "http://127.0.0.1:4060/apps/engine-playground/?scene=sample",
       "fitAction": null,
       "ready": {
         "scene": "sample",
@@ -427,7 +427,7 @@
       "viewportSize": "390x844",
       "backend": "webgl2",
       "backendLabel": "WebGL2",
-      "url": "http://127.0.0.1:4160/apps/engine-playground/?scene=sample",
+      "url": "http://127.0.0.1:4060/apps/engine-playground/?scene=sample",
       "fitAction": null,
       "ready": {
         "scene": "sample",
@@ -568,7 +568,7 @@
       "viewportSize": "1440x900",
       "backend": "webgl2",
       "backendLabel": "WebGL2",
-      "url": "http://127.0.0.1:4160/apps/engine-playground/?scene=sample&view=648%2C664%2C0.5",
+      "url": "http://127.0.0.1:4060/apps/engine-playground/?scene=sample&view=648%2C664%2C0.5",
       "fitAction": null,
       "ready": {
         "scene": "sample",
@@ -714,7 +714,7 @@
       "viewportSize": "390x844",
       "backend": "webgl2",
       "backendLabel": "WebGL2",
-      "url": "http://127.0.0.1:4160/apps/engine-playground/?scene=sample&view=648%2C664%2C0.5",
+      "url": "http://127.0.0.1:4060/apps/engine-playground/?scene=sample&view=648%2C664%2C0.5",
       "fitAction": null,
       "ready": {
         "scene": "sample",
@@ -860,7 +860,7 @@
       "viewportSize": "1440x900",
       "backend": "webgl2",
       "backendLabel": "WebGL2",
-      "url": "http://127.0.0.1:4160/apps/engine-playground/?scene=sample&view=648%2C664%2C0.1",
+      "url": "http://127.0.0.1:4060/apps/engine-playground/?scene=sample&view=648%2C664%2C0.1",
       "fitAction": null,
       "ready": {
         "scene": "sample",
@@ -1006,7 +1006,7 @@
       "viewportSize": "390x844",
       "backend": "webgl2",
       "backendLabel": "WebGL2",
-      "url": "http://127.0.0.1:4160/apps/engine-playground/?scene=sample&view=648%2C664%2C0.1",
+      "url": "http://127.0.0.1:4060/apps/engine-playground/?scene=sample&view=648%2C664%2C0.1",
       "fitAction": null,
       "ready": {
         "scene": "sample",
@@ -1152,7 +1152,7 @@
       "viewportSize": "1440x900",
       "backend": "webgl2",
       "backendLabel": "WebGL2",
-      "url": "http://127.0.0.1:4160/apps/engine-playground/?scene=engine-core",
+      "url": "http://127.0.0.1:4060/apps/engine-playground/?scene=engine-core",
       "fitAction": null,
       "ready": {
         "scene": "engine-core",
@@ -1293,7 +1293,7 @@
       "viewportSize": "390x844",
       "backend": "webgl2",
       "backendLabel": "WebGL2",
-      "url": "http://127.0.0.1:4160/apps/engine-playground/?scene=engine-core",
+      "url": "http://127.0.0.1:4060/apps/engine-playground/?scene=engine-core",
       "fitAction": null,
       "ready": {
         "scene": "engine-core",
@@ -1434,7 +1434,7 @@
       "viewportSize": "1440x900",
       "backend": "webgl2",
       "backendLabel": "WebGL2",
-      "url": "http://127.0.0.1:4160/apps/engine-playground/?scene=stress&count=1",
+      "url": "http://127.0.0.1:4060/apps/engine-playground/?scene=stress&count=1",
       "fitAction": {
         "framesBefore": 2,
         "framesAfter": 3,
@@ -1596,7 +1596,7 @@
       "viewportSize": "390x844",
       "backend": "webgl2",
       "backendLabel": "WebGL2",
-      "url": "http://127.0.0.1:4160/apps/engine-playground/?scene=stress&count=1",
+      "url": "http://127.0.0.1:4060/apps/engine-playground/?scene=stress&count=1",
       "fitAction": {
         "framesBefore": 2,
         "framesAfter": 3,
@@ -1758,7 +1758,7 @@
       "viewportSize": "1440x900",
       "backend": "webgl2",
       "backendLabel": "WebGL2",
-      "url": "http://127.0.0.1:4160/apps/engine-playground/?scene=layers&store=off",
+      "url": "http://127.0.0.1:4060/apps/engine-playground/?scene=layers&store=off",
       "fitAction": null,
       "ready": {
         "scene": "layers",
@@ -1899,7 +1899,7 @@
       "viewportSize": "390x844",
       "backend": "webgl2",
       "backendLabel": "WebGL2",
-      "url": "http://127.0.0.1:4160/apps/engine-playground/?scene=layers&store=off",
+      "url": "http://127.0.0.1:4060/apps/engine-playground/?scene=layers&store=off",
       "fitAction": null,
       "ready": {
         "scene": "layers",
@@ -2040,7 +2040,7 @@
       "viewportSize": "1440x900",
       "backend": "webgl2",
       "backendLabel": "WebGL2",
-      "url": "http://127.0.0.1:4160/apps/engine-playground/?scene=layers&store=off&front=card-0001",
+      "url": "http://127.0.0.1:4060/apps/engine-playground/?scene=layers&store=off&front=card-0001",
       "fitAction": null,
       "ready": {
         "scene": "layers",
@@ -2181,7 +2181,7 @@
       "viewportSize": "390x844",
       "backend": "webgl2",
       "backendLabel": "WebGL2",
-      "url": "http://127.0.0.1:4160/apps/engine-playground/?scene=layers&store=off&front=card-0001",
+      "url": "http://127.0.0.1:4060/apps/engine-playground/?scene=layers&store=off&front=card-0001",
       "fitAction": null,
       "ready": {
         "scene": "layers",
@@ -2322,7 +2322,7 @@
       "viewportSize": "1440x900",
       "backend": "webgl2",
       "backendLabel": "WebGL2",
-      "url": "http://127.0.0.1:4160/apps/engine-playground/?scene=stress&count=0&view=272%2C112%2C1&text=layout",
+      "url": "http://127.0.0.1:4060/apps/engine-playground/?scene=stress&count=0&view=272%2C112%2C1&text=layout",
       "fitAction": null,
       "ready": {
         "scene": "stress",
@@ -2474,7 +2474,7 @@
       "viewportSize": "390x844",
       "backend": "webgl2",
       "backendLabel": "WebGL2",
-      "url": "http://127.0.0.1:4160/apps/engine-playground/?scene=stress&count=0&view=272%2C112%2C1&text=layout",
+      "url": "http://127.0.0.1:4060/apps/engine-playground/?scene=stress&count=0&view=272%2C112%2C1&text=layout",
       "fitAction": null,
       "ready": {
         "scene": "stress",
@@ -2626,7 +2626,7 @@
       "viewportSize": "1440x900",
       "backend": "webgl2",
       "backendLabel": "WebGL2",
-      "url": "http://127.0.0.1:4160/apps/engine-playground/?scene=titles&view=512%2C288%2C1&text=titles",
+      "url": "http://127.0.0.1:4060/apps/engine-playground/?scene=titles&view=512%2C288%2C1&text=titles",
       "fitAction": null,
       "ready": {
         "scene": "titles",
@@ -2778,7 +2778,7 @@
       "viewportSize": "390x844",
       "backend": "webgl2",
       "backendLabel": "WebGL2",
-      "url": "http://127.0.0.1:4160/apps/engine-playground/?scene=titles&view=512%2C288%2C1&text=titles",
+      "url": "http://127.0.0.1:4060/apps/engine-playground/?scene=titles&view=512%2C288%2C1&text=titles",
       "fitAction": null,
       "ready": {
         "scene": "titles",
@@ -2930,7 +2930,7 @@
       "viewportSize": "1440x900",
       "backend": "webgl2",
       "backendLabel": "WebGL2",
-      "url": "http://127.0.0.1:4160/apps/engine-playground/?scene=titles&view=512%2C240%2C2&text=titles",
+      "url": "http://127.0.0.1:4060/apps/engine-playground/?scene=titles&view=512%2C240%2C2&text=titles",
       "fitAction": null,
       "ready": {
         "scene": "titles",
@@ -3082,7 +3082,7 @@
       "viewportSize": "390x844",
       "backend": "webgl2",
       "backendLabel": "WebGL2",
-      "url": "http://127.0.0.1:4160/apps/engine-playground/?scene=titles&view=512%2C240%2C2&text=titles",
+      "url": "http://127.0.0.1:4060/apps/engine-playground/?scene=titles&view=512%2C240%2C2&text=titles",
       "fitAction": null,
       "ready": {
         "scene": "titles",
@@ -3233,19 +3233,19 @@
   "missingBaselines": [],
   "pageErrors": [],
   "chromeStderr": [
-    "[1027/224816.345326:ERROR:third_party/crashpad/crashpad/util/file/file_io_posix.cc:208] open /Users/rasulatashev/Library/Application Support/Google/Chrome for Testing/Crashpad/settings.dat: Operation not permitted (1)",
-    "[1027/224816.345542:ERROR:third_party/crashpad/crashpad/util/file/file_io_posix.cc:208] open /Users/rasulatashev/Library/Application Support/Google/Chrome for Testing/Crashpad/settings.dat: Operation not permitted (1)",
-    "[84250:2926585:1027/224816.396476:ERROR:third_party/crashpad/crashpad/util/file/file_io_posix.cc:208] open /Users/rasulatashev/Library/Application Support/Google/Chrome for Testing/Crashpad/settings.dat: Operation not permitted (1)",
-    "DevTools listening on ws://127.0.0.1:55256/devtools/browser/5d954114-d528-49de-a809-de3c715d16e6",
-    "[84256:2926656:1027/224816.831166:ERROR:ui/display/mac/cv_display_link_mac.mm:188] CVDisplayLinkCreateWithCGDisplay failed. CVReturn: -6670",
-    "[84256:2926656:1027/224816.833264:ERROR:ui/display/mac/cv_display_link_mac.mm:188] CVDisplayLinkCreateWithCGDisplay failed. CVReturn: -6670",
-    "[84256:2926656:1027/224816.833475:ERROR:ui/display/mac/cv_display_link_mac.mm:188] CVDisplayLinkCreateWithCGDisplay failed. CVReturn: -6670",
-    "[84256:2926656:1027/224816.833644:ERROR:ui/display/mac/cv_display_link_mac.mm:188] CVDisplayLinkCreateWithCGDisplay failed. CVReturn: -6670",
-    "[84256:2926656:1027/224816.833789:ERROR:ui/display/mac/cv_display_link_mac.mm:188] CVDisplayLinkCreateWithCGDisplay failed. CVReturn: -6670",
-    "[84256:2926656:1027/224818.359904:ERROR:ui/display/mac/cv_display_link_mac.mm:188] CVDisplayLinkCreateWithCGDisplay failed. CVReturn: -6670"
+    "[1027/225438.848144:ERROR:third_party/crashpad/crashpad/util/file/file_io_posix.cc:208] open /Users/rasulatashev/Library/Application Support/Google/Chrome for Testing/Crashpad/settings.dat: Operation not permitted (1)",
+    "[1027/225438.848361:ERROR:third_party/crashpad/crashpad/util/file/file_io_posix.cc:208] open /Users/rasulatashev/Library/Application Support/Google/Chrome for Testing/Crashpad/settings.dat: Operation not permitted (1)",
+    "[89828:2948381:1027/225438.922085:ERROR:third_party/crashpad/crashpad/util/file/file_io_posix.cc:208] open /Users/rasulatashev/Library/Application Support/Google/Chrome for Testing/Crashpad/settings.dat: Operation not permitted (1)",
+    "DevTools listening on ws://127.0.0.1:55516/devtools/browser/f406070c-057f-48b8-92b0-5162a641af3c",
+    "[89835:2948450:1027/225439.350617:ERROR:ui/display/mac/cv_display_link_mac.mm:188] CVDisplayLinkCreateWithCGDisplay failed. CVReturn: -6670",
+    "[89835:2948450:1027/225439.356885:ERROR:ui/display/mac/cv_display_link_mac.mm:188] CVDisplayLinkCreateWithCGDisplay failed. CVReturn: -6670",
+    "[89835:2948450:1027/225439.357029:ERROR:ui/display/mac/cv_display_link_mac.mm:188] CVDisplayLinkCreateWithCGDisplay failed. CVReturn: -6670",
+    "[89835:2948450:1027/225439.357159:ERROR:ui/display/mac/cv_display_link_mac.mm:188] CVDisplayLinkCreateWithCGDisplay failed. CVReturn: -6670",
+    "[89835:2948450:1027/225439.357291:ERROR:ui/display/mac/cv_display_link_mac.mm:188] CVDisplayLinkCreateWithCGDisplay failed. CVReturn: -6670",
+    "[89835:2948450:1027/225440.894317:ERROR:ui/display/mac/cv_display_link_mac.mm:188] CVDisplayLinkCreateWithCGDisplay failed. CVReturn: -6670"
   ],
-  "finishedAt": "2026-10-27T21:48:24.982Z",
-  "durationMs": 8750,
+  "finishedAt": "2026-10-27T21:54:47.522Z",
+  "durationMs": 8804,
   "result": "pass",
   "resultReason": "pass",
   "exitCode": 0

@@ -5,13 +5,16 @@
   "exit_code": 0,
   "result": "pass",
   "slot": null,
-  "exclusive": [],
+  "exclusive": [
+    "perf",
+    "visual"
+  ],
   "lock_wait_s": 0.0,
   "lock_warning": null,
-  "started": "2026-10-27T21:48:13+00:00",
-  "finished": "2026-10-27T21:48:13+00:00",
-  "commit": "bb52df9360b79863fb2cefa5abbe99ebc0db2d6f",
+  "started": "2026-10-27T21:54:47+00:00",
+  "finished": "2026-10-27T21:54:47+00:00",
+  "commit": "c88e20ea668ee85b64ea3d7561cac382c7eedac9",
   "dirty": true,
-  "log": "P4-10-design-check-20261027T214813Z.log",
+  "log": "P4-10-design-check-20261027T215447Z.log",
   "log_sha256": "ffa556e23d40616c4720395afe0b5df39d0bd1904dc48671f3d045004909d59d"
 }

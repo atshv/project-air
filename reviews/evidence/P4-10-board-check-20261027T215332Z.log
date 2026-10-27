@@ -2,11 +2,17 @@ $ python3 /Users/rasulatashev/Desktop/Polier-main/tools/check.py .
 [exit 0]
 
 WARN: budgets.status overridden to 1900 words (reason: Eleven stages with exit criteria, the remote stage and eighteen owner questions are listed in STATUS.md during foundation; shrinks as questions are answered and tasks finish.)
-WARN: STATUS.md: 2848 words (target max. 1900); it is read in every session
-WARN: P0-02: context pack is about 33086 tokens (warning at 15000); trim scope_read, split the task or shorten the base files
-WARN: P4-10: context pack is about 2348496 tokens (warning at 15000); trim scope_read, split the task or shorten the base files
-WARN: P4-29: context pack is about 2411847 tokens (warning at 15000); trim scope_read, split the task or shorten the base files
-WARN: P4-30: context pack is about 2411913 tokens (warning at 15000); trim scope_read, split the task or shorten the base files
+WARN: STATUS.md: 2925 words (target max. 1900); it is read in every session
+WARN: P4-10: done and other tasks depend on it, but no handoff (max. 3 lines)
+WARN: P0-02: context pack is about 33240 tokens (warning at 15000); trim scope_read, split the task or shorten the base files
+WARN: P4-14: context pack is about 166136 tokens (warning at 15000); trim scope_read, split the task or shorten the base files
+WARN: P4-15: context pack is about 166081 tokens (warning at 15000); trim scope_read, split the task or shorten the base files
+WARN: P4-16: context pack is about 166113 tokens (warning at 15000); trim scope_read, split the task or shorten the base files
+WARN: P4-23: context pack is about 166095 tokens (warning at 15000); trim scope_read, split the task or shorten the base files
+WARN: P4-27: context pack is about 168654 tokens (warning at 15000); trim scope_read, split the task or shorten the base files
+WARN: P4-28: context pack is about 179022 tokens (warning at 15000); trim scope_read, split the task or shorten the base files
+WARN: P4-29: context pack is about 234008 tokens (warning at 15000); trim scope_read, split the task or shorten the base files
+WARN: P4-30: context pack is about 234074 tokens (warning at 15000); trim scope_read, split the task or shorten the base files
 WARN: P4-01: record reviews/evidence/P4-01-board-check-20261025T204541Z.json was made on commit b9f5e85a3b, which is not in HEAD's history
 WARN: P4-01: record reviews/evidence/P4-01-boundaries-20261025T204546Z.json was made on commit b9f5e85a3b, which is not in HEAD's history
 WARN: P4-01: record reviews/evidence/P4-01-cpp-unit-20261025T204549Z.json was made on commit b9f5e85a3b, which is not in HEAD's history
@@ -23,6 +29,8 @@ WARN: P4-08: record reviews/evidence/P4-08-cpp-unit-20261027T210021Z.json was ma
 WARN: P4-08: record reviews/evidence/P4-08-wasm-build-20261027T210024Z.json was made on commit f456f499f5, which is not in HEAD's history
 WARN: P4-08: record reviews/evidence/P4-08-wasm-size-20261027T210028Z.json was made on commit f456f499f5, which is not in HEAD's history
 WARN: P4-08: record reviews/evidence/P4-08-typecheck-20261027T210029Z.json was made on commit f456f499f5, which is not in HEAD's history
+WARN: P4-10: record reviews/evidence/P4-10-visual-20261027T214816Z.json was made on commit bb52df9360, which is not in HEAD's history
+WARN: P4-10: record reviews/evidence/P4-10-design-check-20261027T214813Z.json was made on commit bb52df9360, which is not in HEAD's history
 WARN: P4-25: record reviews/evidence/P4-25-board-check-20261027T200126Z.json was made on commit acb66376ed, which is not in HEAD's history
 WARN: P4-25: record reviews/evidence/P4-25-contracts-20261027T200129Z.json was made on commit acb66376ed, which is not in HEAD's history
 WARN: P4-26: record reviews/evidence/P4-26-board-check-20261027T205513Z.json was made on commit eae65f62bd, which is not in HEAD's history
@@ -35,4 +43,4 @@ WARN: P0-29: record reviews/evidence/P0-29-changelog-entry-20261027T073817Z.json
 WARN: P0-30: record reviews/evidence/P0-30-board-check-20261027T103140Z.json was made on commit 0fcaf09b90, which is not in HEAD's history
 WARN: P0-30: record reviews/evidence/P0-30-design-check-20261027T103142Z.json was made on commit 0fcaf09b90, which is not in HEAD's history
 WARN: P0-30: record reviews/evidence/P0-30-changelog-entry-20261027T103142Z.json was made on commit 0fcaf09b90, which is not in HEAD's history
-OK: /private/tmp/air-P4-10 passes the mandatory checks. (34 warning(s))
+OK: /Users/rasulatashev/Desktop/KI Projekte/Project air passes the mandatory checks. (42 warning(s))

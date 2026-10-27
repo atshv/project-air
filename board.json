@@ -3522,15 +3522,19 @@
       "worktree": null,
       "round": 0,
       "evidence": [
-        "reviews/evidence/P4-10-board-check-20261027T214010Z.json",
+        "reviews/evidence/P4-10-board-check-20261027T215332Z.json",
         "reviews/evidence/P4-10-boundaries-20261027T213804Z.json",
         "reviews/evidence/P4-10-cpp-unit-20261027T213807Z.json",
-        "reviews/evidence/P4-10-visual-20261027T214816Z.json",
-        "reviews/evidence/P4-10-design-check-20261027T214813Z.json",
-        "reviews/evidence/P4-10-perf-20261027T213541Z.json"
+        "reviews/evidence/P4-10-visual-20261027T215438Z.json",
+        "reviews/evidence/P4-10-design-check-20261027T215447Z.json",
+        "reviews/evidence/P4-10-perf-20261027T215428Z.json"
       ],
       "scope_write_forbidden": [
         "reference/"
+      ],
+      "exclusive": [
+        "perf",
+        "visual"
       ]
     },
     {
