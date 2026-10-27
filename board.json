@@ -4541,7 +4541,8 @@
         "docs/engine/",
         "docs/quality.md",
         "reviews/evidence/",
-        ".changes/"
+        ".changes/",
+        "docs/engine.md"
       ],
       "scope_read": [
         "ARCHITECTURE.md",
