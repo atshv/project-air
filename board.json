@@ -3290,7 +3290,7 @@
       ],
       "owner": null,
       "branch": "task/P4-07",
-      "worktree": "/private/tmp/air-P4-07",
+      "worktree": null,
       "round": 0,
       "evidence": [
         "reviews/evidence/P4-07-board-check-20261027T203704Z.json",
@@ -3304,7 +3304,7 @@
       ],
       "handoff": [
         "Closed P4-07: pure Camera::fitBounds (min(...,1.0), 0.1 floor, 64 px L02 padding from tokens), dot grid shader (tokens faint/canvas, 16 px, visible at >=0.5), on-demand rendering (0 idle frames).",
-        "visual 10/10 0-diff incl. the reviewed sample-zoom-in update and two one-card-fit baselines; perf p95 0.1 ms, 0 intervals > 16.7 ms; L01 final mean 0.049 vs basis 0.052, culling pass; cpp-unit 2/2 on contract 0.2.0.",
+        "visual 10/10 0-diff incl. reviewed sample-zoom-in update + two one-card-fit baselines; perf p95 0.1 ms, 0 intervals > 16.7 ms; L01 final mean 0.049 vs basis 0.052.",
         "Harnesses gained --task evidence prefixes; docs updated. Two review rounds, four minors fixed (record commit base, visual --task, comment wording, baseline-history precision)."
       ]
     },

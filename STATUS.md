@@ -133,15 +133,15 @@
   - P4-05: Undo/redo depth 20 with redo-clear and describe() labels; fake + bridge adapter byte-identical round trips; create builders validate geometry, port read is isolated, adapter projects z.
   - P4-05: Two review rounds, four minors fixed. The z-order gesture awaits the contract 0.2.0 reorder operation (P4-25); the moveZone description is corrected there.
   - P4-07: Closed P4-07: pure Camera::fitBounds (min(...,1.0), 0.1 floor, 64 px L02 padding from tokens), dot grid shader (tokens faint/canvas, 16 px, visible at >=0.5), on-demand rendering (0 idle frames).
-  - P4-07: visual 10/10 0-diff incl. the reviewed sample-zoom-in update and two one-card-fit baselines; perf p95 0.1 ms, 0 intervals > 16.7 ms; L01 final mean 0.049 vs basis 0.052, culling pass; cpp-unit 2/2 on contract 0.2.0.
+  - P4-07: visual 10/10 0-diff incl. reviewed sample-zoom-in update + two one-card-fit baselines; perf p95 0.1 ms, 0 intervals > 16.7 ms; L01 final mean 0.049 vs basis 0.052.
   - P4-07: Harnesses gained --task evidence prefixes; docs updated. Two review rounds, four minors fixed (record commit base, visual --task, comment wording, baseline-history precision).
 - `P4-22` Remember view (L17)
   - P4-07: Closed P4-07: pure Camera::fitBounds (min(...,1.0), 0.1 floor, 64 px L02 padding from tokens), dot grid shader (tokens faint/canvas, 16 px, visible at >=0.5), on-demand rendering (0 idle frames).
-  - P4-07: visual 10/10 0-diff incl. the reviewed sample-zoom-in update and two one-card-fit baselines; perf p95 0.1 ms, 0 intervals > 16.7 ms; L01 final mean 0.049 vs basis 0.052, culling pass; cpp-unit 2/2 on contract 0.2.0.
+  - P4-07: visual 10/10 0-diff incl. reviewed sample-zoom-in update + two one-card-fit baselines; perf p95 0.1 ms, 0 intervals > 16.7 ms; L01 final mean 0.049 vs basis 0.052.
   - P4-07: Harnesses gained --task evidence prefixes; docs updated. Two review rounds, four minors fixed (record commit base, visual --task, comment wording, baseline-history precision).
 - `P4-24` Trackpad and wheel defaults (L15, desktop part)
   - P4-07: Closed P4-07: pure Camera::fitBounds (min(...,1.0), 0.1 floor, 64 px L02 padding from tokens), dot grid shader (tokens faint/canvas, 16 px, visible at >=0.5), on-demand rendering (0 idle frames).
-  - P4-07: visual 10/10 0-diff incl. the reviewed sample-zoom-in update and two one-card-fit baselines; perf p95 0.1 ms, 0 intervals > 16.7 ms; L01 final mean 0.049 vs basis 0.052, culling pass; cpp-unit 2/2 on contract 0.2.0.
+  - P4-07: visual 10/10 0-diff incl. reviewed sample-zoom-in update + two one-card-fit baselines; perf p95 0.1 ms, 0 intervals > 16.7 ms; L01 final mean 0.049 vs basis 0.052.
   - P4-07: Harnesses gained --task evidence prefixes; docs updated. Two review rounds, four minors fixed (record commit base, visual --task, comment wording, baseline-history precision).
 - `P4-26` Zones as containers II: platform migration and containment (L08)
   - P4-25: Closed P4-25: contract 0.2.0 (17 schemas, root/schema ids/board entry), containment fixtures for the nullable zone parent, the reorder {itemId,z} operation with inverse, moveZone description fix.
