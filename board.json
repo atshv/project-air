@@ -4454,7 +4454,8 @@
         "P4-22",
         "P4-23",
         "P4-24",
-        "P4-27"
+        "P4-27",
+        "P4-29"
       ],
       "complexity": 5,
       "stage": "engine-core",
@@ -4933,6 +4934,69 @@
         "Closed P0-32: zones show their name in a 40 px header (content 40 + 16 px below), title outside the FLIP frame so it never stretches; follows the frame's settle.",
         "Inline rename: click selects all, Enter/blur commits, Escape restores, empty -> default, 40-char cap; new zones from grouping start as New zone; defaults follow DE/EN.",
         "Masthead + ?v=P0-32; gates board-check/design-check/changelog-entry; 7 screenshots + log; names live in page memory only."
+      ]
+    },
+    {
+      "id": "P4-29",
+      "title": "Zone interaction parity with the live demo (L08)",
+      "goal": "The engine zones behave like the live design demo (P0-28 to P0-32): members are arranged stacked or side by side, dragging shows the release preview (landing slot, room-making, shrinking and ghost frames), the release commits one operation, an empty zone is removed, two free objects dropped onto each other form a new zone, every zone shows its editable title in a 40 px header, and every settle uses one calm ease-out.",
+      "why": "Owner decision 2026-10-27: the engine must work the way the live demo shows it.",
+      "satisfies": [
+        "D10"
+      ],
+      "status": "pending",
+      "depends_on": [
+        "P4-27",
+        "P4-23",
+        "P4-10"
+      ],
+      "complexity": 8,
+      "stage": "engine-core",
+      "parallel_group": null,
+      "scope_write": [
+        "packages/engine/",
+        "apps/engine-playground/",
+        "docs/adr/",
+        "docs/engine.md",
+        ".changes/"
+      ],
+      "scope_read": [
+        "ARCHITECTURE.md",
+        "AGENTS.md",
+        "STATUS.md",
+        "docs/module-map.md",
+        "docs/quality.md",
+        "docs/design-rules.md",
+        "docs/canvas-acceptance.md",
+        "docs/engine.md",
+        "packages/engine/",
+        "packages/contracts/generated/types.ts",
+        "packages/ui-kit/tokens.h",
+        "apps/engine-playground/",
+        "docs/contracts.md",
+        "apps/web/preview/",
+        "docs/adr/ADR-0010-zone-containers.md"
+      ],
+      "acceptance": [
+        "A1",
+        "A2",
+        "A3",
+        "A4"
+      ],
+      "gates": [
+        "board-check",
+        "boundaries",
+        "cpp-unit",
+        "visual",
+        "typecheck"
+      ],
+      "owner": null,
+      "branch": "task/P4-29",
+      "worktree": null,
+      "round": 0,
+      "evidence": [],
+      "scope_write_forbidden": [
+        "reference/"
       ]
     }
   ],
