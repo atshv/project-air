@@ -1,0 +1,217 @@
+{
+  "task": "P4-07",
+  "gate": "idle",
+  "command": "node packages/engine/test/idle/run-idle.mjs",
+  "timestamp": "2026-10-27T20:38:00.608Z",
+  "measurement": {
+    "idleWindowMs": 1000,
+    "changeSettleMs": 400,
+    "rule": "on-demand rendering: a camera, document or resize change renders one frame; an idle canvas renders none",
+    "counter": "window.__enginePlayground.frameCount() (getState().framesRendered)"
+  },
+  "urls": {
+    "sample": "http://127.0.0.1:4160/apps/engine-playground/?scene=sample",
+    "benchmarkControl": "http://127.0.0.1:4160/apps/engine-playground/?bench=1000&samples=100000&warmup=0"
+  },
+  "hardware": {
+    "model": "Apple M2",
+    "logicalCores": 8,
+    "memoryGiB": 8,
+    "arch": "arm64",
+    "os": {
+      "type": "Darwin",
+      "release": "27.2.0",
+      "version": "Darwin Kernel Version 27.2.0: Wed Oct 14 23:48:16 PDT 2026; root:xnu-13432.41.4~25/RELEASE_ARM64_T8112"
+    },
+    "node": "v26.12.1"
+  },
+  "browser": {
+    "product": "Chrome/156.0.8078.4",
+    "revision": "@f842f52ef39fd97b449eb27cff414bf05a98ddce",
+    "executable": "/Users/rasulatashev/Library/Caches/ms-playwright/chromium-1248/chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing",
+    "source": "local Playwright cache default",
+    "flags": [
+      "--headless=new",
+      "--use-angle=metal",
+      "--enable-gpu",
+      "--hide-scrollbars",
+      "--disable-frame-rate-limit",
+      "--disable-gpu-vsync",
+      "--no-first-run",
+      "--no-default-browser-check",
+      "--disable-background-timer-throttling",
+      "--disable-renderer-backgrounding",
+      "--disable-backgrounding-occluded-windows",
+      "--window-size=1440,900",
+      "--no-sandbox"
+    ]
+  },
+  "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M2, Unspecified Version)",
+  "ready": {
+    "ok": true,
+    "scene": "sample",
+    "counts": {
+      "zones": 50,
+      "blocks": 144,
+      "cards": 500,
+      "total": 694
+    },
+    "objectCount": 694,
+    "visibleCount": 694
+  },
+  "page": {
+    "inner": {
+      "width": 1440,
+      "height": 700
+    },
+    "devicePixelRatio": 1,
+    "canvas": {
+      "cssWidth": 1050,
+      "cssHeight": 591,
+      "pixelWidth": 1050,
+      "pixelHeight": 591
+    },
+    "state": {
+      "scene": "sample",
+      "counts": {
+        "zones": 50,
+        "blocks": 144,
+        "cards": 500,
+        "total": 694
+      },
+      "objectCount": 694,
+      "visibleCount": 694,
+      "framesRendered": 2,
+      "backend": "WebGL2",
+      "camera": {
+        "panX": -4.060913705583516,
+        "panY": 0,
+        "zoom": 0.10928254437869822
+      }
+    },
+    "error": ""
+  },
+  "windows": [
+    {
+      "label": "idle-after-load",
+      "windowMs": 1000,
+      "framesBefore": 2,
+      "framesAfter": 2,
+      "framesDelta": 0
+    },
+    {
+      "label": "fit-action",
+      "change": "keyboard `f`",
+      "framesBefore": 2,
+      "framesAfter": 3,
+      "framesDelta": 1
+    },
+    {
+      "label": "idle-after-fit",
+      "windowMs": 1000,
+      "framesBefore": 3,
+      "framesAfter": 3,
+      "framesDelta": 0
+    },
+    {
+      "label": "resize",
+      "change": "Emulation.setDeviceMetricsOverride 1200x800",
+      "framesBefore": 3,
+      "framesAfter": 4,
+      "framesDelta": 1
+    },
+    {
+      "label": "idle-after-resize",
+      "windowMs": 1000,
+      "framesBefore": 4,
+      "framesAfter": 4,
+      "framesDelta": 0
+    }
+  ],
+  "cameraAfterFit": {
+    "panX": -450,
+    "panY": -570.9999999999997,
+    "zoom": 0.1
+  },
+  "benchmarkControl": {
+    "label": "benchmark-continuous-loop",
+    "windowMs": 1000,
+    "framesBefore": 1389,
+    "framesAfter": 2171,
+    "framesDelta": 782,
+    "note": "benchmark mode keeps its continuous rAF loop; the counter is the length of the page's own frameTimesMs sample array"
+  },
+  "assertions": [
+    {
+      "name": "idle one second after load renders zero frames",
+      "passed": true,
+      "expected": 0,
+      "actual": 0
+    },
+    {
+      "name": "the fit action renders a frame",
+      "passed": true,
+      "expected": ">= 1",
+      "actual": 1
+    },
+    {
+      "name": "idle one second after the fit action renders zero frames",
+      "passed": true,
+      "expected": 0,
+      "actual": 0
+    },
+    {
+      "name": "a resize renders a frame",
+      "passed": true,
+      "expected": ">= 1",
+      "actual": 1
+    },
+    {
+      "name": "idle one second after the resize renders zero frames",
+      "passed": true,
+      "expected": 0,
+      "actual": 0
+    },
+    {
+      "name": "the benchmark control keeps rendering continuously",
+      "passed": true,
+      "expected": "> 0",
+      "actual": 782
+    },
+    {
+      "name": "the page reported no error",
+      "passed": true,
+      "expected": "",
+      "actual": ""
+    },
+    {
+      "name": "the fit action returns the L19 camera",
+      "passed": true,
+      "expected": "zoom within 0.1 … 1.0",
+      "actual": {
+        "panX": -450,
+        "panY": -570.9999999999997,
+        "zoom": 0.1
+      }
+    }
+  ],
+  "result": "pass",
+  "resultReason": "every idle window rendered zero frames; both changes and the benchmark control rendered",
+  "benchmarkUrl": "http://127.0.0.1:4160/apps/engine-playground/?bench=1000&samples=100000&warmup=0",
+  "finishedAt": "2026-10-27T20:38:09.089Z",
+  "durationMs": 8481,
+  "chromeStderr": [
+    "[1027/213800.690625:ERROR:third_party/crashpad/crashpad/util/file/file_io_posix.cc:208] open /Users/rasulatashev/Library/Application Support/Google/Chrome for Testing/Crashpad/settings.dat: Operation not permitted (1)",
+    "[1027/213800.690822:ERROR:third_party/crashpad/crashpad/util/file/file_io_posix.cc:208] open /Users/rasulatashev/Library/Application Support/Google/Chrome for Testing/Crashpad/settings.dat: Operation not permitted (1)",
+    "[47404:2656096:1027/213800.738438:ERROR:third_party/crashpad/crashpad/util/file/file_io_posix.cc:208] open /Users/rasulatashev/Library/Application Support/Google/Chrome for Testing/Crashpad/settings.dat: Operation not permitted (1)",
+    "DevTools listening on ws://127.0.0.1:52538/devtools/browser/316d8092-513f-45fa-8b83-9c54a4b7528a",
+    "[47410:2656167:1027/213801.142242:ERROR:ui/display/mac/cv_display_link_mac.mm:188] CVDisplayLinkCreateWithCGDisplay failed. CVReturn: -6670",
+    "[47410:2656167:1027/213801.142778:ERROR:ui/display/mac/cv_display_link_mac.mm:188] CVDisplayLinkCreateWithCGDisplay failed. CVReturn: -6670",
+    "[47410:2656167:1027/213801.142923:ERROR:ui/display/mac/cv_display_link_mac.mm:188] CVDisplayLinkCreateWithCGDisplay failed. CVReturn: -6670",
+    "[47410:2656167:1027/213801.143049:ERROR:ui/display/mac/cv_display_link_mac.mm:188] CVDisplayLinkCreateWithCGDisplay failed. CVReturn: -6670",
+    "[47410:2656167:1027/213801.143155:ERROR:ui/display/mac/cv_display_link_mac.mm:188] CVDisplayLinkCreateWithCGDisplay failed. CVReturn: -6670",
+    "[47410:2656167:1027/213802.510695:ERROR:ui/display/mac/cv_display_link_mac.mm:188] CVDisplayLinkCreateWithCGDisplay failed. CVReturn: -6670",
+    "[47418:2656242:1027/213809.093845:ERROR:gpu/ipc/client/command_buffer_proxy_impl.cc:440] GPU state invalid after WaitForTokenInRange."
+  ],
+  "exitCode": 0
+}

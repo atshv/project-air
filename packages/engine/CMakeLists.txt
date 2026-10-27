@@ -48,8 +48,8 @@ if(EMSCRIPTEN)
   )
   target_link_options(engine PRIVATE
     "--no-entry"
-    "-sEXPORTED_FUNCTIONS=_air_engine_version,_engine_create,_engine_resize,_engine_set_camera,_engine_load_rectangles,_engine_add_rectangle,_engine_update_geometry,_engine_update_z,_engine_remove_object,_engine_hit_test,_engine_visible_instance_count,_engine_render_frame,_engine_last_error,_malloc,_free"
-    "-sEXPORTED_RUNTIME_METHODS=ccall,cwrap,UTF8ToString,HEAPF32"
+    "-sEXPORTED_FUNCTIONS=_air_engine_version,_engine_create,_engine_resize,_engine_set_camera,_engine_load_rectangles,_engine_add_rectangle,_engine_update_geometry,_engine_update_z,_engine_remove_object,_engine_hit_test,_engine_visible_instance_count,_engine_render_frame,_engine_fit_view,_engine_last_error,_malloc,_free"
+    "-sEXPORTED_RUNTIME_METHODS=ccall,cwrap,UTF8ToString,HEAPF32,HEAPF64"
     "-sMODULARIZE=1"
     "-sEXPORT_NAME=createAirEngine"
     "-sMIN_WEBGL_VERSION=2"

@@ -3,6 +3,7 @@
 #include <string_view>
 
 #include "contract.h"
+#include "engine/camera.h"
 #include "tokens.h"
 
 namespace {
@@ -23,3 +24,22 @@ static_assert(tokens::canvas_grid > 0.0,
 }  // namespace
 
 extern "C" const char* air_engine_version() { return kEngineVersion; }
+
+extern "C" int engine_fit_view(double bounds_x, double bounds_y, double bounds_width,
+                               double bounds_height, double viewport_width,
+                               double viewport_height, double* out_pan_zoom) {
+  if (out_pan_zoom == nullptr) {
+    return 0;
+  }
+  air::engine::ViewFit fitted;
+  const air::engine::Status status = air::engine::Camera::fitBounds(
+      air::engine::Bounds{bounds_x, bounds_y, bounds_width, bounds_height}, viewport_width,
+      viewport_height, fitted);
+  if (!status) {
+    return 0;
+  }
+  out_pan_zoom[0] = fitted.panX;
+  out_pan_zoom[1] = fitted.panY;
+  out_pan_zoom[2] = fitted.zoom;
+  return 1;
+}

@@ -19,22 +19,25 @@ the harness and this catalogue in the same task.
 | --- | --- |
 | Viewports | `desktop` 1440x900 and `mobile` 390x844, device pixel ratio 1 |
 | Viewport emulation | DevTools protocol `Emulation.setDeviceMetricsOverride`; the decoded screenshot size and `window.innerWidth/innerHeight` are asserted against the viewport, never trusted |
-| Scenes | `sample-at-rest`, `sample-zoom-in`, `sample-zoom-out`, `engine-core-at-rest` |
+| Scenes | `sample-at-rest`, `sample-zoom-in`, `sample-zoom-out`, `engine-core-at-rest`, `one-card-fit` |
 | `sample` document | `buildSampleScene()` from `packages/test-kit`: 500 cards, 50 zones, 144 blocks = 694 objects, world 9600x5408 px |
 | `engine-core` document | `buildEngineCoreScene()` from `packages/test-kit`: 9,200 cards, 200 zones, 600 blocks = 10,000 objects, world 19,200x10,816 px |
+| `one-card-fit` document | `buildStressScene(1)` from `packages/test-kit`: one card, world 64x22 px; the scene runs the L19 fit action before the capture (P4-07) |
 | Camera anchor | the centre of the sample board's `zone-0001`, world (648, 664) |
-| `sample-zoom-in` camera | anchor at zoom 0.5 |
+| `sample-zoom-in` camera | anchor at zoom 0.5, the L19 dot-grid boundary (grid visible at and above 0.5) |
 | `sample-zoom-out` camera | anchor at the engine camera minimum zoom 0.1 |
-| `*-at-rest` camera | the playground fit camera (world centred, clamped to 0.1 … 8) |
+| `*-at-rest` camera | the playground initial camera: plain world-centred fit, clamped to 0.1 … 8 |
+| `one-card-fit` camera | the L19 fit action: content below the 64 px top padding, zoom at most 100 % (one card → exactly 100 %) |
+| Fit constants | top padding 64 px (bar 48 px + 16 px tokens), maximum fit zoom 100 %, minimum zoom 0.1, mirrored in `packages/engine/src/camera.cpp` and the harness |
 | Backend | `webgl2` today; filename suffix `-webgl2` (WebGPU arrives with P4-11's `?backend=webgpu`) |
 | Tolerance | `MAX_DIFFERING_PIXELS = 0`, `MAX_DIFFERING_PIXEL_RATIO = 0`, `MAX_CHANNEL_DELTA = 0` (exact match) |
 | Baselines | `reviews/evidence/visual-baselines/<scene>-<viewport>-<backend>.png` |
-| Capture record | `reviews/evidence/P4-04-visual-run-<timestamp>.json` |
-| Failure diff | `reviews/evidence/P4-04-visual-<timestamp>-<scene>-<viewport>-<backend>.diff.png` |
-| Gate record | `reviews/evidence/P4-04-visual-<timestamp>.json` + `.log` (written by `gate.py`) |
+| Capture record | `reviews/evidence/<task-id>-visual-run-<timestamp>.json`; `<task-id>` comes from `--task <id>` (default P4-04, the gate's origin) and the report's `task` field follows it |
+| Failure diff | `reviews/evidence/<task-id>-visual-<timestamp>-<scene>-<viewport>-<backend>.diff.png` (same `--task` prefix) |
+| Gate record | `reviews/evidence/<task-id>-visual-<timestamp>.json` + `.log` (written by `gate.py`, named after the running task) |
 | Reference machine | Mac mini M2, macOS 27.2 (Darwin 27.2.0), Chrome for Testing 156.0.8078.4, ANGLE Metal — a documented proxy, not the MacBook Air M1 reference device; the environment recorded in the capture record supersedes this prose |
 
-### Committed reference set (P4-04)
+### Committed reference set (P4-04, extended by P4-07)
 
 | Scene | Desktop | Mobile |
 | --- | --- | --- |
@@ -42,6 +45,13 @@ the harness and this catalogue in the same task.
 | `sample-zoom-in` | `sample-zoom-in-desktop-webgl2.png` | `sample-zoom-in-mobile-webgl2.png` |
 | `sample-zoom-out` | `sample-zoom-out-desktop-webgl2.png` | `sample-zoom-out-mobile-webgl2.png` |
 | `engine-core-at-rest` | `engine-core-at-rest-desktop-webgl2.png` | `engine-core-at-rest-mobile-webgl2.png` |
+| `one-card-fit` (P4-07) | `one-card-fit-desktop-webgl2.png` | `one-card-fit-mobile-webgl2.png` |
+
+P4-07 re-ran the two `sample-zoom-in` captures through the documented `--update` review path because
+the L19 dot grid is visible at the 0.5 boundary (canvas catalogue L19, "hides below zoom 0.5"). Only
+the **desktop** image changed; the mobile 0.5 view is fully covered by board content, so the grid
+behind the opaque cards and zones adds no visible pixel and that image is byte-identical. Every other
+P4-04 image is unchanged, and the two `one-card-fit` images are a reviewed addition.
 
 ## `visual` — engine-core stage gate (P4-04)
 
@@ -53,16 +63,19 @@ before it fails. The harness starts and stops its own static server and browser 
 `ports.playground` from `.polier-slot`, copies the built playground, bridge, test-kit bundle and WASM
 into a temporary folder, and removes that folder.
 
-- **States:** the four named scenes above, each served with `?scene=sample` or `?scene=engine-core`
-  and, for the zoom states, the deterministic `?view=<worldX>,<worldY>,<zoom>` camera hook. Each
-  scene waits for the engine's ready hook, pauses the render loop, hides the volatile FPS HUD item
-  and captures the canvas plus the playground chrome.
-- **Camera determinism:** the at-rest scenes use the page's fit camera. The zoom states use the
+- **States:** the five named scenes above, each served with `?scene=sample`, `?scene=engine-core` or
+  `?scene=stress&count=1` and, for the zoom states, the deterministic
+  `?view=<worldX>,<worldY>,<zoom>` camera hook. The `one-card-fit` scene runs the playground's L19 fit
+  action after the ready hook and asserts that the fit rendered a frame. Each scene waits for the
+  engine's ready hook, pauses the scheduler, hides the volatile rendered-frame HUD item and captures
+  the canvas plus the playground chrome.
+- **Camera determinism:** the at-rest scenes use the page's initial camera. The zoom states use the
   documented read-only view hook, which only calls `setCamera`; the harness asserts the effective
   camera (zoom and pan) against the requested state, so a broken hook is a capture failure, not a
-  plausible image. The scene data never changes between captures. Every per-capture log line prints
-  the capture URL and the effective camera (`panX`, `panY`, `zoom`), so the gate log alone documents
-  which deterministic view produced each comparison.
+  plausible image. The `one-card-fit` camera is asserted against the L19 fit rule (64 px top
+  padding, at most 100 %, centred). The scene data never changes between captures. Every per-capture
+  log line prints the capture URL and the effective camera (`panX`, `panY`, `zoom`), so the gate log
+  alone documents which deterministic view produced each comparison.
 - **Mobile fit:** at 390x844 the raw test-kit viewport fit of both worlds —
   `min(390 / world.width, 844 / world.height)` — is below the engine camera minimum: 0.040625 for the
   sample (390/9600) and 0.0203125 for engine-core (390/19200). The page canvas is smaller than the
@@ -82,14 +95,19 @@ into a temporary folder, and removes that folder.
   backend in the filename. Updating one needs a reviewer who saw the before and after images;
   `--update` reports an update, never a gate pass.
 - **Failure diffs:** the harness writes the capture record
-  `reviews/evidence/P4-04-visual-run-<timestamp>.json` (per capture: scene, viewport, backend,
+  `reviews/evidence/<task-id>-visual-run-<timestamp>.json` (per capture: scene, viewport, backend,
   renderer, baseline path, differing pixels, differing-pixel ratio, worst channel delta, assertion
   results) and one diff PNG per failing capture
-  `reviews/evidence/P4-04-visual-<timestamp>-<scene>-<viewport>-<backend>.diff.png` (current pixels
-  with every differing pixel marked red). A changed reference image is exit 1, never `infra`.
+  `reviews/evidence/<task-id>-visual-<timestamp>-<scene>-<viewport>-<backend>.diff.png` (current
+  pixels with every differing pixel marked red). A changed reference image is exit 1, never `infra`.
+- **Task prefix:** `--task <task-id>` names the capture record and its `task` field after the task
+  that runs the gate (default P4-04, the gate's origin); a later task passes its own id so its record
+  does not masquerade as P4-04 evidence. The option changes no scene, camera or tolerance; the gate
+  record and log are always named by `gate.py` after the running task.
 - **Modes:** `--scene <name>` and `--viewport <name>` restrict a local run (the record says
   `partial: true`); the gate runs the full set. `--update` writes the reference images for the
-  selected scenes/viewports.
+  selected scenes/viewports. `--task <id>` only changes the capture-record prefix and its `task`
+  field (see above).
 - **Exclusive:** the harness starts and stops its own server and browser on the slot port; the gate
   declares `exclusive: ["visual"]` and is never run next to another browser gate.
 - **Exit codes:** 0 pass (or baselines written with `--update`), 1 a reference image differs or a
@@ -97,7 +115,7 @@ into a temporary folder, and removes that folder.
   unknown filter), 3 infra (software or unknown renderer, no Chrome, page not ready, port busy).
 - **PNG codec self-test:** before the first capture the harness encodes and decodes known pixels with
   every scanline filter; a broken decoder fails the run (exit 2) instead of comparing garbage.
-- **Determinism:** paused loop, hidden FPS HUD item, settled web fonts, two animation frames and a
+- **Determinism:** paused scheduler, hidden rendered-frame HUD item, settled web fonts, two animation frames and a
   150 ms compositor settle before the screenshot, hidden scrollbars, DPR 1 through the protocol, and
   no animations. The reference images are captured on the same machine class, OS kernel series, GPU
   family and Chrome build; a different machine or OS is a new baseline set plus review.
@@ -125,8 +143,9 @@ into a temporary folder, and removes that folder.
 
 - Screenshots depend on OS, fonts, device pixel ratio, browser version and GPU; pin all of them or
   record the documented tolerance. A different GPU family is a different measurement.
-- Animations, timestamps, the FPS label and the HUD change; the harness pauses the loop and removes
-  the FPS HUD item from the layout, so only deterministic values remain in the image.
+- Animations, timestamps, the rendered-frame counter and the HUD change; the harness pauses the
+  scheduler and removes the counter item from the layout, so only deterministic values remain in the
+  image.
 - A viewport mismatch (Chrome clamps window size) produces a false diff; set the metrics override
   through the DevTools protocol and assert the decoded screenshot size.
 - Never update baselines to make a gate pass; that hides the regression the gate exists for.
@@ -144,6 +163,17 @@ compares against, so an update needs a reviewer who saw both the old and the new
 
 ### Baseline history
 
+- **2026-10-27 — P4-07 L19 dot grid: the `sample-zoom-in` captures were re-run.** The canvas
+  catalogue defines the grid as hidden below zoom 0.5, so the at-0.5 captures changed when the grid
+  was added. The update went through the documented `--update` review path and was reviewed with
+  P4-07. Only the desktop image changed: 57,556 pixels differ (4.4 % of the image, worst channel
+  delta <= 28). 55,866 of them are `tokens::faint` dots on the unchanged `tokens::canvas` background;
+  the other 1,690 are antialiased object-edge fringe pixels where the dot behind the edge shifts the
+  composited edge colour — no interior object pixel changed, and board geometry, camera and HUD are
+  unchanged. The mobile 0.5 image is byte-identical because that view is fully covered by board
+  content, so the grid behind it adds no visible pixel. Every other P4-04 image is 0-diff, and the two
+  `one-card-fit` images were added as a reviewed addition in the same task. The capture record of the
+  gate run after the update is the committed evidence.
 - **2026-10-27 — regenerated after an OS kernel-series change (Darwin 25.5.0 → 27.2.0).** The initial
   P4-04 set was captured on 2026-10-26 while the host ran Darwin 25.5.0. The committed set was
   captured after the host moved to Darwin 27.2.0 (macOS 27.2); that OS change — not just a reboot —

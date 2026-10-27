@@ -34,6 +34,12 @@ export interface EngineCamera {
   readonly zoom: number;
 }
 
+/** Viewport size in CSS pixels for the L19 fit helper. */
+export interface EngineViewport {
+  readonly width: number;
+  readonly height: number;
+}
+
 export interface EngineOptions {
   /** URL of the Emscripten engine.js; defaults to the build-wasm artifact. */
   readonly moduleUrl?: string | URL;
@@ -65,6 +71,15 @@ export interface Engine {
   hitTest(screenX: number, screenY: number): number;
   /** Instances the current document, camera and viewport render. */
   visibleInstanceCount(): number;
+  /**
+   * Fits a world rectangle (the board's world bounds) into a viewport (L19) and
+   * returns the pan and zoom to apply with `setCamera`: zoom at most 100 % and
+   * never below the engine camera minimum, with the L02 top padding (bar 48 px +
+   * 16 px) kept free above the content. Empty or invalid bounds return the world
+   * origin at 100 %. The rule lives in the C++ core, so the host app never keeps
+   * a second copy of it.
+   */
+  fitView(bounds: EngineGeometry, viewport: EngineViewport): EngineCamera;
   setCamera(camera: EngineCamera): void;
   resize(cssWidth: number, cssHeight: number, devicePixelRatio: number): void;
   renderFrame(): void;
@@ -93,6 +108,7 @@ interface EngineModule {
   _malloc(byteLength: number): number;
   _free(pointer: number): void;
   HEAPF32: Float32Array;
+  HEAPF64: Float64Array;
 }
 
 interface EngineModuleOptions {
@@ -310,6 +326,44 @@ class WebGlEngine implements Engine {
       );
     }
     return count;
+  }
+
+  fitView(bounds: EngineGeometry, viewport: EngineViewport): EngineCamera {
+    this.#assertUsable("fitView");
+    const resultValues = 3;
+    const pointer = this.#module._malloc(resultValues * Float64Array.BYTES_PER_ELEMENT);
+    if (pointer === 0) {
+      throw new EngineError("engine_fit_view: could not allocate the result buffer");
+    }
+    try {
+      const succeeded = callNumber(
+        this.#module,
+        "engine_fit_view",
+        ["number", "number", "number", "number", "number", "number", "number"],
+        [
+          bounds.x,
+          bounds.y,
+          bounds.width,
+          bounds.height,
+          viewport.width,
+          viewport.height,
+          pointer,
+        ],
+      );
+      if (succeeded === 0) {
+        throw new EngineError(`engine_fit_view failed: ${lastError(this.#module)}`);
+      }
+      const offset = pointer / Float64Array.BYTES_PER_ELEMENT;
+      const panX = this.#module.HEAPF64[offset];
+      const panY = this.#module.HEAPF64[offset + 1];
+      const zoom = this.#module.HEAPF64[offset + 2];
+      if (panX === undefined || panY === undefined || zoom === undefined) {
+        throw new EngineError("engine_fit_view: the result buffer was not readable");
+      }
+      return { panX, panY, zoom };
+    } finally {
+      this.#module._free(pointer);
+    }
   }
 
   setCamera(camera: EngineCamera): void {

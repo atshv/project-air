@@ -25,6 +25,14 @@ with the same fail-closed renderer check as `perf-baseline`:
   catalogue's "no long task > 16 ms" is measured as frame intervals, because the browser Long Task
   API only reports tasks above 50 ms. The JSON records p50/p95/p99, mean, max, the raw frame
   intervals, the frame-interval histogram and the count of intervals above 16.7 ms.
+- **Observation without interference:** the harness starts Chrome on `about:blank`, enables the
+  DevTools domains and only then navigates to the measured page; it waits for the page's own
+  `PERF_SCENARIO {…}` console event (`Runtime.consoleAPICalled`) instead of evaluating
+  `window.__enginePerf` while the run is in flight, and reads the final state once afterwards.
+  Enabling a DevTools domain or evaluating on the renderer main thread while frames are produced
+  stalls the renderer and appears as a frame interval the engine did not cause; the measured window
+  must stay untouched. This is observation hygiene, not a threshold change: the p95 and
+  no-interval criterion, the basis comparison and the fail-closed renderer check are unchanged.
 - **L01 basis / final proof:** the 500 cards + 50 zones scene is measured while panning and zooming
   with the same camera path. `--record basis` writes the basis before the drawing and interaction
   tasks; `--record final` repeats the same scene against the committed basis. The final proof
@@ -68,12 +76,19 @@ with the same fail-closed renderer check as `perf-baseline`:
   `reviews/evidence/P4-03-perf-basis-<timestamp>.json` (L01 basis),
   `reviews/evidence/P4-03-perf-final-<timestamp>.json` (L01 final proof, including the basis
   comparison and the culling check) and the gate record
-  `reviews/evidence/P4-03-perf-<timestamp>.json` + `.log`. The numbers with date and path are quoted
-  in the L01 task results and in [docs/engine/perf-baseline.md](../engine/perf-baseline.md).
+  `reviews/evidence/P4-03-perf-<timestamp>.json` + `.log` for the P4-03 runs. The numbers with date
+  and path are quoted in the L01 task results and in
+  [docs/engine/perf-baseline.md](../engine/perf-baseline.md).
+- **Evidence prefix:** `--task <task-id>` sets the engine-core evidence prefix and the record `task`
+  field (default `P4-03`, the gate's origin), so a later task that runs the gate writes
+  `<task-id>-perf-engine-core-<timestamp>.json` and `<task-id>-perf-final-<timestamp>.json` and its
+  records do not masquerade as P4-03 evidence. The committed P4-03 basis record is read-only and
+  keeps its own prefix; the gate record and log are always named by `gate.py` after the running task.
 - **Modes:** `node packages/engine/test/perf/run-perf.mjs --scenario engine-core` (default) runs the
   interactive gate plus the L01 basis (written only when none exists) and the final proof;
   `--record basis` writes only the basis and refuses when one already exists; `--record final` writes
-  only the final proof and fails when no basis exists.
+  only the final proof and fails when no basis exists; `--task <task-id>` only names the evidence files
+  and their `task` field (see above) and changes no threshold or scenario.
 - **Backend:** WebGL2 is the measured default (owner Q19). A WebGPU run may be recorded as an
   observation next to the gate record; it never replaces or loosens the gate.
 - **Exclusive:** `perf` declares `exclusive: ["perf"]`; run it through

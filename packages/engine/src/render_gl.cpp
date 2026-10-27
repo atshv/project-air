@@ -51,6 +51,47 @@ void main() {
 }
 )";
 
+// L19 dot grid (design rule §8, layer 1 "canvas background"): a screen-space
+// triangle with no per-dot instances. The fragment shader turns each pixel into
+// world coordinates with the camera transform and paints the dots of a world grid
+// whose spacing is tokens::canvas_grid; the renderer draws it below every object,
+// so it is chrome and never enters the command buffer or hit testing. The camera,
+// the device pixel ratio and the dot tokens travel in one packed uniform array.
+constexpr const char* kGridVertexShader = R"(#version 300 es
+uniform vec4 u_grid[3];  // 0: pan.xy, zoom, spacing · 1: dpr, radius, resolution.xy · 2: rgba
+out vec2 v_pixel;
+void main() {
+  // One oversized triangle covering the viewport: no vertex buffer, no instances.
+  vec2 resolution = u_grid[1].zw;
+  vec2 corner = vec2(float((gl_VertexID << 1) & 2), float(gl_VertexID & 2));
+  v_pixel = corner * resolution;
+  vec2 clip = vec2(v_pixel.x / resolution.x * 2.0 - 1.0,
+                   1.0 - v_pixel.y / resolution.y * 2.0);
+  gl_Position = vec4(clip, 0.0, 1.0);
+}
+)";
+
+constexpr const char* kGridFragmentShader = R"(#version 300 es
+precision highp float;
+in vec2 v_pixel;
+uniform vec4 u_grid[3];  // 0: pan.xy, zoom, spacing · 1: dpr, radius, resolution.xy · 2: rgba
+out vec4 out_color;
+void main() {
+  // Device pixels -> CSS pixels -> world coordinates (camera convention).
+  vec2 css = v_pixel / u_grid[1].x;
+  vec2 world = u_grid[0].xy + css / u_grid[0].z;
+  // Distance to the nearest world grid point, measured in CSS pixels so the dot
+  // size stays constant on screen while the spacing follows the zoom.
+  vec2 nearest = floor(world / u_grid[0].w + 0.5) * u_grid[0].w;
+  float distance = length((world - nearest) * u_grid[0].z);
+  float coverage = 1.0 - smoothstep(u_grid[1].y - 0.5, u_grid[1].y + 0.5, distance);
+  if (coverage <= 0.0) {
+    discard;
+  }
+  out_color = vec4(u_grid[2].rgb, u_grid[2].a * coverage);
+}
+)";
+
 std::string g_last_error;
 
 int fail(const char* reason) {
@@ -95,6 +136,31 @@ bool parseHexColor(const char* hex, float& red, float& green, float& blue) {
 // shader receives it as a uniform array, so no visual value is hard-coded here.
 bool loadToneColor(const char* token, float* destination) {
   return parseHexColor(token, destination[0], destination[1], destination[2]);
+}
+
+// Loads a token colour with an alpha channel ("rgba(r, g, b, a)") as a GL vec4.
+// The dot grid draws tokens::faint over the cleared tokens::canvas surface; a
+// malformed token is a build error at runtime, never a silently wrong colour.
+bool parseRgbaColor(const char* value, float* rgba) {
+  if (value == nullptr) {
+    return false;
+  }
+  float red = 0.0F;
+  float green = 0.0F;
+  float blue = 0.0F;
+  float alpha = 1.0F;
+  if (std::sscanf(value, "rgba(%f, %f, %f, %f)", &red, &green, &blue, &alpha) != 4) {
+    return false;
+  }
+  if (red < 0.0F || red > 255.0F || green < 0.0F || green > 255.0F || blue < 0.0F ||
+      blue > 255.0F || alpha < 0.0F || alpha > 1.0F) {
+    return false;
+  }
+  rgba[0] = red / 255.0F;
+  rgba[1] = green / 255.0F;
+  rgba[2] = blue / 255.0F;
+  rgba[3] = alpha;
+  return true;
 }
 
 GLuint compileShader(GLenum type, const char* source) {
@@ -155,11 +221,26 @@ class Renderer {
       fail("generated canvas token is not a hexadecimal colour");
       return false;
     }
+    if (!parseRgbaColor(tokens::faint, grid_color_)) {
+      fail("generated faint token is not an rgba colour");
+      return false;
+    }
 
-    if (!buildProgram()) {
+    if (!buildProgram() || !buildGridProgram()) {
       return false;
     }
     buildBuffers();
+    buildGridBuffers();
+    // Force the driver's grid pipeline creation outside any measured frame: the
+    // first grid draw otherwise happens when the camera crosses the L19 zoom
+    // threshold, and a lazy shader/pipeline compile then shows up as a one-frame
+    // stall in the perf measurement. The 1x1 draw happens before the canvas is
+    // resized and is removed by the first cleared frame.
+    glViewport(0, 0, 1, 1);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    drawGrid(1, 1);
+    glDisable(GL_BLEND);
     // An empty document is a valid document: index it now so a frame, a hit test
     // or the visible count works before the first engine_load_rectangles.
     spatial_.rebuild(document_);
@@ -368,20 +449,42 @@ class Renderer {
     glClearColor(clear_color_[0], clear_color_[1], clear_color_[2], 1.0F);
     glClear(GL_COLOR_BUFFER_BIT);
 
+    // Design rule §8, layer 1: the dot grid is chrome below every object, drawn as
+    // one screen-space pattern instead of per-dot instances. It is hidden when the
+    // camera is at or below the L19 grid threshold, so it never uploads anything
+    // and never affects hit testing (it is not part of the command buffer). The
+    // blend state is set only on frames that draw the grid; the object palette is
+    // opaque, so the object pass never needs it.
+    const bool gridVisible = Camera::gridVisibleAtZoom(camera_.zoom());
+    if (gridVisible) {
+      glEnable(GL_BLEND);
+      glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+      drawGrid(drawingWidth, drawingHeight);
+    }
+
     if (commands_.empty()) {
+      if (gridVisible) {
+        glDisable(GL_BLEND);
+      }
       return 1;
     }
     glUseProgram(program_);
-    glUniform2f(resolution_uniform_, static_cast<GLfloat>(css_width_),
-                static_cast<GLfloat>(css_height_));
-    glUniform3fv(tone_colors_uniform_, kToneCount, &tone_colors_[0][0]);
+    // The resolution only changes on a resize; a redundant uniform upload per
+    // frame is measurable at the perf gate's frame rates.
+    if (css_width_ != uniform_width_ || css_height_ != uniform_height_) {
+      glUniform2f(resolution_uniform_, static_cast<GLfloat>(css_width_),
+                  static_cast<GLfloat>(css_height_));
+      uniform_width_ = css_width_;
+      uniform_height_ = css_height_;
+    }
     glBindVertexArray(vertex_array_);
     glBindBuffer(GL_ARRAY_BUFFER, instance_buffer_);
     glBufferSubData(GL_ARRAY_BUFFER, 0, static_cast<GLsizeiptr>(commands_.byteSize()),
                     commands_.bytes());
     glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, static_cast<GLsizei>(commands_.size()));
-    glBindVertexArray(0);
-    glUseProgram(0);
+    if (gridVisible) {
+      glDisable(GL_BLEND);
+    }
     return 1;
   }
 
@@ -442,6 +545,11 @@ class Renderer {
       fail("shader uniforms were not found");
       return false;
     }
+    // The tone palette is constant for the life of the context: upload it once
+    // instead of once per frame.
+    glUseProgram(program_);
+    glUniform3fv(tone_colors_uniform_, kToneCount, &tone_colors_[0][0]);
+    glUseProgram(0);
     return true;
   }
 
@@ -476,6 +584,63 @@ class Renderer {
     glBindVertexArray(0);
   }
 
+  bool buildGridProgram() {
+    const GLuint vertexShader = compileShader(GL_VERTEX_SHADER, kGridVertexShader);
+    if (vertexShader == 0) {
+      return false;
+    }
+    const GLuint fragmentShader = compileShader(GL_FRAGMENT_SHADER, kGridFragmentShader);
+    if (fragmentShader == 0) {
+      glDeleteShader(vertexShader);
+      return false;
+    }
+    grid_program_ = glCreateProgram();
+    glAttachShader(grid_program_, vertexShader);
+    glAttachShader(grid_program_, fragmentShader);
+    glLinkProgram(grid_program_);
+    glDeleteShader(vertexShader);
+    glDeleteShader(fragmentShader);
+
+    GLint linked = 0;
+    glGetProgramiv(grid_program_, GL_LINK_STATUS, &linked);
+    if (linked == GL_FALSE) {
+      GLsizei length = 0;
+      char log[1024] = {};
+      glGetProgramInfoLog(grid_program_, static_cast<GLsizei>(sizeof(log)), &length, log);
+      fail("grid shader link failed: ", log);
+      return false;
+    }
+    grid_uniform_ = glGetUniformLocation(grid_program_, "u_grid");
+    if (grid_uniform_ < 0) {
+      fail("grid shader uniform array was not found");
+      return false;
+    }
+    return true;
+  }
+
+  void buildGridBuffers() {
+    // The full-screen triangle is generated from gl_VertexID, so the grid needs an
+    // empty vertex array and no per-dot buffer at all.
+    glGenVertexArrays(1, &grid_vertex_array_);
+  }
+
+  // The whole grid state travels in one packed uniform upload and one draw: at
+  // 6,000+ measured frames per second the Emscripten GL call overhead itself is
+  // the frame-time cost, so the per-frame grid path stays at four GL calls.
+  void drawGrid(int drawingWidth, int drawingHeight) {
+    const GLfloat grid[12] = {
+        static_cast<GLfloat>(camera_.panX()),   static_cast<GLfloat>(camera_.panY()),
+        static_cast<GLfloat>(camera_.zoom()),   static_cast<GLfloat>(tokens::canvas_grid),
+        device_pixel_ratio_,                    static_cast<GLfloat>(tokens::border_width),
+        static_cast<GLfloat>(drawingWidth),     static_cast<GLfloat>(drawingHeight),
+        grid_color_[0],                         grid_color_[1],
+        grid_color_[2],                         grid_color_[3]};
+    glUseProgram(grid_program_);
+    glUniform4fv(grid_uniform_, 3, grid);
+    glBindVertexArray(grid_vertex_array_);
+    glDrawArrays(GL_TRIANGLES, 0, 3);
+  }
+
   Document document_;
   Camera camera_;
   SpatialIndex spatial_;
@@ -487,10 +652,16 @@ class Renderer {
   GLuint instance_buffer_{0};
   GLint resolution_uniform_{-1};
   GLint tone_colors_uniform_{-1};
+  GLuint grid_program_{0};
+  GLuint grid_vertex_array_{0};
+  GLint grid_uniform_{-1};
   float tone_colors_[kToneCount][3] = {};
   float clear_color_[3] = {};
+  float grid_color_[4] = {};
   int css_width_{0};
   int css_height_{0};
+  int uniform_width_{-1};
+  int uniform_height_{-1};
   float device_pixel_ratio_{1.0F};
   bool created_{false};
 };

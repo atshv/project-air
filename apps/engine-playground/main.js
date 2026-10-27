@@ -19,18 +19,28 @@
 //                                  packages/engine/test/perf/run-perf.mjs
 //
 // Interaction: pointer drag pans, wheel or two-pointer pinch zooms around the
-// pointer. Pan and zoom only call setCamera; the scene data never changes.
+// pointer, and `f` ("show all", L19) fits the board through the engine's fit
+// helper. The scene data never changes.
 //
-// Ready hook: window.__enginePlayground.ready resolves once the scene is drawn
-// and the HUD is filled ({ ok: true, scene, objectCount, visibleCount }) or the
-// engine failed to start ({ ok: false, error }), so harnesses can wait for it
-// instead of sleeping. window.__enginePlayground.pause() stops the loop for a
-// deterministic capture and getState() reports the current view.
+// On-demand rendering (L19): outside the benchmark and perf modes the page draws
+// only after a camera, document or resize change and stops requestAnimationFrame
+// while idle. `renderFrame` is called exactly once per change, so an idle canvas
+// produces no frames; `window.__enginePlayground.frameCount()` and
+// `getState().framesRendered` expose the rendered-frame counter for harnesses.
+// The benchmark (`?bench=…`) and perf (`?perf=engine-core`) modes keep their own
+// continuous loops unchanged, because the perf gate measures frame production.
+//
+// Ready hook: window.__enginePlayground.ready resolves once the first frame is
+// drawn and the HUD is filled ({ ok: true, scene, objectCount, visibleCount }) or
+// the engine failed to start ({ ok: false, error }), so harnesses can wait for it
+// instead of sleeping. window.__enginePlayground.pause() stops the scheduler for
+// a deterministic capture, fit() runs the L19 fit action and getState() reports
+// the current view and the rendered-frame counter.
 //
 // View hook: `?view=<worldX>,<worldY>,<zoom>` places the given world point at the
 // canvas centre at the given zoom (clamped to the engine camera range) for
 // deterministic reference-image captures. It only calls setCamera; the scene data
-// never changes. Without the parameter the page keeps its fit camera.
+// never changes. Without the parameter the page keeps its initial camera.
 //
 // Perf hook: window.__enginePerf exists in `?perf=engine-core` mode and reports
 // the scene counts, warm-up and sample counts, frame intervals, the sampled
@@ -46,7 +56,7 @@ const hudObjectsNode = document.querySelector("#hud-objects");
 const hudCardsNode = document.querySelector("#hud-cards");
 const hudZonesNode = document.querySelector("#hud-zones");
 const hudVisibleNode = document.querySelector("#hud-visible");
-const fpsNode = document.querySelector("#fps");
+const framesNode = document.querySelector("#frames");
 const hudBackendNode = document.querySelector("#hud-backend");
 
 if (
@@ -57,7 +67,7 @@ if (
   !(hudCardsNode instanceof HTMLElement) ||
   !(hudZonesNode instanceof HTMLElement) ||
   !(hudVisibleNode instanceof HTMLElement) ||
-  !(fpsNode instanceof HTMLElement) ||
+  !(framesNode instanceof HTMLElement) ||
   !(hudBackendNode instanceof HTMLElement)
 ) {
   throw new Error("engine-playground: expected #canvas, #scene-caption, #hud-* and #error");
@@ -109,12 +119,23 @@ const state = {
   counts: { cards: 0, zones: 0, blocks: 0 },
   objectCount: benchmarkScene === null ? 0 : benchmarkScene.rectangles.length,
   visibleCount: 0,
-  fps: 0,
   backend: "WebGL2",
   stopped: false,
 };
 let zoomRange = { minimumZoom: MINIMUM_ZOOM, maximumZoom: MAXIMUM_ZOOM };
 let world = { width: 1, height: 1 };
+
+// On-demand rendering state (L19): at most one frame is scheduled at a time and
+// the scheduler stops while idle. `onDemand` is armed only in the normal
+// (non-benchmark, non-perf) mode; the benchmark and perf loops stay continuous.
+let framesRendered = 0;
+let frameScheduled = false;
+let pendingFrameHandle = 0;
+const onDemand = {
+  active: false,
+  request: () => {},
+  fit: () => {},
+};
 
 let resolveReady;
 const ready = new Promise((resolve) => {
@@ -131,21 +152,32 @@ function settleReady(value) {
 }
 
 // The hook exists synchronously so a harness can await `ready` even while the
-// module is still loading the scene and the WASM module.
+// module is still loading the scene and the WASM module. `frameCount()` is the
+// rendered-frame counter the idle evidence samples; `pause()` stops the scheduler
+// (the rendered frame stays on screen for the capture).
 globalThis.__enginePlayground = {
   ready,
   pause: () => {
     state.stopped = true;
+    if (pendingFrameHandle !== 0) {
+      window.cancelAnimationFrame(pendingFrameHandle);
+      pendingFrameHandle = 0;
+    }
+    frameScheduled = false;
   },
   getState: () => ({
     scene: state.scene,
     counts: { ...state.counts },
     objectCount: state.objectCount,
     visibleCount: state.visibleCount,
-    fps: state.fps,
+    framesRendered,
     backend: state.backend,
     camera: { ...camera },
   }),
+  frameCount: () => framesRendered,
+  fit: () => {
+    onDemand.fit();
+  },
 };
 
 function parseInteger(raw, fallback) {
@@ -284,6 +316,8 @@ function installInteraction(engine) {
 
   const applyCamera = () => {
     engine.setCamera(camera);
+    // On-demand rendering: one camera change requests exactly one frame.
+    onDemand.request();
   };
 
   const distanceOf = (left, right) => Math.hypot(left.x - right.x, left.y - right.y);
@@ -401,6 +435,21 @@ function installInteraction(engine) {
   );
 }
 
+// L19 fit action on the keyboard: `f` ("show all"). It calls the same fit function
+// as the exposed `fit()` hook, so the browser evidence and the visual scene drive
+// exactly the user path; a modifier or an already-handled key is left alone.
+function installFitKey() {
+  window.addEventListener("keydown", (event) => {
+    if (event.defaultPrevented || event.ctrlKey || event.metaKey || event.altKey) {
+      return;
+    }
+    if (event.key === "f" || event.key === "F") {
+      event.preventDefault();
+      onDemand.fit();
+    }
+  });
+}
+
 function startBenchmark(engine, benchmarkState) {
   benchmarkState.status = "warmup";
   benchmarkState.renderer = readRendererString();
@@ -412,7 +461,7 @@ function startBenchmark(engine, benchmarkState) {
     pixelHeight: canvas.height,
     devicePixelRatio: window.devicePixelRatio || 1,
   };
-  fpsNode.textContent = "benchmark";
+  framesNode.textContent = "benchmark";
 
   let previousTimestamp = 0;
   let renderedFrames = 0;
@@ -435,7 +484,7 @@ function startBenchmark(engine, benchmarkState) {
         benchmarkState.status = "done";
         benchmarkState.framesRendered = renderedFrames;
         benchmarkState.finishedAt = Date.now();
-        fpsNode.textContent = "benchmark done";
+        framesNode.textContent = "benchmark done";
         console.log(`PERF_RESULT ${JSON.stringify(benchmarkState)}`);
         return;
       }
@@ -501,7 +550,7 @@ function startEngineCoreMeasurement(engine, loaded) {
     framesRendered: 0,
   };
   globalThis.__enginePerf = perfState;
-  fpsNode.textContent = "measuring";
+  framesNode.textContent = "measuring";
   captionNode.textContent = sceneCaption(loaded);
   hudVisibleNode.textContent = "0";
 
@@ -657,31 +706,75 @@ async function start() {
       globalThis.__engineBenchmark = benchmarkState;
     }
 
-    let cameraFitted = false;
-    const fitCamera = () => {
+    // The demo's initial camera is the P4-04 at-rest view: a plain world-centred
+    // fit clamped to the camera range. That view is the committed reference
+    // contract of this task; the L19 "show all" fit action below uses the engine's
+    // padded 100 % fit, and L17/P4-22 will reuse that helper for the restored view.
+    let cameraPlaced = false;
+    const canvasViewport = () => {
       const bounds = canvas.getBoundingClientRect();
-      const cssWidth = Math.max(1, Math.round(bounds.width));
-      const cssHeight = Math.max(1, Math.round(bounds.height));
-      const rawZoom = Math.min(cssWidth / world.width, cssHeight / world.height);
+      return {
+        width: Math.max(1, Math.round(bounds.width)),
+        height: Math.max(1, Math.round(bounds.height)),
+      };
+    };
+    const placeInitialCamera = () => {
+      const viewport = canvasViewport();
+      const rawZoom = Math.min(viewport.width / world.width, viewport.height / world.height);
       camera.zoom = clampNumber(rawZoom, zoomRange.minimumZoom, zoomRange.maximumZoom);
-      camera.panX = (world.width - cssWidth / camera.zoom) / 2;
-      camera.panY = (world.height - cssHeight / camera.zoom) / 2;
+      camera.panX = (world.width - viewport.width / camera.zoom) / 2;
+      camera.panY = (world.height - viewport.height / camera.zoom) / 2;
       engine.setCamera(camera);
     };
-    const resize = () => {
-      const bounds = canvas.getBoundingClientRect();
-      const cssWidth = Math.max(1, Math.round(bounds.width));
-      const cssHeight = Math.max(1, Math.round(bounds.height));
-      const devicePixelRatio = window.devicePixelRatio || 1;
-      engine.resize(cssWidth, cssHeight, devicePixelRatio);
-      if (!cameraFitted) {
-        fitCamera();
-        cameraFitted = true;
-      }
+
+    // L19 fit action ("show all"): the engine's pure fit helper returns the padded,
+    // at-most-100 % camera; the page never keeps a second copy of the rule.
+    const fitBoard = () => {
+      const viewport = canvasViewport();
+      const fitted = engine.fitView(
+        { x: 0, y: 0, width: world.width, height: world.height },
+        { width: viewport.width, height: viewport.height },
+      );
+      camera.panX = fitted.panX;
+      camera.panY = fitted.panY;
+      camera.zoom = fitted.zoom;
+      engine.setCamera(camera);
+      onDemand.request();
     };
 
-    const frameTimes = { frames: 0, lastUpdate: performance.now() };
-    const frame = (timestamp) => {
+    // On-demand rendering (L19): a camera, document or resize change requests one
+    // frame; while idle no animation frame is scheduled at all, so the canvas
+    // produces zero frames. The HUD frame counter makes the idle state visible and
+    // `frameCount()` exposes the same counter to the browser evidence.
+    const renderState = { lastHudAt: 0 };
+    const writeHud = (timestamp) => {
+      if (!readyResolved) {
+        state.visibleCount = engine.visibleInstanceCount();
+        hudVisibleNode.textContent = String(state.visibleCount);
+        framesNode.textContent = String(framesRendered);
+        renderState.lastHudAt = timestamp;
+        settleReady({
+          ok: true,
+          scene: state.scene,
+          counts: { ...state.counts },
+          objectCount: state.objectCount,
+          visibleCount: state.visibleCount,
+        });
+        return;
+      }
+      // At most four HUD text updates per second: the visible count builds the
+      // command buffer again, so a per-change update must not double the work.
+      if (timestamp - renderState.lastHudAt < 250) {
+        return;
+      }
+      renderState.lastHudAt = timestamp;
+      state.visibleCount = engine.visibleInstanceCount();
+      hudVisibleNode.textContent = String(state.visibleCount);
+      framesNode.textContent = String(framesRendered);
+    };
+    const renderFrameNow = (timestamp) => {
+      frameScheduled = false;
+      pendingFrameHandle = 0;
       if (state.stopped) {
         return;
       }
@@ -693,27 +786,28 @@ async function start() {
         settleReady({ ok: false, error: String(error) });
         return;
       }
-      frameTimes.frames += 1;
-      const elapsed = timestamp - frameTimes.lastUpdate;
-      if (elapsed >= 1000) {
-        const fps = (frameTimes.frames * 1000) / elapsed;
-        frameTimes.frames = 0;
-        frameTimes.lastUpdate = timestamp;
-        // One text update per second: a 60 Hz HUD would add layout work to the
-        // frame time it reports.
-        state.fps = fps;
-        state.visibleCount = engine.visibleInstanceCount();
-        hudVisibleNode.textContent = String(state.visibleCount);
-        fpsNode.textContent = `${fps.toFixed(0)} fps`;
-        settleReady({
-          ok: true,
-          scene: state.scene,
-          counts: { ...state.counts },
-          objectCount: state.objectCount,
-          visibleCount: state.visibleCount,
-        });
+      framesRendered += 1;
+      writeHud(timestamp);
+    };
+    const requestFrame = () => {
+      if (!onDemand.active || state.stopped || frameScheduled) {
+        return;
       }
-      window.requestAnimationFrame(frame);
+      frameScheduled = true;
+      pendingFrameHandle = window.requestAnimationFrame(renderFrameNow);
+    };
+    onDemand.request = requestFrame;
+    onDemand.fit = fitBoard;
+    onDemand.active = benchmarkState === null && !perfRequested;
+
+    const resize = () => {
+      const viewport = canvasViewport();
+      engine.resize(viewport.width, viewport.height, window.devicePixelRatio || 1);
+      if (!cameraPlaced) {
+        placeInitialCamera();
+        cameraPlaced = true;
+      }
+      onDemand.request();
     };
 
     const watchPixelRatio = () => {
@@ -762,19 +856,20 @@ async function start() {
 
     const requestedView = parseViewQuery(query.get("view"));
     if (requestedView !== null) {
-      const bounds = canvas.getBoundingClientRect();
-      const cssWidth = Math.max(1, Math.round(bounds.width));
-      const cssHeight = Math.max(1, Math.round(bounds.height));
+      const viewport = canvasViewport();
       camera.zoom = clampNumber(requestedView.zoom, zoomRange.minimumZoom, zoomRange.maximumZoom);
-      camera.panX = requestedView.worldX - cssWidth / camera.zoom / 2;
-      camera.panY = requestedView.worldY - cssHeight / camera.zoom / 2;
+      camera.panX = requestedView.worldX - viewport.width / camera.zoom / 2;
+      camera.panY = requestedView.worldY - viewport.height / camera.zoom / 2;
       engine.setCamera(camera);
+      onDemand.request();
     }
 
     captionNode.textContent = sceneCaption(loaded);
     installInteraction(engine);
-    frameTimes.lastUpdate = performance.now();
-    window.requestAnimationFrame(frame);
+    installFitKey();
+    // One frame is requested by the initial resize; a document or camera change
+    // after that only requests a frame when it actually happens.
+    onDemand.request();
   } catch (error) {
     showError(error);
     settleReady({ ok: false, error: String(error) });

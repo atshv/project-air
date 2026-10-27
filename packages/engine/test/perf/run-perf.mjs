@@ -6,6 +6,7 @@
 //     unchanged since P2-04). Evidence: reviews/evidence/P2-04-perf-<timestamp>.json.
 //
 //   node packages/engine/test/perf/run-perf.mjs --scenario engine-core [--record basis|final]
+//                                               [--task <task-id>]
 //     engine-core `perf` gate: the 10,000-object mixed board scene with continuous
 //     pan and zoom (p95 <= 16.7 ms, no frame interval above 16.7 ms after warm-up)
 //     plus the L01 basis/final proof on the 500-card/50-zone sample board (max
@@ -14,6 +15,10 @@
 //     Default (no --record): interactive run + basis (when none exists) + final.
 //     `--record basis` writes only the L01 basis; `--record final` writes only the
 //     final proof against the committed basis.
+//     `--task <task-id>` names the engine-core evidence files and their `task`
+//     field after the task that runs the gate (default P4-03, the gate's origin),
+//     so a later task's records never masquerade as P4-03 evidence. The committed
+//     P4-03 basis record is read-only and keeps its own prefix.
 //
 // The harness reads the web port (baseline) or playground port (engine-core) from
 // .polier-slot, copies the built playground and engine artefacts into a temporary
@@ -69,6 +74,9 @@ const PAGE_TIMEOUT_MS = 180000;
 // Engine-core scenario constants. They are mirrored by docs/gates/perf.md (a
 // change touches both) and by the page's camera-path constants.
 const ENGINE_CORE_TASK = "P4-03";
+// The engine-core evidence prefix/`task` field; `--task <id>` overrides it for a
+// task that runs the gate, the committed P4-03 basis keeps its own name.
+let evidenceTask = ENGINE_CORE_TASK;
 const ENGINE_CORE_WARMUP_FRAMES = 120;
 // 2,000 samples per run: on the M2 proxy the 10,000-object scene produces frames
 // in well under a millisecond, so the plan's 600-sample window would be far too
@@ -522,7 +530,7 @@ async function launchChromeSession({ chrome, chromeFlags, pageUrl, tempRoot, std
       ...chromeFlags,
       `--user-data-dir=${userDataDir}`,
       `--remote-debugging-port=${debugPort}`,
-      pageUrl,
+      "about:blank",
     ],
     { stdio: ["ignore", "ignore", "pipe"] },
   );
@@ -543,6 +551,7 @@ async function launchChromeSession({ chrome, chromeFlags, pageUrl, tempRoot, std
   await new Promise((resolveOpen) => socket.addEventListener("open", resolveOpen, { once: true }));
   const send = cdpClient(socket);
   const pageErrors = [];
+  const consoleLines = [];
   socket.addEventListener("message", (event) => {
     const message = JSON.parse(event.data);
     if (message.method === "Runtime.exceptionThrown") {
@@ -550,10 +559,23 @@ async function launchChromeSession({ chrome, chromeFlags, pageUrl, tempRoot, std
         String(message.params?.exceptionDetails?.exception?.description ?? "page exception"),
       );
     }
+    if (message.method === "Runtime.consoleAPICalled") {
+      const parts = (message.params?.args ?? []).map((argument) =>
+        String(argument.value ?? argument.description ?? ""),
+      );
+      const text = parts.join(" ").trim();
+      if (text.length > 0) {
+        consoleLines.push(text);
+      }
+    }
   });
   await send("Runtime.enable");
   await send("Page.enable");
-  return { child, send, pageErrors };
+  // Navigate to the measured page only now: enabling the DevTools domains after
+  // the page (and its measurement) has started blocks the renderer main thread
+  // and appears as a frame interval the engine did not cause.
+  await send("Page.navigate", { url: pageUrl });
+  return { child, send, pageErrors, consoleLines, consoleCursor: 0 };
 }
 
 function waitForExit(processHandle, timeoutMs) {
@@ -799,46 +821,47 @@ async function runBaseline() {
 // engine-core (P4-03): 10,000-object pan/zoom gate and the L01 basis/final run.
 // ---------------------------------------------------------------------------
 
-async function waitForPerfState(send, expectedScene, timeoutMs = PAGE_TIMEOUT_MS) {
+// Waits for the page's own `PERF_SCENARIO {…}` completion event instead of
+// evaluating `window.__enginePerf` while the measurement runs: a DevTools
+// evaluate on the renderer main thread blocks frame production and appears as a
+// frame interval the engine did not cause. The page logs the event after the
+// measurement and (in the final proof) after the culling verification, so one
+// read of the final state afterwards is enough and the measured window stays
+// untouched. The claim is documented in docs/gates/perf.md.
+async function waitForPerfDone(session, send, expectedScene, timeoutMs = PAGE_TIMEOUT_MS) {
   const deadline = Date.now() + timeoutMs;
   while (Date.now() < deadline) {
-    let raw = null;
-    try {
-      raw = await evaluate(
-        send,
-        "window.__enginePerf ? JSON.stringify({status: window.__enginePerf.status, scene: window.__enginePerf.scene}) : null",
-      );
-    } catch (error) {
-      // A navigation between two measurements briefly destroys the old
-      // execution context; retry until the new page sets its state.
-      if (!/context/i.test(error instanceof Error ? error.message : String(error))) {
-        throw error;
+    for (let index = session.consoleCursor; index < session.consoleLines.length; index += 1) {
+      const line = session.consoleLines[index];
+      const prefix = "PERF_SCENARIO ";
+      if (!line.startsWith(prefix)) {
+        continue;
       }
-      raw = null;
-    }
-    if (raw !== null && raw !== undefined) {
-      const state = JSON.parse(raw);
-      if (state.status === "error") {
-        const error = await evaluate(send, "window.__enginePerf.error ?? 'unknown'");
-        throw new Error(`the engine-core scenario failed: ${error}`);
+      let message = null;
+      try {
+        message = JSON.parse(line.slice(prefix.length));
+      } catch {
+        continue;
       }
-      if (state.status === "done" && state.scene === expectedScene) {
+      if (message?.status === "done" && message.scene === expectedScene) {
+        session.consoleCursor = index + 1;
         return JSON.parse(await evaluate(send, "JSON.stringify(window.__enginePerf)"));
       }
-    } else {
-      let pageError = "";
-      try {
-        pageError = await evaluate(send, "document.querySelector('#error')?.textContent ?? ''");
-      } catch {
-        pageError = "";
-      }
-      if (typeof pageError === "string" && pageError.length > 0) {
-        throw new Error(`the page reported: ${pageError}`);
-      }
     }
-    await delay(250);
+    if (session.pageErrors.length > 0) {
+      throw new Error(`page exception: ${session.pageErrors[0]}`);
+    }
+    await delay(100);
   }
-  throw new Error(`the page did not finish the ${expectedScene} measurement within ${timeoutMs} ms`);
+  let state = "";
+  try {
+    state = String(await evaluate(send, "JSON.stringify(window.__enginePerf ?? null)"));
+  } catch {
+    state = "";
+  }
+  throw new Error(
+    `the page did not finish the ${expectedScene} measurement within ${timeoutMs} ms${state === "" ? "" : `; state ${state.slice(0, 200)}`}`,
+  );
 }
 
 function scenarioUrl(baseUrl, scene, { verifyCulling = false } = {}) {
@@ -906,7 +929,7 @@ function interactiveEvidence({ state, renderer, browserVersion, chrome, chromeFl
   }
 
   return {
-    task: ENGINE_CORE_TASK,
+    task: evidenceTask,
     gate: "perf",
     scenario: "engine-core",
     kind: "interactive",
@@ -1075,7 +1098,7 @@ function l01Evidence({ state, kind, record, renderer, browserVersion, chrome, ch
   }
 
   return {
-    task: ENGINE_CORE_TASK,
+    task: evidenceTask,
     gate: "perf",
     scenario: "l01",
     kind,
@@ -1304,7 +1327,7 @@ async function runEngineCore({ record }) {
     };
 
     if (record !== "basis" && record !== "final") {
-      const state = await waitForPerfState(send, "engine-core");
+      const state = await waitForPerfDone(chromeSession, send, "engine-core");
       if (pageErrors.length > 0) {
         throw new Error(`page exception: ${pageErrors[0]}`);
       }
@@ -1317,7 +1340,7 @@ async function runEngineCore({ record }) {
         port,
       });
       const path = writeEvidenceJson(
-        `P4-03-perf-engine-core-${timestampSlug(new Date(evidence.timestamp))}.json`,
+        `${evidenceTask}-perf-engine-core-${timestampSlug(new Date(evidence.timestamp))}.json`,
         evidence,
       );
       printResults("engine-core", analyze(frameTimesOf(state)));
@@ -1350,7 +1373,7 @@ async function runEngineCore({ record }) {
     let basisForComparison = existingBasis;
     if (record === "basis" || (record !== "final" && existingBasis === null)) {
       await goto(basisUrl);
-      const state = await waitForPerfState(send, "sample");
+      const state = await waitForPerfDone(chromeSession, send, "sample");
       const renderer = String(state?.renderer ?? "unknown");
       const evidence = l01Evidence({
         ...evidenceContext,
@@ -1364,7 +1387,7 @@ async function runEngineCore({ record }) {
         comparison: null,
       });
       const path = writeEvidenceJson(
-        `P4-03-perf-basis-${timestampSlug(new Date(evidence.timestamp))}.json`,
+        `${evidenceTask}-perf-basis-${timestampSlug(new Date(evidence.timestamp))}.json`,
         evidence,
       );
       printResults("L01 basis", analyze(frameTimesOf(state)));
@@ -1385,7 +1408,7 @@ async function runEngineCore({ record }) {
 
     if (record !== "basis") {
       await goto(finalUrl);
-      const state = await waitForPerfState(send, "sample");
+      const state = await waitForPerfDone(chromeSession, send, "sample");
       const renderer = String(state?.renderer ?? "unknown");
       const analyzeFinal = analyze(frameTimesOf(state));
       comparison =
@@ -1402,7 +1425,7 @@ async function runEngineCore({ record }) {
         comparison,
       });
       const path = writeEvidenceJson(
-        `P4-03-perf-final-${timestampSlug(new Date(evidence.timestamp))}.json`,
+        `${evidenceTask}-perf-final-${timestampSlug(new Date(evidence.timestamp))}.json`,
         evidence,
       );
       printResults("L01 final", analyzeFinal);
@@ -1452,6 +1475,14 @@ async function main() {
   }
   if (scenario !== "engine-core") {
     fail(`unknown --scenario "${scenario}"; expected "engine-core"`, 2);
+  }
+  const taskIndex = args.indexOf("--task");
+  if (taskIndex >= 0) {
+    const task = args[taskIndex + 1];
+    if (task === undefined || task.startsWith("--") || !/^[A-Za-z0-9_.-]+$/.test(task)) {
+      fail("--task needs a task id such as P4-03", 2);
+    }
+    evidenceTask = task;
   }
   const recordIndex = args.indexOf("--record");
   const record = recordIndex >= 0 ? args[recordIndex + 1] : undefined;

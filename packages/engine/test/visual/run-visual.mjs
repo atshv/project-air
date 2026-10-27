@@ -17,6 +17,11 @@
 //   node packages/engine/test/visual/run-visual.mjs --scene <name> --viewport <name>
 //     Local work: restrict the run to one or more scenes and/or one viewport.
 //
+//   node packages/engine/test/visual/run-visual.mjs --task <task-id>
+//     Names the capture record and its `task` field after the task that runs the
+//     gate (default P4-04, the gate's origin), so a later task's record does not
+//     masquerade as P4-04 evidence. It changes no scene, camera or tolerance.
+//
 // The harness is dependency-free: Node builtins only, Chrome for Testing from the
 // local Playwright cache (`CHROME_PATH` wins), the DevTools protocol over Node's
 // WebSocket, and a PNG decoder/encoder built on `node:zlib` plus the five PNG
@@ -28,7 +33,7 @@
 // Determinism: fixed scenes from `packages/test-kit`, deterministic camera states
 // through the documented read-only `?view=<worldX>,<worldY>,<zoom>` page hook,
 // exact viewports and DPR 1 through the DevTools protocol, the render loop paused
-// before the screenshot, the volatile FPS HUD value hidden, fonts settled, no
+// before the screenshot, the volatile rendered-frame HUD counter hidden, fonts settled, no
 // animations. Every capture log line also prints the capture URL and the effective
 // camera (panX, panY, zoom), so the gate log alone documents the deterministic
 // view. The reference images are the contract: a baseline change is a reviewed
@@ -75,7 +80,10 @@ const EVIDENCE_DIR = join(REPO_ROOT, "reviews", "evidence");
 const BASELINE_DIR = join(EVIDENCE_DIR, "visual-baselines");
 const HARNESS_RELATIVE = "packages/engine/test/visual/run-visual.mjs";
 
-const TASK = "P4-04";
+// The capture-record prefix/report `task` field: `--task <id>` overrides it for a
+// task that runs the gate, so its records do not masquerade as P4-04 evidence.
+// The default P4-04 is the gate's origin and stays compatible.
+let evidenceTask = "P4-04";
 const GATE = "visual";
 const BACKEND = "webgl2";
 const BACKEND_LABEL = "WebGL2";
@@ -109,14 +117,23 @@ const SAMPLE_ZOOM_ANCHOR_ID = "zone-0001";
 const MINIMUM_ZOOM = 0.1;
 const MAXIMUM_ZOOM = 8;
 
+// L19 fit rule mirrored from packages/engine/src/camera.cpp and docs/engine.md:
+// "show all" fits the world below the L02 top padding (bar 48 px + 16 px tokens)
+// and never zooms past 100 %. The fit-action scene asserts the effective camera
+// against this rule, so a broken fit helper is a capture failure instead of a
+// plausible image.
+const FIT_TOP_PADDING = 64;
+const MAX_FIT_ZOOM = 1.0;
+
 // Scene names the gate captures. A scene without a `view` is captured with the
-// playground's fit camera (the documented at-rest state).
+// playground's own camera (the documented at-rest state); a scene with
+// `fitAction` runs the L19 fit action before the capture.
 const SCENE_DEFINITIONS = [
   {
     name: "sample-at-rest",
     scene: "sample",
     view: null,
-    camera: "playground fit camera (world centred, clamped to 0.1 … 8)",
+    camera: "playground initial camera (plain world-centred fit, clamped to 0.1 … 8)",
   },
   {
     name: "sample-zoom-in",
@@ -134,7 +151,17 @@ const SCENE_DEFINITIONS = [
     name: "engine-core-at-rest",
     scene: "engine-core",
     view: null,
-    camera: "playground fit camera (world centred, clamped to 0.1 … 8)",
+    camera: "playground initial camera (plain world-centred fit, clamped to 0.1 … 8)",
+  },
+  {
+    // L19 fitted view: one card, so the fit action lands at exactly 100 % and the
+    // dot grid (visible at and above zoom 0.5) is part of the reviewed reference image.
+    name: "one-card-fit",
+    scene: "stress",
+    count: 1,
+    view: null,
+    fitAction: true,
+    camera: "L19 fit action of the one-card world: centred, 100 % zoom, dot grid visible",
   },
 ];
 
@@ -187,13 +214,13 @@ const RENDERER_EXPRESSION = `(() => {
   return String(gl.getParameter(extension.UNMASKED_RENDERER_WEBGL));
 })()`;
 
-// Hides the volatile FPS HUD value before the screenshot: the FPS label and its
-// value are removed from the layout (`display: none`), so neither the number nor
-// the empty label is part of the reference image. The object, card, zone and
-// visible counts are deterministic for a fixed scene and camera.
+// Hides the volatile rendered-frame HUD value before the screenshot: the counter
+// and its item are removed from the layout (`display: none`), so neither the
+// number nor the empty label is part of the reference image. The object, card,
+// zone and visible counts are deterministic for a fixed scene and camera.
 const HIDE_VOLATILE_HUD_EXPRESSION = `(() => {
-  const fps = document.querySelector("#fps");
-  const item = fps === null ? null : fps.closest(".hud__item") ?? fps;
+  const frames = document.querySelector("#frames");
+  const item = frames === null ? null : frames.closest(".hud__item") ?? frames;
   if (item instanceof HTMLElement) {
     item.style.setProperty("display", "none");
   }
@@ -211,6 +238,20 @@ const SETTLE_EXPRESSION = `new Promise((resolve) => {
   } else {
     frames();
   }
+})`;
+
+// Runs the L19 fit action ("show all") and waits until the frame it requested has
+// been drawn: on-demand rendering draws exactly one frame per change, so the
+// rendered-frame counter must advance. Returns the counter and the effective
+// camera for the capture record.
+const FIT_ACTION_EXPRESSION = `new Promise((resolve) => {
+  const before = globalThis.__enginePlayground.frameCount();
+  globalThis.__enginePlayground.fit();
+  requestAnimationFrame(() => requestAnimationFrame(() => resolve(JSON.stringify({
+    framesBefore: before,
+    framesAfter: globalThis.__enginePlayground.frameCount(),
+    camera: globalThis.__enginePlayground.getState().camera
+  }))));
 })`;
 
 const LAYOUT_EXPRESSION = `(() => {
@@ -1021,7 +1062,10 @@ function sceneDefinitions(testKit) {
     ["engine-core", engineCore],
   ]);
   return SCENE_DEFINITIONS.map((definition) => {
-    const scene = byName.get(definition.scene);
+    const scene =
+      definition.scene === "stress"
+        ? testKit.buildStressScene(definition.count)
+        : byName.get(definition.scene);
     if (scene === undefined) {
       fail(`unknown scene "${definition.scene}" in the visual scene list`);
     }
@@ -1033,15 +1077,21 @@ function sceneDefinitions(testKit) {
             worldY: anchor.worldY,
             zoom: definition.view.zoom,
           };
+    const count = definition.count ?? null;
     return {
       name: definition.name,
       scene: definition.scene,
+      count,
       view,
+      fitAction: definition.fitAction === true,
       counts: { ...scene.metadata.counts },
       world: { ...scene.metadata.world },
       camera: definition.camera,
       url: (baseUrl) => {
         const parameters = new URLSearchParams({ scene: definition.scene });
+        if (count !== null) {
+          parameters.set("count", String(count));
+        }
         if (view !== null) {
           parameters.set("view", `${view.worldX},${view.worldY},${view.zoom}`);
         }
@@ -1118,6 +1168,15 @@ async function captureState({ send, scene, viewport, baseUrl }) {
   await sendChecked(send, "Page.navigate", { url });
   const readyState = await waitForPlayground(send);
 
+  let fitAction = null;
+  if (scene.fitAction) {
+    const raw = await evaluate(send, FIT_ACTION_EXPRESSION, { awaitPromise: true });
+    if (typeof raw !== "string") {
+      fail(`the fit action of "${scene.name}" at "${viewport.name}" did not report a result`, 3);
+    }
+    fitAction = JSON.parse(raw);
+  }
+
   await evaluate(send, HIDE_VOLATILE_HUD_EXPRESSION);
   await evaluate(send, "globalThis.__enginePlayground.pause()");
   await evaluate(send, SETTLE_EXPRESSION, { awaitPromise: true });
@@ -1188,8 +1247,17 @@ async function captureState({ send, scene, viewport, baseUrl }) {
     },
     camera:
       expectedCamera === null
-        ? { passed: true, expected: "playground fit camera", actual: layout.state.camera }
+        ? { passed: true, expected: "playground initial camera", actual: layout.state.camera }
         : expectedCamera,
+    fitAction: {
+      passed:
+        !scene.fitAction ||
+        (fitAction !== null && fitAction.framesAfter > fitAction.framesBefore),
+      expected: scene.fitAction
+        ? "the L19 fit action renders at least one frame"
+        : "no fit action in this scene",
+      actual: fitAction,
+    },
     pageError: {
       passed: layout.error === "",
       expected: "",
@@ -1205,6 +1273,7 @@ async function captureState({ send, scene, viewport, baseUrl }) {
     backend: BACKEND,
     backendLabel: BACKEND_LABEL,
     url,
+    fitAction,
     ready: {
       scene: readyState.scene,
       objectCount: readyState.objectCount,
@@ -1218,6 +1287,36 @@ async function captureState({ send, scene, viewport, baseUrl }) {
 }
 
 function expectedCameraState(scene, layout) {
+  if (scene.fitAction) {
+    // Mirrors Camera::fitBounds for a world that starts at (0, 0): zoom into the
+    // viewport below the L02 top padding, at most 100 %, then centre the content.
+    const cssWidth = layout.canvas?.cssWidth ?? 0;
+    const cssHeight = layout.canvas?.cssHeight ?? 0;
+    const availableHeight = Math.max(cssHeight - FIT_TOP_PADDING, 0);
+    const zoom = Math.min(
+      Math.max(
+        Math.min(cssWidth / scene.world.width, availableHeight / scene.world.height, MAX_FIT_ZOOM),
+        MINIMUM_ZOOM,
+      ),
+      MAXIMUM_ZOOM,
+    );
+    const contentScreenLeft = (cssWidth - scene.world.width * zoom) / 2;
+    const contentScreenTop =
+      FIT_TOP_PADDING + (availableHeight - scene.world.height * zoom) / 2;
+    const expectedPanX = -contentScreenLeft / zoom;
+    const expectedPanY = -contentScreenTop / zoom;
+    const camera = layout.state.camera;
+    const passed =
+      Math.abs(camera.zoom - zoom) <= 1e-6 &&
+      Math.abs(camera.panX - expectedPanX) <= 1e-6 &&
+      Math.abs(camera.panY - expectedPanY) <= 1e-6;
+    return {
+      passed,
+      expected: { zoom, panX: expectedPanX, panY: expectedPanY },
+      actual: camera,
+      source: `L19 fit of the ${scene.world.width}x${scene.world.height} world below the ${FIT_TOP_PADDING} px top padding, at most 100 %`,
+    };
+  }
   if (scene.view === null) {
     return null;
   }
@@ -1306,6 +1405,9 @@ function commandLine(options) {
   if (options.update) {
     parts.push("--update");
   }
+  if (options.task !== null) {
+    parts.push("--task", options.task);
+  }
   for (const scene of options.scenes) {
     parts.push("--scene", scene);
   }
@@ -1316,11 +1418,24 @@ function commandLine(options) {
 }
 
 function parseArgs(argv) {
-  const options = { update: false, scenes: [], viewports: [], help: false };
+  const options = { update: false, scenes: [], viewports: [], task: null, help: false };
   for (let index = 0; index < argv.length; index += 1) {
     const argument = argv[index];
     if (argument === "--update") {
       options.update = true;
+    } else if (argument === "--task") {
+      const value = argv[index + 1];
+      if (value === undefined || value.startsWith("--") || !/^[A-Za-z0-9_.-]+$/.test(value)) {
+        fail(`${argument} needs a task id such as P4-04`);
+      }
+      index += 1;
+      options.task = value;
+    } else if (argument.startsWith("--task=")) {
+      const value = argument.slice("--task=".length);
+      if (!/^[A-Za-z0-9_.-]+$/.test(value)) {
+        fail("--task needs a task id such as P4-04");
+      }
+      options.task = value;
     } else if (argument === "--help" || argument === "-h") {
       options.help = true;
     } else if (argument === "--scene" || argument === "--viewport") {
@@ -1351,9 +1466,11 @@ function usage() {
     `  node ${HARNESS_RELATIVE}                     run the visual gate`,
     `  node ${HARNESS_RELATIVE} --update            write the reference images (review action, not a gate pass)`,
     `  node ${HARNESS_RELATIVE} --scene <name> --viewport <name>`,
+    `  node ${HARNESS_RELATIVE} --task <task-id>   name the capture record after the running task`,
     "",
     `  --scene:    ${SCENE_DEFINITIONS.map((scene) => scene.name).join(", ")}`,
     `  --viewport: ${VIEWPORTS.map((viewport) => viewport.name).join(", ")}`,
+    "  --task:     task id for the capture record prefix (default P4-04)",
     "",
     "  Exit codes: 0 pass (or baselines written), 1 difference/assertion, 2 usage/build, 3 infra.",
   ].join("\n");
@@ -1382,7 +1499,7 @@ async function run(options) {
   const missingBaselines = [];
   let pageErrors = [];
   const report = {
-    task: TASK,
+    task: evidenceTask,
     gate: GATE,
     mode: options.update ? "update" : "gate",
     command,
@@ -1401,7 +1518,9 @@ async function run(options) {
     scenes: scenes.map((scene) => ({
       name: scene.name,
       scene: scene.scene,
+      count: scene.count,
       camera: scene.camera,
+      fitAction: scene.fitAction,
       view:
         scene.view === null
           ? null
@@ -1482,6 +1601,7 @@ async function run(options) {
           backend: capture.backend,
           backendLabel: capture.backendLabel,
           url: capture.url,
+          fitAction: capture.fitAction,
           ready: capture.ready,
           renderer: capture.renderer,
           capturedWidth: capture.image.width,
@@ -1580,7 +1700,7 @@ async function run(options) {
         };
         captureRecord.comparison = comparison;
         if (!comparison.withinTolerance) {
-          const diffRelativeName = `${TASK}-visual-${slug}-${scene.name}-${viewport.name}-${BACKEND}.diff.png`;
+          const diffRelativeName = `${evidenceTask}-visual-${slug}-${scene.name}-${viewport.name}-${BACKEND}.diff.png`;
           const diffAbsolute = writeDiffPng(capture.image, baselineImage, diffRelativeName);
           captureRecord.diffPng = diffAbsolute.slice(REPO_ROOT.length);
           result = "fail";
@@ -1669,7 +1789,7 @@ async function run(options) {
   report.exitCode = exitCode;
 
   mkdirSync(EVIDENCE_DIR, { recursive: true });
-  const reportRelative = join("reviews", "evidence", `${TASK}-visual-run-${slug}.json`);
+  const reportRelative = join("reviews", "evidence", `${evidenceTask}-visual-run-${slug}.json`);
   writeFileSync(
     join(REPO_ROOT, reportRelative),
     `${JSON.stringify(report, null, 2)}\n`,
@@ -1718,6 +1838,9 @@ async function main() {
   if (options.help) {
     console.log(usage());
     return;
+  }
+  if (options.task !== null) {
+    evidenceTask = options.task;
   }
   const filters = assertPngCodec();
   console.log(`png self-test: OK (decode/encode round trip, scanline filters 0-4, ${filters} filter sets)`);

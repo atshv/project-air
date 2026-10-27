@@ -34,8 +34,20 @@ Emscripten module through an import map.
   to 50,000.
 - `?scene=engine-core` — the engine-core perf board from `packages/test-kit`: 10,000 mixed board
   objects (9,200 cards, 200 zones with three blocks each).
-- Pointer drag pans; wheel or two-pointer pinch zooms around the pointer. The scene data never
-  changes; the HUD shows objects, visible instances, FPS and backend.
+- Pointer drag pans; wheel or two-pointer pinch zooms around the pointer; `f` runs the L19 fit action
+  ("show all": at most 100 %, L02 top padding, dot grid at and above zoom 0.5). The scene never
+  changes. The HUD shows objects, visible instances, the rendered-frame counter and the backend.
+
+### On-demand rendering (L19)
+
+Outside the benchmark and perf modes the page renders only on change: a camera (pan, zoom or fit),
+document or resize change requests exactly one frame, and while idle no animation frame is scheduled,
+so an idle canvas produces no frames. The benchmark and perf modes below keep their continuous loops.
+`window.__enginePlayground.frameCount()` and `getState().framesRendered` expose the rendered-frame
+counter, `fit()` runs the fit action and `pause()` stops the scheduler for a capture.
+`node packages/engine/test/idle/run-idle.mjs` measures this in a real browser and writes
+`reviews/evidence/P4-07-idle-<timestamp>.json` (one idle second → zero frames; a fit, a resize and the
+benchmark loop still render).
 
 ### Benchmark mode
 

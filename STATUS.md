@@ -121,16 +121,6 @@
 
 ## Ready now
 
-- `P4-06` Layers and draw order (L13)
-  - P4-02: Closed P4-02: deterministic test-kit scenes (500 cards/50 zones/144 blocks, 10k stress), interactive playground with pan/zoom, HUD, ready hook; benchmark mode preserved.
-  - P4-02: Screenshots 1440x900/390x844 + serve/capture log (HTTP 200, SwiftShader capture); test-kit suite 12/12; four gates green after the owner-approved design-check test fix 32c8f28.
-  - P4-02: Two review rounds; minors fixed (serve-log consistency, per-zone block assertions). Deviation: Node v26.12.1 vs the .nvmrc pin.
-  - P4-05: Closed P4-05: engine TS logic layer (gestures, operations, port, history); one gesture = one contract operation with inverse, group drag = one group operation; 31 tests validate.
-  - P4-05: Undo/redo depth 20 with redo-clear and describe() labels; fake + bridge adapter byte-identical round trips; create builders validate geometry, port read is isolated, adapter projects z.
-  - P4-05: Two review rounds, four minors fixed. The z-order gesture awaits the contract 0.2.0 reorder operation (P4-25); the moveZone description is corrected there.
-  - P4-25: Closed P4-25: contract 0.2.0 (17 schemas, root/schema ids/board entry), containment fixtures for the nullable zone parent, the reorder {itemId,z} operation with inverse, moveZone description fix.
-  - P4-25: Blocker fixed after review: packages/engine guard + C++ tests now assert 0.2.0 (fresh cpp-unit 2/2); typecheck 8/8. Codegen/parity green (96 contract tests, 86 fixtures).
-  - P4-25: Lead-approved contract_followups: packages/sdk (stale 0.1.0 wording), services/platform, services/auth (no contract import yet). ADR-0010 records the Q17 decision.
 - `P4-08` Text atlas and glyph texture pipeline (L02)
   - P4-02: Closed P4-02: deterministic test-kit scenes (500 cards/50 zones/144 blocks, 10k stress), interactive playground with pan/zoom, HUD, ready hook; benchmark mode preserved.
   - P4-02: Screenshots 1440x900/390x844 + serve/capture log (HTTP 200, SwiftShader capture); test-kit suite 12/12; four gates green after the owner-approved design-check test fix 32c8f28.
@@ -138,6 +128,21 @@
   - P4-04: Closed P4-04: dependency-free visual gate, 8 committed baselines (4 scenes x 2 viewports, WebGL2), 0 differing pixels on ANGLE Metal M2; fail-closed renderer and exact viewports.
   - P4-04: Baselines regenerated once after the OS move Darwin 25.5.0 -> 27.2.0 (text AA only, geometry unchanged), documented under 'Baseline history'; --update is a review action, never a pass.
   - P4-04: Deterministic ?view= camera hook; gate log prints URL + camera; board-check + visual green. Stage-exit final gates are perf-final/visual-final, run by P4-28.
+- `P4-19` Placement of new objects (L20)
+  - P4-05: Closed P4-05: engine TS logic layer (gestures, operations, port, history); one gesture = one contract operation with inverse, group drag = one group operation; 31 tests validate.
+  - P4-05: Undo/redo depth 20 with redo-clear and describe() labels; fake + bridge adapter byte-identical round trips; create builders validate geometry, port read is isolated, adapter projects z.
+  - P4-05: Two review rounds, four minors fixed. The z-order gesture awaits the contract 0.2.0 reorder operation (P4-25); the moveZone description is corrected there.
+  - P4-07: Closed P4-07: pure Camera::fitBounds (min(...,1.0), 0.1 floor, 64 px L02 padding from tokens), dot grid shader (tokens faint/canvas, 16 px, visible at >=0.5), on-demand rendering (0 idle frames).
+  - P4-07: visual 10/10 0-diff incl. the reviewed sample-zoom-in update and two one-card-fit baselines; perf p95 0.1 ms, 0 intervals > 16.7 ms; L01 final mean 0.049 vs basis 0.052, culling pass; cpp-unit 2/2 on contract 0.2.0.
+  - P4-07: Harnesses gained --task evidence prefixes; docs updated. Two review rounds, four minors fixed (record commit base, visual --task, comment wording, baseline-history precision).
+- `P4-22` Remember view (L17)
+  - P4-07: Closed P4-07: pure Camera::fitBounds (min(...,1.0), 0.1 floor, 64 px L02 padding from tokens), dot grid shader (tokens faint/canvas, 16 px, visible at >=0.5), on-demand rendering (0 idle frames).
+  - P4-07: visual 10/10 0-diff incl. the reviewed sample-zoom-in update and two one-card-fit baselines; perf p95 0.1 ms, 0 intervals > 16.7 ms; L01 final mean 0.049 vs basis 0.052, culling pass; cpp-unit 2/2 on contract 0.2.0.
+  - P4-07: Harnesses gained --task evidence prefixes; docs updated. Two review rounds, four minors fixed (record commit base, visual --task, comment wording, baseline-history precision).
+- `P4-24` Trackpad and wheel defaults (L15, desktop part)
+  - P4-07: Closed P4-07: pure Camera::fitBounds (min(...,1.0), 0.1 floor, 64 px L02 padding from tokens), dot grid shader (tokens faint/canvas, 16 px, visible at >=0.5), on-demand rendering (0 idle frames).
+  - P4-07: visual 10/10 0-diff incl. the reviewed sample-zoom-in update and two one-card-fit baselines; perf p95 0.1 ms, 0 intervals > 16.7 ms; L01 final mean 0.049 vs basis 0.052, culling pass; cpp-unit 2/2 on contract 0.2.0.
+  - P4-07: Harnesses gained --task evidence prefixes; docs updated. Two review rounds, four minors fixed (record commit base, visual --task, comment wording, baseline-history precision).
 - `P4-26` Zones as containers II: platform migration and containment (L08)
   - P4-25: Closed P4-25: contract 0.2.0 (17 schemas, root/schema ids/board entry), containment fixtures for the nullable zone parent, the reorder {itemId,z} operation with inverse, moveZone description fix.
   - P4-25: Blocker fixed after review: packages/engine guard + C++ tests now assert 0.2.0 (fresh cpp-unit 2/2); typecheck 8/8. Codegen/parity green (96 contract tests, 86 fixtures).
@@ -187,6 +192,7 @@
 - [x] `P4-03` Engine-core perf gate and L01 basis — status: `done` — owner: —
 - [x] `P4-04` Visual gate with reference images — status: `done` — owner: —
 - [x] `P4-05` Gesture-to-operation seam and undo history core — status: `done` — owner: —
+- [x] `P4-07` Canvas feel: fit, dot grid and idle drawing (L19) — status: `done` — owner: —
 - [x] `P4-25` Contract 0.2.0: zone parent reference and reorder (z) operation (L08/L13) — status: `done` — owner: —
 - [x] `P0-26` Toolbar and zone with notepad and image window in the preview — status: `done` — owner: —
 - [x] `P0-27` Bilingual preview with DE/EN switch and cache-busted assets — status: `done` — owner: —
@@ -198,7 +204,7 @@
 
 ## In progress
 
-- [ ] `P4-07` Canvas feel: fit, dot grid and idle drawing (L19) — status: `in_progress` — owner: lead
+- [ ] `P4-06` Layers and draw order (L13) — status: `in_progress` — owner: —
 
 ## Blocked / failed
 
@@ -210,7 +216,6 @@
 - [ ] `P0-15` Release command and tag-based CI release — status: `pending` — owner: —
 - [ ] `P0-16` Dependency updates and Polier update check — status: `pending` — owner: —
 - [ ] `P0-17` RELEASING.md and release 0.0.1 — status: `pending` — owner: —
-- [ ] `P4-06` Layers and draw order (L13) — status: `pending` — owner: —
 - [ ] `P4-08` Text atlas and glyph texture pipeline (L02) — status: `pending` — owner: —
 - [ ] `P4-09` Glyph layout, text instances and ellipsis (L02) — status: `pending` — owner: —
 - [ ] `P4-10` Titles, previews and visible quality (L02) — status: `pending` — owner: —
@@ -233,6 +238,13 @@
 - [ ] `P4-28` L01 final proof, two-backend reference images and stage showcase — status: `pending` — owner: —
 - [ ] `P4-29` Zone parity with the live demo I: arrangement and release preview (L08) — status: `pending` — owner: —
 - [ ] `P4-30` Zone parity with the live demo II: lifecycle and names (L08) — status: `pending` — owner: —
+
+<!-- polier:claims -->
+## Claims
+
+- `P4-06` in progress by dsh since 2026-10-27T20:43:14+00:00 — worktree: /Users/rasulatashev/Desktop/KI Projekte/Project air-P4-06 · slot 2
+
+<!-- /polier:claims -->
 
 ## Decisions
 

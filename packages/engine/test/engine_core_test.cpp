@@ -36,6 +36,7 @@ using air::engine::SpatialIndex;
 using air::engine::Status;
 using air::engine::Tone;
 using air::engine::toneColor;
+using air::engine::ViewFit;
 
 namespace test = air::engine::test;
 
@@ -247,6 +248,108 @@ void cameraValidation() {
   test::expect(status.ok, "a finite setView is accepted atomically");
   test::expectNear(atomicCamera.panX(), 50.0, 0.0, "an accepted setView commits the pan x");
   test::expectNear(atomicCamera.zoom(), 2.0, 0.0, "an accepted setView commits the zoom");
+}
+
+void cameraFitAndGridVisibility() {
+  test::section("L19 fit: 100 % cap, L02 top padding, empty and invalid bounds");
+  const double topPadding = Camera::fitTopPadding();
+  test::expectNear(topPadding, 64.0, 0.0, "the fit top padding is bar 48 px + 16 px");
+  test::expectNear(topPadding, tokens::space_48 + tokens::space_16, 0.0,
+                   "the fit top padding comes from the token header");
+  test::expectNear(Camera::kMaxFitZoom, 1.0, 0.0, "fit never zooms past 100 %");
+
+  // 1) One card: the raw fit is far above 100 %, so the zoom caps at 100 %; the
+  // card is centred horizontally and below the top padding.
+  ViewFit card;
+  Status status = Camera::fitBounds(Bounds{0.0, 0.0, 176.0, 80.0}, 1440.0, 900.0, card);
+  test::expect(status.ok, "a one-card fit succeeds");
+  test::expectNear(card.zoom, Camera::kMaxFitZoom, 0.0, "a one-card board fits at exactly 100 %");
+  test::expectNear(card.panX, -632.0, 1e-9, "the one card is centred horizontally");
+  test::expectNear(card.panY, -442.0, 1e-9,
+                   "the one card is centred below the 64 px top padding");
+  Camera fitted;
+  test::expect(fitted.setView(card.panX, card.panY, card.zoom).ok, "the fitted view is a valid camera");
+  const Point cardTopLeft = fitted.worldToScreen({0.0, 0.0});
+  const Point cardBottomRight = fitted.worldToScreen({176.0, 80.0});
+  test::expect(cardTopLeft.x >= 0.0 && cardTopLeft.y >= topPadding - 1e-9 &&
+                   cardBottomRight.x <= 1440.0 && cardBottomRight.y <= 900.0,
+               "the one card is fully visible with the top padding free");
+
+  // 2) Wide board 9600 x 5408 (the sample world) at 1440 x 900: the width is the
+  // limiting side, the content stays fully visible and the padding holds.
+  ViewFit wide;
+  status = Camera::fitBounds(Bounds{0.0, 0.0, 9600.0, 5408.0}, 1440.0, 900.0, wide);
+  test::expect(status.ok, "a wide board fit succeeds");
+  test::expectNear(wide.zoom, 0.15, 1e-12, "a wide board fits by its width at zoom 0.15");
+  test::expect(wide.zoom <= Camera::kMaxFitZoom, "the wide board fit never exceeds 100 %");
+  test::expect(fitted.setView(wide.panX, wide.panY, wide.zoom).ok, "the wide fit is a valid camera");
+  const Point boardTopLeft = fitted.worldToScreen({0.0, 0.0});
+  const Point boardBottomRight = fitted.worldToScreen({9600.0, 5408.0});
+  test::expect(boardTopLeft.y >= topPadding - 1e-9,
+               "the wide board keeps at least the top padding free above it");
+  test::expect(boardTopLeft.x >= -1e-9 && boardBottomRight.x <= 1440.0 + 1e-9 &&
+                   boardBottomRight.y <= 900.0 + 1e-9,
+               "the wide board is fully visible");
+
+  // 3) Empty and invalid bounds: the world origin at 100 %, no division by zero,
+  // no NaN pan. Every invalid-input variant takes the same explicit branch.
+  const Bounds emptyBounds[] = {
+      Bounds{0.0, 0.0, 0.0, 0.0},
+      Bounds{10.0, 20.0, -4.0, 80.0},
+      Bounds{0.0, 0.0, 176.0, -1.0},
+      Bounds{std::numeric_limits<double>::quiet_NaN(), 0.0, 176.0, 80.0},
+      Bounds{0.0, std::numeric_limits<double>::infinity(), 176.0, 80.0},
+      Bounds{0.0, 0.0, 176.0, std::numeric_limits<double>::infinity()},
+  };
+  for (const Bounds& empty : emptyBounds) {
+    ViewFit emptyFit;
+    status = Camera::fitBounds(empty, 1440.0, 900.0, emptyFit);
+    test::expect(status.ok, "empty or invalid bounds still produce a fit");
+    test::expectNear(emptyFit.panX, 0.0, 0.0, "empty bounds pan to the world origin x");
+    test::expectNear(emptyFit.panY, 0.0, 0.0, "empty bounds pan to the world origin y");
+    test::expectNear(emptyFit.zoom, Camera::kMaxFitZoom, 0.0,
+                     "empty bounds show the origin at 100 %");
+  }
+
+  // 4) The camera minimum is a floor the fit never crosses, even when the board is
+  // far too large for the viewport; the result stays a finite, valid camera.
+  ViewFit huge;
+  status = Camera::fitBounds(Bounds{0.0, 0.0, 100000.0, 100000.0}, 390.0, 844.0, huge);
+  test::expect(status.ok, "a huge board fit succeeds");
+  test::expectNear(huge.zoom, Camera::kMinZoom, 0.0,
+                   "a board too large for the viewport clamps to the camera minimum");
+  test::expect(std::isfinite(huge.panX) && std::isfinite(huge.panY),
+               "the clamped fit still returns a finite pan");
+
+  // 5) Off-origin world bounds: the pan is derived from the bounds origin, so a
+  // board that does not start at (0, 0) is centred just as well.
+  ViewFit offset;
+  status = Camera::fitBounds(Bounds{1000.0, 2000.0, 400.0, 300.0}, 800.0, 600.0, offset);
+  test::expect(status.ok, "an off-origin board fit succeeds");
+  test::expectNear(offset.zoom, 1.0, 0.0, "the off-origin board fits at 100 %");
+  test::expectNear(offset.panX, 800.0, 1e-9, "the off-origin board pans from its bounds x");
+  test::expectNear(offset.panY, 1818.0, 1e-9, "the off-origin board pans from its bounds y");
+
+  // 6) An invalid viewport is rejected and leaves the caller's result untouched.
+  ViewFit untouched{7.0, 8.0, 9.0};
+  status = Camera::fitBounds(Bounds{0.0, 0.0, 100.0, 100.0}, 0.0, 900.0, untouched);
+  test::expect(!status.ok && status.reason != nullptr, "a zero-width viewport is rejected");
+  test::expectNear(untouched.panX, 7.0, 0.0, "a rejected fit leaves the result pan x");
+  test::expectNear(untouched.zoom, 9.0, 0.0, "a rejected fit leaves the result zoom");
+  status = Camera::fitBounds(Bounds{0.0, 0.0, 100.0, 100.0},
+                             std::numeric_limits<double>::quiet_NaN(), 900.0, untouched);
+  test::expect(!status.ok, "a non-finite viewport is rejected");
+
+  test::section("L19 dot grid visibility threshold");
+  test::expect(!Camera::gridVisibleAtZoom(0.0), "the grid is hidden at zoom 0");
+  test::expect(!Camera::gridVisibleAtZoom(0.4999), "the grid is hidden below zoom 0.5");
+  test::expect(Camera::gridVisibleAtZoom(Camera::kGridMinZoom),
+               "the grid is visible at exactly zoom 0.5 (L19 boundary)");
+  test::expect(Camera::gridVisibleAtZoom(0.5001), "the grid is visible above zoom 0.5");
+  test::expect(Camera::gridVisibleAtZoom(1.0), "the grid is visible at 100 %");
+  test::expect(!Camera::gridVisibleAtZoom(std::numeric_limits<double>::quiet_NaN()),
+               "a non-finite zoom keeps the grid hidden");
+  test::expectNear(Camera::gridSize(), 16.0, 0.0, "the grid spacing is 16 world px");
 }
 
 void cullingAndDrawOrder() {
@@ -1171,6 +1274,7 @@ int main() {
   cameraRoundTrip();
   cameraZoomAndGrid();
   cameraValidation();
+  cameraFitAndGridVisibility();
   cullingAndDrawOrder();
   edgeCases();
   crossDocumentStaleIndex();

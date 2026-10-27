@@ -218,7 +218,7 @@ async function main() {
         hud: {
           objects: document.querySelector("#hud-objects")?.textContent,
           visible: document.querySelector("#hud-visible")?.textContent,
-          fps: document.querySelector("#fps")?.textContent,
+          frames: document.querySelector("#frames")?.textContent,
           backend: document.querySelector("#hud-backend")?.textContent
         },
         state: globalThis.__enginePlayground.getState(),

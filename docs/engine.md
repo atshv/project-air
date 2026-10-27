@@ -12,7 +12,7 @@ the network (AD-2), and reads the contract and tokens from generated headers.
 | Module | Files | Purpose | Inputs → outputs | Imports |
 | --- | --- | --- | --- | --- |
 | `doc` | `doc.h`, `doc.cpp` | Flat object document reserved for 50,000 objects: stable ids, live/removed slots, incremental mutations, fractional `z`, tone/layer, draw-order permutation | `BoardContent` / `Rectangle` / mutations → objects, ids, order, version, identity | `contract.h`, `tokens.h`, geometry, status |
-| `camera` | `camera.h`, `camera.cpp` | Pan/zoom affine, world↔screen, visible bounds, 16 px grid/snapping, validating mutators | pan/zoom/viewport → screen points, world bounds | geometry, status, `tokens.h` |
+| `camera` | `camera.h`, `camera.cpp` | Pan/zoom affine, world↔screen, visible bounds, 16 px grid/snapping, validating mutators, L19 fit (100 % cap, L02 top padding) and the dot-grid visibility threshold | pan/zoom/viewport → screen points, world bounds, fitted view | geometry, status, `tokens.h` |
 | `spatial` | `spatial.h`, `spatial.cpp` | Uniform-grid culling (256 world-px cells), rebuilt on version change or patched incrementally per mutation; bounds and point queries | document + world bounds/point → candidate slots in document order | doc, geometry, status |
 | `render` | `render.h`, `render.cpp` | Deterministic command buffer: culling, stable order, 24-byte instances, empty-on-failure `Status`; command-buffer hit testing | document + camera + viewport + index → instances, hit result | camera, doc, spatial, status, `tokens.h` |
 | `render_gl` | `render_gl.h`, `render_gl.cpp` | WebGL2 instanced renderer (per-instance attributes, one `drawArraysInstanced`, inline GLSL 300 es) plus the exported C API; native stubs | command buffer / mutation and hit-test calls → pixels / C ABI results | render, camera, doc, spatial, `tokens.h`, GLES3, Emscripten |
@@ -21,8 +21,9 @@ the network (AD-2), and reads the contract and tokens from generated headers.
 Support headers: `geometry.h` (`Point`, `Bounds`) and `status.h` (`Status`; no exceptions
 across the C ABI). The C API exports `engine_create`, `engine_resize`, `engine_set_camera`,
 `engine_load_rectangles`, `engine_add_rectangle`, `engine_update_geometry`, `engine_update_z`,
-`engine_remove_object`, `engine_hit_test`, `engine_visible_instance_count`, `engine_render_frame`
-and `engine_last_error`; the TypeScript bridge exposes the same surface as typed methods.
+`engine_remove_object`, `engine_hit_test`, `engine_visible_instance_count`, `engine_render_frame`,
+`engine_fit_view` and `engine_last_error`; the TypeScript bridge exposes the same surface as typed
+methods.
 
 ## Gesture logic layers (TypeScript)
 
@@ -93,6 +94,48 @@ source scan proves no DOM or network use in the logic layer.
   identical input gives byte-identical builds. `render_gl` uploads the records once per frame and
   issues one instanced draw; no per-object JS call.
 
+## Fit, dot grid and idle drawing (L19)
+
+- **Fit is pure and lives in the core.** `Camera::fitBounds(bounds, viewportWidth, viewportHeight,
+  ViewFit&)` takes the board's world bounds and the canvas viewport and returns the pan/zoom:
+  `zoom = min(viewportWidth / bounds.width, (viewportHeight − 64) / bounds.height, 1.0)` clamped to
+  `0.1 … 1.0`; the content is centred horizontally in the viewport and vertically in the area below
+  the L02 top padding, so at least **64 px** (bar 48 px + 16 px, tokens `space_48 + space_16`) stay
+  free above it. A board whose raw fit is below the 0.1 camera minimum is cropped instead of zoomed
+  further out, and then the padding cannot hold either. Empty or invalid bounds (zero, negative or
+  non-finite area) are an explicit case: world origin at 100 % (pan 0/0, zoom 1), no division by
+  zero and no NaN pan. A non-positive or non-finite viewport is rejected and leaves the result
+  untouched.
+- **C ABI and bridge:** `engine_fit_view(bounds_x, bounds_y, bounds_width, bounds_height,
+  viewport_width, viewport_height, out_pan_zoom[3])` exports the same helper. It needs no renderer,
+  so it lives in `engine.cpp` and is part of the native and the WebAssembly build;
+  `createEngine(canvas).fitView(bounds, viewport)` wraps it, so a host app never duplicates the rule.
+- **The dot grid is chrome.** Design rule §8 layer 1: `render_gl` draws it before any object, as one
+  screen-space triangle whose fragment shader turns each pixel into world coordinates with the camera
+  transform. Dots use `tokens::faint` over the `tokens::canvas` clear colour, 16 px world spacing
+  from `tokens::canvas_grid` and a radius from `tokens::border_width`; the device pixel ratio is a
+  uniform, so the pattern stays crisp when it changes. There are no per-dot instances and no
+  command-buffer entry, so the grid cannot affect culling or hit testing. It is hidden below zoom
+  **0.5** and visible at or above it (canvas catalogue L19); the `sample-zoom-in` captures at zoom 0.5
+  were re-run through the documented, reviewed `--update` path in the same task (only the desktop
+  image changed: the mobile 0.5 view is fully covered by board content, so the grid behind it adds no
+  visible pixel), and `Camera::gridVisibleAtZoom` / `Camera::kGridMinZoom` are the single source for
+  the test and the renderer. The grid pass is one
+  program bind, one packed uniform upload and one draw, and the object pass uploads its constant
+  palette once and its resolution only on a resize, so the extra chrome layer stays inside the perf
+  gate's frame budget.
+- **Only draw on change (playground).** Outside `?bench=…` and `?perf=engine-core` the page owns an
+  on-demand scheduler: a camera (pan, zoom or fit), document or resize change requests exactly one
+  frame, the frame callback renders once and schedules nothing, so an idle canvas produces zero
+  frames. `?bench=…` and `?perf=engine-core` keep their continuous requestAnimationFrame loops
+  unchanged, because the perf gate measures frame production. The HUD "Frames" item,
+  `window.__enginePlayground.frameCount()` and `getState().framesRendered` expose the counter; the
+  `f` key and `window.__enginePlayground.fit()` run the L19 fit action. The browser record
+  `reviews/evidence/P4-07-idle-<timestamp>.json` proves that one idle second renders zero frames and
+  that a camera change, a resize and the benchmark loop still render. The playground's initial
+  camera stays the P4-04 at-rest view (plain world-centred fit, clamped to `0.1 … 8`); L17/P4-22
+  will use the L19 helper for the initial and restored view.
+
 ## Object identity and mutations
 
 `Document` keeps one storage slot per object and assigns a monotonic `ObjectId` on insert
@@ -146,7 +189,11 @@ behind. The same `SpatialIndex::ensureCurrent` guard is covered by the native su
 - **Native build + tests:** `cmake -S packages/engine -B packages/engine/build -DCMAKE_BUILD_TYPE=Debug && cmake --build packages/engine/build --parallel && ctest --test-dir packages/engine/build --output-on-failure` (suites `engine_unit_tests`, `engine_core_tests`).
 - **WASM:** `bash packages/engine/tools/build-wasm.sh` then `node packages/engine/tools/wasm-smoke.mjs`; size: `node packages/engine/tools/wasm-size.mjs` (budget 307,200 B gzip). The wrapper keeps the Emscripten cache under `build-wasm/.emscripten-cache` unless `EM_CACHE` is set, so a read-only package cache (sandboxed agents) or a shared user cache cannot break the build.
 - **Performance:** `node packages/engine/test/perf/run-perf.mjs` (exclusive `perf-baseline`, 50,000 rectangles, p95 ≤ 16.7 ms) and `node packages/engine/test/perf/run-perf.mjs --scenario engine-core` (the `perf` stage gate: 10,000-object interactive run plus the L01 basis/final proof; report [docs/engine/perf-baseline.md](engine/perf-baseline.md), gate catalogue [docs/gates/perf.md](gates/perf.md)).
-- **Visual:** `node packages/engine/test/visual/run-visual.mjs` (the `visual` stage gate: four deterministic scenes at 1440×900 and 390×844 against the committed reference images under `reviews/evidence/visual-baselines/`; `--update` writes baselines as a reviewed update, never a gate pass; catalogue [docs/gates/visual-diff.md](gates/visual-diff.md)).
+- **Visual:** `node packages/engine/test/visual/run-visual.mjs` (the `visual` stage gate: five
+  deterministic scenes at 1440×900 and 390×844 against the committed reference images under
+  `reviews/evidence/visual-baselines/`; the L19 `one-card-fit` scene runs the fit action and shows the
+  dot grid at 100 %; `--update` writes baselines as a reviewed update, never a gate pass; catalogue
+  [docs/gates/visual-diff.md](gates/visual-diff.md)).
 - **Bridge and logic:** `pnpm --filter @project-air/engine run build|typecheck|lint|test`. `tsconfig.json` typechecks all of `src/`; `tsconfig.build.json` emits only the bridge, so the package entry stays `dist/bridge/engine.js`. Pins: CMake 4.4.4, Emscripten 6.0.13 in [docs/versions.md](versions.md); gates in [docs/gates/cpp-cmake.md](gates/cpp-cmake.md), [docs/gates/wasm-emscripten.md](gates/wasm-emscripten.md), [docs/gates/perf.md](gates/perf.md).
 
 ## Scenes and the playground
@@ -169,30 +216,36 @@ the view moves.
   their arguments, so every machine gets identical objects and bounds;
   `pnpm --filter @project-air/test-kit test` proves determinism, the 500/50 counts, the engine-core
   10,000-object mix and the 10,000/0/50,000 stress sizes.
-- **Fit and clamp:** the sample world is 9600×5408 px. The fit zoom is clamped to the engine camera
-  range 0.1 … 8: the raw fit is **0.15** at 1440×900 (desktop) and **0.040625** at 390×844, so a
-  narrow viewport clamps to **0.1** and crops the board instead of zooming further out.
+- **Fit and clamp:** the sample world is 9600×5408 px. The **initial** camera is fitted with the
+  pre-L19 plain rule and clamped to the engine camera range 0.1 … 8: the raw fit is **0.15** at
+  1440×900 (desktop) and **0.040625** at 390×844, so a narrow viewport clamps to **0.1** and crops
+  the board instead of zooming further out. The **fit action** (`f`, `fitView`, `engine_fit_view`)
+  instead applies the L19 rule above: at most 100 %, the 64 px top padding, and the same 0.1 camera
+  floor.
 - **Perf mode:** `?perf=engine-core&scene=<name>&samples=<n>&warmup=<n>[&verifyCulling=1]` loads
   the scene once and then calls exactly one `setCamera` and one `renderFrame` per frame along the
   documented camera path (one zoom cycle fit × 6 and back, one left-to-right pan sweep); the harness
   asserts the scene counts, warm-up and sample counts, a single document load and, for the L01 final,
   the culled command-buffer size against an independent visible-set check.
 - **Interaction:** demo-level pointer-drag pan and wheel or two-pointer pinch zoom around the
-  pointer; both only call `setCamera`, so the scene data never changes. L15 (P4-24) owns the final
-  trackpad defaults.
+  pointer, plus the L19 fit action on the `f` key; all of them only call `setCamera`, so the scene
+  data never changes. L15 (P4-24) owns the final trackpad defaults.
 - **View hook:** `?view=<worldX>,<worldY>,<zoom>` places that world point at the canvas centre at
   that zoom (clamped to the camera range) and only calls `setCamera`; the document and its spatial
   index never change. It is the deterministic camera state for the visual gate
-  (`packages/engine/test/visual/run-visual.mjs`); without the parameter the page keeps its fit
-  camera, and an invalid value fails closed with the engine error instead of falling back to a
-  different view.
-- **HUD:** object, card and zone counts, visible instances, FPS and active backend (`WebGL2` today)
-  in DOM chrome below the canvas, not an overlay; the text updates once per second so it adds no
-  per-frame layout work to the measured frame.
-- **Ready hook:** `window.__enginePlayground.ready` is a Promise that resolves once the first full
-  HUD second is drawn (`{ ok: true, scene, counts, objectCount, visibleCount }`) or with
-  `{ ok: false, error }` when the engine failed. `window.__enginePlayground.pause()` stops the loop
-  for a capture and `getState()` reports scene, counts, FPS, backend and camera.
+  (`packages/engine/test/visual/run-visual.mjs`); without the parameter the page keeps its initial
+  camera (the P4-04 at-rest view), and an invalid value fails closed with the engine error instead
+  of falling back to a different view.
+- **HUD:** object, card and zone counts, visible instances, the rendered-frame counter and the active
+  backend (`WebGL2` today) in DOM chrome below the canvas, not an overlay; the volatile counter is
+  hidden for reference captures, and the visible/frame text updates at most four times per second
+  and only when a frame renders, so the HUD adds no per-frame layout work to the measured frame.
+- **Ready hook:** `window.__enginePlayground.ready` is a Promise that resolves once the first frame is
+  drawn and the HUD is filled (`{ ok: true, scene, counts, objectCount, visibleCount }`) or with
+  `{ ok: false, error }` when the engine failed. `window.__enginePlayground.pause()` stops the
+  scheduler for a capture, `fit()` runs the L19 fit action, `frameCount()` reports the rendered-frame
+  counter and `getState()` reports scene, counts, visible instances, rendered frames, backend and
+  camera.
 - **Serve:** from the repository root, `python3 -m http.server <slot playground port> --bind
   127.0.0.1`, then open `http://127.0.0.1:<port>/apps/engine-playground/?scene=sample`; the port is
   `ports.playground` from `.polier-slot`, never hard-coded in the page.
@@ -214,8 +267,10 @@ performance basis: 50,000 rectangles at p95 ≤ 16.7 ms, committed JSON evidence
 fixtures — the deterministic 500-card/50-zone sample board and the stress scene from
 `packages/test-kit` — and demo-level pan/zoom in the playground. The measured L01 basis and final
 proof, the `perf` gate and the reference images remain with P4-03, P4-04 and P4-28 (board Q18).
-Other engine-owned entries — L02, L03, L07, L08, L10–L20 — belong to those stages; their interaction
-behaviours are not implemented.
+**L19 — Canvas feel** is delivered by P4-07: the fit helper, the dot grid and on-demand drawing are
+documented above, with native fit/grid tests, the `visual` reference image `one-card-fit` and the
+`P4-07-idle-*` browser record. Other engine-owned entries — L02, L03, L07, L08, L10–L18, L20 —
+belong to those stages; their interaction behaviours are not implemented.
 
 ## What the spike does not prove yet
 
@@ -224,12 +279,14 @@ behaviours are not implemented.
 - **Measurement shape:** frame production (unlocked display, no per-frame GPU sync/fence), not GPU
   completion, long tasks while panning/zooming, or the L01 final proof (500 cards + 50 zones, no long
   task > 50 ms).
-- **Canvas behaviours:** the playground has demo-level pan/zoom over a fixed scene; gesture input
-  handling, selection, editing, snapping, zone membership, the undo UI, keyboard input, text, images,
-  edges, cursors and the accessibility mirror are not implemented. The gesture-to-operation seam and
-  the undo history core exist behind the TypeScript logic layer (P4-05) but are not wired to input
-  yet. Hit testing exists at the document/command-buffer level (P4-01); interaction policy,
-  selection state and overlays are not.
+- **Canvas behaviours:** the playground has demo-level pan/zoom over a fixed scene plus the L19 fit
+  action and dot grid; gesture input handling, selection, editing, snapping, zone membership, the
+  undo UI, keyboard input, text, images, edges, cursors and the accessibility mirror are not
+  implemented. The gesture-to-operation seam and the undo history core exist behind the TypeScript
+  logic layer (P4-05) but are not wired to input yet. Hit testing exists at the
+  document/command-buffer level (P4-01); interaction policy, selection state and overlays are not.
+  The initial and restored viewport (L17/P4-22) still uses the pre-L19 plain fit; only the fit action
+  uses the padded 100 % fit.
 - **Contracts of the mutation API:** the `ObjectId` stays inside the C++ core for now; the C ABI
   addresses live objects by their document slot index, and the bridge owns the contract-UUID mapping
   that a later task may expose.
