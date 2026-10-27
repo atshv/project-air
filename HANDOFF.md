@@ -82,6 +82,12 @@ Rules: one commit per task (`<ID>: <title>`), change entry in `.changes/` (`pnpm
 
 - `reference/` was edited remotely in `30626f0` (branding); the rules keep `reference/` read-only, the change is integrated as-is in `fccf5c5` — the owner decides whether to revert it before the remote stage.
 
+- **History anomaly 2026-10-27 (two DSH sessions, shared main checkout):** a commit race put the
+  P4-07 task content into commit `eff284b` (message `chore: start P4-06`) and only the P4-07
+  bookkeeping (HANDOFF/STATUS/board) into `b4938dc`. The tree is correct, `check.py` passes and both
+  commits are pushed; treat `eff284b` as the P4-07 content commit and do not rewrite pushed history
+  without an owner decision. P4-06 is owned by the other session (worktree `../Project air-P4-06`,
+  slot 2).
 - DSH sandboxed sessions cannot create the default sibling worktree (`../<repo>-<ID>` lies outside the workspace). Create it under `/tmp/air-<ID>` (`git worktree add /tmp/air-<ID> -b task/<ID> main`), acquire the slot there (`python3 $POLIER/tools/slot.py acquire`), take the claim with `--worktree /private/tmp/air-<ID> --slot N`, store that absolute path in `board.json`; `worktree.py finish <ID>` accepts the stored absolute path.
 
 ## Owner decisions recorded
