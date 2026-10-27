@@ -11,11 +11,16 @@ Read `AGENTS.md`, `ARCHITECTURE.md`, `STATUS.md`, `docs/module-map.md` and the t
 - **Stage 3 Engine spike:** complete, owner decision `continue`; C++20 core (doc/camera/spatial/render command buffer), WebGL2 instanced renderer, TS bridge `@project-air/engine`, `apps/engine-playground`, ADR-0006 + `docs/engine.md`; CMake 4.4.4 + Emscripten 6.0.13; WASM 49,925 B raw / 21,806 B gzip. Measured on the Mac mini M2 8 GB proxy: p95 2.00 ms (556 fps unlocked frame production), display-locked control p95 16.80 ms. **D8 caveat:** the MacBook Air M1 8 GB reference is unproven — re-measure before treating the hardware target as met.
 - **Stage 4 Backend core:** complete, owner decision `continue`; tasks `P3-01` … `P3-06` done. `services/platform` + `services/auth`, self-hosted Ory Kratos v26.2.0 (ADR-0007; `identity` profile, Mailpit courier, test-session mode for tests, admin API bound to localhost), PostgreSQL migrations `0001`–`0004` with RLS and contract-valid account-id mapping, 20 `/v1` contract routes + `GET /v1/session`, typed SDK `@project-air/sdk`, `api-tests` 32, `rls-tests` 7, platform unit 74, acceptance script `PASS backend-core acceptance`; ADR-0008 (API/session model).
 - **Stage 5 Engine core:** in progress, owner decision `continue`; 30 tasks (28 planned + `P4-29`/`P4-30`
-  live-demo zone parity). **Done and merged:** `P4-01` … `P4-09`, `P4-10` (L02 titles for cards *and*
-  zones, 40 px header chrome, zone content inset, zoom-bucket sharp text incl. 200 %, grown blocks,
-  quiet DOM delete affordance, perf and idle re-tests; review `reviews/P4-10.md` — pass with minors,
-  three fixed before the merge, three follow-ups below), `P4-25` (contract 0.2.0), `P4-26` (DB
-  containment). **Next chain to the zone demo:** `P4-14` (L03) → `P4-15` (L07) → `P4-16` (L10) →
+  live-demo zone parity). **Done and merged:** `P4-01` … `P4-10`, `P4-25` (contract 0.2.0), `P4-26` (DB
+  containment). `P4-10` (L02 titles on cards *and* zones, 40 px header chrome, zone content inset,
+  zoom-bucket sharp text incl. 200 %, grown blocks, quiet DOM delete affordance, perf + idle re-tests)
+  was merged as `0a565b4`; its independent review (`reviews/P4-10.md`, changes-requested) demanded
+  exclusive gate locks and records on the merged head — both fixed by the evidence-refresh commit
+  `97798bf` (`board.json` P4-10 now declares `exclusive: [perf, visual]`; fresh board-check/perf/visual/
+  design-check records on the merged head; superseded records removed). Six minor code follow-ups stay
+  open (text depth order, readable-size bound, inline delete icon/i18n, delete seam, mobile-before
+  images, unused `atlasRasterScale`/ungated zoom tests) — see `reviews/P4-10.md` end note.
+  **Next chain to the zone demo:** `P4-14` (L03) → `P4-15` (L07) → `P4-16` (L10) →
   `P4-23` (L18) → `P4-27` (L08 engine membership/move) → `P4-29` → `P4-30` (zone parity I/II) →
   `P4-28` (L01 final proof + `visual-final`/`perf-final` + showcase). All chain briefs exist
   (`P4-14/15/16/23/27/28/29/30`). Exit gates: `cpp-unit` green; `visual-final`/`perf-final` only pass
@@ -23,10 +28,10 @@ Read `AGENTS.md`, `ARCHITECTURE.md`, `STATUS.md`, `docs/module-map.md` and the t
   `P4-19/21/22/24`, which are NOT in the current chain — record that as an open point in P4-28, never
   as a silent pass.
 - **Other sessions/repo state:** a second DSH/Claude session works in the same checkouts and produced
-  `P4-06`/`P4-08`/`P4-09`/`P4-26`; coordinate via claims/`in_progress` in `board.json`. Commit race
+  `P4-06`/`P4-08`/`P4-09`/`P4-10`/`P4-26` and started `P4-14` (L03); coordinate via claims/`in_progress` in `board.json`. Commit race
   documented above (`eff284b` carries the P4-07 content, `b4938dc` its bookkeeping). `origin/main` is
-  pushed at `64ea426` (check `git log`).
-- **Done overall:** 50 of 71 tasks. Open: the rest of stage 5 (the chain above plus `P4-11`…`P4-13`
+  pushed at `597185b` (check `git log`).
+- **Done overall:** 56 of 78 tasks. Open: the rest of stage 5 (the chain above plus `P4-11`…`P4-13`
   WebGPU, `P4-17`/`P4-18` resize/auto-pan, `P4-19`…`P4-24` placement/keyboard/undo/view/trackpad)
   plus the remote-phase tasks `P0-02`, `P0-15`, `P0-16`, `P0-17` (after hardening) and the planning
   of the later stages (realtime, web-app, value, hardening).
