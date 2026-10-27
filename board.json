@@ -4853,6 +4853,59 @@
         "One calm motion (300 ms ease-out, no overshoot), FLIP frame resize (transform/opacity only), placement against drag-start positions, last touched item on top.",
         "Proportional resize re-fit, 480 px desktop surface, frame on --layer-zones; masthead + ?v=P0-31; gates board-check/design-check/changelog-entry; 9 screenshots + log."
       ]
+    },
+    {
+      "id": "P0-32",
+      "title": "Zone titles: named, editable zone headers in the live demo",
+      "goal": "Every zone in the live demo has a name shown in a 40 px header at the top of its frame; the name can be edited inline (click, type, Enter/Escape), new zones from grouping get a default name, and the content starts below the header.",
+      "why": "The owner wants zones to carry a title or name.",
+      "satisfies": [
+        "D3"
+      ],
+      "status": "pending",
+      "depends_on": [
+        "P0-31"
+      ],
+      "complexity": 4,
+      "stage": "foundation",
+      "parallel_group": null,
+      "owner": null,
+      "round": 0,
+      "scope_write": [
+        "apps/web/preview/",
+        ".changes/"
+      ],
+      "scope_read": [
+        "ARCHITECTURE.md",
+        "AGENTS.md",
+        "STATUS.md",
+        "docs/module-map.md",
+        "docs/quality.md",
+        "docs/design-rules.md",
+        "docs/i18n/style-de.md",
+        "docs/i18n/glossary.md",
+        "apps/web/preview/",
+        "packages/ui-kit/tokens.css",
+        "packages/ui-kit/layers.ts",
+        "docs/canvas-acceptance.md"
+      ],
+      "acceptance": [
+        "A1",
+        "A2",
+        "A3",
+        "A4"
+      ],
+      "gates": [
+        "board-check",
+        "design-check",
+        "changelog-entry"
+      ],
+      "branch": "task/P0-32",
+      "worktree": null,
+      "evidence": [],
+      "scope_write_forbidden": [
+        "reference/"
+      ]
     }
   ],
   "decisions": [
