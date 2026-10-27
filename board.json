@@ -3400,7 +3400,7 @@
       "satisfies": [
         "D10"
       ],
-      "status": "in_progress",
+      "status": "done",
       "depends_on": [
         "P4-08"
       ],
@@ -3444,11 +3444,24 @@
       ],
       "owner": null,
       "branch": "task/P4-09",
-      "worktree": "../Project air-P4-09",
+      "worktree": null,
       "round": 0,
-      "evidence": [],
+      "evidence": [
+        "reviews/evidence/P4-09-board-check-20261027T211325Z.json",
+        "reviews/evidence/P4-09-boundaries-20261027T211256Z.json",
+        "reviews/evidence/P4-09-cpp-unit-20261027T211256Z.json",
+        "reviews/evidence/P4-09-typecheck-20261027T211258Z.json",
+        "reviews/evidence/P4-09-visual-20261027T211304Z.json",
+        "reviews/evidence/P4-09-wasm-build-20261027T211257Z.json",
+        "reviews/evidence/P4-09-wasm-size-20261027T211258Z.json"
+      ],
       "scope_write_forbidden": [
         "reference/"
+      ],
+      "handoff": [
+        "Closed P4-09: layoutText flows line/ellipsis/wrap in CSS px, cached per atlas generation; engine_text_add_box_run; bridge flow/box; glyph set adds dashes, quotes, bullet, U+2026.",
+        "Fixed: visual/perf/idle harnesses now copy dist/bridge/text-atlas.js (broken since P4-08); perf and idle not re-run. text-layout visual reference at zoom 1 (blur at zoom 2 is P4-10).",
+        "Gates board-check/boundaries/cpp-unit/wasm-build/wasm-size/visual (16 captures)/typecheck green; 4 new native layout sections; playground ?text=layout."
       ]
     },
     {

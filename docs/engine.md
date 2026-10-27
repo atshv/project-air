@@ -180,28 +180,47 @@ in the repository or the bundle.
   character used as an icon.
 - **Runs and the glyph buffer.** A run is a world-anchored line box (top-left) of code points in one
   role; `TextRuns` rejects non-finite anchors, unknown roles, code points above U+10FFFF, more than
-  4,096 runs or 65,536 glyphs. `GlyphBuffer::build` places glyphs by advance only (wrapping,
-  ellipsis and card binding are P4-09), maps them through the camera (quads scale with the zoom),
+  4,096 runs or 65,536 glyphs. `GlyphBuffer::build` places `line` runs by advance only and
+  `ellipsis`/`wrap` runs from their cached layout (below), maps them through the camera (quads
+  scale with the zoom),
   culls quads outside the viewport and writes 32-byte `GlyphInstance` records (screen x, y, width,
   height, normalised atlas u0, v0, u1, v1); it is reserved once and byte-identical for identical
   input. Without an atlas it succeeds with no glyphs.
+- **Layout (P4-09).** `layoutText` turns a run's code points into glyph placements relative to the
+  anchor, in CSS px from the atlas metrics, so it is independent of the device pixel ratio and of the
+  zoom (a line never re-breaks on zoom). Line height = token font size × token line height. Flows:
+  `line` (P4-08 behaviour, byte-identical buffers), `ellipsis` (one line; a line feed reads as a
+  space; cut so the kept glyphs plus U+2026 fit the box width, trailing spaces before the cut
+  dropped; three full stops when the atlas lacks U+2026; nothing when even the ellipsis is wider than
+  the box) and `wrap` (greedy word wrap at U+0020, hard break at U+000A, an empty line stays a line, a
+  word wider than the box breaks between characters, spaces at a line start dropped and at a line end
+  not placed; `floor(height / line height)` lines are visible, the rest clipped and the last visible
+  line ended with the ellipsis even if it would fit). A box width of 0 draws nothing. A run keeps its
+  layout and recomputes it only when the atlas generation changes; an `ellipsis`/`wrap` run reserves
+  three extra glyphs against the 65,536 limit. C ABI: `engine_text_add_box_run(x, y, role, flow,
+  width, height, codePoints, count)`; `engine_text_add_run` stays the `line` flow.
 - **Renderer.** `engine_text_load_atlas` uploads the validated pixels once per atlas build
   (`RGBA8`, linear, clamp to edge); a frame with runs builds the glyph buffer and issues one
   instanced draw after the object pass, sampling only the alpha coverage and tinting it with
   `tokens::fg` (blend `SRC_ALPHA, ONE_MINUS_SRC_ALPHA`, like the grid). A frame without runs or
   without an atlas touches no GL state for text, so the perf gate's frame cost is unchanged.
 - **Bridge.** `buildTextAtlas()` (`src/bridge/text-atlas.ts`) rasterises one placeholder per role
-  plus the default set — printable ASCII and the Latin-1 supplement (umlauts) — with OffscreenCanvas
+  plus the default set — printable ASCII, the Latin-1 supplement (umlauts) and, since P4-09, en/em
+  dash, single and double quotes incl. „ and ‚, the bullet and U+2026 — with OffscreenCanvas
   (fallback: a detached `<canvas>`) as white coverage on transparent pixels, one uniform cell per
   glyph (`measureText` boxes rounded outward), and uploads pixels and packed metrics in a single
   call; it returns size, raster scale, glyph count and the texture limit. After the first build,
   `resize` rebuilds the atlas whenever the device pixel ratio changes (zoom-bucket re-rasterisation
-  is P4-10). `addTextRun({ x, y, text, role })` passes the string's code points (a lone surrogate
+  is P4-10). `addTextRun({ x, y, text, role, flow, box })` passes the string's code points (a lone surrogate
   stays its own code unit and draws the placeholder); `clearTextRuns()` and `visibleGlyphCount()`
   complete the surface.
 - **Playground.** `?text=1` (e.g. `?text=1&view=200,64,2`) builds the atlas and draws a title and
   a body run with Latin-1 letters and one missing glyph; `getState().textAtlas` reports the atlas.
-  Off by default, so scenes, `visual` baselines and perf documents are unchanged.
+  Off by default, so scenes, `visual` baselines and perf documents are unchanged. `?text=layout`
+  (P4-09, with `?scene=stress&count=0&view=272,112,1`) shows a fitting title, a title cut with an
+  ellipsis, a zone-name box with an em dash and a wrapped preview clipped to three lines; it is the
+  `text-layout` visual scene. The browser harnesses (visual, perf, idle) copy
+  `dist/bridge/text-atlas.js` next to `engine.js` since P4-09 (P4-08 added the import).
 - **Tests.** `engine_text_tests` (CTest) covers token styles, the plan at DPR 1/2/3, the fallback
   and its failures, upload validation and atomicity, DPR-independent CSS metrics, the placeholder,
   run validation and the glyph buffer (placement, zoom, culling, determinism, atlas replacement);

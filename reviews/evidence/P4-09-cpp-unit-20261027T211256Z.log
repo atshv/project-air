@@ -1,0 +1,22 @@
+$ cmake -S packages/engine -B packages/engine/build -DCMAKE_BUILD_TYPE=Debug && cmake --build packages/engine/build --parallel && ctest --test-dir packages/engine/build --output-on-failure
+[exit 0]
+
+-- Configuring done (0.1s)
+-- Generating done (0.0s)
+-- Build files have been written to: /Users/rasulatashev/Desktop/KI Projekte/Project air-P4-09/packages/engine/build
+[ 53%] Built target air_engine_objects
+[ 60%] Built target air_engine
+[ 86%] Built target engine_text_tests
+[ 86%] Built target engine_unit_tests
+[100%] Built target engine_core_tests
+Test project /Users/rasulatashev/Desktop/KI Projekte/Project air-P4-09/packages/engine/build
+    Start 1: engine_unit_tests
+1/3 Test #1: engine_unit_tests ................   Passed    0.00 sec
+    Start 2: engine_core_tests
+2/3 Test #2: engine_core_tests ................   Passed    0.23 sec
+    Start 3: engine_text_tests
+3/3 Test #3: engine_text_tests ................   Passed    0.14 sec
+
+100% tests passed out of 3
+
+Total Test time (real) =   0.38 sec

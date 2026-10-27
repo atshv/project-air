@@ -229,6 +229,223 @@ const Glyph* GlyphAtlas::resolve(std::uint32_t role, std::uint32_t codePoint) co
   return &*found;  // load() guarantees one placeholder per role
 }
 
+namespace {
+
+// Comparisons of summed advances tolerate rounding so a line that is exactly
+// the box width still fits.
+constexpr double kLayoutEpsilon = 1e-9;
+
+double advanceOf(const GlyphAtlas& atlas, std::uint32_t role, std::uint32_t codePoint) {
+  const Glyph* glyph = atlas.resolve(role, codePoint);
+  return glyph == nullptr ? 0.0 : static_cast<double>(glyph->advance);
+}
+
+double widthOf(const GlyphAtlas& atlas, std::uint32_t role,
+               const std::vector<std::uint32_t>& codePoints) {
+  double width = 0.0;
+  for (const std::uint32_t codePoint : codePoints) {
+    width += advanceOf(atlas, role, codePoint);
+  }
+  return width;
+}
+
+// U+2026 when the atlas has it, otherwise three full stops when it has those,
+// otherwise U+2026 anyway, which then draws the role's placeholder box.
+std::vector<std::uint32_t> ellipsisFor(const GlyphAtlas& atlas, std::uint32_t role) {
+  if (!atlas.contains(role, kEllipsisCodePoint) && atlas.contains(role, kFullStopCodePoint)) {
+    return {kFullStopCodePoint, kFullStopCodePoint, kFullStopCodePoint};
+  }
+  return {kEllipsisCodePoint};
+}
+
+void dropTrailingSpaces(std::vector<std::uint32_t>& codePoints) {
+  while (!codePoints.empty() && codePoints.back() == kSpaceCodePoint) {
+    codePoints.pop_back();
+  }
+}
+
+// One line cut to `width` with an ellipsis. `force` ends the line with the
+// ellipsis even when it would fit (more lines follow that are clipped). Returns
+// the drawn code points; empty when not even the ellipsis fits.
+std::vector<std::uint32_t> ellipsize(const GlyphAtlas& atlas, std::uint32_t role,
+                                     const std::vector<std::uint32_t>& line, double width,
+                                     bool force) {
+  if (!force && widthOf(atlas, role, line) <= width + kLayoutEpsilon) {
+    return line;
+  }
+  const std::vector<std::uint32_t> ellipsis = ellipsisFor(atlas, role);
+  const double ellipsisWidth = widthOf(atlas, role, ellipsis);
+  if (ellipsisWidth > width + kLayoutEpsilon) {
+    return {};
+  }
+  std::vector<std::uint32_t> drawn;
+  double pen = 0.0;
+  for (const std::uint32_t codePoint : line) {
+    const double advance = advanceOf(atlas, role, codePoint);
+    if (pen + advance + ellipsisWidth > width + kLayoutEpsilon) {
+      break;
+    }
+    drawn.push_back(codePoint);
+    pen += advance;
+  }
+  dropTrailingSpaces(drawn);
+  drawn.insert(drawn.end(), ellipsis.begin(), ellipsis.end());
+  return drawn;
+}
+
+// Greedy word wrap: words break at spaces and U+000A, a word wider than the box
+// breaks between characters (at least one character per line, so the loop
+// always advances). Spaces at the start of a line are dropped, spaces between
+// words on one line are kept, trailing spaces are dropped by the caller.
+std::vector<std::vector<std::uint32_t>> wrapLines(const GlyphAtlas& atlas, std::uint32_t role,
+                                                  const std::uint32_t* codePoints,
+                                                  std::uint32_t count, double width) {
+  std::vector<std::vector<std::uint32_t>> lines;
+  std::vector<std::uint32_t> current;
+  std::vector<std::uint32_t> pendingSpaces;
+  double currentWidth = 0.0;
+
+  const auto pushCurrent = [&]() {
+    dropTrailingSpaces(current);
+    lines.push_back(current);
+    current.clear();
+    pendingSpaces.clear();
+    currentWidth = 0.0;
+  };
+
+  const auto placeWord = [&](const std::vector<std::uint32_t>& word) {
+    const double wordWidth = widthOf(atlas, role, word);
+    const double spaceWidth = widthOf(atlas, role, pendingSpaces);
+    if (!current.empty() && currentWidth + spaceWidth + wordWidth <= width + kLayoutEpsilon) {
+      current.insert(current.end(), pendingSpaces.begin(), pendingSpaces.end());
+      current.insert(current.end(), word.begin(), word.end());
+      currentWidth += spaceWidth + wordWidth;
+      pendingSpaces.clear();
+      return;
+    }
+    if (!current.empty()) {
+      pushCurrent();
+    }
+    pendingSpaces.clear();
+    if (wordWidth <= width + kLayoutEpsilon) {
+      current = word;
+      currentWidth = wordWidth;
+      return;
+    }
+    for (const std::uint32_t codePoint : word) {
+      const double advance = advanceOf(atlas, role, codePoint);
+      if (!current.empty() && currentWidth + advance > width + kLayoutEpsilon) {
+        pushCurrent();
+      }
+      current.push_back(codePoint);
+      currentWidth += advance;
+    }
+  };
+
+  std::vector<std::uint32_t> word;
+  bool lineOpen = false;  // a line feed or content started the current line
+  for (std::uint32_t index = 0; index < count; ++index) {
+    const std::uint32_t codePoint = codePoints[index];
+    if (codePoint == kSpaceCodePoint || codePoint == kLineFeedCodePoint) {
+      if (!word.empty()) {
+        placeWord(word);
+        word.clear();
+        lineOpen = true;
+      }
+      if (codePoint == kLineFeedCodePoint) {
+        pushCurrent();
+        lineOpen = false;
+      } else if (!current.empty()) {
+        pendingSpaces.push_back(codePoint);
+      }
+      continue;
+    }
+    word.push_back(codePoint);
+  }
+  if (!word.empty()) {
+    placeWord(word);
+    lineOpen = true;
+  }
+  if (lineOpen || !current.empty()) {
+    pushCurrent();
+  }
+  return lines;
+}
+
+}  // namespace
+
+Status layoutText(const GlyphAtlas& atlas, std::uint32_t role, TextFlow flow, double boxWidth,
+                  double boxHeight, const std::uint32_t* codePoints, std::uint32_t count,
+                  TextLayout& out) {
+  out = TextLayout{};
+  if (role >= kTextRoleCount) {
+    return Status::failure("text role is unknown");
+  }
+  if (static_cast<std::uint32_t>(flow) >= kTextFlowCount) {
+    return Status::failure("text flow is unknown");
+  }
+  if (!std::isfinite(boxWidth) || !std::isfinite(boxHeight) || boxWidth < 0.0 ||
+      boxHeight < 0.0) {
+    return Status::failure("text box must be finite and not negative");
+  }
+  if (count > 0 && codePoints == nullptr) {
+    return Status::failure("text code points must not be null");
+  }
+  TextStyle style;
+  const Status styleStatus = textStyle(role, style);
+  if (!styleStatus) {
+    return styleStatus;
+  }
+  if (!atlas.ready() || count == 0) {
+    return Status::success();
+  }
+  const double lineHeight = style.fontSize * style.lineHeight;
+
+  std::vector<std::vector<std::uint32_t>> lines;
+  if (flow == TextFlow::line) {
+    lines.emplace_back(codePoints, codePoints + count);
+  } else if (flow == TextFlow::ellipsis) {
+    // One line: a line feed reads as a space in a title.
+    std::vector<std::uint32_t> line(codePoints, codePoints + count);
+    std::replace(line.begin(), line.end(), kLineFeedCodePoint, kSpaceCodePoint);
+    const double fullWidth = widthOf(atlas, role, line);
+    std::vector<std::uint32_t> drawn = ellipsize(atlas, role, line, boxWidth, false);
+    out.truncated = fullWidth > boxWidth + kLayoutEpsilon;
+    if (!drawn.empty()) {
+      lines.push_back(std::move(drawn));
+    }
+  } else {
+    if (boxWidth <= 0.0) {
+      out.truncated = true;
+      return Status::success();
+    }
+    lines = wrapLines(atlas, role, codePoints, count, boxWidth);
+    const std::size_t maxLines = lineHeight > 0.0
+        ? static_cast<std::size_t>(std::floor((boxHeight + kLayoutEpsilon) / lineHeight))
+        : 0;
+    if (lines.size() > maxLines) {
+      out.truncated = true;
+      lines.resize(maxLines);
+      if (!lines.empty()) {
+        lines.back() = ellipsize(atlas, role, lines.back(), boxWidth, true);
+      }
+    }
+  }
+
+  for (std::size_t lineIndex = 0; lineIndex < lines.size(); ++lineIndex) {
+    double pen = 0.0;
+    const double top = static_cast<double>(lineIndex) * lineHeight;
+    for (const std::uint32_t codePoint : lines[lineIndex]) {
+      out.glyphs.push_back(GlyphPlacement{codePoint, pen, top});
+      pen += advanceOf(atlas, role, codePoint);
+    }
+    out.width = std::max(out.width, pen);
+  }
+  out.lines = static_cast<std::uint32_t>(lines.size());
+  out.height = static_cast<double>(lines.size()) * lineHeight;
+  return Status::success();
+}
+
 TextRuns::TextRuns() { runs_.reserve(kMaxTextRuns); }
 
 Status TextRuns::add(double x, double y, std::uint32_t role, const std::uint32_t* codePoints,
@@ -263,6 +480,35 @@ Status TextRuns::add(double x, double y, std::uint32_t role, const std::uint32_t
   return Status::success();
 }
 
+Status TextRuns::add(double x, double y, std::uint32_t role, TextFlow flow, double boxWidth,
+                     double boxHeight, const std::uint32_t* codePoints, std::uint32_t count) {
+  if (static_cast<std::uint32_t>(flow) >= kTextFlowCount) {
+    return Status::failure("text flow is unknown");
+  }
+  if (!std::isfinite(boxWidth) || !std::isfinite(boxHeight) || boxWidth < 0.0 ||
+      boxHeight < 0.0) {
+    return Status::failure("text box must be finite and not negative");
+  }
+  if (flow == TextFlow::line) {
+    return add(x, y, role, codePoints, count);
+  }
+  // The ellipsis may add glyphs that are not code points of the run.
+  if (count > kMaxGlyphInstances - kEllipsisGlyphReserve ||
+      glyphTotal_ + count + kEllipsisGlyphReserve > kMaxGlyphInstances) {
+    return Status::failure("too many glyphs in text runs");
+  }
+  const Status status = add(x, y, role, codePoints, count);
+  if (!status) {
+    return status;
+  }
+  TextRun& run = runs_.back();
+  run.flow = flow;
+  run.boxWidth = boxWidth;
+  run.boxHeight = boxHeight;
+  glyphTotal_ += kEllipsisGlyphReserve;
+  return Status::success();
+}
+
 void TextRuns::clear() {
   runs_.clear();
   glyphTotal_ = 0;
@@ -290,7 +536,51 @@ Status GlyphBuffer::build(const TextRuns& runs, const GlyphAtlas& atlas, const C
   const double inverseWidth = 1.0 / static_cast<double>(atlas.width());
   const double inverseHeight = 1.0 / static_cast<double>(atlas.height());
   const Bounds viewport{0.0, 0.0, viewportWidth, viewportHeight};
+  const auto pushQuad = [&](const Glyph& glyph, const Bounds& quad) {
+    if (glyph.width <= 0.0F || glyph.height <= 0.0F || !quad.intersects(viewport) ||
+        instances_.size() >= kMaxGlyphInstances) {
+      return;
+    }
+    GlyphInstance instance;
+    instance.x = static_cast<float>(quad.x);
+    instance.y = static_cast<float>(quad.y);
+    instance.width = static_cast<float>(quad.width);
+    instance.height = static_cast<float>(quad.height);
+    instance.u0 = static_cast<float>(static_cast<double>(glyph.atlasX) * inverseWidth);
+    instance.v0 = static_cast<float>(static_cast<double>(glyph.atlasY) * inverseHeight);
+    instance.u1 =
+        static_cast<float>(static_cast<double>(glyph.atlasX + glyph.width) * inverseWidth);
+    instance.v1 =
+        static_cast<float>(static_cast<double>(glyph.atlasY + glyph.height) * inverseHeight);
+    instances_.push_back(instance);
+  };
   for (const TextRun& run : runs.runs()) {
+    if (run.flow != TextFlow::line) {
+      // Laid out once per atlas generation; zoom and pan only map the result.
+      if (run.layoutGeneration != atlas.generation()) {
+        const Status status = layoutText(atlas, run.role, run.flow, run.boxWidth, run.boxHeight,
+                                         run.codePoints.data(),
+                                         static_cast<std::uint32_t>(run.codePoints.size()),
+                                         run.layout);
+        if (!status) {
+          instances_.clear();
+          return status;
+        }
+        run.layoutGeneration = atlas.generation();
+      }
+      for (const GlyphPlacement& placement : run.layout.glyphs) {
+        const Glyph* glyph = atlas.resolve(run.role, placement.codePoint);
+        if (glyph == nullptr) {
+          break;
+        }
+        const Point topLeft = camera.worldToScreen(
+            Point{run.x + placement.x + static_cast<double>(glyph->bearingX),
+                  run.y + placement.y + static_cast<double>(glyph->bearingY)});
+        pushQuad(*glyph, Bounds{topLeft.x, topLeft.y, static_cast<double>(glyph->cssWidth) * zoom,
+                                static_cast<double>(glyph->cssHeight) * zoom});
+      }
+      continue;
+    }
     double pen = run.x;
     for (const std::uint32_t codePoint : run.codePoints) {
       const Glyph* glyph = atlas.resolve(run.role, codePoint);

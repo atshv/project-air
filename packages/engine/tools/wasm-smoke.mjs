@@ -117,9 +117,21 @@ if (atlasResult !== 0 || !atlasError.includes("engine_create")) {
 if (module.ccall("engine_text_max_texture_size", "number", [], []) !== -1) {
   fail("engine_text_max_texture_size reported a size before engine_create");
 }
+// P4-09: the box-run export exists and fails cleanly before engine_create.
+const boxRunResult = module.ccall(
+  "engine_text_add_box_run",
+  "number",
+  ["number", "number", "number", "number", "number", "number", "number", "number"],
+  [0, 0, 0, 1, 100, 20, 0, 0],
+);
+const boxRunError = lastError();
+if (boxRunResult !== 0 || !boxRunError.includes("engine_create")) {
+  fail(`engine_text_add_box_run before create -> ${boxRunResult}, error: ${boxRunError}`);
+}
 
 console.log(`wasm-smoke: engine_create without WebGL2 -> 0, error: ${createError}`);
 console.log(`wasm-smoke: text plan fallback at DPR 3 / 512 px -> scale ${plan[6]}, ${plan[0]}x${plan[1]}`);
 console.log(`wasm-smoke: engine_text_load_atlas before create -> 0, error: ${atlasError}`);
 console.log(`wasm-smoke: engine_load_rectangles before create -> 0, error: ${loadError}`);
+console.log(`wasm-smoke: engine_text_add_box_run before create -> 0, error: ${boxRunError}`);
 console.log("wasm-smoke: OK");

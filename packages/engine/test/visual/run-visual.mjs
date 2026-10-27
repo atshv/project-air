@@ -182,6 +182,17 @@ const SCENE_DEFINITIONS = [
     extra: { store: "off", front: "card-0001" },
     camera: "playground initial camera (plain world-centred fit) of the layers world",
   },
+  {
+    // L02 (P4-09): text layout on an empty world — a fitting title, a title cut
+    // with U+2026, a zone-name box with an em dash and a wrapped preview clipped
+    // to three lines with a hard break; the layout runs inside the engine.
+    name: "text-layout",
+    scene: "stress",
+    count: 0,
+    view: { worldX: 272, worldY: 112, zoom: 1 },
+    extra: { text: "layout" },
+    camera: "world (272, 112) at zoom 1 (the atlas raster scale; zoom re-rasterisation is P4-10)",
+  },
 ];
 
 const PAGE_TIMEOUT_MS = 30000;
@@ -742,6 +753,7 @@ const REQUIRED_ARTEFACTS = [
   "apps/engine-playground/playground.css",
   "packages/ui-kit/tokens.css",
   "packages/engine/dist/bridge/engine.js",
+  "packages/engine/dist/bridge/text-atlas.js",
   "packages/engine/build-wasm/engine.js",
   "packages/engine/build-wasm/engine.wasm",
   "packages/test-kit/dist/scenes.js",
@@ -763,6 +775,7 @@ function copyArtefacts(tempRoot) {
   const files = [
     "packages/ui-kit/tokens.css",
     "packages/engine/dist/bridge/engine.js",
+    "packages/engine/dist/bridge/text-atlas.js",
     "packages/engine/build-wasm/engine.js",
     "packages/engine/build-wasm/engine.wasm",
     "packages/test-kit/dist/scenes.js",
@@ -1099,8 +1112,9 @@ function sceneDefinitions(testKit) {
       definition.view === null
         ? null
         : {
-            worldX: anchor.worldX,
-            worldY: anchor.worldY,
+            // A scene may name its own anchor; the sample board's zone-0001 is the default.
+            worldX: definition.view.worldX ?? anchor.worldX,
+            worldY: definition.view.worldY ?? anchor.worldY,
             zoom: definition.view.zoom,
           };
     const count = definition.count ?? null;

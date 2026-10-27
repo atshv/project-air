@@ -279,6 +279,27 @@ class TextPass {
     return 1;
   }
 
+  int addBoxRun(double x, double y, int role, int flow, double width, double height,
+                const unsigned int* codePoints, int count) {
+    if (!created_) {
+      detail::setLastError("engine_create must be called before engine_text_add_box_run");
+      return 0;
+    }
+    if (role < 0 || flow < 0 || count < 0) {
+      detail::setLastError("text role, flow and code point count must not be negative");
+      return 0;
+    }
+    const Status status =
+        runs_.add(x, y, static_cast<std::uint32_t>(role), static_cast<TextFlow>(flow), width,
+                  height, reinterpret_cast<const std::uint32_t*>(codePoints),
+                  static_cast<std::uint32_t>(count));
+    if (!status) {
+      detail::setLastError(status.reason);
+      return 0;
+    }
+    return 1;
+  }
+
   int clearRuns() {
     if (!created_) {
       detail::setLastError("engine_create must be called before engine_text_clear_runs");
@@ -395,6 +416,12 @@ AIR_ENGINE_RENDER_GL_API int engine_text_add_run(double x, double y, int role,
   return air::engine::g_text.addRun(x, y, role, code_points, count);
 }
 
+AIR_ENGINE_RENDER_GL_API int engine_text_add_box_run(double x, double y, int role, int flow,
+                                                     double width, double height,
+                                                     const unsigned int* code_points, int count) {
+  return air::engine::g_text.addBoxRun(x, y, role, flow, width, height, code_points, count);
+}
+
 AIR_ENGINE_RENDER_GL_API int engine_text_clear_runs() { return air::engine::g_text.clearRuns(); }
 
 AIR_ENGINE_RENDER_GL_API int engine_visible_glyph_count() {
@@ -426,6 +453,20 @@ AIR_ENGINE_RENDER_GL_API int engine_text_add_run(double x, double y, int role,
   (void)x;
   (void)y;
   (void)role;
+  (void)code_points;
+  (void)count;
+  return 0;
+}
+
+AIR_ENGINE_RENDER_GL_API int engine_text_add_box_run(double x, double y, int role, int flow,
+                                                     double width, double height,
+                                                     const unsigned int* code_points, int count) {
+  (void)x;
+  (void)y;
+  (void)role;
+  (void)flow;
+  (void)width;
+  (void)height;
   (void)code_points;
   (void)count;
   return 0;

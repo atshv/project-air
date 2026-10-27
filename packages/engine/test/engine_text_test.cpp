@@ -492,6 +492,250 @@ void testNativeStubs() {
 
 }  // namespace
 
+// ---------------------------------------------------------------------------
+// Layout (P4-09, L02): synthetic advances are 9 for 'a', 10 for 'b', 8 for 'c',
+// 4 for a space, 9 for U+2026 and for '.', and 10 for the placeholder.
+
+using air::engine::GlyphPlacement;
+using air::engine::kEllipsisCodePoint;
+using air::engine::layoutText;
+using air::engine::TextFlow;
+using air::engine::TextLayout;
+
+std::vector<std::uint32_t> codes(std::string_view text) {
+  std::vector<std::uint32_t> out;
+  for (const char character : text) {
+    out.push_back(static_cast<std::uint32_t>(static_cast<unsigned char>(character)));
+  }
+  return out;
+}
+
+std::vector<std::uint32_t> withEllipsis() {
+  std::vector<std::uint32_t> set = ascii();
+  set.push_back(kEllipsisCodePoint);
+  return set;
+}
+
+TextLayout layoutOf(const GlyphAtlas& atlas, TextFlow flow, double width, double height,
+                    std::string_view text, std::uint32_t role = kBody) {
+  const std::vector<std::uint32_t> points = codes(text);
+  TextLayout layout;
+  const Status status = layoutText(atlas, role, flow, width, height, points.data(),
+                                   static_cast<std::uint32_t>(points.size()), layout);
+  test::expect(status.ok, "layoutText succeeds");
+  return layout;
+}
+
+std::vector<std::uint32_t> drawnCodes(const TextLayout& layout) {
+  std::vector<std::uint32_t> out;
+  for (const GlyphPlacement& glyph : layout.glyphs) {
+    out.push_back(glyph.codePoint);
+  }
+  return out;
+}
+
+double lineHeightOf(std::uint32_t role) {
+  TextStyle style;
+  const Status status = air::engine::textStyle(role, style);
+  test::expect(status.ok, "token style resolves");
+  return style.fontSize * style.lineHeight;
+}
+
+void testEllipsisFlow() {
+  test::section("ellipsis flow: fit, cut, trailing space, fallback, too narrow");
+  GlyphAtlas atlas;
+  test::expect(loadUpload(atlas, makeUpload(withEllipsis(), 1.0)).ok, "atlas with U+2026 loads");
+
+  TextLayout fits = layoutOf(atlas, TextFlow::ellipsis, 27.0, 0.0, "abc");
+  test::expect(drawnCodes(fits) == codes("abc") && !fits.truncated && fits.lines == 1,
+               "a run exactly as wide as the box is drawn unchanged");
+  test::expectNear(fits.width, 27.0, 1e-9, "the fitting line keeps its width");
+
+  TextLayout cut = layoutOf(atlas, TextFlow::ellipsis, 40.0, 0.0, "aaaaaaaaaa");
+  std::vector<std::uint32_t> expected = codes("aaa");
+  expected.push_back(kEllipsisCodePoint);
+  test::expect(drawnCodes(cut) == expected && cut.truncated, "a long title ends with U+2026");
+  test::expect(cut.width <= 40.0, "the cut line plus the ellipsis fits the box");
+  test::expectNear(cut.glyphs.back().x, 27.0, 1e-9, "the ellipsis follows the last kept glyph");
+
+  TextLayout spaced = layoutOf(atlas, TextFlow::ellipsis, 31.0, 0.0, "aa aaaa");
+  expected = codes("aa");
+  expected.push_back(kEllipsisCodePoint);
+  test::expect(drawnCodes(spaced) == expected, "a space before the cut is dropped");
+
+  TextLayout narrow = layoutOf(atlas, TextFlow::ellipsis, 5.0, 0.0, "aaaa");
+  test::expect(narrow.glyphs.empty() && narrow.truncated && narrow.lines == 0,
+               "a box narrower than the ellipsis draws nothing");
+  TextLayout zero = layoutOf(atlas, TextFlow::ellipsis, 0.0, 0.0, "a");
+  test::expect(zero.glyphs.empty() && zero.truncated, "a zero-width box draws nothing");
+
+  TextLayout feed = layoutOf(atlas, TextFlow::ellipsis, 200.0, 0.0, "a\nb");
+  test::expect(drawnCodes(feed) == codes("a b"), "a line feed reads as a space in a title");
+
+  GlyphAtlas stops;
+  test::expect(loadUpload(stops, makeUpload(ascii(), 1.0)).ok, "atlas without U+2026 loads");
+  TextLayout fallback = layoutOf(stops, TextFlow::ellipsis, 40.0, 0.0, "aaaaaaaaaa");
+  test::expect(drawnCodes(fallback) == codes("a..."),
+               "without U+2026 the ellipsis is three full stops");
+
+  GlyphAtlas letters;
+  test::expect(loadUpload(letters, makeUpload(codes("ab"), 1.0)).ok, "letters-only atlas loads");
+  TextLayout boxed = layoutOf(letters, TextFlow::ellipsis, 20.0, 0.0, "aaaa");
+  test::expect(boxed.glyphs.size() == 2 && boxed.glyphs.back().codePoint == kEllipsisCodePoint,
+               "without U+2026 and '.' the ellipsis draws the placeholder box");
+}
+
+void testWrapFlow() {
+  test::section("wrap flow: spaces, line feeds, long words, height clip");
+  GlyphAtlas atlas;
+  test::expect(loadUpload(atlas, makeUpload(withEllipsis(), 1.0)).ok, "atlas loads");
+  const double lineHeight = lineHeightOf(kBody);
+  const double tall = lineHeight * 10.0;
+
+  TextLayout words = layoutOf(atlas, TextFlow::wrap, 60.0, tall, "aaa aaa aaa");
+  test::expect(words.lines == 2 && !words.truncated, "words wrap at the space that overflows");
+  test::expect(words.glyphs.size() == 10, "the space at the break is not placed");
+  test::expectNear(words.glyphs[7].x, 0.0, 1e-9, "the second line starts at the box edge");
+  test::expectNear(words.glyphs[7].y, lineHeight, 1e-9, "the second line is one line height down");
+  test::expectNear(words.width, 58.0, 1e-9, "the widest line is 'aaa aaa'");
+  test::expectNear(words.height, 2.0 * lineHeight, 1e-9, "the height is two lines");
+
+  TextLayout feeds = layoutOf(atlas, TextFlow::wrap, 200.0, tall, "aa\n\nbb");
+  test::expect(feeds.lines == 3, "a line feed breaks and an empty line stays a line");
+  test::expectNear(feeds.glyphs.back().y, 2.0 * lineHeight, 1e-9, "the third line is two down");
+  TextLayout trailing = layoutOf(atlas, TextFlow::wrap, 200.0, tall, "aa\n");
+  test::expect(trailing.lines == 1, "a final line feed adds no empty line");
+
+  TextLayout longWord = layoutOf(atlas, TextFlow::wrap, 40.0, tall, "aaaaaaaaaa");
+  test::expect(longWord.lines == 3 && longWord.glyphs.size() == 10,
+               "an over-long word breaks between characters (4 + 4 + 2)");
+
+  TextLayout clipped = layoutOf(atlas, TextFlow::wrap, 30.0, 2.0 * lineHeight, "aaa aaa aaa aaa");
+  std::vector<std::uint32_t> expected = codes("aaaaa");
+  expected.push_back(kEllipsisCodePoint);
+  test::expect(clipped.lines == 2 && clipped.truncated, "lines beyond the box height are clipped");
+  test::expect(drawnCodes(clipped) == expected,
+               "the last visible line ends with U+2026 even when it would fit");
+  test::expect(clipped.width <= 30.0, "the clipped block stays inside the box width");
+
+  TextLayout shortBox = layoutOf(atlas, TextFlow::wrap, 100.0, lineHeight * 0.5, "aaa");
+  test::expect(shortBox.glyphs.empty() && shortBox.truncated,
+               "a box lower than one line draws nothing");
+  TextLayout exact = layoutOf(atlas, TextFlow::wrap, 100.0, lineHeight, "aaa");
+  test::expect(exact.lines == 1 && !exact.truncated, "a box of exactly one line holds one line");
+
+  TextLayout spaces = layoutOf(atlas, TextFlow::wrap, 100.0, tall, "   ");
+  test::expect(spaces.glyphs.empty() && spaces.lines == 0, "a space-only run draws nothing");
+  TextLayout doubled = layoutOf(atlas, TextFlow::wrap, 100.0, tall, "a  a");
+  test::expect(drawnCodes(doubled) == codes("a  a"), "spaces between words on one line stay");
+  TextLayout leading = layoutOf(atlas, TextFlow::wrap, 100.0, tall, "  a");
+  test::expect(drawnCodes(leading) == codes("a"), "spaces at the start of a line are dropped");
+  TextLayout empty = layoutOf(atlas, TextFlow::wrap, 100.0, tall, "");
+  test::expect(empty.glyphs.empty() && empty.lines == 0 && !empty.truncated, "an empty run is empty");
+  TextLayout noWidth = layoutOf(atlas, TextFlow::wrap, 0.0, tall, "a");
+  test::expect(noWidth.glyphs.empty() && noWidth.truncated, "a zero-width wrap box draws nothing");
+}
+
+void testLayoutDprAndValidation() {
+  test::section("layout is identical at DPR 1 and 2; invalid input is rejected");
+  GlyphAtlas one;
+  GlyphAtlas two;
+  test::expect(loadUpload(one, makeUpload(withEllipsis(), 1.0)).ok, "DPR 1 atlas loads");
+  test::expect(loadUpload(two, makeUpload(withEllipsis(), 2.0)).ok, "DPR 2 atlas loads");
+  const std::string_view text = "abc abc abcabcabc ab\nc";
+  for (const TextFlow flow : {TextFlow::ellipsis, TextFlow::wrap}) {
+    const TextLayout left = layoutOf(one, flow, 45.0, lineHeightOf(kTitle) * 3.0, text, kTitle);
+    const TextLayout right = layoutOf(two, flow, 45.0, lineHeightOf(kTitle) * 3.0, text, kTitle);
+    bool same = left.glyphs.size() == right.glyphs.size() && left.lines == right.lines;
+    for (std::size_t index = 0; same && index < left.glyphs.size(); ++index) {
+      same = left.glyphs[index].codePoint == right.glyphs[index].codePoint &&
+             std::abs(left.glyphs[index].x - right.glyphs[index].x) < 1e-6 &&
+             std::abs(left.glyphs[index].y - right.glyphs[index].y) < 1e-6;
+    }
+    test::expect(same, "placements in CSS px do not depend on the device pixel ratio");
+  }
+
+  const std::vector<std::uint32_t> points = codes("a");
+  TextLayout layout;
+  test::expect(!layoutText(one, 7, TextFlow::wrap, 10.0, 10.0, points.data(), 1, layout).ok,
+               "an unknown role is rejected");
+  test::expect(!layoutText(one, kBody, static_cast<TextFlow>(9), 10.0, 10.0, points.data(), 1,
+                           layout).ok,
+               "an unknown flow is rejected");
+  test::expect(!layoutText(one, kBody, TextFlow::wrap, -1.0, 10.0, points.data(), 1, layout).ok,
+               "a negative box is rejected");
+  test::expect(!layoutText(one, kBody, TextFlow::wrap, std::nan(""), 10.0, points.data(), 1,
+                           layout).ok,
+               "a NaN box is rejected");
+  test::expect(!layoutText(one, kBody, TextFlow::wrap, 10.0, 10.0, nullptr, 1, layout).ok,
+               "null code points are rejected");
+  GlyphAtlas notReady;
+  test::expect(layoutText(notReady, kBody, TextFlow::wrap, 10.0, 10.0, points.data(), 1, layout).ok &&
+                   layout.glyphs.empty(),
+               "without an atlas the layout is empty and succeeds");
+
+  TextRuns runs;
+  test::expect(!runs.add(0.0, 0.0, kBody, static_cast<TextFlow>(3), 1.0, 1.0, points.data(), 1).ok,
+               "a run with an unknown flow is rejected");
+  test::expect(!runs.add(0.0, 0.0, kBody, TextFlow::ellipsis, -2.0, 1.0, points.data(), 1).ok,
+               "a run with a negative box is rejected");
+  test::expect(runs.runs().empty() && runs.glyphTotal() == 0, "rejected runs leave the store empty");
+  test::expect(runs.add(0.0, 0.0, kBody, TextFlow::ellipsis, 10.0, 0.0, points.data(), 1).ok,
+               "a box run is accepted");
+  test::expect(runs.glyphTotal() == 1 + air::engine::kEllipsisGlyphReserve,
+               "a box run reserves the ellipsis glyphs");
+}
+
+void testBoxRunsInGlyphBuffer() {
+  test::section("box runs share the glyph buffer; line runs keep their bytes; cache refresh");
+  GlyphAtlas atlas;
+  test::expect(loadUpload(atlas, makeUpload(withEllipsis(), 1.0)).ok, "atlas loads");
+  Camera camera;
+  const std::vector<std::uint32_t> points = codes("aaaaaaaaaa");
+
+  TextRuns legacy;
+  TextRuns flowed;
+  test::expect(legacy.add(16.0, 32.0, kTitle, points.data(), 10).ok, "line run (P4-08 call)");
+  test::expect(flowed.add(16.0, 32.0, kTitle, TextFlow::line, 0.0, 0.0, points.data(), 10).ok,
+               "line run through the box call");
+  GlyphBuffer left;
+  GlyphBuffer right;
+  test::expect(left.build(legacy, atlas, camera, 800.0, 600.0).ok &&
+                   right.build(flowed, atlas, camera, 800.0, 600.0).ok,
+               "both line buffers build");
+  test::expect(left.byteSize() == right.byteSize() &&
+                   std::memcmp(left.bytes(), right.bytes(), left.byteSize()) == 0,
+               "the line flow keeps the P4-08 bytes");
+
+  TextRuns boxed;
+  test::expect(boxed.add(16.0, 32.0, kTitle, TextFlow::ellipsis, 40.0, 0.0, points.data(), 10).ok,
+               "ellipsis run added");
+  GlyphBuffer buffer;
+  test::expect(buffer.build(boxed, atlas, camera, 800.0, 600.0).ok, "ellipsis buffer builds");
+  test::expect(buffer.size() == 4, "three letters and the ellipsis become four quads");
+  const std::vector<std::uint8_t> first(buffer.bytes(), buffer.bytes() + buffer.byteSize());
+  test::expect(buffer.build(boxed, atlas, camera, 800.0, 600.0).ok, "rebuild succeeds");
+  test::expect(std::vector<std::uint8_t>(buffer.bytes(), buffer.bytes() + buffer.byteSize()) == first,
+               "identical input gives byte-identical glyph records");
+  test::expect(boxed.runs().front().layoutGeneration == atlas.generation(),
+               "the run caches its layout for this atlas generation");
+
+  Camera zoomed;
+  test::expect(zoomed.setZoom(2.0).ok, "zoom 2 is accepted");
+  test::expect(buffer.build(boxed, atlas, zoomed, 800.0, 600.0).ok && buffer.size() == 4,
+               "zoom maps the same layout: the line break never changes with zoom");
+
+  GlyphAtlas replacement;
+  test::expect(loadUpload(replacement, makeUpload(ascii(), 1.0)).ok, "replacement atlas loads");
+  // A second atlas object starts its own generation sequence; load it twice so
+  // its generation differs from the cached one.
+  test::expect(loadUpload(replacement, makeUpload(ascii(), 1.0)).ok, "replacement reloads");
+  test::expect(buffer.build(boxed, replacement, camera, 800.0, 600.0).ok, "rebuild on the new atlas");
+  test::expect(boxed.runs().front().layout.glyphs.size() == 4 &&
+                   boxed.runs().front().layout.glyphs.back().codePoint == '.',
+               "a replaced atlas re-lays the run: three full stops instead of U+2026");
+}
+
 int main() {
   testStylesFromTokens();
   testPlanFitsAtEachRatio();
@@ -504,6 +748,10 @@ int main() {
   testRunsValidation();
   testGlyphBuffer();
   testNativeStubs();
+  testEllipsisFlow();
+  testWrapFlow();
+  testLayoutDprAndValidation();
+  testBoxRunsInGlyphBuffer();
   if (air::engine::test::failures != 0) {
     std::fprintf(stderr, "%d text check(s) failed\n", air::engine::test::failures);
     return 1;

@@ -1,0 +1,17 @@
+$ bash packages/engine/tools/build-wasm.sh && node packages/engine/tools/wasm-smoke.mjs
+[exit 0]
+
+build-wasm: Emscripten from Homebrew at /opt/homebrew/opt/emscripten
+-- Configuring done (0.5s)
+-- Generating done (0.0s)
+-- Build files have been written to: /Users/rasulatashev/Desktop/KI Projekte/Project air-P4-09/packages/engine/build-wasm
+[ 80%] Built target air_engine_objects
+[100%] Built target air_engine
+[100%] Built target engine
+wasm-smoke: engine_create without WebGL2 -> 0, error: could not create a WebGL2 context on the canvas
+wasm-smoke: text plan fallback at DPR 3 / 512 px -> scale 1, 256x512
+wasm-smoke: engine_text_load_atlas before create -> 0, error: engine_create must be called before engine_text_load_atlas
+wasm-smoke: engine_load_rectangles before create -> 0, error: engine_create must be called before engine_load_rectangles
+wasm-smoke: engine_text_add_box_run before create -> 0, error: engine_create must be called before engine_text_add_box_run
+wasm-smoke: OK
+emcmake: cmake -S '/Users/rasulatashev/Desktop/KI Projekte/Project air-P4-09/packages/engine' -B '/Users/rasulatashev/Desktop/KI Projekte/Project air-P4-09/packages/engine/build-wasm' -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=/opt/homebrew/Cellar/emscripten/6.0.13/libexec/cmake/Modules/Platform/Emscripten.cmake -DCMAKE_CROSSCOMPILING_EMULATOR=/opt/homebrew/opt/node/bin/node in directory /Users/rasulatashev/Desktop/KI Projekte/Project air-P4-09

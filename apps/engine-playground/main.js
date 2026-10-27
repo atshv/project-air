@@ -30,6 +30,11 @@
 //                                  ?view=200,64,2 to look at it. Off by default,
 //                                  so the scenes, baselines and perf runs stay
 //                                  unchanged.
+//   ?text=layout                   P4-09 layout demo: a title that fits, a title
+//                                  cut with an ellipsis, a zone name in a wider
+//                                  box and a wrapped preview clipped to three
+//                                  lines; combine with ?scene=stress&count=0
+//                                  &view=272,112,2 (the visual scene does).
 //
 // Interaction: pointer drag pans, wheel or two-pointer pinch zooms around the
 // pointer, and `f` ("show all", L19) fits the board through the engine's fit
@@ -133,6 +138,8 @@ const perfQuery = query.get("perf");
 const perfRequested = perfQuery === "engine-core" && !benchmarkRequested;
 const verifyCullingRequested = perfRequested && query.get("verifyCulling") === "1";
 const textDemoRequested = query.get("text") === "1" && !benchmarkRequested && !perfRequested;
+const textLayoutRequested =
+  query.get("text") === "layout" && !benchmarkRequested && !perfRequested;
 const requestedCount = clampInteger(parseInteger(benchQuery, COLUMNS * ROWS), 0, 1000000);
 const warmupFrames = clampInteger(parseInteger(query.get("warmup"), 120), 0, 10000);
 const sampleFrames = clampInteger(parseInteger(query.get("samples"), 600), 1, 10000);
@@ -1034,6 +1041,54 @@ async function start() {
       state.textAtlas = engine.buildTextAtlas();
       engine.addTextRun({ x: 32, y: 32, role: "title", text: "Card title: caf\u00e9, na\u00efve" });
       engine.addTextRun({ x: 32, y: 56, role: "body", text: "Body preview 0123456789 \u4e2d" });
+      onDemand.request();
+    }
+
+    if (textLayoutRequested) {
+      // Sample board content, not UI text. Boxes are the card width (176 px), a
+      // zone header width (240 px) and a three-line preview block; the layout runs
+      // once inside the engine, so zoom never changes a line break.
+      state.textAtlas = engine.buildTextAtlas();
+      engine.addTextRun({
+        x: 32,
+        y: 32,
+        role: "title",
+        flow: "ellipsis",
+        box: { width: 176, height: 0 },
+        text: "Moodboard",
+      });
+      engine.addTextRun({
+        x: 32,
+        y: 64,
+        role: "title",
+        flow: "ellipsis",
+        box: { width: 176, height: 0 },
+        text: "Ausflug an den Walensee mit \u00dcbernachtung",
+      });
+      engine.addTextRun({
+        x: 256,
+        y: 32,
+        role: "title",
+        flow: "ellipsis",
+        box: { width: 240, height: 0 },
+        text: "Sommer am Walensee \u2014 Fotos und Notizen f\u00fcr die Planung",
+      });
+      engine.addTextRun({
+        x: 32,
+        y: 104,
+        role: "body",
+        flow: "wrap",
+        box: { width: 240, height: 60 },
+        text: "Treffpunkt am Bahnhof um neun Uhr.\nDanach gemeinsam zum Ufer, Picknick mitbringen, bei Regen ins Caf\u00e9 am Hafen und sp\u00e4ter zur\u00fcck.",
+      });
+      engine.addTextRun({
+        x: 288,
+        y: 104,
+        role: "body",
+        flow: "wrap",
+        box: { width: 176, height: 120 },
+        text: "Kurzer Text passt.",
+      });
       onDemand.request();
     }
 

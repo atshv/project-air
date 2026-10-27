@@ -61,11 +61,34 @@ export interface EngineViewport {
  * A world-anchored line of text: (x, y) is the top-left of the line box in world
  * px. Glyphs are placed by advance only (P4-08); layout and ellipsis are P4-09.
  */
+/**
+ * Layout of a run (P4-09): `line` places glyphs by advance only; `ellipsis`
+ * keeps one line and cuts it to the box width with U+2026; `wrap` breaks words
+ * inside the box width, clips lines beyond its height and ends the last visible
+ * line with U+2026. Ordinals match TextFlow in text.h.
+ */
+export type TextFlowName = "line" | "ellipsis" | "wrap";
+
+const TEXT_FLOW_ORDINALS: Readonly<Record<TextFlowName, number>> = {
+  line: 0,
+  ellipsis: 1,
+  wrap: 2,
+};
+
+/** Layout box of a run in world (CSS) px; required for `ellipsis` and `wrap`. */
+export interface EngineTextBox {
+  readonly width: number;
+  /** Ignored by `ellipsis`; the visible lines of `wrap` are floor(height / line height). */
+  readonly height: number;
+}
+
 export interface EngineTextRun {
   readonly x: number;
   readonly y: number;
   readonly text: string;
   readonly role?: TextRoleName;
+  readonly flow?: TextFlowName;
+  readonly box?: EngineTextBox;
 }
 
 /** Result of `buildTextAtlas`: the uploaded atlas size and raster scale. */
@@ -125,7 +148,11 @@ export interface Engine {
    * Once built, `resize` rebuilds it whenever the device pixel ratio changes.
    */
   buildTextAtlas(): EngineTextAtlas;
-  /** Adds a glyph run; a code point outside the atlas draws the placeholder. */
+  /**
+   * Adds a glyph run; a code point outside the atlas draws the placeholder. A
+   * `flow` other than `line` needs a `box` and is laid out once per atlas build
+   * inside the engine (no per-glyph call).
+   */
   addTextRun(run: EngineTextRun): void;
   clearTextRuns(): void;
   /** Glyph quads the current runs, atlas, camera and viewport draw. */
@@ -508,11 +535,32 @@ class WebGlEngine implements Engine {
     }
     try {
       module.HEAPU32.set(codePoints, pointer / Uint32Array.BYTES_PER_ELEMENT);
-      this.#requireOk(
-        "engine_text_add_run",
-        ["number", "number", "number", "number", "number"],
-        [run.x, run.y, role, pointer, codePoints.length],
-      );
+      const flow = run.flow ?? "line";
+      if (flow === "line" && run.box === undefined) {
+        this.#requireOk(
+          "engine_text_add_run",
+          ["number", "number", "number", "number", "number"],
+          [run.x, run.y, role, pointer, codePoints.length],
+        );
+      } else {
+        if (run.box === undefined) {
+          throw new EngineError(`addTextRun: the ${flow} flow needs a box`);
+        }
+        this.#requireOk(
+          "engine_text_add_box_run",
+          ["number", "number", "number", "number", "number", "number", "number", "number"],
+          [
+            run.x,
+            run.y,
+            role,
+            TEXT_FLOW_ORDINALS[flow],
+            run.box.width,
+            run.box.height,
+            pointer,
+            codePoints.length,
+          ],
+        );
+      }
     } finally {
       module._free(pointer);
     }

@@ -65,9 +65,22 @@ const CELL_PADDING = 1;
 /** kPlaceholderCodePoint in text.h. */
 const PLACEHOLDER_CODE_POINT = 0;
 
+/** kEllipsisCodePoint in text.h: the single-glyph ellipsis of the layout flows. */
+export const ELLIPSIS_CODE_POINT = 0x2026;
+
 /**
- * Default glyph set: printable ASCII and the Latin-1 supplement (German umlauts
- * and sharp s). Any other code point draws the role's placeholder box.
+ * Typographic punctuation German and English board text uses (P4-09): en and em
+ * dash, single and double quotes including the German low-9 quotes, the bullet
+ * and the ellipsis.
+ */
+const TYPOGRAPHIC_CODE_POINTS = [
+  0x2013, 0x2014, 0x2018, 0x2019, 0x201a, 0x201c, 0x201d, 0x201e, 0x2022, ELLIPSIS_CODE_POINT,
+];
+
+/**
+ * Default glyph set: printable ASCII, the Latin-1 supplement (German umlauts
+ * and sharp s) and the typographic punctuation above, including U+2026 for the
+ * layout ellipsis (P4-09). Any other code point draws the role's placeholder box.
  */
 export function defaultCodePoints(): number[] {
   const codePoints: number[] = [];
@@ -77,6 +90,7 @@ export function defaultCodePoints(): number[] {
   for (let codePoint = 0xa0; codePoint <= 0xff; codePoint += 1) {
     codePoints.push(codePoint);
   }
+  codePoints.push(...TYPOGRAPHIC_CODE_POINTS);
   return codePoints;
 }
 

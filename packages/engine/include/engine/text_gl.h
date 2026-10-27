@@ -44,6 +44,14 @@ AIR_ENGINE_RENDER_GL_API int engine_text_load_atlas(int width, int height, doubl
 AIR_ENGINE_RENDER_GL_API int engine_text_add_run(double x, double y, int role,
                                                  const unsigned int* code_points, int count);
 
+// Adds a run with a layout flow (0 = line, 1 = ellipsis, 2 = wrap; P4-09) inside a
+// box of `width` x `height` CSS px anchored at the top-left (x, y). The layout is
+// computed from the atlas once per atlas build. Returns 1 on success, 0 on
+// failure (unknown role or flow, non-finite or negative box, limits).
+AIR_ENGINE_RENDER_GL_API int engine_text_add_box_run(double x, double y, int role, int flow,
+                                                     double width, double height,
+                                                     const unsigned int* code_points, int count);
+
 // Removes every glyph run. Returns 1 on success, 0 before engine_create.
 AIR_ENGINE_RENDER_GL_API int engine_text_clear_runs();
 

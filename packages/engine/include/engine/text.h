@@ -157,13 +157,68 @@ static_assert(sizeof(GlyphInstance) == 32, "glyph instance layout is the WebGL2 
 inline constexpr std::uint32_t kMaxTextRuns = 4096;
 inline constexpr std::uint32_t kMaxGlyphInstances = 65536;
 
-// A world-anchored line of code points: (x, y) is the top-left of the line box.
-// Glyphs are placed by advance only; wrapping and ellipsis belong to P4-09.
+// Layout (P4-09, L02) ---------------------------------------------------------
+
+// How a run is laid out inside its box. Ordinals cross the C ABI.
+//   line     — one line placed by advance only, no box (the P4-08 behaviour).
+//   ellipsis — one line cut to the box width and ended with U+2026 (titles).
+//   wrap     — greedy word wrap inside the box width, lines beyond the box
+//              height clipped, the last visible line ended with U+2026.
+enum class TextFlow : std::uint32_t {
+  line = 0,
+  ellipsis = 1,
+  wrap = 2,
+};
+inline constexpr std::uint32_t kTextFlowCount = 3;
+
+inline constexpr std::uint32_t kEllipsisCodePoint = 0x2026;
+inline constexpr std::uint32_t kFullStopCodePoint = 0x2E;
+inline constexpr std::uint32_t kSpaceCodePoint = 0x20;
+inline constexpr std::uint32_t kLineFeedCodePoint = 0x0A;
+// Glyphs an ellipsis may add beyond a run's code points: three full stops when
+// the atlas has no U+2026.
+inline constexpr std::uint32_t kEllipsisGlyphReserve = 3;
+
+// One laid-out glyph: offsets in CSS px from the run anchor; `x` is the pen
+// position on its line and `y` the top of its line box.
+struct GlyphPlacement {
+  std::uint32_t codePoint{0};
+  double x{0.0};
+  double y{0.0};
+};
+
+struct TextLayout {
+  std::vector<GlyphPlacement> glyphs;
+  std::uint32_t lines{0};   // lines that draw at least one glyph slot
+  bool truncated{false};    // content was cut (ellipsis or clipped lines)
+  double width{0.0};        // widest laid-out line, CSS px
+  double height{0.0};       // lines times the role's line height, CSS px
+};
+
+// Lays out code points of one role inside a box (CSS px) from the atlas
+// metrics, so the result is independent of the device pixel ratio and of the
+// zoom. Line height is the token font size times the token line height. A box
+// width of 0 draws nothing; trailing spaces of a wrapped line are not placed.
+// Without a ready atlas the layout is empty and the call succeeds. Fails for an
+// unknown role or flow, a non-finite or negative box, or null code points.
+Status layoutText(const GlyphAtlas& atlas, std::uint32_t role, TextFlow flow, double boxWidth,
+                  double boxHeight, const std::uint32_t* codePoints, std::uint32_t count,
+                  TextLayout& out);
+
+// A world-anchored run of code points: (x, y) is the top-left of the first line
+// box. `line` runs are placed by advance only; `ellipsis`/`wrap` runs keep a
+// layout that is recomputed only when the atlas generation changes (the cache
+// is mutable because the glyph buffer reads runs as const).
 struct TextRun {
   double x{0.0};
   double y{0.0};
   std::uint32_t role{0};
   std::vector<std::uint32_t> codePoints;
+  TextFlow flow{TextFlow::line};
+  double boxWidth{0.0};
+  double boxHeight{0.0};
+  mutable TextLayout layout;
+  mutable std::uint64_t layoutGeneration{0};
 };
 
 class TextRuns {
@@ -175,6 +230,11 @@ class TextRuns {
   // nothing.
   Status add(double x, double y, std::uint32_t role, const std::uint32_t* codePoints,
              std::uint32_t count);
+  // A run with a layout flow and a box (CSS px). Validates the flow and a
+  // finite, non-negative box on top of the checks above; an `ellipsis`/`wrap`
+  // run reserves kEllipsisGlyphReserve extra glyphs against the glyph limit.
+  Status add(double x, double y, std::uint32_t role, TextFlow flow, double boxWidth,
+             double boxHeight, const std::uint32_t* codePoints, std::uint32_t count);
   void clear();
   const std::vector<TextRun>& runs() const { return runs_; }
   std::size_t glyphTotal() const { return glyphTotal_; }

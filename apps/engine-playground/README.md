@@ -40,6 +40,9 @@ Emscripten module through an import map.
   brings the object to the front of its layer with exactly one `reorder` operation through the
   gesture seam, the keys persist in `localStorage` so a reload keeps the order, `&front=<scene id>`
   applies one front gesture at start and `&store=off` ignores the storage (the visual gate uses it).
+- `?text=layout` — the P4-09 text layout demo (use with `?scene=stress&count=0&view=272,112,1`): a
+  title that fits, a title cut with an ellipsis, a zone-name box and a wrapped preview clipped to
+  three lines, laid out inside the engine; the `text-layout` visual scene.
 - Pointer drag pans; wheel or two-pointer pinch zooms around the pointer; `f` runs the L19 fit action
   ("show all": at most 100 %, L02 top padding, dot grid at and above zoom 0.5). The scene never
   changes. The HUD shows objects, visible instances, the rendered-frame counter and the backend.
