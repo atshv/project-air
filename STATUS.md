@@ -40,9 +40,9 @@
 
 ### Stage 5 — `engine-core` Engine core
 
-- State: exit gates missing: visual
+- State: exit gates missing: visual-final, perf-final
 - Owner decision: `continue`
-- Exit gates: `cpp-unit`, `visual` (missing record), `perf`
+- Exit gates: `cpp-unit`, `visual-final` (missing record), `perf-final` (missing record)
 - Exit criteria: 10,000 objects at 60 fps in the playground.; All engine entries of the canvas work orders done; reference images green.
 - Tasks: P4-01, P4-02, P4-03, P4-04, P4-05, P4-06, P4-07, P4-08, P4-09, P4-10, P4-11, P4-12, P4-13, P4-14, P4-15, P4-16, P4-17, P4-18, P4-19, P4-20, P4-21, P4-22, P4-23, P4-24, P4-25, P4-26, P4-27, P4-28
 
@@ -217,6 +217,13 @@
 - [ ] `P4-26` Zones as containers II: platform migration and containment (L08) — status: `pending` — owner: —
 - [ ] `P4-27` Zones as containers II: engine membership and zone move (L08) — status: `pending` — owner: —
 - [ ] `P4-28` L01 final proof, two-backend reference images and stage showcase — status: `pending` — owner: —
+
+<!-- polier:claims -->
+## Claims
+
+- `P4-04` in progress by dsh since 2026-10-27T18:51:22+00:00 — worktree: /private/tmp/air-P4-04 · slot 1
+
+<!-- /polier:claims -->
 
 ## Decisions
 

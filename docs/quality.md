@@ -74,12 +74,14 @@ task from the project's manifests; until then the gate cannot pass.
 | `wasm-size` | `node packages/engine/tools/wasm-size.mjs` | exit 0, gzip size <= 307200 bytes (300 KiB); P2-04 records the measured size |
 | `perf-baseline` | `node packages/engine/test/perf/run-perf.mjs` | exit 0, p95 frame time <= 16.7 ms at 50,000 rectangles, real GPU renderer recorded, JSON evidence written (exclusive; see `docs/gates/perf.md`) |
 | `perf` | `node packages/engine/test/perf/run-perf.mjs --scenario engine-core` | exit 0, 10,000 objects p95 <= 16.7 ms with continuous pan/zoom and no frame interval above 16.7 ms, 500 cards + 50 zones final proof < 50 ms with the culling proof (>= 50 sampled cameras, 0 mismatches), p50/p95/p99/mean within basis + 10 % while the maximum frame duration is a 50 ms-bounded observation, real GPU recorded (exclusive; see `docs/gates/perf.md`) |
+| `perf-final` | `node packages/engine/test/perf/run-perf.mjs --scenario engine-core` | exit 0, 10,000 objects p95 <= 16.7 ms with continuous pan/zoom and no frame interval above 16.7 ms, 500 cards + 50 zones final proof < 50 ms with the culling proof (>= 50 sampled cameras, 0 mismatches), p50/p95/p99/mean within basis + 10 % while the maximum frame duration is a 50 ms-bounded observation, real GPU recorded; the stage-exit final proof recorded by P4-28 against the committed basis (exclusive; see `docs/gates/perf.md`) |
 | `db-migrate` | `node services/platform/dist/db/migrate.js` | exit 0, migrations applied to the slot database |
 | `api-tests` | `node --test services/platform/test/api/*.test.mjs` | exit 0, every route has an allow and a deny case |
 | `rls-tests` | `node --test services/platform/test/rls/*.test.mjs` | exit 0, a second account sees nothing (exclusive) |
 | `crdt-convergence` | `[VERIFY: stage realtime]` | exit 0, 10,000 rounds without divergence |
 | `load` | see `docs/gates/load.md` `[VERIFY: stage realtime]` | exit 0 (exclusive) |
 | `visual` | `node packages/engine/test/visual/run-visual.mjs` | exit 0, every reference image at 1440x900 and 390x844 within tolerance for WebGL2 and WebGPU (see `docs/gates/visual-diff.md`) |
+| `visual-final` | `node packages/engine/test/visual/run-visual.mjs` | exit 0, the stage-exit final reference-image proof recorded by P4-28: every reference image at 1440x900 and 390x844 within tolerance for WebGL2 and WebGPU (see `docs/gates/visual-diff.md`) |
 | `e2e` | see `docs/gates/playwright.md` `[VERIFY: stage web-app]` | exit 0 (exclusive) |
 | `import-tests` | `[VERIFY: stage value]` | exit 0 |
 
