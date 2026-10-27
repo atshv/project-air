@@ -4862,7 +4862,7 @@
       "satisfies": [
         "D3"
       ],
-      "status": "pending",
+      "status": "in_progress",
       "depends_on": [
         "P0-31"
       ],
@@ -4901,7 +4901,7 @@
         "changelog-entry"
       ],
       "branch": "task/P0-32",
-      "worktree": null,
+      "worktree": "../Project air-P0-32",
       "evidence": [],
       "scope_write_forbidden": [
         "reference/"

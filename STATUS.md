@@ -128,10 +128,6 @@
   - P4-04: Closed P4-04: dependency-free visual gate, 8 committed baselines (4 scenes x 2 viewports, WebGL2), 0 differing pixels on ANGLE Metal M2; fail-closed renderer and exact viewports.
   - P4-04: Baselines regenerated once after the OS move Darwin 25.5.0 -> 27.2.0 (text AA only, geometry unchanged), documented under 'Baseline history'; --update is a review action, never a pass.
   - P4-04: Deterministic ?view= camera hook; gate log prints URL + camera; board-check + visual green. Stage-exit final gates are perf-final/visual-final, run by P4-28.
-- `P0-32` Zone titles: named, editable zone headers in the live demo
-  - P0-31: Closed P0-31: live release preview (dashed landing slot, other item makes room, frame shrinks on pull-out, dimmed emptying frame, ghost frame for grouping); release commits.
-  - P0-31: One calm motion (300 ms ease-out, no overshoot), FLIP frame resize (transform/opacity only), placement against drag-start positions, last touched item on top.
-  - P0-31: Proportional resize re-fit, 480 px desktop surface, frame on --layer-zones; masthead + ?v=P0-31; gates board-check/design-check/changelog-entry; 9 screenshots + log.
 
 ## Done
 
@@ -188,6 +184,7 @@
 
 - [ ] `P4-07` Canvas feel: fit, dot grid and idle drawing (L19) — status: `in_progress` — owner: lead
 - [ ] `P4-25` Contract 0.2.0: zone parent reference and reorder (z) operation (L08/L13) — status: `in_progress` — owner: lead
+- [ ] `P0-32` Zone titles: named, editable zone headers in the live demo — status: `in_progress` — owner: —
 
 ## Blocked / failed
 
@@ -220,11 +217,11 @@
 - [ ] `P4-26` Zones as containers II: platform migration and containment (L08) — status: `pending` — owner: —
 - [ ] `P4-27` Zones as containers II: engine membership and zone move (L08) — status: `pending` — owner: —
 - [ ] `P4-28` L01 final proof, two-backend reference images and stage showcase — status: `pending` — owner: —
-- [ ] `P0-32` Zone titles: named, editable zone headers in the live demo — status: `pending` — owner: —
 
 <!-- polier:claims -->
 ## Claims
 
+- `P0-32` in progress by dsh since 2026-10-27T19:52:47+00:00 — worktree: /Users/rasulatashev/Desktop/KI Projekte/Project air-P0-32 · slot 3
 - `P4-07` in progress by dsh since 2026-10-27T19:45:04+00:00 — worktree: /private/tmp/air-P4-07 · slot 1
 
 <!-- /polier:claims -->
