@@ -3831,7 +3831,8 @@
       "scope_write": [
         "packages/engine/",
         "apps/engine-playground/",
-        ".changes/"
+        ".changes/",
+        "docs/engine.md"
       ],
       "scope_read": [
         "ARCHITECTURE.md",
@@ -4208,7 +4209,8 @@
       "scope_write": [
         "packages/engine/",
         "apps/engine-playground/",
-        ".changes/"
+        ".changes/",
+        "docs/engine.md"
       ],
       "scope_read": [
         "ARCHITECTURE.md",
