@@ -4762,6 +4762,58 @@
         "Less magnetic: 1:1 pointer tracking, no mid-drag dock/group, drop hint, commit on release (detach/dock/reorder/group); collapse/resize refit kept; edge stays A/B only; reduced motion instant.",
         "Controls smaller (32x96, 28px painted, 32x32 hit, 12px glyphs); masthead P0-30 EN+DE; ?v=P0-30; gates board-check/design-check/changelog-entry; evidence horizontal/vertical/swapped/controls."
       ]
+    },
+    {
+      "id": "P0-31",
+      "title": "Refined live demo: smooth merge/split and calm motion",
+      "goal": "The whole live demo is reworked: pulling the zone items apart and together feels smooth and predictable, every settle uses one calm motion curve without overshoot or jumps, the zone grows/shrinks without layout animation, and drag feedback (lift, drop hint, placeholder) is clear.",
+      "why": "The owner wants the live demo refined as a whole, especially merging/splitting and the animations; the preview is not bound to the brief word budgets.",
+      "satisfies": [
+        "D3"
+      ],
+      "status": "pending",
+      "depends_on": [
+        "P0-30"
+      ],
+      "complexity": 6,
+      "stage": "foundation",
+      "parallel_group": null,
+      "owner": null,
+      "round": 0,
+      "scope_write": [
+        "apps/web/preview/",
+        ".changes/"
+      ],
+      "scope_read": [
+        "ARCHITECTURE.md",
+        "AGENTS.md",
+        "STATUS.md",
+        "docs/module-map.md",
+        "docs/quality.md",
+        "docs/design-rules.md",
+        "docs/i18n/style-de.md",
+        "docs/i18n/glossary.md",
+        "apps/web/preview/",
+        "packages/ui-kit/tokens.css",
+        "packages/ui-kit/layers.ts"
+      ],
+      "acceptance": [
+        "A1",
+        "A2",
+        "A3",
+        "A4"
+      ],
+      "gates": [
+        "board-check",
+        "design-check",
+        "changelog-entry"
+      ],
+      "branch": "task/P0-31",
+      "worktree": null,
+      "evidence": [],
+      "scope_write_forbidden": [
+        "reference/"
+      ]
     }
   ],
   "decisions": [
