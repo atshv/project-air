@@ -4862,7 +4862,7 @@
       "satisfies": [
         "D3"
       ],
-      "status": "in_progress",
+      "status": "done",
       "depends_on": [
         "P0-31"
       ],
@@ -4901,10 +4901,19 @@
         "changelog-entry"
       ],
       "branch": "task/P0-32",
-      "worktree": "../Project air-P0-32",
-      "evidence": [],
+      "worktree": null,
+      "evidence": [
+        "reviews/evidence/P0-32-board-check-20261027T195757Z.json",
+        "reviews/evidence/P0-32-changelog-entry-20261027T195801Z.json",
+        "reviews/evidence/P0-32-design-check-20261027T195801Z.json"
+      ],
       "scope_write_forbidden": [
         "reference/"
+      ],
+      "handoff": [
+        "Closed P0-32: zones show their name in a 40 px header (content 40 + 16 px below), title outside the FLIP frame so it never stretches; follows the frame's settle.",
+        "Inline rename: click selects all, Enter/blur commits, Escape restores, empty -> default, 40-char cap; new zones from grouping start as New zone; defaults follow DE/EN.",
+        "Masthead + ?v=P0-32; gates board-check/design-check/changelog-entry; 7 screenshots + log; names live in page memory only."
       ]
     }
   ],

@@ -1,0 +1,48 @@
+# P0-32 — zone titles: evidence
+
+- Date: 2026-10-27 (Europe/Zurich)
+- Worktree: `/Users/rasulatashev/Desktop/KI Projekte/Project air-P0-32` (branch `task/P0-32`, slot 3, web port 4300)
+- Changed: `apps/web/preview/index.html`, `preview.css`, `preview.js`, `README.md`, `locales/en.json`, `locales/de.json`, `.changes/P0-32-zone-titles.md`, `reviews/evidence/`
+
+## Server and HTTP
+
+```sh
+cd "/Users/rasulatashev/Desktop/KI Projekte/Project air-P0-32"
+python3 -m http.server 4300 --bind 127.0.0.1
+```
+
+All asset URLs carry `?v=P0-32`; HTTP 200 and HTTP size = disk size: index.html 71220, preview.css 46687, preview.js 64690, locales/en.json 21101, locales/de.json 22812.
+
+## Interaction run (CDP, real mouse and keyboard input)
+
+Same out-of-repo helper as P0-31 (Chrome for Testing chromium-1248, headless): `Input.dispatchMouseEvent` clicks the title, `Input.insertText` types, `Input.dispatchKeyEvent` presses Enter/Escape; `Runtime.evaluate` reads state and clicks the DE/EN switch.
+
+```
+start: title="Lake trip" frame=solid vertical 430,115.7,274,315 slot=off notepad=docked@447,172.7 p0.00 window=docked@447,273.7 p0.00 edges=1 status=""
+header: frame top 240.7, first item top 297.7 (+57.0 px)
+title style: 13px / 600 / 24px / ellipsis / contenteditable=plaintext-only
+after click: selection="Lake trip" active=true
+enter: title="Summer at Lake Walen" frame=solid vertical 430,115.7,274,315 slot=off notepad=docked@447,172.7 p0.00 window=docked@447,273.7 p0.00 edges=1 status="Zone renamed to “Summer at Lake Walen”."
+escape: title="Summer at Lake Walen" frame=solid vertical 430,115.7,274,315 slot=off notepad=docked@447,172.7 p0.00 window=docked@447,273.7 p0.00 edges=1 status="Zone renamed to “Summer at Lake Walen”."
+typed length: 40
+long name: title="A very long zone name that keeps going a" frame=solid vertical 430,115.7,274,315 slot=off notepad=docked@447,172.7 p0.00 window=docked@447,273.7 p0.00 edges=1 status="Zone renamed to “A very long zone name that keeps going a”." scrollWidth>clientWidth=true
+empty -> default: title="Lake trip" frame=solid vertical 430,115.7,274,315 slot=off notepad=docked@447,172.7 p0.00 window=docked@447,273.7 p0.00 edges=1 status="Zone name reset to “Lake trip”."
+de (default follows): title="Ausflug an den See" frame=solid vertical 430,115.7,274,315 slot=off notepad=docked@447,172.7 p0.00 window=docked@447,273.7 p0.00 edges=1 status=""
+en (custom stays): title="Sommer am Walensee" frame=solid vertical 430,115.7,274,315 slot=off notepad=docked@447,172.7 p0.00 window=docked@447,273.7 p0.00 edges=1 status=""
+pull-out mid-drag: title="Sommer am Walensee" frame=solid vertical 430,115.7,274,163 slot=off notepad=docked@447,172.7 p0.00 window=docked@827,293.7 p1.00 dragging edges=1 status="" title-y=124.7px
+both out: title="Sommer am Walensee"/collapsed frame=emptying/collapsed vertical 430,115.7,274,163 slot=off notepad=detached@64,256 p1.00 window=detached@832,288 p1.00 edges=1 status="Zone ausgeblendet — zieh die beiden Elemente zusammen, um eine neue Zone zu bilden."
+group ghost: title="Neue Zone"/ghost frame=ghost vertical 815,130,274,315 slot=on notepad=detached@812,243.7 p1.00 dragging window=detached@832,288 p1.00 edges=1 status="Zone ausgeblendet — zieh die beiden Elemente zusammen, um eine neue Zone zu bilden."
+grouped: title="Neue Zone" frame=solid vertical 815,130,274,315 slot=off notepad=docked@832,187 p0.00 window=docked@832,288 p0.00 edges=1 status="Elemente untereinander zu einer neuen Zone gruppiert."
+mobile: title="Ausflug an den See" frame=solid vertical 41,248.7,274,315 slot=off notepad=docked@58,305.7 p0.00 window=docked@58,406.7 p0.00 edges=1 status="" overflow=0
+reduced motion title transition: 0s
+```
+
+Reading: the first item starts 57 px below the frame top (1 px border + 40 px header + 16 px); clicking selects the whole name; Enter commits and announces, Escape restores, typing is capped at 40 characters with an ellipsis at rest, an empty name returns to the default; the default follows DE/EN while a typed name stays; the title follows the frame when it shrinks, fades with the collapse, the ghost already shows "Neue Zone" and the grouped zone keeps it; no overflow at 390 px; reduced motion: title transition 0s; one edge element throughout.
+
+## Screenshots
+
+`P0-32-named.png`, `P0-32-editing.png`, `P0-32-renamed.png`, `P0-32-long-name.png`, `P0-32-ghost.png`, `P0-32-new-zone.png` (1440×900), `P0-32-mobile.png` (390×844).
+
+## Checks
+
+design-check exit 0, language-check OK, changelog-entry OK, `node --check preview.js` OK, en/de 271 identical keys.

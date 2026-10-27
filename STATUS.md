@@ -179,12 +179,12 @@
 - [x] `P0-29` Zone collapse, re-grouping and smaller zoom controls — status: `done` — owner: —
 - [x] `P0-30` Flexible zone layout, less magnetic drag and smaller controls — status: `done` — owner: —
 - [x] `P0-31` Refined live demo: smooth merge/split and calm motion — status: `done` — owner: —
+- [x] `P0-32` Zone titles: named, editable zone headers in the live demo — status: `done` — owner: —
 
 ## In progress
 
 - [ ] `P4-07` Canvas feel: fit, dot grid and idle drawing (L19) — status: `in_progress` — owner: lead
 - [ ] `P4-25` Contract 0.2.0: zone parent reference and reorder (z) operation (L08/L13) — status: `in_progress` — owner: lead
-- [ ] `P0-32` Zone titles: named, editable zone headers in the live demo — status: `in_progress` — owner: —
 
 ## Blocked / failed
 
@@ -217,14 +217,6 @@
 - [ ] `P4-26` Zones as containers II: platform migration and containment (L08) — status: `pending` — owner: —
 - [ ] `P4-27` Zones as containers II: engine membership and zone move (L08) — status: `pending` — owner: —
 - [ ] `P4-28` L01 final proof, two-backend reference images and stage showcase — status: `pending` — owner: —
-
-<!-- polier:claims -->
-## Claims
-
-- `P0-32` in progress by dsh since 2026-10-27T19:52:47+00:00 — worktree: /Users/rasulatashev/Desktop/KI Projekte/Project air-P0-32 · slot 3
-- `P4-07` in progress by dsh since 2026-10-27T19:45:04+00:00 — worktree: /private/tmp/air-P4-07 · slot 1
-
-<!-- /polier:claims -->
 
 ## Decisions
 

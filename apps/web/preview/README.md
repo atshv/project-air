@@ -1,4 +1,4 @@
-# Design preview (P0-19, P0-20, P0-21, P0-22, P0-23, P0-24, P0-25, P0-26, P0-27, P0-28, P0-29, P0-30, P0-31, P1-07)
+# Design preview (P0-19, P0-20, P0-21, P0-22, P0-23, P0-24, P0-25, P0-26, P0-27, P0-28, P0-29, P0-30, P0-31, P0-32, P1-07)
 
 A design preview of the Project air design system. It is **not the product**: there is no engine,
 no data, no server and no build step. It exists so the owner can see the look and feel between
@@ -15,9 +15,9 @@ its two values come from:
   `0.0.1 – unreleased`; the status word comes from the same heading. `CHANGELOG.md` is the display
   source and currently agrees with the root `package.json` version `0.0.1`.
 - **Last change** — the newest preview change entry, currently
-  `.changes/P0-31-demo-refine.md`; the line shows the task id and that task's title from
-  `board.json` / the task brief: `P0-31 — Refined live demo: smooth merge/split and calm motion`.
-  The line follows the `P0-*` preview tasks (P0-19 … P0-31, P1-07); the engine tasks
+  `.changes/P0-32-zone-titles.md`; the line shows the task id and that task's title from
+  `board.json` / the task brief: `P0-32 — Zone titles: named, editable zone headers in the live
+  demo`. The line follows the `P0-*` preview tasks (P0-19 … P0-32, P1-07); the engine tasks
   (`P4-*`) and the other stages run in parallel and do not move it, so "highest numeric id" alone is
   not the rule. If several files exist for the same preview task, the most recent one is used;
   `.changes/README.md` and `.changes/TEMPLATE.md` do not count as entries.
@@ -48,8 +48,8 @@ task.
   docked back (P0-28); when both are out the empty zone fades away (P0-29) and dragging the two
   free items together forms a new zone around them. While dragging, the zone previews the release
   (landing slot, room-making, shrinking and ghost frames) and every settle uses one calm ease-out
-  (P0-31). There is no upload, no file handling and
-  nothing is saved.
+  (P0-31). Every zone carries a name in its header that can be renamed inline (P0-32). There is no
+  upload, no file handling and nothing is saved.
 - A small floating **zoom pill** in the demo (preview-only): zoom in, zoom out and fit stacked
   vertically, drawn with CSS shapes and labels from the locale files (28 px visual buttons in a
   32 px pill, 12 px glyphs, 32 × 32 px hit areas).
@@ -184,7 +184,7 @@ release only confirms it.
   layout pass measures the static card grid (the no-script look), moves both items onto the zone
   layer and from then on positions frame and items in world coordinates. The frame is laid out from
   the docked items only: item sizes plus 16 px padding (`--space-16`) and a 12 px gap
-  (`--space-12`), side by side or stacked. One docked item → a one-item frame; no docked item → the
+  (`--space-12`), side by side or stacked, below the 40 px name header (P0-32). One docked item → a one-item frame; no docked item → the
   frame is hidden. Sizes are re-measured on resize, locale switch and content reflow
   (`ResizeObserver`).
 - **1:1 drag** — pointer events with `setPointerCapture`, one active drag, mouse, pen and touch; the
@@ -246,6 +246,31 @@ release only confirms it.
 - **Reduced motion** — under `prefers-reduced-motion: reduce` every zone transition is off and the
   lift scale is dropped; previews and commits apply their end state immediately.
 
+## Zone name (P0-32)
+
+Zones carry a name. The frame has a **40 px header** (`--space-24` title box + `--space-16`), and
+the content starts **40 + 16 px** below the frame's inner top edge, as `docs/canvas-acceptance.md`
+L02 asks for zones.
+
+- **Display** — one line, 13 px semibold `--fg` (`--text-13`, `--weight-semibold`), 24 px box with a
+  4 px inner padding and `--radius-tooltip`, ellipsis when the name is wider than the frame; hover
+  shows `--faint`, editing shows `--surface` with the `--accent` focus outline.
+- **Not scaled** — the title is not a child of the FLIP-scaled frame (its text would stretch while
+  the frame resizes); the script places it on the zone layer at the frame's header and moves it with
+  the same settle curve, so frame and name arrive together. Ghost and emptying frames dim it to
+  0.6 and make it inert; a collapsed zone fades it out with the frame.
+- **Rename** — the title is a plain-text editable field (`contenteditable="plaintext-only"`, falls
+  back to `true`; `role="textbox"`, `aria-label` from the locale files). Clicking it selects the
+  whole name, so typing replaces it. **Enter** or leaving the field commits ("Zone renamed to
+  “…”."), **Escape** restores the previous name, an **empty** name returns to the default ("Zone
+  name reset to “…”."), whitespace is collapsed and the length is capped at **40 characters**. Item
+  drags never start from the title.
+- **Defaults and language** — the start zone is called "Lake trip" / "Ausflug an den See"; a zone
+  formed by grouping two free items starts as "New zone" / "Neue Zone" (the ghost frame already
+  shows it). A default name follows the DE/EN switch; a typed name stays exactly as typed. Names
+  live only in this page's memory, like everything else in the demo.
+- **Without script** — the title is the first row of the static card grid.
+
 ## Bilingual preview and the DE/EN switch (P0-27)
 
 The page is bilingual: English is the markup fallback and German comes from a locale file, so the
@@ -295,9 +320,9 @@ P0-26 markup with the old stylesheet and a broken-looking demo. The preview ther
 assets with a version query:
 
 ```html
-<link rel="stylesheet" href="../../../packages/ui-kit/tokens.css?v=P0-31" />
-<link rel="stylesheet" href="preview.css?v=P0-31" />
-<script src="preview.js?v=P0-31" defer></script>
+<link rel="stylesheet" href="../../../packages/ui-kit/tokens.css?v=P0-32" />
+<link rel="stylesheet" href="preview.css?v=P0-32" />
+<script src="preview.js?v=P0-32" defer></script>
 ```
 
 - **Bump rule:** every task that changes a file in `apps/web/preview/` — or the shared
@@ -306,7 +331,7 @@ assets with a version query:
   never cached and gets the current files, which also covers a changed design system that would
   otherwise be served from the cached token stylesheet.
 - The locale files reuse the script's version automatically: `preview.js` reads the `v` query of its
-  own script URL and appends it to the locale request (`locales/de.json?v=P0-31`), so one bump
+  own script URL and appends it to the locale request (`locales/de.json?v=P0-32`), so one bump
   covers the translations as well.
 - The icon SVGs are referenced from `preview.css` and keep stable, unversioned URLs; they only
   change with a design-system task, and every such task bumps the preview version anyway.
@@ -363,7 +388,7 @@ Serve the **repository root**, not this folder, so the relative token and icon p
 the slot's `web` port from `.polier-slot` (never hard-code it), then:
 
 ```sh
-cd "/Users/rasulatashev/Desktop/KI Projekte/Project air-P0-31"
+cd "/Users/rasulatashev/Desktop/KI Projekte/Project air-P0-32"
 PORT=$(python3 -c "import json; print(json.load(open('.polier-slot'))['ports']['web'])")
 python3 -m http.server "$PORT" --bind 127.0.0.1
 ```
@@ -430,11 +455,18 @@ line and tasks in English and German),
 `P0-31-ghost.png` (1440×900, two free items about to group: dashed ghost frame),
 `P0-31-emptying.png` (1440×900, the last item pulled out: dimmed dashed frame),
 `P0-31-grouped.png` (1440×900, the committed new zone),
-`P0-31-mobile.png` (390×844, the start state on mobile) and the
+`P0-31-mobile.png` (390×844, the start state on mobile),
+`P0-32-named.png` (1440×900, the zone with its name in the header),
+`P0-32-editing.png` (1440×900, renaming inline),
+`P0-32-renamed.png` (1440×900, the committed new name),
+`P0-32-long-name.png` (1440×900, a 40-character name with ellipsis),
+`P0-32-ghost.png` / `P0-32-new-zone.png` (1440×900, grouping preview and the new zone named
+“Neue Zone”),
+`P0-32-mobile.png` (390×844, the named zone on mobile) and the
 `P0-19-preview.log` / `P0-20-preview.log` / `P0-21-preview.log` / `P0-22-preview.log` /
 `P0-23-preview.log` / `P0-24-preview.log` / `P0-25-preview.log` / `P0-26-preview.log` /
 `P0-27-preview.log` / `P0-28-preview.log` / `P0-29-preview.log` / `P0-30-preview.log` /
-`P0-31-preview.log` /
+`P0-31-preview.log` / `P0-32-preview.log` /
 `P1-07-preview.log` files with the
 exact serve, curl and screenshot commands. The page has no horizontal overflow at 1440×900, 390×844
 or the owner's 1426 × 583 viewport.

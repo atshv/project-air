@@ -42,6 +42,8 @@
   var ZONE_ORIENTATION_DOMINANCE = 1.25;
   var ZONE_ORIENTATION_OVERLAP = 0.5;
   var ZONE_ORDER_HYSTERESIS = 12;
+  // A zone name is one line of at most 40 characters (P0-32).
+  var ZONE_TITLE_MAX = 40;
 
   var LOCALE_STORAGE_KEY = "preview-locale";
   var LOCALE_DEFAULT = "en";
@@ -63,8 +65,15 @@
     "demo.status.groupedVertical": "Items grouped stacked into a new zone.",
     "demo.status.reordered": "Order changed inside the zone.",
     "demo.status.orientationChanged": "Orientation changed inside the zone.",
+    "demo.status.zoneRenamed": "Zone renamed to “{name}”.",
+    "demo.status.zoneNameReset": "Zone name reset to “{name}”.",
+    "demo.zone.nameInitial": "Lake trip",
+    "demo.zone.nameNew": "New zone",
+    "demo.zone.nameLabel": "Zone name, click to rename",
   };
   var localeMessages = null;
+  // Called after a locale was applied, for text the script owns (zone names).
+  var localeListeners = [];
   // Language whose messages are currently applied; null means the page shows the
   // English markup fallback only. Never change the switch without changing this.
   var appliedLocale = null;
@@ -127,6 +136,7 @@
         }
       }
     }
+    for (var l = 0; l < localeListeners.length; l += 1) localeListeners[l]();
   }
 
   function updateLocaleSwitch(lang) {
@@ -642,6 +652,17 @@
     var zoneObserver = null;
     var zonePadding = 16;
     var zoneGap = 12;
+    // Header row of the frame (L02: 40 px header, content 40 + 16 px below the
+    // top) and the 24 px title box centred in it.
+    var zoneHeader = 40;
+    var zoneTitleHeight = 24;
+    var zoneTitleInset = 4;
+    var zoneTitle = zone === null ? null : zone.querySelector("[data-zone-title]");
+    // The zone name: a default from the locale files (it follows the language)
+    // until someone types their own, which then stays exactly as typed.
+    var zoneName = { key: "demo.zone.nameInitial", custom: null };
+    var zoneTitleBefore = "";
+    var zoneTitleCancelled = false;
 
     if (zone !== null && zoneCard !== null) {
       var zoneElements = zone.querySelectorAll("[data-zone-item]");
@@ -824,10 +845,12 @@
     }
 
     // Frame layout for docked keys in flow order: slots are item sizes plus the
-    // 16 px padding and the 12 px gap, laid out side by side or stacked.
+    // 16 px padding and the 12 px gap, laid out side by side or stacked, below
+    // the 40 px header that carries the zone name.
     function buildLayout(keys, orientation) {
       var horizontal = keys.length > 1 && orientation === "horizontal";
       var inset = zoneBorderWidth + zonePadding;
+      var top = inset + zoneHeader;
       var along = 0;
       var across = 0;
       var slots = {};
@@ -835,7 +858,7 @@
         var entry = zoneItemByKey(keys[index]);
         if (entry === null) continue;
         if (index > 0) along += zoneGap;
-        slots[entry.key] = horizontal ? { x: inset + along, y: inset } : { x: inset, y: inset + along };
+        slots[entry.key] = horizontal ? { x: inset + along, y: top } : { x: inset, y: top + along };
         along += horizontal ? entry.width : entry.height;
         across = Math.max(across, horizontal ? entry.height : entry.width);
       }
@@ -845,7 +868,7 @@
         x: 0,
         y: 0,
         w: (horizontal ? along : across) + 2 * inset,
-        h: (horizontal ? across : along) + 2 * inset,
+        h: (horizontal ? across : along) + inset + top,
         slots: slots,
       };
     }
@@ -954,6 +977,7 @@
         ? worldRectOf(zoneCard)
         : null;
       zoneFrame = next;
+      placeTitle(next, from === null);
       withoutTransitions(zoneCard, function () {
         zoneCard.style.inlineSize = next.w.toFixed(1) + "px";
         zoneCard.style.blockSize = next.h.toFixed(1) + "px";
@@ -978,6 +1002,7 @@
       zoneCard.classList.toggle("is-emptying", mode === "emptying");
       zoneCard.setAttribute("data-zone-mode", mode);
       zoneCard.setAttribute("data-zone-visible", "true");
+      syncTitle(mode, false);
     }
 
     // Fades out and then leaves the pointer and tab flow (visibility follows the
@@ -986,6 +1011,124 @@
       if (!frameShown()) return;
       zoneCard.classList.add("is-collapsed");
       zoneCard.setAttribute("data-zone-visible", "false");
+      syncTitle(zoneCard.getAttribute("data-zone-mode"), true);
+    }
+
+    // ---------- zone name (P0-32) ----------
+
+    function zoneDisplayName() {
+      return zoneName.custom !== null ? zoneName.custom : translate(zoneName.key);
+    }
+
+    // Shows the zone name (or a preview text); never overwrites a name that is
+    // being typed.
+    function renderTitle(text) {
+      if (zoneTitle === null || zoneTitle.classList.contains("is-editing")) return;
+      zoneTitle.textContent = typeof text === "string" ? text : zoneDisplayName();
+      zoneTitle.setAttribute("aria-label", translate("demo.zone.nameLabel"));
+    }
+
+    // The title is not part of the FLIP-scaled frame (its text would stretch):
+    // it sits on the zone layer at the frame's header and moves with the same
+    // settle, so frame and name arrive together.
+    function placeTitle(frame, instant) {
+      if (zoneTitle === null || !zoneTitle.classList.contains("is-placed")) return;
+      var apply = function () {
+        var x = frame.x + zoneBorderWidth + zonePadding - zoneTitleInset;
+        var y = frame.y + zoneBorderWidth + (zoneHeader - zoneTitleHeight) / 2;
+        var width = frame.w - 2 * (zoneBorderWidth + zonePadding - zoneTitleInset);
+        zoneTitle.style.setProperty("--title-x", x.toFixed(1) + "px");
+        zoneTitle.style.setProperty("--title-y", y.toFixed(1) + "px");
+        zoneTitle.style.maxInlineSize = Math.max(0, width).toFixed(1) + "px";
+      };
+      if (instant) withoutTransitions(zoneTitle, apply);
+      else apply();
+    }
+
+    function syncTitle(mode, collapsed) {
+      if (zoneTitle === null) return;
+      zoneTitle.classList.toggle("is-ghost", !collapsed && (mode === "ghost" || mode === "emptying"));
+      zoneTitle.classList.toggle("is-collapsed", collapsed);
+      if (collapsed && document.activeElement === zoneTitle) zoneTitle.blur();
+    }
+
+    // Selects the whole name (rename: typing replaces it) or puts the caret at
+    // its end (after the 40-character cap cut the text).
+    function selectTitleText(element, caretAtEnd) {
+      var selection = window.getSelection();
+      if (selection === null) return;
+      var range = document.createRange();
+      range.selectNodeContents(element);
+      if (caretAtEnd) range.collapse(false);
+      selection.removeAllRanges();
+      selection.addRange(range);
+    }
+
+    // Enter or leaving the field commits, Escape restores the previous name, an
+    // empty name returns to the default (which follows the language again).
+    function commitTitle() {
+      zoneTitle.classList.remove("is-editing");
+      zoneTitle.scrollLeft = 0;
+      if (zoneTitleCancelled) {
+        renderTitle();
+        return;
+      }
+      var text = (zoneTitle.textContent || "").replace(/\s+/g, " ").trim().slice(0, ZONE_TITLE_MAX);
+      if (text === zoneTitleBefore.replace(/\s+/g, " ").trim()) {
+        renderTitle();
+        return;
+      }
+      zoneName.custom = text === "" ? null : text;
+      renderTitle();
+      if (status !== null) {
+        status.textContent = translate(text === "" ? "demo.status.zoneNameReset" : "demo.status.zoneRenamed", {
+          name: zoneDisplayName(),
+        });
+      }
+    }
+
+    function setupZoneTitle() {
+      if (zoneTitle === null) return;
+      zone.insertBefore(zoneTitle, zonePlaceholder.nextSibling);
+      zoneTitle.classList.add("is-placed");
+      zoneTitle.setAttribute("role", "textbox");
+      zoneTitle.setAttribute("spellcheck", "false");
+      try {
+        zoneTitle.contentEditable = "plaintext-only";
+      } catch (error) {
+        // Older engines only know "true"; the commit reads plain text anyway.
+        zoneTitle.contentEditable = "true";
+      }
+      renderTitle();
+      zoneTitle.addEventListener("focus", function () {
+        zoneTitleBefore = zoneTitle.textContent || "";
+        zoneTitleCancelled = false;
+        zoneTitle.classList.add("is-editing");
+        // After the click has placed its caret, select the whole name.
+        window.requestAnimationFrame(function () {
+          if (document.activeElement === zoneTitle) selectTitleText(zoneTitle, false);
+        });
+      });
+      zoneTitle.addEventListener("keydown", function (event) {
+        if (event.key === "Enter") {
+          event.preventDefault();
+          zoneTitle.blur();
+        } else if (event.key === "Escape") {
+          event.preventDefault();
+          zoneTitleCancelled = true;
+          zoneTitle.blur();
+        }
+      });
+      zoneTitle.addEventListener("input", function () {
+        var text = zoneTitle.textContent || "";
+        if (text.length <= ZONE_TITLE_MAX) return;
+        zoneTitle.textContent = text.slice(0, ZONE_TITLE_MAX);
+        selectTitleText(zoneTitle, true);
+      });
+      zoneTitle.addEventListener("blur", commitTitle);
+      localeListeners.push(function () {
+        renderTitle();
+      });
     }
 
     function showPlaceholder(item, position) {
@@ -1139,6 +1282,8 @@
       var intent = drag.intent;
       var index;
       if (intent.type === "zone" || intent.type === "group") {
+        // A ghost that would form a brand-new zone already shows the new name.
+        if (intent.type === "group" && zoneDocked.length === 0) renderTitle(translate("demo.zone.nameNew"));
         showFrame(intent.layout, intent.type === "group" ? "ghost" : "target");
         for (index = 0; index < intent.layout.keys.length; index += 1) {
           var entry = zoneItemByKey(intent.layout.keys[index]);
@@ -1173,6 +1318,10 @@
         var beforeLayout = committedLayout();
         var beforeOrientation = beforeLayout === null ? null : beforeLayout.orientation;
         var target = intent.layout;
+        if (intent.type === "group" && before.length === 0) {
+          zoneName = { key: "demo.zone.nameNew", custom: null };
+          renderTitle();
+        }
         zoneDocked = target.keys.slice();
         if (target.keys.length > 1) zoneOrientation = intent.requested;
         zoneOrigin = { x: target.x, y: target.y };
@@ -1279,12 +1428,16 @@
       if (zoneReady || zoneItems.length < 2) return;
       zonePadding = readPixelToken("--space-16", 16);
       zoneGap = readPixelToken("--space-12", 12);
+      zoneTitleHeight = readPixelToken("--space-24", 24);
+      zoneTitleInset = readPixelToken("--space-4", 4);
+      zoneHeader = zoneTitleHeight + zonePadding;
       refreshItemSizes();
       var cardRect = worldRectOf(zoneCard);
       zonePlaceholder = document.createElement("span");
       zonePlaceholder.className = "demo-zone__placeholder";
       zonePlaceholder.setAttribute("aria-hidden", "true");
       zone.insertBefore(zonePlaceholder, zone.firstChild);
+      setupZoneTitle();
       withoutTransitions(zone, function () {
         for (var index = 0; index < zoneItems.length; index += 1) {
           var entry = zoneItems[index];
