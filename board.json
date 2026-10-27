@@ -4701,6 +4701,58 @@
         "Grouped zone animates in, re-orients horizontal/vertical and re-fits on resize without clipping, clamps below the floating toolbar; no new edge; spring-like motion; reduced-motion instant.",
         "Zoom pill smaller (36x104, 32px buttons, 16px glyphs); en/de strings; ?v=P0-29; gates board-check/design-check/changelog-entry + language-check; evidence fading/overlap/grouped/zoom/mobile/resize."
       ]
+    },
+    {
+      "id": "P0-30",
+      "title": "Flexible zone layout, less magnetic drag and smaller controls",
+      "goal": "Zone items can be arranged horizontally or vertically depending on how they are dragged/placed, can swap positions inside the zone, dragging in/out is less magnetic with cleaner combine/separate animations, and the zoom +/-/fit controls are smaller.",
+      "why": "The owner wants the zone layout to follow placement (side by side or stacked), individual reordering inside the zone, less snap/magnetism when moving in and out, and even smaller zoom controls.",
+      "satisfies": [
+        "D3"
+      ],
+      "status": "pending",
+      "depends_on": [
+        "P0-29"
+      ],
+      "complexity": 6,
+      "stage": "foundation",
+      "parallel_group": null,
+      "owner": null,
+      "round": 0,
+      "scope_write": [
+        "apps/web/preview/",
+        ".changes/"
+      ],
+      "scope_read": [
+        "ARCHITECTURE.md",
+        "AGENTS.md",
+        "STATUS.md",
+        "docs/module-map.md",
+        "docs/quality.md",
+        "docs/design-rules.md",
+        "docs/i18n/style-de.md",
+        "docs/i18n/glossary.md",
+        "apps/web/preview/",
+        "packages/ui-kit/tokens.css",
+        "packages/ui-kit/layers.ts"
+      ],
+      "acceptance": [
+        "A1",
+        "A2",
+        "A3",
+        "A4"
+      ],
+      "gates": [
+        "board-check",
+        "design-check",
+        "changelog-entry"
+      ],
+      "branch": "task/P0-30",
+      "worktree": null,
+      "evidence": [],
+      "scope_write_forbidden": [
+        "reference/"
+      ]
     }
   ],
   "decisions": [
