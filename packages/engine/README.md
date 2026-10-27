@@ -36,7 +36,8 @@ from [docs/versions.md](../../docs/versions.md), not through pnpm.
 - **Toolchain:** CMake 4.4.4, Emscripten 6.0.13, C++20; gate details in
   [docs/gates/cpp-cmake.md](../../docs/gates/cpp-cmake.md) and
   [docs/gates/wasm-emscripten.md](../../docs/gates/wasm-emscripten.md).
-- **Tests:** CTest suites `engine_unit_tests` (toolchain smoke test) and `engine_core_tests`
-  (document, camera, culling, command-buffer determinism on 50,000 rectangles).
+- **Tests:** CTest suites `engine_unit_tests` (toolchain smoke test), `engine_core_tests`
+  (document, camera, culling, command-buffer determinism on 50,000 rectangles) and
+  `engine_text_tests` (P4-08 glyph atlas: plan, upload validation, CSS metrics, placeholder).
 
 `build/` and `build-wasm/` are gitignored and never committed.

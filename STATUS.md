@@ -121,6 +121,10 @@
 
 ## Ready now
 
+- `P4-09` Glyph layout, text instances and ellipsis (L02)
+  - P4-08: Closed P4-08: C++ text module (token styles, atlas plan halving DPR->1 on texture limit, validated glyph table with per-role placeholder, 32-byte glyph buffer) plus one instanced glyph pass.
+  - P4-08: Bridge buildTextAtlas rasterises ASCII+Latin-1 via OffscreenCanvas with token fonts, one upload, DPR rebuild; addTextRun/clearTextRuns. Playground ?text=1 demo; default scenes unchanged.
+  - P4-08: Gates green after rebase on P4-06: ctest 3/3, wasm gzip 47,526 B. Browser check caught a glyph shader link bug (uniform precision), fixed. Next: P4-09 layout/ellipsis, ADR-0009 note.
 - `P4-19` Placement of new objects (L20)
   - P4-05: Closed P4-05: engine TS logic layer (gestures, operations, port, history); one gesture = one contract operation with inverse, group drag = one group operation; 31 tests validate.
   - P4-05: Undo/redo depth 20 with redo-clear and describe() labels; fake + bridge adapter byte-identical round trips; create builders validate geometry, port read is isolated, adapter projects z.
@@ -183,6 +187,7 @@
 - [x] `P4-05` Gesture-to-operation seam and undo history core — status: `done` — owner: —
 - [x] `P4-06` Layers and draw order (L13) — status: `done` — owner: —
 - [x] `P4-07` Canvas feel: fit, dot grid and idle drawing (L19) — status: `done` — owner: —
+- [x] `P4-08` Text atlas and glyph texture pipeline (L02) — status: `done` — owner: —
 - [x] `P4-25` Contract 0.2.0: zone parent reference and reorder (z) operation (L08/L13) — status: `done` — owner: —
 - [x] `P4-26` Zones as containers II: platform migration and containment (L08) — status: `done` — owner: —
 - [x] `P0-26` Toolbar and zone with notepad and image window in the preview — status: `done` — owner: —
@@ -195,7 +200,7 @@
 
 ## In progress
 
-- [ ] `P4-08` Text atlas and glyph texture pipeline (L02) — status: `in_progress` — owner: —
+- none
 
 ## Blocked / failed
 
@@ -227,13 +232,6 @@
 - [ ] `P4-28` L01 final proof, two-backend reference images and stage showcase — status: `pending` — owner: —
 - [ ] `P4-29` Zone parity with the live demo I: arrangement and release preview (L08) — status: `pending` — owner: —
 - [ ] `P4-30` Zone parity with the live demo II: lifecycle and names (L08) — status: `pending` — owner: —
-
-<!-- polier:claims -->
-## Claims
-
-- `P4-08` in progress by dsh since 2026-10-27T20:47:31+00:00 — worktree: /Users/rasulatashev/Desktop/KI Projekte/Project air-P4-08 · slot 1
-
-<!-- /polier:claims -->
 
 ## Decisions
 

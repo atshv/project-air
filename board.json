@@ -3330,7 +3330,7 @@
       "satisfies": [
         "D10"
       ],
-      "status": "in_progress",
+      "status": "done",
       "depends_on": [
         "P4-02",
         "P4-04"
@@ -3373,9 +3373,21 @@
       ],
       "owner": null,
       "branch": "task/P4-08",
-      "worktree": "../Project air-P4-08",
+      "worktree": null,
       "round": 0,
-      "evidence": [],
+      "evidence": [
+        "reviews/evidence/P4-08-board-check-20261027T210018Z.json",
+        "reviews/evidence/P4-08-boundaries-20261027T210021Z.json",
+        "reviews/evidence/P4-08-cpp-unit-20261027T210021Z.json",
+        "reviews/evidence/P4-08-wasm-build-20261027T210024Z.json",
+        "reviews/evidence/P4-08-wasm-size-20261027T210028Z.json",
+        "reviews/evidence/P4-08-typecheck-20261027T210029Z.json"
+      ],
+      "handoff": [
+        "Closed P4-08: C++ text module (token styles, atlas plan halving DPR->1 on texture limit, validated glyph table with per-role placeholder, 32-byte glyph buffer) plus one instanced glyph pass.",
+        "Bridge buildTextAtlas rasterises ASCII+Latin-1 via OffscreenCanvas with token fonts, one upload, DPR rebuild; addTextRun/clearTextRuns. Playground ?text=1 demo; default scenes unchanged.",
+        "Gates green after rebase on P4-06: ctest 3/3, wasm gzip 47,526 B. Browser check caught a glyph shader link bug (uniform precision), fixed. Next: P4-09 layout/ellipsis, ADR-0009 note."
+      ],
       "scope_write_forbidden": [
         "reference/"
       ]

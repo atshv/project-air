@@ -1,6 +1,6 @@
 # Engine
 
-**As of:** 2026-10-25 · **Package:** `packages/engine` ·
+**As of:** 2026-10-27 · **Package:** `packages/engine` ·
 **Architecture decision:** [ADR-0006](adr/ADR-0006-engine-architecture.md)
 
 The engine is a C++20 core compiled to WebAssembly behind the TypeScript bridge
@@ -16,14 +16,18 @@ the network (AD-2), and reads the contract and tokens from generated headers.
 | `spatial` | `spatial.h`, `spatial.cpp` | Uniform-grid culling (256 world-px cells), rebuilt on version change or patched incrementally per mutation; bounds and point queries | document + world bounds/point → candidate slots in document order | doc, geometry, status |
 | `render` | `render.h`, `render.cpp` | Deterministic command buffer: culling, stable order, 24-byte instances, empty-on-failure `Status`; command-buffer hit testing | document + camera + viewport + index → instances, hit result | camera, doc, spatial, status, `tokens.h` |
 | `render_gl` | `render_gl.h`, `render_gl.cpp` | WebGL2 instanced renderer (per-instance attributes, one `drawArraysInstanced`, inline GLSL 300 es) plus the exported C API; native stubs | command buffer / mutation and hit-test calls → pixels / C ABI results | render, camera, doc, spatial, `tokens.h`, GLES3, Emscripten |
+| `text` | `text.h`, `text.cpp` | L02 runtime glyph atlas: token text styles, atlas plan with the texture-limit fallback, validated glyph table with a placeholder per role, glyph runs and the 32-byte glyph command buffer | token typography / glyph count, cell, DPR, texture limit / RGBA pixels + packed metrics / runs + camera → plan, CSS-px glyph metrics, glyph quads | camera, geometry, status, `tokens.h` |
+| `text_gl` | `text_gl.h`, `text_gl.cpp` | Text C ABI (pure style/plan calls in both builds) and the WebGL2 glyph pass: atlas texture upload, one instanced glyph draw after the object pass | C ABI calls / glyph buffer → texture, pixels | text, `tokens.h`, GLES3 |
 | C ABI | `engine.h`, `engine.cpp` | `air_engine_version()` and compile-time checks of `kContractVersion`/`tokens.h` | – → version string | `contract.h`, `tokens.h` |
 
 Support headers: `geometry.h` (`Point`, `Bounds`) and `status.h` (`Status`; no exceptions
 across the C ABI). The C API exports `engine_create`, `engine_resize`, `engine_set_camera`,
 `engine_load_rectangles`, `engine_add_rectangle`, `engine_update_geometry`, `engine_update_z`,
 `engine_remove_object`, `engine_hit_test`, `engine_visible_instance_count`, `engine_render_frame`,
-`engine_fit_view` and `engine_last_error`; the TypeScript bridge exposes the same surface as typed
-methods.
+`engine_fit_view`, the text calls `engine_text_style`, `engine_text_font_family`,
+`engine_text_plan_atlas`, `engine_text_max_texture_size`, `engine_text_load_atlas`,
+`engine_text_add_run`, `engine_text_clear_runs`, `engine_visible_glyph_count` (P4-08) and
+`engine_last_error`; the TypeScript bridge exposes the same surface as typed methods.
 
 ## Gesture logic layers (TypeScript)
 
@@ -147,6 +151,62 @@ source scan proves no DOM or network use in the logic layer.
   camera stays the P4-04 at-rest view (plain world-centred fit, clamped to `0.1 … 8`); L17/P4-22
   will use the L19 helper for the initial and restored view.
 
+## Text atlas and glyph pass (L02, P4-08)
+
+ADR-0009 in code: the browser rasterises, the core plans, validates and draws; no font file exists
+in the repository or the bundle.
+
+- **Styles from tokens.** `textStyle(role)` returns the token typography: `title` =
+  `font_sans`, `text_15`, `weight_semibold` (L02 card title 15 px/600), `body` = `font_sans`,
+  `text_13`, `weight_regular`, both with `line_height`. The bridge reads them through
+  `engine_text_style` / `engine_text_font_family` and composes the CSS `font` string, so it holds
+  no typography value of its own.
+- **Atlas plan and texture-limit fallback.** `planAtlas` takes the glyph count, the CSS cell size,
+  the device pixel ratio (finite, `(0, 8]`) and the GPU `MAX_TEXTURE_SIZE` and returns the smallest
+  power-of-two atlas (smallest area, then the squarer one) with uniform cells of
+  `ceil(css × scale) + 2` raster px (1 px transparent padding per side, so linear sampling never
+  bleeds). The raster scale starts at the device pixel ratio and halves, never below 1, until the
+  atlas fits; a ratio below 1 is used as is and not halved; if the last scale does not fit, the plan
+  fails with a `Status` and the output is untouched. Example: 392 cells of 12×21 CSS px at DPR 3 and
+  a 512 px limit fall back 3 → 1.5 → 1 (256×512).
+- **Glyph table.** `GlyphAtlas::load` validates the whole upload before replacing anything: power of
+  two sides within the texture limit, a raster scale in `(0, 8]`, exactly `width × height × 4` RGBA
+  bytes, and per glyph nine finite floats (role, code point, atlas x/y, width, height, bearing x/y,
+  advance; raster px), an integral role and code point up to U+10FFFF, a rectangle inside the atlas,
+  a non-negative advance, no duplicate role/code point and one placeholder (code point 0) per role.
+  A rejected upload keeps the previous atlas, pixels and generation. Metrics are reported in CSS px
+  (raster px / scale), so a run lays out identically at DPR 1, 2 and 3. `resolve` returns the
+  role's placeholder for a missing code point — an outlined box, never a silent gap and never a
+  character used as an icon.
+- **Runs and the glyph buffer.** A run is a world-anchored line box (top-left) of code points in one
+  role; `TextRuns` rejects non-finite anchors, unknown roles, code points above U+10FFFF, more than
+  4,096 runs or 65,536 glyphs. `GlyphBuffer::build` places glyphs by advance only (wrapping,
+  ellipsis and card binding are P4-09), maps them through the camera (quads scale with the zoom),
+  culls quads outside the viewport and writes 32-byte `GlyphInstance` records (screen x, y, width,
+  height, normalised atlas u0, v0, u1, v1); it is reserved once and byte-identical for identical
+  input. Without an atlas it succeeds with no glyphs.
+- **Renderer.** `engine_text_load_atlas` uploads the validated pixels once per atlas build
+  (`RGBA8`, linear, clamp to edge); a frame with runs builds the glyph buffer and issues one
+  instanced draw after the object pass, sampling only the alpha coverage and tinting it with
+  `tokens::fg` (blend `SRC_ALPHA, ONE_MINUS_SRC_ALPHA`, like the grid). A frame without runs or
+  without an atlas touches no GL state for text, so the perf gate's frame cost is unchanged.
+- **Bridge.** `buildTextAtlas()` (`src/bridge/text-atlas.ts`) rasterises one placeholder per role
+  plus the default set — printable ASCII and the Latin-1 supplement (umlauts) — with OffscreenCanvas
+  (fallback: a detached `<canvas>`) as white coverage on transparent pixels, one uniform cell per
+  glyph (`measureText` boxes rounded outward), and uploads pixels and packed metrics in a single
+  call; it returns size, raster scale, glyph count and the texture limit. After the first build,
+  `resize` rebuilds the atlas whenever the device pixel ratio changes (zoom-bucket re-rasterisation
+  is P4-10). `addTextRun({ x, y, text, role })` passes the string's code points (a lone surrogate
+  stays its own code unit and draws the placeholder); `clearTextRuns()` and `visibleGlyphCount()`
+  complete the surface.
+- **Playground.** `?text=1` (e.g. `?text=1&view=200,64,2`) builds the atlas and draws a title and
+  a body run with Latin-1 letters and one missing glyph; `getState().textAtlas` reports the atlas.
+  Off by default, so scenes, `visual` baselines and perf documents are unchanged.
+- **Tests.** `engine_text_tests` (CTest) covers token styles, the plan at DPR 1/2/3, the fallback
+  and its failures, upload validation and atomicity, DPR-independent CSS metrics, the placeholder,
+  run validation and the glyph buffer (placement, zoom, culling, determinism, atlas replacement);
+  `wasm-smoke` checks the pure text calls and the pre-create failures in the WebAssembly build.
+
 ## Object identity and mutations
 
 `Document` keeps one storage slot per object and assigns a monotonic `ObjectId` on insert
@@ -197,7 +257,7 @@ behind. The same `SpatialIndex::ensureCurrent` guard is covered by the native su
 
 ## Build and check commands
 
-- **Native build + tests:** `cmake -S packages/engine -B packages/engine/build -DCMAKE_BUILD_TYPE=Debug && cmake --build packages/engine/build --parallel && ctest --test-dir packages/engine/build --output-on-failure` (suites `engine_unit_tests`, `engine_core_tests`).
+- **Native build + tests:** `cmake -S packages/engine -B packages/engine/build -DCMAKE_BUILD_TYPE=Debug && cmake --build packages/engine/build --parallel && ctest --test-dir packages/engine/build --output-on-failure` (suites `engine_unit_tests`, `engine_core_tests`, `engine_text_tests`).
 - **WASM:** `bash packages/engine/tools/build-wasm.sh` then `node packages/engine/tools/wasm-smoke.mjs`; size: `node packages/engine/tools/wasm-size.mjs` (budget 307,200 B gzip). The wrapper keeps the Emscripten cache under `build-wasm/.emscripten-cache` unless `EM_CACHE` is set, so a read-only package cache (sandboxed agents) or a shared user cache cannot break the build.
 - **Performance:** `node packages/engine/test/perf/run-perf.mjs` (exclusive `perf-baseline`, 50,000 rectangles, p95 ≤ 16.7 ms) and `node packages/engine/test/perf/run-perf.mjs --scenario engine-core` (the `perf` stage gate: 10,000-object interactive run plus the L01 basis/final proof; report [docs/engine/perf-baseline.md](engine/perf-baseline.md), gate catalogue [docs/gates/perf.md](gates/perf.md)).
 - **Visual:** `node packages/engine/test/visual/run-visual.mjs` (the `visual` stage gate: five
@@ -293,7 +353,7 @@ belong to those stages; their interaction behaviours are not implemented.
   task > 50 ms).
 - **Canvas behaviours:** the playground has demo-level pan/zoom over a fixed scene plus the L19 fit
   action and dot grid; gesture input handling, selection, editing, snapping, zone membership, the
-  undo UI, keyboard input, text, images, edges, cursors and the accessibility mirror are not
+  undo UI, keyboard input, text layout (the P4-08 atlas draws advance-placed runs only), images, edges, cursors and the accessibility mirror are not
   implemented. The gesture-to-operation seam and the undo history core exist behind the TypeScript
   logic layer (P4-05) but are not wired to input yet. Hit testing exists at the
   document/command-buffer level (P4-01); interaction policy, selection state and overlays are not.

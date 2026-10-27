@@ -3,7 +3,24 @@
 // It loads the Emscripten-generated engine.js, starts the module with the target
 // canvas, calls the small exported C API and turns failures into EngineError.
 // The bridge owns no visual values: tones and layers travel as ordinals and the
-// C++ side maps them to packages/ui-kit tokens.
+// C++ side maps them to packages/ui-kit tokens. Text (P4-08) follows the same
+// rule: the glyph atlas is rasterised here with the token typography the C ABI
+// reports (see text-atlas.ts) and uploaded to the core in one call.
+
+import {
+  codePointsOf,
+  defaultCodePoints,
+  METRICS_STRIDE,
+  rasterizeTextAtlas,
+  TEXT_ROLE_ORDINALS,
+  type TextAtlasPlan,
+  type TextAtlasPort,
+  type TextAtlasRequest,
+  type TextRoleName,
+  type TextRoleStyle,
+} from "./text-atlas.js";
+
+export type { TextRoleName } from "./text-atlas.js";
 
 export type ToneName =
   | "neutral"
@@ -38,6 +55,26 @@ export interface EngineCamera {
 export interface EngineViewport {
   readonly width: number;
   readonly height: number;
+}
+
+/**
+ * A world-anchored line of text: (x, y) is the top-left of the line box in world
+ * px. Glyphs are placed by advance only (P4-08); layout and ellipsis are P4-09.
+ */
+export interface EngineTextRun {
+  readonly x: number;
+  readonly y: number;
+  readonly text: string;
+  readonly role?: TextRoleName;
+}
+
+/** Result of `buildTextAtlas`: the uploaded atlas size and raster scale. */
+export interface EngineTextAtlas {
+  readonly width: number;
+  readonly height: number;
+  readonly rasterScale: number;
+  readonly glyphCount: number;
+  readonly maxTextureSize: number;
 }
 
 export interface EngineOptions {
@@ -82,6 +119,17 @@ export interface Engine {
   fitView(bounds: EngineGeometry, viewport: EngineViewport): EngineCamera;
   setCamera(camera: EngineCamera): void;
   resize(cssWidth: number, cssHeight: number, devicePixelRatio: number): void;
+  /**
+   * Rasterises the default glyph set (ASCII, Latin-1, one placeholder per role)
+   * with the token font stack at the current device pixel ratio and uploads it.
+   * Once built, `resize` rebuilds it whenever the device pixel ratio changes.
+   */
+  buildTextAtlas(): EngineTextAtlas;
+  /** Adds a glyph run; a code point outside the atlas draws the placeholder. */
+  addTextRun(run: EngineTextRun): void;
+  clearTextRuns(): void;
+  /** Glyph quads the current runs, atlas, camera and viewport draw. */
+  visibleGlyphCount(): number;
   renderFrame(): void;
   lastError(): string;
   dispose(): void;
@@ -98,6 +146,8 @@ type CcallArgumentType = "number" | "string";
 type CcallArgument = number | string;
 
 interface EngineModule {
+  HEAPU8: Uint8Array;
+  HEAPU32: Uint32Array;
   ccall(
     name: string,
     returnType: "number",
@@ -215,6 +265,8 @@ class WebGlEngine implements Engine {
   readonly canvas: HTMLCanvasElement;
   readonly #module: EngineModule;
   #disposed = false;
+  #devicePixelRatio = 1;
+  #atlasRatio: number | null = null;
 
   constructor(module: EngineModule, canvas: HTMLCanvasElement) {
     this.#module = module;
@@ -384,6 +436,100 @@ class WebGlEngine implements Engine {
       cssHeight,
       devicePixelRatio,
     ]);
+    this.#devicePixelRatio = devicePixelRatio;
+    // ADR-0009: the atlas follows the device pixel ratio, so text stays crisp
+    // when a window moves to another display.
+    if (this.#atlasRatio !== null && this.#atlasRatio !== devicePixelRatio) {
+      this.buildTextAtlas();
+    }
+  }
+
+  buildTextAtlas(): EngineTextAtlas {
+    this.#assertUsable("buildTextAtlas");
+    const maxTextureSize = callNumber(this.#module, "engine_text_max_texture_size", [], []);
+    if (maxTextureSize <= 0) {
+      throw new EngineError(`engine_text_max_texture_size failed: ${lastError(this.#module)}`);
+    }
+    const port: TextAtlasPort = {
+      style: (role) => this.#textStyle(role),
+      plan: (request) => this.#planAtlas(request, maxTextureSize),
+    };
+    const atlas = rasterizeTextAtlas(port, defaultCodePoints(), this.#devicePixelRatio);
+    const module = this.#module;
+    const pixelPointer = module._malloc(atlas.pixels.byteLength);
+    const metricsPointer = module._malloc(atlas.metrics.byteLength);
+    try {
+      if (pixelPointer === 0 || metricsPointer === 0) {
+        throw new EngineError("engine_text_load_atlas: could not allocate the atlas buffers");
+      }
+      module.HEAPU8.set(atlas.pixels, pixelPointer);
+      module.HEAPF32.set(atlas.metrics, metricsPointer / Float32Array.BYTES_PER_ELEMENT);
+      this.#requireOk(
+        "engine_text_load_atlas",
+        ["number", "number", "number", "number", "number", "number", "number"],
+        [
+          atlas.plan.width,
+          atlas.plan.height,
+          atlas.plan.rasterScale,
+          pixelPointer,
+          atlas.pixels.byteLength,
+          metricsPointer,
+          atlas.metrics.length / METRICS_STRIDE,
+        ],
+      );
+    } finally {
+      if (pixelPointer !== 0) {
+        module._free(pixelPointer);
+      }
+      if (metricsPointer !== 0) {
+        module._free(metricsPointer);
+      }
+    }
+    this.#atlasRatio = this.#devicePixelRatio;
+    return {
+      width: atlas.plan.width,
+      height: atlas.plan.height,
+      rasterScale: atlas.plan.rasterScale,
+      glyphCount: atlas.glyphCount,
+      maxTextureSize,
+    };
+  }
+
+  addTextRun(run: EngineTextRun): void {
+    this.#assertUsable("addTextRun");
+    const codePoints = Uint32Array.from(codePointsOf(run.text));
+    const role = TEXT_ROLE_ORDINALS[run.role ?? "body"];
+    const module = this.#module;
+    // An empty run still crosses the ABI (it is valid and draws nothing); one
+    // element is allocated so the pointer is never null.
+    const pointer = module._malloc(Math.max(1, codePoints.length) * Uint32Array.BYTES_PER_ELEMENT);
+    if (pointer === 0) {
+      throw new EngineError("engine_text_add_run: could not allocate the code points");
+    }
+    try {
+      module.HEAPU32.set(codePoints, pointer / Uint32Array.BYTES_PER_ELEMENT);
+      this.#requireOk(
+        "engine_text_add_run",
+        ["number", "number", "number", "number", "number"],
+        [run.x, run.y, role, pointer, codePoints.length],
+      );
+    } finally {
+      module._free(pointer);
+    }
+  }
+
+  clearTextRuns(): void {
+    this.#assertUsable("clearTextRuns");
+    this.#requireOk("engine_text_clear_runs", [], []);
+  }
+
+  visibleGlyphCount(): number {
+    this.#assertUsable("visibleGlyphCount");
+    const count = callNumber(this.#module, "engine_visible_glyph_count", [], []);
+    if (count < 0) {
+      throw new EngineError(`engine_visible_glyph_count failed: ${lastError(this.#module)}`);
+    }
+    return count;
   }
 
   renderFrame(): void {
@@ -398,6 +544,66 @@ class WebGlEngine implements Engine {
   dispose(): void {
     // The spike keeps one module-level GL context; dispose only stops this handle.
     this.#disposed = true;
+  }
+
+  #textStyle(role: number): TextRoleStyle {
+    const values = this.#readDoubles(3, "engine_text_style", ["number"], [role]);
+    const fontFamily = this.#module.UTF8ToString(
+      callNumber(this.#module, "engine_text_font_family", ["number"], [role]),
+    );
+    const [fontSize, fontWeight, lineHeight] = values;
+    if (fontSize === undefined || fontWeight === undefined || lineHeight === undefined) {
+      throw new EngineError("engine_text_style: the result buffer was not readable");
+    }
+    return { fontFamily, fontSize, fontWeight, lineHeight };
+  }
+
+  #planAtlas(request: TextAtlasRequest, maxTextureSize: number): TextAtlasPlan {
+    const values = this.#readDoubles(
+      7,
+      "engine_text_plan_atlas",
+      ["number", "number", "number", "number", "number"],
+      [
+        request.glyphCount,
+        request.cellWidth,
+        request.cellHeight,
+        request.devicePixelRatio,
+        maxTextureSize,
+      ],
+    );
+    const [width, height, columns, rows, cellWidth, cellHeight, rasterScale] = values;
+    if (
+      width === undefined ||
+      height === undefined ||
+      columns === undefined ||
+      rows === undefined ||
+      cellWidth === undefined ||
+      cellHeight === undefined ||
+      rasterScale === undefined
+    ) {
+      throw new EngineError("engine_text_plan_atlas: the result buffer was not readable");
+    }
+    return { width, height, columns, rows, cellWidth, cellHeight, rasterScale };
+  }
+
+  // Calls a C ABI function whose last argument is a double[count] result buffer.
+  #readDoubles(
+    count: number,
+    name: string,
+    argumentTypes: readonly CcallArgumentType[],
+    arguments_: readonly CcallArgument[],
+  ): number[] {
+    const pointer = this.#module._malloc(count * Float64Array.BYTES_PER_ELEMENT);
+    if (pointer === 0) {
+      throw new EngineError(`${name}: could not allocate the result buffer`);
+    }
+    try {
+      this.#requireOk(name, [...argumentTypes, "number"], [...arguments_, pointer]);
+      const offset = pointer / Float64Array.BYTES_PER_ELEMENT;
+      return Array.from(this.#module.HEAPF64.subarray(offset, offset + count));
+    } finally {
+      this.#module._free(pointer);
+    }
   }
 
   #assertUsable(operation: string): void {

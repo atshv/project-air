@@ -23,6 +23,13 @@
 //   ?bench=<n>&samples=<n>&warmup=<n>
 //                                  benchmark loop kept unchanged for
 //                                  packages/engine/test/perf/run-perf.mjs
+//   ?text=1                        P4-08 glyph-atlas demo: builds the runtime
+//                                  atlas and draws a title and a body run at
+//                                  world (32, 32), incl. Latin-1 letters and one
+//                                  missing glyph (placeholder box); combine with
+//                                  ?view=200,64,2 to look at it. Off by default,
+//                                  so the scenes, baselines and perf runs stay
+//                                  unchanged.
 //
 // Interaction: pointer drag pans, wheel or two-pointer pinch zooms around the
 // pointer, and `f` ("show all", L19) fits the board through the engine's fit
@@ -125,6 +132,7 @@ const benchmarkRequested = benchQuery !== null;
 const perfQuery = query.get("perf");
 const perfRequested = perfQuery === "engine-core" && !benchmarkRequested;
 const verifyCullingRequested = perfRequested && query.get("verifyCulling") === "1";
+const textDemoRequested = query.get("text") === "1" && !benchmarkRequested && !perfRequested;
 const requestedCount = clampInteger(parseInteger(benchQuery, COLUMNS * ROWS), 0, 1000000);
 const warmupFrames = clampInteger(parseInteger(query.get("warmup"), 120), 0, 10000);
 const sampleFrames = clampInteger(parseInteger(query.get("samples"), 600), 1, 10000);
@@ -138,6 +146,7 @@ const state = {
   visibleCount: 0,
   backend: "WebGL2",
   stopped: false,
+  textAtlas: null,
 };
 let zoomRange = { minimumZoom: MINIMUM_ZOOM, maximumZoom: MAXIMUM_ZOOM };
 let world = { width: 1, height: 1 };
@@ -190,6 +199,7 @@ globalThis.__enginePlayground = {
     framesRendered,
     backend: state.backend,
     camera: { ...camera },
+    textAtlas: state.textAtlas === null ? null : { ...state.textAtlas },
   }),
   frameCount: () => framesRendered,
   fit: () => {
@@ -1015,6 +1025,15 @@ async function start() {
       camera.panX = requestedView.worldX - viewport.width / camera.zoom / 2;
       camera.panY = requestedView.worldY - viewport.height / camera.zoom / 2;
       engine.setCamera(camera);
+      onDemand.request();
+    }
+
+    if (textDemoRequested) {
+      // Sample board content, not UI text: Latin-1 letters exercise the atlas and
+      // U+4E2D is outside the default glyph set, so it draws the placeholder box.
+      state.textAtlas = engine.buildTextAtlas();
+      engine.addTextRun({ x: 32, y: 32, role: "title", text: "Card title: caf\u00e9, na\u00efve" });
+      engine.addTextRun({ x: 32, y: 56, role: "body", text: "Body preview 0123456789 \u4e2d" });
       onDemand.request();
     }
 

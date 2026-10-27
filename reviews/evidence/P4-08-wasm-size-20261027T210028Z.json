@@ -1,0 +1,17 @@
+{
+  "task": "P4-08",
+  "gate": "wasm-size",
+  "command": "node packages/engine/tools/wasm-size.mjs",
+  "exit_code": 0,
+  "result": "pass",
+  "slot": null,
+  "exclusive": [],
+  "lock_wait_s": 0.0,
+  "lock_warning": null,
+  "started": "2026-10-27T21:00:28+00:00",
+  "finished": "2026-10-27T21:00:28+00:00",
+  "commit": "f456f499f5efaa37b752d8076c9b871a3ec7f21b",
+  "dirty": true,
+  "log": "P4-08-wasm-size-20261027T210028Z.log",
+  "log_sha256": "c5c2558b58f07e14aabfb62ce1b2c74dd9285a65d1cc92f8b275d59f69f61ebc"
+}

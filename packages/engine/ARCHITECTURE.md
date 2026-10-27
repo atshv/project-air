@@ -45,7 +45,7 @@ port's browser adapter; tests use the in-memory fake.
 Pinned toolchain: CMake 4.4.4 + Emscripten 6.0.13, C++20
 ([docs/versions.md](../../docs/versions.md)); the engine builds with CMake, not pnpm.
 
-- **Native and WASM:** native build, CTest suites `engine_unit_tests`/`engine_core_tests` and the
+- **Native and WASM:** native build, CTest suites `engine_unit_tests`/`engine_core_tests`/`engine_text_tests` and the
   WASM module use the commands in [docs/engine.md](../../docs/engine.md#build-and-check-commands).
 - **TypeScript:** `pnpm --filter @project-air/engine run build|typecheck|lint|test`; `tsconfig.json`
   typechecks all of `src/` and `tsconfig.build.json` emits only the bridge to

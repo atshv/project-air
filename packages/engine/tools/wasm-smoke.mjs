@@ -7,6 +7,9 @@
 // CommonJS by the build wrapper), verifies that engine_create fails cleanly when
 // no WebGL2 canvas exists (0 plus a message on engine_last_error) and that the
 // rectangle load before a successful create keeps reporting the pre-create error.
+// P4-08: the pure text calls (token style, font family, atlas plan with the
+// texture-limit fallback) answer without a renderer, while the atlas upload and
+// the glyph runs fail cleanly before engine_create.
 // Exit codes: 0 pass, 1 failure.
 //
 // The GPU path itself is covered by the playground and the headless screenshot.
@@ -67,6 +70,56 @@ if (loadError.length === 0) {
   fail("engine_last_error() is empty after a pre-create rectangle load");
 }
 
+const OUT_BYTES = 7 * 8;
+const out = module._malloc(OUT_BYTES);
+const outValues = () => Array.from(module.HEAPF64.subarray(out / 8, out / 8 + 7));
+const styleResult = module.ccall("engine_text_style", "number", ["number", "number"], [0, out]);
+const [titleSize, titleWeight] = outValues();
+if (styleResult !== 1 || titleSize !== 15 || titleWeight !== 600) {
+  fail(`engine_text_style(title) -> ${styleResult}, size ${titleSize}, weight ${titleWeight}`);
+}
+const family = module.UTF8ToString(
+  module.ccall("engine_text_font_family", "number", ["number"], [0]),
+);
+if (!family.includes("system-ui")) {
+  fail(`engine_text_font_family(title) is not the token font stack: ${family}`);
+}
+const planResult = module.ccall(
+  "engine_text_plan_atlas",
+  "number",
+  ["number", "number", "number", "number", "number", "number"],
+  [392, 12, 21, 3, 512, out],
+);
+const plan = outValues();
+if (planResult !== 1 || plan[6] !== 1 || plan[0] > 512 || plan[1] > 512) {
+  fail(`engine_text_plan_atlas fallback -> ${planResult}, plan ${plan.join(",")}`);
+}
+const tooSmall = module.ccall(
+  "engine_text_plan_atlas",
+  "number",
+  ["number", "number", "number", "number", "number", "number"],
+  [392, 12, 21, 2, 64, out],
+);
+if (tooSmall !== 0 || lastError().length === 0) {
+  fail("engine_text_plan_atlas accepted an atlas above the texture limit");
+}
+module._free(out);
+const atlasResult = module.ccall(
+  "engine_text_load_atlas",
+  "number",
+  ["number", "number", "number", "number", "number", "number", "number"],
+  [1, 1, 1, 0, 4, 0, 1],
+);
+const atlasError = lastError();
+if (atlasResult !== 0 || !atlasError.includes("engine_create")) {
+  fail(`engine_text_load_atlas before create -> ${atlasResult}, error: ${atlasError}`);
+}
+if (module.ccall("engine_text_max_texture_size", "number", [], []) !== -1) {
+  fail("engine_text_max_texture_size reported a size before engine_create");
+}
+
 console.log(`wasm-smoke: engine_create without WebGL2 -> 0, error: ${createError}`);
+console.log(`wasm-smoke: text plan fallback at DPR 3 / 512 px -> scale ${plan[6]}, ${plan[0]}x${plan[1]}`);
+console.log(`wasm-smoke: engine_text_load_atlas before create -> 0, error: ${atlasError}`);
 console.log(`wasm-smoke: engine_load_rectangles before create -> 0, error: ${loadError}`);
 console.log("wasm-smoke: OK");

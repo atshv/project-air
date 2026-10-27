@@ -17,6 +17,7 @@
 #include "engine/doc.h"
 #include "engine/render.h"
 #include "engine/spatial.h"
+#include "renderer_internal.h"
 #include "tokens.h"
 
 namespace air::engine {
@@ -226,7 +227,7 @@ class Renderer {
       return false;
     }
 
-    if (!buildProgram() || !buildGridProgram()) {
+    if (!buildProgram() || !buildGridProgram() || !detail::createTextPass()) {
       return false;
     }
     buildBuffers();
@@ -466,7 +467,7 @@ class Renderer {
       if (gridVisible) {
         glDisable(GL_BLEND);
       }
-      return 1;
+      return drawText();
     }
     glUseProgram(program_);
     // The resolution only changes on a resize; a redundant uniform upload per
@@ -485,10 +486,14 @@ class Renderer {
     if (gridVisible) {
       glDisable(GL_BLEND);
     }
-    return 1;
+    return drawText();
   }
 
   const char* lastError() const { return g_last_error.c_str(); }
+
+  detail::FrameView frameView() const {
+    return detail::FrameView{created_, &camera_, css_width_, css_height_};
+  }
 
  private:
   // An incremental patch must never trust a stale grid: before the document is
@@ -498,6 +503,10 @@ class Renderer {
   void ensureSpatialCurrent() {
     spatial_.ensureCurrent(document_);
   }
+
+  // P4-08: glyph runs draw above every object (text_gl.cpp); a frame without
+  // runs touches no GL state there.
+  static int drawText() { return detail::drawTextPass() ? 1 : 0; }
 
   // Maps an ABI slot index to a live document slot; rejects -1, out-of-range and
   // tombstoned slots without touching the document.
@@ -669,6 +678,16 @@ class Renderer {
 Renderer g_renderer;
 
 }  // namespace
+
+namespace detail {
+
+FrameView frameView() { return g_renderer.frameView(); }
+
+void setLastError(const char* reason) { fail(reason); }
+
+bool parseRgbaToken(const char* value, float* rgba) { return parseRgbaColor(value, rgba); }
+
+}  // namespace detail
 }  // namespace air::engine
 
 AIR_ENGINE_RENDER_GL_API int engine_create(const char* canvas_selector) {
