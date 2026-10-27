@@ -121,10 +121,6 @@
 
 ## Ready now
 
-- `P4-09` Glyph layout, text instances and ellipsis (L02)
-  - P4-08: Closed P4-08: C++ text module (token styles, atlas plan halving DPR->1 on texture limit, validated glyph table with per-role placeholder, 32-byte glyph buffer) plus one instanced glyph pass.
-  - P4-08: Bridge buildTextAtlas rasterises ASCII+Latin-1 via OffscreenCanvas with token fonts, one upload, DPR rebuild; addTextRun/clearTextRuns. Playground ?text=1 demo; default scenes unchanged.
-  - P4-08: Gates green after rebase on P4-06: ctest 3/3, wasm gzip 47,526 B. Browser check caught a glyph shader link bug (uniform precision), fixed. Next: P4-09 layout/ellipsis, ADR-0009 note.
 - `P4-19` Placement of new objects (L20)
   - P4-05: Closed P4-05: engine TS logic layer (gestures, operations, port, history); one gesture = one contract operation with inverse, group drag = one group operation; 31 tests validate.
   - P4-05: Undo/redo depth 20 with redo-clear and describe() labels; fake + bridge adapter byte-identical round trips; create builders validate geometry, port read is isolated, adapter projects z.
@@ -200,7 +196,7 @@
 
 ## In progress
 
-- none
+- [ ] `P4-09` Glyph layout, text instances and ellipsis (L02) — status: `in_progress` — owner: —
 
 ## Blocked / failed
 
@@ -212,7 +208,6 @@
 - [ ] `P0-15` Release command and tag-based CI release — status: `pending` — owner: —
 - [ ] `P0-16` Dependency updates and Polier update check — status: `pending` — owner: —
 - [ ] `P0-17` RELEASING.md and release 0.0.1 — status: `pending` — owner: —
-- [ ] `P4-09` Glyph layout, text instances and ellipsis (L02) — status: `pending` — owner: —
 - [ ] `P4-10` Titles, previews and visible quality (L02) — status: `pending` — owner: —
 - [ ] `P4-11` WebGPU render pipeline behind the command buffer — status: `pending` — owner: —
 - [ ] `P4-12` WebGPU backend selection, capability and fallback — status: `pending` — owner: —
@@ -232,6 +227,13 @@
 - [ ] `P4-28` L01 final proof, two-backend reference images and stage showcase — status: `pending` — owner: —
 - [ ] `P4-29` Zone parity with the live demo I: arrangement and release preview (L08) — status: `pending` — owner: —
 - [ ] `P4-30` Zone parity with the live demo II: lifecycle and names (L08) — status: `pending` — owner: —
+
+<!-- polier:claims -->
+## Claims
+
+- `P4-09` in progress by dsh since 2026-10-27T21:05:22+00:00 — worktree: /Users/rasulatashev/Desktop/KI Projekte/Project air-P4-09 · slot 1
+
+<!-- /polier:claims -->
 
 ## Decisions
 
