@@ -3179,7 +3179,8 @@
       "status": "pending",
       "depends_on": [
         "P4-02",
-        "P4-05"
+        "P4-05",
+        "P4-25"
       ],
       "complexity": 5,
       "stage": "engine-core",
@@ -4228,15 +4229,15 @@
     },
     {
       "id": "P4-25",
-      "title": "Zones as containers I: contract parent reference (L08)",
-      "goal": "The contract gains an optional zone parent reference on board items with a version bump, valid and invalid fixtures, regenerated TS/C++ codegen and parity, and an ADR records the Q17 decision; no database change yet.",
-      "why": "Q17 approved zones as containers; the data model must exist before storage and engine behaviour can rely on it.",
+      "title": "Contract 0.2.0: zone parent reference and reorder (z) operation (L08/L13)",
+      "goal": "The contract gains (a) an optional zone parent reference on board items and (b) a reorder operation that stores a new fractional z for one item with its inverse (previous z), plus the version bump to 0.2.0, valid and invalid fixtures, regenerated TS/C++ codegen and parity, the corrected moveZone zoneId description, and an ADR for the Q17 decision; no database change yet.",
+      "why": "Q17 approved zones as containers, and L13 stores 'last moved on top' as a fractional z that must be one contract operation with its inverse (AD-1); the P4-05 gesture seam found no z/reorder operation type in 0.1.0, so both changes share the 0.2.0 bump.",
       "satisfies": [
         "D10"
       ],
       "status": "pending",
       "depends_on": [],
-      "complexity": 5,
+      "complexity": 6,
       "stage": "engine-core",
       "parallel_group": null,
       "exclusive": [
@@ -4246,7 +4247,8 @@
         "packages/contracts/",
         "docs/contracts.md",
         "docs/adr/",
-        ".changes/"
+        ".changes/",
+        "board.json"
       ],
       "scope_read": [
         "ARCHITECTURE.md",
@@ -4263,7 +4265,8 @@
       "acceptance": [
         "A1",
         "A2",
-        "A3"
+        "A3",
+        "A4"
       ],
       "gates": [
         "board-check",
@@ -4887,6 +4890,12 @@
       "id": "ADR-0009",
       "title": "Canvas text and overlay strategy",
       "file": "docs/adr/ADR-0009-canvas-text-and-overlay.md"
+    },
+    {
+      "date": "2026-10-27",
+      "id": "ADR-0010",
+      "title": "Zones as containers",
+      "file": "docs/adr/ADR-0010-zone-containers.md"
     }
   ],
   "open_questions": [

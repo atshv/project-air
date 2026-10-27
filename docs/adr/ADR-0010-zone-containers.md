@@ -1,0 +1,47 @@
+# ADR-0010: Zones as containers
+
+**Date:** 2026-10-27 · **Status:** accepted · **Supersedes:** –
+
+## Context
+
+The canvas catalogue entry L08 ("Zones as containers") asks whether a zone merely draws a frame or
+actually owns its content: dropping an object with its centre inside the zone, dragging it out,
+moving the zone as one operation, deleting with "keep content" vs "delete content", shrinking never
+below content + 16 px, and no nested zones in v1. Board question Q17 was answered in favour of
+containers on 2026-10-25. The engine holds a working copy and every board-content change must be one
+contract operation with its inverse (AD-1, AD-2), so containment needs a stored, versioned reference
+rather than a rendering convention.
+
+## Decision
+
+Zones are containers:
+
+- **Contract (0.2.0):** cards and blocks gain an optional nullable zone parent (`null`/absent = board
+  level). Zones never carry a parent; nested zones are invalid in v1 and the fixture corpus rejects
+  them. The same bump adds the `reorder` operation (fractional `z` + inverse) that L13 needs.
+- **Storage (P4-26):** the platform migration adds the nullable parent column with a foreign key to
+  the zone, the same row-level security as the board, and the containment constraint; history import
+  is unaffected because legacy rows simply have no parent.
+- **Behaviour (P4-27):** drop membership by centre inside the zone, a 1 s `--accent-line` highlight,
+  drag-out releases, a zone drag moves its content as exactly one group operation, deletion asks
+  "keep content" (default) or "delete content", and resizing clamps at content extent + 16 px.
+
+## Consequences
+
+- **Positive:** membership survives reloads and sync, matches the visual model, allows "keep content"
+  on deletion without data loss, and keeps every change reversible through one operation.
+- **Negative:** a schema and migration change (0.2.0), a join/normalisation cost on every container
+  move, and a cross-package dependency between contract, platform and engine tasks; engine-only
+  visuals cannot express membership.
+- **Binds:** `packages/contracts`, `services/platform`/migrations, `packages/engine`,
+  `apps/engine-playground`; L08, L13.
+- **Prevents:** zone membership as an unsaved visual convention, nested zones in v1, and a second
+  containment table or write path.
+
+## Alternatives
+
+- **Zones as visual frames only** — rejected by Q17; deletion and reload semantics would be lossy.
+- **Nested zones in v1** — rejected: recursive containment, layout and migration complexity without a
+  user need yet.
+- **Membership in a separate table instead of a nullable parent** — rejected for v1: one parent per
+  item is the requirement, and a nullable column keeps the board-content model flat and cheap.

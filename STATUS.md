@@ -132,7 +132,7 @@
   - P4-04: Closed P4-04: dependency-free visual gate, 8 committed baselines (4 scenes x 2 viewports, WebGL2), 0 differing pixels on ANGLE Metal M2; fail-closed renderer and exact viewports.
   - P4-04: Baselines regenerated once after the OS move Darwin 25.5.0 -> 27.2.0 (text AA only, geometry unchanged), documented under 'Baseline history'; --update is a review action, never a pass.
   - P4-04: Deterministic ?view= camera hook; gate log prints URL + camera; board-check + visual green. Stage-exit final gates are perf-final/visual-final, run by P4-28.
-- `P4-25` Zones as containers I: contract parent reference (L08)
+- `P4-25` Contract 0.2.0: zone parent reference and reorder (z) operation (L08/L13)
 
 ## Done
 
@@ -217,7 +217,7 @@
 - [ ] `P4-22` Remember view (L17) — status: `pending` — owner: —
 - [ ] `P4-23` DOM overlay for field editing and inline comfort (L18) — status: `pending` — owner: —
 - [ ] `P4-24` Trackpad and wheel defaults (L15, desktop part) — status: `pending` — owner: —
-- [ ] `P4-25` Zones as containers I: contract parent reference (L08) — status: `pending` — owner: —
+- [ ] `P4-25` Contract 0.2.0: zone parent reference and reorder (z) operation (L08/L13) — status: `pending` — owner: —
 - [ ] `P4-26` Zones as containers II: platform migration and containment (L08) — status: `pending` — owner: —
 - [ ] `P4-27` Zones as containers II: engine membership and zone move (L08) — status: `pending` — owner: —
 - [ ] `P4-28` L01 final proof, two-backend reference images and stage showcase — status: `pending` — owner: —
@@ -233,6 +233,7 @@
 - 2026-10-25 `ADR-0007` Self-hosted Ory Kratos for authentication (`docs/adr/ADR-0007-auth.md`)
 - 2026-10-25 `ADR-0008` API and session model
 - 2026-10-25 `ADR-0009` Canvas text and overlay strategy (`docs/adr/ADR-0009-canvas-text-and-overlay.md`)
+- 2026-10-27 `ADR-0010` Zones as containers (`docs/adr/ADR-0010-zone-containers.md`)
 
 ## Open questions
 
