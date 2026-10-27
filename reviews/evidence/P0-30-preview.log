@@ -1,0 +1,282 @@
+# P0-30 — flexible zone layout, less magnetic drag and smaller controls: manual evidence
+
+- Date: 2026-10-27 (Europe/Zurich)
+- Worktree: `/Users/rasulatashev/Desktop/KI Projekte/Project air-P0-30` (branch `task/P0-30`, slot 2,
+  base: `5bb7d4f`, P0-29 merged)
+- Changed: `apps/web/preview/index.html`, `apps/web/preview/preview.css`,
+  `apps/web/preview/preview.js`, `apps/web/preview/README.md`,
+  `apps/web/preview/locales/en.json`, `apps/web/preview/locales/de.json`,
+  `.changes/P0-30-flexible-zone.md` and `reviews/evidence/` (screenshots + this log)
+- Goal: placement-driven horizontal/vertical zone orientation with an animated resize, individual
+  reorder/swap inside the zone, a commit-on-release pointer-following drag model with a drop hint,
+  the P0-29 collapse/resize behaviour kept, and smaller zoom controls (28 px visual buttons in a
+  32 px pill, 12 px glyphs, 32 × 32 px hit areas).
+
+## Port and server
+
+Slot values from `.polier-slot` (`web=4200` for slot 2). Only this task's static server was started
+and stopped; the owner's static server on port 4000 was not touched.
+
+```sh
+cd "/Users/rasulatashev/Desktop/KI Projekte/Project air-P0-30"
+PORT=4200
+python3 -m http.server "$PORT" --bind 127.0.0.1
+```
+
+Served from the repository root so the relative token, icon, image and locale paths resolve.
+
+## HTTP status and sizes (final files)
+
+```
+apps/web/preview/                           -> 200 70640
+preview.css?v=P0-30                          -> 200 43143
+preview.js?v=P0-30                           -> 200 50247
+locales/en.json?v=P0-30                      -> 200 20446
+locales/de.json?v=P0-30                      -> 200 22071
+packages/ui-kit/tokens.css?v=P0-30           -> 200 2295
+apps/web/preview/assets/demo-zone-image.webp -> 200 74494
+packages/ui-kit/icons/note.svg               -> 200 298
+```
+
+HTTP sizes equal the on-disk byte sizes (`stat -f '%z'`): `index.html` 70640, `preview.css` 43143,
+`preview.js` 50247, `locales/en.json` 20446, `locales/de.json` 22071. All three asset URLs in the
+page carry `?v=P0-30`; the locale fetch inherits the script version. The only server-log 404 is the
+browser's automatic `/favicon.ico`.
+
+## Interaction model (CDP pointer events, real layout)
+
+A temporary out-of-repo helper drove Chrome for Testing 156 through CDP
+(`Emulation.setDeviceMetricsOverride`, `Page.navigate`, `Runtime.evaluate` with real
+`PointerEvent`/`KeyboardEvent` dispatch, `Page.captureScreenshot`, `Emulation.setEmulatedMedia`) and
+was removed afterwards. Screenshots are scrolled so the demo surface is visible.
+
+```sh
+node /tmp/p030-cdp.mjs "http://127.0.0.1:4200/apps/web/preview/?v=P0-30" "reviews/evidence"
+```
+
+### 1:1 pointer tracking, no mid-drag commit
+
+Docked notepad dragged twice (world coordinates):
+
+```
+start:  pointer (567.0, 135.8)  item (447.0,  91.0) 240 × 88.6
+mid:    pointer (440.0, 184.8)  item (320.0, 140.0) 240 × 88.6   delta (-127, +49) = (-127, +49)
+end:    pointer (540.0, 244.8)  item (420.0, 200.0) 240 × 88.6   delta (+100, +60) = (+100, +60)
+```
+
+The item follows the pointer exactly; only the canvas edge clamps it. Mid-drag checks:
+
+- grouping: after both items are free, dragging the window over the notepad gives
+  `zone.data-zone-visible=false`, both items still `detached`, slot order unchanged
+  `[notepad, window]`, and the drop hint only on the notepad (`is-drop-target`); the zone was not
+  created mid-drag.
+- reorder: inside a grouped zone, dragging the notepad over the window gives both items `docked`,
+  slot order unchanged `[notepad, window]`, hint on the window; no orientation/size change mid-drag.
+
+### Release commits
+
+```
+release free (outside):   notepad released outside the zone -> status "Notepad detached — free on
+                          the canvas.", notepad state detached, window still docked, zone visible
+release over hidden zone: zone hidden with both items detached; dragging a free item to the hidden
+                          zone's old centre and releasing -> zone stays hidden (data-zone-visible
+                          false), both items still detached, status unchanged "Zone hidden — drag
+                          the two items together to form a new zone."
+grouping on release:      window dragged over the free notepad, released -> new grouped zone,
+                          both items docked, status "Items grouped stacked into a new zone."
+collapse:                 detaching both items from a grouped zone hides the zone again
+                          (data-zone-visible=false, is-collapsed)
+```
+
+### Orientation from the placement
+
+```
+vertical drop:    dragged the window onto the notepad from below (offset +10, +60) -> requested
+                  vertical; zone 274 × 275 at (412.4, 78.7), insideWorld true, toolbarOverlap 0,
+                  status "Items grouped stacked into a new zone."
+horizontal drop:  dragged the window onto the notepad from the right (offset +90, +5) -> requested
+                  horizontal; zone 526 × 174 at (316.4, 110.7), insideWorld true, toolbarOverlap 0,
+                  status "Items grouped side by side into a new zone."
+reorder/swap:     in the horizontal zone drag the notepad past the window's midpoint -> zone stays
+                  horizontal 526 × 174, slot order [window, notepad], status "Order changed inside
+                  the zone."
+orientation flip: drag the window above the notepad -> zone becomes vertical 274 × 275, slot order
+                  [window, notepad]
+back:             drag it to the right again -> horizontal 526 × 174, slot order [notepad, window]
+```
+
+The zone animates its resize, measured while switching vertical 274 × 275 → horizontal 526 × 174:
+
+```
+t (ms)   inline-size   block-size   orientation attribute
+   15       274px         275px      horizontal
+   32       274px         275px      horizontal
+   49       375.1px       234.5px    horizontal
+   65       444.7px       206.6px    horizontal
+   82       485.3px       190.3px    horizontal
+   99       507.2px       181.5px    horizontal
+  115       518.3px       177.1px    horizontal
+  315       526px         174px      horizontal
+```
+
+`inline-size`/`block-size` transition over `--motion-panel` (180 ms) with the spring-like ease while
+the items settle to their new slots.
+
+### Resize re-fit (P0-29 kept)
+
+```
+1440 x 900 (grouped): horizontal 526 x 174 at (316.4, 110.7), insideWorld true
+390 x 844:            fallback vertical 274 x 275 at (82, 110.7), world 356 x 744, insideWorld true,
+                      toolbarOverlap 0, both items clipped=false
+back at 1440 x 900:   horizontal 526 x 174 at (82, 110.7), insideWorld true
+```
+
+The requested orientation is kept; a fit fallback is used temporarily and restored when the surface
+is wide enough again. Card A/B are user-placed canvas objects and are only clamped on viewport
+changes (P0-24 behaviour), so the A/B edge path changes with the viewport — zone actions themselves
+never touch the edge (docked, grouped, reordered, reduced-motion and re-grouped states share the same
+A/B path at a fixed 1440 × 900 viewport).
+
+### Zoom levels
+
+```
+150 % zoom, vertical drop:  requested stacked; the stacked zone does not fit below the floating
+                            toolbar (toolbar clearance grows in world space when zoomed in), so it
+                            falls back to horizontal 526 x 174 at (108.4, 111.7), insideWorld true,
+                            toolbarOverlap 0, status "Items grouped side by side into a new zone."
+50 % zoom:                  the same orientation/reorder rules were exercised in the P0-29 centre
+                            rule probe (thresholds use screen px); grouping/reorder use the same
+                            screen-px dominance and hysteresis.
+390 x 844:                  grouped vertical 274 x 275 at (28.4, 94.7), insideWorld true.
+```
+
+### Reduced motion, locale switch, existing demo
+
+```
+prefers-reduced-motion: the card transition duration is 0 s; a released detach commits immediately
+                        (state detached after the release) and grouping reaches the grouped state
+                        immediately with no animated size/opacity (measured at 80 ms / 120 ms).
+locale switch mid-drag: switched to DE while the window was being dragged; no errors, the page
+                        switched to German (lang=de), the drag continued and released with both items
+                        docked; German status/ hint/ legend strings rendered.
+existing demo:          ArrowRight moves card A +16 px, the card move changes the edge and Home
+                        restores it exactly; zoom-in gives scale(1.1), fit returns to scale(1); the
+                        palette tool is selected; the DE/EN switch still translates the page.
+page:                   no horizontal overflow at 1440 x 900 or 390 x 844; all probe states report
+                        window/console errors = [].
+```
+
+## Smaller zoom controls (measured)
+
+```
+pill:            32 x 96 px (P0-29: 36 x 104)
+buttons:         32 x 32 px hit areas (3 buttons), painted visual 28 x 28 px via a ::before inset of
+                 --space-4 / 2 = 2 px (P0-29: 32 x 32 painted)
+glyphs:          12 x 12 px (P0-29: 16 x 16)
+labels:          ["Zoom in", "Zoom out", "Fit to view"] unchanged; focus outline unchanged
+overlaps:        pill vs toolbar / card A / card B / zone = 0 px² at 1440 x 900 and at 390 x 844
+keyboard:        the same buttons and focus order; hit areas stay >= 32 px
+```
+
+## Screenshots
+
+| File | Size | Content |
+| --- | --- | --- |
+| `reviews/evidence/P0-30-horizontal.png` | PNG 1440 × 900, 186477 bytes | zone grouped side by side from a horizontal drop (526 × 174) |
+| `reviews/evidence/P0-30-vertical.png` | PNG 1440 × 900, 189442 bytes | zone grouped stacked from a vertical drop (274 × 275) |
+| `reviews/evidence/P0-30-swapped.png` | PNG 1440 × 900, 186008 bytes | the two docked items reordered/swapped (photo first, notepad second), status "Order changed inside the zone." |
+| `reviews/evidence/P0-30-drop-hint.png` | PNG 1440 × 900, 191385 bytes | subtle drop outline on the notepad while the free photo window is dragged over it, before any commit; the zone stays hidden and no state changed |
+| `reviews/evidence/P0-30-controls.png` | PNG 1440 × 900, 186576 bytes | the smaller zoom pill (32 × 96, 28 px visuals, 12 px glyphs) |
+| `reviews/evidence/P0-30-controls-mobile.png` | PNG 390 × 844, 58464 bytes | the smaller pill on mobile, scrolled so it is inside the capture |
+| `reviews/evidence/P0-30-masthead-en.png` | PNG 1440 × 900, 166684 bytes | rendered masthead in English: last change P0-30 plus 2026-10-27 11:12 and tasks including P0-30 |
+| `reviews/evidence/P0-30-masthead-de.png` | PNG 1440 × 900, 185775 bytes | rendered masthead in German: `Letzte Änderung: P0-30 — …` plus 2026-10-27 11:12 and `Aufgaben: … P0-30, P1-07` |
+| `reviews/evidence/P0-30-zoom-150.png` | PNG 1440 × 900, 218882 bytes | a grouped zone at 150 % zoom re-fitted inside the visible surface (526 × 174 at world (188.3, 111.7)), no toolbar overlap |
+
+## Gates
+
+```sh
+cd "/Users/rasulatashev/Desktop/KI Projekte/Project air-P0-30"
+export POLIER=/Users/rasulatashev/Desktop/Polier-main
+python3 "$POLIER/tools/gate.py" --task P0-30 --name board-check --shell "python3 $POLIER/tools/check.py ."
+python3 "$POLIER/tools/gate.py" --task P0-30 --name design-check --shell "node tools/design-check/index.mjs ."
+python3 "$POLIER/tools/gate.py" --task P0-30 --name changelog-entry --shell "node tools/release/check-changes.mjs --task P0-30 --base main"
+node tools/language-check/index.mjs .
+```
+
+| Gate | Result | Record |
+| --- | --- | --- |
+| `board-check` | PASS (exit 0) | `reviews/evidence/P0-30-board-check-20261027T103140Z.json` |
+| `design-check` | PASS (exit 0, 0 findings) | `reviews/evidence/P0-30-design-check-20261027T103142Z.json` |
+| `changelog-entry` | PASS (exit 0, `.changes/P0-30-flexible-zone.md`) | `reviews/evidence/P0-30-changelog-entry-20261027T103142Z.json` |
+
+`board-check` ran first, before any `pnpm` command; `check.py` exits 0 with pre-existing board
+warnings only. `board.json`, `STATUS.md`, `CHANGELOG.md`, `apps/web/messages/` and the package
+manifests are untouched. `language-check: OK`; design-check reports 0 findings (no raw colours, no
+off-grid spacing, no numeric z-index).
+
+## Locale and masthead (rendered, round 2)
+
+The rendered page was read after the locale files loaded, in English and in German (not just the
+HTML markup), and captured:
+
+```
+EN rendered:  last change "Last change: P0-30 — Flexible zone layout, less magnetic drag and smaller
+              controls", time "2026-10-27 11:12 (Europe/Zurich)",
+              tasks "Tasks: P0-19, P0-20, P0-21, P0-22, P0-23, P0-24, P0-25, P0-26, P0-27, P0-28,
+              P0-29, P0-30, P1-07" (lang=en)
+DE rendered:  last change "Letzte Änderung: P0-30 — Flexible Zonenanordnung, weniger magnetisches
+              Ziehen und kleinere Steuerelemente", time "2026-10-27 11:12 (Europe/Zurich)",
+              tasks "Aufgaben: P0-19, P0-20, P0-21, P0-22, P0-23, P0-24, P0-25, P0-26, P0-27,
+              P0-28, P0-29, P0-30, P1-07" (lang=de)
+back to EN:   the P0-30 line and tasks remain (locale switch round trip)
+locale keys:  en 266 / de 266, identical key sets, 252 keys referenced from HTML, no sharp-s and no
+              exclamation mark in German; new keys demo.status.groupedHorizontal,
+              demo.status.groupedVertical, demo.status.reordered and demo.status.orientationChanged;
+              hint, legend, intro and masthead values updated in both files
+masthead time: mtime of .changes/P0-30-flexible-zone.md = 2026-10-27 11:12 (Europe/Zurich)
+assets:       tokens.css / preview.css / preview.js all ?v=P0-30
+```
+
+## Notes
+
+- Thresholds in the code: visual detach ramp 28 screen px, release margin 18 screen px (outside =
+  free, inside/within the band = dock/reorder), grouping 25 % overlap of the smaller area or 48
+  screen px centre distance, orientation dominance 1.2 (hysteresis band for diagonal drops), order
+  hysteresis 8 screen px around the midpoint, zone padding 16 px / gap 12 px, motion 180 ms with the
+  spring eases above, detach scale max 1.03.
+- The hidden zone is inert on both drag and release paths (P0-29); the zone comes back through
+  re-grouping or by docking during the exit. The zone resize/collapse animations use the existing
+  motion tokens; transform/opacity drive the item motion, while the committed orientation change
+  animates the zone's inline/block size.
+- Zone actions never create, move or change the A/B edge: exactly one `.demo__edge` element and one
+  path in every measured state; only viewport changes (which clamp the user-placed cards) change it.
+
+## Round 2 (rework after the fail review)
+
+**Blocker A4 — rendered locale masthead.** The HTML fallback was correct, but `en.json`/`de.json`
+still carried the P0-29 lines, so `applyLocale` overwrote the rendered masthead. Fixed in both JSONs:
+`masthead.lastChange` = P0-30 title (EN) / German translation (DE), `masthead.tasks` includes P0-30,
+`masthead.lastChangeTime` = 2026-10-27 11:12. Verified on the rendered page in EN and DE (values above,
+captured as `P0-30-masthead-en.png` / `P0-30-masthead-de.png`) and after switching back to EN.
+
+**Minor 1 — distinct orientation status.** Added `demo.status.orientationChanged` (EN "Orientation
+changed inside the zone.", DE "Ausrichtung in der Zone geändert.") and split the reorder commit:
+a real slot swap announces "Order changed inside the zone.", an axis flip without a slot swap
+announces "Orientation changed inside the zone." Measured: horizontal zone [notepad, window] →
+dragging the notepad above the window gives vertical, order unchanged [notepad, window], status
+"Orientation changed inside the zone."; a following drop past the window gives horizontal, order
+[window, notepad], status "Order changed inside the zone."
+
+**Minor 2 — visible-surface fit at high zoom.** A grouped zone is now clamped into the **visible**
+surface rectangle (`visibleWorldBounds()`: the intersection of the scaled world and the demo
+surface), not just the world layer. At 150 % zoom the stacked request does not fit below the toolbar
+so it uses the side-by-side fallback like before, but the position is clamped to the visible area:
+zone screen rect (188.3, 111.7) 526 × 174 in world coordinates, `insideSurface` true,
+`toolbarOverlap` 0; before the fix the same zone sat at x = 108.4 and was partly outside the visible
+surface. Captured as `P0-30-zoom-150.png`. Ordinary 100 %/390 px fits are unchanged (`insideSurface`
+also true there).
+
+No other screenshots changed: the horizontal/vertical/swapped/drop-hint/controls captures were taken
+at 100 % zoom in a fixed 1440 × 900 viewport, where the visible surface equals the world and the
+status strings for those flows are unchanged. The round-1 gate records are superseded by the round-2
+records in the gates table above and will not be committed.

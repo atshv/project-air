@@ -177,11 +177,11 @@
 - [x] `P0-27` Bilingual preview with DE/EN switch and cache-busted assets — status: `done` — owner: —
 - [x] `P0-28` Zone detach interaction: drag notepad and photo out and back — status: `done` — owner: —
 - [x] `P0-29` Zone collapse, re-grouping and smaller zoom controls — status: `done` — owner: —
+- [x] `P0-30` Flexible zone layout, less magnetic drag and smaller controls — status: `done` — owner: —
 
 ## In progress
 
 - [ ] `P4-04` Visual gate with reference images — status: `in_progress` — owner: lead
-- [ ] `P0-30` Flexible zone layout, less magnetic drag and smaller controls — status: `in_progress` — owner: —
 
 ## Blocked / failed
 
@@ -217,13 +217,6 @@
 - [ ] `P4-26` Zones as containers II: platform migration and containment (L08) — status: `pending` — owner: —
 - [ ] `P4-27` Zones as containers II: engine membership and zone move (L08) — status: `pending` — owner: —
 - [ ] `P4-28` L01 final proof, two-backend reference images and stage showcase — status: `pending` — owner: —
-
-<!-- polier:claims -->
-## Claims
-
-- `P0-30` in progress by dsh since 2026-10-27T09:56:45+00:00 — worktree: /Users/rasulatashev/Desktop/KI Projekte/Project air-P0-30 · slot 2
-
-<!-- /polier:claims -->
 
 ## Decisions
 

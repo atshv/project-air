@@ -4,9 +4,9 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title data-i18n="page.projectAirDesignPreviewStatic">Project air design preview — static design preview</title>
-    <link rel="stylesheet" href="../../../packages/ui-kit/tokens.css?v=P0-29" />
-    <link rel="stylesheet" href="preview.css?v=P0-29" />
-    <script src="preview.js?v=P0-29" defer></script>
+    <link rel="stylesheet" href="../../../packages/ui-kit/tokens.css?v=P0-30" />
+    <link rel="stylesheet" href="preview.css?v=P0-30" />
+    <script src="preview.js?v=P0-30" defer></script>
   </head>
   <body>
     <main class="page">
@@ -22,14 +22,14 @@
         <p class="masthead__version" data-preview-meta>
           <span data-preview-version data-i18n="masthead.version">Version 0.0.1</span>
           <span data-preview-status data-i18n="masthead.unreleased">unreleased</span>
-          <span data-preview-last-change data-i18n="masthead.lastChange">Last change: P0-29 — Zone collapse, re-grouping and smaller zoom controls</span>
-          <span data-preview-last-change-time data-i18n="masthead.lastChangeTime">2026-10-27 08:37 (Europe/Zurich)</span>
+          <span data-preview-last-change data-i18n="masthead.lastChange">Last change: P0-30 — Flexible zone layout, less magnetic drag and smaller controls</span>
+          <span data-preview-last-change-time data-i18n="masthead.lastChangeTime">2026-10-27 11:12 (Europe/Zurich)</span>
         </p>
         <div class="masthead__meta">
           <span data-i18n-html="masthead.tokensPackagesUiKitTokens">Tokens: <code>packages/ui-kit/tokens.css</code></span>
           <span data-i18n-html="masthead.iconsPackagesUiKitIcons">Icons: <code>packages/ui-kit/icons/</code></span>
           <span data-i18n-html="masthead.demoPreviewJs">Demo: <code>preview.js</code></span>
-          <span data-i18n="masthead.tasks">Tasks: P0-19, P0-20, P0-21, P0-22, P0-23, P0-24, P0-25, P0-26, P0-27, P0-28, P0-29, P1-07</span>
+          <span data-i18n="masthead.tasks">Tasks: P0-19, P0-20, P0-21, P0-22, P0-23, P0-24, P0-25, P0-26, P0-27, P0-28, P0-29, P0-30, P1-07</span>
           <div
             class="preview-locale"
             role="group"
@@ -64,7 +64,9 @@
           <h2 id="demo" data-i18n="demo.liveConnectionDemo">Live connection demo</h2>
           <p class="section__intro" data-i18n-html="demo.twoNoteCardsAndOne">
             Two note cards and one connection, plus a preview-only toolbar and a zone whose notepad
-            and photo can be pulled out and docked back — when both are out the empty zone
+            and photo can be pulled out and docked back. The zone lays its two items side by side or
+            stacked depending on where you drop them, a drag follows the pointer one to one, and a
+            docked item can be reordered inside the zone. When both items are out the empty zone
             disappears, and dragging the two items together forms a new zone around them. Drag a
             card with mouse, pen or finger — the whole card is the handle — or focus a card and use
             the arrow keys (16 px per step, <kbd>Home</kbd> resets both).
@@ -81,15 +83,18 @@
           <p class="demo__hint" id="demo-hint" data-i18n="demo.aClickWithoutMovementUnder">
             A click without movement (under 4 px) selects the card; the four side-midpoint anchors
             are invisible geometry and the edge snaps to the nearest pair. Drag the notepad or the
-            photo out of the zone: after about 28 px it detaches and stays free on the canvas, and
-            dragging it back docks it into its slot again. When both items are out, the empty zone
-            fades away; drag the free items so they overlap (at least a quarter of the smaller one,
-            or centres within 48 px) and they group into a new zone. Toolbar, zone and zoom pill are
-            preview-only: a tool click only selects it and changes nothing on the canvas.
+            photo: it follows the pointer one to one, nothing snaps mid-drag, and a subtle outline
+            marks the drop target. Release over the other free item to group them into a zone,
+            release inside a zone to dock (above/below stacks, left/right places side by side), and
+            release further out to keep the item free — the spring settle runs after the release.
+            Drag a docked item inside the zone over the other one to reorder or swap it. When both
+            items are out the empty zone fades away; toolbar, zone and zoom pill are preview-only: a
+            tool click only selects it and changes nothing on the canvas.
           </p>
           <p class="demo__legend token-caption" data-i18n="demo.toolbarPreviewOnlyZoneNotepad">
-            toolbar · preview-only · drag out / back · both out: zone fades · overlap: new zone ·
-            curve · --tone-d · 1.5 px
+            toolbar · preview-only · drag 1:1 · release to dock/group · above/below = stacked ·
+            left/right = side by side · drag inside = reorder · both out: zone fades · curve ·
+            --tone-d · 1.5 px
           </p>
           <div class="demo__surface" data-demo-surface>
             <div

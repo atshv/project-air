@@ -1,4 +1,4 @@
-# Design preview (P0-19, P0-20, P0-21, P0-22, P0-23, P0-24, P0-25, P0-26, P0-27, P0-28, P0-29, P1-07)
+# Design preview (P0-19, P0-20, P0-21, P0-22, P0-23, P0-24, P0-25, P0-26, P0-27, P0-28, P0-29, P0-30, P1-07)
 
 A design preview of the Project air design system. It is **not the product**: there is no engine,
 no data, no server and no build step. It exists so the owner can see the look and feel between
@@ -15,9 +15,9 @@ its two values come from:
   `0.0.1 – unreleased`; the status word comes from the same heading. `CHANGELOG.md` is the display
   source and currently agrees with the root `package.json` version `0.0.1`.
 - **Last change** — the newest preview change entry, currently
-  `.changes/P0-29-zone-collapse.md`; the line shows the task id and that task's title from
-  `board.json` / the task brief: `P0-29 — Zone collapse, re-grouping and smaller zoom controls`.
-  The line follows the `P0-*` preview tasks (P0-19 … P0-29, P1-07); the engine tasks
+  `.changes/P0-30-flexible-zone.md`; the line shows the task id and that task's title from
+  `board.json` / the task brief: `P0-30 — Flexible zone layout, less magnetic drag and smaller
+  controls`. The line follows the `P0-*` preview tasks (P0-19 … P0-30, P1-07); the engine tasks
   (`P4-*`) and the other stages run in parallel and do not move it, so "highest numeric id" alone is
   not the rule. If several files exist for the same preview task, the most recent one is used;
   `.changes/README.md` and `.changes/TEMPLATE.md` do not count as entries.
@@ -42,13 +42,15 @@ task.
 - A **top-centre floating toolbar** (preview-only) with the ten tools note (selected initially),
   link, image, file │ zone, checklist, palette, columns, timeline and table, using the ui-kit icon
   files through the existing `.icon--*` mask classes.
-- A **zone** with a notepad and a small image window that shows the owner-supplied demo photo. Both
-  items can be dragged out of the zone onto the canvas and docked back (P0-28); when both are out
-  the empty zone fades away (P0-29) and dragging the two free items together forms a new zone
-  around them. There is no upload, no file handling and nothing is saved.
+- A **zone** with a notepad and a small image window that shows the owner-supplied demo photo. The
+  zone lays the two items side by side or stacked depending on where the drop lands, a docked item
+  can be reordered or swapped inside it (P0-30), both items can be dragged out onto the canvas and
+  docked back (P0-28); when both are out the empty zone fades away (P0-29) and dragging the two
+  free items together forms a new zone around them. There is no upload, no file handling and
+  nothing is saved.
 - A small floating **zoom pill** in the demo (preview-only): zoom in, zoom out and fit stacked
-  vertically, drawn with CSS shapes and labels from the locale files (32 px buttons in a 36 px
-  pill, 16 px glyphs).
+  vertically, drawn with CSS shapes and labels from the locale files (28 px visual buttons in a
+  32 px pill, 12 px glyphs, 32 × 32 px hit areas).
 - A **DE/EN switch** at the top right of the masthead: the whole page (all text, `aria-label`s,
   `alt` texts and the document title) switches between English and German, the choice persists in
   `localStorage`, and `<html lang>` follows the switch.
@@ -97,10 +99,10 @@ design system updates the demo and refreshes its screenshot in `reviews/evidence
   layer below the cards (`--layer-note-cards`) and keeps the design-system connection style — a
   `--tone-d` stroke at 1.5 px (`--border-width-strong`) with `--tone-d` endpoint dots.
 - **Zoom pill (preview-only):** one floating vertical control sits 12 px from the bottom-left corner
-  of the demo surface — a 36 px container (`--click-target` 32 px plus a 4 px inline margin) with
-  `--radius-md`, `--surface` background, a 1 px `--border` outline, 4 px block padding and three
-  stacked 32 px segments (zoom in, zoom out, fit), each a ≥ 32 × 32 px target, separated by 1 px
-  `--border` rules and drawn with 16 px glyphs (`--icon-card`). The `+`, `−` and fit-corner glyphs are drawn with CSS shapes only; every
+  of the demo surface — a 32 px container (`--click-target`) with `--radius-md`, `--surface`
+  background, a 1 px `--border` outline, no block padding and three stacked segments (zoom in, zoom
+  out, fit), each a **32 × 32 px hit area** whose painted button is 28 × 28 px (a `::before` inset by
+  `--space-4 / 2`), separated by 1 px `--border` rules and drawn with 12 px glyphs (`--space-12`). The `+`, `−` and fit-corner glyphs are drawn with CSS shapes only; every
   segment has an `aria-label` from the locale files plus a CSS tooltip (`Zoom in`, `Zoom out`,
   `Fit to view` in English; `Vergrössern`, `Verkleinern`, `Alles anzeigen` in German) and
   follows the design states (hover `--faint`, pressed `scale(0.97)`, `--accent` focus outline,
@@ -169,73 +171,76 @@ Both are **preview-only**: no toolbar action touches the canvas, and the zone is
   layouts; on desktop the world layer and the surface are identical and the demo behaves exactly as
   before.
 
-## Zone detach interaction (P0-28)
+## Zone interaction: orientation, reorder and commit-on-release (P0-28 → P0-30)
 
-The notepad and the photo window are draggable canvas objects, not static decoration:
+The notepad and the photo window are draggable canvas objects, not static decoration. P0-30 changes
+the drag model from "magnetic" to "commit on release": the items track the pointer exactly and the
+drop decides.
 
 - **Dock slots** — on the first drag the script measures both items in the zone grid, replaces them
   with equally sized dock slots and moves them into the zone container, positioned in world
   coordinates. Dock positions are measured from those slots (never hard-coded) and re-measured on
   resize, locale switch and content reflow (`ResizeObserver`), so a re-dock always restores the
   original slot exactly.
-- **Drag** — pointer events with `setPointerCapture`, one active drag, mouse, pen and touch; the
-  same 4 px movement threshold (`--drag-threshold`) as the cards starts it. While the pointer is
-  inside the zone the item follows it, clamped to the zone.
-- **Detach progress 0 → 1** — the pointer distance outside the zone edge drives a smoothstep
-  progress over **28 screen px** (screen pixels, so it behaves the same at every zoom level). The
-  progress scales the item 1 → 1.03 (`transform`, no layout thrash), fades its border out
-  (1 → 0) and grows the `--card-shadow` (0 → 1). At progress 1 the item is released into canvas
-  space, clamped to the demo surface and snapped to the 16 px canvas grid on release.
-- **Hysteresis** — detaching needs at least 28 px outside the zone edge, docking again needs at most
-  **8 px**; the band in between keeps the current state, so a wobble at the edge cannot flicker.
-  Releasing mid-detach settles to the nearest state: farther than 18 px outside stays detached,
-  otherwise the item settles back into its slot.
-- **Docking back** — dragging the item toward the zone reverses the progress and it settles into its
-  measured slot with a short `--motion-panel` transition and a spring-like
-  `cubic-bezier(0.22, 1.12, 0.36, 1)` ease; other content does not move.
-- **No edge** — detached items are free objects. The demo keeps exactly one edge element
-  (`.demo__edge`, cards A ↕ B) and its path never changes when a zone item moves; zone items are
-  never connected.
+- **1:1 drag, no mid-drag commit** — pointer events with `setPointerCapture`, one active drag, mouse,
+  pen and touch; the same 4 px movement threshold (`--drag-threshold`) as the cards starts it. The
+  dragged item follows the pointer one to one and is clamped only at the canvas edge: no snapping,
+  no mid-drag dock, no mid-drag group, no state change at all. The detach look is purely visual
+  during the drag (progress ramps over 28 screen px of pointer travel outside the zone edge: item
+  scale 1 → 1.03, border fades out, `--card-shadow` fades in), and a subtle outline marks the drop
+  target (the other item or the zone) without changing any layout.
+- **Release commits** — the drop position decides, with documented margins:
+  - a **docked** item released farther than **18 screen px** outside the zone edge becomes free
+    (detached, snapped to the 16 px canvas grid, spring settle);
+  - a **docked** item released inside the zone (or within the 18 px margin) docks back, and if it
+    was dropped over the other item it **reorders/swaps** with it;
+  - a **free** item released over the other free item **groups** into a new zone on the existing
+    P0-29 rule: rectangles overlap by at least **25 % of the smaller area** or centres are within
+    **48 screen px**; a free item released inside a visible zone docks back; a free item released
+    outside stays free; and a **hidden zone is inert**, so releasing over its old rectangle keeps the
+    item free and the zone hidden.
+  - The settle, dock, group and reorder animations run only after the release, with the spring ease
+    `cubic-bezier(0.22, 1.12, 0.36, 1)` for items and `cubic-bezier(0.22, 1.08, 0.36, 1)` for the
+    zone, over `--motion-panel` (180 ms). A drop exactly on the other item's midpoint keeps the
+    current order (8 screen px hysteresis band).
+- **Orientation from placement** — a grouped zone has a `horizontal` (side by side) or `vertical`
+  (stacked) orientation. Grouping picks it from the drop: the dragged item's centre offset from the
+  other item dominates vertically → stacked, horizontally → side by side; a near-diagonal drop keeps
+  the current orientation (dominance ratio 1.2, the hysteresis against diagonal flapping). The same
+  rule applies to a docked reorder: the item can switch the orientation (drop above/below vs
+  left/right) while it is reordered. The zone is **sized from the two dock slots plus 16 px padding
+  and the original 12 px gap**, positioned around the union of the items, clamped into the demo
+  surface and — on desktop — below the floating toolbar (`--space-8` below its bottom edge in world
+  coordinates; when the chosen orientation does not fit there, the other one is used, e.g. a stacked
+  zone falls back to side by side below the toolbar at 150 % zoom). A grouped zone is clamped into
+  the **visible** surface rectangle (the part of the scaled world that is visible through the demo
+  surface), not just into the world layer, so at high zoom it never sits under the toolbar or outside
+  the visible area. The zone **animates its size**
+  (`inline-size`/`block-size` transition with `--motion-panel`) and its position while both items
+  ease to their new slots.
+- **Reorder/swap inside the zone** — dragging a docked item over the other item and releasing inside
+  the zone changes the order along the flow: the dragged item is before the other when its centre is
+  before the other's centre; dropping above/below switches to stacked, left/right to side by side.
+  Only the order/orientation is animated (transform for the items, size for the zone); the zone stays
+  clamped and its slots are re-measured. The status line distinguishes the two cases: a real slot
+  swap announces "Order changed inside the zone.", an axis flip without a slot swap announces
+  "Orientation changed inside the zone." (`Ausrichtung in der Zone geändert.`).
+- **Collapse** — with one item inside the zone it stays visible; when the last item leaves, the empty
+  zone fades and shrinks out (`opacity` 1 → 0, scale 1 → 0.96 over `--motion-panel`), then it is
+  hidden and inert (`visibility: hidden`, `pointer-events: none`) on both drag and release paths. The
+  zone comes back through re-grouping (or by docking during the exit).
+- **Resize** — a grouped zone is re-measured on every resize/locale reflow: the orientation is kept
+  when it fits and falls back to the other one when it does not (1440 → 390 switches side by side to
+  stacked, 390 → 1440 switches back), the zone is clamped fully into the surface (also below the
+  toolbar when it fits) and both docked items follow their new slots; nothing is clipped.
+- **No edge** — the demo keeps exactly one edge element (`.demo__edge`, cards A ↕ B); its path never
+  changes when a zone item moves, reorders or groups. Zone items are never connected.
 - **Z-order** — docked items sit at `--layer-blocks`, a dragged or detached item at
   `--layer-dragged-or-selected` (above the note cards) and below the canvas chrome
   (`--layer-canvas-chrome`: toolbar and zoom pill); no numeric z-index.
-- **Reduced motion** — under `prefers-reduced-motion: reduce` the scale and shadow animation are
-  removed, the settle transition is immediate and the zone collapse/re-grouping jumps straight to
-  its end state (the state changes still happen, they just do not animate).
-
-## Zone collapse and re-grouping (P0-29)
-
-The zone is now a state machine of its own; the P0-28 detach/dock behaviour above stays unchanged.
-
-- **Collapse** — with **one** item inside the zone it stays visible; when the **last** item leaves,
-  the empty zone plays a short exit and is then hidden: `opacity` 1 → 0 and `transform` scale
-  1 → 0.96 over `--motion-panel` (180 ms) with the spring-like ease, then `visibility: hidden` and
-  `pointer-events: none` — it leaves the pointer and tab flow and is inert. An item that docks
-  during the exit cancels it and the zone fades back in (the collapse timer is cleared). A fully
-  collapsed zone is inert on both entry paths: dragging an item over its old rectangle does not
-  re-dock it and releasing it there keeps it detached and the zone hidden (the pointermove and the
-  release decision both check the hidden state); the zone comes back through re-grouping.
-- **Re-grouping** — only **free** items group (docked items behave as in P0-28). While dragging a
-  free item, or on release, the two free items are compared: they group when their rectangles overlap
-  by at least **25 % of the smaller area** or when their **centres are within 48 screen px** (so the
-  threshold behaves the same at every zoom level). The new zone is **sized from the two dock slots
-  plus 16 px padding** and **positioned around the union of the items**, clamped to the demo surface
-  (`opacity` 0 → 1, scale 0.96 → 1) while both items ease into slots inside it with 16 px padding and
-  the original 12 px gap. On wide surfaces the slots sit side by side (526 × 174 px zone); on narrow
-  ones such as 390 px they stack vertically (274 × 275 px). On desktop the zone is also kept below
-  the floating toolbar (`--space-8` below its bottom edge in world coordinates, re-measured on every
-  fit), so the two canvas chrome layers never overlap. The grouped zone is a normal zone again: its items can be detached,
-  the zone collapses when both leave, and the items can group again.
-- **Resize** — a grouped zone is re-measured on every resize and locale reflow: the orientation is
-  recomputed from the current item sizes and the world, so 1440 → 390 switches from side by side to
-  stacked, then 390 → 1440 switches back; the zone is clamped fully into the surface (also below the
-  toolbar) and both docked items follow their new slots, so nothing is clipped.
-- **No edge** — grouping never creates, moves or changes the A/B edge: the demo keeps exactly one
-  `.demo__edge` element and its path is unchanged by grouping.
-- **Motion** — the item settle, zone exit and zone enter use transform/opacity only (no layout
-  thrash), the existing motion tokens for durations and the spring-like easing curves above; the
-  detach scale tops out at 1.03. `prefers-reduced-motion: reduce` turns the zone transitions off and
-  the collapse/re-grouping applies its end state immediately.
+- **Reduced motion** — under `prefers-reduced-motion: reduce` all zone transitions are off: the
+  detach look, the settle, the zone size and the collapse/grouping apply their end state immediately;
+  the state changes still happen.
 
 ## Bilingual preview and the DE/EN switch (P0-27)
 
@@ -286,9 +291,9 @@ P0-26 markup with the old stylesheet and a broken-looking demo. The preview ther
 assets with a version query:
 
 ```html
-<link rel="stylesheet" href="../../../packages/ui-kit/tokens.css?v=P0-29" />
-<link rel="stylesheet" href="preview.css?v=P0-29" />
-<script src="preview.js?v=P0-29" defer></script>
+<link rel="stylesheet" href="../../../packages/ui-kit/tokens.css?v=P0-30" />
+<link rel="stylesheet" href="preview.css?v=P0-30" />
+<script src="preview.js?v=P0-30" defer></script>
 ```
 
 - **Bump rule:** every task that changes a file in `apps/web/preview/` — or the shared
@@ -297,7 +302,7 @@ assets with a version query:
   never cached and gets the current files, which also covers a changed design system that would
   otherwise be served from the cached token stylesheet.
 - The locale files reuse the script's version automatically: `preview.js` reads the `v` query of its
-  own script URL and appends it to the locale request (`locales/de.json?v=P0-29`), so one bump
+  own script URL and appends it to the locale request (`locales/de.json?v=P0-30`), so one bump
   covers the translations as well.
 - The icon SVGs are referenced from `preview.css` and keep stable, unversioned URLs; they only
   change with a design-system task, and every such task bumps the preview version anyway.
@@ -354,7 +359,7 @@ Serve the **repository root**, not this folder, so the relative token and icon p
 the slot's `web` port from `.polier-slot` (never hard-code it), then:
 
 ```sh
-cd "/Users/rasulatashev/Desktop/KI Projekte/Project air-P0-29"
+cd "/Users/rasulatashev/Desktop/KI Projekte/Project air-P0-30"
 PORT=$(python3 -c "import json; print(json.load(open('.polier-slot'))['ports']['web'])")
 python3 -m http.server "$PORT" --bind 127.0.0.1
 ```
@@ -404,9 +409,21 @@ whole demo surface with both cards and the photo is visible),
 `P0-29-grouped-mobile.png` (390×844, a grouped zone re-fitted after resizing from 1440: vertical,
 both items visible) and
 `P0-29-grouped-toolbar.png` (1440×900, a grouped zone near the top clamped below the floating
-toolbar) and the
+toolbar),
+`P0-30-horizontal.png` (1440×900, a zone grouped side by side from a horizontal drop),
+`P0-30-vertical.png` (1440×900, a zone grouped stacked from a vertical drop),
+`P0-30-swapped.png` (1440×900, the two docked items reordered/swapped inside the zone),
+`P0-30-drop-hint.png` (1440×900, the subtle drop outline on the target while a free item is dragged
+over it, before any commit),
+`P0-30-controls.png` (1440×900, the smaller zoom pill),
+`P0-30-controls-mobile.png` (390×844, the smaller pill on mobile),
+`P0-30-masthead-en.png` / `P0-30-masthead-de.png` (1440×900, the rendered masthead with the P0-30
+line and tasks in English and German),
+`P0-30-zoom-150.png` (1440×900, a grouped zone re-fitted inside the visible surface at 150 % zoom)
+and the
 `P0-19-preview.log` / `P0-20-preview.log` / `P0-21-preview.log` / `P0-22-preview.log` /
 `P0-23-preview.log` / `P0-24-preview.log` / `P0-25-preview.log` / `P0-26-preview.log` /
-`P0-27-preview.log` / `P0-28-preview.log` / `P0-29-preview.log` / `P1-07-preview.log` files with the
+`P0-27-preview.log` / `P0-28-preview.log` / `P0-29-preview.log` / `P0-30-preview.log` /
+`P1-07-preview.log` files with the
 exact serve, curl and screenshot commands. The page has no horizontal overflow at 1440×900, 390×844
 or the owner's 1426 × 583 viewport.

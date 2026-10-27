@@ -4710,7 +4710,7 @@
       "satisfies": [
         "D3"
       ],
-      "status": "in_progress",
+      "status": "done",
       "depends_on": [
         "P0-29"
       ],
@@ -4748,10 +4748,19 @@
         "changelog-entry"
       ],
       "branch": "task/P0-30",
-      "worktree": "../Project air-P0-30",
-      "evidence": [],
+      "worktree": null,
+      "evidence": [
+        "reviews/evidence/P0-30-board-check-20261027T103140Z.json",
+        "reviews/evidence/P0-30-design-check-20261027T103142Z.json",
+        "reviews/evidence/P0-30-changelog-entry-20261027T103142Z.json"
+      ],
       "scope_write_forbidden": [
         "reference/"
+      ],
+      "handoff": [
+        "Closed P0-30: zone layout horizontal (526x174) or vertical (274x275) chosen by drop placement, animated resize; docked items reorder/swap and flip orientation inside the zone (hysteresis).",
+        "Less magnetic: 1:1 pointer tracking, no mid-drag dock/group, drop hint, commit on release (detach/dock/reorder/group); collapse/resize refit kept; edge stays A/B only; reduced motion instant.",
+        "Controls smaller (32x96, 28px painted, 32x32 hit, 12px glyphs); masthead P0-30 EN+DE; ?v=P0-30; gates board-check/design-check/changelog-entry; evidence horizontal/vertical/swapped/controls."
       ]
     }
   ],

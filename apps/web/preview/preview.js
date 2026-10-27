@@ -2,7 +2,8 @@
 // edge snapped to invisible side-midpoint anchors (P0-23/P0-25) and preview-only
 // zoom controls (P0-24). P0-26 adds the preview-only toolbar selection state and
 // P0-27 the DE/EN locale controller (locale JSON over HTTP, no build step) and
-// P0-28/P0-29 the zone detach, collapse and re-grouping interaction.
+// P0-28/P0-29 the zone detach, collapse and re-grouping interaction and P0-30 the
+// placement-driven orientation, reorder/swap and release-commit drag model.
 // Plain DOM, pointer events and one SVG path: no dependencies, no engine, no data.
 // Card positions, edge anchors and zoom maths use the world layer, which equals
 // the demo surface on desktop and is the grid row below the toolbar strip in the
@@ -22,21 +23,20 @@
   var ZOOM_MAX = 1.5;
   var ZOOM_STEP = 0.1;
   var SCALE_PRECISION = 10;
-  // Zone detach (P0-28): distances are screen pixels, so the behaviour is the
-  // same at every zoom level. Detach needs 28 px of pointer travel outside the
-  // zone edge (progress 0 -> 1); it docks again below 8 px (hysteresis, so a
-  // wobble at the edge cannot flicker). A release halfway uses the nearest
-  // state: farther than 18 px outside means detached.
+  // Zone interaction (P0-28/P0-29/P0-30). Distances are screen pixels, so the
+  // behaviour is the same at every zoom level: the detach look ramps over 28 px
+  // of pointer travel outside the zone edge, the drop hint appears inside that
+  // band, and the release margin decides the commit: a release outside the zone
+  // farther than 18 px stays free, a release inside (or within the 18 px band)
+  // docks / reorders. Free items group on release when their rectangles overlap by
+  // at least 25 % of the smaller area or their centres are within 48 screen px.
+  // The orientation dominance ratio is the hysteresis band for diagonal drops.
   var ZONE_DETACH_DISTANCE = 28;
-  var ZONE_DOCK_DISTANCE = 8;
   var ZONE_RELEASE_DISTANCE = 18;
-  // Zone collapse and re-grouping (P0-29): both items out -> the empty zone fades
-  // and shrinks out (opacity/scale via CSS classes). Free items that overlap by at
-  // least 25 % of the smaller area, or whose centres are within 48 screen px, form
-  // a new zone around their union + 16 px padding; the slots keep the original
-  // 12 px gap, are clamped to the demo surface and become functional again.
   var ZONE_GROUP_OVERLAP = 0.25;
   var ZONE_GROUP_CENTRE_DISTANCE = 48;
+  var ZONE_ORIENTATION_DOMINANCE = 1.2;
+  var ZONE_ORDER_HYSTERESIS = 8;
   var ZONE_MOTION_TIMEOUT = 260;
 
   var LOCALE_STORAGE_KEY = "preview-locale";
@@ -55,7 +55,10 @@
     "demo.item.window": "Image window",
     "demo.status.zoneHidden": "Zone hidden — drag the two items together to form a new zone.",
     "demo.status.zoneShown": "Zone back — an item is docked in it again.",
-    "demo.status.grouped": "Items grouped into a new zone.",
+    "demo.status.groupedHorizontal": "Items grouped side by side into a new zone.",
+    "demo.status.groupedVertical": "Items grouped stacked into a new zone.",
+    "demo.status.reordered": "Order changed inside the zone.",
+    "demo.status.orientationChanged": "Orientation changed inside the zone.",
   };
   var localeMessages = null;
   // Language whose messages are currently applied; null means the page shows the
@@ -585,19 +588,33 @@
       fitView();
     });
 
-    // ---------- zone detach (P0-28) ----------
+    // ---------- zone interaction (P0-28, P0-29, P0-30) ----------
+    //
+    // The two zone items track the pointer 1:1 while a drag is active and nothing
+    // is committed mid-drag: no snapping, no mid-drag dock or group. On release
+    // the drop position decides (free vs. docked, a grouped zone, an individual
+    // reorder/swap or the orientation) and only then does the spring settle run.
+    // A collapsed zone stays inert (P0-29) and a grouped zone keeps its re-fit on
+    // resize; no edge is ever created or moved.
 
     var zone = surface.querySelector("[data-demo-zone]");
     var zoneCard = zone === null ? null : zone.querySelector("[data-demo-zone-card]");
     var zoneItems = [];
     var zonePointer = null;
     var zoneGeometryReady = false;
+    var zoneGrouped = false;
     var zoneObserver = null;
     var zoneCollapseTimer = null;
     var zoneHidden = false;
     var zoneLeaving = false;
-    var zoneGrouping = false;
+    var zoneCommitting = false;
+    var zonePendingSync = false;
     var zoneLayout = { x: 0, y: 0 };
+    var zoneOrientation = "vertical"; // requested orientation, used when it fits
+    var zoneOrder = [];               // keys, first key at the start of the flow
+    var zonePadding = 16;
+    var zoneGap = 12;
+    var zoneHint = null;
 
     if (zone !== null && zoneCard !== null) {
       var zoneElements = zone.querySelectorAll("[data-zone-item]");
@@ -621,6 +638,20 @@
       }
     }
 
+    function zoneItemByKey(key) {
+      for (var index = 0; index < zoneItems.length; index += 1) {
+        if (zoneItems[index].key === key) return zoneItems[index];
+      }
+      return null;
+    }
+
+    function otherZoneItem(item) {
+      for (var index = 0; index < zoneItems.length; index += 1) {
+        if (zoneItems[index] !== item) return zoneItems[index];
+      }
+      return null;
+    }
+
     function zoneItemLabel(item) {
       return translate("demo.item." + item.key) || item.key;
     }
@@ -632,6 +663,11 @@
       });
     }
 
+    function announceZoneStatus(key) {
+      if (status === null) return;
+      status.textContent = translate(key);
+    }
+
     function worldRectOf(element) {
       var worldRect = world.getBoundingClientRect();
       var rect = element.getBoundingClientRect();
@@ -640,6 +676,20 @@
         y: (rect.top - worldRect.top) / scale,
         w: rect.width / scale,
         h: rect.height / scale,
+      };
+    }
+
+    function screenRectOf(element) {
+      var rect = element.getBoundingClientRect();
+      return {
+        left: rect.left,
+        top: rect.top,
+        right: rect.right,
+        bottom: rect.bottom,
+        w: rect.width,
+        h: rect.height,
+        cx: rect.left + rect.width / 2,
+        cy: rect.top + rect.height / 2,
       };
     }
 
@@ -666,6 +716,21 @@
       return { x: 0, y: 0, w: world.clientWidth, h: world.clientHeight };
     }
 
+    // The part of the world layer that is actually visible through the surface
+    // (the world is scaled inside the surface at every zoom level). A grouped zone
+    // must stay inside this rectangle, otherwise it can sit under the toolbar or
+    // outside the visible area at high zoom.
+    function visibleWorldBounds() {
+      var worldBox = world.getBoundingClientRect();
+      var surfaceBox = surface.getBoundingClientRect();
+      var scaleRatio = worldBox.width / Math.max(1, world.clientWidth);
+      var left = (Math.max(surfaceBox.left, worldBox.left) - worldBox.left) / scaleRatio;
+      var top = (Math.max(surfaceBox.top, worldBox.top) - worldBox.top) / scaleRatio;
+      var right = (Math.min(surfaceBox.right, worldBox.right) - worldBox.left) / scaleRatio;
+      var bottom = (Math.min(surfaceBox.bottom, worldBox.bottom) - worldBox.top) / scaleRatio;
+      return { x: left, y: top, w: Math.max(0, right - left), h: Math.max(0, bottom - top) };
+    }
+
     function zoneDockedCount() {
       var count = 0;
       for (var index = 0; index < zoneItems.length; index += 1) {
@@ -677,11 +742,6 @@
     function prefersReducedMotion() {
       return typeof window.matchMedia === "function" &&
         window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    }
-
-    function announceZoneStatus(key) {
-      if (status === null) return;
-      status.textContent = translate(key);
     }
 
     function startSettling(item) {
@@ -700,11 +760,140 @@
       item.element.classList.remove("is-settling");
     }
 
+    // The floating toolbar is canvas chrome above the world on desktop; a grouped
+    // zone is kept below it so the two never overlap. In the compact layout the
+    // toolbar sits in its own row above the world, so the clearance is zero.
+    function zoneTopLimit() {
+      var toolbar = surface.querySelector(".demo-toolbar");
+      if (toolbar === null) return 0;
+      var worldBox = world.getBoundingClientRect();
+      var toolbarBox = toolbar.getBoundingClientRect();
+      if (toolbarBox.bottom <= worldBox.top + 1) return 0;
+      var scaleRatio = worldBox.width / Math.max(1, world.clientWidth);
+      var toolbarBottom = (toolbarBox.bottom - worldBox.top) / scaleRatio;
+      return Math.max(0, toolbarBottom + readPixelToken("--space-8", 8));
+    }
+
+    function orientationSize(orientation) {
+      var first = zoneItemByKey(zoneOrder[0]);
+      var second = zoneItemByKey(zoneOrder[1]);
+      if (first === null || second === null) return null;
+      var horizontal = orientation === "horizontal";
+      var contentWidth = horizontal
+        ? first.width + zoneGap + second.width
+        : Math.max(first.width, second.width);
+      var contentHeight = horizontal
+        ? Math.max(first.height, second.height)
+        : first.height + zoneGap + second.height;
+      return {
+        horizontal: horizontal,
+        width: contentWidth + 2 * zonePadding + 2 * zoneBorderWidth,
+        height: contentHeight + 2 * zonePadding + 2 * zoneBorderWidth,
+        offsets: horizontal
+          ? [{ x: 0, y: 0 }, { x: first.width + zoneGap, y: 0 }]
+          : [{ x: 0, y: 0 }, { x: 0, y: first.height + zoneGap }],
+      };
+    }
+
+    // A grouped zone also has to fit below the floating toolbar (its world-space
+    // clearance grows when the canvas is zoomed in); the initial centred zone only
+    // has to fit inside the surface.
+    function orientationFits(orientation, includeToolbar) {
+      var size = orientationSize(orientation);
+      if (size === null) return false;
+      var bounds = includeToolbar ? visibleWorldBounds() : worldBounds();
+      var top = includeToolbar ? Math.max(bounds.y, zoneTopLimit()) - bounds.y : 0;
+      return size.width <= bounds.w && size.height + top <= bounds.h;
+    }
+
+    // Requested orientation when it fits, otherwise the other one (for example a
+    // horizontal zone falls back to vertical at 390 px and returns to horizontal
+    // when the surface gets wider again). The requested value is kept.
+    function effectiveOrientation() {
+      if (orientationFits(zoneOrientation, zoneGrouped)) return zoneOrientation;
+      var fallback = zoneOrientation === "horizontal" ? "vertical" : "horizontal";
+      return orientationFits(fallback, zoneGrouped) ? fallback : zoneOrientation;
+    }
+
+    function applyZoneLayout(x, y, instant) {
+      var orientation = effectiveOrientation();
+      var size = orientationSize(orientation);
+      if (size === null) return;
+      var bounds = zoneGrouped ? visibleWorldBounds() : worldBounds();
+      var top = Math.max(bounds.y, zoneTopLimit());
+      var maxX = Math.max(bounds.x, bounds.x + bounds.w - size.width);
+      var insideMaxY = Math.max(bounds.y, bounds.y + bounds.h - size.height);
+      var nextX = clamp(x, bounds.x, maxX);
+      // Stay inside the visible surface first; keep below the toolbar when the size
+      // allows it (at maximum zoom the clearance can be larger than the free height).
+      var nextY = clamp(y, Math.min(top, insideMaxY), insideMaxY);
+      zoneLayout = { x: nextX, y: nextY };
+      if (instant === true) zoneCard.classList.add("is-resizing");
+      zoneCard.classList.toggle("is-horizontal", size.horizontal);
+      zoneCard.style.setProperty("--zone-w", size.width.toFixed(1) + "px");
+      zoneCard.style.setProperty("--zone-h", size.height.toFixed(1) + "px");
+      zoneCard.style.setProperty("--zone-x", nextX.toFixed(1) + "px");
+      zoneCard.style.setProperty("--zone-y", nextY.toFixed(1) + "px");
+      zoneCard.setAttribute("data-zone-orientation", size.horizontal ? "horizontal" : "vertical");
+      zoneCard.setAttribute("data-zone-layout", zoneGrouped ? "grouped" : "docked");
+      zoneCard.setAttribute("data-zone-visible", "true");
+      for (var index = 0; index < zoneOrder.length; index += 1) {
+        var entry = zoneItemByKey(zoneOrder[index]);
+        if (entry === null || entry.slot === null) continue;
+        zoneCard.appendChild(entry.slot);
+        entry.slot.style.inlineSize = entry.width + "px";
+        entry.slot.style.blockSize = entry.height + "px";
+        entry.dockX = nextX + zoneBorderWidth + zonePadding + size.offsets[index].x;
+        entry.dockY = nextY + zoneBorderWidth + zonePadding + size.offsets[index].y;
+      }
+      if (instant === true) {
+        void zoneCard.offsetWidth;
+        zoneCard.classList.remove("is-resizing");
+      }
+    }
+
+    function refreshItemSizes() {
+      for (var index = 0; index < zoneItems.length; index += 1) {
+        var entry = zoneItems[index];
+        entry.width = entry.element.offsetWidth;
+        entry.height = entry.element.offsetHeight;
+        if (entry.slot !== null) {
+          entry.slot.style.inlineSize = entry.width + "px";
+          entry.slot.style.blockSize = entry.height + "px";
+        }
+      }
+    }
+
+    function syncZoneGeometry() {
+      if (!zoneGeometryReady) return;
+      if (zonePointer !== null) {
+        zonePendingSync = true;
+        return;
+      }
+      zonePendingSync = false;
+      refreshItemSizes();
+      applyZoneLayout(zoneLayout.x, zoneLayout.y, true);
+      for (var index = 0; index < zoneItems.length; index += 1) {
+        var entry = zoneItems[index];
+        if (entry.element.classList.contains("is-detached")) {
+          var clamped = clampToBounds(entry, entry.x, entry.y, worldBounds());
+          entry.x = clamped.x;
+          entry.y = clamped.y;
+          entry.progress = 1;
+        } else {
+          entry.x = entry.dockX;
+          entry.y = entry.dockY;
+          entry.progress = 0;
+        }
+        placeZoneItem(entry);
+      }
+    }
+
     // Empty zone: fade/scale out, then hide it from pointer and tab flow. An item
     // that docks during the exit cancels it (revealZone) and the zone fades back
     // in; nothing else in the demo is touched.
     function hideZone() {
-      if (zoneHidden || zoneLeaving || zoneGrouping) return;
+      if (zoneHidden || zoneLeaving || zoneCommitting) return;
       zoneLeaving = true;
       zoneCard.classList.remove("is-collapsed");
       zoneCard.classList.add("is-leaving");
@@ -732,30 +921,31 @@
       window.clearTimeout(zoneCollapseTimer);
       zoneHidden = false;
       zoneLeaving = false;
-      zoneCard.classList.remove("is-collapsed");
-      zoneCard.classList.remove("is-leaving");
+      zoneCard.classList.remove("is-collapsed", "is-leaving");
       zoneCard.setAttribute("data-zone-visible", "true");
       announceZoneStatus("demo.status.zoneShown");
     }
 
     function updateZoneCollapse() {
-      if (zoneItems.length === 0 || !zoneGeometryReady || zoneGrouping) return;
+      if (zoneItems.length === 0 || !zoneGeometryReady) return;
+      if (zonePointer !== null || zoneCommitting) return;
       if (zoneDockedCount() > 0) revealZone();
       else hideZone();
     }
 
-    function screenRectOf(element) {
-      var rect = element.getBoundingClientRect();
-      return {
-        left: rect.left,
-        top: rect.top,
-        right: rect.right,
-        bottom: rect.bottom,
-        w: rect.width,
-        h: rect.height,
-        cx: rect.left + rect.width / 2,
-        cy: rect.top + rect.height / 2,
-      };
+    function clearDropHint() {
+      if (zoneHint === null) return;
+      zoneHint.classList.remove("is-drop-target");
+      zoneHint = null;
+    }
+
+    function setDropHint(element) {
+      if (zoneHint === element) return;
+      clearDropHint();
+      if (element !== null) {
+        element.classList.add("is-drop-target");
+        zoneHint = element;
+      }
     }
 
     function overlapFraction(a, b) {
@@ -766,228 +956,12 @@
       return smaller === 0 ? 0 : (width * height) / smaller;
     }
 
-    function maybeGroupZone() {
-      if (zoneGrouping || zoneItems.length < 2 || zoneDockedCount() !== 0) return false;
-      for (var index = 0; index < zoneItems.length; index += 1) {
-        var entry = zoneItems[index];
-        if (!entry.element.classList.contains("is-detached")) return false;
-        if (entry.settling) return false;
-      }
-      var first = screenRectOf(zoneItems[0].element);
-      var second = screenRectOf(zoneItems[1].element);
-      var overlap = overlapFraction(first, second);
-      var centres = Math.hypot(first.cx - second.cx, first.cy - second.cy);
-      if (overlap < ZONE_GROUP_OVERLAP && centres > ZONE_GROUP_CENTRE_DISTANCE) return false;
-      return groupZone();
-    }
-
-    // The floating toolbar is canvas chrome above the world on desktop; a grouped
-    // zone is kept below it so the two never overlap. In the compact layout the
-    // toolbar sits in its own row above the world, so the clearance is zero.
-    function zoneTopLimit() {
-      var toolbar = surface.querySelector(".demo-toolbar");
-      if (toolbar === null) return 0;
-      var worldBox = world.getBoundingClientRect();
-      var toolbarBox = toolbar.getBoundingClientRect();
-      if (toolbarBox.bottom <= worldBox.top + 1) return 0;
-      var scale = worldBox.width / Math.max(1, world.clientWidth);
-      var toolbarBottom = (toolbarBox.bottom - worldBox.top) / scale;
-      return Math.max(0, toolbarBottom + readPixelToken("--space-8", 8));
-    }
-
-    function groupedOrientation() {
-      var padding = readPixelToken("--space-16", 16);
-      var gap = readPixelToken("--space-12", 12);
-      var bounds = worldBounds();
-      var first = zoneItems[0];
-      var second = zoneItems[1];
-      var horizontalWidth = first.width + gap + second.width + 2 * padding + 2 * zoneBorderWidth;
-      var horizontalHeight = Math.max(first.height, second.height) + 2 * padding + 2 * zoneBorderWidth;
-      var verticalWidth = Math.max(first.width, second.width) + 2 * padding + 2 * zoneBorderWidth;
-      var verticalHeight = first.height + gap + second.height + 2 * padding + 2 * zoneBorderWidth;
-      var horizontal = horizontalWidth <= bounds.w && horizontalHeight <= bounds.h;
-      return {
-        horizontal: horizontal,
-        width: horizontal ? horizontalWidth : verticalWidth,
-        height: horizontal ? horizontalHeight : verticalHeight,
-      };
-    }
-
-    function placeGroupedZone(x, y) {
-      var bounds = worldBounds();
-      var width = zoneCard.offsetWidth;
-      var height = zoneCard.offsetHeight;
-      var top = Math.max(bounds.y, zoneTopLimit());
-      var nextX = clamp(x, bounds.x, Math.max(bounds.x, bounds.x + bounds.w - width));
-      var nextY = clamp(y, top, Math.max(top, bounds.y + bounds.h - height));
-      zoneLayout = { x: nextX, y: nextY };
-      zoneCard.style.setProperty("--zone-x", nextX.toFixed(1) + "px");
-      zoneCard.style.setProperty("--zone-y", nextY.toFixed(1) + "px");
-      return zoneLayout;
-    }
-
-    // Both items are free and overlap: animate a new zone in around their union
-    // and ease both items into slots inside it (side by side when the surface is
-    // wide enough, stacked otherwise). No edge is created or moved.
-    function groupZone() {
-      if (zoneGrouping || zoneItems.length < 2) return false;
-      zoneGrouping = true;
-      window.clearTimeout(zoneCollapseTimer);
-      zoneHidden = false;
-      zoneLeaving = false;
-      if (zonePointer !== null) {
-        var drag = zonePointer;
-        zonePointer = null;
-        drag.item.element.classList.remove("is-dragging");
-        stopSettling(drag.item);
-      }
-      var index;
-      for (index = 0; index < zoneItems.length; index += 1) {
-        zoneItems[index].width = zoneItems[index].element.offsetWidth;
-        zoneItems[index].height = zoneItems[index].element.offsetHeight;
-        if (zoneItems[index].slot !== null) {
-          zoneItems[index].slot.style.inlineSize = zoneItems[index].width + "px";
-          zoneItems[index].slot.style.blockSize = zoneItems[index].height + "px";
-        }
-      }
-      var bounds = worldBounds();
-      var orientation = groupedOrientation();
-      var horizontal = orientation.horizontal;
-      var cardWidth = orientation.width;
-      var cardHeight = orientation.height;
-      var rects = [];
-      for (index = 0; index < zoneItems.length; index += 1) {
-        rects.push(worldRectOf(zoneItems[index].element));
-      }
-      var unionX = Math.min(rects[0].x, rects[1].x);
-      var unionY = Math.min(rects[0].y, rects[1].y);
-      // is-entering disables the card transition first, so pinning the card and
-      // measuring the new slots happens at the final geometry (no mid-transition
-      // measurements); removing it afterwards plays the opacity/scale entrance.
-      zoneCard.classList.add("is-entering");
-      zoneCard.classList.remove("is-leaving", "is-collapsed");
-      zoneCard.classList.add("is-positioned");
-      zoneCard.classList.toggle("is-horizontal", horizontal);
-      zoneCard.setAttribute("data-zone-layout", "grouped");
-      zoneCard.setAttribute("data-zone-orientation", horizontal ? "horizontal" : "vertical");
-      zoneCard.setAttribute("data-zone-visible", "true");
-      var padding = readPixelToken("--space-16", 16);
-      zoneLayout = {
-        x: clamp(unionX - padding, bounds.x, Math.max(bounds.x, bounds.x + bounds.w - cardWidth)),
-        y: clamp(unionY - padding, bounds.y, Math.max(bounds.y, bounds.y + bounds.h - cardHeight)),
-      };
-      placeGroupedZone(zoneLayout.x, zoneLayout.y);
-      void zoneCard.offsetWidth;
-      syncZoneGeometry();
-      for (index = 0; index < zoneItems.length; index += 1) {
-        var entry = zoneItems[index];
-        setZoneItemState(entry, "docked");
-        entry.element.classList.remove("is-dragging");
-        entry.progress = 0;
-        startSettling(entry);
-      }
-      syncZoneGeometry();
-      void zoneCard.offsetWidth;
-      zoneCard.classList.remove("is-entering");
-      announceZoneStatus("demo.status.grouped");
-      zoneGrouping = false;
-      return true;
-    }
-
-    function syncZoneGeometry() {
-      if (!zoneGeometryReady) return;
-      if (zoneCard.classList.contains("is-positioned")) {
-        placeGroupedZone(zoneLayout.x, zoneLayout.y);
-      }
-      var index;
-      for (index = 0; index < zoneItems.length; index += 1) {
-        var measured = zoneItems[index];
-        measured.width = measured.element.offsetWidth;
-        measured.height = measured.element.offsetHeight;
-        if (measured.slot !== null) {
-          measured.slot.style.inlineSize = measured.width + "px";
-          measured.slot.style.blockSize = measured.height + "px";
-        }
-      }
-      // An existing grouped zone is re-fitted on every resize (and locale/height
-      // change): the orientation is recomputed from the current item sizes and the
-      // world, so 1440 -> 390 switches from side by side to stacked, then the zone
-      // is clamped fully into the surface below the toolbar and the docked items
-      // follow their new slots (both items stay visible).
-      if (zoneCard.classList.contains("is-positioned")) {
-        var refit = groupedOrientation();
-        zoneCard.classList.toggle("is-horizontal", refit.horizontal);
-        zoneCard.setAttribute("data-zone-orientation", refit.horizontal ? "horizontal" : "vertical");
-        placeGroupedZone(zoneLayout.x, zoneLayout.y);
-      }
-      // Dock positions come from the slot's layout offset inside the card plus the
-      // card's border-box origin, so an in-flight card scale (entrance) cannot
-      // distort the measurement.
-      var cardOrigin;
-      if (zoneCard.classList.contains("is-positioned")) {
-        cardOrigin = { x: zoneLayout.x, y: zoneLayout.y };
-      } else {
-        var cardRect = worldRectOf(zoneCard);
-        cardOrigin = { x: cardRect.x, y: cardRect.y };
-      }
-      for (index = 0; index < zoneItems.length; index += 1) {
-        var entry = zoneItems[index];
-        if (entry.slot === null) continue;
-        entry.dockX = cardOrigin.x + zoneBorderWidth + entry.slot.offsetLeft;
-        entry.dockY = cardOrigin.y + zoneBorderWidth + entry.slot.offsetTop;
-        var dragging = zonePointer !== null && zonePointer.item === entry;
-        if (entry.element.classList.contains("is-detached")) {
-          var clampedFree = clampToBounds(entry, entry.x, entry.y, worldBounds());
-          entry.x = clampedFree.x;
-          entry.y = clampedFree.y;
-          placeZoneItem(entry);
-        } else if (!dragging) {
-          entry.x = entry.dockX;
-          entry.y = entry.dockY;
-          placeZoneItem(entry);
-        }
-      }
-    }
-
-    // The items start in the zone card grid. On the first drag they are replaced
-    // by equally sized dock slots and moved into the zone container, so they can
-    // leave the zone; their world coordinates are measured from those slots (the
-    // dock position is never hard-coded).
-    function ensureZoneGeometry() {
-      if (zoneGeometryReady || zoneItems.length === 0) return;
-      var index;
-      for (index = 0; index < zoneItems.length; index += 1) {
-        var item = zoneItems[index];
-        item.width = item.element.offsetWidth;
-        item.height = item.element.offsetHeight;
-      }
-      for (index = 0; index < zoneItems.length; index += 1) {
-        var entry = zoneItems[index];
-        var slot = document.createElement("span");
-        slot.className = "demo-zone__slot";
-        slot.setAttribute("data-zone-slot", entry.key);
-        slot.setAttribute("aria-hidden", "true");
-        slot.style.inlineSize = entry.width + "px";
-        slot.style.blockSize = entry.height + "px";
-        entry.element.parentNode.insertBefore(slot, entry.element);
-        entry.slot = slot;
-        zone.appendChild(entry.element);
-        entry.element.classList.add("is-floating", "is-docked");
-        entry.element.style.setProperty("--detach-progress", "0");
-        setZoneItemState(entry, "docked");
-      }
-      zoneGeometryReady = true;
-      zoneCard.setAttribute("data-zone-layout", "docked");
-      zoneCard.setAttribute("data-zone-visible", "true");
-      syncZoneGeometry();
-      if (zoneObserver === null && typeof window.ResizeObserver === "function") {
-        zoneObserver = new window.ResizeObserver(function () {
-          if (zonePointer === null) syncZoneGeometry();
-        });
-        for (var observed = 0; observed < zoneItems.length; observed += 1) {
-          zoneObserver.observe(zoneItems[observed].element);
-        }
-      }
+    function releaseGroupingAllowed(item, other) {
+      if (other === null || !other.element.classList.contains("is-detached")) return false;
+      var first = screenRectOf(item.element);
+      var second = screenRectOf(other.element);
+      return overlapFraction(first, second) >= ZONE_GROUP_OVERLAP ||
+        Math.hypot(first.cx - second.cx, first.cy - second.cy) <= ZONE_GROUP_CENTRE_DISTANCE;
     }
 
     function pointerOutsideZone(clientX, clientY) {
@@ -1010,6 +984,197 @@
       return value * value * (3 - 2 * value);
     }
 
+    // Orientation from the drop placement: more vertical than horizontal -> stacked,
+    // more horizontal than vertical -> side by side. The dominance ratio is the
+    // hysteresis band: a near-diagonal drop keeps the current orientation instead
+    // of flapping between the two.
+    function placementOrientation(item, other, fallback) {
+      if (other === null) return fallback;
+      var first = worldRectOf(item.element);
+      var second = worldRectOf(other.element);
+      var deltaX = first.x + first.w / 2 - (second.x + second.w / 2);
+      var deltaY = first.y + first.h / 2 - (second.y + second.h / 2);
+      var horizontal = Math.abs(deltaX);
+      var vertical = Math.abs(deltaY);
+      if (vertical > horizontal * ZONE_ORIENTATION_DOMINANCE) return "vertical";
+      if (horizontal > vertical * ZONE_ORIENTATION_DOMINANCE) return "horizontal";
+      return fallback;
+    }
+
+    // Order along the flow: the dragged item is before the other one when its
+    // centre is before the other centre. A small screen-pixel band around the
+    // midpoint keeps the current order, so a drop exactly on the midpoint (or a
+    // tiny wobble) does not flip it.
+    function placementOrder(item, other, orientation) {
+      if (other === null) return zoneOrder.slice();
+      var first = worldRectOf(item.element);
+      var second = worldRectOf(other.element);
+      var delta = orientation === "vertical"
+        ? first.y + first.h / 2 - (second.y + second.h / 2)
+        : first.x + first.w / 2 - (second.x + second.w / 2);
+      if (zoneOrder.length === 2 && Math.abs(delta) * scale < ZONE_ORDER_HYSTERESIS) {
+        return zoneOrder.slice();
+      }
+      return delta < 0 ? [item.key, other.key] : [other.key, item.key];
+    }
+
+    function settleItemToDock(item) {
+      item.element.classList.remove("is-dragging");
+      item.progress = 0;
+      setZoneItemState(item, "docked");
+      startSettling(item);
+      item.x = item.dockX;
+      item.y = item.dockY;
+      placeZoneItem(item);
+    }
+
+    function commitDetached(item, silent) {
+      var snapped = clampToBounds(item, snap(item.x), snap(item.y), worldBounds());
+      item.x = snapped.x;
+      item.y = snapped.y;
+      item.progress = 1;
+      item.element.classList.remove("is-dragging");
+      setZoneItemState(item, "detached");
+      startSettling(item);
+      placeZoneItem(item);
+      updateZoneCollapse();
+      if (!silent) announceZoneItem(item, true);
+    }
+
+    function commitDock(item, other) {
+      var orientation = effectiveOrientation();
+      if (other !== null && other.element.classList.contains("is-docked")) {
+        zoneOrder = placementOrder(item, other, orientation);
+      }
+      applyZoneLayout(zoneLayout.x, zoneLayout.y, false);
+      setZoneItemState(item, "docked");
+      item.progress = 0;
+      startSettling(item);
+      item.x = item.dockX;
+      item.y = item.dockY;
+      placeZoneItem(item);
+      revealZone();
+      announceZoneItem(item, false);
+      updateZoneCollapse();
+    }
+
+    function commitGrouping(item, other) {
+      if (zoneCommitting) return;
+      zoneCommitting = true;
+      window.clearTimeout(zoneCollapseTimer);
+      zoneHidden = false;
+      zoneLeaving = false;
+      clearDropHint();
+      refreshItemSizes();
+      var requested = placementOrientation(item, other, zoneOrientation);
+      zoneGrouped = true;
+      var orientation = orientationFits(requested, true)
+        ? requested
+        : (requested === "horizontal" ? "vertical" : "horizontal");
+      zoneOrientation = requested;
+      zoneOrder = placementOrder(item, other, orientation);
+      var first = worldRectOf(item.element);
+      var second = worldRectOf(other.element);
+      var unionX = Math.min(first.x, second.x);
+      var unionY = Math.min(first.y, second.y);
+      zoneCard.classList.add("is-entering");
+      zoneCard.classList.remove("is-leaving", "is-collapsed");
+      zoneCard.classList.add("is-positioned");
+      applyZoneLayout(unionX - zonePadding, unionY - zonePadding, false);
+      for (var index = 0; index < zoneItems.length; index += 1) {
+        var entry = zoneItems[index];
+        setZoneItemState(entry, "docked");
+        entry.element.classList.remove("is-dragging");
+        entry.progress = 0;
+        startSettling(entry);
+        entry.x = entry.dockX;
+        entry.y = entry.dockY;
+        placeZoneItem(entry);
+      }
+      void zoneCard.offsetWidth;
+      zoneCard.classList.remove("is-entering");
+      announceZoneStatus(orientation === "horizontal"
+        ? "demo.status.groupedHorizontal"
+        : "demo.status.groupedVertical");
+      zoneCommitting = false;
+    }
+
+    function updateDropHint(item) {
+      var drag = zonePointer;
+      if (drag === null) {
+        clearDropHint();
+        return;
+      }
+      var other = otherZoneItem(item);
+      var pointerInside = !zoneHidden &&
+        pointerOutsideZone(drag.pointerX, drag.pointerY) <= ZONE_RELEASE_DISTANCE;
+      var itemDocked = item.element.classList.contains("is-docked");
+      if (pointerInside) {
+        if (itemDocked && other !== null && other.element.classList.contains("is-docked") &&
+            overlapFraction(screenRectOf(item.element), screenRectOf(other.element)) > 0.15) {
+          setDropHint(other.element);
+        } else {
+          setDropHint(zoneCard);
+        }
+        return;
+      }
+      if (!itemDocked && other !== null && releaseGroupingAllowed(item, other)) {
+        setDropHint(other.element);
+        return;
+      }
+      clearDropHint();
+    }
+
+    function ensureZoneGeometry() {
+      if (zoneGeometryReady || zoneItems.length === 0) return;
+      zonePadding = readPixelToken("--space-16", 16);
+      zoneGap = readPixelToken("--space-12", 12);
+      var index;
+      for (index = 0; index < zoneItems.length; index += 1) {
+        var item = zoneItems[index];
+        item.width = item.element.offsetWidth;
+        item.height = item.element.offsetHeight;
+      }
+      var cardRect = worldRectOf(zoneCard);
+      for (index = 0; index < zoneItems.length; index += 1) {
+        var entry = zoneItems[index];
+        var slot = document.createElement("span");
+        slot.className = "demo-zone__slot";
+        slot.setAttribute("data-zone-slot", entry.key);
+        slot.setAttribute("aria-hidden", "true");
+        slot.style.inlineSize = entry.width + "px";
+        slot.style.blockSize = entry.height + "px";
+        entry.element.parentNode.insertBefore(slot, entry.element);
+        entry.slot = slot;
+        zone.appendChild(entry.element);
+        entry.element.classList.add("is-floating", "is-docked");
+        entry.element.style.setProperty("--detach-progress", "0");
+        setZoneItemState(entry, "docked");
+      }
+      zoneGeometryReady = true;
+      zoneGrouped = false;
+      zoneOrientation = "vertical";
+      zoneOrder = [zoneItems[0].key, zoneItems[1].key];
+      zoneLayout = { x: cardRect.x, y: cardRect.y };
+      zoneCard.classList.add("is-positioned");
+      applyZoneLayout(cardRect.x, cardRect.y, true);
+      for (index = 0; index < zoneItems.length; index += 1) {
+        var placed = zoneItems[index];
+        placed.x = placed.dockX;
+        placed.y = placed.dockY;
+        placed.progress = 0;
+        placeZoneItem(placed);
+      }
+      if (zoneObserver === null && typeof window.ResizeObserver === "function") {
+        zoneObserver = new window.ResizeObserver(function () {
+          syncZoneGeometry();
+        });
+        for (var observed = 0; observed < zoneItems.length; observed += 1) {
+          zoneObserver.observe(zoneItems[observed].element);
+        }
+      }
+    }
+
     function onZoneItemPointerDown(item, event) {
       if (zonePointer !== null) return;
       if (event.pointerType === "mouse" && event.button !== 0) return;
@@ -1027,6 +1192,8 @@
         grabY: point.y - item.y,
         startClientX: event.clientX,
         startClientY: event.clientY,
+        pointerX: event.clientX,
+        pointerY: event.clientY,
         startedDetached: item.element.classList.contains("is-detached"),
         active: false,
       };
@@ -1039,6 +1206,9 @@
       }
     }
 
+    // 1:1 tracking: the item follows the pointer exactly (only clamped at the
+    // canvas edge), detach/dock is only a visual progress during the drag and the
+    // drop hint marks the target. Nothing is committed here.
     function onZoneItemPointerMove(item, event) {
       var drag = zonePointer;
       if (drag === null || drag.item !== item || drag.pointerId !== event.pointerId) return;
@@ -1048,67 +1218,66 @@
         }
         drag.active = true;
       }
+      drag.pointerX = event.clientX;
+      drag.pointerY = event.clientY;
       stopSettling(item);
       var point = zoneWorldPoint(event);
-      var distance = pointerOutsideZone(event.clientX, event.clientY);
-      var progress = detachProgress(distance);
-      var detached = item.element.classList.contains("is-detached");
-      var stateChanged = false;
-      if (!detached && distance >= ZONE_DETACH_DISTANCE) {
-        detached = true;
-        setZoneItemState(item, "detached");
-        stateChanged = true;
-      } else if (detached && distance <= ZONE_DOCK_DISTANCE && !zoneHidden) {
-        // A collapsed zone is inert: dragging over its old area does not re-dock.
-        // Only a zone that is still visible (or mid-exit) can take an item back.
-        detached = false;
-        setZoneItemState(item, "docked");
-        stateChanged = true;
-        item.x = item.dockX;
-        item.y = item.dockY;
-        drag.grabX = point.x - item.x;
-        drag.grabY = point.y - item.y;
-        item.element.classList.add("is-settling");
-      }
-      var targetX = point.x - drag.grabX;
-      var targetY = point.y - drag.grabY;
-      var position;
-      if (detached) {
-        item.progress = 1;
-        position = clampToBounds(item, targetX, targetY, worldBounds());
-      } else {
-        item.progress = progress;
-        var inside = clampToBounds(item, targetX, targetY, worldRectOf(zoneCard));
-        var free = clampToBounds(item, targetX, targetY, worldBounds());
-        position = {
-          x: inside.x + (free.x - inside.x) * progress,
-          y: inside.y + (free.y - inside.y) * progress,
-        };
-      }
-      item.x = position.x;
-      item.y = position.y;
+      var distance = zoneHidden ? ZONE_DETACH_DISTANCE : pointerOutsideZone(event.clientX, event.clientY);
+      item.progress = zoneHidden ? 1 : detachProgress(distance);
+      item.x = point.x - drag.grabX;
+      item.y = point.y - drag.grabY;
+      var clamped = clampToBounds(item, item.x, item.y, worldBounds());
+      item.x = clamped.x;
+      item.y = clamped.y;
       placeZoneItem(item);
-      if (stateChanged) updateZoneCollapse();
-      if (drag.active && detached) maybeGroupZone();
+      updateDropHint(item);
     }
 
-    function settleZoneItem(item, detached) {
-      item.element.classList.remove("is-dragging");
-      if (detached) {
-        var snapped = clampToBounds(item, snap(item.x), snap(item.y), worldBounds());
-        item.x = snapped.x;
-        item.y = snapped.y;
-        item.progress = 1;
-        setZoneItemState(item, "detached");
-      } else {
-        item.x = item.dockX;
-        item.y = item.dockY;
-        item.progress = 0;
-        setZoneItemState(item, "docked");
+    function decideRelease(item, drag) {
+      var other = otherZoneItem(item);
+      var pointerInside = !zoneHidden &&
+        pointerOutsideZone(drag.pointerX, drag.pointerY) <= ZONE_RELEASE_DISTANCE;
+      if (!drag.startedDetached) {
+        if (!pointerInside) {
+          commitDetached(item, false);
+          return;
+        }
+        if (other === null || !other.element.classList.contains("is-docked")) {
+          settleItemToDock(item);
+          updateZoneCollapse();
+          return;
+        }
+        var orientation = placementOrientation(item, other, zoneOrientation);
+        var order = placementOrder(item, other, orientation);
+        var orderChanged = order[0] !== zoneOrder[0];
+        var orientationChanged = orientation !== zoneOrientation;
+        zoneOrientation = orientation;
+        zoneOrder = order;
+        if (orderChanged || orientationChanged) {
+          applyZoneLayout(zoneLayout.x, zoneLayout.y, false);
+          settleItemToDock(other);
+          settleItemToDock(item);
+          updateZoneCollapse();
+          announceZoneStatus(orderChanged
+            ? "demo.status.reordered"
+            : "demo.status.orientationChanged");
+        } else {
+          settleItemToDock(item);
+          updateZoneCollapse();
+        }
+        return;
       }
-      startSettling(item);
-      placeZoneItem(item);
-      updateZoneCollapse();
+      // Started free: grouping wins over docking, then a visible zone can take the
+      // item back on release; a hidden zone is inert and the item stays free.
+      if (other !== null && releaseGroupingAllowed(item, other)) {
+        commitGrouping(item, other);
+        return;
+      }
+      if (pointerInside) {
+        commitDock(item, other);
+        return;
+      }
+      commitDetached(item, true);
     }
 
     function onZoneItemPointerEnd(item, event, cancelled) {
@@ -1116,27 +1285,22 @@
       if (drag === null || drag.item !== item || drag.pointerId !== event.pointerId) return;
       zonePointer = null;
       item.element.classList.remove("is-dragging");
+      clearDropHint();
       if (!drag.active) {
-        item.element.classList.remove("is-settling");
         placeZoneItem(item);
+        if (zonePendingSync) syncZoneGeometry();
         return;
       }
-      // A collapsed zone is inert on release as well: dropping a free item over
-      // its old rectangle keeps the item detached and the zone hidden. Only the
-      // pointermove dock branch and this release decision can re-dock; both check
-      // zoneHidden, and the zone comes back through re-grouping (or by docking
-      // during the exit, before it is hidden).
-      var detached;
+      drag.pointerX = event.clientX;
+      drag.pointerY = event.clientY;
       if (cancelled) {
-        detached = item.element.classList.contains("is-detached");
-      } else if (zoneHidden) {
-        detached = true;
+        if (drag.startedDetached) commitDetached(item, true);
+        else settleItemToDock(item);
+        updateZoneCollapse();
       } else {
-        detached = pointerOutsideZone(event.clientX, event.clientY) > ZONE_RELEASE_DISTANCE;
+        decideRelease(item, drag);
       }
-      if (!cancelled && detached && maybeGroupZone()) return;
-      settleZoneItem(item, detached);
-      if (detached !== drag.startedDetached) announceZoneItem(item, detached);
+      if (zonePendingSync) syncZoneGeometry();
     }
 
     zoneItems.forEach(function (item) {
