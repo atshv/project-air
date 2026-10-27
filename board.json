@@ -3317,7 +3317,7 @@
       "satisfies": [
         "D10"
       ],
-      "status": "pending",
+      "status": "in_progress",
       "depends_on": [
         "P4-02",
         "P4-04"
@@ -3360,7 +3360,7 @@
       ],
       "owner": null,
       "branch": "task/P4-08",
-      "worktree": null,
+      "worktree": "../Project air-P4-08",
       "round": 0,
       "evidence": [],
       "scope_write_forbidden": [

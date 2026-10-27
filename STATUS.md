@@ -121,13 +121,6 @@
 
 ## Ready now
 
-- `P4-08` Text atlas and glyph texture pipeline (L02)
-  - P4-02: Closed P4-02: deterministic test-kit scenes (500 cards/50 zones/144 blocks, 10k stress), interactive playground with pan/zoom, HUD, ready hook; benchmark mode preserved.
-  - P4-02: Screenshots 1440x900/390x844 + serve/capture log (HTTP 200, SwiftShader capture); test-kit suite 12/12; four gates green after the owner-approved design-check test fix 32c8f28.
-  - P4-02: Two review rounds; minors fixed (serve-log consistency, per-zone block assertions). Deviation: Node v26.12.1 vs the .nvmrc pin.
-  - P4-04: Closed P4-04: dependency-free visual gate, 8 committed baselines (4 scenes x 2 viewports, WebGL2), 0 differing pixels on ANGLE Metal M2; fail-closed renderer and exact viewports.
-  - P4-04: Baselines regenerated once after the OS move Darwin 25.5.0 -> 27.2.0 (text AA only, geometry unchanged), documented under 'Baseline history'; --update is a review action, never a pass.
-  - P4-04: Deterministic ?view= camera hook; gate log prints URL + camera; board-check + visual green. Stage-exit final gates are perf-final/visual-final, run by P4-28.
 - `P4-19` Placement of new objects (L20)
   - P4-05: Closed P4-05: engine TS logic layer (gestures, operations, port, history); one gesture = one contract operation with inverse, group drag = one group operation; 31 tests validate.
   - P4-05: Undo/redo depth 20 with redo-clear and describe() labels; fake + bridge adapter byte-identical round trips; create builders validate geometry, port read is isolated, adapter projects z.
@@ -205,6 +198,7 @@
 ## In progress
 
 - [ ] `P4-06` Layers and draw order (L13) — status: `in_progress` — owner: —
+- [ ] `P4-08` Text atlas and glyph texture pipeline (L02) — status: `in_progress` — owner: —
 
 ## Blocked / failed
 
@@ -216,7 +210,6 @@
 - [ ] `P0-15` Release command and tag-based CI release — status: `pending` — owner: —
 - [ ] `P0-16` Dependency updates and Polier update check — status: `pending` — owner: —
 - [ ] `P0-17` RELEASING.md and release 0.0.1 — status: `pending` — owner: —
-- [ ] `P4-08` Text atlas and glyph texture pipeline (L02) — status: `pending` — owner: —
 - [ ] `P4-09` Glyph layout, text instances and ellipsis (L02) — status: `pending` — owner: —
 - [ ] `P4-10` Titles, previews and visible quality (L02) — status: `pending` — owner: —
 - [ ] `P4-11` WebGPU render pipeline behind the command buffer — status: `pending` — owner: —
@@ -243,6 +236,7 @@
 ## Claims
 
 - `P4-06` in progress by dsh since 2026-10-27T20:43:14+00:00 — worktree: /Users/rasulatashev/Desktop/KI Projekte/Project air-P4-06 · slot 2
+- `P4-08` in progress by dsh since 2026-10-27T20:47:31+00:00 — worktree: /Users/rasulatashev/Desktop/KI Projekte/Project air-P4-08 · slot 1
 
 <!-- /polier:claims -->
 
