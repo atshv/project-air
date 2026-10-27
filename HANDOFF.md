@@ -14,14 +14,15 @@ Read `AGENTS.md`, `ARCHITECTURE.md`, `STATUS.md`, `docs/module-map.md` and the t
   live-demo zone parity). **Done and merged:** `P4-01` (engine document/hit testing), `P4-02`
   (test-kit scenes/playground), `P4-03` (perf gate + L01 basis), `P4-04` (visual gate), `P4-05`
   (gesture/undo seam), `P4-06` (L13 layers), `P4-07` (L19 fit/grid/idle), `P4-08` (text atlas),
-  `P4-09` (glyph layout/ellipsis), `P4-25` (contract 0.2.0), `P4-26` (DB containment). **In progress:**
-  `P4-10` (L02 titles for cards *and* zones, 40 px headers, zoom-bucket sharp text, reviewed reference
-  at 100 %, plus `perf` and idle re-tests) in worktree `/tmp/air-P4-10` (worker `p4-10-worker`; brief:
-  `tasks/P4-10.md`). **Next chain to the zone demo:** `P4-14` (L03) → `P4-15` (L07) → `P4-16` (L10) →
-  `P4-23` (L18) → `P4-27` (L08 engine membership/move) → `P4-29` → `P4-30` (zone parity I/II, briefs
-  exist) → `P4-28` (L01 final proof + `visual-final`/`perf-final` + showcase). Briefs for
-  `P4-14/15/16/23/27/28` are still missing (write them JIT). Exit gates: `cpp-unit` green;
-  `visual-final`/`perf-final` only pass in `P4-28`.
+  `P4-09` (glyph layout/ellipsis), `P4-25` (contract 0.2.0), `P4-26` (DB containment). **Submitted,
+  awaiting review/merge:** `P4-10` (L02 titles for cards *and* zones, 40 px headers, zoom-bucket sharp
+  text incl. 200 %, reviewed reference at 100 %, plus `perf` and idle re-tests) as commit `bb52df9` in
+  `/tmp/air-P4-10` (branch `task/P4-10`, rebase on current `main`; evidence in `reviews/evidence/`;
+  gates board-check/boundaries/cpp-unit/visual/design-check/perf pass). **Next chain to the zone demo:**
+  `P4-14` (L03) → `P4-15` (L07) → `P4-16` (L10) → `P4-23` (L18) → `P4-27` (L08 engine membership/move) →
+  `P4-29` → `P4-30` (zone parity I/II) → `P4-28` (L01 final proof + `visual-final`/`perf-final` +
+  showcase). **All briefs for that chain exist now** (`P4-14/15/16/23/27/28/29/30`). Exit gates:
+  `cpp-unit` green; `visual-final`/`perf-final` only pass in `P4-28`.
 - **Other sessions/repo state:** a second DSH/Claude session works in the same checkouts and produced
   `P4-06`/`P4-08`/`P4-09`/`P4-26`; coordinate via claims/`in_progress` in `board.json`. Commit race
   documented above (`eff284b` carries the P4-07 content, `b4938dc` its bookkeeping). `origin/main` is
