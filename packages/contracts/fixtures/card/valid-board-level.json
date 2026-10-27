@@ -1,0 +1,17 @@
+{
+  "schema": "schemas/card.schema.json",
+  "valid": true,
+  "reason": "a card without a zoneId sits at board level; the parent reference is optional and additive, so 0.1.0-valid cards stay valid",
+  "data": {
+    "id": "0192f0ab-7000-7000-8000-00000000000b",
+    "boardId": "0192f0a3-7000-7000-8000-000000000003",
+    "noteId": "0192f0aa-7000-7000-8000-00000000000a",
+    "x": 512,
+    "y": 256,
+    "width": 176,
+    "height": 80,
+    "z": "a0",
+    "createdAt": "2027-01-10T09:00:00.000Z",
+    "updatedAt": "2027-01-10T09:30:00.000Z"
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "schema": "schemas/block.schema.json",
+  "valid": true,
+  "reason": "a block with an explicit null zoneId sits at board level; the nullable parent is additive",
+  "data": {
+    "id": "0192f0ac-7000-7000-8000-00000000000c",
+    "boardId": "0192f0a3-7000-7000-8000-000000000003",
+    "x": 160,
+    "y": 96,
+    "z": "a1",
+    "createdAt": "2027-01-10T09:00:00.000Z",
+    "updatedAt": "2027-01-10T09:30:00.000Z",
+    "type": "checklist",
+    "width": 224,
+    "height": 128,
+    "zoneId": null
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "schema": "schemas/operation.schema.json",
+  "valid": false,
+  "reason": "the reorder payload is missing the new fractional z",
+  "data": {
+    "id": "0192f0c2-7000-7000-8000-000000000022",
+    "boardId": "0192f0a3-7000-7000-8000-000000000003",
+    "actorId": "0192f0a1-7000-7000-8000-000000000001",
+    "createdAt": "2027-01-10T09:00:00.000Z",
+    "type": "reorder",
+    "payload": {
+      "itemId": "0192f0a6-7000-7000-8000-000000000006"
+    },
+    "inverse": {
+      "boardId": "0192f0a3-7000-7000-8000-000000000003",
+      "type": "reorder",
+      "payload": {
+        "itemId": "0192f0a6-7000-7000-8000-000000000006",
+        "z": "a0"
+      }
+    }
+  }
+}

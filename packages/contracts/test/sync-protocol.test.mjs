@@ -1,4 +1,4 @@
-// Unit tests for the WebSocket sync protocol of contract 0.1.0.
+// Unit tests for the WebSocket sync protocol of contract 0.2.0.
 //
 // The suite checks the sync schema (12 message types in one versioned document,
 // client-to-server and server-to-client, the reconnect and session sequences),
@@ -176,8 +176,8 @@ test("the sync schema is versioned JSON Schema 2020-12 with one message union", 
   assert.equal(SYNC_SCHEMA.$schema, JSON_SCHEMA_2020_12);
   assert.equal(SYNC_SCHEMA.$id, SYNC_SCHEMA_ID);
   assert.equal(SYNC_SCHEMA_ID, `${CONTRACT_BASE_URI}sync.schema.json`);
-  assert.equal(CONTRACT_VERSION, "0.1.0");
-  assert.ok(SYNC_SCHEMA.$id.includes("/0.1.0/"));
+  assert.equal(CONTRACT_VERSION, "0.2.0");
+  assert.ok(SYNC_SCHEMA.$id.includes("/0.2.0/"));
   assert.equal(typeof SYNC_SCHEMA.title, "string");
   assert.ok(SYNC_SCHEMA.title.length > 0);
   assert.equal(typeof SYNC_SCHEMA.description, "string");

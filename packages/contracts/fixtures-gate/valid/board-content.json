@@ -3,7 +3,7 @@
   "valid": true,
   "reason": "one board with two notes, two cards, one zone, one checklist block and one edge; every reference resolves",
   "data": {
-    "contractVersion": "0.1.0",
+    "contractVersion": "0.2.0",
     "board": {
       "id": "0192f0a3-7000-7000-8000-000000000003",
       "workspaceId": "0192f0a2-7000-7000-8000-000000000002",

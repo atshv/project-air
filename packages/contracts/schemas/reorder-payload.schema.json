@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://project-air.dev/contracts/0.2.0/reorder-payload.schema.json",
+  "title": "Reorder payload",
+  "description": "The payload of the reorder operation (L13): one item whose fractional index changes and the new value. The operation and its inverse both use this payload, the inverse carrying the previous z.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "itemId",
+    "z"
+  ],
+  "properties": {
+    "itemId": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+      "description": "Reference to the reordered item: a card, a block or a zone of the board."
+    },
+    "z": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "pattern": "^[0-9A-Za-z]{1,64}$",
+      "description": "The fractional index of the item; lexicographic order, the highest value is on top of its layer (L13)."
+    }
+  }
+}

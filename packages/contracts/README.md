@@ -2,17 +2,17 @@
 
 The common language of Project air: the board-content data model, its operations, the WebSocket
 sync protocol and the REST API resources with their error codes as JSON Schema 2020-12, version
-`0.1.0`, with valid and invalid fixtures for every schema, generated TypeScript and C++ types, and a
+`0.2.0`, with valid and invalid fixtures for every schema, generated TypeScript and C++ types, and a
 fixture parity harness that proves both sides read the same contract.
 
 - **Kind:** `package`
 - **Created in stage:** `contract`
 - **Root architecture:** [ARCHITECTURE.md](../../ARCHITECTURE.md)
 - **Package map:** [docs/module-map.md](../../docs/module-map.md)
-- **Contract version:** `0.1.0`
+- **Contract version:** `0.2.0`
 
-Every schema `$id` is `https://project-air.dev/contracts/0.1.0/<entity>.schema.json`; the sync
-protocol is `.../0.1.0/sync.schema.json` and the REST API schemas are `.../0.1.0/api/<name>.schema.json`.
+Every schema `$id` is `https://project-air.dev/contracts/0.2.0/<entity>.schema.json`; the sync
+protocol is `.../0.2.0/sync.schema.json` and the REST API schemas are `.../0.2.0/api/<name>.schema.json`.
 The base URI is the versioned contract namespace; it is not fetched by any tool.
 
 ## Schema map
@@ -23,22 +23,34 @@ The base URI is the versioned contract namespace; it is not fetched by any tool.
 | `schemas/workspace.schema.json` | Workspace | `id`, `name`, `ownerId`, timestamps | owned by one account |
 | `schemas/board.schema.json` | Board | `id`, `workspaceId`, `ownerId`, `title`, `visibility`, `archived`, timestamps | `visibility` enum |
 | `schemas/note.schema.json` | Note | `id`, `workspaceId`, `title`, timestamps | a note exists once (AD-4); the body arrives with the editor stage |
-| `schemas/card.schema.json` | Note card (placement) | `id`, `boardId`, `noteId`, `zoneId`, geometry, `z`, timestamps | references the note, never embeds it; minimum 176×80 |
+| `schemas/card.schema.json` | Note card (placement) | `id`, `boardId`, `noteId`, `zoneId`, geometry, `z`, timestamps | references the note, never embeds it; optional nullable `zoneId` parent; minimum 176×80 |
 | `schemas/zone.schema.json` | Zone | `id`, `boardId`, `title`, geometry, `z`, timestamps | minimum 256×192; zones are never nested in v1 |
-| `schemas/block.schema.json` | Block | `id`, `boardId`, `zoneId`, `type`, geometry, `z`, timestamps | `type` enum; minimum size per type |
+| `schemas/block.schema.json` | Block | `id`, `boardId`, `zoneId`, `type`, geometry, `z`, timestamps | `type` enum; optional nullable `zoneId` parent; minimum size per type |
 | `schemas/edge.schema.json` | Edge | `id`, `boardId`, `from`, `to`, timestamps | endpoints are cards only |
-| `schemas/operation.schema.json` | Operation | `id`, `boardId`, `actorId`, `createdAt`, `type`, `payload`, `inverse` | 19 operation types, exactly one inverse, ordered non-nesting `group` |
+| `schemas/operation.schema.json` | Operation | `id`, `boardId`, `actorId`, `createdAt`, `type`, `payload`, `inverse` | 20 operation types (incl. `reorder`), exactly one inverse, ordered non-nesting `group` |
+| `schemas/reorder-payload.schema.json` | Reorder payload | `itemId`, `z` | one card, block or zone and its new fractional index; shared by `reorder` and its inverse |
 | `schemas/sync/sync.schema.json` | Sync protocol message | `id`, `clientId`, `boardId`, `seq`/`serverSeq`, `type`, `sentAt`, `payload` | 12 message types in one `oneOf` envelope; `$ref`s to the operations and the root document |
-| `schemas/board-content.schema.json` | Root document | `contractVersion`, `board`, `notes`, `zones`, `cards`, `blocks`, `edges` | `$ref`s to every entity; `contractVersion` const `0.1.0` |
+| `schemas/board-content.schema.json` | Root document | `contractVersion`, `board`, `notes`, `zones`, `cards`, `blocks`, `edges` | `$ref`s to every entity; `contractVersion` const `0.2.0` |
 
 Minimum sizes (width × height): note card 176×80, checklist 224×128, palette 224×128, columns
 368×192, timeline 320×160, table 288×160, zone 256×192. `z` is a fractional-index string, `x`/`y`
 are world pixels, ids are UUIDv7 and timestamps are ISO-8601 with timezone.
 
+## Operations and zone parents (0.2.0)
+
+Every board-content change is one operation with exactly one inverse. 0.1.0 defines 19 types; 0.2.0
+adds `reorder`, whose payload `{itemId, z}` stores the new fractional-index `z` of one card, block or
+zone and whose inverse carries the previous `z` for the same item. Cards and blocks already carry an
+optional nullable `zoneId` (0.1.0, P1-01) that names a zone of the same board; `null` or an absent
+field means board level; 0.2.0 documents the rule and adds the containment fixtures.
+Zones never carry a parent, so nested zones are invalid in v1, and a dangling parent is rejected by
+the containment rule (`fixtures/containment/`, `test/containment.test.mjs`) and, at rest, by the
+platform foreign key (P4-26).
+
 ## Sync protocol (WebSocket)
 
 The protocol is one versioned JSON Schema document, `schemas/sync/sync.schema.json`, with `$id`
-`https://project-air.dev/contracts/0.1.0/sync.schema.json`. Every message carries a UUIDv7 `id`,
+`https://project-air.dev/contracts/0.2.0/sync.schema.json`. Every message carries a UUIDv7 `id`,
 the `clientId` of the connection, an ISO-8601 `sentAt` and a typed `payload`; client messages carry
 a per-connection `seq`, durable server messages a board-wide `serverSeq`. The `oneOf` envelope
 rejects unknown message types and unknown fields (`additionalProperties: false`). Operation
@@ -130,7 +142,7 @@ fails.
 
 ## Fixture parity (AD-3)
 
-The unit suite runs a two-sided harness over **every** fixture (77: 32 valid, 45 invalid). The
+The unit suite runs a two-sided harness over **every** fixture (86: 37 valid, 49 invalid). The
 corpus lives in `fixtures/`; the sync protocol fixtures in `fixtures-sync/`, the REST API fixtures
 in `fixtures-api/` and the gate specimens in `fixtures-gate/` are deliberately outside it, so the
 counts stay stable:
@@ -168,8 +180,15 @@ dependencies; the tests use Node builtins and the local C++ compiler only.
 `fixtures/<entity>/` holds one file per case in the wrapper
 `{ "schema": "schemas/card.schema.json", "valid": true, "reason": "…", "data": { … } }`. Every
 schema has at least one valid and one invalid fixture; an invalid fixture names the violated rule.
-The operation fixtures cover all 19 operation types plus inverse and group edge cases. This tree is
-the 77-fixture parity corpus and stays unchanged.
+The operation fixtures cover all 20 operation types plus inverse, `group` and `reorder` edge cases.
+This tree is the 86-fixture parity corpus (37 valid, 49 invalid) and grows only additively. The
+reorder payload has its own folder because it is its own schema file shared by the operation and its
+inverse.
+
+`fixtures/containment/` holds the two board-content specimens for the parent rule JSON Schema cannot
+compare across the document: one valid document with zoned and board-level cards/blocks and one
+invalid document with a dangling parent. They are part of the parity corpus and are checked by
+`test/containment.test.mjs`.
 
 `fixtures-sync/{valid,invalid}/` holds the sync protocol fixtures: one valid and one invalid example
 per message type plus the reconnect and session sequence logs, all in the same wrapper.
@@ -184,7 +203,7 @@ the code/messageKey mapping.
 `fixtures/board-content/valid.json` and `fixtures/board-content/invalid-missing-board.json`; a unit
 test enforces the copies.
 
-## Not in 0.1.0
+## Not in 0.2.0
 
 Runtime validation and CMake/Emscripten packaging belong to the engine stage. Block content,
 images, files, comments, templates and workspace members are later contract growth.

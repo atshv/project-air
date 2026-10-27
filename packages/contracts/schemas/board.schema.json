@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://project-air.dev/contracts/0.1.0/board.schema.json",
+  "$id": "https://project-air.dev/contracts/0.2.0/board.schema.json",
   "title": "Board",
   "description": "A board is one canvas in a workspace. Its content is the board-content root schema.",
   "type": "object",

@@ -10,7 +10,7 @@
     "sentAt": "2027-01-10T09:00:01.000Z",
     "serverSeq": 43,
     "payload": {
-      "contractVersion": "0.1.0",
+      "contractVersion": "0.2.0",
       "snapshotRef": "snapshot:0192f0b1-7000-7000-8000-0000000000b1:43"
     }
   }

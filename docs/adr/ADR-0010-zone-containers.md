@@ -16,9 +16,18 @@ rather than a rendering convention.
 
 Zones are containers:
 
-- **Contract (0.2.0):** cards and blocks gain an optional nullable zone parent (`null`/absent = board
-  level). Zones never carry a parent; nested zones are invalid in v1 and the fixture corpus rejects
-  them. The same bump adds the `reorder` operation (fractional `z` + inverse) that L13 needs.
+- **Contract (0.2.0):** cards and blocks already carry an optional nullable zone parent
+  (`null`/absent = board level) since 0.1.0 (P1-01); 0.2.0 documents the rule, adds the containment
+  fixtures and keeps zones free of a parent (nested zones are invalid in v1 and the fixture corpus
+  rejects them). The same bump adds the `reorder` operation (fractional `z` + inverse) that L13
+  needs.
+  Refinement from the implementation: `reorder` carries `{itemId, z}` for one card, block or zone and
+  its inverse the previous `z`; the reference is additive, so 0.1.0-valid content stays valid. JSON
+  Schema checks the parent's shape only, so the referential rule (the parent names a zone of the same
+  board) lives in `fixtures/containment` plus `test/containment.test.mjs` and is enforced at rest by
+  the P4-26 foreign key; a reorder inverse never creates an item, so it cannot resurrect a deleted
+  one. `moveZone`'s `zoneId` description is corrected to name the moved zone; the wire shape is
+  unchanged.
 - **Storage (P4-26):** the platform migration adds the nullable parent column with a foreign key to
   the zone, the same row-level security as the board, and the containment constraint; history import
   is unaffected because legacy rows simply have no parent.

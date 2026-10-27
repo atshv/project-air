@@ -1,9 +1,9 @@
-# Contract 0.1.0
+# Contract 0.2.0
 
 The contract is the common language: everything two parts exchange is in
 [`packages/contracts`](../packages/contracts/README.md), the JSON Schema source of truth for board
-content, operations, sync protocol and API resources/errors. Version **0.1.0**; base URI
-`https://project-air.dev/contracts/0.1.0/`, a placeholder until the domain is decided (Q1), changed
+content, operations, sync protocol and API resources/errors. Version **0.2.0**; base URI
+`https://project-air.dev/contracts/0.2.0/`, a placeholder until the domain is decided (Q1), changed
 only with a version bump (ADR-0004). It binds `AD-1`
 (operation inverses), `AD-2` (durable acks), `AD-3` (versioned schemas with fixtures), `AD-4` (one
 note, many placements) and `AD-8` (translated `messageKey`). The engine includes
@@ -11,12 +11,14 @@ note, many placements) and `AD-8` (translated `messageKey`). The engine includes
 
 ## Schema families and files
 
-All 16 are JSON Schema 2020-12, closed, UUIDv7/ISO-8601, versioned `$id`.
+All 17 are JSON Schema 2020-12, closed, UUIDv7/ISO-8601, versioned `$id`.
 
 - **Board content** (codegen input): `schemas/account.schema.json`, `schemas/workspace.schema.json`,
   `schemas/board.schema.json`, `schemas/note.schema.json`, `schemas/card.schema.json`,
   `schemas/zone.schema.json`, `schemas/block.schema.json`, `schemas/edge.schema.json`,
-  `schemas/operation.schema.json` (19 types, one inverse each; ordered non-nesting `group`) and the root `schemas/board-content.schema.json` (`contractVersion` const `0.1.0`).
+  `schemas/operation.schema.json` (20 types, one inverse each; ordered non-nesting `group`),
+  `schemas/reorder-payload.schema.json` (the payload shared by `reorder` and its inverse) and the
+  root `schemas/board-content.schema.json` (`contractVersion` const `0.2.0`).
 - **Sync**: `schemas/sync/sync.schema.json` — one `oneOf` envelope, 12 message types (6
   client→server, 6 server→client) plus reconnect and session sequences.
 - **REST API**: `schemas/api/workspace.schema.json`, `schemas/api/board.schema.json`,
@@ -25,13 +27,52 @@ All 16 are JSON Schema 2020-12, closed, UUIDv7/ISO-8601, versioned `$id`.
   `schemas/api/errors.schema.json` (7 UPPER_SNAKE codes, required `messageKey`
   `errors.<camelCase>`).
 
+## Zone parent reference
+
+Cards and blocks live in at most one zone. Both have carried an optional nullable `zoneId` since
+0.1.0 (P1-01): a UUIDv7 reference to a zone of the same board, where `null` or an absent field means
+board level. Zones carry no parent field at all, so **nested zones are invalid in v1**; the zone
+schema rejects a `zoneId`, and the fixture corpus keeps a nested-zone specimen
+(`fixtures/zone/invalid-nested.json`). The reference is additive: every 0.1.0-valid card or block
+stays valid, with or without the field. 0.2.0 documents the rule and adds the containment fixtures
+below.
+
+JSON Schema validates the shape of the reference but cannot compare it with the `zones` array, so the
+referential part is an executable rule next to the schemas: `fixtures/containment/` holds one valid
+document (zoned and board-level cards/blocks) and one invalid document (a dangling parent), both in
+the TS/C++ parity corpus, and `test/containment.test.mjs` rejects a parent that does not name a zone
+of the same board. At rest the platform migration enforces the same rule with a nullable foreign key
+and the board's row-level security (P4-26); the engine and UI use the field in P4-27.
+
+## Operations (20 types, AD-1)
+
+Every board-content change is one operation with exactly one inverse. The 19 types of 0.1.0 remain
+unchanged; 0.2.0 adds `reorder`.
+
+- **Content:** `createNote`, `updateNote`, `deleteNote`, `createCard`, `moveCard`, `resizeCard`,
+  `deleteCard`, `createZone`, `moveZone`, `resizeZone`, `deleteZone`, `createBlock`, `moveBlock`,
+  `resizeBlock`, `updateBlock`, `deleteBlock`, `createEdge`, `deleteEdge`.
+- **`reorder` (L13, new in 0.2.0):** payload `{itemId, z}` sets the fractional-index `z` of one card,
+  block or zone; the inverse `reorder` carries the same `itemId` and the previous `z`. The operation
+  and its inverse share `schemas/reorder-payload.schema.json`, and both use the contract's
+  fractional-index string (1–64 characters `[0-9A-Za-z]`), never a numeric z. A
+  reorder only changes the order: it never creates or restores an item, so the inverse of a reorder
+  whose item was deleted is rejected by the server (`NOT_FOUND`) instead of resurrecting it. `moveCard`
+  and `resizeCard` stay unchanged, so no operation is duplicated.
+- **`moveZone`:** payload `zoneId` names the moved zone itself (the same id in the operation and its
+  inverse). 0.2.0 corrects the description that called it a parent zone; the wire shape and the
+  payload required fields are unchanged because a zone is never reparented in v1.
+- **`group`:** bundles ordered child operations, does not nest, and its inverse is the reversed child
+  inverses.
+
 ## Fixtures
 
-Fixture wrapper: `{ "schema", "valid", "reason", "data" }`; invalid ones name the rule; other
-corpora keep parity at 77.
+Fixture wrapper: `{ "schema", "valid", "reason", "data" }`; invalid ones name the rule; the sync,
+API and gate corpora stay outside the parity count.
 
-- `fixtures/` — 77 parity fixtures (32 valid, 45 invalid) over the ten board-content schemas; the
-  operation fixtures cover all 19 types, the inverse pair and `group`.
+- `fixtures/` — 86 parity fixtures (37 valid, 49 invalid) over the ten board-content entity schemas,
+  the reorder payload and the containment corpus; the operation fixtures cover all 20 types, the
+  inverse pair, `group` and `reorder`, and `fixtures/reorder-payload/` covers the shared payload.
 - `fixtures-sync/` — 14 valid (one per message type and the two sequence logs), 20 invalid.
 - `fixtures-api/` — 35 valid (envelopes per resource plus one per error code), 20 invalid.
 - `fixtures-gate/` — 2 direct Polier specimens (canonical board-content copies); the gate needs
@@ -45,10 +86,11 @@ structs, enums, unions, `kContractVersion`). Output is deterministic (sorted, LF
 timestamps or paths); generated files are never hand-edited and the `codegen` gate fails on a diff.
 Sync/API schemas live in subdirectories and do not change the model.
 
-`test/parity/canonical.ts` reduces all 77 fixtures to canonical lines; `test/cpp/parity.cpp` reads
+`test/parity/canonical.ts` reduces all 86 fixtures to canonical lines; `test/cpp/parity.cpp` reads
 the same wrappers and includes the header; `test/parity.test.mjs` compiles it with
 `-std=c++20 -Wall -Wextra -Wpedantic -Werror` and asserts equal line sets. Without a local C++
-compiler it fails loudly; it never skips.
+compiler it fails loudly; it never skips. The 0.2.0 model adds `ReorderPayload` to the TypeScript
+interface set and the C++ operation variants.
 
 ## Versions and change procedure
 
@@ -62,6 +104,13 @@ SemVer; the machine-readable version lives in `board.contracts[]`.
 
 The server understands current/previous major; never rename: add, deprecate, remove after a major.
 
+### Version history
+
+| Version | Change |
+| --- | --- |
+| 0.1.0 | Initial contract: board-content model, 19 operations with inverses, sync protocol and REST API envelopes. |
+| 0.2.0 | Zone parent reference documented and fixtures added (cards and blocks nullable `zoneId`, no nested zones), `reorder` operation with inverse, `moveZone` `zoneId` description corrected. Limits, visibility and error codes unchanged (ADR-0004); additive fields only. |
+
 Per task: edit schemas; add valid and invalid fixtures; run codegen and commit generated files;
 update every dependant in the same task (AD-3), or list a deferred one in `contract_followups` for
 lead approval; bump every schema `$id`, root `contractVersion` and `board.contracts[]`; update this
@@ -70,22 +119,25 @@ document; run `board-check`, `contracts`, `codegen`, `unit` and commit evidence.
 The table is the intent; the `contracts` gate is a property-level aid: it compares property names
 and required paths with the base branch (added required/removed/renamed → major, added optional or
 new schema file → minor, else patch), so it can under-classify (e.g. an enum-only new operation
-type) or over-classify (a new definition with required fields); follow the table. A change under
-`packages/contracts/` without a bump still fails.
+type) or over-classify (a new definition with required fields); follow the table. A new payload with
+required fields therefore lives in its own schema file (`reorder-payload.schema.json`), which the
+gate classifies as a new schema file (minor). A change under `packages/contracts/` without a bump
+still fails.
 
 ## board.contracts[] metadata
 
 `board.json` → `contracts[]` has one entry for the contract: `name`
-`project-air-contract`, `path` `packages/contracts`, `version` `0.1.0`, the 16 `schema_files` named
-above, `fixtures_dir` `packages/contracts/fixtures-gate`, empty `dependants`.
+`project-air-contract`, `path` `packages/contracts`, `version` `0.2.0`, the 17 `schema_files` named
+above, `fixtures_dir` `packages/contracts/fixtures-gate`, and the four `dependants`
+(`packages/engine`, `packages/sdk`, `services/platform`, `services/auth`).
 `python3 $POLIER/tools/contracts.py check` validates the entry, schema files, fixtures, base-branch
 bump and dependant coverage. The lead owns `board.json`; a contract change bumps its
 version in the same task.
 
-## The 0.1.0 tag
+## The 0.2.0 tag
 
 The version is recorded in `board.contracts[].version`, every schema `$id` and the root
-`contractVersion`. The logical contract tag is `contracts@0.1.0`, created by the owner/CI in the
+`contractVersion`. The logical contract tag is `contracts@0.2.0`, created by the owner/CI in the
 remote phase (ADR-0003); git release tags stay `v<semver>` per
 [docs/releasing.md](releasing.md). No tag in this stage; agents never tag or publish
 (AD-10). Decision: [ADR-0005](adr/ADR-0005-contract.md).

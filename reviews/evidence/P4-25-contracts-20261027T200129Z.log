@@ -1,0 +1,7 @@
+$ python3 /Users/rasulatashev/Desktop/Polier-main/tools/contracts.py check --task P4-25
+[exit 0]
+
+WARN: contract project-air-contract: task P4-25 leaves dependant packages/sdk out of scope_write but lists it in contract_followups (lead approval required)
+WARN: contract project-air-contract: task P4-25 leaves dependant services/platform out of scope_write but lists it in contract_followups (lead approval required)
+WARN: contract project-air-contract: task P4-25 leaves dependant services/auth out of scope_write but lists it in contract_followups (lead approval required)
+OK: contracts pass in /private/tmp/air-P4-25 (3 warning(s))

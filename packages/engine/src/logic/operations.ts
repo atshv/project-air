@@ -206,10 +206,9 @@ function moveBlockPayload(block: Block, x: number, y: number): MoveBlockPayload 
 }
 
 function moveZonePayload(zone: Zone, x: number, y: number): MoveZonePayload {
-  // Contract 0.1.0 payload-move-zone identifies the moved zone in `zoneId`:
-  // the valid fixture and its inverse rely on it, while the schema description
-  // calls the field the parent zone. The seam follows the fixture; the
-  // description is recorded as an open question in docs/engine.md.
+  // payload-move-zone identifies the moved zone in `zoneId`: the valid fixture
+  // and its inverse rely on it, and contract 0.2.0 corrects the description to
+  // name the moved zone instead of a parent zone.
   return { zoneId: zone.id, x, y };
 }
 

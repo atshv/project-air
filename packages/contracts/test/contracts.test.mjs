@@ -1,4 +1,4 @@
-// Unit tests for the board-content contract 0.1.0.
+// Unit tests for the board-content contract 0.2.0.
 //
 // The suite parses every schema and fixture, validates the fixtures against the
 // schemas with a small structural validator for the keywords this contract uses,
@@ -10,10 +10,12 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 import {
+  API_SCHEMA_FILES,
   CONTRACT_BASE_URI,
   CONTRACT_VERSION,
   FIXTURE_DIRS,
   SCHEMA_FILES,
+  SYNC_SCHEMA_FILE,
   fixturePath,
   schemaId,
   schemaPath,
@@ -43,6 +45,7 @@ const EXPECTED_SCHEMA_NAMES = [
   "edge",
   "note",
   "operation",
+  "reorder-payload",
   "workspace",
   "zone",
 ];
@@ -63,8 +66,8 @@ const EXPECTED_MINIMUMS = {
 // --- the contract -------------------------------------------------------------
 
 test("index exports the versioned schema and fixture paths", () => {
-  assert.equal(CONTRACT_VERSION, "0.1.0");
-  assert.equal(CONTRACT_BASE_URI, "https://project-air.dev/contracts/0.1.0/");
+  assert.equal(CONTRACT_VERSION, "0.2.0");
+  assert.equal(CONTRACT_BASE_URI, "https://project-air.dev/contracts/0.2.0/");
   assert.deepEqual([...SCHEMA_NAMES].sort(), EXPECTED_SCHEMA_NAMES);
   assert.deepEqual(Object.keys(FIXTURE_DIRS).sort(), EXPECTED_SCHEMA_NAMES);
   for (const name of EXPECTED_SCHEMA_NAMES) {
@@ -77,12 +80,26 @@ test("index exports the versioned schema and fixture paths", () => {
   assert.throws(() => fixturePath("unknown", "valid.json"), /unknown contract schema/);
 });
 
+test("board.contracts metadata names the current version and all 17 schema files", () => {
+  const board = readJson("../../board.json");
+  const contract = board.contracts.find((entry) => entry.path === "packages/contracts");
+  assert.ok(contract !== undefined, "board.contracts has the package entry");
+  assert.equal(contract.name, "project-air-contract");
+  assert.equal(contract.version, CONTRACT_VERSION);
+  const expected = [
+    ...Object.values(SCHEMA_FILES),
+    SYNC_SCHEMA_FILE,
+    ...Object.values(API_SCHEMA_FILES),
+  ].map((file) => `packages/contracts/${file}`).sort();
+  assert.deepEqual([...contract.schema_files].sort(), expected);
+});
+
 test("every schema is JSON Schema 2020-12 with a versioned $id and required fields", () => {
   for (const name of ENTITY_SCHEMA_NAMES) {
     const schema = schemaOf(name);
     assert.equal(schema.$schema, JSON_SCHEMA_2020_12, `${name} uses JSON Schema 2020-12`);
     assert.equal(schema.$id, schemaId(name), `${name} has the versioned $id`);
-    assert.ok(schema.$id.includes("/0.1.0/"), `${name} carries version 0.1.0`);
+    assert.ok(schema.$id.includes("/0.2.0/"), `${name} carries version 0.2.0`);
     assert.equal(typeof schema.title, "string");
     assert.ok(schema.title.length > 0, `${name} has a title`);
     assert.equal(typeof schema.description, "string");
@@ -229,7 +246,7 @@ test("fixed enums are part of the schemas", () => {
     "table",
   ]);
   assert.deepEqual(schemaOf("board-content").required[0], "contractVersion");
-  assert.equal(schemaOf("board-content").properties.contractVersion.const, "0.1.0");
+  assert.equal(schemaOf("board-content").properties.contractVersion.const, "0.2.0");
 });
 
 test("the fractional index is a string", () => {

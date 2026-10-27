@@ -1,0 +1,19 @@
+{
+  "task": "P4-25",
+  "gate": "board-check",
+  "command": "python3 /Users/rasulatashev/Desktop/Polier-main/tools/check.py .",
+  "exit_code": 0,
+  "result": "pass",
+  "slot": null,
+  "exclusive": [
+    "db"
+  ],
+  "lock_wait_s": 0.0,
+  "lock_warning": null,
+  "started": "2026-10-27T20:01:26+00:00",
+  "finished": "2026-10-27T20:01:29+00:00",
+  "commit": "acb66376eda23a96bbc5bdc7fecea6efaf0edbdf",
+  "dirty": true,
+  "log": "P4-25-board-check-20261027T200126Z.log",
+  "log_sha256": "d18fa7380bf1dc85c5157b7cfb8750c98882e3d781a6d347de535c61010b65a9"
+}

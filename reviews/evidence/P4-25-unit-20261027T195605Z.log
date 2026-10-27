@@ -1,0 +1,522 @@
+$ pnpm test
+[exit 0]
+
+
+   • turbo 2.11.10
+   • Packages in scope: @project-air/auth, @project-air/contracts, @project-air/design-check, @project-air/engine, @project-air/language-check, @project-air/platform, @project-air/release, @project-air/sdk, @project-air/test-kit, @project-air/ui-kit
+   • Running test in 10 packages
+   • Remote caching disabled, using shared worktree cache
+
+@project-air/engine:build: cache miss, executing 5e10ca59f09e34fb
+@project-air/contracts:test: cache miss, executing c7ce25cd754a9e1e
+@project-air/ui-kit:build: cache hit, replaying logs a86ffff7cfd68d26
+@project-air/ui-kit:build: $ node codegen.mjs
+@project-air/ui-kit:build: ui-kit codegen: wrote tokens.css, tokens.h, layers.ts
+@project-air/design-check:test: cache hit, replaying logs 80136beb4e61afb2
+@project-air/design-check:test: $ node --test test/*.test.mjs
+@project-air/design-check:test: ✔ the design source is read from tokens.json and layers.ts (4.965ms)
+@project-air/design-check:test: ✔ the clean fixture has no findings (126.725334ms)
+@project-air/design-check:test: ✔ the repository itself is clean (21.356ms)
+@project-air/design-check:test: ✔ raw colours are reported; var() and currentColor are allowed (1.655959ms)
+@project-air/design-check:test: ✔ off-grid spacing is reported and non-px values are skipped (1.31825ms)
+@project-air/design-check:test: ✔ numeric z-index values must come from layers.ts (0.908041ms)
+@project-air/design-check:test: ✔ ignored directories, generated token files and test files are skipped (1.067125ms)
+@project-air/design-check:test: ✔ node_modules, VCS, cache and build directories are skipped (12.653584ms)
+@project-air/design-check:test: ✔ isIgnored covers generated, ignored and test paths (0.361209ms)
+@project-air/design-check:test: ✔ allowed values come from the project's own tokens.json and layers.ts (4.491625ms)
+@project-air/design-check:test: ✔ --task requires the before and after screenshots (6.454375ms)
+@project-air/design-check:test: ✔ an empty project is clean (0.087667ms)
+@project-air/design-check:test: ✔ missing design source is a configuration error (285.101666ms)
+@project-air/design-check:test: ✔ the CLI reports findings as file:line: rule and supports --json (377.552875ms)
+@project-air/design-check:test: ✔ the CLI exits 0 on the repository and with JSON (542.008917ms)
+@project-air/design-check:test: ✔ the CLI validates its arguments and the root (420.67425ms)
+@project-air/design-check:test: ℹ tests 16
+@project-air/design-check:test: ℹ suites 0
+@project-air/design-check:test: ℹ pass 16
+@project-air/design-check:test: ℹ fail 0
+@project-air/design-check:test: ℹ cancelled 0
+@project-air/design-check:test: ℹ skipped 0
+@project-air/design-check:test: ℹ todo 0
+@project-air/design-check:test: ℹ duration_ms 2133.723084
+@project-air/language-check:test: cache hit, replaying logs d46f2045d61cdb4b
+@project-air/language-check:test: $ node --test test/*.test.mjs
+@project-air/language-check:test: ✔ clean fixture passes with exit 0 and no findings (570.635125ms)
+@project-air/language-check:test: ✔ key drift is reported per key with file, line and rule (205.506458ms)
+@project-air/language-check:test: ✔ broken ICU is reported with the message key (136.883875ms)
+@project-air/language-check:test: ✔ the German sharp-s character in code is reported (134.730042ms)
+@project-air/language-check:test: ✔ a German word in a user-facing string is reported (357.213625ms)
+@project-air/language-check:test: ✔ a drifting pseudo-locale is reported per key (140.717ms)
+@project-air/language-check:test: ✔ --write-pseudo repairs en-XA.json and is deterministic on a second run (386.5605ms)
+@project-air/language-check:test: ✔ a missing root is a configuration error with exit 2 (94.99775ms)
+@project-air/language-check:test: ✔ the repository itself passes (301.58575ms)
+@project-air/language-check:test: ℹ tests 9
+@project-air/language-check:test: ℹ suites 0
+@project-air/language-check:test: ℹ pass 9
+@project-air/language-check:test: ℹ fail 0
+@project-air/language-check:test: ℹ cancelled 0
+@project-air/language-check:test: ℹ skipped 0
+@project-air/language-check:test: ℹ todo 0
+@project-air/language-check:test: ℹ duration_ms 2614.705541
+@project-air/test-kit:build: cache hit, replaying logs 3aabc592a29788bf
+@project-air/test-kit:build: $ tsc --project tsconfig.json
+@project-air/release:test: cache hit, replaying logs d8d2cc1496ff7aec
+@project-air/release:test: $ node --test test/*.test.mjs
+@project-air/release:test: ✔ writes a deterministic entry from flags (183.572625ms)
+@project-air/release:test: ✔ derives the task id from the branch and accepts positional arguments (181.233584ms)
+@project-air/release:test: ✔ defaults the kind to patch (157.471875ms)
+@project-air/release:test: ✔ refuses unknown areas and kinds without writing a file (230.6695ms)
+@project-air/release:test: ✔ refuses invalid task ids, missing and multi-line summaries (404.197459ms)
+@project-air/release:test: ✔ refuses a task id when the branch is not task/<ID> (168.446709ms)
+@project-air/release:test: ✔ refuses to overwrite an entry unless --force is passed (300.10925ms)
+@project-air/release:test: ✔ ignores a -- separator forwarded by a package manager (251.241917ms)
+@project-air/release:test: ✔ never edits CHANGELOG.md (149.171667ms)
+@project-air/release:test: ✔ fails on a committed code change without an entry (273.375792ms)
+@project-air/release:test: ✔ passes with a matching entry (263.555041ms)
+@project-air/release:test: ✔ passes for docs-only changes (260.538792ms)
+@project-air/release:test: ✔ passes with the owner exception and the reason (272.202042ms)
+@project-air/release:test: ✔ rejects --no-changelog without a reason (260.551708ms)
+@project-air/release:test: ✔ detects uncommitted working-tree code changes (210.998584ms)
+@project-air/release:test: ✔ requires an entry for a changed root manifest (392.158792ms)
+@project-air/release:test: ✔ fails on an invalid entry (236.884125ms)
+@project-air/release:test: ✔ fails when a task has more than one entry (229.075333ms)
+@project-air/release:test: ✔ exits 2 for usage and configuration errors (354.814416ms)
+@project-air/release:test: ✔ accepts an explicit --task on a branch that is not task/<ID> (217.343292ms)
+@project-air/release:test: ✔ areas and kinds are fixed (0.928417ms)
+@project-air/release:test: ✔ task ids are normalized to upper case and validated (0.137792ms)
+@project-air/release:test: ✔ slug is deterministic and stays short (0.186708ms)
+@project-air/release:test: ✔ entry file name uses the task id and the slug (0.064041ms)
+@project-air/release:test: ✔ entry render and parse round-trip (0.201ms)
+@project-air/release:test: ✔ parse rejects invalid entries (0.19525ms)
+@project-air/release:test: ✔ entry files for a task are listed sorted and ignore other files (1.546334ms)
+@project-air/release:test: ✔ code paths follow the gate policy (0.188542ms)
+@project-air/release:test: ℹ tests 28
+@project-air/release:test: ℹ suites 0
+@project-air/release:test: ℹ pass 28
+@project-air/release:test: ℹ fail 0
+@project-air/release:test: ℹ cancelled 0
+@project-air/release:test: ℹ skipped 0
+@project-air/release:test: ℹ todo 0
+@project-air/release:test: ℹ duration_ms 3113.853375
+@project-air/sdk:build: cache hit, replaying logs ebad7287a6c5f5f6
+@project-air/sdk:build: $ tsc --project tsconfig.json
+@project-air/auth:build: cache hit, replaying logs ee529163a9ae5b06
+@project-air/auth:build: $ tsc --project tsconfig.json
+@project-air/ui-kit:test: cache hit, replaying logs a00a77d6a8f72267
+@project-air/ui-kit:test: $ node --test tests/*.test.mjs
+@project-air/ui-kit:test: ✔ committed tokens.css equals the generated CSS (4.783625ms)
+@project-air/ui-kit:test: ✔ committed tokens.h equals the generated C++ header (1.730709ms)
+@project-air/ui-kit:test: ✔ committed layers.ts equals the generated layer order (0.430334ms)
+@project-air/ui-kit:test: ✔ every token appears in the generated CSS with the token value (0.512916ms)
+@project-air/ui-kit:test: ✔ every token appears in the generated C++ header with the token value (0.540083ms)
+@project-air/ui-kit:test: ✔ a second render is byte-identical (no timestamps, stable ordering) (1.74625ms)
+@project-air/ui-kit:test: ✔ codegen.mjs uses Node builtins only (2.702792ms)
+@project-air/ui-kit:test: ✔ layers.ts data matches tokens.json (0.202417ms)
+@project-air/ui-kit:test: ✔ writeGenerated writes the three documented files (2.4405ms)
+@project-air/ui-kit:test: ✔ icons/ contains exactly the ten toolbar icons (2.037166ms)
+@project-air/ui-kit:test: ✔ note.svg is a valid standalone 24x24 stroke icon (0.670833ms)
+@project-air/ui-kit:test: ✔ source.svg is a valid standalone 24x24 stroke icon (0.448042ms)
+@project-air/ui-kit:test: ✔ image.svg is a valid standalone 24x24 stroke icon (0.290208ms)
+@project-air/ui-kit:test: ✔ file.svg is a valid standalone 24x24 stroke icon (0.2625ms)
+@project-air/ui-kit:test: ✔ zone.svg is a valid standalone 24x24 stroke icon (0.258167ms)
+@project-air/ui-kit:test: ✔ checklist.svg is a valid standalone 24x24 stroke icon (0.419834ms)
+@project-air/ui-kit:test: ✔ palette.svg is a valid standalone 24x24 stroke icon (0.384833ms)
+@project-air/ui-kit:test: ✔ columns.svg is a valid standalone 24x24 stroke icon (0.145667ms)
+@project-air/ui-kit:test: ✔ timeline.svg is a valid standalone 24x24 stroke icon (0.38975ms)
+@project-air/ui-kit:test: ✔ table.svg is a valid standalone 24x24 stroke icon (0.148584ms)
+@project-air/ui-kit:test: ✔ package.json defines the five required scripts and no dependencies (0.53925ms)
+@project-air/ui-kit:test: ✔ the generated files exist and are documented in README.md (0.860833ms)
+@project-air/ui-kit:test: ✔ the open questions live in README.md, not in tokens.json (0.134ms)
+@project-air/ui-kit:test: ✔ only tokens.json holds raw colour values; generated files are derived (1.60125ms)
+@project-air/ui-kit:test: ✔ no placeholder or TODO ships in the package (0.653375ms)
+@project-air/ui-kit:test: ✔ ARCHITECTURE.md stays within the 400-word package budget and names commands (0.286708ms)
+@project-air/ui-kit:test: ✔ tsconfig.json includes the generated layer module (0.140834ms)
+@project-air/ui-kit:test: ✔ tokens.json holds token data only (2.209708ms)
+@project-air/ui-kit:test: ✔ colours carry the design-law names and the blueprint/reference values (0.265167ms)
+@project-air/ui-kit:test: ✔ spacing is the 4-px series only (0.1165ms)
+@project-air/ui-kit:test: ✔ sizes cover borders, focus outline, grid, thresholds, targets, icons and header (0.077916ms)
+@project-air/ui-kit:test: ✔ radii carry the design-law names and values, including the tooltip radius (0.060459ms)
+@project-air/ui-kit:test: ✔ typography has both stacks, the seven sizes and the three weights (0.107875ms)
+@project-air/ui-kit:test: ✔ motion has the four design-law durations plus the 2 s saved fade (0.047125ms)
+@project-air/ui-kit:test: ✔ shadows are exactly card-shadow and shadow (0.095167ms)
+@project-air/ui-kit:test: ✔ layers keep the design-law order 1-11 including 7a (0.558ms)
+@project-air/ui-kit:test: ✔ no token value is null, empty or a placeholder (0.857958ms)
+@project-air/ui-kit:test: ℹ tests 37
+@project-air/ui-kit:test: ℹ suites 0
+@project-air/ui-kit:test: ℹ pass 37
+@project-air/ui-kit:test: ℹ fail 0
+@project-air/ui-kit:test: ℹ cancelled 0
+@project-air/ui-kit:test: ℹ skipped 0
+@project-air/ui-kit:test: ℹ todo 0
+@project-air/ui-kit:test: ℹ duration_ms 598.172833
+@project-air/platform:build: cache hit, replaying logs 05c9a3432977730e
+@project-air/platform:build: $ tsc --project tsconfig.json
+@project-air/test-kit:test: cache hit, replaying logs ad51ed47228d5764
+@project-air/sdk:test: cache hit, replaying logs c6cc6653b342c077
+@project-air/sdk:test: $ node --test test/*.test.mjs
+@project-air/sdk:test: ✔ workspaces.list sends the session and requestId and parses the list envelope (38.103791ms)
+@project-air/sdk:test: ✔ a cookie session is sent as the cookie header (8.251958ms)
+@project-air/sdk:test: ✔ a string session is shorthand for the test session header (7.572958ms)
+@project-air/sdk:test: ✔ workspace create/get/update/delete use the contract envelopes (29.974042ms)
+@project-air/sdk:test: ✔ boards list/create/get/update/delete (15.330958ms)
+@project-air/sdk:test: ✔ notes list/create/get/update/delete (27.182042ms)
+@project-air/sdk:test: ✔ cards list/create/get/update/delete (85.096833ms)
+@project-air/sdk:test: ✔ pagination nextCursor is passed back as the cursor query (12.968083ms)
+@project-air/sdk:test: ✔ no session maps to a typed AUTH_REQUIRED ApiError (1.72025ms)
+@project-air/sdk:test: ✔ a validation error exposes the field paths (2.553584ms)
+@project-air/sdk:test: ✔ a conflict maps to CONFLICT and unknown ids to NOT_FOUND (3.011791ms)
+@project-air/sdk:test: ✔ an unexpected success envelope becomes an INTERNAL ApiError (6.060666ms)
+@project-air/sdk:test: ✔ an invalid baseUrl is rejected by the client (0.133125ms)
+@project-air/sdk:test: ℹ tests 13
+@project-air/sdk:test: ℹ suites 0
+@project-air/sdk:test: ℹ pass 13
+@project-air/sdk:test: ℹ fail 0
+@project-air/sdk:test: ℹ cancelled 0
+@project-air/sdk:test: ℹ skipped 0
+@project-air/sdk:test: ℹ todo 0
+@project-air/sdk:test: ℹ duration_ms 705.334709
+@project-air/test-kit:test: $ node --test test/*.test.mjs
+@project-air/test-kit:test: ✔ engine-core board has exactly 10,000 mixed objects (17.148333ms)
+@project-air/test-kit:test: ✔ engine-core board is deterministic across builds (27.00825ms)
+@project-air/test-kit:test: ✔ engine-core ids are short, stable and unique (12.913334ms)
+@project-air/test-kit:test: ✔ engine-core geometry is finite, positive and on the 16 px grid (25.898333ms)
+@project-air/test-kit:test: ✔ engine-core objects stay inside the world (22.657542ms)
+@project-air/test-kit:test: ✔ engine-core follows the layer order and varies in size and tone (19.328666ms)
+@project-air/test-kit:test: ✔ engine-core blocks sit in their zone and each zone has three (2.02625ms)
+@project-air/test-kit:test: ✔ engine-core cards are either contained in a zone or free (2.640417ms)
+@project-air/test-kit:test: ✔ engine-core fit clamps the zoom at 1440x900 and 390x844 (1.237458ms)
+@project-air/test-kit:test: ✔ buildScene resolves the engine-core scene and the scene name guard (2.553417ms)
+@project-air/test-kit:test: ✔ sample board has exactly 500 cards and 50 zones with contained blocks (3.706042ms)
+@project-air/test-kit:test: ✔ sample board is deterministic across builds (4.120875ms)
+@project-air/test-kit:test: ✔ sample ids are short, stable and unique (2.414917ms)
+@project-air/test-kit:test: ✔ sample geometry is finite, positive and on the 16 px grid (1.743417ms)
+@project-air/test-kit:test: ✔ sample stays inside the world and reaches its edges (1.477625ms)
+@project-air/test-kit:test: ✔ sample objects follow the layer order and vary in size and tone (1.685417ms)
+@project-air/test-kit:test: ✔ sample blocks and zone cards are contained in their zone (1.598584ms)
+@project-air/test-kit:test: ✔ sample fit clamps the zoom at 1440x900 and 390x844 (2.292542ms)
+@project-air/test-kit:test: ✔ stress scene defaults to 10,000 deterministic objects (47.323375ms)
+@project-air/test-kit:test: ✔ stress scene handles the empty and maximum document sizes (33.620958ms)
+@project-air/test-kit:test: ✔ buildScene resolves scene names and forwards the stress count (4.085791ms)
+@project-air/test-kit:test: ✔ the seeded PRNG repeats and the source uses no ambient randomness (3.591709ms)
+@project-air/test-kit:test: ℹ tests 22
+@project-air/test-kit:test: ℹ suites 0
+@project-air/test-kit:test: ℹ pass 22
+@project-air/test-kit:test: ℹ fail 0
+@project-air/test-kit:test: ℹ cancelled 0
+@project-air/test-kit:test: ℹ skipped 0
+@project-air/test-kit:test: ℹ todo 0
+@project-air/test-kit:test: ℹ duration_ms 316.346542
+@project-air/auth:test: cache hit, replaying logs 7aad9a63cb705006
+@project-air/auth:test: $ node --test test/*.test.mjs
+@project-air/auth:test: ✔ parses a complete environment and normalises the Kratos URLs (15.284292ms)
+@project-air/auth:test: ✔ defaults NODE_ENV, LOG_LEVEL and HOST (0.406583ms)
+@project-air/auth:test: ✔ AUTH_PORT is required and must be a valid port number (1.147875ms)
+@project-air/auth:test: ✔ secrets are required, long enough and never echoed (3.268292ms)
+@project-air/auth:test: ✔ the Kratos URLs are required http(s) URLs (1.171833ms)
+@project-air/auth:test: ✔ a missing or invalid DATABASE_URL fails fast (7.81325ms)
+@project-air/auth:test: ✔ NODE_ENV and LOG_LEVEL reject unknown values (0.413333ms)
+@project-air/auth:test: ✔ the test-session mode is opt-in and impossible in production (0.344125ms)
+@project-air/auth:test: ✔ liveness answers 200 while the database is down (24.505917ms)
+@project-air/auth:test: ✔ readiness answers 200 when the database ping succeeds (66.34725ms)
+@project-air/auth:test: ✔ readiness includes the Kratos check when wired (9.289042ms)
+@project-air/auth:test: ✔ readiness answers 503 when the database ping fails (1.53125ms)
+@project-air/auth:test: ✔ readiness answers 503 when the database is unreachable (10.451292ms)
+@project-air/auth:test: ✔ creates an identity through the Kratos admin API and returns its id (94.522917ms)
+@project-air/auth:test: ✔ a missing or wrong admin token is 401 AUTH_REQUIRED (23.120166ms)
+@project-air/auth:test: ✔ an invalid invitation body is 400 VALIDATION with field details (1.390875ms)
+@project-air/auth:test: ✔ a duplicate e-mail is 409 CONFLICT (3.711167ms)
+@project-air/auth:test: ✔ a Kratos failure is a 503 INTERNAL (4.252834ms)
+@project-air/auth:test: ✔ whoami returns the mapped identity and forwards the cookie (46.133917ms)
+@project-air/auth:test: ✔ whoami returns null for a missing or expired session (17.807666ms)
+@project-air/auth:test: ✔ whoami rejects an unexpected Kratos status (4.14ms)
+@project-air/auth:test: ✔ createIdentity sends the traits and returns the identity (9.220875ms)
+@project-air/auth:test: ✔ createIdentity maps a duplicate e-mail to conflict (5.943792ms)
+@project-air/auth:test: ✔ createRecoveryLink and listIdentities call the admin API (4.59275ms)
+@project-air/auth:test: ✔ the public flow clients return id and action (6.36975ms)
+@project-air/auth:test: ✔ ready is true for a healthy Kratos and false for 503 or a closed port (8.945625ms)
+@project-air/auth:test: ✔ a slow Kratos times out as unavailable (56.087083ms)
+@project-air/auth:test: ✔ an invalid JSON body is a bad_response error (0.517875ms)
+@project-air/auth:test: ✔ loads the migrations in file-name order with SHA-256 checksums (8.372542ms)
+@project-air/auth:test: ✔ returns the success envelope with a UUIDv7 request id in the header (59.0305ms)
+@project-air/auth:test: ✔ keeps a valid UUIDv7 client request id and replaces anything else (30.669208ms)
+@project-air/auth:test: ✔ parses the query string (8.878417ms)
+@project-air/auth:test: ✔ returns the contract error envelope for an unknown path (2.245917ms)
+@project-air/auth:test: ✔ returns 405 with an Allow header for a known path and the wrong method (4.404958ms)
+@project-air/auth:test: ✔ reads a JSON body and wraps the result (2.016917ms)
+@project-air/auth:test: ✔ rejects invalid JSON with a VALIDATION envelope (0.92375ms)
+@project-air/auth:test: ✔ rejects a non-JSON content type with 415 (0.883875ms)
+@project-air/auth:test: ✔ rejects a body above the limit with 413 (1.84825ms)
+@project-air/auth:test: ✔ a custom status and headers are preserved (0.890708ms)
+@project-air/auth:test: ✔ an empty handler result is a 204 without a body (1.820917ms)
+@project-air/auth:test: ✔ an unexpected error becomes a generic INTERNAL envelope (1.75575ms)
+@project-air/auth:test: ✔ a valid Kratos session returns the account id, e-mail and display name (137.453375ms)
+@project-air/auth:test: ✔ no session cookie is 401 AUTH_REQUIRED (4.725ms)
+@project-air/auth:test: ✔ an invalid or expired Kratos session is 401 AUTH_REQUIRED (7.544917ms)
+@project-air/auth:test: ✔ an error response from Kratos is a 503 INTERNAL (4.55525ms)
+@project-air/auth:test: ✔ an unreachable Kratos is a 503 INTERNAL (1.615125ms)
+@project-air/auth:test: ✔ POST /test/session mints a session that GET /session accepts (21.614708ms)
+@project-air/auth:test: ✔ a tampered or expired test session is 401, never 500 (15.717917ms)
+@project-air/auth:test: ✔ POST /test/session validates its body (4.166709ms)
+@project-air/auth:test: ✔ without test mode the test-session route does not exist and the header is ignored (2.107083ms)
+@project-air/auth:test: ✔ mints the documented three-part token and verifies it (1.488167ms)
+@project-air/auth:test: ✔ rejects a tampered signature and another secret (0.148875ms)
+@project-air/auth:test: ✔ rejects an expired token (0.092208ms)
+@project-air/auth:test: ✔ rejects malformed tokens (0.077875ms)
+@project-air/auth:test: ✔ rejects an invalid account id and an out-of-range TTL (0.225959ms)
+@project-air/auth:test: ✔ the header name and the deterministic test profile are stable (0.111625ms)
+@project-air/auth:test: ℹ tests 56
+@project-air/auth:test: ℹ suites 0
+@project-air/auth:test: ℹ pass 56
+@project-air/auth:test: ℹ fail 0
+@project-air/auth:test: ℹ cancelled 0
+@project-air/auth:test: ℹ skipped 0
+@project-air/auth:test: ℹ todo 0
+@project-air/auth:test: ℹ duration_ms 742.609875
+@project-air/platform:test: cache hit, replaying logs a7d6ac6e4e2a5204
+@project-air/platform:test: $ node --test --test-concurrency=1 test/*.test.mjs test/migrations/*.test.mjs
+@project-air/platform:test: ✔ parses a complete environment (1.092459ms)
+@project-air/platform:test: ✔ defaults NODE_ENV, LOG_LEVEL and HOST (0.17475ms)
+@project-air/platform:test: ✔ a missing DATABASE_URL fails fast (0.262958ms)
+@project-air/platform:test: ✔ the app_user connection is required and must be a PostgreSQL URL (0.234125ms)
+@project-air/platform:test: ✔ the auth service URL is required and must be http(s) (0.179625ms)
+@project-air/platform:test: ✔ port, NODE_ENV, LOG_LEVEL and HOST are validated (0.209583ms)
+@project-air/platform:test: ✔ liveness answers 200 while the database is down (16.0215ms)
+@project-air/platform:test: ✔ readiness answers 200 when the database ping succeeds (5.386459ms)
+@project-air/platform:test: ✔ readiness answers 503 INTERNAL when the database ping fails (1.881458ms)
+@project-air/platform:test: ✔ readiness answers 503 when the database is unreachable (3.025458ms)
+@project-air/platform:test: ▶ migration runner
+@project-air/platform:test:   ✔ loads the migrations in file-name order with SHA-256 checksums (4.133208ms)
+@project-air/platform:test: {"time":"2026-10-26T05:46:38.833Z","level":"info","message":"migrations complete","applied":0,"skipped":4}
+@project-air/platform:test:   ✔ applies the migrations once and records versions in schema_migrations (39.952833ms)
+@project-air/platform:test: {"time":"2026-10-26T05:46:38.857Z","level":"info","message":"migrations complete","applied":0,"skipped":4}
+@project-air/platform:test:   ✔ a second run is a no-op (11.443584ms)
+@project-air/platform:test:   ✔ fails when an applied migration changed (11.823542ms)
+@project-air/platform:test:   ✔ fails when an applied migration disappeared (8.690792ms)
+@project-air/platform:test: ✔ migration runner (77.192125ms)
+@project-air/platform:test: {"time":"2026-10-26T05:46:39.019Z","level":"info","message":"migrations complete","applied":0,"skipped":4}
+@project-air/platform:test: ✔ F1: a note cannot be moved to another workspace, even by a writer of both (58.655625ms)
+@project-air/platform:test: ✔ F1: a board cannot be moved to another workspace, even by a writer of both (3.138417ms)
+@project-air/platform:test: ✔ F2: a member cannot be promoted to the owner role (3.454583ms)
+@project-air/platform:test: ✔ F2: an owner membership row cannot be inserted directly (4.084625ms)
+@project-air/platform:test: ✔ F5: as app_user, creating a workspace creates exactly one owner row (3.791208ms)
+@project-air/platform:test: ✔ F2: the owner of a workspace cannot be deleted, a member can (2.308375ms)
+@project-air/platform:test: ✔ F4: a malformed app.account_id yields no rows instead of an error (13.299084ms)
+@project-air/platform:test: ✔ F6: the contract minimum lengths are enforced (2.616583ms)
+@project-air/platform:test: ✔ F3: the helpers are executable by app_user only (3.244625ms)
+@project-air/platform:test: ✔ P3-06: the identity mapping helper returns one account id and the index is unique (2.47225ms)
+@project-air/platform:test: ✔ F3: the note/board helper does not answer for a foreign workspace (2.219208ms)
+@project-air/platform:test: {"time":"2026-10-26T05:46:39.231Z","level":"info","message":"migrations complete","applied":0,"skipped":4}
+@project-air/platform:test: ✔ returns null and no rows when app.account_id is unset (51.933625ms)
+@project-air/platform:test: ✔ does not leak app.account_id into the next transaction (3.830916ms)
+@project-air/platform:test: ✔ a member sees only rows of their own workspaces (6.678542ms)
+@project-air/platform:test: ✔ the owner sees the membership list of their workspace only (3.473042ms)
+@project-air/platform:test: ✔ an account cannot insert rows into a foreign workspace (6.472083ms)
+@project-air/platform:test: ✔ an account cannot create a workspace for somebody else (1.432ms)
+@project-air/platform:test: ✔ an owner can write, delete and manage membership (5.477709ms)
+@project-air/platform:test: ✔ an editor can write but cannot manage the workspace (6.522917ms)
+@project-air/platform:test: ✔ an editor cannot claim board ownership for somebody else (1.786125ms)
+@project-air/platform:test: ✔ a reader can only read (4.448ms)
+@project-air/platform:test: ✔ a card cannot attach a note from a foreign workspace (1.820083ms)
+@project-air/platform:test: ✔ the owner membership row cannot be changed or removed (3.131584ms)
+@project-air/platform:test: ✔ profiles are visible and writable only for the owning account (2.615541ms)
+@project-air/platform:test: {"time":"2026-10-26T05:46:39.450Z","level":"info","message":"migrations complete","applied":0,"skipped":4}
+@project-air/platform:test: {"time":"2026-10-26T05:46:39.476Z","level":"info","message":"migrations complete","applied":0,"skipped":4}
+@project-air/platform:test: ✔ applies the migrations once and records every version with its checksum (44.447292ms)
+@project-air/platform:test: ✔ creates the six application tables with the expected columns and types (4.425458ms)
+@project-air/platform:test: ✔ uses the contract enums for roles and board visibility (1.449625ms)
+@project-air/platform:test: ✔ has the primary keys, check constraints, foreign-key delete rules and indexes (3.398958ms)
+@project-air/platform:test: ✔ enables and forces row-level security on every table (0.802083ms)
+@project-air/platform:test: ✔ has a policy for every operation of the permission matrix, bound to app_user (1.619208ms)
+@project-air/platform:test: ✔ gives app_user CRUD grants but no superuser, bypass or table ownership (11.063208ms)
+@project-air/platform:test: ✔ creating a workspace creates the owner membership atomically (2.030958ms)
+@project-air/platform:test: ▶ rejects invalid rows
+@project-air/platform:test:   ✔ an orphan board (1.022541ms)
+@project-air/platform:test:   ✔ a workspace with a missing owner profile (0.696875ms)
+@project-air/platform:test:   ✔ a card without a note (0.635084ms)
+@project-air/platform:test:   ✔ a card with a note from another workspace (2.404667ms)
+@project-air/platform:test:   ✔ a card below the minimum size (0.579792ms)
+@project-air/platform:test:   ✔ a card with an invalid fractional z (0.572333ms)
+@project-air/platform:test:   ✔ a note title above the contract limit (0.571833ms)
+@project-air/platform:test:   ✔ a workspace name above the contract limit (0.643041ms)
+@project-air/platform:test:   ✔ a display name above the contract limit (0.61725ms)
+@project-air/platform:test:   ✔ an unknown locale (0.641792ms)
+@project-air/platform:test:   ✔ a duplicate membership (0.685167ms)
+@project-air/platform:test:   ✔ removing or demoting the owner membership (1.865125ms)
+@project-air/platform:test:   ✔ transferring workspace ownership (0.641ms)
+@project-air/platform:test:   ✔ deleting a note that still has cards (1.105959ms)
+@project-air/platform:test:   ✔ deleting a board cascades its cards and keeps the note (3.779375ms)
+@project-air/platform:test:   ✔ deleting a workspace cascades every child row (4.600041ms)
+@project-air/platform:test: ✔ rejects invalid rows (22.140625ms)
+@project-air/platform:test: {"time":"2026-10-26T05:46:39.544Z","level":"info","message":"migration applied","version":"0004_account_mapping","name":"0004_account_mapping.sql"}
+@project-air/platform:test: {"time":"2026-10-26T05:46:39.544Z","level":"info","message":"migrations complete","applied":1,"skipped":3}
+@project-air/platform:test: ✔ P3-06: migration 0004 backfills the mapping only for legacy non-v7 account ids (23.5225ms)
+@project-air/platform:test: ✔ wraps `data` in {requestId, data} and mirrors the UUIDv7 id in the header (14.366666ms)
+@project-air/platform:test: ✔ sends a `body` envelope unchanged and matches path parameters (1.819417ms)
+@project-air/platform:test: ✔ keeps a valid UUIDv7 client request id and replaces anything else (2.711833ms)
+@project-air/platform:test: ✔ returns 404 for an unknown path and 405 for a known path with a wrong method (1.444ms)
+@project-air/platform:test: ✔ reads a JSON body and wraps the result (1.885333ms)
+@project-air/platform:test: ✔ rejects invalid JSON, non-JSON content types and oversized bodies (2.526959ms)
+@project-air/platform:test: ✔ a custom status and headers are preserved, and an empty result is 204 (2.641833ms)
+@project-air/platform:test: ✔ an unexpected error becomes a generic INTERNAL envelope (1.223041ms)
+@project-air/platform:test: ℹ tests 74
+@project-air/platform:test: ℹ suites 0
+@project-air/platform:test: ℹ pass 74
+@project-air/platform:test: ℹ fail 0
+@project-air/platform:test: ℹ cancelled 0
+@project-air/platform:test: ℹ skipped 0
+@project-air/platform:test: ℹ todo 0
+@project-air/platform:test: ℹ duration_ms 1388.581792
+@project-air/contracts:test: $ node --test test/*.test.mjs
+@project-air/engine:build: $ tsc --project tsconfig.build.json
+@project-air/contracts:test: ✔ the error schema is versioned JSON Schema 2020-12 with the fixed code enum (0.819084ms)
+@project-air/contracts:test: ✔ the wire codes stay UPPER_SNAKE and the message keys are lowerCamelCase (0.240125ms)
+@project-air/contracts:test: ✔ the oneOf ties every code to exactly one message key (0.479208ms)
+@project-air/contracts:test: ✔ every error code has a valid fixture and the invalid ones are rejected (2.687958ms)
+@project-air/contracts:test: ✔ details carry field paths, never user text (0.147417ms)
+@project-air/contracts:test: ✔ every error code has exactly one message key in de, en and en-XA (1.648417ms)
+@project-air/contracts:test: ✔ the German error messages follow the style rules and the English ones differ (0.208667ms)
+@project-air/contracts:test: ✔ the pseudo locale carries the generated values for the error keys (0.204041ms)
+@project-air/contracts:test: ✔ the index exports the error code table and the API schema path (0.238375ms)
+@project-air/contracts:test: ✔ the four API resource schemas are versioned JSON Schema 2020-12 with closed envelopes (3.032625ms)
+@project-air/contracts:test: ✔ the envelopes cover list, get, create, update and delete (0.721292ms)
+@project-air/contracts:test: ✔ the envelopes reference the P1-01 entity schemas instead of restating them (2.2765ms)
+@project-air/contracts:test: ✔ card create and changes mirror the P1-01 minimum sizes and the nullable zone parent (2.295042ms)
+@project-air/contracts:test: ✔ every resource envelope has a valid fixture that satisfies it (3.966542ms)
+@project-air/contracts:test: ✔ the invalid fixtures violate their envelope and name the rule (3.034959ms)
+@project-air/contracts:test: ✔ every API fixture has the wrapper and maps to an API schema (1.553041ms)
+@project-air/contracts:test: ✔ valid API fixtures use UUIDv7 ids and ISO-8601 timestamps (1.118959ms)
+@project-air/contracts:test: ✔ an empty list is valid with items [] and nextCursor null (0.132792ms)
+@project-air/contracts:test: ✔ pagination bounds are encoded in the schema (0.148292ms)
+@project-air/contracts:test: ✔ update requests need a non-empty changes object (0.552833ms)
+@project-air/contracts:test: ✔ delete envelopes name the resource id (0.280625ms)
+@project-air/contracts:test: ✔ the index exports the API resources, schema paths and fixture paths (0.289542ms)
+@project-air/contracts:test: ✔ the generated directory holds exactly the two committed files (2.000917ms)
+@project-air/contracts:test: ✔ the committed generated files equal the generator output (7.387541ms)
+@project-air/contracts:test: ✔ codegen is deterministic and free of timestamps and absolute paths (2.485875ms)
+@project-air/contracts:test: ✔ the TypeScript output exposes the entities, enums, union and inverse pair (0.538375ms)
+@project-air/contracts:test: ✔ the generated files carry the 0.2.0 reorder payload in both languages (0.507375ms)
+@project-air/contracts:test: ✔ the generated operation vocabulary matches the contract index (0.399ms)
+@project-air/contracts:test: ✔ the C++ output exposes the model, enums and the operation envelope (0.381666ms)
+@project-air/contracts:test: ✔ the containment corpus is additive and uses the board-content schema (1.805042ms)
+@project-air/contracts:test: ✔ valid containment fixtures are schema-valid and follow the parent rule (1.400583ms)
+@project-air/contracts:test: ✔ the dangling parent fixture is rejected by the containment rule (0.507375ms)
+@project-air/contracts:test: ✔ a nested zone is rejected by the zone schema (2.4195ms)
+@project-air/contracts:test: ✔ cards and blocks carry an optional nullable parent and zones carry none (0.79225ms)
+@project-air/contracts:test: ✔ index exports the versioned schema and fixture paths (1.946625ms)
+@project-air/contracts:test: ✔ board.contracts metadata names the current version and all 17 schema files (1.095958ms)
+@project-air/contracts:test: ✔ every schema is JSON Schema 2020-12 with a versioned $id and required fields (0.421ms)
+@project-air/contracts:test: ✔ every schema has at least one valid and one invalid fixture with the wrapper (5.675583ms)
+@project-air/contracts:test: ✔ every fixture schema path resolves to a schema (4.296083ms)
+@project-air/contracts:test: ✔ valid fixtures satisfy their schema (1.663208ms)
+@project-air/contracts:test: ✔ invalid fixtures violate their schema and name the broken rule (2.1485ms)
+@project-air/contracts:test: ✔ valid fixtures carry every required top-level field (2.788583ms)
+@project-air/contracts:test: ✔ valid ids are UUIDv7 and valid timestamps are ISO-8601 with timezone (5.602458ms)
+@project-air/contracts:test: ✔ minimum sizes are encoded in the schemas (0.295583ms)
+@project-air/contracts:test: ✔ valid fixtures sit exactly on the minimum sizes (0.259833ms)
+@project-air/contracts:test: ✔ invalid minimum-size fixtures are below their type minimum (0.204375ms)
+@project-air/contracts:test: ✔ fixed enums are part of the schemas (0.189083ms)
+@project-air/contracts:test: ✔ the fractional index is a string (0.161083ms)
+@project-air/contracts:test: ✔ timestamps are ISO-8601 strings with timezone (0.415125ms)
+@project-air/contracts:test: ✔ AD-4: a note exists once and cards only reference it (0.154375ms)
+@project-air/contracts:test: ✔ the parent relation is board to zone to card, without nested zones (0.15975ms)
+@project-air/contracts:test: ✔ edges connect cards only (0.127834ms)
+@project-air/contracts:test: ✔ the root schema references every board-content entity (0.293084ms)
+@project-air/contracts:test: ✔ the package has no runtime dependencies and defines the test command (0.073917ms)
+@project-air/contracts:test: ✔ the gate specimens are byte-identical copies of canonical fixtures (2.361375ms)
+@project-air/contracts:test: ✔ the gate fixture directories hold direct JSON files for Polier (1.0115ms)
+@project-air/contracts:test: ✔ the gate specimens keep the fixture wrapper (0.533917ms)
+@project-air/contracts:test: ✔ the operation schema is versioned JSON Schema 2020-12 with the operation vocabulary (0.817792ms)
+@project-air/contracts:test: ✔ index exports the operation schema path, id and type vocabulary (0.794708ms)
+@project-air/contracts:test: ✔ every operation type has a valid and at least one invalid fixture (0.612875ms)
+@project-air/contracts:test: ✔ every operation fixture maps to the operation schema with the fixture wrapper (3.117958ms)
+@project-air/contracts:test: ✔ valid operation fixtures satisfy the schema and the inverse model (5.501417ms)
+@project-air/contracts:test: ✔ invalid operation fixtures break the schema or the inverse model and name the rule (4.676084ms)
+@project-air/contracts:test: ✔ every operation carries exactly one inverse with board, type and payload (1.653042ms)
+@project-air/contracts:test: ✔ operation ids are UUIDv7 and timestamps are ISO-8601 (1.535958ms)
+@project-air/contracts:test: ✔ each operation type pairs with its documented inverse type (1.417916ms)
+@project-air/contracts:test: ✔ groups have ordered children and the inverse reverses the child inverses (0.447333ms)
+@project-air/contracts:test: ✔ groups do not nest and need at least one child (0.370292ms)
+@project-air/contracts:test: ✔ updates store only changed fields and the inverse stores the previous values (1.087ms)
+@project-air/contracts:test: ✔ deletes store the object and creates have the matching delete as inverse (0.885334ms)
+@project-air/contracts:test: ✔ the reorder operation stores the new z and its inverse the previous z (0.444208ms)
+@project-air/contracts:test: ✔ resize operations respect the P1-01 minimum sizes (0.874916ms)
+@project-air/contracts:test: ✔ move payloads carry a position and an optional zone parent (0.085458ms)
+@project-air/contracts:test: ✔ the group inverse is checked against the reversed child inverses (0.67225ms)
+@project-air/contracts:test: ✔ an inverse with a mismatching board or target is invalid (0.398292ms)
+@project-air/contracts:test: ✔ every valid operation payload object still satisfies the P1-01 entity schemas (3.036ms)
+@project-air/engine:test: cache miss, executing 5a674bd7c35ac703
+@project-air/engine:test: $ node --test test/*.test.mjs
+@project-air/engine:test: ✔ the in-memory fake stores isolated copies and rejects duplicates (0.698333ms)
+@project-air/engine:test: ✔ the fake writes geometry, z and removals and rejects unknown ids (0.162875ms)
+@project-air/engine:test: ✔ the fake snapshot is canonical and changes only on writes (0.376416ms)
+@project-air/engine:test: ✔ the bridge adapter maps contract ids to slots and projects to the engine (0.276792ms)
+@project-air/engine:test: ✔ an operation and its inverse round-trip through the bridge adapter (0.473375ms)
+@project-air/engine:test: ✔ the logic layer imports the bridge for types only and uses no DOM or network (1.286417ms)
+@project-air/engine:test: ✔ undo and redo on an empty history are no-ops (7.134375ms)
+@project-air/engine:test: ✔ undo applies the inverse and redo re-applies the operation (1.20325ms)
+@project-air/engine:test: ✔ a new operation clears the redo branch (0.322917ms)
+@project-air/engine:test: ✔ the history keeps the newest 20 entries and drops the oldest (0.520625ms)
+@project-air/engine:test: ✔ undo reverses a group's child operations as one step (0.423458ms)
+@project-air/engine:test: ✔ describe names the next undoable operation from its lookup (0.496792ms)
+@project-air/engine:test: ✔ push records without applying and leaves the copy untouched (0.188541ms)
+@project-air/engine:test: ✔ a failing undo leaves the stacks and the copy unchanged (0.536625ms)
+@project-air/engine:test: ✔ a single drag yields exactly one moveCard operation and its inverse restores the card (2.2035ms)
+@project-air/engine:test: ✔ a move onto the current position is a no-op without an operation (0.147834ms)
+@project-air/engine:test: ✔ a keyboard nudge series is batched into one move operation (0.220875ms)
+@project-air/engine:test: ✔ a group drag is exactly one group operation, not one per object (0.70725ms)
+@project-air/engine:test: ✔ an empty or unchanged group drag yields no operation (0.090625ms)
+@project-air/engine:test: ✔ a group drag rejects the same object twice (0.24325ms)
+@project-air/engine:test: ✔ a resize builds resizeCard and restores the previous card size (0.214875ms)
+@project-air/engine:test: ✔ resize rejects sizes below the contract minimum before writing (0.105084ms)
+@project-air/engine:test: ✔ a create builds one createCard operation with a deleteCard inverse (0.308125ms)
+@project-air/engine:test: ✔ create rejects a card or zone below its minimum size and an empty zone title (0.166208ms)
+@project-air/engine:test: ✔ create rejects a non-finite draft position for every object kind (0.188417ms)
+@project-air/engine:test: ✔ create builds a zone and a block with exactly the contract minimum size (0.28275ms)
+@project-air/engine:test: ✔ delete stores the whole card and its createCard inverse restores it (0.353416ms)
+@project-air/engine:test: ✔ deleting an object that is already gone is rejected (0.152541ms)
+@project-air/engine:test: ✔ unknown and malformed object ids are rejected without a write (0.107333ms)
+@project-air/engine:test: ✔ an invalid session context is rejected before any operation (0.064292ms)
+@project-air/engine:test: ✔ an operation survives a contract-native JSON round trip (0.3025ms)
+@project-air/engine:test: ℹ tests 31
+@project-air/engine:test: ℹ suites 0
+@project-air/engine:test: ℹ pass 31
+@project-air/engine:test: ℹ fail 0
+@project-air/engine:test: ℹ cancelled 0
+@project-air/engine:test: ℹ skipped 0
+@project-air/engine:test: ℹ todo 0
+@project-air/engine:test: ℹ duration_ms 203.617084
+@project-air/contracts:test: ✔ every fixture has a canonical TypeScript result (0.543584ms)
+@project-air/contracts:test: ✔ the canonical TypeScript description is deterministic (1.022625ms)
+@project-air/contracts:test: ✔ the parity program compiles with the local C++ compiler (1265.012459ms)
+@project-air/contracts:test: ✔ TypeScript and C++ canonical results match for every fixture (203.723917ms)
+@project-air/contracts:test: ✔ a tampered canonical line is detected as a parity difference (0.34675ms)
+@project-air/contracts:test: ✔ invalid fixtures keep their validity verdict and model fields in the canonical form (0.775042ms)
+@project-air/contracts:test: ✔ the sync schema is versioned JSON Schema 2020-12 with one message union (0.874583ms)
+@project-air/contracts:test: ✔ every message type is documented with its direction and the required metadata (0.584542ms)
+@project-air/contracts:test: ✔ the index exports the sync schema, message table and fixture paths (0.26325ms)
+@project-air/contracts:test: ✔ every message type has a valid and an invalid fixture in the wrapper (9.200792ms)
+@project-air/contracts:test: ✔ every sync fixture names the sync schema and its validity (1.336958ms)
+@project-air/contracts:test: ✔ valid message fixtures use UUIDv7 ids and ISO-8601 timestamps (0.797708ms)
+@project-air/contracts:test: ✔ operation batches carry P1-02 operations through the operation schema reference (0.793458ms)
+@project-air/contracts:test: ✔ presence messages carry presence only, never operation data (0.200042ms)
+@project-air/contracts:test: ✔ message ids and sequence rules live in the envelope (0.612875ms)
+@project-air/contracts:test: ✔ no unknown message type matches the envelope (0.49475ms)
+@project-air/contracts:test: ✔ the reconnect sequence starts from a known serverSeq and ends with the snapshot (0.518583ms)
+@project-air/contracts:test: ✔ the session sequence keeps join order, sequences, duplicate batches and ack coverage (0.866083ms)
+@project-air/contracts:test: ✔ every acknowledged batch is durable before the client sees the ack (0.130917ms)
+@project-air/contracts:test: ✔ the board content in a snapshot is the root board-content document (0.147833ms)
+@project-air/contracts:test: ℹ tests 96
+@project-air/contracts:test: ℹ suites 0
+@project-air/contracts:test: ℹ pass 96
+@project-air/contracts:test: ℹ fail 0
+@project-air/contracts:test: ℹ cancelled 0
+@project-air/contracts:test: ℹ skipped 0
+@project-air/contracts:test: ℹ todo 0
+@project-air/contracts:test: ℹ duration_ms 2004.055375
+
+ Tasks:    16 successful, 16 total
+Cached:    13 cached, 16 total
+  Time:    2.153s 
+
+$ turbo run test
+ WARNING  no output files found for task @project-air/contracts#test. Please check your `outputs` key in `turbo.json`
+ WARNING  no output files found for task @project-air/engine#test. Please check your `outputs` key in `turbo.json`

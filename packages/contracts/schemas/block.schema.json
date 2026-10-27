@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://project-air.dev/contracts/0.1.0/block.schema.json",
+  "$id": "https://project-air.dev/contracts/0.2.0/block.schema.json",
   "title": "Block",
   "description": "A block object on one board. The block type is fixed and each type has its own minimum size: checklist 224x128, palette 224x128, columns 368x192, timeline 320x160, table 288x160.",
   "type": "object",

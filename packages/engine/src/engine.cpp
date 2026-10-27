@@ -11,10 +11,10 @@ constexpr const char kEngineVersion[] = "0.1.0";
 
 // The engine speaks exactly one contract version; a mismatch must not compile.
 constexpr bool contractVersionMatches() {
-  return std::string_view(project_air::contracts::kContractVersion) == "0.1.0";
+  return std::string_view(project_air::contracts::kContractVersion) == "0.2.0";
 }
 static_assert(contractVersionMatches(),
-              "contract.h must be generated for contract version 0.1.0");
+              "contract.h must be generated for contract version 0.2.0");
 
 // The generated token header is part of the engine's build surface (AD-7).
 static_assert(tokens::canvas_grid > 0.0,

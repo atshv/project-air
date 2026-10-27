@@ -124,7 +124,7 @@ function targetId(change) {
 export function assertValidOperation(operation) {
   assert.ok(
     validate(operation, OPERATION_SCHEMA, OPERATION_SCHEMA),
-    `operation is not valid contract 0.1.0: ${JSON.stringify(operation)}`,
+    `operation is not valid contract 0.2.0: ${JSON.stringify(operation)}`,
   );
 }
 

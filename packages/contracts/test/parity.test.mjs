@@ -96,14 +96,14 @@ function runParityProgram() {
 }
 
 test("every fixture has a canonical TypeScript result", () => {
-  assert.equal(FIXTURES.length, 77, "the contract has 77 fixtures");
+  assert.equal(FIXTURES.length, 86, "the contract has 86 fixtures");
   assert.equal(TS_LINES.length, FIXTURES.length);
   assert.equal(new Set(TS_LINES).size, TS_LINES.length, "each fixture yields one distinct line");
   const invalid = FIXTURES.filter((fixture) => WRAPPERS.get(fixture).valid === false);
   assert.ok(invalid.length > 0);
-  assert.equal(invalid.length, 45, "45 invalid fixtures are described too");
+  assert.equal(invalid.length, 49, "49 invalid fixtures are described too");
   const schemas = new Set(FIXTURES.map((fixture) => WRAPPERS.get(fixture).schema));
-  assert.equal(schemas.size, 10, "all ten schemas are covered");
+  assert.equal(schemas.size, 11, "all eleven schema files of the corpus are covered");
 });
 
 test("the canonical TypeScript description is deterministic", () => {

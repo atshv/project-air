@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://project-air.dev/contracts/0.1.0/operation.schema.json",
+  "$id": "https://project-air.dev/contracts/0.2.0/operation.schema.json",
   "title": "Board operation",
   "description": "One board change with exactly one inverse (AD-1): one gesture is one operation. A group bundles ordered child operations and reverses their inverses.",
   "$ref": "#/$defs/operation",
@@ -25,6 +25,7 @@
         "deleteBlock",
         "createEdge",
         "deleteEdge",
+        "reorder",
         "group"
       ]
     },
@@ -410,6 +411,25 @@
             "properties": {
               "payload": {
                 "$ref": "#/$defs/payload-delete-edge"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "reorder"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "payload": {
+                "$ref": "reorder-payload.schema.json"
               }
             }
           }
@@ -804,6 +824,25 @@
           "if": {
             "properties": {
               "type": {
+                "const": "reorder"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "payload": {
+                "$ref": "reorder-payload.schema.json"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
                 "const": "group"
               }
             },
@@ -1052,7 +1091,7 @@
             "null"
           ],
           "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
-          "description": "Parent zone after the move; omitted or null means board level."
+          "description": "Reference to the moved zone id. A zone never has a parent zone, so the value names the zone itself and not a container."
         },
         "x": {
           "type": "number",
@@ -1063,7 +1102,7 @@
           "description": "World y in pixels (Float64)."
         }
       },
-      "description": "Moves a zone to a new world position and optional zone parent."
+      "description": "Moves a zone to a new world position; a zone is never reparented in v1."
     },
     "payload-resize-zone": {
       "type": "object",

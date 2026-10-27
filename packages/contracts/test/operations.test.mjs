@@ -1,4 +1,4 @@
-// Tests for the operation contract 0.1.0 (AD-1).
+// Tests for the operation contract 0.2.0 (AD-1).
 //
 // The suite checks the operation schema, the fixture coverage per operation type,
 // schema validity of the fixtures, and the model rules that JSON Schema cannot
@@ -11,7 +11,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 import { OPERATION_TYPES, SCHEMA_FILES, fixturePath, schemaId, schemaPath } from "../index.mjs";
-import { fixtureFiles, fixtureOf, schemaOf, validate, walk } from "./support.mjs";
+import { FRACTIONAL_INDEX, fixtureFiles, fixtureOf, schemaOf, validate, walk } from "./support.mjs";
 
 const OPERATION_SCHEMA = schemaOf("operation");
 const OPERATION_FIXTURES = "operation";
@@ -35,6 +35,7 @@ const EXPECTED_TYPES = [
   "deleteBlock",
   "createEdge",
   "deleteEdge",
+  "reorder",
   "group",
 ];
 
@@ -57,6 +58,7 @@ const EXPECTED_INVERSE_TYPE = {
   deleteBlock: "createBlock",
   createEdge: "deleteEdge",
   deleteEdge: "createEdge",
+  reorder: "reorder",
   group: "group",
 };
 
@@ -146,6 +148,9 @@ function targetIds({ type, payload }) {
     case "deleteEdge":
       push(payload.edge?.id);
       break;
+    case "reorder":
+      push(payload.itemId);
+      break;
     case "group":
       for (const child of payload.children ?? []) ids.push(...targetIds(child));
       break;
@@ -214,7 +219,7 @@ function modelProblems(operation) {
 test("the operation schema is versioned JSON Schema 2020-12 with the operation vocabulary", () => {
   assert.equal(OPERATION_SCHEMA.$schema, "https://json-schema.org/draft/2020-12/schema");
   assert.equal(OPERATION_SCHEMA.$id, schemaId("operation"));
-  assert.ok(OPERATION_SCHEMA.$id.includes("/0.1.0/"));
+  assert.ok(OPERATION_SCHEMA.$id.includes("/0.2.0/"));
   assert.equal(OPERATION_SCHEMA.$ref, "#/$defs/operation");
   assert.deepEqual(OPERATION_SCHEMA.$defs.operationType.enum, EXPECTED_TYPES);
   assert.deepEqual([...OPERATION_TYPES], EXPECTED_TYPES);
@@ -392,6 +397,28 @@ test("deletes store the object and creates have the matching delete as inverse",
   const deleteZone = fixtureOf(OPERATION_FIXTURES, "valid-delete-zone.json").data;
   assert.ok(["keep", "delete"].includes(deleteZone.payload.policy));
   assert.ok(Array.isArray(deleteZone.payload.cards) && Array.isArray(deleteZone.payload.blocks));
+});
+
+test("the reorder operation stores the new z and its inverse the previous z", () => {
+  const { data } = fixtureOf(OPERATION_FIXTURES, "valid-reorder.json");
+  const payloadDefinition = schemaOf("reorder-payload");
+  assert.equal(data.type, "reorder");
+  assert.equal(data.inverse.type, "reorder");
+  assert.deepEqual(payloadDefinition.required, ["itemId", "z"]);
+  assert.equal(payloadDefinition.properties.itemId.type, "string");
+  assert.equal(payloadDefinition.properties.z.type, "string");
+  assert.equal(payloadDefinition.properties.z.pattern, FRACTIONAL_INDEX.source);
+  assert.equal(data.inverse.payload.itemId, data.payload.itemId, "the inverse names the same item");
+  assert.notEqual(data.inverse.payload.z, data.payload.z, "the inverse carries the previous z");
+  assert.equal(
+    schemaValid(fixtureOf(OPERATION_FIXTURES, "invalid-reorder.json").data),
+    false,
+    "a reorder without z is schema-invalid",
+  );
+  assert.ok(
+    modelProblems(fixtureOf(OPERATION_FIXTURES, "invalid-reorder-inverse-target.json").data).length > 0,
+    "a reorder inverse for another item is model-invalid",
+  );
 });
 
 test("resize operations respect the P1-01 minimum sizes", () => {

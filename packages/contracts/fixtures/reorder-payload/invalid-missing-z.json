@@ -1,0 +1,8 @@
+{
+  "schema": "schemas/reorder-payload.schema.json",
+  "valid": false,
+  "reason": "the reorder payload is missing the new fractional z",
+  "data": {
+    "itemId": "0192f0a6-7000-7000-8000-000000000006"
+  }
+}

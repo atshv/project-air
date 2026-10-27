@@ -1,9 +1,9 @@
 {
   "schema": "schemas/board-content.schema.json",
   "valid": false,
-  "reason": "contractVersion '0.2.0' does not match the contract version constant 0.1.0",
+  "reason": "contractVersion '0.1.0' is the previous contract version and does not match the root constant 0.2.0",
   "data": {
-    "contractVersion": "0.2.0",
+    "contractVersion": "0.1.0",
     "board": {
       "id": "0192f0a3-7000-7000-8000-000000000003",
       "workspaceId": "0192f0a2-7000-7000-8000-000000000002",

@@ -1,0 +1,9 @@
+{
+  "schema": "schemas/reorder-payload.schema.json",
+  "valid": true,
+  "reason": "the reorder payload names one item and its new fractional z, and the inverse payload the previous z",
+  "data": {
+    "itemId": "0192f0a6-7000-7000-8000-000000000006",
+    "z": "a2"
+  }
+}

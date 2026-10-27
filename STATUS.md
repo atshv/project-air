@@ -121,6 +121,16 @@
 
 ## Ready now
 
+- `P4-06` Layers and draw order (L13)
+  - P4-02: Closed P4-02: deterministic test-kit scenes (500 cards/50 zones/144 blocks, 10k stress), interactive playground with pan/zoom, HUD, ready hook; benchmark mode preserved.
+  - P4-02: Screenshots 1440x900/390x844 + serve/capture log (HTTP 200, SwiftShader capture); test-kit suite 12/12; four gates green after the owner-approved design-check test fix 32c8f28.
+  - P4-02: Two review rounds; minors fixed (serve-log consistency, per-zone block assertions). Deviation: Node v26.12.1 vs the .nvmrc pin.
+  - P4-05: Closed P4-05: engine TS logic layer (gestures, operations, port, history); one gesture = one contract operation with inverse, group drag = one group operation; 31 tests validate.
+  - P4-05: Undo/redo depth 20 with redo-clear and describe() labels; fake + bridge adapter byte-identical round trips; create builders validate geometry, port read is isolated, adapter projects z.
+  - P4-05: Two review rounds, four minors fixed. The z-order gesture awaits the contract 0.2.0 reorder operation (P4-25); the moveZone description is corrected there.
+  - P4-25: Closed P4-25: contract 0.2.0 (17 schemas, root/schema ids/board entry), containment fixtures for the nullable zone parent, the reorder {itemId,z} operation with inverse, moveZone description fix.
+  - P4-25: Blocker fixed after review: packages/engine guard + C++ tests now assert 0.2.0 (fresh cpp-unit 2/2); typecheck 8/8. Codegen/parity green (96 contract tests, 86 fixtures).
+  - P4-25: Lead-approved contract_followups: packages/sdk (stale 0.1.0 wording), services/platform, services/auth (no contract import yet). ADR-0010 records the Q17 decision.
 - `P4-08` Text atlas and glyph texture pipeline (L02)
   - P4-02: Closed P4-02: deterministic test-kit scenes (500 cards/50 zones/144 blocks, 10k stress), interactive playground with pan/zoom, HUD, ready hook; benchmark mode preserved.
   - P4-02: Screenshots 1440x900/390x844 + serve/capture log (HTTP 200, SwiftShader capture); test-kit suite 12/12; four gates green after the owner-approved design-check test fix 32c8f28.
@@ -128,6 +138,10 @@
   - P4-04: Closed P4-04: dependency-free visual gate, 8 committed baselines (4 scenes x 2 viewports, WebGL2), 0 differing pixels on ANGLE Metal M2; fail-closed renderer and exact viewports.
   - P4-04: Baselines regenerated once after the OS move Darwin 25.5.0 -> 27.2.0 (text AA only, geometry unchanged), documented under 'Baseline history'; --update is a review action, never a pass.
   - P4-04: Deterministic ?view= camera hook; gate log prints URL + camera; board-check + visual green. Stage-exit final gates are perf-final/visual-final, run by P4-28.
+- `P4-26` Zones as containers II: platform migration and containment (L08)
+  - P4-25: Closed P4-25: contract 0.2.0 (17 schemas, root/schema ids/board entry), containment fixtures for the nullable zone parent, the reorder {itemId,z} operation with inverse, moveZone description fix.
+  - P4-25: Blocker fixed after review: packages/engine guard + C++ tests now assert 0.2.0 (fresh cpp-unit 2/2); typecheck 8/8. Codegen/parity green (96 contract tests, 86 fixtures).
+  - P4-25: Lead-approved contract_followups: packages/sdk (stale 0.1.0 wording), services/platform, services/auth (no contract import yet). ADR-0010 records the Q17 decision.
 
 ## Done
 
@@ -173,6 +187,7 @@
 - [x] `P4-03` Engine-core perf gate and L01 basis — status: `done` — owner: —
 - [x] `P4-04` Visual gate with reference images — status: `done` — owner: —
 - [x] `P4-05` Gesture-to-operation seam and undo history core — status: `done` — owner: —
+- [x] `P4-25` Contract 0.2.0: zone parent reference and reorder (z) operation (L08/L13) — status: `done` — owner: —
 - [x] `P0-26` Toolbar and zone with notepad and image window in the preview — status: `done` — owner: —
 - [x] `P0-27` Bilingual preview with DE/EN switch and cache-busted assets — status: `done` — owner: —
 - [x] `P0-28` Zone detach interaction: drag notepad and photo out and back — status: `done` — owner: —
@@ -184,7 +199,6 @@
 ## In progress
 
 - [ ] `P4-07` Canvas feel: fit, dot grid and idle drawing (L19) — status: `in_progress` — owner: lead
-- [ ] `P4-25` Contract 0.2.0: zone parent reference and reorder (z) operation (L08/L13) — status: `in_progress` — owner: lead
 
 ## Blocked / failed
 
