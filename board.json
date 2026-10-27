@@ -406,7 +406,12 @@
         "packages/contracts/schemas/api/errors.schema.json"
       ],
       "fixtures_dir": "packages/contracts/fixtures-gate",
-      "dependants": []
+      "dependants": [
+        "packages/engine",
+        "packages/sdk",
+        "services/platform",
+        "services/auth"
+      ]
     }
   ],
   "tasks": [
@@ -4258,7 +4263,8 @@
         "docs/contracts.md",
         "docs/adr/",
         ".changes/",
-        "board.json"
+        "board.json",
+        "packages/engine/"
       ],
       "scope_read": [
         "ARCHITECTURE.md",
@@ -4283,7 +4289,9 @@
         "boundaries",
         "contracts",
         "codegen",
-        "unit"
+        "unit",
+        "cpp-unit",
+        "typecheck"
       ],
       "owner": "lead",
       "branch": "task/P4-25",
