@@ -3205,7 +3205,9 @@
         "packages/engine/",
         "apps/engine-playground/",
         ".changes/",
-        "packages/test-kit/"
+        "packages/test-kit/",
+        "docs/engine.md",
+        "docs/gates/visual-diff.md"
       ],
       "scope_read": [
         "ARCHITECTURE.md",
