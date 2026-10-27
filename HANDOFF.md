@@ -1,6 +1,6 @@
 # Handoff — Project air, new session
 
-**As of:** 2026-10-27 12:00 (Europe/Zurich) · **Repository:** `/Users/rasulatashev/Desktop/KI Projekte/Project air` · **Base branch:** `main` · **Pushed:** `origin/main` now tracks `main` (owner request 2026-10-25, after the stage-5 plan); the remote commit `30626f0` (branding fix in `reference/`) was merged first with `fccf5c5`. The remote stage (`P0-02` branch protection, CI, release) is still pending.
+**As of:** 2026-10-27 22:30 (Europe/Zurich) · **Repository:** `/Users/rasulatashev/Desktop/KI Projekte/Project air` · **Base branch:** `main` · **Pushed:** `origin/main` now tracks `main` (owner request 2026-10-25, after the stage-5 plan); the remote commit `30626f0` (branding fix in `reference/`) was merged first with `fccf5c5`. The remote stage (`P0-02` branch protection, CI, release) is still pending.
 
 Read `AGENTS.md`, `ARCHITECTURE.md`, `STATUS.md`, `docs/module-map.md` and the task brief before working. Polier is pinned to v1.0.0: `export POLIER=/Users/rasulatashev/Desktop/Polier-main` then `bash tools/polier.sh --check`.
 
@@ -10,20 +10,22 @@ Read `AGENTS.md`, `ARCHITECTURE.md`, `STATUS.md`, `docs/module-map.md` and the t
 - **Stage 2 Contract:** complete, owner decision `continue`; contract `0.1.0` (16 schema files, fixtures/sync/api corpora, TS+C++ codegen/parity), `docs/contracts.md`, ADR-0005, `board.contracts[]`, Contract overview in the preview.
 - **Stage 3 Engine spike:** complete, owner decision `continue`; C++20 core (doc/camera/spatial/render command buffer), WebGL2 instanced renderer, TS bridge `@project-air/engine`, `apps/engine-playground`, ADR-0006 + `docs/engine.md`; CMake 4.4.4 + Emscripten 6.0.13; WASM 49,925 B raw / 21,806 B gzip. Measured on the Mac mini M2 8 GB proxy: p95 2.00 ms (556 fps unlocked frame production), display-locked control p95 16.80 ms. **D8 caveat:** the MacBook Air M1 8 GB reference is unproven — re-measure before treating the hardware target as met.
 - **Stage 4 Backend core:** complete, owner decision `continue`; tasks `P3-01` … `P3-06` done. `services/platform` + `services/auth`, self-hosted Ory Kratos v26.2.0 (ADR-0007; `identity` profile, Mailpit courier, test-session mode for tests, admin API bound to localhost), PostgreSQL migrations `0001`–`0004` with RLS and contract-valid account-id mapping, 20 `/v1` contract routes + `GET /v1/session`, typed SDK `@project-air/sdk`, `api-tests` 32, `rls-tests` 7, platform unit 74, acceptance script `PASS backend-core acceptance`; ADR-0008 (API/session model).
-- **Stage 5 Engine core:** planned and in progress, owner decision `continue`; 28 tasks `P4-01` …
-  `P4-28` in five waves (measurement/gates, drawing + WebGPU, interaction, zones, final proof);
-  `P4-01` (engine document, hit testing), `P4-02` (test-kit scenes, interactive playground),
-  `P4-03` (perf gate + L01 basis), `P4-04` (visual gate) and `P4-05` (gesture operations + undo
-  history) are done and merged; the contract is **0.2.0** (P4-25: nullable zone parent, `reorder`
-  operation, 17 schemas, engine consumer guard updated; lead-approved follow-ups: sdk wording,
-  platform/auth do not import the contract yet). `P4-07` (L19 fit/grid/idle) is done; `P4-06` (L13
-  layers) is next on 0.2.0, then the interaction wave. The live-demo parity work added `P4-29`/`P4-30`
-  (zone arrangement/lifecycle parity, L08) to this stage. Briefs are written through `P4-07` (JIT;
-  P4-25 additionally). The stage exit is proven by the final gates `perf-final` and `visual-final`,
-  run by `P4-28`. Stage target: 10,000 objects at 60 fps, no frame above 16 ms while
-  panning/zooming (`perf`, M2 proxy), engine entries L01–L03, L07, L08, L10–L14, L16–L20 and the
-  desktop part of L15, WebGPU behind the command buffer as second backend, reference images green
-  (`visual`, both viewports, both backends). ADR-0009 (text/overlay strategy) is recorded.
+- **Stage 5 Engine core:** in progress, owner decision `continue`; 30 tasks (28 planned + `P4-29`/`P4-30`
+  live-demo zone parity). **Done and merged:** `P4-01` (engine document/hit testing), `P4-02`
+  (test-kit scenes/playground), `P4-03` (perf gate + L01 basis), `P4-04` (visual gate), `P4-05`
+  (gesture/undo seam), `P4-06` (L13 layers), `P4-07` (L19 fit/grid/idle), `P4-08` (text atlas),
+  `P4-09` (glyph layout/ellipsis), `P4-25` (contract 0.2.0), `P4-26` (DB containment). **In progress:**
+  `P4-10` (L02 titles for cards *and* zones, 40 px headers, zoom-bucket sharp text, reviewed reference
+  at 100 %, plus `perf` and idle re-tests) in worktree `/tmp/air-P4-10` (worker `p4-10-worker`; brief:
+  `tasks/P4-10.md`). **Next chain to the zone demo:** `P4-14` (L03) → `P4-15` (L07) → `P4-16` (L10) →
+  `P4-23` (L18) → `P4-27` (L08 engine membership/move) → `P4-29` → `P4-30` (zone parity I/II, briefs
+  exist) → `P4-28` (L01 final proof + `visual-final`/`perf-final` + showcase). Briefs for
+  `P4-14/15/16/23/27/28` are still missing (write them JIT). Exit gates: `cpp-unit` green;
+  `visual-final`/`perf-final` only pass in `P4-28`.
+- **Other sessions/repo state:** a second DSH/Claude session works in the same checkouts and produced
+  `P4-06`/`P4-08`/`P4-09`/`P4-26`; coordinate via claims/`in_progress` in `board.json`. Commit race
+  documented above (`eff284b` carries the P4-07 content, `b4938dc` its bookkeeping). `origin/main` is
+  pushed at `64ea426` (check `git log`).
 - **Done overall:** 49 of 71 tasks. Open: the rest of stage 5 plus the remote-phase tasks `P0-02`,
   `P0-15`, `P0-16`, `P0-17` (stage remote, after hardening) and the planning of the later stages
   (realtime, web-app, value, hardening).
@@ -101,4 +103,13 @@ Rules: one commit per task (`<ID>: <title>`), change entry in `.changes/` (`pnpm
 
 ## New session prompt
 
-> Lies `AGENTS.md`, `ARCHITECTURE.md`, `STATUS.md`, `docs/module-map.md` und `HANDOFF.md`. Foundation, Contract, Engine-Spike, Backend-Core sind fertig; die Preview ist zweisprachig (DE/EN) mit Toolbar/Zone-Demo, Raus-/Reinziehen, Collapse/Re-Grouping, placementsabhängigem horizontalem/vertikalem Zonen-Layout, Reorder/Swap und kleineren Controls (P0-26…P0-30). Stage 5 `engine-core` läuft: P4-01…P4-03 sind gemergt, `P4-04` ist implementiert (in `/private/tmp/air-P4-04`), aber noch nicht reviewed/gemergt. Setze `P4-04` fort (Review, Merge, Worktree aufräumen) und arbeite die Stage-5-Wellen nach `HANDOFF.md` ab; Engine-Spike-M1-Referenz bleibt offen. Lokal arbeiten; `main` ist auf `origin/main`, Task-Branches bleiben lokal bis zum Merge.
+> Lies `AGENTS.md`, `ARCHITECTURE.md`, `STATUS.md`, `docs/module-map.md`, `docs/canvas-acceptance.md`
+> und `HANDOFF.md`. Stage 5 (`engine-core`) läuft: `P4-01`…`P4-09`, `P4-25`, `P4-26` sind gemerged,
+> `P4-10` (L02 Titel für Karten **und** Zonen, 40-px-Kopfzeile, scharfer Text beim Zoomen über
+> Zoom-Buckets, Referenzbild bei 100 %, Perf- und Idle-Re-Test) läuft in `/tmp/air-P4-10`.
+> Prüfe `git log`, `board.json` und `list_agents`/Claims, übernimm den laufenden Task oder starte nach
+> seinem Merge die Kette `P4-14` → `P4-15` → `P4-16` → `P4-23` → `P4-27` → `P4-29` → `P4-30` → `P4-28`
+> (Briefs JIT schreiben; `P4-29`/`P4-30` haben Briefs). Lokal arbeiten; `main` wird gepusht, nichts
+> ohne Freigabe pushen/mergen/taggen. Worktrees unter `/tmp/air-<ID>` (DSH-Sandbox), Slot aus
+> `.polier-slot`, `board-check` vor `pnpm install`, Chrome-Gates mit `--no-sandbox`, Evidenz in
+> `reviews/evidence/`, ein Commit pro Task.
