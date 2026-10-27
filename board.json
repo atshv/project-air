@@ -3485,7 +3485,8 @@
         "packages/engine/",
         "apps/engine-playground/",
         "docs/engine.md",
-        ".changes/"
+        ".changes/",
+        "docs/gates/visual-diff.md"
       ],
       "scope_read": [
         "ARCHITECTURE.md",
