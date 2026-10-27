@@ -4649,7 +4649,7 @@
       "satisfies": [
         "D3"
       ],
-      "status": "in_progress",
+      "status": "done",
       "depends_on": [
         "P0-28"
       ],
@@ -4687,10 +4687,19 @@
         "changelog-entry"
       ],
       "branch": "task/P0-29",
-      "worktree": "../Project air-P0-29",
-      "evidence": [],
+      "worktree": null,
+      "evidence": [
+        "reviews/evidence/P0-29-board-check-20261027T073815Z.json",
+        "reviews/evidence/P0-29-design-check-20261027T073817Z.json",
+        "reviews/evidence/P0-29-changelog-entry-20261027T073817Z.json"
+      ],
       "scope_write_forbidden": [
         "reference/"
+      ],
+      "handoff": [
+        "Closed P0-29: empty zone fades/scales out (180 ms) then hidden+inert on pointermove and release; docking during exit cancels it; free notepad+photo group at >=25% overlap or <=48 px centres.",
+        "Grouped zone animates in, re-orients horizontal/vertical and re-fits on resize without clipping, clamps below the floating toolbar; no new edge; spring-like motion; reduced-motion instant.",
+        "Zoom pill smaller (36x104, 32px buttons, 16px glyphs); en/de strings; ?v=P0-29; gates board-check/design-check/changelog-entry + language-check; evidence fading/overlap/grouped/zoom/mobile/resize."
       ]
     }
   ],

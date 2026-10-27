@@ -1,0 +1,214 @@
+# P0-29 — zone collapse, re-grouping and smaller zoom controls: manual evidence (round 2)
+
+- Date: 2026-10-27 (Europe/Zurich), rework round after the fail review
+- Worktree: `/Users/rasulatashev/Desktop/KI Projekte/Project air-P0-29` (branch `task/P0-29`, slot 2,
+  base: `bc8fddb`)
+- Changed: `apps/web/preview/index.html`, `apps/web/preview/preview.css`,
+  `apps/web/preview/preview.js`, `apps/web/preview/README.md`,
+  `apps/web/preview/locales/en.json`, `apps/web/preview/locales/de.json`,
+  `.changes/P0-29-zone-collapse.md`, `reviews/P0-29.md` (reviewer's fail verdict, included in the
+  commit for the round-2 review)
+- Round-2 fixes: (A1) a collapsed zone is inert on **both** the pointermove and the release path, so
+  releasing a free item over its hidden old rectangle keeps it detached and the zone hidden;
+  (A3) a grouped zone is re-oriented and re-fitted on resize (1440 → 390 → 1440 and compact/desktop
+  breakpoint), clamped fully into the surface with both items visible; (minor) mobile zoom capture
+  scrolled so the pill is inside it, dead `ZONE_SETTLE_TIMEOUT` removed, grouped zone kept below the
+  floating toolbar, README and log wording corrected.
+
+## Port and server
+
+Slot values from `.polier-slot` (`web=4200` for slot 2); only this task's server and Chrome were
+started, and both were stopped afterwards.
+
+```sh
+cd "/Users/rasulatashev/Desktop/KI Projekte/Project air-P0-29"
+PORT=$(python3 -c "import json;print(json.load(open('.polier-slot'))['ports']['web'])")
+python3 -m http.server "$PORT" --bind 127.0.0.1
+```
+
+Served from the repository root so the relative token, icon, image and locale paths resolve.
+
+## HTTP status and sizes (final files)
+
+```
+apps/web/preview/                           -> 200 70153
+preview.css?v=P0-29                          -> 200 41814
+preview.js?v=P0-29                           -> 200 45462
+locales/en.json?v=P0-29                      -> 200 19876
+locales/de.json?v=P0-29                      -> 200 21394
+packages/ui-kit/tokens.css?v=P0-29           -> 200 2295
+apps/web/preview/assets/demo-zone-image.webp -> 200 74494
+packages/ui-kit/icons/note.svg               -> 200 298
+```
+
+HTTP sizes equal the on-disk byte sizes (`stat -f '%z'`): `index.html` 70153, `preview.css` 41814,
+`preview.js` 45462, `locales/en.json` 19876, `locales/de.json` 21394. The only server-log 404 is the
+browser's automatic `/favicon.ico`. All three asset URLs in the page carry `?v=P0-29` and return 200;
+the locale fetch inherits the script version.
+
+## A1 (blocker) — a collapsed zone is inert on release too
+
+The release decision in `onZoneItemPointerEnd` now checks the hidden state before it can settle an
+item back into the zone:
+
+```js
+var detached;
+if (cancelled) detached = item.element.classList.contains("is-detached");
+else if (zoneHidden) detached = true;               // inert collapsed zone
+else detached = pointerOutsideZone(...) > ZONE_RELEASE_DISTANCE;
+```
+
+Probe: both items out → zone hidden → grab the notepad, move the pointer to the hidden zone's old
+centre, release.
+
+```
+before release:  zone classes [demo-zone__card, is-collapsed], data-zone-visible=false,
+                 visibility hidden, opacity 0; both items detached;
+                 status "Zone hidden — drag the two items together to form a new zone."
+after release:   zone classes [demo-zone__card, is-collapsed], data-zone-visible=false,
+                 visibility hidden, opacity 0; both items still detached;
+                 status unchanged
+```
+
+The item stays free and the zone cannot re-dock or reveal itself. Docking during the 180 ms exit
+(before the zone is hidden) still cancels the exit, and grouping is still the way back.
+
+## A3 (major) — grouped zone re-orients and re-fits on resize
+
+One grouped zone (created at 1440×900: horizontal, 526 × 174 px at world (124.4, 126.7)) is resized
+with the same page (no reload); `layout()`/`ResizeObserver` call `syncZoneGeometry`, which recomputes
+the orientation from the current item sizes and the world, toggles `is-horizontal`, clamps the zone
+(into the surface and below the toolbar) and repositions the docked items onto their new slots.
+
+```
+1440 x 900 (grouped):  orientation horizontal, zone 526 x 174 at (124.4, 126.7),
+                       insideWorld true, toolbarOverlap 0
+390 x 844:             orientation vertical, zone 274 x 275 at (0, 126.7),
+                       world 356 x 744, insideWorld true, toolbarOverlap 0,
+                       notepad (17, 143.7) 240 x 88.6, window (17, 244.7) 240 x 140,
+                       clipped: false / false
+900 x 844:             orientation horizontal, zone 526 x 174 at (0, 126.7),
+                       insideWorld true, clipped false / false
+901 x 844:             orientation horizontal, zone 526 x 174 at (0, 126.7), insideWorld true
+1440 x 900 again:      orientation horizontal, zone 526 x 174 at (0, 126.7),
+                       insideWorld true, toolbarOverlap 0, clipped false / false
+```
+
+The photo is no longer clipped (the round-1 bug: horizontal 17–543 px against a 16–374 px surface,
+152 px clipped, while page overflow was still 0). The zone remains fully inside the world rectangle
+in all four states, both items are visible and the A/B edge stays at exactly one element.
+
+## Collapse (unchanged from round 1, re-measured)
+
+```
+docked:            zone 274 x 275, opacity 1, visible, layout=docked
+one item out:      zone still visible, opacity 1 (zone stays while an item is inside)
+both items out:    opacity 1 -> 0, scale 1 -> 0.96 over --motion-panel (180 ms)
+timeline (ms, opacity, scale):
+   5, 1.00, 1.000      22, 0.60, 0.9839     39, 0.32, 0.9729
+  55, 0.16, 0.9665     72, 0.07, 0.9630     89, 0.03, 0.9612
+ 106, 0.01, 0.9604    (end) 0.00, 0.9600
+after the exit:    [is-collapsed], opacity 0, visibility hidden, data-zone-visible=false
+mid-fade capture:  transition paused via the Web Animations API at 18 ms: opacity 0.57,
+                   transform scale 0.9829 (hide timer stretched only for the capture; the
+                   timeline above is the real, unpaused curve)
+```
+
+Docking during the exit still cancels it (measured in round 1: at 70 ms the zone is at opacity 0.16
+with `[is-leaving]`; after docking the notepad the zone is back at opacity 1 and visible).
+
+## Grouping (re-measured)
+
+```
+overlap below threshold:  rect overlap 0.185 (18.5 % of the smaller area), centres 101 px apart
+                          -> no grouping, zone stays hidden
+overlap above threshold:  12 px further the geometric overlap is 0.308 (30.8 %) -> grouping
+grouped zone:             layout=grouped, orientation=horizontal, zone 526 x 174 at (124.4, 126.7),
+                          insideWorld true, toolbarOverlap 0
+slots:                    notepad 240 x 88.6 at (141.4, 143.7), window 240 x 140 at (393.4, 143.7)
+                          (16 px zone padding, original 12 px gap, side by side)
+status:                   "Items grouped into a new zone."
+centre rule (50 % zoom):  overlap 0.106 (10.6 % < 25 %) with centres 58 px -> no grouping; after
+                          moving closer the items group with the same 10.6 % overlap because the
+                          centres are within 48 screen px
+grouped near the top:     zone top clamped to y=74 px = toolbar bottom (66 px world) + --space-8,
+                          toolbarOverlap 0, both items docked and visible
+```
+
+## Motion and reduced motion (unchanged, re-measured)
+
+```
+detach:            item scale tops out at 1.03, border/shadow fade; transform/opacity only
+settle + zone:     --motion-panel with spring-like cubic-bezier(0.22, 1.12, 0.36, 1) (items) and
+                   cubic-bezier(0.22, 1.08, 0.36, 1) (zone)
+reduced motion:    zone card transition duration 0 s; collapse applies immediately
+                   ([is-collapsed], opacity 0, visibility hidden within 60 ms); re-grouping reaches
+                   its grouped state immediately
+```
+
+## Zoom controls and existing demo (re-measured)
+
+```
+zoom pill 1440 x 900:  36 x 104 px, buttons 32 x 32 px (three), glyph 16 x 16 px,
+                       labels ["Zoom in", "Zoom out", "Fit to view"] unchanged
+zoom pill 390 x 844:   36 x 104 px, buttons 32 x 32 px, glyph 16 x 16 px;
+                       P0-29-zoom-mobile.png is scrolled so the pill is inside the 844 px capture
+                       (pill y 692..796, inViewport true)
+pill overlap with toolbar / card A / card B / zone: 0 px² at 1440 and 390
+existing demo:          ArrowRight moves card A +16 px, the edge path changes and Home restores it;
+                        zoom-in scale(1.1), fit 1.0; palette tool selected; DE/EN switch translates
+                        the masthead/hint/legend (German samples in the run output)
+edge:                   exactly one .demo__edge element in every measured state; the A/B path is
+                        unchanged by collapsing/grouping (mobile path matches the mobile docked path)
+page:                   no horizontal overflow at 1440 x 900 or 390 x 844; window/console errors []
+masthead:               "P0-29 — Zone collapse, re-grouping and smaller zoom controls ·
+                        2026-10-27 08:37 (Europe/Zurich)" (mtime of .changes/P0-29-zone-collapse.md)
+locale keys:            en 263 / de 263, identical key sets, 252 keys referenced from HTML,
+                        no sharp-s and no exclamation mark in German; language-check OK
+```
+
+## Screenshots
+
+| File | Size | Content |
+| --- | --- | --- |
+| `reviews/evidence/P0-29-zone-fading.png` | PNG 1440 × 900, 187107 bytes | empty zone mid-fade at opacity 0.57 / scale 0.9829 (paused at 18 ms of the real 180 ms; hide timer stretched only for the capture) |
+| `reviews/evidence/P0-29-overlap.png` | PNG 1440 × 900, 187005 bytes | both items free, overlap 18.5 % (< 25 %), no grouping, zone hidden |
+| `reviews/evidence/P0-29-grouped.png` | PNG 1440 × 900, 183081 bytes | new zone 526 × 174 with both items docked side by side, edge unchanged |
+| `reviews/evidence/P0-29-zoom.png` | PNG 1440 × 900, 181236 bytes | smaller zoom pill (36 px wide, 32 px buttons, 16 px glyphs) |
+| `reviews/evidence/P0-29-zoom-mobile.png` | PNG 390 × 844, 58725 bytes | mobile view scrolled so the smaller pill is inside the capture (pill 36 × 104) |
+| `reviews/evidence/P0-29-grouped-mobile.png` | PNG 390 × 844, 60672 bytes | grouped zone resized from 1440: vertical 274 × 275, fully inside the surface, both items visible |
+| `reviews/evidence/P0-29-grouped-toolbar.png` | PNG 1440 × 900, 178074 bytes | grouped zone near the top clamped below the floating toolbar (no overlap) |
+
+## Gates
+
+```sh
+cd "/Users/rasulatashev/Desktop/KI Projekte/Project air-P0-29"
+export POLIER=/Users/rasulatashev/Desktop/Polier-main
+python3 "$POLIER/tools/gate.py" --task P0-29 --name board-check --shell "python3 $POLIER/tools/check.py ."
+python3 "$POLIER/tools/gate.py" --task P0-29 --name design-check --shell "node tools/design-check/index.mjs ."
+python3 "$POLIER/tools/gate.py" --task P0-29 --name changelog-entry --shell "node tools/release/check-changes.mjs --task P0-29 --base main"
+node tools/language-check/index.mjs .
+```
+
+| Gate | Result | Record |
+| --- | --- | --- |
+| `board-check` | PASS (exit 0) | `reviews/evidence/P0-29-board-check-20261027T073815Z.json` |
+| `design-check` | PASS (exit 0, 0 findings) | `reviews/evidence/P0-29-design-check-20261027T073817Z.json` |
+| `changelog-entry` | PASS (exit 0, `.changes/P0-29-zone-collapse.md`) | `reviews/evidence/P0-29-changelog-entry-20261027T073817Z.json` |
+
+`board-check` ran first, before any `pnpm` command; `check.py` exits 0 with pre-existing board
+warnings only. `board.json`, `STATUS.md`, `CHANGELOG.md`, `apps/web/messages/` and the package
+manifests are untouched. `language-check: OK`; design-check reports 0 findings (no raw colours, no
+off-grid spacing, no numeric z-index; the dead `ZONE_SETTLE_TIMEOUT` constant was removed).
+
+## Notes
+
+- Round 2 changes: `onZoneItemPointerEnd` gates the dock decision on `zoneHidden` (A1);
+  `syncZoneGeometry` re-orients and re-fits an existing grouped zone on every resize/locale reflow
+  and `placeGroupedZone` keeps it below the toolbar (A3 + minor d); mobile zoom capture scrolls the
+  pill into view (minor a); `ZONE_SETTLE_TIMEOUT` removed (minor b); README wording and this log
+  corrected (minors c/e).
+- `reviews/P0-29.md` contains the reviewer's round-1 fail verdict and is committed for the re-review;
+  the re-review will append round 2.
+- `.changes/P0-29-zone-collapse.md` was rewritten during the rework (same content, new mtime), so its
+  mtime (2026-10-27 08:37, Europe/Zurich) is the masthead time in `index.html` and both locale files.
