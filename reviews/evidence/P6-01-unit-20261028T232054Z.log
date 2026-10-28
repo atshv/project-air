@@ -1,0 +1,43 @@
+$ pnpm test --affected
+[exit 0]
+
+
+   • turbo 2.11.10
+   • Packages in scope: //, @project-air/web
+   • Running test in 2 packages
+   • Remote caching disabled, using shared worktree cache
+
+@project-air/web:build: cache miss, executing 89ca9b75e8f607f0
+@project-air/web:build: $ vite build
+@project-air/web:build: vite v8.3.5 building client environment for production...
+@project-air/web:build: transforming...
+@project-air/web:build: ✓ 99 modules transformed.
+@project-air/web:build: rendering chunks...
+@project-air/web:build: computing gzip size...
+@project-air/web:build: dist/index.html                   0.44 kB │ gzip:  0.27 kB
+@project-air/web:build: dist/assets/index-BJNX1prH.css    5.62 kB │ gzip:  1.74 kB
+@project-air/web:build: dist/assets/index-BZAqLnUP.js   266.84 kB │ gzip: 84.97 kB
+@project-air/web:build: 
+@project-air/web:build: ✓ built in 107ms
+@project-air/web:test: cache miss, executing a25b38e88f1e3d8f
+@project-air/web:test: $ node --test test/*.test.mjs
+@project-air/web:test: ✔ en and de catalogs have identical key sets (1.404708ms)
+@project-air/web:test: ✔ translate resolves nested keys and interpolates values (0.1725ms)
+@project-air/web:test: ✔ German is the default and a stored choice persists (0.097ms)
+@project-air/web:test: ✔ every required route exists with message-backed title and body keys (0.702ms)
+@project-air/web:test: ✔ route helpers stay pure and encode board ids (0.188333ms)
+@project-air/web:test: ℹ tests 5
+@project-air/web:test: ℹ suites 0
+@project-air/web:test: ℹ pass 5
+@project-air/web:test: ℹ fail 0
+@project-air/web:test: ℹ cancelled 0
+@project-air/web:test: ℹ skipped 0
+@project-air/web:test: ℹ todo 0
+@project-air/web:test: ℹ duration_ms 163.421958
+
+ Tasks:    2 successful, 2 total
+Cached:    0 cached, 2 total
+  Time:    856ms 
+
+$ turbo run test --affected
+ WARNING  no output files found for task @project-air/web#test. Please check your `outputs` key in `turbo.json`

@@ -1,0 +1,26 @@
+{
+  "name": "@project-air/web",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Project air web app: React 19 + Vite SPA for the product UI.",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit --project tsconfig.json",
+    "lint": "eslint --max-warnings=0 .",
+    "test": "node --test test/*.test.mjs"
+  },
+  "dependencies": {
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "react-router": "8.5.1"
+  },
+  "devDependencies": {
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "@vitejs/plugin-react": "6.1.2",
+    "vite": "8.3.5"
+  }
+}

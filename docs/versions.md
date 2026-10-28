@@ -4,7 +4,7 @@ Every dependency in every manifest appears here. `[UNVERIFIED]` and `[VERIFY: �
 a release. P0-04 added the workspace rows from the root manifest and lockfile; P0-09 added the
 GitHub Actions rows from `.github/workflows/ci.yml`; P2-01 added the C++ engine toolchain rows from
 the Homebrew formulae; P2-04 added the Chrome for Testing row used by the local performance
-baseline; P3-01 added the backend rows (`pg`, `@types/pg`, `@types/node`) and the Ory Kratos image.
+baseline; P3-01 added the backend rows (`pg`, `@types/pg`, `@types/node`) and the Ory Kratos image; P6-01 added the ADR-0013 web-app rows (React 19, React Router, Vite and their types).
 
 | Tool / library | Exact version | Source URL | Date checked | Approved by |
 | --- | --- | --- | --- | --- |
@@ -18,6 +18,13 @@ baseline; P3-01 added the backend rows (`pg`, `@types/pg`, `@types/node`) and th
 | Turborepo (`turbo`) | `2.11.10` | https://www.npmjs.com/package/turbo/v/2.11.10 — MIT | 2026-10-25 | owner (2026-10-25) |
 | Yjs (`yjs`, CRDT for `packages/crdt`) | `13.6.27` | https://www.npmjs.com/package/yjs/v/13.6.27 — MIT, https://github.com/yjs/yjs (tag 13.6.27); Q4-approved dependency | 2026-10-28 | owner (Q4, 2026-10-28) |
 | TypeScript (`typescript`) | `5.9.3` | https://www.npmjs.com/package/typescript/v/5.9.3 — Apache-2.0 | 2026-10-25 | owner (2026-10-25) |
+| `react` (web app runtime, ADR-0013) | `19.3.1` | https://www.npmjs.com/package/react/v/19.3.1 — MIT | 2026-10-29 | owner (ADR-0013, 2026-10-29) |
+| `react-dom` (web app runtime, ADR-0013) | `19.3.1` | https://www.npmjs.com/package/react-dom/v/19.3.1 — MIT | 2026-10-29 | owner (ADR-0013, 2026-10-29) |
+| `react-router` (web app router, ADR-0013) | `8.5.1` | https://www.npmjs.com/package/react-router/v/8.5.1 — MIT | 2026-10-29 | owner (ADR-0013, 2026-10-29) |
+| `vite` (web app build/dev server, ADR-0013) | `8.3.5` | https://www.npmjs.com/package/vite/v/8.3.5 — MIT | 2026-10-29 | owner (ADR-0013, 2026-10-29) |
+| `@vitejs/plugin-react` (web app Vite plugin, ADR-0013) | `6.1.2` | https://www.npmjs.com/package/@vitejs/plugin-react/v/6.1.2 — MIT | 2026-10-29 | owner (ADR-0013, 2026-10-29) |
+| `@types/react` (dev, web app, ADR-0013) | `19.3.0` | https://www.npmjs.com/package/@types/react/v/19.3.0 — MIT | 2026-10-29 | owner (ADR-0013, 2026-10-29) |
+| `@types/react-dom` (dev, web app, ADR-0013) | `19.3.0` | https://www.npmjs.com/package/@types/react-dom/v/19.3.0 — MIT | 2026-10-29 | owner (ADR-0013, 2026-10-29) |
 | ESLint (`eslint`) | `10.13.0` | https://www.npmjs.com/package/eslint/v/10.13.0 — MIT | 2026-10-25 | owner (2026-10-25) |
 | typescript-eslint | `8.72.0` | https://www.npmjs.com/package/typescript-eslint/v/8.72.0 — MIT | 2026-10-25 | owner (2026-10-25) |
 | Docker Desktop (local runtime) | `4.96.3` (Engine `29.9.2`, Compose `5.6.1`) | https://www.docker.com/products/docker-desktop/ — proprietary Docker Desktop licence (local development tool, owner decision) | 2026-10-25 | owner (2026-10-25) |

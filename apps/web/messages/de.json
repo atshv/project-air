@@ -62,5 +62,66 @@
     "close": "Schliessen",
     "eyebrow": "Notiz",
     "label": "Notiz"
+  },
+  "app": {
+    "name": "Project air",
+    "tagline": "Denkraum für verbundene Notizen."
+  },
+  "nav": {
+    "label": "Hauptnavigation",
+    "boards": "Boards",
+    "settings": "Einstellungen",
+    "start": "Start"
+  },
+  "auth": {
+    "signedOut": "Nicht angemeldet",
+    "signIn": "Anmelden"
+  },
+  "language": {
+    "label": "Sprache",
+    "de": "Deutsch",
+    "en": "Englisch"
+  },
+  "common": {
+    "close": "Schliessen",
+    "menu": "Menü öffnen",
+    "learnMore": "Mehr erfahren"
+  },
+  "menu": {
+    "label": "Menü",
+    "empty": "Keine Aktionen verfügbar."
+  },
+  "dialog": {
+    "closeLabel": "Dialog schliessen"
+  },
+  "routes": {
+    "start": {
+      "title": "Willkommen bei Project air",
+      "body": "Deine Boards erscheinen hier, sobald die Kontoverbindung verfügbar ist."
+    },
+    "login": {
+      "title": "Anmelden",
+      "body": "Die Kontoverbindung ist in diesem Stand noch nicht verfügbar."
+    },
+    "boards": {
+      "title": "Boards",
+      "body": "Die Board-Liste ist in diesem Stand noch nicht verbunden."
+    },
+    "board": {
+      "title": "Board",
+      "body": "Die Board-Fläche ist in diesem Stand noch nicht verbunden."
+    },
+    "settings": {
+      "title": "Einstellungen",
+      "body": "Einstellungen sind in diesem Stand noch nicht verbunden."
+    }
+  },
+  "emptyState": {
+    "heading": "Noch nicht verbunden",
+    "description": "Dieser Bereich gehört zu einem späteren Schritt des Projekts. Hier wird noch nichts angezeigt oder gespeichert."
+  },
+  "settings": {
+    "language": "Sprache",
+    "languageHint": "Wähle die Sprache der Oberfläche. Deine Wahl wird auf diesem Gerät gemerkt."
   }
 }

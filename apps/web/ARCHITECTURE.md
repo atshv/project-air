@@ -31,7 +31,11 @@ Exactly these workspace packages, copied from `board.json` -> `packages[]` -> `m
 
 ## Commands
 
-Install, build, lint, typecheck and test: **set by P0-04**, the workspace task. This package defines no command before the workspace exists; the task that adds code expands this section.
+P6-01 added the app commands: `pnpm --filter ./apps/web dev` (Vite, slot `web` port),
+`build`, `preview` (slot `web-e2e` port), `typecheck`, `lint` and `test`
+(`node --test` for the i18n loader, language persistence and route helpers; DOM
+behaviour is covered by P6-08's Playwright e2e). Vite reads `.polier-slot` for
+ports; `WEB_PORT`/`WEB_E2E_PORT` override them for e2e runs.
 
 
 ## References

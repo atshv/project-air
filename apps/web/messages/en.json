@@ -62,5 +62,66 @@
     "close": "Close",
     "eyebrow": "Note",
     "label": "Note"
+  },
+  "app": {
+    "name": "Project air",
+    "tagline": "Thinking space for connected notes."
+  },
+  "nav": {
+    "label": "Main navigation",
+    "boards": "Boards",
+    "settings": "Settings",
+    "start": "Start"
+  },
+  "auth": {
+    "signedOut": "Not signed in",
+    "signIn": "Sign in"
+  },
+  "language": {
+    "label": "Language",
+    "de": "German",
+    "en": "English"
+  },
+  "common": {
+    "close": "Close",
+    "menu": "Open menu",
+    "learnMore": "Learn more"
+  },
+  "menu": {
+    "label": "Menu",
+    "empty": "No actions available."
+  },
+  "dialog": {
+    "closeLabel": "Close dialog"
+  },
+  "routes": {
+    "start": {
+      "title": "Welcome to Project air",
+      "body": "Your boards live here once the account connection is available."
+    },
+    "login": {
+      "title": "Sign in",
+      "body": "The account connection is not available in this build yet."
+    },
+    "boards": {
+      "title": "Boards",
+      "body": "The board list is not connected in this build yet."
+    },
+    "board": {
+      "title": "Board",
+      "body": "The board canvas is not connected in this build yet."
+    },
+    "settings": {
+      "title": "Settings",
+      "body": "Settings are not connected in this build yet."
+    }
+  },
+  "emptyState": {
+    "heading": "Not connected yet",
+    "description": "This area is part of a later step in the project. Nothing is shown or saved here yet."
+  },
+  "settings": {
+    "language": "Language",
+    "languageHint": "Choose the language for the interface. Your choice is remembered on this device."
   }
 }
