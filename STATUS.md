@@ -122,7 +122,6 @@
 
 ## Ready now
 
-- `P5-05` Presence: cursors, selection, name and colour
 - `P5-06` Durability and reconnect: restart, catch-up and snapshot compaction
 
 ## Done
@@ -212,6 +211,7 @@
 
 ## In progress
 
+- [ ] `P5-05` Presence: cursors, selection, name and colour — status: `in_progress` — owner: lead
 - [ ] `P0-36` Live demo: select and resize objects, photo without bar, edges behind — status: `in_progress` — owner: —
 
 ## Blocked / failed
@@ -224,7 +224,6 @@
 - [ ] `P0-15` Release command and tag-based CI release — status: `pending` — owner: —
 - [ ] `P0-16` Dependency updates and Polier update check — status: `pending` — owner: —
 - [ ] `P0-17` RELEASING.md and release 0.0.1 — status: `pending` — owner: —
-- [ ] `P5-05` Presence: cursors, selection, name and colour — status: `pending` — owner: —
 - [ ] `P5-06` Durability and reconnect: restart, catch-up and snapshot compaction — status: `pending` — owner: —
 - [ ] `P5-07` crdt-convergence proof: 10,000 rounds, offline clients and own-only undo — status: `pending` — owner: —
 - [ ] `P5-08` load proof: 25 clients per board at p95 <= 150 ms and the stage report — status: `pending` — owner: —
@@ -234,7 +233,7 @@
 ## Claims
 
 - `P0-36` in progress by dsh since 2026-10-28T19:18:41+00:00 — worktree: /Users/rasulatashev/Desktop/KI Projekte/Project air-P0-36 · slot 2
-- `P5-04` in progress by dsh since 2026-10-28T19:18:39+00:00 — worktree: /private/tmp/air-P5-04 · slot 1
+- `P5-05` in progress by dsh since 2026-10-28T19:19:39+00:00 — worktree: /private/tmp/air-P5-05 · slot 1
 
 <!-- /polier:claims -->
 
