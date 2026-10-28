@@ -84,8 +84,8 @@ inline constexpr const char* shadow = "0 1px 0 rgba(255, 255, 255, 0.04) inset, 
 
 // layers (z-index)
 inline constexpr int layer_canvas_background = 1;  // 1
-inline constexpr int layer_zones = 2;  // 2
-inline constexpr int layer_edges = 3;  // 3
+inline constexpr int layer_edges = 2;  // 2
+inline constexpr int layer_zones = 3;  // 3
 inline constexpr int layer_blocks = 4;  // 4
 inline constexpr int layer_note_cards = 5;  // 5
 inline constexpr int layer_dragged_or_selected = 6;  // 6

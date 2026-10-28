@@ -1,0 +1,13 @@
+# P0-38 preview evidence (2026-10-28)
+# serve: cd "/Users/rasulatashev/Desktop/KI Projekte/Project air-P0-38"; PORT=$(python3 -c "import json; print(json.load(open('.polier-slot'))['ports']['web'])"); python3 -m http.server "$PORT" --bind 127.0.0.1
+# drive: out-of-repo CDP helper (Chrome for Testing 1248, headless, real Input.dispatchMouseEvent) at 1440x900
+# url: http://127.0.0.1:4200/apps/web/preview/index.html
+tokens: canvas-background=1 edges=2 zones=3 blocks=4 note-cards=5
+computed z-index: edge=2 zone=3
+edge midpoint 689,371; zone 583,257-857,572
+after zone move: top element at edge midpoint = zone card; status="Zone moved."
+screenshot P0-38-edge-below-zone.png
+section 06 rows: 1 --layer-canvas-background | 2 --layer-edges | 3 --layer-zones | 4 --layer-blocks
+screenshot P0-38-layers.png
+masthead: Last change: P0-38 — Layer order: edges below zones / 2026-10-28 20:36 (Europe/Zurich)
+overflow: 0

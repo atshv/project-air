@@ -1,0 +1,17 @@
+{
+  "task": "P0-38",
+  "gate": "unit",
+  "command": "cd packages/ui-kit && node --test tests/*.test.mjs",
+  "exit_code": 0,
+  "result": "pass",
+  "slot": null,
+  "exclusive": [],
+  "lock_wait_s": 0.0,
+  "lock_warning": null,
+  "started": "2026-10-28T19:39:30+00:00",
+  "finished": "2026-10-28T19:39:31+00:00",
+  "commit": "2a19869f4ffb99121ee1db8b7ad76104138b42f2",
+  "dirty": true,
+  "log": "P0-38-unit-20261028T193930Z.log",
+  "log_sha256": "7dc7dc7e8a582110b2b8b1770a7b519da611c1620efe84ab655df4962e02ad55"
+}

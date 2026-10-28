@@ -152,8 +152,8 @@ The same order is the render order of the engine and the z-order of the DOM.
 | # | Layer |
 | --- | --- |
 | 1 | Canvas background (dot grid) |
-| 2 | Zones |
-| 3 | Edges (connections) |
+| 2 | Edges (connections) |
+| 3 | Zones |
 | 4 | Blocks (checklist, palette, columns, timeline, table) |
 | 5 | Note cards |
 | 6 | Element just dragged or selected (temporarily at the top of its layer) |
@@ -164,6 +164,8 @@ The same order is the render order of the engine and the z-order of the DOM.
 | 10 | Context menu, tooltip |
 | 11 | Dialogs, toasts |
 
+- Edges lie below every object, zones included: a connection line never crosses a zone's surface
+  or title (owner decision 2026-10-28, ADR-0013).
 - **NEVER** `z-index` > 10 in components without an entry in `packages/ui-kit/layers.ts`.
 
 ## 9. Canvas chrome — a fixed place for everything

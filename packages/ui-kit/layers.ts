@@ -2,8 +2,8 @@
 
 export const LAYERS = [
   { name: "canvas-background", order: "1", zIndex: 1 },
-  { name: "zones", order: "2", zIndex: 2 },
-  { name: "edges", order: "3", zIndex: 3 },
+  { name: "edges", order: "2", zIndex: 2 },
+  { name: "zones", order: "3", zIndex: 3 },
   { name: "blocks", order: "4", zIndex: 4 },
   { name: "note-cards", order: "5", zIndex: 5 },
   { name: "dragged-or-selected", order: "6", zIndex: 6 },
@@ -19,12 +19,12 @@ export type LayerName = (typeof LAYERS)[number]["name"];
 
 export type LayerZIndex = (typeof LAYERS)[number]["zIndex"];
 
-export const LAYER_ORDER: readonly LayerName[] = ["canvas-background", "zones", "edges", "blocks", "note-cards", "dragged-or-selected", "snap-guides", "remote-cursors", "canvas-chrome", "side-panel", "context-menu", "dialogs"];
+export const LAYER_ORDER: readonly LayerName[] = ["canvas-background", "edges", "zones", "blocks", "note-cards", "dragged-or-selected", "snap-guides", "remote-cursors", "canvas-chrome", "side-panel", "context-menu", "dialogs"];
 
 export const LAYER_Z_INDEX: Readonly<Record<LayerName, LayerZIndex>> = {
   "canvas-background": 1,
-  "zones": 2,
-  "edges": 3,
+  "edges": 2,
+  "zones": 3,
   "blocks": 4,
   "note-cards": 5,
   "dragged-or-selected": 6,

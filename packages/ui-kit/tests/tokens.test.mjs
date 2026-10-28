@@ -96,8 +96,8 @@ const EXPECTED_SHADOWS = {
 
 const EXPECTED_LAYERS = [
   ["canvas-background", "1", 1],
-  ["zones", "2", 2],
-  ["edges", "3", 3],
+  ["edges", "2", 2],
+  ["zones", "3", 3],
   ["blocks", "4", 4],
   ["note-cards", "5", 5],
   ["dragged-or-selected", "6", 6],

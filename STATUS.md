@@ -211,11 +211,11 @@
 - [x] `P0-35` Design system page: contract 0.3.0, missing tokens and engine chrome — status: `done` — owner: —
 - [x] `P0-36` Live demo: select and resize objects, photo without bar, edges behind — status: `done` — owner: —
 - [x] `P0-37` Live demo: engine canvas chrome — status: `done` — owner: —
+- [x] `P0-38` Layer order: edges below zones — status: `done` — owner: —
 
 ## In progress
 
 - [ ] `P5-06` Durability and reconnect: restart, catch-up and snapshot compaction — status: `in_progress` — owner: lead
-- [ ] `P0-38` Layer order: edges below zones — status: `in_progress` — owner: —
 
 ## Blocked / failed
 

@@ -1,4 +1,4 @@
-# Design preview (P0-19, P0-20, P0-21, P0-22, P0-23, P0-24, P0-25, P0-26, P0-27, P0-28, P0-29, P0-30, P0-31, P0-32, P0-33, P0-34, P0-35, P0-36, P0-37, P1-07)
+# Design preview (P0-19, P0-20, P0-21, P0-22, P0-23, P0-24, P0-25, P0-26, P0-27, P0-28, P0-29, P0-30, P0-31, P0-32, P0-33, P0-34, P0-35, P0-36, P0-37, P0-38, P1-07)
 
 A design preview of the Project air design system. It is **not the product**: there is no engine,
 no data, no server and no build step. It exists so the owner can see the look and feel between
@@ -15,9 +15,9 @@ its two values come from:
   `0.0.1 – unreleased`; the status word comes from the same heading. `CHANGELOG.md` is the display
   source and currently agrees with the root `package.json` version `0.0.1`.
 - **Last change** — the newest preview change entry, currently
-  `.changes/P0-37-canvas-chrome.md`; the line shows the task id and that task's title from
-  `board.json` / the task brief: `P0-37 — Live demo: engine canvas chrome`. The line follows the
-  `P0-*` preview tasks (P0-19 … P0-37, P1-07); the engine tasks
+  `.changes/P0-38-edges-below-zones.md`; the line shows the task id and that task's title from
+  `board.json` / the task brief: `P0-38 — Layer order: edges below zones`. The line follows the
+  `P0-*` preview tasks (P0-19 … P0-38, P1-07); the engine tasks
   (`P4-*`) and the other stages run in parallel and do not move it, so "highest numeric id" alone is
   not the rule. If several files exist for the same preview task, the most recent one is used;
   `.changes/README.md` and `.changes/TEMPLATE.md` do not count as entries.
@@ -98,7 +98,7 @@ design system updates the demo and refreshes its screenshot in `reviews/evidence
   two anchors' side normals at 48 px (`--space-48`), so the curve leaves and enters the cards
   perpendicularly; it recomputes on every pointer move, keyboard step, zoom and reset and is clamped
   to a minimum visible length of 1 px when the cards overlap. The path sits on the `--layer-edges`
-  layer below the cards (`--layer-note-cards`) and keeps the design-system connection style — a
+  layer below the zones and cards (`--layer-zones`, `--layer-note-cards`; ADR-0013) and keeps the design-system connection style — a
   `--tone-d` stroke at 1.5 px (`--border-width-strong`) with `--tone-d` endpoint dots.
 - **Zoom pill (preview-only):** one floating vertical control sits 12 px from the bottom-left corner
   of the demo surface — a 32 px container (`--click-target`) with `--radius-md`, `--surface`
@@ -238,7 +238,7 @@ release only confirms it.
   zone is re-fitted and re-clamped and the docked items follow their slots.
 - **No edge** — the demo keeps exactly one edge element (`.demo__edge`, cards A ↕ B); its path never
   changes when a zone item moves, reorders or groups. Zone items are never connected.
-- **Z-order** — the zone frame sits at `--layer-zones` (below the edge, as in design law §8), the
+- **Z-order** — the zone frame sits at `--layer-zones` (above the edge, as in design law §8 since ADR-0013), the
   items and the landing slot at `--layer-blocks`; the last touched item is selected and sits at
   `--layer-dragged-or-selected` while and after its drag (a drop near a note card or onto the
   other item never hides it), all below the canvas chrome (toolbar and zoom pill); no numeric
@@ -270,6 +270,19 @@ L02 asks for zones.
   shows it). A default name follows the DE/EN switch; a typed name stays exactly as typed. Names
   live only in this page's memory, like everything else in the demo.
 - **Without script** — the title is the first row of the static card grid.
+
+## Layer order: edges below zones (P0-38)
+
+The owner decision of P0-36 is now the design law (ADR-0013): connection lines lie below every
+object, zones included.
+
+- **Law and tokens** — design law §8 reads canvas background 1, edges 2, zones 3, blocks 4 …
+  dialogs 11; `packages/ui-kit/tokens.json` holds `edges` 2 and `zones` 3, and the generated
+  `tokens.css`, `tokens.h` and `layers.ts` follow.
+- **Section 06** — the layer list shows edges (2, `--layer-edges`) before zones
+  (3, `--layer-zones`).
+- **Demo edge** — `.demo__edge` uses `--layer-edges` again; the local deviation comment of P0-36 is
+  gone. The line still runs below the zone card, the blocks and the note cards.
 
 ## Engine canvas chrome in the live demo (P0-37)
 
@@ -320,10 +333,8 @@ dropped into a zone takes its size, and the connection lines run behind all card
 - **Photo** — no title bar; the image fills the window (`object-fit: cover`). Free, it resizes
   freely; docked into a zone with another member it takes that member's width (stacked) or height
   (side by side) and keeps its aspect ratio.
-- **Edges behind (owner decision)** — `.demo__edge` sits on `--layer-canvas-background` (1), below
-  zones (2). Design law §8 puts edges (3) above zones; the owner chose "lines behind all cards" for
-  the demo on 2026-10-28 — an open question for the design law and the engine (edges are not drawn
-  by the engine yet).
+- **Edges behind (owner decision)** — `.demo__edge` runs below every object, zones included. Since
+  P0-38 this is design law §8 (ADR-0013): edges are layer 2 (`--layer-edges`), zones layer 3.
 
 ## Design system refresh (P0-35)
 
@@ -437,9 +448,9 @@ P0-26 markup with the old stylesheet and a broken-looking demo. The preview ther
 assets with a version query:
 
 ```html
-<link rel="stylesheet" href="../../../packages/ui-kit/tokens.css?v=P0-37" />
-<link rel="stylesheet" href="preview.css?v=P0-37" />
-<script src="preview.js?v=P0-37" defer></script>
+<link rel="stylesheet" href="../../../packages/ui-kit/tokens.css?v=P0-38" />
+<link rel="stylesheet" href="preview.css?v=P0-38" />
+<script src="preview.js?v=P0-38" defer></script>
 ```
 
 - **Bump rule:** every task that changes a file in `apps/web/preview/` — or the shared
@@ -448,7 +459,7 @@ assets with a version query:
   never cached and gets the current files, which also covers a changed design system that would
   otherwise be served from the cached token stylesheet.
 - The locale files reuse the script's version automatically: `preview.js` reads the `v` query of its
-  own script URL and appends it to the locale request (`locales/de.json?v=P0-37`), so one bump
+  own script URL and appends it to the locale request (`locales/de.json?v=P0-38`), so one bump
   covers the translations as well.
 - The icon SVGs are referenced from `preview.css` and keep stable, unversioned URLs; they only
   change with a design-system task, and every such task bumps the preview version anyway.
@@ -505,7 +516,7 @@ Serve the **repository root**, not this folder, so the relative token and icon p
 the slot's `web` port from `.polier-slot` (never hard-code it), then:
 
 ```sh
-cd "/Users/rasulatashev/Desktop/KI Projekte/Project air-P0-37"
+cd "/Users/rasulatashev/Desktop/KI Projekte/Project air-P0-38"
 PORT=$(python3 -c "import json; print(json.load(open('.polier-slot'))['ports']['web'])")
 python3 -m http.server "$PORT" --bind 127.0.0.1
 ```
@@ -590,11 +601,12 @@ line and tasks in English and German),
 `P0-36-docked-resize.png`, `P0-36-free-photo.png`, `P0-36-photo-adopted.png`,
 `P0-36-zoom-selection.png` (1440×900),
 `P0-37-snap.png`, `P0-37-undo-hint.png`, `P0-37-highlight.png`, `P0-37-band.png`,
-`P0-37-count-bar.png`, `P0-37-menu.png`, `P0-37-zone-delete.png` (1440×900) and the
+`P0-37-count-bar.png`, `P0-37-menu.png`, `P0-37-zone-delete.png` (1440×900),
+`P0-38-layers.png`, `P0-38-edge-below-zone.png` (1440×900) and the
 `P0-19-preview.log` / `P0-20-preview.log` / `P0-21-preview.log` / `P0-22-preview.log` /
 `P0-23-preview.log` / `P0-24-preview.log` / `P0-25-preview.log` / `P0-26-preview.log` /
 `P0-27-preview.log` / `P0-28-preview.log` / `P0-29-preview.log` / `P0-30-preview.log` /
-`P0-31-preview.log` / `P0-32-preview.log` / `P0-33-preview.log` / `P0-34-preview.log` / `P0-35-preview.log` / `P0-36-preview.log` / `P0-37-preview.log` /
+`P0-31-preview.log` / `P0-32-preview.log` / `P0-33-preview.log` / `P0-34-preview.log` / `P0-35-preview.log` / `P0-36-preview.log` / `P0-37-preview.log` / `P0-38-preview.log` /
 `P1-07-preview.log` files with the
 exact serve, curl and screenshot commands. The page has no horizontal overflow at 1440×900, 390×844
 or the owner's 1426 × 583 viewport.

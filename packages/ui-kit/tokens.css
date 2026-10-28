@@ -82,8 +82,8 @@
 
   /* layers (z-index) */
   --layer-canvas-background: 1;
-  --layer-zones: 2;
-  --layer-edges: 3;
+  --layer-edges: 2;
+  --layer-zones: 3;
   --layer-blocks: 4;
   --layer-note-cards: 5;
   --layer-dragged-or-selected: 6;

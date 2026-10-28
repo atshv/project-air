@@ -16,8 +16,8 @@ namespace air::engine {
 // Draw layers in docs/design-rules.md §8 order, bottom to top. The z-index
 // numbers come from the generated ui-kit token header (AD-7, design rule §13),
 // never from a copy in the engine. Only the layers that draw rectangles are
-// listed: edges (3) are not rectangles and the chrome layers (8+) are DOM.
-// Design rule §8, quoted: "2 | Zones", "3 | Edges (connections)", "4 | Blocks
+// listed: edges (2) are not rectangles and the chrome layers (8+) are DOM.
+// Design rule §8, quoted: "2 | Edges (connections)", "3 | Zones", "4 | Blocks
 // (checklist, palette, columns, timeline, table)", "5 | Note cards", "6 | Element
 // just dragged or selected (temporarily at the top of its layer)". Layer 6 is not
 // a separate layer here: "top of its layer" is the greatest fractional z inside

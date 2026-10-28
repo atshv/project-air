@@ -1,0 +1,4 @@
+$ node packages/ui-kit/codegen.mjs && git diff --exit-code -- packages/ui-kit
+[exit 0]
+
+ui-kit codegen: wrote tokens.css, tokens.h, layers.ts

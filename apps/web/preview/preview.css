@@ -971,13 +971,10 @@ button {
   will-change: transform;
 }
 
-/* Owner decision 2026-10-28 (P0-36): the connection line runs behind every
-   object, zones included — below the zone layer instead of design law §8's
-   edge layer above the zones. */
 .demo__edge {
   position: absolute;
   inset: 0;
-  z-index: var(--layer-canvas-background);
+  z-index: var(--layer-edges);
   inline-size: 100%;
   block-size: 100%;
   visibility: hidden;
