@@ -10,6 +10,7 @@
       {
         "imports": {
           "@project-air/engine": "../../packages/engine/dist/bridge/engine.js",
+          "@project-air/engine/input.js": "../../packages/engine/dist/bridge/input.js",
           "@project-air/test-kit": "../../packages/test-kit/dist/scenes.js",
           "@project-air/engine/logic/": "../../packages/engine/dist/logic/packages/engine/src/logic/"
         }
@@ -25,6 +26,7 @@
       </header>
       <div class="canvas-wrap">
         <div class="overlay" id="overlay"></div>
+        <div class="header-surface" id="header-surface" aria-hidden="true"></div>
         <canvas
           id="canvas"
           class="canvas"

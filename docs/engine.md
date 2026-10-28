@@ -19,6 +19,7 @@ the network (AD-2), and reads the contract and tokens from generated headers.
 | `text` | `text.h`, `text.cpp` | L02 runtime glyph atlas: token text styles, atlas plan with the texture-limit fallback, validated glyph table with a placeholder per role, glyph runs and the 32-byte glyph command buffer | token typography / glyph count, cell, DPR, texture limit / RGBA pixels + packed metrics / runs + camera → plan, CSS-px glyph metrics, glyph quads | camera, geometry, status, `tokens.h` |
 | `text_gl` | `text_gl.h`, `text_gl.cpp` | Text C ABI (pure style/plan calls in both builds), the WebGL2 glyph pass (atlas texture upload, one instanced glyph draw after the object pass) and, since P4-10, the bound title/preview runs and the header-chrome pass | C ABI calls / glyph buffer / bound text → texture, pixels | text, text_binding, `tokens.h`, GLES3 |
 | `text_binding` | `text_binding.h`, `text_binding.cpp` | L02 (P4-10) presentation binding: caller-supplied titles and previews bound to visible objects (ellipsis titles, wrapped/clipped previews), the 40 px header/inset chrome geometry, block growth, header chrome quads | document + camera + viewport + index + caller text → runs, chrome quads, required preview height | doc, spatial, text, geometry, status, `tokens.h` |
+| `input` (bridge) | `src/bridge/input.ts` | L03 (P4-14) DOM-free pointer input layer: click/drag threshold, card/header grip policy, field/scroll suppression, pointer capture/cancel, right-button and multi-touch rejection, cursor and header-hover state, injected seam commit | pointer samples + hit test + camera callbacks → drag preview/commit/revert, hover, cursor, pan/zoom | none at runtime (types only) |
 | C ABI | `engine.h`, `engine.cpp` | `air_engine_version()` and compile-time checks of `kContractVersion`/`tokens.h` | – → version string | `contract.h`, `tokens.h` |
 
 Support headers: `geometry.h` (`Point`, `Bounds`) and `status.h` (`Status`; no exceptions
@@ -336,6 +337,73 @@ records are `reviews/evidence/P4-10-perf-*.json` and the idle record written by 
 frame without an atlas or a binding returns from the glyph pass before any GL state is touched, so
 the perf path keeps its measured cost.
 
+## Pointer input: click, drag and edit (L03, P4-14)
+
+L03 asks the canvas to separate click, drag and edit: clicking opens, dragging on the grip moves,
+clicking in text edits — never two at the same time. The decision lives in one DOM-free input layer,
+`src/bridge/input.ts`, and the playground binds pointer and wheel events to it; no second pointer
+handler exists in the page. The layer is exported as `@project-air/engine/input.js` next to the
+bridge and has no runtime imports, so it runs in Node tests and the page alike.
+
+- **One state machine.** A press becomes a click candidate, an object drag, a pan or a pinch; the
+  layer tracks the active pointers, the down point, the grip and the grabbed world offset, and
+  reports its phase. A press that moves less than the token `drag_threshold` (4 px, screen pixels,
+  `packages/ui-kit/tokens.json`) is a click: on release the layer reports a tap and writes nothing —
+  no operation, no history entry, no document write. Once the movement reaches the threshold a drag
+  starts exactly once and follows the pointer 1:1 (the grabbed world point under the finger stays
+  under the finger; positions are world px while the threshold is screen px, so a zoom never changes
+  the L03 rule). The layer never snaps or repositions by itself (P4-15 owns snapping).
+- **Grip policy.** A note card drags on its whole body; a block or a zone only inside its
+  `header_height` (40 px) band. A press below the header of a block or zone is consumed and moves
+  nothing; the press is *not* a pan either, so the object never jitters and the view stays put. The
+  band in world px is measured from the object's top through the camera transform, so it follows
+  zoom correctly.
+- **Suppressed targets.** A press on `input`, `textarea`, `select`, `button`, `[contenteditable]`,
+  `[data-field]` or an element whose computed `overflow-x/y` is `auto`/`scroll`/`overlay` never starts
+  a drag and is not captured: the element keeps its own pointer and wheel handling. The playground
+  derives the descriptor from the DOM (`describeSuppression`) and the policy function lives in the
+  input layer (`isSuppressedTarget`, `cursorForSuppressed`). Wheel events over a suppressed target are
+  not intercepted either, so a scrollable chrome area keeps its native scrolling.
+- **Capture, cancel and buttons.** A primary pointer is captured on the surface and released on up,
+  `pointercancel`, `lostpointercapture` and window blur; a cancelled drag is reverted to the working
+  copy position without an operation or history entry. Right/middle mouse buttons and non-primary
+  buttons never drag or pan (the context menu belongs to L20); a second pointer cancels a running
+  drag and turns the gesture into the two-pointer pinch zoom.
+- **View-only pan and zoom.** An empty-canvas press is a pan candidate: dragging it moves the camera
+  only (`setCamera`); a wheel or a two-pointer pinch zooms around the pointer (clamped to the engine
+  camera range). Neither path writes the document.
+- **One drag = one operation.** On release the layer calls the scene's `commitDrag`, which builds
+  exactly one `drag-single` gesture with `buildOperation` on the `DocumentPort`, applies it through
+  the same port and pushes the operation/inverse pair onto the P4-05 history (AD-1). While dragging,
+  `previewDrag` moves the rectangle through the bridge without a document write, so the port still
+  holds the start position when the operation and its inverse are built. The bridge module receives
+  the seam functions through its host (injected by the playground), keeping the module-map direction
+  UI → logic → data intact.
+- **Presentation chrome (ADR-0009).** Cursors are `grab` on a grip, `grabbing` while dragging, `text`
+  over editable targets and `default` elsewhere; the canvas is not permanently a grab cursor. A
+  hovered block or zone header shows a DOM `--faint` band (`.header-surface`) that fades in with the
+  120 ms `motion_hover` token (design rule §6/§7), repositioned on every camera change and fully
+  transparent at rest — it is DOM chrome, never a canvas glyph or document state, so the committed
+  visual references stay 0-diff. Hover chrome never appears in the at-rest captures because there is
+  no pointer.
+- **Playground.** The sample and layers scenes get a drag session: the layers scene reuses its
+  existing contract document port/history (a click still brings the object to the front, P4-06),
+  and the sample board — loaded as packed rectangles — projects the same objects onto its already
+  assigned engine slots (`loadRectangleDragSession`), so its pixels, document load count and
+  reference images are unchanged while a drag commits one contract move operation. `?input=demo`
+  (`?scene=layers&input=demo`) adds one editable field and one scrollable area inside `block-0001`'s
+  body to demonstrate the suppression policy; the chrome exists only in that mode. The titles gallery
+  is presentation-only and keeps its hover/select path through the same layer. The page exposes
+  `window.__engineInput` (phase, cursor, hover, token values, whether a drag session exists) and
+  `window.__engineDrag.last()` (the last committed operation/inverse types) for evidence.
+- **Tests and evidence.** `test/input.test.mjs` drives the state machine directly: the 3.9/4.1 px
+  threshold, click-writes-nothing, the grip policy per kind, field/scroll suppression, cursor
+  mapping, header-hover state, right-button and multi-touch rejection, pointer capture, pan/zoom
+  view-only, one operation per drag through the real seam with the inverse restoring a byte-identical
+  working copy, and cancel reverting without a write. `apps/engine-playground/tools/input-check.mjs`
+  repeats the engine-owned cases in a real browser with trusted pointer/wheel events
+  (`reviews/evidence/<task>-input-<timestamp>.json`). The native suites are unchanged (`cpp-unit`).
+
 ## Object identity and mutations
 
 `Document` keeps one storage slot per object and assigns a monotonic `ObjectId` on insert
@@ -496,7 +564,10 @@ fixtures — the deterministic 500-card/50-zone sample board and the stress scen
 proof, the `perf` gate and the reference images remain with P4-03, P4-04 and P4-28 (board Q18).
 **L19 — Canvas feel** is delivered by P4-07: the fit helper, the dot grid and on-demand drawing are
 documented above, with native fit/grid tests, the `visual` reference image `one-card-fit` and the
-`P4-07-idle-*` browser record (re-run for P4-10 as `P4-10-idle-*`). **L02 — Visible quality** is
+`P4-07-idle-*` browser record (re-run for P4-10 as `P4-10-idle-*`). **L03 — Dragging vs editing** is
+delivered for the engine-owned part by P4-14: the 4 px click/drag threshold, the card/header grip
+policy, field/scroll suppression, the header hover band, cursors and one move operation per drag,
+documented in the pointer-input section above. **L02 — Visible quality** is
 delivered by P4-08, P4-09 and P4-10 for
 the engine-owned part: the runtime atlas, the layout flows and, since P4-10, the title/preview
 binding, the 40 px header geometry with the zone content inset, the grown block, the quiet delete
@@ -513,14 +584,15 @@ implemented.
   completion, long tasks while panning/zooming, or the L01 final proof (500 cards + 50 zones, no long
   task > 50 ms).
 - **Canvas behaviours:** the playground has demo-level pan/zoom over a fixed scene plus the L19 fit
-  action and dot grid; gesture input handling, selection, editing, snapping, zone membership, the
-  undo UI, keyboard input, title editing (L09 owns it), images, edges, cursors and the accessibility
-  mirror are not implemented. Text is presentation input: titles and previews are bound to visible
+  action and dot grid; the L03 click/drag/edit separation and its pan/zoom are implemented (P4-14,
+  above), while selection, editing, snapping, zone membership, the undo UI, keyboard input, title
+  editing (L09 owns it), images, edges and the accessibility mirror are not. The input layer is
+  DOM-driven: a real e2e for fields inside a block arrives with the editor overlay (P4-23). Text is presentation input: titles and previews are bound to visible
   objects by the caller (P4-10), but the engine document still stores no note content, and a
   title/preview that overlaps a higher-layer object is not clipped per pixel (the titles scene and
-  its reference images place the gallery without overlap). The gesture-to-operation seam and the undo history core exist behind the TypeScript
-  logic layer (P4-05) but are not wired to input yet. Hit testing exists at the
-  document/command-buffer level (P4-01); interaction policy, selection state and overlays are not.
+  its reference images place the gallery without overlap). The gesture-to-operation seam and the
+  undo history core exist behind the TypeScript logic layer (P4-05) and a completed drag now reaches
+  them through the input layer; selection state and overlays are not wired yet.
   The initial and restored viewport (L17/P4-22) still uses the pre-L19 plain fit; only the fit action
   uses the padded 100 % fit.
 - **Contracts of the mutation API:** the `ObjectId` stays inside the C++ core for now; the C ABI

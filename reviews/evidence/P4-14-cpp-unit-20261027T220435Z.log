@@ -1,0 +1,49 @@
+$ cmake -S packages/engine -B packages/engine/build -DCMAKE_BUILD_TYPE=Debug && cmake --build packages/engine/build --parallel && ctest --test-dir packages/engine/build --output-on-failure
+[exit 0]
+
+-- The CXX compiler identification is AppleClang 21.0.0.21000101
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Configuring done (0.7s)
+-- Generating done (0.0s)
+-- Build files have been written to: /tmp/air-P4-14/packages/engine/build
+[  5%] Building CXX object CMakeFiles/air_engine_objects.dir/src/engine.cpp.o
+[ 11%] Building CXX object CMakeFiles/air_engine_objects.dir/src/text_binding.cpp.o
+[ 16%] Building CXX object CMakeFiles/air_engine_objects.dir/src/render.cpp.o
+[ 22%] Building CXX object CMakeFiles/air_engine_objects.dir/src/text.cpp.o
+[ 27%] Building CXX object CMakeFiles/air_engine_objects.dir/src/render_gl.cpp.o
+[ 33%] Building CXX object CMakeFiles/air_engine_objects.dir/src/doc.cpp.o
+[ 38%] Building CXX object CMakeFiles/air_engine_objects.dir/src/spatial.cpp.o
+[ 44%] Building CXX object CMakeFiles/air_engine_objects.dir/src/camera.cpp.o
+[ 50%] Building CXX object CMakeFiles/air_engine_objects.dir/src/text_gl.cpp.o
+[ 50%] Built target air_engine_objects
+[ 55%] Linking CXX static library libair_engine.a
+[ 55%] Built target air_engine
+[ 77%] Building CXX object CMakeFiles/engine_unit_tests.dir/test/engine_test.cpp.o
+[ 77%] Building CXX object CMakeFiles/engine_binding_tests.dir/test/engine_binding_test.cpp.o
+[ 77%] Building CXX object CMakeFiles/engine_core_tests.dir/test/engine_core_test.cpp.o
+[ 77%] Building CXX object CMakeFiles/engine_text_tests.dir/test/engine_text_test.cpp.o
+[ 83%] Linking CXX executable engine_unit_tests
+[ 83%] Built target engine_unit_tests
+[ 88%] Linking CXX executable engine_text_tests
+[ 94%] Linking CXX executable engine_binding_tests
+[ 94%] Built target engine_text_tests
+[ 94%] Built target engine_binding_tests
+[100%] Linking CXX executable engine_core_tests
+[100%] Built target engine_core_tests
+Test project /tmp/air-P4-14/packages/engine/build
+    Start 1: engine_unit_tests
+1/4 Test #1: engine_unit_tests ................   Passed    0.28 sec
+    Start 2: engine_core_tests
+2/4 Test #2: engine_core_tests ................   Passed    0.42 sec
+    Start 3: engine_text_tests
+3/4 Test #3: engine_text_tests ................   Passed    0.34 sec
+    Start 4: engine_binding_tests
+4/4 Test #4: engine_binding_tests .............   Passed    0.23 sec
+
+100% tests passed out of 4
+
+Total Test time (real) =   1.27 sec

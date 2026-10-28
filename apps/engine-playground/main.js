@@ -35,6 +35,11 @@
 //                                  box and a wrapped preview clipped to three
 //                                  lines; combine with ?scene=stress&count=0
 //                                  &view=272,112,2 (the visual scene does).
+//   ?input=demo                    L03 (P4-14) pointer demo on the layers scene:
+//                                  one editable field and one scrollable area
+//                                  inside block-0001's body; presses there start
+//                                  no drag and the scroll area keeps its wheel.
+//                                  Off by default, so no reference image changes.
 //   ?text=titles                   P4-10 titles/previews demo: the page-owned
 //                                  deterministic gallery (2 zones, 2 blocks,
 //                                  4 cards) with zone names, ellipsis card
@@ -49,9 +54,17 @@
 //                                  (100 %) and ?text=titles&view=512,240,2
 //                                  (200 %).
 //
-// Interaction: pointer drag pans, wheel or two-pointer pinch zooms around the
-// pointer, and `f` ("show all", L19) fits the board through the engine's fit
-// helper. The scene data never changes.
+// Interaction (L03/P4-14): every pointer/wheel event goes through the single
+// input layer in packages/engine/src/bridge/input.ts. A press moving less than
+// the token 4 px threshold is a click and writes nothing; a note card drags on
+// its whole body, a block or zone only on its 40 px header; fields, buttons,
+// editable and scrollable targets never drag; a completed drag on the sample or
+// layers scene is exactly one `drag-single` operation with its inverse through
+// the P4-05 seam. An empty-canvas drag pans and a wheel or two-pointer pinch
+// zooms around the pointer — both view-only `setCamera` calls. Cursor and the
+// `--faint` block/zone header hover band are DOM chrome (ADR-0009). `f`
+// ("show all", L19) fits the board through the engine's fit helper. The scene
+// data never changes.
 //
 // On-demand rendering (L19): outside the benchmark and perf modes the page draws
 // only after a camera, document or resize change and stops requestAnimationFrame
@@ -79,6 +92,11 @@
 // command-buffer instance count next to the visible set computed from geometry.
 
 import { createEngine, EngineError } from "@project-air/engine";
+import {
+  createPointerInput,
+  cursorForSuppressed,
+  isSuppressedTarget,
+} from "@project-air/engine/input.js";
 
 const canvas = document.querySelector("#canvas");
 const errorNode = document.querySelector("#error");
@@ -155,6 +173,10 @@ const textLayoutRequested =
   query.get("text") === "layout" && !benchmarkRequested && !perfRequested;
 const titlesRequested =
   query.get("text") === "titles" && !benchmarkRequested && !perfRequested;
+// L03 (P4-14) input demo: one editable field and one scrollable area inside a
+// block body of the layers scene. Off by default, so no reference image changes.
+const inputDemoRequested =
+  query.get("input") === "demo" && !benchmarkRequested && !perfRequested;
 const requestedCount = clampInteger(parseInteger(benchQuery, COLUMNS * ROWS), 0, 1000000);
 const warmupFrames = clampInteger(parseInteger(query.get("warmup"), 120), 0, 10000);
 const sampleFrames = clampInteger(parseInteger(query.get("samples"), 600), 1, 10000);
@@ -181,6 +203,14 @@ let frameScheduled = false;
 // Set by the `?text=titles` scene: positions the DOM delete affordances next to
 // their objects after every rendered frame.
 let titlesOverlay = null;
+// L03 (P4-14) pointer input: one state machine for click/drag/pan/zoom, the drag
+// session of the loaded scene (sample or layers) and the DOM chrome it drives.
+let pointerInput = null;
+let sceneSession = null;
+let headerSurface = null;
+let inputDemo = null;
+let hoverHeaderTarget = null;
+let dragTokens = null;
 let pendingFrameHandle = 0;
 const onDemand = {
   active: false,
@@ -573,12 +603,6 @@ function installTitles(engine, loaded) {
     onDemand.request();
   };
 
-  const objectIdAt = (screenX, screenY) => {
-    const index = engine.hitTest(screenX, screenY);
-    const object = objects.find((candidate) => candidate.slot === index);
-    return object === undefined || object.removed === true ? null : object.id;
-  };
-
   const setHovered = (id) => {
     if (hovered === id) {
       return;
@@ -587,28 +611,28 @@ function installTitles(engine, loaded) {
     apply();
   };
 
-  const tap = (screenX, screenY) => {
-    const id = objectIdAt(screenX, screenY);
+  // L03 (P4-14): hover, click and drag come from the page's single pointer input
+  // layer; this controller only exposes the gallery object under a screen point
+  // and applies the presentation state. No canvas pointer listener lives here.
+  const targetAt = (screenX, screenY) => {
+    const index = engine.hitTest(screenX, screenY);
+    const object = objects.find((candidate) => candidate.slot === index);
+    if (object === undefined || object.removed === true) {
+      return null;
+    }
+    return {
+      kind: object.kind,
+      id: object.id,
+      slot: object.slot,
+      world: { x: object.x, y: object.y, width: object.width, height: object.height },
+      draggable: false,
+    };
+  };
+
+  const tapById = (id) => {
     selected = selected === id ? null : id;
     apply();
   };
-
-  canvas.addEventListener("pointermove", (event) => {
-    if (event.buttons !== 0) {
-      return;
-    }
-    const point = screenPointOf(event);
-    setHovered(objectIdAt(point.x, point.y));
-  });
-  canvas.addEventListener("pointerleave", (event) => {
-    const related = event.relatedTarget;
-    if (related instanceof Element && related.closest(".object-action") !== null) {
-      // The pointer moved onto the revealed affordance: the control keeps the
-      // object hovered and its own pointerleave clears the state.
-      return;
-    }
-    setHovered(null);
-  });
 
   // Evidence hook: the capture tool reads the binding, atlas and affordance state
   // next to the images so the numbers and the pixels agree.
@@ -630,7 +654,7 @@ function installTitles(engine, loaded) {
   };
 
   updatePositions();
-  return { update: updatePositions, tap, remove };
+  return { update: updatePositions, targetAt, setHovered, tapById, remove };
 }
 
 async function loadScene() {
@@ -680,6 +704,9 @@ async function loadScene() {
 function sceneCaption(loaded) {
   if (titlesRequested) {
     return `${loaded.counts.total} objects — zone names, card titles cut with an ellipsis and block previews bound to the visible objects; blocks grow to their preview height and the delete affordance appears on hover, focus or selection.`;
+  }
+  if (inputDemoRequested && loaded.name === "layers") {
+    return `${loaded.counts.total} objects — L03 input demo: drag a card body or a 40 px block/zone header to move one object as one operation; the block body below the header, the field and the scroll area start no drag, and the scroll area keeps its own wheel.`;
   }
   if (loaded.name === "layers") {
     return `${loaded.counts.total} objects — zones, blocks and note cards whose stored z contradicts the layers. Click an object to bring it to the front of its layer; reload keeps the order.`;
@@ -833,146 +860,505 @@ async function loadLayersDocument(engine, loaded) {
       return undone;
     },
   };
-  return { front, frontAt };
+  // L03 (P4-14): a completed drag on this board goes through the same document
+  // port and history: preview while dragging, then exactly one `drag-single`
+  // operation on release. The click path (front) stays the L13 behaviour.
+  const session = createDragSession({
+    engine,
+    port,
+    context,
+    history,
+    seam: { buildOperation, applyOperation },
+    sceneIdOf,
+    onTap: (target) => {
+      front(sceneIdOf.get(target.id) ?? null);
+    },
+  });
+  return { front, frontAt, session };
 }
 
-// Pointer drag pan and wheel/pinch zoom for the demo. L15 (P4-24) refines the
-// exact trackpad defaults later; this is the basic demo behaviour.
-function installInteraction(engine, onTap = null) {
-  const pointers = new Map();
-  let lastPointer = null;
-  let pinch = null;
-  // A press that moves less than the 4 px drag threshold is a tap, not a pan.
-  let tap = null;
-
-  const applyCamera = () => {
-    engine.setCamera(camera);
-    // On-demand rendering: one camera change requests exactly one frame.
+// Shared drag session over one `DocumentPort`. This is the only place a drag
+// becomes an operation: `preview` moves the rectangle through the bridge without a
+// document write, `commit` builds exactly one `drag-single` gesture with
+// `buildOperation`, applies it through the port and pushes the pair onto the
+// P4-05 history, and `revert` restores a cancelled drag. The numbers stay token
+// values; the input layer owns the threshold and grip rules.
+function createDragSession({ engine, port, context, history, seam, sceneIdOf, onTap }) {
+  const targetAt = (screenX, screenY) => {
+    const slot = engine.hitTest(screenX, screenY);
+    const hit = port.objectAt(slot);
+    if (hit === undefined) {
+      return null;
+    }
+    const entity = port.read(hit.kind, hit.id);
+    if (entity === undefined) {
+      return null;
+    }
+    return {
+      kind: hit.kind,
+      id: hit.id,
+      slot,
+      world: { x: entity.x, y: entity.y, width: entity.width, height: entity.height },
+      draggable: true,
+    };
+  };
+  const preview = (target, position) => {
+    engine.updateGeometry(target.slot, {
+      x: position.x,
+      y: position.y,
+      width: target.world.width,
+      height: target.world.height,
+    });
     onDemand.request();
   };
-
-  const distanceOf = (left, right) => Math.hypot(left.x - right.x, left.y - right.y);
-  const midpointOf = (left, right) => ({
-    x: (left.x + right.x) / 2,
-    y: (left.y + right.y) / 2,
-  });
-
-  const zoomAround = (screenX, screenY, requestedZoom) => {
-    const nextZoom = clampNumber(requestedZoom, zoomRange.minimumZoom, zoomRange.maximumZoom);
-    if (nextZoom === camera.zoom) {
+  const revert = (target) => {
+    const entity = port.read(target.kind, target.id);
+    if (entity === undefined) {
       return;
     }
-    // Keep the world point under the pointer fixed while the zoom changes.
-    const worldX = camera.panX + screenX / camera.zoom;
-    const worldY = camera.panY + screenY / camera.zoom;
-    camera.zoom = nextZoom;
-    camera.panX = worldX - screenX / nextZoom;
-    camera.panY = worldY - screenY / nextZoom;
-    applyCamera();
+    engine.updateGeometry(target.slot, {
+      x: entity.x,
+      y: entity.y,
+      width: entity.width,
+      height: entity.height,
+    });
+    onDemand.request();
+  };
+  let lastPair = null;
+  const commit = (target, position) => {
+    const pair = seam.buildOperation(port, context, {
+      kind: "drag-single",
+      objectKind: target.kind,
+      objectId: target.id,
+      position,
+    });
+    if (pair === null) {
+      return;
+    }
+    seam.applyOperation(port, pair.operation);
+    history.push(pair.operation, pair.inverse);
+    lastPair = pair;
+    onDemand.request();
+  };
+  const tap = (target) => {
+    if (target !== null && onTap !== null) {
+      onTap(target);
+    }
+  };
+  // Evidence hook for the browser check and manual verification: the last
+  // committed drag (the operation/inverse types it produced, never board state).
+  globalThis.__engineDrag = {
+    last: () =>
+      lastPair === null
+        ? null
+        : { operation: lastPair.operation.type, inverse: lastPair.inverse.type },
+    targetAt,
+  };
+  return { targetAt, preview, revert, commit, tap };
+}
+
+// Builds the contract entity of a scene object that was loaded as packed
+// rectangles (the sample board). The engine document already holds the
+// rectangles in array order, so the projection backend below assigns exactly
+// those slots instead of adding them again; the port then gives the drag session
+// the entity reads and the single `move` write of the P4-05 seam.
+function rectangleEntity(object, index, uuidOf, boardId) {
+  const base = {
+    id: uuidOf.get(object.id),
+    boardId,
+    x: object.x,
+    y: object.y,
+    width: object.width,
+    height: object.height,
+    z: "0",
+    createdAt: LAYERS_TIMESTAMP,
+    updatedAt: LAYERS_TIMESTAMP,
+  };
+  const zoneId = object.parent === null ? {} : { zoneId: uuidOf.get(object.parent) };
+  if (object.kind === "zone") {
+    return { ...base, title: object.id };
+  }
+  if (object.kind === "block") {
+    return { ...base, ...zoneId, type: "checklist" };
+  }
+  return { ...base, ...zoneId, noteId: layersUuid(0x9000 + index) };
+}
+
+// Drag session for a rectangle scene: the engine document stays exactly the
+// packed `loadRectangles` board (pixels unchanged), while the contract port
+// projects the same objects onto the already assigned slots, so a drag commits
+// one contract move operation without reloading the document.
+async function loadRectangleDragSession(engine, loaded) {
+  const [{ applyOperation, buildOperation }, { createEngineDocumentPort }, { createHistory }] =
+    await Promise.all([
+      import("@project-air/engine/logic/operations.js"),
+      import("@project-air/engine/logic/document-port.js"),
+      import("@project-air/engine/logic/history.js"),
+    ]);
+  const boardId = layersUuid(0xb0b2);
+  const uuidOf = new Map(
+    loaded.objects.map((object, index) => [object.id, layersUuid(0x2000 + index)]),
+  );
+  const sceneIdOf = new Map([...uuidOf].map(([sceneId, uuid]) => [uuid, sceneId]));
+  let nextSlot = 0;
+  const projection = {
+    addRectangle() {
+      const slot = nextSlot;
+      nextSlot += 1;
+      return slot;
+    },
+    updateGeometry(slot, geometry) {
+      engine.updateGeometry(slot, geometry);
+    },
+    updateZ() {
+      // Rectangle scenes carry no fractional z (their order is the packed array
+      // order); a drag never changes it, so the projection ignores the call.
+    },
+    removeObject(slot) {
+      engine.removeObject(slot);
+    },
+  };
+  const port = createEngineDocumentPort(projection);
+  loaded.objects.forEach((object, index) => {
+    port.add(object.kind, rectangleEntity(object, index, uuidOf, boardId));
+  });
+  const history = createHistory(port);
+  let operationCount = 0;
+  const context = {
+    boardId,
+    actorId: layersUuid(0xac02),
+    createOperationId: () => layersUuid(0x30000 + operationCount),
+    now: () => LAYERS_TIMESTAMP,
+  };
+  return createDragSession({
+    engine,
+    port,
+    context,
+    history,
+    seam: { buildOperation, applyOperation },
+    sceneIdOf,
+    onTap: null,
+  });
+}
+
+// ---------------------------------------------------------------------------
+// L03 (P4-14) pointer input: one layer for click, drag and pan/zoom.
+//
+// The DOM listeners live here and nowhere else: every pointer/wheel event goes
+// through the `PointerInput` state machine from `@project-air/engine/input.js`,
+// which owns the token 4 px drag threshold, the grip policy (cards: whole body;
+// blocks and zones: the 40 px header band), field/scroll suppression, pointer
+// capture and the right-button/multi-touch rules. This function only translates
+// DOM events into the layer's samples and applies the layer's presentation state
+// (cursor, header hover surface, titles hover/selection). Pan and zoom stay
+// view-only `setCamera` calls; a completed drag is committed by the scene's drag
+// session as one `drag-single` operation through the P4-05 seam.
+// ---------------------------------------------------------------------------
+
+// Applies the page camera and requests exactly one frame (on-demand rendering).
+function applyCamera(engine) {
+  engine.setCamera(camera);
+  onDemand.request();
+}
+
+// View-only zoom around a screen point: keep the world point under the pointer.
+function zoomAround(engine, screenX, screenY, requestedZoom) {
+  const nextZoom = clampNumber(requestedZoom, zoomRange.minimumZoom, zoomRange.maximumZoom);
+  if (nextZoom === camera.zoom) {
+    return;
+  }
+  const worldX = camera.panX + screenX / camera.zoom;
+  const worldY = camera.panY + screenY / camera.zoom;
+  camera.zoom = nextZoom;
+  camera.panX = worldX - screenX / nextZoom;
+  camera.panY = worldY - screenY / nextZoom;
+  applyCamera(engine);
+}
+
+// Maps a world rectangle to the overlay box that exactly covers the canvas.
+function worldToOverlay(worldRect) {
+  const bounds = canvas.getBoundingClientRect();
+  const engineWidth = Math.max(1, Math.round(bounds.width));
+  const contentScale = canvas.clientWidth > 0 ? canvas.clientWidth / engineWidth : 1;
+  return {
+    x: canvas.clientLeft + (worldRect.x - camera.panX) * camera.zoom * contentScale,
+    y: canvas.clientTop + (worldRect.y - camera.panY) * camera.zoom * contentScale,
+    width: worldRect.width * camera.zoom * contentScale,
+    height: worldRect.height * camera.zoom * contentScale,
+  };
+}
+
+// Describes the event target for the suppression policy of the input layer:
+// `input`, `textarea`, `select`, `button`, editable and `[data-field]` elements
+// and elements whose computed overflow scrolls never start a drag (L03).
+function describeSuppression(target) {
+  if (!(target instanceof Element)) {
+    return { suppressed: false, editable: false, cursor: "default" };
+  }
+  const element = target;
+  const style = getComputedStyle(element);
+  const tagName = element.tagName;
+  const contentEditable = element instanceof HTMLElement ? element.isContentEditable : false;
+  const descriptor = {
+    tagName,
+    contentEditable,
+    dataField: element.closest("[data-field]") !== null,
+    overflowX: style.overflowX,
+    overflowY: style.overflowY,
+  };
+  const suppressed = isSuppressedTarget(descriptor);
+  const editable =
+    contentEditable ||
+    tagName.toLowerCase() === "input" ||
+    tagName.toLowerCase() === "textarea";
+  return { suppressed, editable, cursor: suppressed ? cursorForSuppressed(descriptor) : "default" };
+}
+
+function positionHeaderSurface() {
+  if (headerSurface === null || hoverHeaderTarget === null) {
+    return;
+  }
+  const box = worldToOverlay({
+    x: hoverHeaderTarget.world.x,
+    y: hoverHeaderTarget.world.y,
+    width: hoverHeaderTarget.world.width,
+    height: dragTokens["header-height"],
+  });
+  headerSurface.style.left = `${box.x}px`;
+  headerSurface.style.top = `${box.y}px`;
+  headerSurface.style.width = `${box.width}px`;
+  headerSurface.style.height = `${box.height}px`;
+}
+
+// Header hover chrome (design rule §6, ADR-0009): a DOM `--faint` band over the
+// hovered block/zone header, faded in with the 120 ms motion token. It is never a
+// canvas glyph and never document state; at rest it is fully transparent, so the
+// committed reference images stay 0-diff.
+function applyHeaderHover(state) {
+  if (headerSurface === null) {
+    return;
+  }
+  const shown = state.header && state.suppressed !== true && state.target !== null;
+  hoverHeaderTarget = shown ? state.target : null;
+  headerSurface.classList.toggle("is-visible", shown);
+  if (shown) {
+    positionHeaderSurface();
+  }
+}
+
+// Repositions the pointer-driven DOM chrome after a camera change. The titles
+// overlay does the same for its delete affordances; the header surface and the
+// optional input demo follow the same camera.
+function updateChrome() {
+  if (headerSurface !== null && hoverHeaderTarget !== null) {
+    positionHeaderSurface();
+  }
+  inputDemo?.update();
+}
+
+// Installs the one pointer input layer of the page. `session` is the drag
+// session of the loaded scene (null for scenes that are not contract entities);
+// `titlesController` handles the titles gallery's hover/selection.
+function installPointerInput(engine, session, titlesController) {
+  const wrap = canvas.parentElement;
+  if (!(wrap instanceof HTMLElement)) {
+    throw new Error("engine-playground: the canvas needs a .canvas-wrap parent");
+  }
+  headerSurface = document.querySelector("#header-surface");
+  dragTokens = readTokenPixels(["drag-threshold", "header-height", "motion-hover"]);
+
+  const targetAt = (screenX, screenY) => {
+    if (session !== null) {
+      return session.targetAt(screenX, screenY);
+    }
+    if (titlesController !== null) {
+      return titlesController.targetAt(screenX, screenY);
+    }
+    return null;
   };
 
-  canvas.addEventListener("pointerdown", (event) => {
-    if (event.pointerType === "mouse" && event.button !== 0) {
-      return;
-    }
-    const point = screenPointOf(event);
-    pointers.set(event.pointerId, point);
-    canvas.setPointerCapture(event.pointerId);
-    if (pointers.size === 1) {
-      lastPointer = point;
-      tap = { x: point.x, y: point.y };
-      canvas.classList.add("is-dragging");
-      return;
-    }
-    tap = null;
-    const [first, second] = [...pointers.values()];
-    if (first === undefined || second === undefined) {
-      return;
-    }
-    const middle = midpointOf(first, second);
-    pinch = {
-      distance: Math.max(distanceOf(first, second), 1),
-      zoom: camera.zoom,
-      worldX: camera.panX + middle.x / camera.zoom,
-      worldY: camera.panY + middle.y / camera.zoom,
-    };
-    lastPointer = null;
-  });
-
-  canvas.addEventListener("pointermove", (event) => {
-    if (!pointers.has(event.pointerId)) {
-      return;
-    }
-    const point = screenPointOf(event);
-    pointers.set(event.pointerId, point);
-    if (pointers.size >= 2 && pinch !== null) {
-      const [first, second] = [...pointers.values()];
-      if (first === undefined || second === undefined) {
-        return;
+  const host = {
+    hitTest: targetAt,
+    screenToWorld: (screenX, screenY) => ({
+      x: camera.panX + screenX / camera.zoom,
+      y: camera.panY + screenY / camera.zoom,
+    }),
+    panByScreen: (deltaX, deltaY) => {
+      camera.panX -= deltaX / camera.zoom;
+      camera.panY -= deltaY / camera.zoom;
+      applyCamera(engine);
+    },
+    zoomByFactor: (factor, screenX, screenY) => {
+      zoomAround(engine, screenX, screenY, camera.zoom * factor);
+    },
+    previewDrag: (target, position) => {
+      session?.preview(target, position);
+    },
+    commitDrag: (target, position) => {
+      session?.commit(target, position);
+    },
+    revertDrag: (target) => {
+      session?.revert(target);
+    },
+    onTap: (target) => {
+      session?.tap(target);
+      titlesController?.tapById(target === null ? null : target.id);
+    },
+    onHover: (state) => {
+      canvas.style.cursor = state.cursor;
+      applyHeaderHover(state);
+      if (state.suppressed !== true) {
+        titlesController?.setHovered(state.target === null ? null : state.target.id);
       }
-      const middle = midpointOf(first, second);
-      const nextZoom = clampNumber(
-        pinch.zoom * (distanceOf(first, second) / pinch.distance),
-        zoomRange.minimumZoom,
-        zoomRange.maximumZoom,
-      );
-      camera.zoom = nextZoom;
-      camera.panX = pinch.worldX - middle.x / nextZoom;
-      camera.panY = pinch.worldY - middle.y / nextZoom;
-      applyCamera();
-      return;
-    }
-    if (tap !== null && Math.hypot(point.x - tap.x, point.y - tap.y) >= TAP_SLOP) {
-      tap = null;
-    }
-    if (pointers.size === 1 && lastPointer !== null) {
-      camera.panX -= (point.x - lastPointer.x) / camera.zoom;
-      camera.panY -= (point.y - lastPointer.y) / camera.zoom;
-      lastPointer = point;
-      applyCamera();
-    }
+    },
+    onCursor: (cursor) => {
+      canvas.style.cursor = cursor;
+    },
+    capturePointer: (pointerId) => {
+      try {
+        wrap.setPointerCapture(pointerId);
+      } catch {
+        // A pointer that already ended cannot be captured; the next event fixes it.
+      }
+    },
+    releasePointer: (pointerId) => {
+      if (wrap.hasPointerCapture(pointerId)) {
+        wrap.releasePointerCapture(pointerId);
+      }
+    },
+  };
+
+  const input = createPointerInput({
+    thresholdPx: dragTokens["drag-threshold"],
+    headerHeightPx: dragTokens["header-height"],
+    hoverTransitionMs: dragTokens["motion-hover"],
+    host,
   });
 
-  const endPointer = (event) => {
-    if (!pointers.has(event.pointerId)) {
-      return;
-    }
-    pointers.delete(event.pointerId);
-    if (canvas.hasPointerCapture(event.pointerId)) {
-      canvas.releasePointerCapture(event.pointerId);
-    }
-    if (tap !== null && event.type === "pointerup" && onTap !== null && pointers.size === 0) {
-      onTap(tap.x, tap.y);
-    }
-    tap = null;
-    pinch = null;
-    if (pointers.size === 0) {
-      lastPointer = null;
-      canvas.classList.remove("is-dragging");
-      return;
-    }
-    const [remaining] = [...pointers.values()];
-    lastPointer = remaining ?? null;
+  const NOT_SUPPRESSED = { suppressed: false, editable: false, cursor: "default" };
+  const sampleOf = (event) => {
+    const point = screenPointOf(event);
+    // The canvas is never a suppressed target; only DOM chrome needs the
+    // computed style, so the hot pan/zoom path avoids a style read per move.
+    const suppression = event.target === canvas ? NOT_SUPPRESSED : describeSuppression(event.target);
+    return {
+      pointerId: event.pointerId,
+      pointerType: event.pointerType,
+      button: event.button,
+      screen: point,
+      suppressed: suppression.suppressed,
+      editable: suppression.editable,
+    };
   };
-  canvas.addEventListener("pointerup", endPointer);
-  canvas.addEventListener("pointercancel", endPointer);
 
-  canvas.addEventListener(
+  // The listeners sit on the canvas wrapper (not the canvas), so events from the
+  // DOM chrome bubble here too and the suppression policy can reject them.
+  wrap.addEventListener("pointerdown", (event) => {
+    input.pointerDown(sampleOf(event));
+  });
+  wrap.addEventListener("pointermove", (event) => {
+    if (event.buttons === 0) {
+      input.pointerHover(sampleOf(event));
+      return;
+    }
+    input.pointerMove(sampleOf(event));
+  });
+  wrap.addEventListener("pointerup", (event) => {
+    input.pointerUp(sampleOf(event));
+  });
+  wrap.addEventListener("pointercancel", (event) => {
+    input.pointerCancel(event.pointerId);
+  });
+  wrap.addEventListener("lostpointercapture", (event) => {
+    input.pointerCancel(event.pointerId);
+  });
+  wrap.addEventListener("pointerleave", () => {
+    input.pointerLeave();
+  });
+  wrap.addEventListener(
     "wheel",
     (event) => {
-      event.preventDefault();
-      const point = screenPointOf(event);
-      // Normalise line/page deltas to pixels so mice and trackpads zoom alike.
-      let delta = event.deltaY;
-      if (event.deltaMode === WheelEvent.DOM_DELTA_LINE) {
-        delta *= 16;
-      } else if (event.deltaMode === WheelEvent.DOM_DELTA_PAGE) {
-        delta *= 100;
+      const suppression = describeSuppression(event.target);
+      if (suppression.suppressed) {
+        // The scrollable chrome element keeps its own wheel handling.
+        return;
       }
-      zoomAround(point.x, point.y, camera.zoom * Math.exp(-delta * 0.0015));
+      event.preventDefault();
+      input.wheel(event.deltaY, event.deltaMode, screenPointOf(event), false);
     },
     { passive: false },
   );
+  window.addEventListener("blur", () => {
+    input.cancelAll();
+  });
+  // Evidence hook: the browser/manual check reads the layer state next to the
+  // pixels (threshold, phase, hover target and cursor), never document state.
+  globalThis.__engineInput = {
+    phase: () => input.phase,
+    cursor: () => input.cursor,
+    hover: () => input.hover,
+    tokens: () => ({ ...dragTokens }),
+    dragSession: session !== null,
+  };
+  return input;
+}
+
+// L03 (P4-14) demo chrome for `?input=demo` on the layers scene: one editable
+// field and one scrollable area inside block-0001's body. Presses there must not
+// drag the block, and the scroll area keeps its own wheel. The elements are DOM
+// chrome (ADR-0009) and only exist in this query mode, so no reference image or
+// baseline changes.
+function installInputDemo(enabled) {
+  const overlay = document.querySelector("#overlay");
+  if (!enabled || !(overlay instanceof HTMLElement)) {
+    return null;
+  }
+  const field = document.createElement("div");
+  field.className = "input-demo__field";
+  field.dataset.field = "";
+  const label = document.createElement("span");
+  label.className = "input-demo__label";
+  label.textContent = "Field: no drag";
+  const input = document.createElement("input");
+  input.className = "input-demo__input";
+  input.type = "text";
+  input.value = "Editable field";
+  input.setAttribute("aria-label", "Editable demo field inside a block");
+  field.append(label, input);
+
+  const scroll = document.createElement("div");
+  scroll.className = "input-demo__scroll";
+  scroll.dataset.field = "";
+  scroll.tabIndex = 0;
+  scroll.setAttribute("aria-label", "Scrollable demo area inside a block");
+  for (let index = 1; index <= 12; index += 1) {
+    const line = document.createElement("p");
+    line.className = "input-demo__line";
+    line.textContent = `Scrollable row ${index}`;
+    scroll.append(line);
+  }
+  overlay.append(field, scroll);
+
+  const anchors = {
+    field: { x: 120, y: 184, width: 232, height: 56 },
+    scroll: { x: 120, y: 252, width: 232, height: 52 },
+  };
+  const update = () => {
+    const fieldBox = worldToOverlay(anchors.field);
+    field.style.left = `${fieldBox.x}px`;
+    field.style.top = `${fieldBox.y}px`;
+    field.style.width = `${fieldBox.width}px`;
+    updateScroll(scroll, anchors.scroll);
+  };
+  const updateScroll = (element, rect) => {
+    const box = worldToOverlay(rect);
+    element.style.left = `${box.x}px`;
+    element.style.top = `${box.y}px`;
+    element.style.width = `${box.width}px`;
+    element.style.height = `${box.height}px`;
+  };
+  update();
+  return { update };
 }
 
 // L19 fit action on the keyboard: `f` ("show all"). It calls the same fit function
@@ -1336,6 +1722,7 @@ async function start() {
       }
       framesRendered += 1;
       titlesOverlay?.update();
+      updateChrome();
       writeHud(timestamp);
     };
     const requestFrame = () => {
@@ -1479,18 +1866,17 @@ async function start() {
     if (layers !== null && requestedFront !== null) {
       layers.front(requestedFront);
     }
-    installInteraction(
-      engine,
-      layers !== null
-        ? (screenX, screenY) => {
-            layers.frontAt(screenX, screenY);
-          }
-        : titlesOverlay === null
-          ? null
-          : (screenX, screenY) => {
-              titlesOverlay.tap(screenX, screenY);
-            },
-    );
+    // L03 (P4-14): one pointer input layer owns click, drag and pan/zoom. The
+    // sample and layers scenes get a drag session (preview + one operation per
+    // drag); the titles gallery is presentation-only and keeps its hover/select.
+    sceneSession = layers !== null ? layers.session : null;
+    if (sceneSession === null && loaded.name === "sample" && !titlesRequested) {
+      sceneSession = await loadRectangleDragSession(engine, loaded);
+    }
+    pointerInput = installPointerInput(engine, sceneSession, titlesOverlay);
+    if (inputDemoRequested && layers !== null) {
+      inputDemo = installInputDemo(true);
+    }
     installFitKey();
     // One frame is requested by the initial resize; a document or camera change
     // after that only requests a frame when it actually happens.

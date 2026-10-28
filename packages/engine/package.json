@@ -10,6 +10,10 @@
     ".": {
       "types": "./dist/bridge/engine.d.ts",
       "import": "./dist/bridge/engine.js"
+    },
+    "./input.js": {
+      "types": "./dist/bridge/input.d.ts",
+      "import": "./dist/bridge/input.js"
     }
   },
   "scripts": {

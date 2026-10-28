@@ -125,6 +125,9 @@
   - P4-06: Closed P4-06: draw order layer > fractional z (byte-wise) > insertion; bring-to-front is one contract reorder via the seam (keyAfter, inverse = old key); reload keeps order.
   - P4-06: Port: kindOf/zIndices, adapter toneOf + objectAt; logic browser build dist/logic (tsconfig.logic.json); test-kit layers scene; playground ?scene=layers click-to-front, localStorage.
   - P4-06: Gates board-check/boundaries/cpp-unit/visual (14 captures, +4 layers refs)/typecheck; native layerOrderAndFront, 9 Node + 3 test-kit tests; docs engine.md, visual-diff.md.
+- `P4-15` Snapping (L07)
+- `P4-17` Resize (L14)
+- `P4-18` Auto-pan (L16)
 - `P4-19` Placement of new objects (L20)
   - P4-05: Closed P4-05: engine TS logic layer (gestures, operations, port, history); one gesture = one contract operation with inverse, group drag = one group operation; 31 tests validate.
   - P4-05: Undo/redo depth 20 with redo-clear and describe() labels; fake + bridge adapter byte-identical round trips; create builders validate geometry, port read is isolated, adapter projects z.
@@ -136,6 +139,7 @@
   - P4-07: Closed P4-07: pure Camera::fitBounds (min(...,1.0), 0.1 floor, 64 px L02 padding from tokens), dot grid shader (tokens faint/canvas, 16 px, visible at >=0.5), on-demand rendering (0 idle frames).
   - P4-07: visual 10/10 0-diff incl. reviewed sample-zoom-in update + two one-card-fit baselines; perf p95 0.1 ms, 0 intervals > 16.7 ms; L01 final mean 0.049 vs basis 0.052.
   - P4-07: Harnesses gained --task evidence prefixes; docs updated. Two review rounds, four minors fixed (record commit base, visual --task, comment wording, baseline-history precision).
+- `P4-23` DOM overlay for field editing and inline comfort (L18)
 - `P4-24` Trackpad and wheel defaults (L15, desktop part)
   - P4-07: Closed P4-07: pure Camera::fitBounds (min(...,1.0), 0.1 floor, 64 px L02 padding from tokens), dot grid shader (tokens faint/canvas, 16 px, visible at >=0.5), on-demand rendering (0 idle frames).
   - P4-07: visual 10/10 0-diff incl. reviewed sample-zoom-in update + two one-card-fit baselines; perf p95 0.1 ms, 0 intervals > 16.7 ms; L01 final mean 0.049 vs basis 0.052.
@@ -190,6 +194,7 @@
 - [x] `P4-08` Text atlas and glyph texture pipeline (L02) — status: `done` — owner: —
 - [x] `P4-09` Glyph layout, text instances and ellipsis (L02) — status: `done` — owner: —
 - [x] `P4-10` Titles, previews and visible quality (L02) — status: `done` — owner: —
+- [x] `P4-14` Dragging versus editing (L03) — status: `done` — owner: —
 - [x] `P4-25` Contract 0.2.0: zone parent reference and reorder (z) operation (L08/L13) — status: `done` — owner: —
 - [x] `P4-26` Zones as containers II: platform migration and containment (L08) — status: `done` — owner: —
 - [x] `P0-26` Toolbar and zone with notepad and image window in the preview — status: `done` — owner: —
@@ -202,7 +207,7 @@
 
 ## In progress
 
-- [ ] `P4-14` Dragging versus editing (L03) — status: `in_progress` — owner: lead
+- none
 
 ## Blocked / failed
 
@@ -235,7 +240,7 @@
 <!-- polier:claims -->
 ## Claims
 
-- `P4-14` in progress by dsh since 2026-10-27T21:50:25+00:00 — worktree: /private/tmp/air-P4-14 · slot 1
+- `P4-14` in progress by dsh since 2026-10-28T05:51:53+00:00 — worktree: /private/tmp/air-P4-14 · slot 1
 
 <!-- /polier:claims -->
 

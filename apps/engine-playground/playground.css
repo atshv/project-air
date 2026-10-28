@@ -138,6 +138,85 @@ body {
   }
 }
 
+/* L03 (P4-14) header hover surface: DOM chrome per ADR-0009, never a canvas
+   glyph. It covers the 40 px header band of the hovered block or zone with
+   --faint and fades in over the 120 ms hover motion token (design rule §6/§7).
+   At rest it is fully transparent, so no reference image changes. */
+.header-surface {
+  position: absolute;
+  pointer-events: none;
+  border-radius: var(--radius-sm);
+  background-color: var(--faint);
+  opacity: 0;
+  transition: opacity var(--motion-hover) ease;
+}
+
+.header-surface.is-visible {
+  opacity: 1;
+}
+
+/* L03 (P4-14) input demo (only with ?input=demo on the layers scene): one
+   editable field and one scrollable area inside a block body. Presses there never
+   start a drag; the scroll area keeps its own wheel handling. */
+.input-demo__field,
+.input-demo__scroll {
+  position: absolute;
+  pointer-events: auto;
+  box-sizing: border-box;
+  border: var(--border-width) solid var(--border);
+  border-radius: var(--radius-sm);
+  background-color: var(--surface);
+  color: var(--fg);
+  font-family: var(--font-sans);
+  font-size: var(--text-12);
+  padding: var(--space-8);
+}
+
+.input-demo__field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  cursor: text;
+}
+
+.input-demo__label {
+  color: var(--muted);
+  font-size: var(--text-11);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+}
+
+.input-demo__input {
+  box-sizing: border-box;
+  width: 100%;
+  border: var(--border-width) solid var(--border);
+  border-radius: var(--radius-sm);
+  background-color: var(--canvas);
+  color: var(--fg);
+  font-family: var(--font-sans);
+  font-size: var(--text-13);
+  padding: var(--space-4) var(--space-8);
+}
+
+.input-demo__input:focus-visible {
+  outline: var(--outline-width) solid var(--accent);
+  outline-offset: var(--outline-offset);
+}
+
+.input-demo__scroll {
+  overflow-y: auto;
+  cursor: default;
+}
+
+.input-demo__line {
+  margin: 0;
+  padding: var(--space-4) 0;
+  color: var(--muted);
+  font-size: var(--text-12);
+  border-bottom: var(--border-width) solid var(--border);
+}
+
 .canvas {
   display: block;
   width: 100%;
@@ -147,12 +226,11 @@ body {
   background: var(--canvas);
   border: var(--border-width) solid var(--border);
   border-radius: var(--radius-md);
-  cursor: grab;
+  /* L03 (P4-14): the pointer input layer sets the live cursor (grab on a grip,
+     grabbing while dragging, text on a field, default elsewhere); at rest the
+     canvas is `default`, never a permanent grab. */
+  cursor: default;
   touch-action: none;
-}
-
-.canvas.is-dragging {
-  cursor: grabbing;
 }
 
 .caption {

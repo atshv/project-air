@@ -28,6 +28,11 @@ Emscripten module through an import map.
 7. L02 before/after evidence (P4-10): `node apps/engine-playground/tools/capture-titles.mjs --mode before|after|all`
    starts its own server and browser on the slot port and writes the before/after PNGs plus a JSON
    record with the camera, atlas raster scale, binding and affordance state per shot.
+8. L03 pointer evidence (P4-14): `node apps/engine-playground/tools/input-check.mjs --task P4-14`
+   starts its own server and browser and drives trusted pointer/wheel events: a card/block-header
+   drag commits exactly one move operation, a block body, a field and a scroll area start no drag,
+   empty-canvas drags pan the view only, the header hover band appears and the titles hover still
+   works. It writes `reviews/evidence/<task>-input-<timestamp>.json`.
 
 ### Scenes
 
@@ -46,6 +51,11 @@ Emscripten module through an import map.
 - `?text=layout` — the P4-09 text layout demo (use with `?scene=stress&count=0&view=272,112,1`): a
   title that fits, a title cut with an ellipsis, a zone-name box and a wrapped preview clipped to
   three lines, laid out inside the engine; the `text-layout` visual scene.
+- `?scene=layers&input=demo` — the L03 pointer demo (P4-14): the layers board plus one editable
+  field and one scrollable area inside `block-0001`'s body. A press in the field or the scroll area
+  never starts a drag (the scroll area keeps its own wheel), while the card bodies and the 40 px
+  block/zone headers still drag; the caption explains it. The demo chrome exists only in this query
+  mode, so no reference image or baseline changes.
 - `?text=titles` — the P4-10 L02 titles gallery: the page-owned deterministic demo board (2 zones,
   2 blocks, 4 cards, world 1024×576) with a zone name, a cut zone name, ellipsis card titles,
   wrapped/clipped block previews, the 40 px header band with its rule, a block grown to its preview
@@ -55,9 +65,16 @@ Emscripten module through an import map.
   Use `?view=<worldX>,<worldY>,<zoom>` for a deterministic camera; zoom buckets 25/50/100/200/400 %
   re-rasterise the atlas so text stays sharp when zooming in. The `text-titles` and
   `text-titles-zoom-200` visual scenes use it at 100 % and 200 %.
-- Pointer drag pans; wheel or two-pointer pinch zooms around the pointer; `f` runs the L19 fit action
-  ("show all": at most 100 %, L02 top padding, dot grid at and above zoom 0.5). The scene never
-  changes. The HUD shows objects, visible instances, the rendered-frame counter and the backend.
+- Pointer input (P4-14, L03) goes through one layer (`@project-air/engine/input.js`): a press that
+  moves less than the 4 px `drag-threshold` is a click and writes nothing; a note card drags on its
+  whole body, a block or zone only on its 40 px header band (a body press moves nothing); an empty
+  canvas drag pans and a wheel or two-pointer pinch zooms around the pointer — pan/zoom stay
+  view-only `setCamera` calls. On the sample and layers scenes a completed drag commits exactly one
+  `drag-single` operation with its inverse through the P4-05 seam; the block/zone header shows the
+  `--faint` hover band (120 ms) and the cursor is `grab` on a grip, `grabbing` while dragging,
+  `text` over editable chrome and `default` elsewhere. `f` runs the L19 fit action ("show all": at
+  most 100 %, L02 top padding, dot grid at and above zoom 0.5). The scene never changes. The HUD
+  shows objects, visible instances, the rendered-frame counter and the backend.
 
 ### On-demand rendering (L19)
 

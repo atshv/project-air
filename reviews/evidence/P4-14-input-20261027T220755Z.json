@@ -1,0 +1,204 @@
+{
+  "task": "P4-14",
+  "gate": "input",
+  "startedAt": "2026-10-27T22:07:47.443Z",
+  "chrome": "/Users/rasulatashev/Library/Caches/ms-playwright/chromium-1248/chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing",
+  "flags": [
+    "--headless=new",
+    "--use-angle=metal",
+    "--enable-gpu",
+    "--hide-scrollbars",
+    "--disable-frame-rate-limit",
+    "--disable-gpu-vsync",
+    "--no-first-run",
+    "--no-default-browser-check",
+    "--disable-background-timer-throttling",
+    "--disable-renderer-backgrounding",
+    "--disable-backgrounding-occluded-windows",
+    "--window-size=1440,900",
+    "--no-sandbox"
+  ],
+  "checks": [
+    {
+      "name": "a card-body drag commits exactly one moveCard operation",
+      "passed": true,
+      "actual": {
+        "operation": "moveCard",
+        "inverse": "moveCard"
+      },
+      "expected": "moveCard with a moveCard inverse"
+    },
+    {
+      "name": "a card drag moves the object, not the camera",
+      "passed": true,
+      "actual": {
+        "panX": 0,
+        "panY": -0.18285714285713084,
+        "zoom": 1.025390625
+      },
+      "expected": {
+        "panX": 0,
+        "panY": -0.18285714285713084,
+        "zoom": 1.025390625
+      }
+    },
+    {
+      "name": "a block-header drag commits exactly one moveBlock operation",
+      "passed": true,
+      "actual": "moveBlock",
+      "expected": "moveBlock"
+    },
+    {
+      "name": "a block body drag moves nothing (no op, no pan)",
+      "passed": true,
+      "actual": {
+        "undo": null,
+        "cameraSame": true
+      },
+      "expected": "no undo entry and an unchanged camera"
+    },
+    {
+      "name": "hovering a block header shows the faint band after 120 ms",
+      "passed": true,
+      "actual": {
+        "hover": {
+          "target": {
+            "kind": "block",
+            "id": "0192f0c1-7000-7000-8000-000000000602",
+            "slot": 2,
+            "world": {
+              "x": 112,
+              "y": 128,
+              "width": 256,
+              "height": 160
+            },
+            "draggable": true
+          },
+          "grip": true,
+          "header": true,
+          "cursor": "grab",
+          "screen": {
+            "x": 135,
+            "y": 152.203125
+          }
+        },
+        "cursor": "grab",
+        "surface": {
+          "visible": true,
+          "opacity": "1"
+        }
+      },
+      "expected": {
+        "header": true,
+        "grip": true,
+        "cursor": "grab",
+        "visible": true,
+        "opacity": 1
+      }
+    },
+    {
+      "name": "a field press starts no drag and writes nothing",
+      "passed": true,
+      "actual": {
+        "phase": "idle",
+        "active": "input-demo__input",
+        "camera": {
+          "panX": 0,
+          "panY": -0.18285714285713084,
+          "zoom": 1.025390625
+        },
+        "undo": null
+      },
+      "expected": "no history entry and an unchanged camera"
+    },
+    {
+      "name": "the scroll area keeps its wheel and the camera does not zoom",
+      "passed": true,
+      "actual": {
+        "scrollTop": 120,
+        "camera": {
+          "panX": 0,
+          "panY": -0.18285714285713084,
+          "zoom": 1.025390625
+        }
+      },
+      "expected": "scrollTop > 0 and an unchanged camera"
+    },
+    {
+      "name": "the titles gallery hover still reveals its delete affordance",
+      "passed": true,
+      "actual": {
+        "hover": {
+          "target": {
+            "kind": "card",
+            "id": "card-0002",
+            "slot": 5,
+            "world": {
+              "x": 264,
+              "y": 256,
+              "width": 200,
+              "height": 112
+            },
+            "draggable": false
+          },
+          "grip": false,
+          "header": false,
+          "cursor": "default",
+          "screen": {
+            "x": 413,
+            "y": 295.203125
+          }
+        },
+        "visibleControls": 1
+      },
+      "expected": "a hover target and at least one visible control"
+    },
+    {
+      "name": "a sample-scene card drag commits one moveCard without panning",
+      "passed": true,
+      "actual": {
+        "last": {
+          "operation": "moveCard",
+          "inverse": "moveCard"
+        },
+        "camera": {
+          "panX": -4.060913705583516,
+          "panY": 0,
+          "zoom": 0.10928254437869822
+        }
+      },
+      "expected": "moveCard and an unchanged camera"
+    },
+    {
+      "name": "a click below the threshold writes no operation",
+      "passed": true,
+      "actual": null,
+      "expected": null
+    },
+    {
+      "name": "dragging empty canvas pans the view and writes nothing",
+      "passed": true,
+      "actual": {
+        "last": null,
+        "cameraChanged": true
+      },
+      "expected": "no operation and a moved camera"
+    }
+  ],
+  "tokens": "{\"drag-threshold\":4,\"header-height\":40,\"motion-hover\":120}",
+  "camera": {
+    "before": {
+      "panX": 0,
+      "panY": -0.18285714285713084,
+      "zoom": 1.025390625
+    },
+    "afterDrag": {
+      "panX": 0,
+      "panY": -0.18285714285713084,
+      "zoom": 1.025390625
+    }
+  },
+  "result": "pass",
+  "exitCode": 0,
+  "finishedAt": "2026-10-27T22:07:55.253Z"
+}

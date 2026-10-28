@@ -11,33 +11,34 @@ Read `AGENTS.md`, `ARCHITECTURE.md`, `STATUS.md`, `docs/module-map.md` and the t
 - **Stage 3 Engine spike:** complete, owner decision `continue`; C++20 core (doc/camera/spatial/render command buffer), WebGL2 instanced renderer, TS bridge `@project-air/engine`, `apps/engine-playground`, ADR-0006 + `docs/engine.md`; CMake 4.4.4 + Emscripten 6.0.13; WASM 49,925 B raw / 21,806 B gzip. Measured on the Mac mini M2 8 GB proxy: p95 2.00 ms (556 fps unlocked frame production), display-locked control p95 16.80 ms. **D8 caveat:** the MacBook Air M1 8 GB reference is unproven — re-measure before treating the hardware target as met.
 - **Stage 4 Backend core:** complete, owner decision `continue`; tasks `P3-01` … `P3-06` done. `services/platform` + `services/auth`, self-hosted Ory Kratos v26.2.0 (ADR-0007; `identity` profile, Mailpit courier, test-session mode for tests, admin API bound to localhost), PostgreSQL migrations `0001`–`0004` with RLS and contract-valid account-id mapping, 20 `/v1` contract routes + `GET /v1/session`, typed SDK `@project-air/sdk`, `api-tests` 32, `rls-tests` 7, platform unit 74, acceptance script `PASS backend-core acceptance`; ADR-0008 (API/session model).
 - **Stage 5 Engine core:** in progress, owner decision `continue`; 30 tasks (28 planned + `P4-29`/`P4-30`
-  live-demo zone parity). **Done and merged:** `P4-01` … `P4-10`, `P4-25` (contract 0.2.0), `P4-26` (DB
-  containment). `P4-10` (L02 titles on cards *and* zones, 40 px header chrome, zone content inset,
-  zoom-bucket sharp text incl. 200 %, grown blocks, quiet DOM delete affordance, perf + idle re-tests)
-  was merged as `0a565b4`; its independent review (`reviews/P4-10.md`, changes-requested) demanded
-  exclusive gate locks and records on the merged head — both fixed by the evidence-refresh commit
-  `97798bf` (`board.json` P4-10 now declares `exclusive: [perf, visual]`; fresh board-check/perf/visual/
-  design-check records on the merged head; superseded records removed). Six minor code follow-ups stay
-  open (text depth order, readable-size bound, inline delete icon/i18n, delete seam, mobile-before
-  images, unused `atlasRasterScale`/ungated zoom tests) — see `reviews/P4-10.md` end note.
-  **Next chain to the zone demo:** `P4-14` (L03) → `P4-15` (L07) → `P4-16` (L10) →
-  `P4-23` (L18) → `P4-27` (L08 engine membership/move) → `P4-29` → `P4-30` (zone parity I/II) →
-  `P4-28` (L01 final proof + `visual-final`/`perf-final` + showcase). All chain briefs exist
+  live-demo zone parity). **Done and merged:** `P4-01` … `P4-10`, `P4-14`, `P4-25` (contract 0.2.0),
+  `P4-26` (DB containment). `P4-10` (L02 titles on cards *and* zones, 40 px header chrome, zone content
+  inset, zoom-bucket sharp text incl. 200 %, grown blocks, quiet DOM delete affordance, perf + idle
+  re-tests) merged as `0a565b4`; review `reviews/P4-10.md` (changes-requested on evidence) was closed by
+  the evidence-refresh commit `97798bf` (`exclusive: [perf, visual]`, fresh records on the merged head);
+  six minor code follow-ups stay open (see the end note of `reviews/P4-10.md`). `P4-14` (L03 pointer
+  input layer: one DOM-free state machine, 4 px click/drag threshold, card body vs 40 px header grip,
+  field/scroll suppression, header hover chrome, cursors, one move operation per drag; review
+  `reviews/P4-14.md` pass with minors — the package `input.js` export was fixed before the merge) is
+  merged. **Next chain to the zone demo:** `P4-15` (L07 snapping) → `P4-16` (L10 multi-selection) →
+  `P4-23` (L18 overlay/inline) → `P4-27` (L08 engine membership/move) → `P4-29` → `P4-30` (zone parity
+  I/II) → `P4-28` (L01 final proof + `visual-final`/`perf-final` + showcase). All chain briefs exist
   (`P4-14/15/16/23/27/28/29/30`). Exit gates: `cpp-unit` green; `visual-final`/`perf-final` only pass
   in `P4-28`, and P4-28's "two backends" part still needs `P4-11`…`P4-13` (WebGPU) plus
   `P4-19/21/22/24`, which are NOT in the current chain — record that as an open point in P4-28, never
   as a silent pass.
-- **Other sessions/repo state:** a second DSH/Claude session works in the same checkouts and produced
-  `P4-06`/`P4-08`/`P4-09`/`P4-10`/`P4-26` and started `P4-14` (L03); coordinate via claims/`in_progress` in `board.json`. Commit race
-  documented above (`eff284b` carries the P4-07 content, `b4938dc` its bookkeeping). `origin/main` is
-  pushed at `597185b` (check `git log`).
-- **Done overall:** 56 of 78 tasks. Open: the rest of stage 5 (the chain above plus `P4-11`…`P4-13`
+- **Other sessions/repo state:** a second DSH/Claude session works in the same checkouts; it produced
+  `P4-06`/`P4-08`/`P4-09`/`P4-10`/`P4-26`, reviewed and refreshed the P4-10 evidence (`97798bf`,
+  `597185b`, `b50cd26`). Coordinate via claims/`in_progress` in `board.json`. Commit race documented
+  below (`eff284b` carries the P4-07 content, `b4938dc` its bookkeeping). `origin/main` is pushed at
+  the latest main commit (check `git log` / `git status -sb`).
+- **Done overall:** 57 of 78 tasks. Open: the rest of stage 5 (the chain above plus `P4-11`…`P4-13`
   WebGPU, `P4-17`/`P4-18` resize/auto-pan, `P4-19`…`P4-24` placement/keyboard/undo/view/trackpad)
   plus the remote-phase tasks `P0-02`, `P0-15`, `P0-16`, `P0-17` (after hardening) and the planning
   of the later stages (realtime, web-app, value, hardening).
 - **Preview:** `apps/web/preview/` has the permanent Contract 0.1.0 overview as section 02 and the live demo: top-centre ten-tool toolbar and a zone with notepad + image window (P0-26), **bilingual EN/DE with a themed top-right switch** via `apps/web/preview/locales/{en,de}.json` (all visible text/aria/alt; 260 identical keys; `<html lang>`, localStorage persistence, safe fallback) (P0-27), **zone items that can be dragged out onto the canvas and docked back** with a 28 px progressive detach animation, 8 px dock hysteresis, grid-snap, no edge connection, reduced-motion (P0-28); **when both items are out the empty zone fades/scales away and becomes hidden/inert, and dragging the two free items together (≥25 % overlap or ≤48 px centres) groups them into a newly animated zone** that re-orients/re-fits on resize, plus refined spring motion and a smaller zoom pill (36×104, 32 px buttons) (P0-29); **zone layout follows the drop (side by side or stacked), docked items can be reordered/swapped inside the zone, drags track the pointer 1:1 with commit-on-release (no magnetism) and the +/−/fit controls are smaller (32×96 pill, 28 px painted, 32 px hit, 12 px glyphs)** (P0-30). **Cache rule:** every preview change bumps `?v=` on `tokens.css`/`preview.css`/`preview.js` in `index.html`; locale fetches inherit the script version. A cached `index.html` may still need one hard reload (an old HTML document cannot reference the new CSS). Demo-cadence baseline screenshots: `P0-27-*` (desktop/mobile EN+DE, owner 1426×583 DPR2) `P0-28-*` (docked/mid-detach/detached/redocked) `P0-29-*` (zone fading/overlap/grouped/zoom/mobile/resize/toolbar) and `P0-30-*` (horizontal/vertical/swapped/drop-hint/controls/masthead/zoom-150).
-- **Checks:** `check.py` exit 0 (2 warnings: `budgets.status` override, P0-02 context pack), `boundaries.py` exit 0, `contracts.py check` exit 0, `design-check` exit 0, `language-check` OK, contract unit suite 88/88, engine CTest 2/2, `codegen`/`wasm-*` clean; DB suites need a Polier slot (they cannot run in the main checkout).
-- **Reviews:** `reviews/P1-04.md` … `reviews/P4-10.md` committed; verdicts and findings are in the files.
+- **Checks:** `check.py` exit 0 (40 warnings, all historical evidence-record commits; run it in the main checkout only with `node_modules/` absent — a pnpm install materialises `node_modules/.pnpm`, whose package READMEs break `check_links`), `boundaries.py` exit 0, design-check tool tests 16/16, engine node tests 59/59, engine CTest 4/4, `codegen`/`wasm-*` clean; DB suites need a Polier slot (they cannot run in the main checkout). Repo-wide `pnpm test` is still red for pre-existing env reasons — `services/platform` tests need the slot database, the release-tool tests flake under turbo concurrency (28/28 alone) and `language-check` flags the P4-10 German demo strings in `apps/engine-playground/main.js`; the `unit` gate therefore uses the documented `pnpm test --affected`.
+- **Reviews:** `reviews/P1-04.md` … `reviews/P4-14.md` committed; verdicts and findings are in the files.
 
 ## Backend-core follow-ups (recorded, not blockers)
 
@@ -59,6 +60,14 @@ Read `AGENTS.md`, `ARCHITECTURE.md`, `STATUS.md`, `docs/module-map.md` and the t
   inline SVG in the playground, not an icon in `packages/ui-kit/icons/`, and its label is hardcoded
   English (AD-8 wants translation files). The playground has no message catalogue yet; move both in
   L09/web-app when the affordance enters `apps/web`.
+- **Repo-wide `pnpm test` (P4-14 review finding 2), follow-up before CI stage.** Three pre-existing
+  reds: `services/platform` tests need a slot database (`tools/dev/setup`), the release-tool tests
+  flake under turbo concurrency (pass alone), and `language-check` flags 10 German demo strings in
+  `apps/engine-playground/main.js` that P4-10 added. Decide whether the engine playground is exempt
+  from the translation rule (it is a demo without a message catalogue) or move the demo text to a
+  locale file; do not silence the language gate without owner approval.
+- **Playground architecture (P4-14 review finding 3).** `apps/engine-playground/ARCHITECTURE.md` does
+  not mention the P4-14 input layer yet (README and `docs/engine.md` do).
 - **`perf-final`/`visual-final` prerequisites.** `visual-final` names WebGL2 *and* WebGPU reference
   images, but WebGPU (`P4-11`…`P4-13`) is still open; P4-28 must record the missing backend instead
   of claiming two-backend proof (see the note in the stage-5 state above).
@@ -118,6 +127,11 @@ Rules: one commit per task (`<ID>: <title>`), change entry in `.changes/` (`pnpm
   commits are pushed; treat `eff284b` as the P4-07 content commit and do not rewrite pushed history
   without an owner decision. P4-06 is owned by the other session (worktree `../Project air-P4-06`,
   slot 2).
+- **Board-check and node_modules (2026-10-28):** `python3 $POLIER/tools/check.py .` scans every
+  `*.md` including `node_modules/`, and a pnpm install materialises `node_modules/.pnpm` READMEs with
+  dead relative links, so the check fails after an install. Worktrees: run `board-check` **before**
+  `pnpm install` (documented order). Main checkout: move `node_modules/` aside while running
+  `check.py` (and keep it out if the checkout is only used for bookkeeping).
 - DSH sandboxed sessions cannot create the default sibling worktree (`../<repo>-<ID>` lies outside the workspace). Create it under `/tmp/air-<ID>` (`git worktree add /tmp/air-<ID> -b task/<ID> main`), acquire the slot there (`python3 $POLIER/tools/slot.py acquire`), take the claim with `--worktree /private/tmp/air-<ID> --slot N`, store that absolute path in `board.json`; `worktree.py finish <ID>` accepts the stored absolute path.
 
 ## Owner decisions recorded
@@ -133,7 +147,8 @@ Rules: one commit per task (`<ID>: <title>`), change entry in `.changes/` (`pnpm
 
 > Lies `AGENTS.md`, `ARCHITECTURE.md`, `STATUS.md`, `docs/module-map.md`, `docs/canvas-acceptance.md`
 > und `HANDOFF.md`. Stage 5 (`engine-core`) läuft: `P4-01`…`P4-10`, `P4-25`, `P4-26` sind gemerged,
-> die Kette `P4-14` → `P4-15` → `P4-16` → `P4-23` → `P4-27` → `P4-29` → `P4-30` → `P4-28` ist als
-> Nächstes dran (alle Briefs existieren). Lokal arbeiten; nichts ohne Freigabe pushen/mergen/taggen.
+> `P4-14` ist gemerged; die Kette `P4-15` (L07) → `P4-16` (L10) → `P4-23` (L18) → `P4-27` (L08) →
+> `P4-29` → `P4-30` → `P4-28` ist als Nächstes dran (alle Briefs existieren). Lokal arbeiten; `main`
+> wird gepusht; nichts ohne Freigabe taggen.
 > Worktrees unter `/tmp/air-<ID>` (DSH-Sandbox), Slot aus `.polier-slot`, `board-check` vor
 > `pnpm install`, Chrome-Gates mit `--no-sandbox`, Evidenz in `reviews/evidence/`, ein Commit pro Task.
