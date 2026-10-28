@@ -5541,7 +5541,8 @@
         "services/sync/",
         "infra/migrations/",
         "docs/realtime.md",
-        ".changes/"
+        ".changes/",
+        "pnpm-lock.yaml"
       ],
       "scope_read": [
         "ARCHITECTURE.md",
