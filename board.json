@@ -7249,7 +7249,7 @@
       "satisfies": [
         "D3"
       ],
-      "status": "in_progress",
+      "status": "done",
       "depends_on": [
         "P0-44"
       ],
@@ -7286,13 +7286,21 @@
         "changelog-entry"
       ],
       "branch": "task/P0-45",
-      "worktree": "../Project air-P0-45",
-      "evidence": [],
+      "worktree": null,
+      "evidence": [
+        "reviews/evidence/P0-45-board-check-20261028T235048Z.json",
+        "reviews/evidence/P0-45-changelog-entry-20261028T235055Z.json",
+        "reviews/evidence/P0-45-design-check-20261028T235054Z.json"
+      ],
       "scope_write_forbidden": [
         "reference/",
         "docs/owner/"
       ],
-      "handoff": []
+      "handoff": [
+        "Closed P0-45: page contents under the masthead link 01-13 (labels reuse each eyebrow key); section 13 lists nine project areas with purpose, owner, folders, 53 parts with status.",
+        "Roles table maps eight roles; texts in areas.*/toc.* (EN/DE); works dark and light, no overflow at 390 px. Status is a 2026-10-29 snapshot of board.json.",
+        "Moved to stage web-app: an open foundation task failed the stage rule for in-progress web-app tasks. Gates board-check/design-check/changelog-entry green."
+      ]
     }
   ],
   "decisions": [

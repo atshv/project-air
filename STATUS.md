@@ -61,7 +61,7 @@
 - Exit gates: `e2e` (missing record), `design-check`, `language-check`
 - Exit criteria: Main e2e flows green on a preview environment.; Every canvas work order done with evidence; design-check and language-check green repo-wide.
 - Tasks: P6-01, P6-02, P6-03, P6-04, P6-05, P6-06, P6-07, P6-08, P6-09, P6-10, P0-45
-- Tasks open: P6-07, P6-08, P6-09, P6-10, P0-45
+- Tasks open: P6-07, P6-08, P6-09, P6-10
 
 ### Stage 8 — `value` Import, export and AI
 
@@ -231,11 +231,11 @@
 - [x] `P6-04` Board page host: engine, toolbar, zoom and view persistence (L00, L17) — status: `done` — owner: —
 - [x] `P6-05` Board interactions: context menu, keyboard and undo/redo UI (L12, L11 hint) — status: `done` — owner: —
 - [x] `P6-06` Contract 0.4.0: note body document and content operations — status: `done` — owner: —
+- [x] `P0-45` Preview page: project areas, their tasks and purpose — status: `done` — owner: —
 
 ## In progress
 
 - [ ] `P6-07` Panel and editor: overlay, own editor, note placeholder and title (L04, L06, L09) — status: `in_progress` — owner: lead
-- [ ] `P0-45` Preview page: project areas, their tasks and purpose — status: `in_progress` — owner: —
 
 ## Blocked / failed
 
