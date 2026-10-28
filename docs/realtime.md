@@ -124,3 +124,38 @@ update), `participants()`/`onPresence()` expose a subscription with the remote
 participants (server-derived name/colour), and the participant list is cleared on
 leave, close, reconnect/snapshot and board switch. The SDK never persists
 presence.
+
+## Durability, recovery, catch-up and snapshot compaction (P5-06)
+
+**Recovery.** The service reads the latest snapshot and replays the durable
+`sync_updates` after that snapshot's `serverSeq` on join (and at start-up the
+store is the source of truth). A fresh board has the baseline snapshot at
+`serverSeq = 1`; after a restart the next `serverSeq` continues monotonically
+from the durable maximum (updates and snapshots), and every acknowledged
+operation is replayed from the log. `serverSeq` is never memory-only.
+
+**Graceful shutdown.** `createSyncService().close()` sets the stopping flag
+first (the protocol refuses to send any further `ack` once shutdown started,
+even when the update already committed), stops accepting, closes the connected
+sockets with the retryable `1012` "service restart" close code, and lets the
+caller close the store after the connections are gone.
+
+**Catch-up.** `resyncRequest`/`fromServerSeq` reads the durable log strictly
+after the requested sequence, ordered ascending with no gap or duplicate: `0`
+(or the previous snapshot) replays the whole log, `current` is an empty
+catch-up, and intermediate values return exactly the missed rows. A reconnect
+receives welcome+snapshot at the current `serverSeq` and, when the client is
+current, an empty catch-up.
+
+**Snapshot compaction.** Policy: threshold-based (default
+`COMPACTION_MIN_UPDATES = 32` pending updates after the current snapshot; the
+restart harness forces `minUpdates: 1`). `writeCompactedSnapshot` writes the
+document snapshot at the current board `serverSeq` and prunes only updates
+`<= snapshot.serverSeq` in **one transaction** under the per-board advisory
+lock. The snapshot is written before the prune, so a crash between the two
+leaves snapshot + older updates; replay-after-snapshot ignores the older rows and
+the state stays consistent. Acknowledged updates are never lost (the snapshot is
+at their sequence) and DB growth is bounded (the log is pruned). Compaction runs
+against the DB outside a client session, so it does not block operation batches;
+the restart harness proves a compacted restart reproduces exactly the
+uncompacted snapshot.

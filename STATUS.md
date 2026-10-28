@@ -122,7 +122,7 @@
 
 ## Ready now
 
-- none
+- `P5-07` crdt-convergence proof: 10,000 rounds, offline clients and own-only undo
 
 ## Done
 
@@ -207,6 +207,7 @@
 - [x] `P5-03` Sync service: WebSocket protocol, auth and durable update log — status: `done` — owner: —
 - [x] `P5-04` SDK board-sync client and the one autosave path (L05 realtime half) — status: `done` — owner: —
 - [x] `P5-05` Presence: cursors, selection, name and colour — status: `done` — owner: —
+- [x] `P5-06` Durability and reconnect: restart, catch-up and snapshot compaction — status: `done` — owner: —
 - [x] `P0-34` Live demo: move a zone with its members — status: `done` — owner: —
 - [x] `P0-35` Design system page: contract 0.3.0, missing tokens and engine chrome — status: `done` — owner: —
 - [x] `P0-36` Live demo: select and resize objects, photo without bar, edges behind — status: `done` — owner: —
@@ -218,7 +219,6 @@
 
 ## In progress
 
-- [ ] `P5-06` Durability and reconnect: restart, catch-up and snapshot compaction — status: `in_progress` — owner: lead
 - [ ] `P0-41` Live demo: rounded frames, darker done items, contents instead of text — status: `in_progress` — owner: —
 
 ## Blocked / failed
@@ -238,7 +238,7 @@
 <!-- polier:claims -->
 ## Claims
 
-- `P5-06` in progress by dsh since 2026-10-28T20:32:33+00:00 — worktree: /private/tmp/air-P5-06 · slot 1
+- `P5-06` in progress by dsh since 2026-10-28T20:44:27+00:00 — worktree: /private/tmp/air-P5-06 · slot 1
 
 <!-- /polier:claims -->
 

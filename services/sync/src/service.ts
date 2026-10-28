@@ -38,6 +38,7 @@ interface ClientRecord {
 export async function createSyncService(options: SyncServiceOptions): Promise<RunningSyncService> {
   const logger = options.logger ?? createLogger("info", () => undefined);
   const clients = new Set<ClientRecord>();
+  let stopping = false;
   const presence = new PresenceHub({
     broadcast: (boardId, message, exceptClientId) => {
       for (const record of clients) {
@@ -70,6 +71,7 @@ export async function createSyncService(options: SyncServiceOptions): Promise<Ru
       authorizer: options.authorizer,
       store: options.store,
       documents: options.documents,
+      shouldAck: () => !stopping,
       presence,
       broadcast: (boardId, message, exceptClientId) => {
         for (const record of clients) {
@@ -111,10 +113,14 @@ export async function createSyncService(options: SyncServiceOptions): Promise<Ru
     server,
     connectionCount: () => clients.size,
     close: async () => {
+      // Graceful shutdown: stop accepting, refuse further acks, then close the
+      // sockets with the retryable 1012 "service restart" close code.
+      stopping = true;
+      const closed = new Promise<void>((resolve) => server.close(() => resolve()));
       presence.clear();
-      for (const record of clients) record.connection.close(1001, "shutdown");
+      for (const record of clients) record.connection.close(1012, "service restart");
       clients.clear();
-      await new Promise<void>((resolve) => server.close(() => resolve()));
+      await closed;
     },
   };
 }

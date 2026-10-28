@@ -1,0 +1,4 @@
+area: sync
+kind: minor
+
+Add P5-06 durability and reconnect: recovery loads the latest snapshot and replays the log after it (serverSeq continues monotonically across restarts; fresh boards at baseline 1), graceful shutdown stops accepting and refuses further acks while closing sockets with the retryable 1012 code, catch-up fromServerSeq returns exactly the missed ordered updates (empty/one/large), and threshold-based snapshot compaction writes a snapshot at the current serverSeq and prunes only covered updates in one per-board-advisory-locked transaction (crash between snapshot and prune stays consistent, bounded growth, no blocking of operation batches). Adds the test-only child-process restart harness on the slot PostgreSQL proving N acked operations survive SIGTERM/restart, seq continuity, exact catch-up boundaries and compaction equality; docs/realtime recovery/catch-up/compaction policy.

@@ -80,6 +80,8 @@ export interface CreateSyncSessionOptions {
   readonly documents: BoardDocumentFactory;
   readonly now?: () => string;
   readonly broadcast?: (boardId: string, message: Record<string, unknown>, exceptClientId: string) => void;
+  /** P5-06: graceful shutdown — when false, no ack is sent after the update committed. */
+  readonly shouldAck?: () => boolean;
   /** P5-05: ephemeral presence hub (no persistence). */
   readonly presence?: {
     publish(input: { boardId: string; clientId: string; userId: string; messageId: string; seq: number; sentAt: string; payload: unknown }): boolean;
@@ -301,6 +303,12 @@ export class SyncSession {
       return;
     }
     this.#state.lastServerSeq = serverSeq;
+    // Graceful shutdown: the update may already be durable, but once shutdown has
+    // started no ack is sent (the client retries; the contract ack is the only
+    // success signal).
+    if (this.#options.shouldAck !== undefined && !this.#options.shouldAck()) {
+      return;
+    }
     send({
       id: message.id, type: "ack", clientId: message.clientId, boardId: this.#state.joinedBoard, sentAt: sentAt(), serverSeq,
       payload: { batchId, opIds: operations.map((operation) => String((operation as { id?: string }).id ?? "")) },

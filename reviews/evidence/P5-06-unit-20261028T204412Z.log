@@ -1,0 +1,43 @@
+$ pnpm test --affected
+[exit 0]
+
+
+   • turbo 2.11.10
+   • Packages in scope: //, @project-air/sync
+   • Running test in 2 packages
+   • Remote caching disabled, using shared worktree cache
+
+@project-air/sync:build: cache miss, executing 9b0ab29e207bdde1
+@project-air/sync:build: $ tsc --project tsconfig.json
+@project-air/sync:test: cache miss, executing 6f8c109529070ed3
+@project-air/sync:test: $ node --test --test-concurrency=1 test/*.test.mjs
+@project-air/sync:test: ✔ live socket integration: join, ack-after-commit, broadcast and reconnect catch-up (71.769334ms)
+@project-air/sync:test: ✔ live presence: throttled, identity-derived, isolated, cleaned up and never blocking operations (549.314125ms)
+@project-air/sync:test: ✔ hello is required first and the first message rejection is explicit (1.24875ms)
+@project-air/sync:test: ✔ version and session validation reject before joinBoard (0.140584ms)
+@project-air/sync:test: ✔ the platform authorizer gates joinBoard and welcome/snapshot carry the durable seq (0.324125ms)
+@project-air/sync:test: ✔ operationBatch is persisted before the ack and the ack carries the new seq (0.526583ms)
+@project-air/sync:test: ✔ a failed append produces a reject and never an ack (0.1985ms)
+@project-air/sync:test: ✔ resyncRequest reads from the durable seq and leaveBoard broadcasts presence (0.200459ms)
+@project-air/sync:test: restart harness evidence: /private/tmp/air-P5-06/reviews/evidence/P5-06-restart-20261028T204415Z.json
+@project-air/sync:test: ✔ restart, catch-up and snapshot compaction preserve every acked update (1070.505958ms)
+@project-air/sync:test: ✔ the handshake accept value matches the RFC 6455 vector (0.794375ms)
+@project-air/sync:test: ✔ masked client frames decode and unmasked/reserved frames are rejected (0.313417ms)
+@project-air/sync:test: ✔ fragmentation reassembles and enforces the bounded size (0.264584ms)
+@project-air/sync:test: ✔ ping is answered with pong and close ends the connection (0.295417ms)
+@project-air/sync:test: ✔ an oversized declared frame closes with 1009 before allocating it (0.106708ms)
+@project-air/sync:test: ℹ tests 14
+@project-air/sync:test: ℹ suites 0
+@project-air/sync:test: ℹ pass 14
+@project-air/sync:test: ℹ fail 0
+@project-air/sync:test: ℹ cancelled 0
+@project-air/sync:test: ℹ skipped 0
+@project-air/sync:test: ℹ todo 0
+@project-air/sync:test: ℹ duration_ms 2506.265042
+
+ Tasks:    2 successful, 2 total
+Cached:    0 cached, 2 total
+  Time:    3.326s 
+
+$ turbo run test --affected
+ WARNING  no output files found for task @project-air/sync#test. Please check your `outputs` key in `turbo.json`

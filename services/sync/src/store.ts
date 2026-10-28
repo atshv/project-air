@@ -110,6 +110,47 @@ export class PgSyncStore implements SyncStore {
     }
   }
 
+  /** Current max across updates and snapshots (baseline is 1). */
+  async currentSeq(boardId: string): Promise<number> { return this.#currentSeq(boardId); }
+
+  /**
+   * Snapshot compaction: writes the current document snapshot at its serverSeq
+   * and prunes only updates <= that sequence, in one transaction under the
+   * per-board advisory lock. If a crash happens after the snapshot commit and
+   * before the prune, old updates remain: replay-after-snapshot ignores them, so
+   * the state stays consistent. Acknowledged updates are never lost because the
+   * snapshot is at their sequence.
+   */
+  async writeCompactedSnapshot(input: { boardId: string; boardContent: BoardContent; snapshotSeq: number }): Promise<{ snapshotSeq: number; pruned: number }> {
+    const client = await this.#pool.connect();
+    try {
+      await client.query("BEGIN");
+      await client.query("SELECT pg_advisory_xact_lock(hashtext($1))", [input.boardId]);
+      const current = await client.query<{ seq: string }>(
+        `SELECT GREATEST(
+           COALESCE((SELECT MAX(server_seq) FROM sync_updates WHERE board_id = $1), 0),
+           COALESCE((SELECT MAX(server_seq) FROM sync_snapshots WHERE board_id = $1), 0)
+         )::text AS seq`,
+        [input.boardId],
+      );
+      const snapshotSeq = Math.max(Number(current.rows[0]?.seq ?? "1"), input.snapshotSeq);
+      await client.query(
+        "INSERT INTO sync_snapshots (board_id, server_seq, snapshot) VALUES ($1, $2, $3) ON CONFLICT (board_id, server_seq) DO UPDATE SET snapshot = EXCLUDED.snapshot",
+        [input.boardId, snapshotSeq, input.boardContent],
+      );
+      // Prune only updates covered by the snapshot; a failed prune leaves the
+      // snapshot + older updates, which replay correctly.
+      const pruned = await client.query("DELETE FROM sync_updates WHERE board_id = $1 AND server_seq <= $2", [input.boardId, snapshotSeq]);
+      await client.query("COMMIT");
+      return { snapshotSeq, pruned: pruned.rowCount ?? 0 };
+    } catch (error) {
+      await client.query("ROLLBACK").catch(() => undefined);
+      throw error;
+    } finally {
+      client.release();
+    }
+  }
+
   async updatesAfter(boardId: string, fromServerSeq: number, limit = 500): Promise<StoredUpdate[]> {
     const result = await this.#pool.query<{ server_seq: string; encoded_update: Buffer }>(
       "SELECT server_seq::text AS server_seq, encoded_update FROM sync_updates WHERE board_id = $1 AND server_seq > $2 ORDER BY server_seq ASC LIMIT $3",
