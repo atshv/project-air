@@ -53,6 +53,7 @@
 - Exit gates: `crdt-convergence`, `load` (missing record)
 - Exit criteria: Load test 25 clients p95 <= 150 ms; restart loses no acknowledged change.; Two offline browsers converge after reconnect.
 - Tasks: P5-01, P5-02, P5-03, P5-04, P5-05, P5-06, P5-07, P5-08
+- Tasks open: P5-08
 
 ### Stage 7 — `web-app` Web app
 
@@ -82,6 +83,7 @@
 - Exit gates: `branch-protection` (missing record), `ci-green` (missing record), `polier-version`, `release-dry` (missing record), `smoke` (missing record)
 - Exit criteria: main is protected; CI rejects a pull request outside its scope, with raw colours, hard-coded UI text or without a change entry.; Polier v1.0.0 is pinned in CI; release 0.0.1 and one preview ran end to end from a tag.; Hosting is chosen (Q3), environments and smoke checks are complete.
 - Tasks: P0-02, P0-15, P0-16, P0-17
+- Tasks open: P0-02, P0-15, P0-16, P0-17
 
 ### Stage 11 — `v1` Public v1
 
@@ -219,11 +221,11 @@
 - [x] `P0-40` Live demo: two teammates on the board — status: `done` — owner: —
 - [x] `P0-41` Live demo: rounded frames, darker done items, contents instead of text — status: `done` — owner: —
 - [x] `P0-42` Live demo: light theme with sun/moon icons under DE/EN — status: `done` — owner: —
+- [x] `P0-43` Live demo: pen tool and ink colours over the whole board — status: `done` — owner: —
 
 ## In progress
 
 - [ ] `P5-08` load proof: 25 clients per board at p95 <= 150 ms and the stage report — status: `in_progress` — owner: lead
-- [ ] `P0-43` Live demo: pen tool and ink colours over the whole board — status: `in_progress` — owner: lead
 
 ## Blocked / failed
 
@@ -235,14 +237,6 @@
 - [ ] `P0-15` Release command and tag-based CI release — status: `pending` — owner: —
 - [ ] `P0-16` Dependency updates and Polier update check — status: `pending` — owner: —
 - [ ] `P0-17` RELEASING.md and release 0.0.1 — status: `pending` — owner: —
-
-<!-- polier:claims -->
-## Claims
-
-- `P0-43` in progress by dsh since 2026-10-28T22:01:28+00:00 — worktree: /private/tmp/air-P0-43 · slot 3
-- `P5-08` in progress by dsh since 2026-10-28T21:59:44+00:00 — worktree: /private/tmp/air-P5-08 · slot 1
-
-<!-- /polier:claims -->
 
 ## Decisions
 

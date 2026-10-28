@@ -27,9 +27,9 @@
         document.documentElement.setAttribute("data-theme", theme);
       })();
     </script>
-    <link rel="stylesheet" href="../../../packages/ui-kit/tokens.css?v=P0-42" />
-    <link rel="stylesheet" href="preview.css?v=P0-42" />
-    <script src="preview.js?v=P0-42" defer></script>
+    <link rel="stylesheet" href="../../../packages/ui-kit/tokens.css?v=P0-43" />
+    <link rel="stylesheet" href="preview.css?v=P0-43" />
+    <script src="preview.js?v=P0-43" defer></script>
   </head>
   <body>
     <main class="page">
@@ -46,14 +46,14 @@
         <p class="masthead__version" data-preview-meta>
           <span data-preview-version data-i18n="masthead.version">Version 0.0.1</span>
           <span data-preview-status data-i18n="masthead.unreleased">unreleased</span>
-          <span data-preview-last-change data-i18n="masthead.lastChange">Last change: P0-42 — Live demo: light theme with sun/moon icons under DE/EN</span>
-          <span data-preview-last-change-time data-i18n="masthead.lastChangeTime">2026-10-28 22:07 (Europe/Zurich)</span>
+          <span data-preview-last-change data-i18n="masthead.lastChange">Last change: P0-43 — Live demo: pen tool and ink colours over the whole board</span>
+          <span data-preview-last-change-time data-i18n="masthead.lastChangeTime">2026-10-28 23:07 (Europe/Zurich)</span>
         </p>
         <div class="masthead__meta">
           <span data-i18n-html="masthead.tokensPackagesUiKitTokens">Tokens: <code>packages/ui-kit/tokens.css</code></span>
           <span data-i18n-html="masthead.iconsPackagesUiKitIcons">Icons: <code>packages/ui-kit/icons/</code></span>
           <span data-i18n-html="masthead.demoPreviewJs">Demo: <code>preview.js</code></span>
-          <span data-i18n="masthead.tasks">Tasks: P0-19, P0-20, P0-21, P0-22, P0-23, P0-24, P0-25, P0-26, P0-27, P0-28, P0-29, P0-30, P0-31, P0-32, P0-33, P0-34, P0-35, P0-36, P0-37, P0-38, P0-39, P0-40, P0-41, P0-42, P1-07</span>
+          <span data-i18n="masthead.tasks">Tasks: P0-19, P0-20, P0-21, P0-22, P0-23, P0-24, P0-25, P0-26, P0-27, P0-28, P0-29, P0-30, P0-31, P0-32, P0-33, P0-34, P0-35, P0-36, P0-37, P0-38, P0-39, P0-40, P0-41, P0-42, P0-43, P1-07</span>
           <div class="masthead__switches">
             <div
               class="preview-locale"
@@ -192,8 +192,8 @@
               </li>
               <li class="demo-guide-list__item">
                 <details class="demo-guide-list__point">
-                  <summary><span class="demo-guide-list__number" aria-hidden="true">10</span><span data-i18n="demo.guide.preview.title">Preview only</span></summary>
-                  <p data-i18n-html="demo.guide.preview.body">Toolbar and zoom pill only show their states: a tool click changes nothing on the canvas.</p>
+                  <summary><span class="demo-guide-list__number" aria-hidden="true">10</span><span data-i18n="demo.guide.preview.title">Preview</span></summary>
+                  <p data-i18n-html="demo.guide.preview.body">The pen draws on the whole board in the chosen colour; every other tool only shows its state. The zoom pill works.</p>
                 </details>
               </li>
             </ol>
@@ -209,7 +209,7 @@
             <div
               class="demo-toolbar"
               role="group"
-              aria-label="Demo toolbar, preview only: selecting a tool changes nothing on the canvas"
+              aria-label="Demo toolbar: the pen draws on the board, every other tool only shows its state"
               data-demo-toolbar
              data-i18n-attr="aria-label:demo.demoToolbarPreviewOnlySelecting">
               <button class="demo-toolbar__button" type="button" data-demo-tool="note" aria-label="Note tool" data-label="Note" aria-pressed="true" data-i18n-attr="aria-label:demo.noteTool data-label:demo.note">
@@ -231,9 +231,26 @@
               <button class="demo-toolbar__button" type="button" data-demo-tool="checklist" aria-label="Checklist tool" data-label="Checklist" aria-pressed="false" data-i18n-attr="aria-label:demo.checklistTool data-label:demo.checklist">
                 <span class="icon icon--checklist" aria-hidden="true"></span>
               </button>
-              <button class="demo-toolbar__button" type="button" data-demo-tool="palette" aria-label="Palette tool" data-label="Palette" aria-pressed="false" data-i18n-attr="aria-label:demo.paletteTool data-label:demo.palette">
-                <span class="icon icon--palette" aria-hidden="true"></span>
+              <button class="demo-toolbar__button" type="button" data-demo-tool="pen" aria-label="Pen tool" data-label="Pen" aria-pressed="false" data-i18n-attr="aria-label:demo.penTool data-label:demo.pen">
+                <svg class="demo-toolbar__icon" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
+                  <path d="M4 20l4.2-1.1L19.3 7.8a2.1 2.1 0 0 0-3-3L5.2 15.8 4 20Z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+                  <path d="M14.8 6.3l2.9 2.9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+                </svg>
               </button>
+              <div class="demo-toolbar__palette">
+                <button class="demo-toolbar__button" type="button" data-demo-tool="palette" aria-label="Colour palette" data-label="Palette" aria-pressed="false" aria-expanded="false" data-i18n-attr="aria-label:demo.paletteTool data-label:demo.palette">
+                  <span class="icon icon--palette" aria-hidden="true"></span>
+                  <span class="demo-toolbar__ink" data-demo-ink-dot aria-hidden="true"></span>
+                </button>
+                <div class="demo-palette" role="group" aria-label="Pen colours" data-demo-palette data-i18n-attr="aria-label:demo.ink.colours" hidden>
+                  <button class="demo-palette__swatch" type="button" data-ink-tone="tone-a" aria-label="Sage" aria-pressed="true" data-i18n-attr="aria-label:demo.ink.toneA"></button>
+                  <button class="demo-palette__swatch" type="button" data-ink-tone="tone-b" aria-label="Ochre" aria-pressed="false" data-i18n-attr="aria-label:demo.ink.toneB"></button>
+                  <button class="demo-palette__swatch" type="button" data-ink-tone="tone-c" aria-label="Lilac" aria-pressed="false" data-i18n-attr="aria-label:demo.ink.toneC"></button>
+                  <button class="demo-palette__swatch" type="button" data-ink-tone="tone-d" aria-label="Blue" aria-pressed="false" data-i18n-attr="aria-label:demo.ink.toneD"></button>
+                  <button class="demo-palette__swatch" type="button" data-ink-tone="tone-e" aria-label="Rust" aria-pressed="false" data-i18n-attr="aria-label:demo.ink.toneE"></button>
+                  <button class="demo-palette__swatch" type="button" data-ink-tone="fg" aria-label="Neutral" aria-pressed="false" data-i18n-attr="aria-label:demo.ink.neutral"></button>
+                </div>
+              </div>
               <button class="demo-toolbar__button" type="button" data-demo-tool="columns" aria-label="Columns tool" data-label="Columns" aria-pressed="false" data-i18n-attr="aria-label:demo.columnsTool data-label:demo.columns">
                 <span class="icon icon--columns" aria-hidden="true"></span>
               </button>
@@ -428,6 +445,7 @@
                   </table>
                 </div>
               </article>
+              <svg class="demo-ink" data-demo-ink aria-hidden="true" focusable="false"></svg>
             </div>
             <div class="demo-zoom" role="group" aria-label="Demo zoom controls" data-demo-zoom data-i18n-attr="aria-label:demo.demoZoomControls">
               <button class="demo-zoom__button" type="button" data-demo-zoom-in aria-label="Zoom in" data-label="Zoom in" data-i18n-attr="aria-label:demo.zoomIn data-label:demo.zoomIn">

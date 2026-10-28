@@ -1242,6 +1242,33 @@ button {
   fill: var(--tone-d);
 }
 
+/* Ink (P0-43): one SVG above every board object and below the canvas chrome.
+   Points live in world coordinates and scale with the world transform; each
+   stroke carries the token name, so a theme switch recolours it. */
+.demo-ink {
+  position: absolute;
+  inset: 0;
+  z-index: var(--layer-snap-guides);
+  inline-size: 100%;
+  block-size: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.demo-ink__stroke {
+  fill: none;
+  stroke-width: var(--outline-width);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.demo-ink__stroke[data-ink-tone="tone-a"] { stroke: var(--tone-a); }
+.demo-ink__stroke[data-ink-tone="tone-b"] { stroke: var(--tone-b); }
+.demo-ink__stroke[data-ink-tone="tone-c"] { stroke: var(--tone-c); }
+.demo-ink__stroke[data-ink-tone="tone-d"] { stroke: var(--tone-d); }
+.demo-ink__stroke[data-ink-tone="tone-e"] { stroke: var(--tone-e); }
+.demo-ink__stroke[data-ink-tone="fg"] { stroke: var(--fg); }
+
 .demo__status {
   min-block-size: var(--space-16);
   color: var(--muted);
@@ -1309,6 +1336,121 @@ button {
   border-color: var(--accent-line);
   background-color: var(--accent-soft);
   color: var(--accent);
+}
+
+/* Pen mode (P0-43): the whole board, objects included, takes a crosshair. */
+.demo__surface[data-demo-pen="true"],
+.demo__surface[data-demo-pen="true"] .demo__world,
+.demo__surface[data-demo-pen="true"] .demo__world * {
+  cursor: crosshair;
+}
+
+.demo__surface[data-demo-pen="true"] .demo__world {
+  touch-action: none;
+}
+
+.demo-toolbar__icon {
+  display: block;
+  inline-size: var(--icon-bar);
+  block-size: var(--icon-bar);
+}
+
+/* The palette trigger keeps the toolbar button and adds the current ink dot. */
+.demo-toolbar__palette {
+  position: relative;
+  display: flex;
+}
+
+.demo-toolbar__ink {
+  position: absolute;
+  inset-block-end: var(--space-4);
+  inset-inline-end: var(--space-4);
+  inline-size: var(--space-8);
+  block-size: var(--space-8);
+  border: var(--border-width) solid var(--surface);
+  border-radius: var(--radius-pill);
+  background-color: var(--ink-colour, var(--fg));
+  pointer-events: none;
+}
+
+/* Ink colour popover: token swatches, the current one outlined (P0-43). */
+.demo-palette {
+  position: absolute;
+  inset-block-start: calc(100% + var(--space-8));
+  inset-inline-start: 50%;
+  z-index: var(--layer-context-menu);
+  display: grid;
+  grid-template-columns: repeat(3, var(--button-bar));
+  gap: var(--space-4);
+  padding: var(--space-8);
+  border: var(--border-width) solid var(--border);
+  border-radius: var(--radius-md);
+  background-color: var(--surface);
+  box-shadow: var(--shadow);
+  transform: translateX(-50%);
+}
+
+.demo-palette[hidden] {
+  display: none;
+}
+
+.demo-palette__swatch {
+  position: relative;
+  display: block;
+  inline-size: var(--button-bar);
+  block-size: var(--button-bar);
+  padding: 0;
+  border: var(--border-width) solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: outline-color var(--motion-hover) ease, transform var(--motion-hover) ease;
+}
+
+.demo-palette__swatch[data-ink-tone="tone-a"] { background-color: var(--tone-a); }
+.demo-palette__swatch[data-ink-tone="tone-b"] { background-color: var(--tone-b); }
+.demo-palette__swatch[data-ink-tone="tone-c"] { background-color: var(--tone-c); }
+.demo-palette__swatch[data-ink-tone="tone-d"] { background-color: var(--tone-d); }
+.demo-palette__swatch[data-ink-tone="tone-e"] { background-color: var(--tone-e); }
+.demo-palette__swatch[data-ink-tone="fg"] { background-color: var(--fg); }
+
+.demo-palette__swatch:hover {
+  outline: var(--outline-width) solid var(--border-strong);
+  outline-offset: var(--outline-offset);
+}
+
+.demo-palette__swatch:active {
+  transform: scale(0.97);
+}
+
+.demo-palette__swatch[aria-pressed="true"] {
+  outline: var(--outline-width) solid var(--accent);
+  outline-offset: var(--outline-offset);
+  box-shadow: inset 0 0 0 var(--border-width-strong) var(--surface);
+}
+
+.demo-palette__swatch:focus-visible {
+  outline: var(--outline-width) solid var(--accent);
+  outline-offset: var(--outline-offset);
+}
+
+.demo-toolbar__button[aria-expanded="true"]::after {
+  opacity: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .demo-palette__swatch {
+    transition: none;
+  }
+}
+
+/* On the compact layout the palette sits at the end of the wrapped toolbar, so
+   the popover opens towards the board instead of past the surface edge. */
+@media (max-width: 900px) {
+  .demo-palette {
+    inset-inline-start: auto;
+    inset-inline-end: 0;
+    transform: none;
+  }
 }
 
 .demo-toolbar__divider {

@@ -1,0 +1,107 @@
+# P0-43 browser verification — pen tool and ink colours
+
+- Date: 2026-10-28 23:07 Europe/Zurich (original run); rework run 23:38; final F4/F5 run 23:47
+- Browser: Chrome/156.0.8078.4 (Chrome for Testing, Playwright cache, --no-sandbox, --headless=new)
+- Viewports: 1440 × 900 and 390 × 844, deviceScaleFactor 1
+- Served from the worktree root: python3 -m http.server 4300 --bind 127.0.0.1
+- Page: http://127.0.0.1:4300/apps/web/preview/
+- Driver: raw Chrome DevTools Protocol (Runtime, Page, Emulation, Input.dispatchMouseEvent / dispatchKeyEvent / dispatchTouchEvent)
+
+## Light theme, English, 1440 × 900 (original run, 23:07 Europe/Zurich)
+- theme: light; language: en
+- pen button: aria-pressed=true, drawing mode=true, cursor=crosshair
+- status after selecting the pen: "Pen selected — Sage. Draw on the board; Escape ends the pen."
+- colour via palette (tone-d): swatch aria-pressed=true, palette dot=oklch(0.45 0.08 255), status="Pen selected — Blue. Draw on the board; Escape ends the pen."
+- colour via palette (tone-e): swatch aria-pressed=true, palette dot=oklch(0.455 0.1 40), status="Pen selected — Rust. Draw on the board; Escape ends the pen."
+- colour via palette (tone-a): swatch aria-pressed=true, palette dot=oklch(0.455 0.065 165), status="Pen selected — Sage. Draw on the board; Escape ends the pen."
+- four strokes committed: count=4, tones=["tone-d","tone-e","tone-a","tone-a"], stroke colours=["oklch(0.45 0.08 255)","oklch(0.455 0.1 40)","oklch(0.455 0.065 165)","oklch(0.455 0.065 165)"]
+- ink layer: z-index=7 (--layer-snap-guides), pointer-events=none
+- drawing over note A changed no object: class "note-card demo-card", transform "translate3d(32px, 16px, 0px)" (before "translate3d(32px, 16px, 0px)"), position 185.0/17.3 (before 185.0/17.3)
+- palette popover open: hidden=false, trigger aria-expanded=true, aria-pressed swatches=["tone-a"], focus on swatch "tone-a"
+- screenshot P0-43-palette-open-desktop.png (1440 × 900, light, EN, popover open)
+- Escape closed the popover: hidden=true, focus on trigger=true, drawing mode still=true
+- keyboard: Enter on the palette trigger opened it (aria-expanded=true), focus on swatch "tone-a"
+- keyboard: ArrowRight moved the focus to swatch "tone-b"
+- keyboard: Enter picked tone-b — popover hidden=true, aria-pressed=["tone-b"], dot=oklch(0.455 0.09 80), focus back on trigger=true, status "Pen selected — Ochre. Draw on the board; Escape ends the pen."
+- Cmd/Ctrl+Z after four strokes: ink paths=3, hint "Undo: Draw"
+- Shift+Cmd/Ctrl+Z: ink paths=4, hint "Redo: Draw"
+- world coordinates: stroke 2 lives over note A at 100 % (scale 1.00); note 176.0 × 122.8 at 185.0/17.3, stroke 147.8 × 15.6 at 199.1/61.1
+- screenshot P0-43-ink-light-en-desktop.png (1440 × 900, light, EN, 100 % scale, handwriting over the zone, note A, the photo and the table)
+- after five zoom-in steps (scale 1.50): note 264.0 × 184.1 at -82.5/-94.2, stroke 221.7 × 23.3 at -61.4/-28.5
+- relative offset stroke↔note: x 0.080 → 0.080, y 0.357 → 0.357 (unchanged: the stroke stays over its object)
+- stroke colour of the tone-d stroke in the light theme: oklch(0.45 0.08 255)
+- theme switch light → dark: theme=dark, ink paths=4, tone-d colour oklch(0.45 0.08 255) → rgb(143, 176, 220) (token name kept: ["tone-d","tone-e","tone-a","tone-a"])
+- language switch EN → DE: lang=de, ink paths unchanged=4, tones unchanged=["tone-d","tone-e","tone-a","tone-a"]
+- screenshot P0-43-ink-dark-de-desktop.png (1440 × 900, dark, DE, same strokes recoloured by the token switch)
+- Escape left the pen: drawing mode=false, note aria-pressed=true
+- selecting another tool left the pen: drawing mode=false, pen aria-pressed=false
+- ink still on the board after the tool change and both switches: 4 strokes, tones ["tone-d","tone-e","tone-a","tone-a"]
+- console/page errors during the desktop run: none
+
+The original run's dot/status lines after the language switch were not captured consistently (F5); the final one-session sequence below is the authoritative colour-survival check.
+
+## Reload clears the preview ink
+- after a fresh load: ink paths=0, pen drawing mode=false, palette dot=rgb(143, 191, 175) (stored dark theme, default tone-a)
+
+## Mobile, light, English, 390 × 844
+- layout: surface 358 × 1664 at 16/1171.09375, toolbar 356 × 94, horizontal overflow 0 px, theme=light
+- mobile palette: hidden=false, swatches=6, popover 134 × 94 at 226/66, inside 390 × 844: true, horizontal overflow 0 px
+- mobile palette closed with Escape: hidden=true, pen still active=true
+- after scrolling the compact board: zone at 58/140 (274 × 315), note A at 17/-445
+- mobile strokes committed: 2, pen drawing mode=true, status "Stroke drawn in Sage."
+- mobile horizontal overflow after drawing: 0 px, console errors: none
+- screenshot P0-43-ink-light-mobile.png (390 × 844, light, EN, handwriting over the zone, its notepad and the photo)
+
+## Rework verification, 2026-10-28 23:38 Europe/Zurich (F1 masthead, F2 undo mid-stroke)
+- harness: the same raw-CDP driver, fresh Chrome profile, 1440 × 900; 30 assertions, all passed, no console error or page exception
+### Masthead after applyLocale (F1)
+- EN: lastChange "Last change: P0-43 — Live demo: pen tool and ink colours over the whole board", lastChangeTime "2026-10-28 23:07 (Europe/Zurich)", tasks "Tasks: P0-19, …, P0-42, P0-43, P1-07"
+- the rendered EN lastChange, time and task list equal the index.html fallback text byte for byte after the locale fetch (no P0-42 title, no 22:07)
+- DE: lastChange "Letzte Änderung: P0-43 — Live-Demo: Stift und Tintenfarben über das ganze Board", lastChangeTime "2026-10-28 23:07 (Europe/Zurich)", tasks "Aufgaben: P0-19, …, P0-42, P0-43, P1-07"
+- the rendered DE strings equal locales/de.json (same key set as en.json, no "ß", du-form); EN and DE agree on P0-43, 23:07 and the task list ending P0-42, P0-43, P1-07
+### Undo mid-stroke (F2 repro)
+- stroke 1 in tone-a committed: ink paths=1
+- stroke 2 started with the pointer still down (8 moves): ink paths=2
+- Cmd/Ctrl+Z mid-stroke: ink paths=0, hint "Undo: Draw" — the live stroke and stroke 1 are gone
+- releasing the pointer after the cancelled stroke: ink paths=0, hint unchanged "Undo: Draw"; no "Undo: Move" step was recorded and nothing cleared the redo stack
+- second Cmd/Ctrl+Z after the release: ink paths=0 — there is no spurious history entry to consume
+- Shift+Cmd/Ctrl+Z: ink paths=1, hint "Redo: Draw", tones ["tone-a"] — redo restores the real previous step
+- normal undo/redo without a live stroke: 1 → 0 → 1 path, hints "Undo: Draw" / "Redo: Draw"
+- regression after leaving the pen: dragging note A records "Undo: Move", undo restores the position and keeps the ink (press snapshot path intact)
+
+## Final verification, 2026-10-28 23:47 Europe/Zurich (F4 multi-pointer guard, F5 colour survival)
+- harness: the same raw-CDP driver, fresh Chrome profile, 1440 × 900, one loaded page for the colour sequence and fresh reloads for the pointer cases; no console error or page exception in any part.
+
+### Colour survival across theme and language (F5, one session)
+- start: theme=light, lang=en, pen off, default swatch tone-a, dot=oklch(0.455 0.065 165), ink paths=0
+- pen selected; palette opened; swatch tone-d clicked: aria-pressed=["tone-d"], dot=oklch(0.45 0.08 255), status "Pen selected — Blue. Draw on the board; Escape ends the pen."
+- two mouse strokes drawn: ink paths=2, tones=["tone-d","tone-d"], stroke colour oklch(0.45 0.08 255) for both, status "Stroke drawn in Blue."
+- Cmd/Ctrl+Z: ink paths=1, hint "Undo: Draw"; Shift+Cmd/Ctrl+Z: ink paths=2, hint "Redo: Draw", tones still ["tone-d","tone-d"]
+- theme light → dark: theme=dark, ink paths=2, tones unchanged, dot=rgb(143, 176, 220), stroke colour rgb(143, 176, 220), status unchanged
+- language EN → DE: lang=de, ink paths=2, tones unchanged, dot=rgb(143, 176, 220) (same dark tone-d); the locale switch clears the status line by design, then re-selecting the pen announces "Stift ausgewählt — Blau. Zeichne auf der Leinwand; Escape beendet den Stift."
+- theme dark → light: theme=light, ink paths=2, tones unchanged, dot=oklch(0.45 0.08 255) (light tone-d), stroke colour oklch(0.45 0.08 255), status unchanged
+- language DE → EN: lang=en, ink paths=2, tones unchanged, dot=oklch(0.45 0.08 255); re-selecting the pen announces "Pen selected — Blue. Draw on the board; Escape ends the pen."
+- result: the same tone-d token is kept through light → dark → DE → light → EN; only the resolved value follows the theme (oklch in light, rgb(143, 176, 220) in dark), in both directions, and both strokes survive every switch.
+
+### Multi-pointer guard (F4)
+- non-primary pointer: fresh load, pen selected, no live stroke; a synthetic pointerdown with isPrimary=false, pointerId 77, pointerType=touch on the surface left ink paths=0, event.defaultPrevented=false (the guard returns before preventDefault) and started no stroke.
+- real two-finger touch: fresh load, pen selected, `Emulation.setTouchEmulationEnabled` with maxTouchPoints=5, then one `Input.dispatchTouchEvent` touchStart with two points (primary at surface +400/+220, non-primary at surface +620/+300).
+- after touchStart: exactly one live path, d="M 399.0 171.0" — the second, non-primary pointer neither started nor replaced a stroke (without the guard, the first partial path would have been orphaned in the SVG and the second would have become the live path, i.e. two `path` elements).
+- after touchMove moving both fingers (primary +40/+30, second +60/+40): the same path reads d="M 399.0 171.0 L 439.0 201.0" — only the primary pointer's sample was appended; the second finger's movement was not drawn.
+- after touchEnd: ink paths=1, tones=["tone-a"], status "Stroke drawn in Sage.", pen still active.
+- Cmd/Ctrl+Z: ink paths=0, hint "Undo: Draw"; Shift+Cmd/Ctrl+Z: ink paths=1, tone-a, hint "Redo: Draw" — the touch stroke is exactly one history step.
+- normal mouse pen and its undo/redo are unaffected: the two mouse strokes and their undo/redo in the colour sequence above passed with the guard in place.
+
+## Captures
+- The four committed PNGs are the 23:18 originals and were not regenerated.
+- P0-43-palette-open-desktop.png: the open six-swatch popover with the current swatch marked.
+- P0-43-ink-light-en-desktop.png: 100 % light EN frame with handwriting over the zone, note A, the photo and the table; its trigger dot is the default tone-a (light rgb(48, 98, 78)), not the tone-d dot of the final sequence.
+- P0-43-ink-dark-de-desktop.png: dark DE frame with the same strokes recoloured; its trigger dot is dark tone-a rgb(143, 191, 175).
+- P0-43-ink-light-mobile.png: mobile light EN handwriting over the zone, its notepad and the photo.
+- No capture needs regeneration to close F5: the defect was the log narration, and the captures still prove ink over the objects in both themes and languages. Regenerate the two ink captures only if the screenshot dot itself must show tone-d.
+
+## Result
+- All P0-43 interactions ran without a console error or page exception; the four committed screenshots are in reviews/evidence/.
+- Ink is one SVG in the world above every object, stores token names, survives zoom/theme/language and is cleared only by a reload.
+- Rework run: 30/30 assertions passed (masthead EN/DE, undo/redo mid-stroke, normal undo/redo, drag-undo regression).
+- Final run: colour survival in one session and the multi-pointer guard passed; one touch stroke = one undo step, redo restores it, and the normal mouse pen/undo/redo still pass.

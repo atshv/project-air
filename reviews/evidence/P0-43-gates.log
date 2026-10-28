@@ -1,0 +1,90 @@
+# P0-43 gate records — pen tool and ink colours
+
+Date: 2026-10-28 23:48 Europe/Zurich · Worktree: /tmp/air-P0-43 · Branch: task/P0-43 · Slot: 3
+Board pin: board.json `generator_version` = 1.0.0.
+
+The three records in this set were written by the pinned Polier v1.0.0 gate.py, which reports the
+start `22:48:21Z` … `22:48:28Z` (23:48 Europe/Zurich) quoted below. They supersede the earlier
+`…T223907Z` / `…T223914Z` / `…T223916Z` records (and the 22:18 set); all superseded files were
+deleted so exactly one current set remains.
+
+All three records carry `commit: 528d94e` with `dirty: true`: the gates ran on the final rework
+working tree before `git commit --amend`, so the recorded commit is the pre-amend task commit. The
+base `main` `1034527` is unchanged and remains in the submitted commit's history; the amend adds the
+`isPrimary`/live-stroke guard, the F5 evidence rewrite and this gate set.
+
+## board-check
+
+The shared checkout `/Users/rasulatashev/Desktop/Polier-main` now carries Polier 1.1.0
+(`VERSION` 1.1.0, commit `adb4d07`, `v1.0.0-6-gadb4d07`, clean tree), while `board.json` still pins
+`generator_version` 1.0.0. Its 1.1.0 `check.py` still fails on project state that P0-43 does not
+touch, and it warns about the pin itself:
+
+```
+$ python3 /Users/rasulatashev/Desktop/Polier-main/tools/check.py .
+WARN: board.json: project uses generator 1.0.0, package is 1.1.0; see CHANGELOG.md before updating
+FAIL: 2 finding(s) in /private/tmp/air-P0-43
+- P5-08: stage realtime needs stage(s) backend-core, engine-core complete first
+- STATUS.md is out of date with board.json — run tools/render_status.py
+[exit 1]
+```
+
+Neither finding is caused by this task's files: P0-43 touches no stage order and no `STATUS.md`.
+Because the board still pins 1.0.0, the gate ran through the exact tag v1.0.0 extracted from the same
+repository, with `gate.py` and `check.py` both from that extraction:
+
+```
+$ git -C /Users/rasulatashev/Desktop/Polier-main archive v1.0.0 | tar -x -C /tmp/polier-1.0.0
+$ python3 /tmp/polier-1.0.0/tools/gate.py --task P0-43 --name board-check --slot 3 --root . \
+    --shell "python3 /tmp/polier-1.0.0/tools/check.py ."
+GATE board-check: PASS (exit 0)
+OK: /private/tmp/air-P0-43 passes the mandatory checks. (102 warning(s))
+```
+
+`/tmp/polier-1.0.0/VERSION` is `1.0.0`, its `tools/check.py` sha256
+`fdc2d03e2ad0b4e86987e37991c667ab508755b649aa6a65075a6a66ef42b1f0` equals
+`git show v1.0.0:tools/check.py`, and the extract's `tools/gate.py` is
+`3bf3eeb4e6b8af6ba0d4b9451ff89164e9b5898b22fef9f75267926b018d76ac`; the tag extraction is genuine.
+
+Record: reviews/evidence/P0-43-board-check-20261028T224821Z.json / .log
+(started 2026-10-28T22:48:21Z, finished 22:48:26Z, exit 0, result pass, log_sha256
+`c0959811f061f43e48b18522cdfc3c440962ef226c8112c260b477286d0c4e9e`).
+
+## design-check
+
+```
+$ python3 /tmp/polier-1.0.0/tools/gate.py --task P0-43 --name design-check --slot 3 --root . \
+    --shell "node tools/design-check/index.mjs ."
+GATE design-check: PASS (exit 0)
+```
+
+Record: reviews/evidence/P0-43-design-check-20261028T224828Z.json / .log
+(started 2026-10-28T22:48:28Z, exit 0, result pass, log_sha256
+`ffa556e23d40616c4720395afe0b5df39d0bd1904dc48671f3d045004909d59d`).
+
+## changelog-entry
+
+```
+$ python3 /tmp/polier-1.0.0/tools/gate.py --task P0-43 --name changelog-entry --slot 3 --root . \
+    --shell "node tools/release/check-changes.mjs --base main --task P0-43"
+GATE changelog-entry: PASS (exit 0)
+check-changes: task P0-43, base main, 24 changed path(s), 6 code path(s)
+changelog-entry: OK (.changes/P0-43-pen-and-ink-colours.md)
+```
+
+The record is authoritative for the count: 24 changed paths at `22:48:28Z` = the 19 paths in the
+committed task tree (the six superseded gate-record files still count as deletions against `main`)
+plus the four new board-check and design-check record files on disk plus the untracked
+`reviews/P0-43.md`; the changelog record's own two files and this rewritten summary did not exist
+yet. The final amended tree again has 19 changed paths against `main` (the six old records are
+replaced by six new ones), so the committed set is unchanged in size.
+
+Record: reviews/evidence/P0-43-changelog-entry-20261028T224828Z.json / .log
+(started 2026-10-28T22:48:28Z, finished 22:48:28Z, exit 0, result pass, log_sha256
+`fe79982f7a5d1182f0c7f1459585bab473996cd784f47d80eeea904aa93d9b1f`).
+
+## Open point for the Lead
+
+The Polier 1.1.0 upgrade and the board regeneration (board.json `generator_version`, STATUS.md) are
+outside P0-43's scope. Once main carries the upgraded board, the board-check gate should be rerun with
+the canonical 1.1.0 checkout; the pinned v1.0.0 gate already proves this diff clean.

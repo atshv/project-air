@@ -1,0 +1,17 @@
+{
+  "task": "P0-43",
+  "gate": "board-check",
+  "command": "python3 /tmp/polier-1.0.0/tools/check.py .",
+  "exit_code": 0,
+  "result": "pass",
+  "slot": 3,
+  "exclusive": [],
+  "lock_wait_s": 0.0,
+  "lock_warning": null,
+  "started": "2026-10-28T22:48:21+00:00",
+  "finished": "2026-10-28T22:48:26+00:00",
+  "commit": "528d94e5f71c2b9a97ab6c97d6cdcb02222c0dc3",
+  "dirty": true,
+  "log": "P0-43-board-check-20261028T224821Z.log",
+  "log_sha256": "c0959811f061f43e48b18522cdfc3c440962ef226c8112c260b477286d0c4e9e"
+}

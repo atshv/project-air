@@ -57,7 +57,7 @@ Read `AGENTS.md`, `ARCHITECTURE.md`, `STATUS.md`, `docs/module-map.md` and the t
   session, merged locally and pushed. Coordinate via claims/`in_progress` in `board.json`. Commit race
   documented below (`eff284b` carries the P4-07 content, `b4938dc` its bookkeeping). `origin/main` is
   at the latest main commit (check `git log` / `git status -sb`).
-- **Done overall:** 93 of 98 tasks. Open: the rest of stage 5 (the chain above plus `P4-11`…`P4-13`
+- **Done overall:** 94 of 99 tasks. Open: the rest of stage 5 (the chain above plus `P4-11`…`P4-13`
   WebGPU, `P4-17`/`P4-18` resize/auto-pan, `P4-19`…`P4-24` placement/keyboard/undo/view/trackpad)
   plus the remote-phase tasks `P0-02`, `P0-15`, `P0-16`, `P0-17` (after hardening) and the planning
   of the later stages (realtime, web-app, value, hardening).

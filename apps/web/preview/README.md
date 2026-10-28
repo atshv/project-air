@@ -1,4 +1,4 @@
-# Design preview (P0-19, P0-20, P0-21, P0-22, P0-23, P0-24, P0-25, P0-26, P0-27, P0-28, P0-29, P0-30, P0-31, P0-32, P0-33, P0-34, P0-35, P0-36, P0-37, P0-38, P0-39, P0-40, P0-41, P0-42, P1-07)
+# Design preview (P0-19, P0-20, P0-21, P0-22, P0-23, P0-24, P0-25, P0-26, P0-27, P0-28, P0-29, P0-30, P0-31, P0-32, P0-33, P0-34, P0-35, P0-36, P0-37, P0-38, P0-39, P0-40, P0-41, P0-42, P0-43, P1-07)
 
 A design preview of the Project air design system. It is **not the product**: there is no engine,
 no data, no server and no build step. It exists so the owner can see the look and feel between
@@ -15,9 +15,9 @@ its two values come from:
   `0.0.1 – unreleased`; the status word comes from the same heading. `CHANGELOG.md` is the display
   source and currently agrees with the root `package.json` version `0.0.1`.
 - **Last change** — the newest preview change entry, currently
-  `.changes/P0-42-light-theme.md`; the line shows the task id and that task's title from
-  `board.json` / the task brief: `P0-42 — Live demo: light theme with sun/moon icons under DE/EN`. The line follows the
-  `P0-*` preview tasks (P0-19 … P0-42, P1-07); the engine tasks
+  `.changes/P0-43-pen-and-ink-colours.md`; the line shows the task id and that task's title from
+  `board.json` / the task brief: `P0-43 — Live demo: pen tool and ink colours over the whole board`. The line follows the
+  `P0-*` preview tasks (P0-19 … P0-43, P1-07); the engine tasks
   (`P4-*`) and the other stages run in parallel and do not move it, so "highest numeric id" alone is
   not the rule. If several files exist for the same preview task, the most recent one is used;
   `.changes/README.md` and `.changes/TEMPLATE.md` do not count as entries.
@@ -39,9 +39,10 @@ task.
 - An **interactive connection demo**: two note cards joined by one curved edge. Drag a card with
   mouse, pen or finger, or focus a card and use the arrow keys (16 px per step); `Home` resets both
   cards. Clearly labelled “interactive demo — not the engine; no data, no server”.
-- A **top-centre floating toolbar** (preview-only) with the ten tools note (selected initially),
-  link, image, file │ zone, checklist, palette, columns, timeline and table, using the ui-kit icon
-  files through the existing `.icon--*` mask classes.
+- A **top-centre floating toolbar** (preview-only) with the eleven tools note (selected initially),
+  link, image, file │ zone, checklist, pen, palette, columns, timeline and table, using the ui-kit
+  icon files through the existing `.icon--*` mask classes. The pen draws freehand ink over the whole
+  board; the palette opens the ink colours in a token-only popover (P0-43).
 - A **zone** with a notepad and a small image window that shows the owner-supplied demo photo. The
   zone lays the two items side by side or stacked depending on where the drop lands, a docked item
   can be reordered or swapped inside it (P0-30), both items can be dragged out onto the canvas and
@@ -134,16 +135,17 @@ design system updates the demo and refreshes its screenshot in `reviews/evidence
 ## The preview toolbar and zone (P0-26)
 
 The demo also carries the canvas chrome and one zone/content composition from the design system.
-Both are **preview-only**: no toolbar action touches the canvas, and the zone is static demo content
-(no upload, no file handling, no engine).
+All of it is **preview-only**: only the pen changes the canvas, every other toolbar action just shows
+its state, and the zone is static demo content (no upload, no file handling, no engine).
 
 - **Toolbar** — one floating pill at the top centre, 12 px (`--space-12`) from the surface edge, with
   a `--surface` background, a 1 px `--border` border, `--radius-pill`, `--shadow`, 8 px padding
-  (`--space-8`) and 4 px gap (`--space-4`). Ten 36 × 36 buttons (`--button-bar`) with 20 px icons
+  (`--space-8`) and 4 px gap (`--space-4`). Eleven 36 × 36 buttons (`--button-bar`) with 20 px icons
   (`--icon-bar`) in the owner's order: note (selected first), link (`source.svg`), image, file │
-  zone, checklist, palette, columns, timeline and table; the 1 × 20 px group divider after "file"
-  uses `--border-width` and `--icon-bar`. The icons are the ui-kit SVGs through the existing
-  `.icon--*` mask classes, so they only ever take token colours through `currentColor`.
+  zone, checklist, pen, palette, columns, timeline and table; the 1 × 20 px group divider after
+  "file" uses `--border-width` and `--icon-bar`. The icons are the ui-kit SVGs through the existing
+  `.icon--*` mask classes, plus one inline ui-kit-style pen SVG (24 grid, 1.6 stroke,
+  `currentColor`, round caps), so they only ever take token colours through `currentColor`.
 - **Toolbar states** — every button has all design states: rest `--muted` on transparent, hover
   `--faint` background with the icon in `--fg` and a `--border-strong` border, focus-visible a 2 px
   `--accent` outline, pressed `scale(0.97)`, and selected `aria-pressed="true"` with an
@@ -151,8 +153,9 @@ Both are **preview-only**: no toolbar action touches the canvas, and the zone is
   `aria-label` and a `data-label` tooltip from the locale files (never the native `title`
   attribute).
 - **Toolbar selection** — clicking or pressing a tool flips `aria-pressed` and names the tool in the
-  demo status line; the note tool is selected in the markup. Nothing else changes: the cards, the
-  edge and the zoom scale stay where they are.
+  demo status line; the note tool is selected in the markup. The pen button enters drawing mode and
+  the palette button opens the colour popover without taking the drawing mode away; every other tool
+  only flips its state, so the cards, the edge and the zoom scale stay where they are (P0-43).
 - **Zone** — a static zone card at the centre of the canvas with a `--card` background, a 1 px `--border`
   border and `--radius-md`. It contains a 240 px notepad (`--surface`, 1 px `--border-strong`,
   `--radius-sm`, `--text-15` title, `--text-13` body) and a 240 × 140 px image window with a 32 px
@@ -178,6 +181,45 @@ Both are **preview-only**: no toolbar action touches the canvas, and the zone is
   measure the world layer instead of the surface, so the edge stays exactly on the anchors in both
   layouts; on desktop the world layer and the surface are identical and the demo behaves exactly as
   before.
+
+## Pen tool and ink colours (P0-43)
+
+The owner asked to write and draw by hand over everything on the board — "in verschiedenen farben
+auf leinwand und über alle zonen, notizen, fotos usw einzeichnen / von hand schreiben". The pen and
+the palette are **preview state only**: ink exists in this page's memory, is never sent anywhere and
+is cleared on reload.
+
+- **Pen** — the pen button (inline SVG line icon in the ui-kit style: 24 grid, 1.6 stroke,
+  `currentColor`, round caps) sits next to the palette button. Selecting it puts the whole surface in
+  drawing mode with a crosshair cursor. A pointerdown starts one stroke, pointermove extends it,
+  pointerup commits it; the samples are smoothed into one quadratic polyline, and a press that never
+  covers 2 world px is a click, not ink. The stroke is drawn in one SVG ink layer inside the demo
+  world at `--layer-snap-guides` — above zones, note cards, the zone items, photos, the checklist and
+  the table, below the toolbar, zoom pill, guides and frames. The ink SVG has `pointer-events: none`
+  at rest; only the pen mode captures the gesture, and it stops the press before any object handler,
+  so drawing never selects, moves or opens an object. Escape or any other tool leaves the pen mode.
+- **World coordinates** — every point is stored in the world layer's coordinates (the inverse of the
+  world transform at pointer time, the same maths the zone drag uses), so panning, zooming, resizing,
+  a theme switch and a language switch never move a stroke. The ink SVG scales with the world; the
+  surface clips it, so it never spills onto the page.
+- **Colours** — the palette button opens a keyboard-operable popover with the six swatches
+  `--tone-a` … `--tone-e` plus the neutral `--fg`. The current swatch carries `aria-pressed="true"`;
+  choosing one sets the next stroke's colour and the dot on the palette button, closes the popover
+  and returns focus to the trigger. The popover also closes on Escape, on a focus move out and on a
+  press outside; arrow keys walk the swatches. Every stroke stores the **token name**, not a colour,
+  and is stroked with `stroke: var(--tone-x)`, so existing ink is recoloured by the light/dark theme
+  and the colour survives tool, language and theme changes. All labels are in `en.json` and
+  `de.json` (Pen, Pen colours, Sage/Ochre/Lilac/Blue/Rust/Neutral; Stift, Stiftfarben,
+  Salbei/Ocker/Flieder/Blau/Rost/Neutral).
+- **History and status** — one committed stroke is exactly one history step, labelled "Draw" /
+  "Zeichnen" in the undo hint; undo removes the last stroke and redo (`Shift+Cmd/Ctrl+Z`) restores
+  it. The existing object steps stay intact, and undo cancels a stroke that is still in progress
+  instead of adding a point. The status line names the pen and the current colour, like the other
+  tools.
+- **States** — the pen and palette buttons keep the toolbar states (rest, hover, pressed,
+  focus-visible, `aria-pressed`) and both appear in the DE/EN strings; the palette popover uses only
+  token colours, the 4 px spacing series, `--radius-md`/`--radius-sm` and the `--shadow`. Under
+  `prefers-reduced-motion: reduce` the swatch transition is off.
 
 ## Zone interaction: live release preview and one calm motion (P0-28 → P0-31)
 
@@ -292,7 +334,7 @@ Owner feedback of 2026-10-28:
   One short intro line remains, followed by a numbered contents list of ten points (`<details>`,
   closed by default, keyboard operable, two columns on desktop, one on mobile): move cards,
   connection, dock/reorder/pull out, new zone, name and move a zone, select and resize, snap /
-  several / menu / undo, checklist and table, teammates, preview only (`demo.guide.*`).
+  several / menu / undo, checklist and table, teammates, preview and pen (`demo.guide.*`).
 
 ## Two teammates on the board (P0-40)
 
@@ -604,9 +646,9 @@ P0-26 markup with the old stylesheet and a broken-looking demo. The preview ther
 assets with a version query:
 
 ```html
-<link rel="stylesheet" href="../../../packages/ui-kit/tokens.css?v=P0-42" />
-<link rel="stylesheet" href="preview.css?v=P0-42" />
-<script src="preview.js?v=P0-42" defer></script>
+<link rel="stylesheet" href="../../../packages/ui-kit/tokens.css?v=P0-43" />
+<link rel="stylesheet" href="preview.css?v=P0-43" />
+<script src="preview.js?v=P0-43" defer></script>
 ```
 
 - **Bump rule:** every task that changes a file in `apps/web/preview/` — or the shared
@@ -615,7 +657,7 @@ assets with a version query:
   never cached and gets the current files, which also covers a changed design system that would
   otherwise be served from the cached token stylesheet.
 - The locale files reuse the script's version automatically: `preview.js` reads the `v` query of its
-  own script URL and appends it to the locale request (`locales/de.json?v=P0-42`), so one bump
+  own script URL and appends it to the locale request (`locales/de.json?v=P0-43`), so one bump
   covers the translations as well.
 - The icon SVGs are referenced from `preview.css` and keep stable, unversioned URLs; they only
   change with a design-system task, and every such task bumps the preview version anyway.
@@ -673,7 +715,7 @@ the slot's `web` port from `.polier-slot` (never hard-code it), then:
 
 ```sh
 # Replace <worktree> with the repository root of your task checkout
-# (P0-42 ran in /tmp/air-P0-42 on branch task/P0-42; the path is worktree-specific
+# (P0-43 ran in /tmp/air-P0-43 on branch task/P0-43; the path is worktree-specific
 # and goes stale after merge).
 cd "<worktree>"
 PORT=$(python3 -c "import json; print(json.load(open('.polier-slot'))['ports']['web'])")
@@ -775,8 +817,10 @@ line and tasks in English and German),
 `P0-42-light-de-board-desktop.png`, `P0-42-light-de-selection.png` (1440×900),
 `P0-42-light-de-board-mobile.png` (390×1800), `P0-42-light-de-contents.png` (1440×900),
 `P0-42-light-en-reload-desktop.png` and `P0-42-light-system-desktop.png` (1440×900, light system
-preference with no stored value) and the
-`P0-42-browsertest.log` verification log; the older
+preference with no stored value), plus
+`P0-43-ink-light-en-desktop.png`, `P0-43-ink-dark-de-desktop.png`,
+`P0-43-palette-open-desktop.png` (1440×900) and `P0-43-ink-light-mobile.png` (390×844) and the
+`P0-43-browsertest.log` verification log; the older
 `P0-19-preview.log` / `P0-20-preview.log` / `P0-21-preview.log` / `P0-22-preview.log` /
 `P0-23-preview.log` / `P0-24-preview.log` / `P0-25-preview.log` / `P0-26-preview.log` /
 `P0-27-preview.log` / `P0-28-preview.log` / `P0-29-preview.log` / `P0-30-preview.log` /

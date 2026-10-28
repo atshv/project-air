@@ -6521,8 +6521,8 @@
       "id": "P0-43",
       "title": "Live demo: pen tool and ink colours over the whole board",
       "stage": "foundation",
-      "status": "in_progress",
-      "owner": "lead",
+      "status": "done",
+      "owner": null,
       "depends_on": [
         "P0-42"
       ],
@@ -6556,9 +6556,17 @@
         "A3",
         "A4"
       ],
-      "evidence": [],
-      "handoff": [],
-      "worktree": "/private/tmp/air-P0-43",
+      "evidence": [
+        "reviews/evidence/P0-43-board-check-20261028T224821Z.json",
+        "reviews/evidence/P0-43-design-check-20261028T224828Z.json",
+        "reviews/evidence/P0-43-changelog-entry-20261028T224828Z.json"
+      ],
+      "handoff": [
+        "Closed P0-43: pen draws one smooth stroke per press above zones/notes/photos/tables, in world coords (pan/zoom), never selecting/moving; crosshair, Escape/tool exit.",
+        "Palette popover with six token colours (tone-a..e, fg), aria-pressed swatches, trigger dot, keyboard/Escape/outside; strokes store the tone so dark/light recolour them; one translated undo step each.",
+        "P0-41/P0-42 preserved; README documents preview-only ink; board-check (pinned Polier v1.0.0, 1.1.0 upgrade documented), design-check and changelog-entry pass; screenshots and browser log committed."
+      ],
+      "worktree": null,
       "exclusive": [],
       "satisfies": [
         "D3"

@@ -56,6 +56,23 @@
   var THEME_STORAGE_KEY = "preview-theme";
   var THEME_DEFAULT = "dark";
   var THEME_THEMES = ["dark", "light"];
+  // Ink colours (P0-43): the five zone tones plus the neutral text colour. A
+  // stroke stores the token name and is stroked with var(--tone-x), never a raw
+  // colour, so a theme switch recolours existing ink.
+  var INK_TONES = ["tone-a", "tone-b", "tone-c", "tone-d", "tone-e", "fg"];
+  var INK_LABEL_KEYS = {
+    "tone-a": "demo.ink.toneA",
+    "tone-b": "demo.ink.toneB",
+    "tone-c": "demo.ink.toneC",
+    "tone-d": "demo.ink.toneD",
+    "tone-e": "demo.ink.toneE",
+    fg: "demo.ink.neutral",
+  };
+  var INK_DEFAULT_TONE = "tone-a";
+  // World-distance thresholds in px: sampled points this close to the last one
+  // are dropped, and a press that never covers this length is a click, not ink.
+  var INK_MIN_DISTANCE = 1.5;
+  var INK_MIN_LENGTH = 2;
   // English fallbacks for the status strings when the locale file cannot be loaded.
   var STATUS_FALLBACK = {
     "demo.status.card": "Card {label} at column {column}, row {row}.",
@@ -80,7 +97,18 @@
     "demo.sheet.sumFunction": "SUM",
     "demo.status.zoneMoved": "Zone moved.",
     "demo.status.resized": "Size changed.",
+    "demo.status.pen": "Pen selected — {colour}. Draw on the board; Escape ends the pen.",
+    "demo.status.ink": "Pen colour: {colour}.",
+    "demo.status.stroke": "Stroke drawn in {colour}.",
+    "demo.ink.toneA": "Sage",
+    "demo.ink.toneB": "Ochre",
+    "demo.ink.toneC": "Lilac",
+    "demo.ink.toneD": "Blue",
+    "demo.ink.toneE": "Rust",
+    "demo.ink.neutral": "Neutral",
     "demo.chrome.undoHint": "Undo: {action}",
+    "demo.chrome.redoHint": "Redo: {action}",
+    "demo.chrome.action.draw": "Draw",
     "demo.chrome.selected": "{count} selected",
     "demo.status.checklistCount": "{done} of {total} done",
     "demo.status.checklistDone": "\u201c{item}\u201d done \u2014 {done} of {total}.",
@@ -124,6 +152,26 @@
     }
     if (text === null) return "";
     return interpolate(text, params || {});
+  }
+
+  function inkColourLabel(tone) {
+    return translate(INK_LABEL_KEYS[tone] || INK_LABEL_KEYS.fg);
+  }
+
+  // Toolbar and demo share one state object: the toolbar owns the buttons and
+  // the palette, the demo owns the pointer handlers and the ink layer; the
+  // callbacks are wired at setup time (P0-43).
+  function createToolState() {
+    return {
+      tool: "note",
+      pen: false,
+      colour: INK_DEFAULT_TONE,
+      paletteOpen: false,
+      onTool: null,
+      onColour: null,
+      closePalette: null,
+      exitPen: null,
+    };
   }
 
   function applyLocale(messages, lang) {
@@ -383,11 +431,12 @@
     return value.toFixed(1);
   }
 
-  function setupDemo(demo) {
+  function setupDemo(demo, toolState) {
     var surface = demo.querySelector("[data-demo-surface]");
     var world = demo.querySelector("[data-demo-world]");
     var edge = demo.querySelector("[data-demo-edge]");
     if (surface === null || world === null || edge === null) return;
+    if (toolState === undefined) toolState = createToolState();
 
     var edgePath = edge.querySelector("[data-demo-edge-path]");
     var edgeDots = edge.querySelectorAll("[data-demo-edge-dot]");
@@ -2196,6 +2245,8 @@
       function (event) {
         var target = event.target;
         if (!(target instanceof Element)) return;
+        // The pen owns the press: drawing never selects or moves an object.
+        if (penMode) return;
         if (target.closest(".demo-selection, .demo-toolbar, .demo-zoom")) return;
         var hit = null;
         for (var index = 0; index < selectionTargets.length && hit === null; index += 1) {
@@ -2410,10 +2461,22 @@
     undoHint.removeAttribute("aria-hidden");
     var hintTimer = null;
     var historyStack = [];
+    var redoStack = [];
     var pressSnapshot = null;
 
     function sizeOf(element) {
       return { w: element.style.inlineSize, h: element.style.blockSize };
+    }
+
+    // Ink strokes join every snapshot, so undo and redo cover them like any
+    // other gesture while the existing steps stay intact (P0-43).
+    function copyStrokes(list) {
+      return list.map(function (stroke) {
+        return {
+          tone: stroke.tone,
+          points: stroke.points.map(function (point) { return { x: point.x, y: point.y }; }),
+        };
+      });
     }
 
     function takeSnapshot() {
@@ -2433,6 +2496,7 @@
           origin: { x: zoneOrigin.x, y: zoneOrigin.y },
           name: { key: zoneName.key, custom: zoneName.custom },
         },
+        strokes: copyStrokes(strokes),
       };
     }
 
@@ -2483,6 +2547,12 @@
         var item = zoneItems[index];
         moveZoneItem(item, saved.docked && layout !== null ? slotPosition(layout, item.key) : { x: saved.x, y: saved.y });
       });
+      strokes = copyStrokes(snapshot.strokes || []);
+      inkStroke = null;
+      inkPath = null;
+      inkPointer = null;
+      inkBefore = null;
+      renderInk();
       setSelection([]);
     }
 
@@ -2509,22 +2579,38 @@
       // recorder with the same starting state: keep one step only.
       var last = historyStack[historyStack.length - 1];
       if (last !== undefined && JSON.stringify(last.snapshot) === JSON.stringify(before)) return;
-      historyStack.push({ label: label || describeChange(before, after), snapshot: before });
+      historyStack.push({ label: label || describeChange(before, after), snapshot: before, state: after });
       if (historyStack.length > HISTORY_DEPTH) historyStack.shift();
+      redoStack = [];
     }
 
-    function undo() {
-      var entry = historyStack.pop();
-      if (entry === undefined) return;
-      restoreSnapshot(entry.snapshot);
-      undoHint.textContent = translate("demo.chrome.undoHint", {
-        action: translate("demo.chrome.action." + entry.label),
+    function showHistoryHint(key, label) {
+      undoHint.textContent = translate(key, {
+        action: translate("demo.chrome.action." + label),
       });
       undoHint.classList.add("is-visible");
       window.clearTimeout(hintTimer);
       hintTimer = window.setTimeout(function () {
         undoHint.classList.remove("is-visible");
       }, HINT_MS);
+    }
+
+    function undo() {
+      cancelInkStroke();
+      var entry = historyStack.pop();
+      if (entry === undefined) return;
+      redoStack.push(entry);
+      restoreSnapshot(entry.snapshot);
+      showHistoryHint("demo.chrome.undoHint", entry.label);
+    }
+
+    function redo() {
+      cancelInkStroke();
+      var entry = redoStack.pop();
+      if (entry === undefined) return;
+      historyStack.push(entry);
+      restoreSnapshot(entry.state);
+      showHistoryHint("demo.chrome.redoHint", entry.label);
     }
 
     surface.addEventListener(
@@ -2543,6 +2629,221 @@
         recordChange(before);
       }, 0);
     });
+
+    // ---------- pen and ink (P0-43) ----------
+    //
+    // The pen draws one freehand stroke per press, committed on release, in one
+    // SVG above every board object (zones, notes, photos, tables, checklists)
+    // and below the canvas chrome. Points live in world coordinates (the inverse
+    // of the world transform at pointer time), so zoom, pan, theme and locale
+    // never move them; a stroke stores its token name and is stroked with
+    // var(--tone-x), so a theme switch recolours existing ink. Ink is preview
+    // state: no data, no server, gone on reload. One stroke is one undo step;
+    // drawing never selects or moves an object.
+
+    var inkLayer = demo.querySelector("[data-demo-ink]");
+    var strokes = [];
+    var inkStroke = null;
+    var inkPath = null;
+    var inkPointer = null;
+    var inkBefore = null;
+    var penMode = false;
+
+    function inkPointOf(clientX, clientY) {
+      var worldBox = world.getBoundingClientRect();
+      var ratio = worldRatio(worldBox);
+      return {
+        x: (clientX - worldBox.left) / ratio,
+        y: (clientY - worldBox.top) / ratio,
+      };
+    }
+
+    // A smooth polyline: quadratic segments between the midpoints of the sampled
+    // points, so the stroke reads as handwriting instead of a polygon.
+    function inkPathData(points) {
+      if (points.length === 0) return "";
+      var data = "M " + format(points[0].x) + " " + format(points[0].y);
+      for (var index = 1; index < points.length - 1; index += 1) {
+        var middleX = (points[index].x + points[index + 1].x) / 2;
+        var middleY = (points[index].y + points[index + 1].y) / 2;
+        data += " Q " + format(points[index].x) + " " + format(points[index].y) +
+          " " + format(middleX) + " " + format(middleY);
+      }
+      if (points.length > 1) {
+        var last = points[points.length - 1];
+        data += " L " + format(last.x) + " " + format(last.y);
+      }
+      return data;
+    }
+
+    function inkLength(points) {
+      var total = 0;
+      for (var index = 1; index < points.length; index += 1) {
+        var dx = points[index].x - points[index - 1].x;
+        var dy = points[index].y - points[index - 1].y;
+        total += Math.sqrt(dx * dx + dy * dy);
+      }
+      return total;
+    }
+
+    function inkElement(stroke) {
+      var path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+      path.setAttribute("class", "demo-ink__stroke");
+      path.setAttribute("data-ink-tone", stroke.tone);
+      path.setAttribute("d", inkPathData(stroke.points));
+      return path;
+    }
+
+    function renderInk() {
+      if (inkLayer === null) return;
+      while (inkLayer.firstChild !== null) inkLayer.removeChild(inkLayer.firstChild);
+      for (var index = 0; index < strokes.length; index += 1) {
+        inkLayer.appendChild(inkElement(strokes[index]));
+      }
+      if (inkStroke !== null) {
+        inkPath = inkElement(inkStroke);
+        inkLayer.appendChild(inkPath);
+      }
+    }
+
+    function addInkPoint(point) {
+      if (inkStroke === null) return;
+      var points = inkStroke.points;
+      var last = points[points.length - 1];
+      var dx = point.x - last.x;
+      var dy = point.y - last.y;
+      if (dx * dx + dy * dy < INK_MIN_DISTANCE * INK_MIN_DISTANCE) return;
+      points.push(point);
+      if (inkPath !== null) inkPath.setAttribute("d", inkPathData(points));
+    }
+
+    // Discard or commit the live stroke; returns whether it became ink.
+    function finishInkStroke(commit) {
+      if (inkStroke === null) return false;
+      var stroke = inkStroke;
+      var path = inkPath;
+      var pointer = inkPointer;
+      inkStroke = null;
+      inkPath = null;
+      inkPointer = null;
+      inkBefore = null;
+      if (pointer !== null) {
+        try {
+          if (surface.hasPointerCapture(pointer)) surface.releasePointerCapture(pointer);
+        } catch (error) {
+          // Pointer capture is best effort; the stroke keeps its points.
+        }
+      }
+      var valid = commit && stroke.points.length > 1 && inkLength(stroke.points) >= INK_MIN_LENGTH;
+      if (!valid) {
+        if (path !== null && path.parentNode !== null) path.parentNode.removeChild(path);
+        return false;
+      }
+      strokes.push(stroke);
+      if (status !== null) {
+        status.textContent = translate("demo.status.stroke", { colour: inkColourLabel(stroke.tone) });
+      }
+      return true;
+    }
+
+    // Cancel also drops the pending press snapshot: a release after a
+    // mid-stroke undo/redo or tool change must not be recorded as a second,
+    // spurious history step (P0-43).
+    function cancelInkStroke() {
+      finishInkStroke(false);
+      pressSnapshot = null;
+    }
+
+    function isPenChrome(target) {
+      return target instanceof Element &&
+        target.closest(".demo-toolbar, .demo-zoom, .demo-undo-hint, .demo-count, .demo-menu, .demo-selection") !== null;
+    }
+
+    function onPenDown(event) {
+      // One stroke per press: ignore a second finger/palm and any non-primary
+      // pointer while a stroke is live, so it cannot replace the stroke in
+      // progress and orphan its partial path (P0-43).
+      if (!event.isPrimary || inkStroke !== null) return;
+      if (!penMode || inkLayer === null) return;
+      if (event.pointerType === "mouse" && event.button !== 0) return;
+      if (isPenChrome(event.target)) return;
+      event.preventDefault();
+      event.stopPropagation();
+      inkBefore = takeSnapshot();
+      inkStroke = { tone: toolState.colour, points: [inkPointOf(event.clientX, event.clientY)] };
+      inkPath = inkElement(inkStroke);
+      inkLayer.appendChild(inkPath);
+      inkPointer = event.pointerId;
+      try {
+        surface.setPointerCapture(event.pointerId);
+      } catch (error) {
+        // Pointer capture is best effort; the stroke keeps its points.
+      }
+    }
+
+    function onPenMove(event) {
+      if (!penMode || inkStroke === null || event.pointerId !== inkPointer) return;
+      event.preventDefault();
+      event.stopPropagation();
+      addInkPoint(inkPointOf(event.clientX, event.clientY));
+    }
+
+    // Capture phase on the document: the pen owns the whole gesture and records
+    // its own history step before any object or band handler sees the release.
+    function onPenEnd(event) {
+      if (inkStroke === null || event.pointerId !== inkPointer) return;
+      event.preventDefault();
+      event.stopPropagation();
+      var before = inkBefore;
+      var kept = finishInkStroke(event.type === "pointerup");
+      pressSnapshot = null;
+      if (kept && before !== null) recordChange(before, "draw");
+    }
+
+    surface.addEventListener("pointerdown", onPenDown, true);
+    surface.addEventListener("pointermove", onPenMove, true);
+    document.addEventListener("pointerup", onPenEnd, true);
+    document.addEventListener("pointercancel", onPenEnd, true);
+
+    // Escape ends the pen (or closes the palette first) after the focus checks
+    // the rest of the demo uses for contenteditable and form fields.
+    document.addEventListener("keydown", function (event) {
+      if (event.key !== "Escape") return;
+      var focus = document.activeElement;
+      if (focus instanceof HTMLElement && (focus.isContentEditable || focus.closest("input, textarea, select"))) {
+        return;
+      }
+      if (toolState.paletteOpen && typeof toolState.closePalette === "function") {
+        event.preventDefault();
+        toolState.closePalette(true);
+        return;
+      }
+      if (penMode && typeof toolState.exitPen === "function") {
+        event.preventDefault();
+        toolState.exitPen();
+      }
+    });
+
+    toolState.onTool = function (name) {
+      var next = name === "pen";
+      if (next === penMode) return;
+      penMode = next;
+      cancelInkStroke();
+      if (penMode) {
+        setSelectedTarget(null);
+        setSelection([]);
+        surface.setAttribute("data-demo-pen", "true");
+      } else {
+        surface.removeAttribute("data-demo-pen");
+      }
+    };
+
+    toolState.onColour = function () {
+      if (status === null) return;
+      status.textContent = translate(penMode ? "demo.status.pen" : "demo.status.ink", {
+        colour: inkColourLabel(toolState.colour),
+      });
+    };
 
     // ----- multi-selection, rubber band and the count bar (L10) -----
     var band = chromeElement("demo-band");
@@ -2627,6 +2928,7 @@
     }
 
     surface.addEventListener("pointerdown", function (event) {
+      if (penMode) return;
       if (!event.shiftKey || !isEmptyCanvas(event.target)) return;
       if (event.pointerType === "mouse" && event.button !== 0) return;
       event.preventDefault();
@@ -2917,6 +3219,11 @@
       if (focus instanceof HTMLElement && (focus.isContentEditable || focus.closest("input, textarea, select"))) return;
       if (!demo.contains(focus) && focus !== document.body) return;
       var command = event.metaKey || event.ctrlKey;
+      if (command && event.shiftKey && (event.key === "z" || event.key === "Z")) {
+        event.preventDefault();
+        redo();
+        return;
+      }
       if (command && !event.shiftKey && (event.key === "z" || event.key === "Z")) {
         event.preventDefault();
         undo();
@@ -3161,41 +3468,144 @@
     resume();
   }
 
-  function setupToolbar(demo) {
+  // The demo toolbar: the pen draws, the palette opens the ink colours, every
+  // other tool only flips aria-pressed and names itself in the status line
+  // (preview only). The pen's pointer work lives in the demo; both sides share
+  // one tool state object (P0-43).
+  function setupToolbar(demo, toolState) {
     var toolbar = demo.querySelector("[data-demo-toolbar]");
     if (toolbar === null) return;
+    if (toolState === undefined) toolState = createToolState();
     var tools = toolbar.querySelectorAll("[data-demo-tool]");
     if (tools.length === 0) return;
     var status = demo.querySelector("[data-demo-status]");
+    var paletteButton = toolbar.querySelector('[data-demo-tool="palette"]');
+    var palette = toolbar.querySelector("[data-demo-palette]");
+    var swatches = palette === null ? [] : palette.querySelectorAll("[data-ink-tone]");
 
-    function selectTool(tool) {
+    function updatePressed(activeTool) {
       for (var index = 0; index < tools.length; index += 1) {
-        tools[index].setAttribute(
-          "aria-pressed",
-          tools[index] === tool ? "true" : "false",
-        );
-      }
-      if (status !== null) {
-        status.textContent = translate("demo.status.tool", {
-          label: tool.getAttribute("data-label") || "",
-        });
+        var entry = tools[index];
+        if (entry === paletteButton) {
+          entry.setAttribute("aria-pressed", toolState.paletteOpen ? "true" : "false");
+        } else {
+          entry.setAttribute("aria-pressed", entry === activeTool ? "true" : "false");
+        }
       }
     }
+
+    function applyColour(tone, announce) {
+      if (INK_TONES.indexOf(tone) === -1) return;
+      toolState.colour = tone;
+      demo.style.setProperty("--ink-colour", "var(--" + tone + ")");
+      for (var index = 0; index < swatches.length; index += 1) {
+        swatches[index].setAttribute(
+          "aria-pressed",
+          swatches[index].getAttribute("data-ink-tone") === tone ? "true" : "false",
+        );
+      }
+      if (announce && typeof toolState.onColour === "function") toolState.onColour();
+    }
+
+    function setPaletteOpen(open, returnFocus) {
+      if (palette === null || paletteButton === null) return;
+      toolState.paletteOpen = open;
+      palette.hidden = !open;
+      paletteButton.setAttribute("aria-expanded", open ? "true" : "false");
+      paletteButton.setAttribute("aria-pressed", open ? "true" : "false");
+      if (open) {
+        var current = palette.querySelector('[data-ink-tone][aria-pressed="true"]');
+        var focusTarget = current instanceof HTMLElement ? current : swatches[0];
+        if (focusTarget instanceof HTMLElement) focusTarget.focus();
+      } else if (returnFocus) {
+        paletteButton.focus();
+      }
+    }
+
+    function selectTool(activeTool) {
+      var name = activeTool.getAttribute("data-demo-tool") || "";
+      setPaletteOpen(false, false);
+      toolState.tool = name;
+      updatePressed(activeTool);
+      if (typeof toolState.onTool === "function") toolState.onTool(name);
+      if (status !== null) {
+        status.textContent = name === "pen"
+          ? translate("demo.status.pen", { colour: inkColourLabel(toolState.colour) })
+          : translate("demo.status.tool", { label: activeTool.getAttribute("data-label") || "" });
+      }
+    }
+
+    toolState.closePalette = function (returnFocus) {
+      setPaletteOpen(false, returnFocus !== false);
+    };
+    toolState.exitPen = function () {
+      var note = toolbar.querySelector('[data-demo-tool="note"]');
+      if (note instanceof Element) selectTool(note);
+    };
 
     for (var index = 0; index < tools.length; index += 1) {
       var tool = tools[index];
       tool.addEventListener("click", function (event) {
         var pressed = event.currentTarget;
-        if (pressed instanceof Element) selectTool(pressed);
+        if (!(pressed instanceof Element)) return;
+        if (pressed === paletteButton) {
+          setPaletteOpen(paletteButton.getAttribute("aria-expanded") !== "true", true);
+          return;
+        }
+        selectTool(pressed);
       });
     }
+
+    for (var chipIndex = 0; chipIndex < swatches.length; chipIndex += 1) {
+      var swatch = swatches[chipIndex];
+      swatch.addEventListener("click", function (event) {
+        var chip = event.currentTarget;
+        if (!(chip instanceof Element)) return;
+        applyColour(chip.getAttribute("data-ink-tone") || "", true);
+        setPaletteOpen(false, true);
+      });
+      // Arrow keys walk the swatches; Tab still leaves the popover, which closes
+      // on focusout, Escape or a press outside (P0-43).
+      swatch.addEventListener("keydown", function (event) {
+        var step = { ArrowLeft: -1, ArrowUp: -1, ArrowRight: 1, ArrowDown: 1 }[event.key];
+        if (step === undefined) return;
+        event.preventDefault();
+        var list = Array.prototype.slice.call(swatches);
+        var index = list.indexOf(event.currentTarget);
+        var next = list[(index + step + list.length) % list.length];
+        if (next instanceof HTMLElement) next.focus();
+      });
+    }
+
+    if (palette !== null) {
+      palette.addEventListener("focusout", function (event) {
+        if (!toolState.paletteOpen) return;
+        var next = event.relatedTarget;
+        if (next instanceof Node &&
+            (palette.contains(next) || (paletteButton !== null && paletteButton.contains(next)))) {
+          return;
+        }
+        setPaletteOpen(false, false);
+      });
+    }
+
+    document.addEventListener("pointerdown", function (event) {
+      if (!toolState.paletteOpen || palette === null) return;
+      var target = event.target;
+      if (!(target instanceof Node)) return;
+      if (palette.contains(target) || (paletteButton !== null && paletteButton.contains(target))) return;
+      setPaletteOpen(false, false);
+    }, true);
+
+    applyColour(toolState.colour, false);
   }
 
   function init() {
     var demos = document.querySelectorAll("[data-demo]");
     for (var i = 0; i < demos.length; i += 1) {
-      setupToolbar(demos[i]);
-      setupDemo(demos[i]);
+      var toolState = createToolState();
+      setupDemo(demos[i], toolState);
+      setupToolbar(demos[i], toolState);
       setupTeam(demos[i]);
     }
     setupLocaleSwitcher();

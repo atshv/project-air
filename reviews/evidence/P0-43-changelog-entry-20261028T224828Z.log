@@ -1,0 +1,5 @@
+$ node tools/release/check-changes.mjs --base main --task P0-43
+[exit 0]
+
+check-changes: task P0-43, base main, 24 changed path(s), 6 code path(s)
+changelog-entry: OK (.changes/P0-43-pen-and-ink-colours.md)
