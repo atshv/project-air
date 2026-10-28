@@ -121,10 +121,6 @@
 
 ## Ready now
 
-- `P4-11` WebGPU render pipeline behind the command buffer
-  - P4-06: Closed P4-06: draw order layer > fractional z (byte-wise) > insertion; bring-to-front is one contract reorder via the seam (keyAfter, inverse = old key); reload keeps order.
-  - P4-06: Port: kindOf/zIndices, adapter toneOf + objectAt; logic browser build dist/logic (tsconfig.logic.json); test-kit layers scene; playground ?scene=layers click-to-front, localStorage.
-  - P4-06: Gates board-check/boundaries/cpp-unit/visual (14 captures, +4 layers refs)/typecheck; native layerOrderAndFront, 9 Node + 3 test-kit tests; docs engine.md, visual-diff.md.
 - `P4-17` Resize (L14)
 - `P4-18` Auto-pan (L16)
 - `P4-19` Placement of new objects (L20)
@@ -213,7 +209,7 @@
 
 ## In progress
 
-- none
+- [ ] `P4-11` WebGPU render pipeline behind the command buffer — status: `in_progress` — owner: lead
 
 ## Blocked / failed
 
@@ -225,7 +221,6 @@
 - [ ] `P0-15` Release command and tag-based CI release — status: `pending` — owner: —
 - [ ] `P0-16` Dependency updates and Polier update check — status: `pending` — owner: —
 - [ ] `P0-17` RELEASING.md and release 0.0.1 — status: `pending` — owner: —
-- [ ] `P4-11` WebGPU render pipeline behind the command buffer — status: `pending` — owner: —
 - [ ] `P4-12` WebGPU backend selection, capability and fallback — status: `pending` — owner: —
 - [ ] `P4-13` WebGPU switch and two-backend image comparison — status: `pending` — owner: —
 - [ ] `P4-17` Resize (L14) — status: `pending` — owner: —
@@ -239,7 +234,7 @@
 <!-- polier:claims -->
 ## Claims
 
-- `P4-28` in progress by dsh since 2026-10-28T07:52:30+00:00 — worktree: /private/tmp/air-P4-28 · slot 1
+- `P4-11` in progress by dsh since 2026-10-28T16:13:31+00:00 — worktree: /private/tmp/air-P4-11 · slot 1
 
 <!-- /polier:claims -->
 
