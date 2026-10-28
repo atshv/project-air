@@ -166,7 +166,7 @@ The same order is the render order of the engine and the z-order of the DOM.
 | 11 | Dialogs, toasts |
 
 - Edges lie below every object, zones included: a connection line never crosses a zone's surface
-  or title (owner decision 2026-10-28, ADR-0013).
+  or title (owner decision 2026-10-28, ADR-0014).
 - **NEVER** `z-index` > 10 in components without an entry in `packages/ui-kit/layers.ts`.
 
 ## 9. Canvas chrome — a fixed place for everything

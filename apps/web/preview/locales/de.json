@@ -466,7 +466,7 @@
   "rules.s8.where": "Zu sehen in: 06 — Ebenen",
   "rules.s8.r1": "Von unten nach oben — 1 Canvas-Hintergrund, 2 Verbindungen, 3 Zonen, 4 Blöcke, 5 Notizkarten, 6 gezogen oder ausgewählt, 7 Fanglinien und Auswahlrahmen, 7a fremde Cursor, 8 Canvas-Bedienelemente, 9 Seitenpanel, 10 Kontextmenü und Tooltip, 11 Dialoge und Toasts.",
   "rules.s8.r2": "Dieselbe Reihenfolge ist die Zeichenfolge der Engine und die z-Reihenfolge im DOM.",
-  "rules.s8.r3": "Verbindungen liegen unter jedem Objekt, auch unter Zonen: eine Linie kreuzt nie die Fläche oder den Titel einer Zone (ADR-0013).",
+  "rules.s8.r3": "Verbindungen liegen unter jedem Objekt, auch unter Zonen: eine Linie kreuzt nie die Fläche oder den Titel einer Zone (ADR-0014).",
   "rules.s8.r4": "<strong>NIE</strong> ein <code>z-index</code> über 10 ohne Eintrag in <code>packages/ui-kit/layers.ts</code>.",
   "rules.s9.title": "§9 Canvas-Bedienelemente",
   "rules.s9.where": "Zu sehen in: 10 — Canvas-Bedienelemente",

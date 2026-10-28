@@ -1,6 +1,9 @@
-# ADR-0013: Edges below zones
+# ADR-0014: Edges below zones
 
 **Date:** 2026-10-28 · **Status:** accepted · **Supersedes:** –
+
+> Renumbered from ADR-0013 on 2026-10-29: P6-01 recorded the web-app stack as ADR-0013 in
+> parallel; that number stays with the web-app stack.
 
 ## Context
 

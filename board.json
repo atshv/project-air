@@ -6209,7 +6209,7 @@
         "docs/owner/"
       ],
       "handoff": [
-        "Closed P0-38: design law §8 now edges 2, zones 3 (ADR-0013); tokens.json swapped, tokens.css/tokens.h/layers.ts regenerated; ui-kit token test follows (owner-approved).",
+        "Closed P0-38: design law §8 now edges 2, zones 3 (ADR-0014); tokens.json swapped, tokens.css/tokens.h/layers.ts regenerated; ui-kit token test follows (owner-approved).",
         "Engine draw order unchanged (zones lowest rectangle layer); doc.h comment and docs/engine.md updated; demo edge back on --layer-edges, section 06 reordered, masthead P0-38.",
         "cpp-unit not a gate: red on main since P5-01 (engine.cpp + 2 tests expect contract 0.2.0, generated 0.3.0); scratch build passes all other checks."
       ]
@@ -7300,10 +7300,16 @@
       "file": "docs/adr/ADR-0012-sdk-client-document.md"
     },
     {
-      "date": "2026-10-28",
+      "date": "2026-10-29",
       "id": "ADR-0013",
+      "title": "Web app stack: React + Vite SPA with an own editor",
+      "file": "docs/adr/ADR-0013-web-app-stack.md"
+    },
+    {
+      "date": "2026-10-28",
+      "id": "ADR-0014",
       "title": "Edges below zones",
-      "file": "docs/adr/ADR-0013-edges-below-zones.md"
+      "file": "docs/adr/ADR-0014-edges-below-zones.md"
     }
   ],
   "open_questions": [

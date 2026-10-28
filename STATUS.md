@@ -271,7 +271,8 @@
 - 2026-10-27 `ADR-0010` Zones as containers (`docs/adr/ADR-0010-zone-containers.md`)
 - 2026-10-28 `ADR-0011` CRDT: Yjs behind an own interface (`docs/adr/ADR-0011-crdt.md`)
 - 2026-10-28 `ADR-0012` The SDK owns the client-side board document (`docs/adr/ADR-0012-sdk-client-document.md`)
-- 2026-10-28 `ADR-0013` Edges below zones (`docs/adr/ADR-0013-edges-below-zones.md`)
+- 2026-10-29 `ADR-0013` Web app stack: React + Vite SPA with an own editor (`docs/adr/ADR-0013-web-app-stack.md`)
+- 2026-10-28 `ADR-0014` Edges below zones (`docs/adr/ADR-0014-edges-below-zones.md`)
 
 ## Open questions
 

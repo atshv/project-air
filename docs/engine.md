@@ -95,7 +95,7 @@ source scan proves no DOM or network use in the logic layer.
   zones 3, blocks 4, note cards 5), then `z` lexicographically, then insertion order, so equal `z`
   keeps insertion order. The layer always wins: a zone with the greatest key still draws below a card
   with the least. Keys are compared byte by byte, never parsed, so keys that are equal as doubles keep
-  their order. The edge layer (2, below zones since ADR-0013) is reserved and not drawn by the engine; chrome layers stay DOM.
+  their order. The edge layer (2, below zones since ADR-0014) is reserved and not drawn by the engine; chrome layers stay DOM.
 - **Front of the layer (L13, P4-06).** "The last moved or selected element is on top of its layer"
   is stored, not computed: the `bring-to-front` gesture becomes exactly one contract `reorder`
   operation through the seam whose `z` is `keyAfter(highest key of the other objects of the same

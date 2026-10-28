@@ -106,7 +106,7 @@ design system updates the demo and refreshes its screenshot in `reviews/evidence
   two anchors' side normals at 48 px (`--space-48`), so the curve leaves and enters the cards
   perpendicularly; it recomputes on every pointer move, keyboard step, zoom and reset and is clamped
   to a minimum visible length of 1 px when the cards overlap. The path sits on the `--layer-edges`
-  layer below the zones and cards (`--layer-zones`, `--layer-note-cards`; ADR-0013) and keeps the design-system connection style — a
+  layer below the zones and cards (`--layer-zones`, `--layer-note-cards`; ADR-0014) and keeps the design-system connection style — a
   `--tone-d` stroke at 1.5 px (`--border-width-strong`) with `--tone-d` endpoint dots.
 - **Zoom pill (preview-only):** one floating vertical control sits 12 px from the bottom-left corner
   of the demo surface — a 32 px container (`--click-target`) with `--radius-md`, `--surface`
@@ -320,7 +320,7 @@ release only confirms it.
   zone is re-fitted and re-clamped and the docked items follow their slots.
 - **No edge** — the demo keeps exactly one edge element (`.demo__edge`, cards A ↕ B); its path never
   changes when a zone item moves, reorders or groups. Zone items are never connected.
-- **Z-order** — the zone frame sits at `--layer-zones` (above the edge, as in design law §8 since ADR-0013), the
+- **Z-order** — the zone frame sits at `--layer-zones` (above the edge, as in design law §8 since ADR-0014), the
   items and the landing slot at `--layer-blocks`; the last touched item is selected and sits at
   `--layer-dragged-or-selected` while and after its drag (a drop near a note card or onto the
   other item never hides it), all below the canvas chrome (toolbar and zoom pill); no numeric
@@ -415,7 +415,7 @@ Owner requests of 2026-10-28:
 
 ## Layer order: edges below zones (P0-38)
 
-The owner decision of P0-36 is now the design law (ADR-0013): connection lines lie below every
+The owner decision of P0-36 is now the design law (ADR-0014): connection lines lie below every
 object, zones included.
 
 - **Law and tokens** — design law §8 reads canvas background 1, edges 2, zones 3, blocks 4 …
@@ -476,7 +476,7 @@ dropped into a zone takes its size, and the connection lines run behind all card
   freely; docked into a zone with another member it takes that member's width (stacked) or height
   (side by side) and keeps its aspect ratio.
 - **Edges behind (owner decision)** — `.demo__edge` runs below every object, zones included. Since
-  P0-38 this is design law §8 (ADR-0013): edges are layer 2 (`--layer-edges`), zones layer 3.
+  P0-38 this is design law §8 (ADR-0014): edges are layer 2 (`--layer-edges`), zones layer 3.
 
 ## Design system refresh (P0-35)
 
