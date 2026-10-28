@@ -275,7 +275,8 @@
       "path": "packages/sdk",
       "kind": "package",
       "may_import": [
-        "packages/contracts"
+        "packages/contracts",
+        "packages/crdt"
       ]
     },
     {
@@ -5562,15 +5563,16 @@
     },
     {
       "id": "P5-04",
-      "title": "SDK sync client and the one autosave path (L05 realtime half)",
-      "goal": "packages/sdk gets a typed sync client (connect/joinBoard, send operationBatch, apply remote updates and snapshots, ack/serverSeq tracking, reconnect with fromServerSeq) and the one autosave path of L05 for its realtime half: 400 ms debounce after the last keystroke, immediate flush on blur, panel close, navigation, tab hidden and pagehide, sequence numbers so an older response never overwrites a newer value, an offline queue, and saving/saved/error status events.",
-      "why": "Every later client (web app, e2e and load harnesses) needs one typed sync/autosave path; L05 maps to realtime and web-app.",
+      "title": "SDK board-sync client and the one autosave path (L05 realtime half)",
+      "goal": "packages/sdk becomes the client board library: it owns the client BoardDoc (packages/crdt), speaks the 0.3.0 sync protocol over an injected WebSocket (connect/joinBoard, operation batches, remote updates/snapshots, ack/serverSeq tracking, reconnect from a state vector) and provides the one autosave path of L05 for its realtime half (400 ms debounce, immediate flush on blur/panel close/navigation/tab hidden/pagehide, sequence numbers so an older response never overwrites a newer value, offline queue and saving/saved/error status events).",
+      "why": "ADR-0012 places the client document and the sync boundary in the SDK; every later client (web app, e2e/load harnesses) needs one typed path with one autosave behaviour (L05).",
       "satisfies": [
         "D11"
       ],
       "status": "pending",
       "depends_on": [
         "P5-01",
+        "P5-02",
         "P5-03"
       ],
       "complexity": 5,
@@ -5578,6 +5580,7 @@
       "parallel_group": null,
       "scope_write": [
         "packages/sdk/",
+        "docs/adr/",
         ".changes/",
         "docs/realtime.md"
       ],
@@ -5592,7 +5595,9 @@
         "packages/contracts/",
         "packages/crdt/",
         "packages/sdk/",
-        "services/sync/"
+        "services/sync/",
+        "docs/adr/ADR-0011-crdt.md",
+        "docs/adr/ADR-0012-sdk-client-document.md"
       ],
       "acceptance": [
         "A1",
@@ -5904,6 +5909,12 @@
       "id": "ADR-0011",
       "title": "CRDT: Yjs behind an own interface",
       "file": "docs/adr/ADR-0011-crdt.md"
+    },
+    {
+      "date": "2026-10-28",
+      "id": "ADR-0012",
+      "title": "The SDK owns the client-side board document",
+      "file": "docs/adr/ADR-0012-sdk-client-document.md"
     }
   ],
   "open_questions": [

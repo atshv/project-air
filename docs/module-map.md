@@ -12,7 +12,7 @@
 | `packages/engine/` | `package` | C++ → WebAssembly canvas engine + TS bridge | `packages/contracts`, `packages/ui-kit` | engine-spike |
 | `packages/crdt/` | `package` | board document as CRDT behind an own interface | `packages/contracts` | later |
 | `packages/editor/` | `package` | note editor (rich text, links) | `packages/contracts`, `packages/ui-kit` | later |
-| `packages/sdk/` | `package` | typed client for platform and sync | `packages/contracts` | later |
+| `packages/sdk/` | `package` | typed client for platform and sync; owns the client-side board document and the one autosave path (ADR-0012) | `packages/contracts`, `packages/crdt` | later |
 | `packages/test-kit/` | `package` | fixtures, fake servers, slot helpers | `packages/contracts` | engine-spike |
 | `services/platform/` | `service` | HTTP API: workspaces, boards, notes, permissions | `packages/contracts` | later |
 | `services/auth/` | `service` | accounts, sessions, invitations | `packages/contracts` | later |

@@ -97,7 +97,7 @@
 - `packages/engine` — kind: `package` — may import: packages/contracts, packages/ui-kit
 - `packages/crdt` — kind: `package` — may import: packages/contracts
 - `packages/editor` — kind: `package` — may import: packages/contracts, packages/ui-kit
-- `packages/sdk` — kind: `package` — may import: packages/contracts
+- `packages/sdk` — kind: `package` — may import: packages/contracts, packages/crdt
 - `packages/test-kit` — kind: `package` — may import: packages/contracts
 - `services/platform` — kind: `service` — may import: packages/contracts
 - `services/auth` — kind: `service` — may import: packages/contracts
@@ -219,7 +219,7 @@
 - [ ] `P0-17` RELEASING.md and release 0.0.1 — status: `pending` — owner: —
 - [ ] `P5-02` CRDT document core behind an own interface (Yjs) — status: `pending` — owner: —
 - [ ] `P5-03` Sync service: WebSocket protocol, auth and durable update log — status: `pending` — owner: —
-- [ ] `P5-04` SDK sync client and the one autosave path (L05 realtime half) — status: `pending` — owner: —
+- [ ] `P5-04` SDK board-sync client and the one autosave path (L05 realtime half) — status: `pending` — owner: —
 - [ ] `P5-05` Presence: cursors, selection, name and colour — status: `pending` — owner: —
 - [ ] `P5-06` Durability and reconnect: restart, catch-up and snapshot compaction — status: `pending` — owner: —
 - [ ] `P5-07` crdt-convergence proof: 10,000 rounds, offline clients and own-only undo — status: `pending` — owner: —
@@ -245,6 +245,7 @@
 - 2026-10-25 `ADR-0009` Canvas text and overlay strategy (`docs/adr/ADR-0009-canvas-text-and-overlay.md`)
 - 2026-10-27 `ADR-0010` Zones as containers (`docs/adr/ADR-0010-zone-containers.md`)
 - 2026-10-28 `ADR-0011` CRDT: Yjs behind an own interface (`docs/adr/ADR-0011-crdt.md`)
+- 2026-10-28 `ADR-0012` The SDK owns the client-side board document (`docs/adr/ADR-0012-sdk-client-document.md`)
 
 ## Open questions
 
