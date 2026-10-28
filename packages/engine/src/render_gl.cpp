@@ -17,6 +17,7 @@
 #include "engine/camera.h"
 #include "engine/doc.h"
 #include "engine/render.h"
+#include "engine/render_webgpu.h"
 #include "engine/selection_gl.h"
 #include "engine/zone_highlight.h"
 #include "engine/snap.h"
@@ -186,6 +187,8 @@ GLuint compileShader(GLenum type, const char* source) {
   return shader;
 }
 
+enum class Backend { webgl2, webgpu };
+
 class Renderer {
  public:
   bool create(const char* canvasSelector) {
@@ -254,6 +257,42 @@ class Renderer {
     return true;
   }
 
+  // P4-11: a separate renderer instance for the WebGPU backend. The WebGL2 create
+  // path and every WebGL2 byte stay untouched; the WebGPU module consumes the same
+  // command buffer through this renderer's document/camera/spatial state.
+  int createWebgpu(const char* canvasSelector) {
+    if (created_) {
+      return backend_ == Backend::webgpu
+                 ? 1
+                 : fail("a WebGL2 renderer already exists; create WebGPU in a separate module instance");
+    }
+    if (canvasSelector == nullptr || canvasSelector[0] == '\0') {
+      return fail("engine_create_webgpu needs a canvas selector");
+    }
+    float toneColors[kToneCount][3] = {};
+    float clear[3] = {};
+    if (!loadToneColor(tokens::card, toneColors[0]) ||
+        !loadToneColor(tokens::tone_a, toneColors[1]) ||
+        !loadToneColor(tokens::tone_b, toneColors[2]) ||
+        !loadToneColor(tokens::tone_c, toneColors[3]) ||
+        !loadToneColor(tokens::tone_d, toneColors[4]) ||
+        !loadToneColor(tokens::tone_e, toneColors[5])) {
+      return fail("generated tone tokens are not hexadecimal colours");
+    }
+    if (!parseHexColor(tokens::canvas, clear[0], clear[1], clear[2])) {
+      return fail("generated canvas token is not a hexadecimal colour");
+    }
+    if (!webgpu::create(canvasSelector, toneColors, clear)) {
+      return fail(webgpu::lastError());
+    }
+    backend_ = Backend::webgpu;
+    created_ = true;
+    // An empty document is valid: index it so a frame or a hit test works before
+    // the first engine_load_rectangles, exactly like the WebGL2 create path.
+    spatial_.rebuild(document_);
+    return 1;
+  }
+
   int resize(int cssWidth, int cssHeight, float devicePixelRatio) {
     if (!created_) {
       return fail("engine_create must be called before engine_resize");
@@ -267,6 +306,9 @@ class Renderer {
     css_width_ = cssWidth;
     css_height_ = cssHeight;
     device_pixel_ratio_ = devicePixelRatio;
+    if (backend_ == Backend::webgpu && !webgpu::resize(cssWidth, cssHeight, devicePixelRatio)) {
+      return fail(webgpu::lastError());
+    }
     return 1;
   }
 
@@ -446,6 +488,15 @@ class Renderer {
     if (!status) {
       return fail(status.reason);
     }
+    if (backend_ == Backend::webgpu) {
+      // P4-11: one instanced draw over the same command-buffer bytes; the glyph
+      // and chrome passes are P4-13 (not part of this pipeline task).
+      if (!webgpu::frame(commands_.bytes(), commands_.size(), css_width_, css_height_,
+                         device_pixel_ratio_)) {
+        return fail(webgpu::lastError());
+      }
+      return 1;
+    }
 
     int drawingWidth = 0;
     int drawingHeight = 0;
@@ -620,6 +671,27 @@ class Renderer {
   static double nowSeconds() {
     return std::chrono::duration<double>(std::chrono::steady_clock::now().time_since_epoch())
         .count();
+  }
+
+  // P4-11: explicit WebGPU frame call and readiness (asynchronous device init).
+  int renderWebgpuFrame() {
+    if (!created_ || backend_ != Backend::webgpu) {
+      return fail("engine_create_webgpu must be called before engine_render_webgpu_frame");
+    }
+    return renderFrame();
+  }
+
+  int webgpuReady() {
+    if (!created_ || backend_ != Backend::webgpu) {
+      fail("engine_create_webgpu must be called before engine_webgpu_ready");
+      return -1;
+    }
+    const int status = webgpu::ready();
+    if (status < 0) {
+      fail(webgpu::lastError());
+      return -1;
+    }
+    return status;
   }
 
   const char* lastError() const { return g_last_error.c_str(); }
@@ -809,6 +881,7 @@ class Renderer {
     glDrawArrays(GL_TRIANGLES, 0, 3);
   }
 
+  Backend backend_{Backend::webgl2};
   Document document_;
   Camera camera_;
   SpatialIndex spatial_;
@@ -902,6 +975,16 @@ AIR_ENGINE_RENDER_GL_API int engine_visible_instance_count() {
 AIR_ENGINE_RENDER_GL_API int engine_render_frame() {
   return air::engine::g_renderer.renderFrame();
 }
+
+AIR_ENGINE_RENDER_GL_API int engine_create_webgpu(const char* canvas_selector) {
+  return air::engine::g_renderer.createWebgpu(canvas_selector);
+}
+
+AIR_ENGINE_RENDER_GL_API int engine_render_webgpu_frame() {
+  return air::engine::g_renderer.renderWebgpuFrame();
+}
+
+AIR_ENGINE_RENDER_GL_API int engine_webgpu_ready() { return air::engine::g_renderer.webgpuReady(); }
 
 AIR_ENGINE_RENDER_GL_API int engine_snap_position(int index, double x, double y, int free,
                                                   double* out_xy) {
@@ -1012,6 +1095,17 @@ AIR_ENGINE_RENDER_GL_API int engine_hit_test(double screen_x, double screen_y) {
 AIR_ENGINE_RENDER_GL_API int engine_visible_instance_count() { return -1; }
 
 AIR_ENGINE_RENDER_GL_API int engine_render_frame() { return 0; }
+
+// P4-11 native stubs: no browser API exists, so the WebGPU entry points fail
+// cleanly (engine_last_error reports the reason) and never crash.
+AIR_ENGINE_RENDER_GL_API int engine_create_webgpu(const char* canvas_selector) {
+  (void)canvas_selector;
+  return 0;
+}
+
+AIR_ENGINE_RENDER_GL_API int engine_render_webgpu_frame() { return 0; }
+
+AIR_ENGINE_RENDER_GL_API int engine_webgpu_ready() { return -1; }
 
 AIR_ENGINE_RENDER_GL_API int engine_snap_position(int index, double x, double y, int free,
                                                   double* out_xy) {

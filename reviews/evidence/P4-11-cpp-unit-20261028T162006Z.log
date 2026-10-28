@@ -1,0 +1,76 @@
+$ cmake -S packages/engine -B packages/engine/build -DCMAKE_BUILD_TYPE=Debug && cmake --build packages/engine/build --parallel && ctest --test-dir packages/engine/build --output-on-failure
+[exit 0]
+
+-- The CXX compiler identification is AppleClang 21.0.0.21000101
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Configuring done (0.7s)
+-- Generating done (0.0s)
+-- Build files have been written to: /tmp/air-P4-11/packages/engine/build
+[  3%] Building CXX object CMakeFiles/engine_zone_lifecycle_tests.dir/test/engine_zone_lifecycle_test.cpp.o
+[  6%] Building CXX object CMakeFiles/air_engine_objects.dir/src/engine.cpp.o
+[ 10%] Building CXX object CMakeFiles/air_engine_objects.dir/src/render.cpp.o
+[ 13%] Building CXX object CMakeFiles/air_engine_objects.dir/src/spatial.cpp.o
+[ 16%] Building CXX object CMakeFiles/engine_zone_tests.dir/test/engine_zone_test.cpp.o
+[ 26%] Building CXX object CMakeFiles/air_engine_objects.dir/src/render_webgpu.cpp.o
+[ 30%] Building CXX object CMakeFiles/air_engine_objects.dir/src/doc.cpp.o
+[ 30%] Building CXX object CMakeFiles/air_engine_objects.dir/src/camera.cpp.o
+[ 33%] Building CXX object CMakeFiles/air_engine_objects.dir/src/render_gl.cpp.o
+[ 33%] Building CXX object CMakeFiles/engine_zone_layout_tests.dir/test/engine_zone_layout_test.cpp.o
+[ 36%] Building CXX object CMakeFiles/air_engine_objects.dir/src/snap.cpp.o
+[ 43%] Building CXX object CMakeFiles/air_engine_objects.dir/src/text_binding.cpp.o
+[ 43%] Building CXX object CMakeFiles/air_engine_objects.dir/src/text.cpp.o
+[ 46%] Building CXX object CMakeFiles/air_engine_objects.dir/src/text_gl.cpp.o
+[ 50%] Linking CXX executable engine_zone_tests
+[ 50%] Built target engine_zone_tests
+[ 53%] Linking CXX executable engine_zone_lifecycle_tests
+[ 53%] Built target engine_zone_lifecycle_tests
+[ 56%] Linking CXX executable engine_zone_layout_tests
+[ 56%] Built target engine_zone_layout_tests
+[ 56%] Built target air_engine_objects
+[ 60%] Linking CXX static library libair_engine.a
+[ 60%] Built target air_engine
+[ 63%] Building CXX object CMakeFiles/engine_unit_tests.dir/test/engine_test.cpp.o
+[ 66%] Building CXX object CMakeFiles/engine_snap_tests.dir/test/engine_snap_test.cpp.o
+[ 70%] Building CXX object CMakeFiles/engine_core_tests.dir/test/engine_core_test.cpp.o
+[ 73%] Building CXX object CMakeFiles/engine_render_webgpu_tests.dir/test/engine_render_webgpu_test.cpp.o
+[ 76%] Building CXX object CMakeFiles/engine_binding_tests.dir/test/engine_binding_test.cpp.o
+[ 80%] Building CXX object CMakeFiles/engine_text_tests.dir/test/engine_text_test.cpp.o
+[ 83%] Linking CXX executable engine_render_webgpu_tests
+[ 83%] Built target engine_render_webgpu_tests
+[ 86%] Linking CXX executable engine_unit_tests
+[ 86%] Built target engine_unit_tests
+[ 90%] Linking CXX executable engine_snap_tests
+[ 90%] Built target engine_snap_tests
+[ 93%] Linking CXX executable engine_text_tests
+[ 96%] Linking CXX executable engine_binding_tests
+[ 96%] Built target engine_text_tests
+[ 96%] Built target engine_binding_tests
+[100%] Linking CXX executable engine_core_tests
+[100%] Built target engine_core_tests
+Test project /tmp/air-P4-11/packages/engine/build
+    Start 1: engine_render_webgpu_tests
+1/9 Test #1: engine_render_webgpu_tests .......   Passed    0.30 sec
+    Start 2: engine_unit_tests
+2/9 Test #2: engine_unit_tests ................   Passed    0.15 sec
+    Start 3: engine_core_tests
+3/9 Test #3: engine_core_tests ................   Passed    0.42 sec
+    Start 4: engine_text_tests
+4/9 Test #4: engine_text_tests ................   Passed    0.32 sec
+    Start 5: engine_binding_tests
+5/9 Test #5: engine_binding_tests .............   Passed    0.21 sec
+    Start 6: engine_zone_lifecycle_tests
+6/9 Test #6: engine_zone_lifecycle_tests ......   Passed    0.17 sec
+    Start 7: engine_zone_layout_tests
+7/9 Test #7: engine_zone_layout_tests .........   Passed    0.18 sec
+    Start 8: engine_zone_tests
+8/9 Test #8: engine_zone_tests ................   Passed    0.16 sec
+    Start 9: engine_snap_tests
+9/9 Test #9: engine_snap_tests ................   Passed    0.17 sec
+
+100% tests passed out of 9
+
+Total Test time (real) =   2.10 sec

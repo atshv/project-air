@@ -121,6 +121,7 @@
 
 ## Ready now
 
+- `P4-12` WebGPU backend selection, capability and fallback
 - `P4-17` Resize (L14)
 - `P4-18` Auto-pan (L16)
 - `P4-19` Placement of new objects (L20)
@@ -189,6 +190,7 @@
 - [x] `P4-08` Text atlas and glyph texture pipeline (L02) — status: `done` — owner: —
 - [x] `P4-09` Glyph layout, text instances and ellipsis (L02) — status: `done` — owner: —
 - [x] `P4-10` Titles, previews and visible quality (L02) — status: `done` — owner: —
+- [x] `P4-11` WebGPU render pipeline behind the command buffer — status: `done` — owner: —
 - [x] `P4-14` Dragging versus editing (L03) — status: `done` — owner: —
 - [x] `P4-15` Snapping (L07) — status: `done` — owner: —
 - [x] `P4-16` Multi-selection (L10) — status: `done` — owner: —
@@ -209,7 +211,7 @@
 
 ## In progress
 
-- [ ] `P4-11` WebGPU render pipeline behind the command buffer — status: `in_progress` — owner: lead
+- none
 
 ## Blocked / failed
 
@@ -234,7 +236,7 @@
 <!-- polier:claims -->
 ## Claims
 
-- `P4-11` in progress by dsh since 2026-10-28T16:13:31+00:00 — worktree: /private/tmp/air-P4-11 · slot 1
+- `P4-11` in progress by dsh since 2026-10-28T16:20:57+00:00 — worktree: /private/tmp/air-P4-11 · slot 1
 
 <!-- /polier:claims -->
 

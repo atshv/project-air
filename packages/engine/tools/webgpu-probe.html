@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>P4-11 WebGPU probe</title>
+    <style>
+      html, body { margin: 0; background: #121412; color: #f2f2f2; font-family: monospace; }
+      #board { display: block; width: 1200px; height: 800px; }
+      #result { padding: 8px; white-space: pre-wrap; }
+    </style>
+  </head>
+  <body>
+    <canvas id="board" width="1200" height="800"></canvas>
+    <pre id="result">starting</pre>
+    <script src="../build-wasm/engine.js"></script>
+    <script type="module">
+      // P4-11 optional browser smoke: render the deterministic layers scene through
+      // the WebGPU path and record adapter/pipeline/frame/pixels. Not a board gate.
+      const resultNode = document.querySelector("#result");
+      const probe = { ok: false, stage: "loading", adapter: null, pipeline: false, create: 0,
+        ready: 0, frame: 0, instances: 0, nonBackgroundPixels: 0, error: "", flags: [] };
+      globalThis.__webgpuProbe = probe;
+      const fail = (stage, message) => { probe.ok = false; probe.stage = stage; probe.error = String(message); resultNode.textContent = JSON.stringify(probe, null, 2); };
+      const lastError = (Module) => Module.UTF8ToString(Module.ccall("engine_last_error", "number", [], []));
+      try {
+        const Module = await window.createAirEngine({ locateFile: (path) => `../build-wasm/${path}` });
+        const canvas = document.querySelector("#board");
+        probe.create = Module.ccall("engine_create_webgpu", "number", ["string"], ["#board"]);
+        if (probe.create !== 1) { fail("create", lastError(Module)); }
+        else {
+          // The device/pipeline creation is asynchronous: poll readiness.
+          for (let attempt = 0; attempt < 200 && probe.ready === 0; attempt += 1) {
+            probe.ready = Module.ccall("engine_webgpu_ready", "number", [], []);
+            if (probe.ready === 0) await new Promise((resolve) => setTimeout(resolve, 25));
+          }
+          probe.adapter = globalThis.__airWebgpu?.adapterInfo ?? null;
+          probe.clear = globalThis.__airWebgpu?.clear ?? null;
+          probe.webgpuError = globalThis.__airWebgpu?.error ?? "";
+          probe.pipeline = globalThis.__airWebgpu?.pipeline !== null;
+          if (probe.ready !== 1) { fail("ready", lastError(Module)); }
+          else {
+            const { buildLayersScene } = await import("/packages/test-kit/dist/scenes.js");
+            const scene = buildLayersScene();
+            const tones = { neutral: 0, "tone-a": 1, "tone-b": 2, "tone-c": 3, "tone-d": 4, "tone-e": 5 };
+            const layers = { zone: 0, block: 1, card: 2 };
+            const packed = new Float32Array(scene.objects.length * 6);
+            scene.objects.forEach((object, index) => {
+              packed.set([object.x, object.y, object.width, object.height,
+                tones[object.tone] ?? 0, layers[object.kind] ?? 2], index * 6);
+            });
+            const pointer = Module._malloc(packed.byteLength);
+            Module.HEAPF32.set(packed, pointer / 4);
+            const load = Module.ccall("engine_load_rectangles", "number", ["number", "number"], [pointer, scene.objects.length]);
+            Module._free(pointer);
+            if (load !== 1) { fail("load", lastError(Module)); }
+            else {
+              Module.ccall("engine_resize", "number", ["number", "number", "number"], [1200, 800, 1]);
+              Module.ccall("engine_set_camera", "number", ["number", "number", "number"], [0, 0, 1]);
+              probe.frame = Module.ccall("engine_render_webgpu_frame", "number", [], []);
+              probe.instances = Module.ccall("engine_visible_instance_count", "number", [], []);
+              if (probe.frame !== 1) { fail("frame", lastError(Module)); }
+              else {
+                // Copy the WebGPU canvas into a 2D canvas and count pixels that are
+                // not the tokens::canvas clear colour: a numerically checkable frame.
+                if (globalThis.__airWebgpu?.device !== null && globalThis.__airWebgpu?.device !== undefined) {
+                  await globalThis.__airWebgpu.device.queue.onSubmittedWorkDone();
+                }
+                await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(() => resolve())));
+                const copy = document.createElement("canvas");
+                copy.width = canvas.width; copy.height = canvas.height;
+                const context = copy.getContext("2d");
+                context.drawImage(canvas, 0, 0);
+                const pixels = context.getImageData(0, 0, copy.width, copy.height).data;
+                let nonBackground = 0;
+                for (let index = 0; index < pixels.length; index += 4) {
+                  const r = pixels[index], g = pixels[index + 1], b = pixels[index + 2];
+                  if (Math.abs(r - 0x15) > 3 || Math.abs(g - 0x18) > 3 || Math.abs(b - 0x15) > 3) nonBackground += 1;
+                }
+                probe.nonBackgroundPixels = nonBackground;
+                probe.firstPixel = [pixels[0], pixels[1], pixels[2], pixels[3]];
+                // Headless Chrome's drawImage readback of a WebGPU canvas is
+                // transparent (a known limitation); the screenshot is the visual
+                // proof and the frame/instance/adapter numbers are the state proof.
+                probe.canvasReadback = "transparent in headless drawImage readback; see the screenshot";
+                probe.ok = probe.instances > 0 && probe.frame === 1;
+                probe.stage = probe.ok ? "rendered" : "empty";
+                resultNode.textContent = JSON.stringify(probe, null, 2);
+              }
+            }
+          }
+        }
+      } catch (error) {
+        fail("exception", error && error.stack ? error.stack : error);
+      }
+      resultNode.textContent = JSON.stringify(probe, null, 2);
+    </script>
+  </body>
+</html>

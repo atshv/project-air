@@ -674,6 +674,46 @@ explicit WebGPU/open-task gaps live in `docs/engine/stage-report.md`. The two-ba
 is **not** proven (WebGPU P4-11…P4-13 are not merged); the committed reference images are WebGL2-only
 and no baseline was changed by P4-28.
 
+## WebGPU render pipeline (P4-11)
+
+`src/render_webgpu.cpp` + `include/engine/render_webgpu.h` add the second render backend behind the
+same seam the WebGL2 renderer uses. The core builds the 24-byte `air::engine::Instance` records in
+`CommandBuffer` (x, y, width, height screen-space CSS px from the top-left, `tone` uint, `layer`
+uint); the WebGPU module consumes exactly those bytes — culling, sorting, tones and draw order stay in
+the core, there is no second data path and no JS call per object.
+
+- **Module/JS boundary.** The C++ module owns the frame decision, the document/camera/spatial state
+  and the buffer bytes; a small Emscripten `EM_JS` helper owns the browser objects (adapter, device,
+  WebGPU canvas context, shader module, render pipeline, two uniform buffers for the palette and the
+  resolution, one instance `GPUBuffer`). The palette (6 x RGB from `tokens::card`/tone tokens) and the
+  clear colour (`tokens::canvas`) are decoded from `tokens.h` in C++ and copied once, so the WGSL never
+  carries a second colour table.
+- **Pipeline/draw.** One WGSL vertex/fragment pair: the 24-byte stride is bound as instance attributes
+  (`float32x4` at 0, `uint32` at 16, `uint32` at 20), the vertex stage expands a unit quad to
+  screen-space CSS px with the same top-left clip convention as the WebGL2 shader, the fragment stage
+  selects `palette[tone]`; one `draw(6, instanceCount)` per frame. The instance `GPUBuffer` is reused
+  and only grows (bounded doubling, one new buffer per growth step; the 50,000-instance document bound
+  is asserted), never re-created per object. Resize/reconfigure uses the recorded CSS size and DPR and
+  the canvas backing is set from them.
+- **C ABI and native stubs.** `engine_create_webgpu(canvas_selector)`, `engine_render_webgpu_frame()`
+  and `engine_webgpu_ready()` are exported next to the WebGL2 entries; WebGL2's behaviour and bytes
+  are unchanged (a module instance creates either the WebGL2 or the WebGPU renderer, not both).
+  Native builds compile stubs for all three: create/frame return 0 with a clean `engine_last_error`,
+  readiness returns -1, and `engine_render_webgpu_test` pins that (no browser API at compile time).
+- **Asynchronous readiness.** WebGPU device/pipeline creation is asynchronous: `engine_create_webgpu`
+  starts it and returns; `engine_webgpu_ready()` reports 1 (ready), 0 (initialising) or -1 (failed,
+  with `engine_last_error`), and a frame before readiness fails cleanly instead of drawing with a
+  partial device. Backend selection/capability detection/fallback (P4-12) and the switch + two-backend
+  comparison (P4-13) build on this contract.
+- **Scope of this pipeline.** The glyph/atlas and chrome passes (titles, selection, guides, grid) are
+  still WebGL2-only; porting them is P4-13 scope for an honest two-backend image comparison. The
+  optional browser smoke (`tools/webgpu-smoke.mjs`, not a board gate) renders the deterministic layers
+  scene through the WebGPU path on the real adapter (ANGLE Metal `apple`/`metal-3`), records the
+  adapter/pipeline/frame/instance state and commits
+  `reviews/evidence/P4-11-webgpu-*.json` + `P4-11-webgpu-frame.png`; headless Chrome's `drawImage`
+  readback of a WebGPU canvas is transparent, so the screenshot is the visual proof and the record
+  carries that observation as an open point.
+
 ## Object identity and mutations
 
 `Document` keeps one storage slot per object and assigns a monotonic `ObjectId` on insert

@@ -35,6 +35,17 @@
   (entry point, exported functions/runtime methods, module name and memory flags), not on the
   command line; read that block for the authoritative export list.
 
+## P4-11 WebGPU helper (build/JS-library change)
+
+P4-11 adds the WebGPU module `src/render_webgpu.cpp`, which carries a small `EM_JS` helper compiled
+into `engine.js` (no new Emscripten flag: the helper uses the browser's `navigator.gpu` WebGPU API at
+runtime). The CMake `EXPORTED_FUNCTIONS` list gains `_engine_create_webgpu`,
+`_engine_render_webgpu_frame` and `_engine_webgpu_ready`; everything else in the Emscripten block is
+unchanged. `wasm-smoke.mjs` asserts the three exports and the clean failure paths outside a WebGPU
+browser (create without a WebGPU canvas, a frame before create, readiness before create), and
+`wasm-size.mjs` stays within the 300 KiB gzip budget (61,066 B gzip after the change). The optional
+browser smoke in `packages/engine/tools/webgpu-smoke.mjs` is evidence, not a board gate.
+
 ## Pitfalls
 
 - Do not call `emcmake` directly from a shell where Homebrew's bin is behind `/usr/bin`: CMake

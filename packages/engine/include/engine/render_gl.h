@@ -26,6 +26,21 @@
 // selector such as "#canvas"). Returns 1 on success, 0 on failure.
 AIR_ENGINE_RENDER_GL_API int engine_create(const char* canvas_selector);
 
+// P4-11: creates the WebGPU canvas context, device and pipeline for the same
+// selector. WebGPU is browser-only; the call starts the asynchronous device
+// creation and a frame before readiness fails cleanly. One renderer instance per
+// C ABI module: WebGL2 and WebGPU are created in separate module instances.
+AIR_ENGINE_RENDER_GL_API int engine_create_webgpu(const char* canvas_selector);
+
+// P4-11: draws the current command buffer with one WebGPU instanced draw. Fails
+// cleanly (0 + engine_last_error) before engine_create_webgpu or before the
+// device/pipeline is ready.
+AIR_ENGINE_RENDER_GL_API int engine_render_webgpu_frame();
+
+// P4-11: 1 = WebGPU device and pipeline ready, 0 = asynchronous initialisation
+// still running, -1 = failed or not created (engine_last_error has the reason).
+AIR_ENGINE_RENDER_GL_API int engine_webgpu_ready();
+
 // Records the CSS canvas size and the device pixel ratio. The drawing buffer size
 // is set by the caller; returns 1 on success, 0 on failure.
 AIR_ENGINE_RENDER_GL_API int engine_resize(int css_width, int css_height,

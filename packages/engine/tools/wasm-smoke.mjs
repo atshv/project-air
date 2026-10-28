@@ -72,6 +72,31 @@ if (loadError.length === 0) {
   fail("engine_last_error() is empty after a pre-create rectangle load");
 }
 
+// P4-11: WebGPU entry points are exported and fail cleanly outside a WebGPU
+// browser (the Node smoke shim has no navigator.gpu): create returns 0 with a
+// reason, a frame before create fails cleanly, and readiness reports -1.
+for (const name of ["engine_create_webgpu", "engine_render_webgpu_frame", "engine_webgpu_ready"]) {
+  if (typeof module[`_${name}`] !== "function") {
+    fail(`${name} is not exported by the WebAssembly module`);
+  }
+}
+const webgpuCreate = module.ccall("engine_create_webgpu", "number", ["string"], ["#no-webgpu-canvas"]);
+const webgpuCreateError = lastError();
+if (webgpuCreate !== 0) {
+  fail(`engine_create_webgpu reported success without a WebGPU canvas: ${webgpuCreate}`);
+}
+if (webgpuCreateError.length === 0) {
+  fail("engine_last_error() is empty after a failed engine_create_webgpu");
+}
+const webgpuFrameBeforeCreate = module.ccall("engine_render_webgpu_frame", "number", [], []);
+if (webgpuFrameBeforeCreate !== 0 || lastError().length === 0) {
+  fail("engine_render_webgpu_frame did not fail cleanly before a WebGPU create");
+}
+const webgpuReadyBeforeCreate = module.ccall("engine_webgpu_ready", "number", [], []);
+if (webgpuReadyBeforeCreate !== -1 || lastError().length === 0) {
+  fail("engine_webgpu_ready did not report -1 cleanly before a WebGPU create");
+}
+
 const OUT_BYTES = 7 * 8;
 const out = module._malloc(OUT_BYTES);
 const outValues = () => Array.from(module.HEAPF64.subarray(out / 8, out / 8 + 7));

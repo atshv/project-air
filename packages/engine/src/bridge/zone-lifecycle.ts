@@ -3,13 +3,72 @@
 // (zone title) are strictly separated; the committed outcomes are built as one
 // operation with inverse by the logic seam.
 
-import { arrangeZone, zoneOrientation, ZONE_HEADER_HEIGHT, ZONE_PADDING, type ZoneOrientation } from "./zone-parity.js";
-
 /** Grouping thresholds from the live demo (screen px, zoom-independent). */
 export const GROUP_OVERLAP = 0.2;
 export const GROUP_POINTER_PX = 16;
 export const GROUP_CONTACT_PX = 32;
 /** Zone title limit of the live demo and the 0.2.0 header band. */
+// Local copies of the two pure layout rules used by planZoneGroup. They mirror
+// zone-parity.ts (which stays import-free for the browser bundle); keeping the
+// helpers local avoids a runtime TS-to-TS import that only one of the Node test
+// loader and the compiled browser module can resolve.
+const ZONE_HEADER_HEIGHT = 40;
+const ZONE_PADDING = 16;
+const ZONE_GAP = 12;
+type ZoneOrientation = "vertical" | "horizontal";
+
+function localOrientation(
+  members: readonly { width: number; height: number; offsetX: number; offsetY: number }[],
+  current: ZoneOrientation,
+): ZoneOrientation {
+  if (members.length < 2) return current;
+  let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+  let widthSum = 0, heightSum = 0;
+  for (const member of members) {
+    minX = Math.min(minX, member.offsetX); maxX = Math.max(maxX, member.offsetX);
+    minY = Math.min(minY, member.offsetY); maxY = Math.max(maxY, member.offsetY);
+    widthSum += member.width; heightSum += member.height;
+  }
+  const nx = (maxX - minX) / Math.max(1, widthSum / members.length);
+  const ny = (maxY - minY) / Math.max(1, heightSum / members.length);
+  if (Math.max(nx, ny) < 0.5) return current;
+  if (nx >= 1.25 * ny) return "horizontal";
+  if (ny >= 1.25 * nx) return "vertical";
+  return current;
+}
+
+function localArrange(
+  members: readonly { id: string; width: number; height: number }[],
+  orientation: ZoneOrientation,
+  bounds: { width: number; height: number },
+): { orientation: ZoneOrientation; frame: { width: number; height: number }; placements: { id: string; x: number; y: number }[] } {
+  const layout = (candidate: ZoneOrientation) => {
+    const placements: { id: string; x: number; y: number }[] = [];
+    let contentWidth = 0, contentHeight = 0, cursor = 0;
+    for (const member of members) {
+      if (candidate === "vertical") {
+        placements.push({ id: member.id, x: 0, y: cursor });
+        cursor += member.height + ZONE_GAP;
+        contentWidth = Math.max(contentWidth, member.width);
+        contentHeight += member.height + ZONE_GAP;
+      } else {
+        placements.push({ id: member.id, x: cursor, y: 0 });
+        cursor += member.width + ZONE_GAP;
+        contentHeight = Math.max(contentHeight, member.height);
+        contentWidth += member.width + ZONE_GAP;
+      }
+    }
+    if (members.length > 0) {
+      if (candidate === "vertical") contentHeight -= ZONE_GAP; else contentWidth -= ZONE_GAP;
+    }
+    return { orientation: candidate, frame: { width: contentWidth + 2 * ZONE_PADDING, height: ZONE_HEADER_HEIGHT + contentHeight + 2 * ZONE_PADDING }, placements };
+  };
+  const preferred = layout(orientation);
+  const tooWide = bounds.width > 0 && preferred.frame.width > bounds.width + 0.5;
+  const tooTall = bounds.height > 0 && preferred.frame.height > bounds.height + 0.5;
+  return tooWide || tooTall ? layout(orientation === "vertical" ? "horizontal" : "vertical") : preferred;
+}
+
 export const ZONE_TITLE_MAX = 40;
 export const ZONE_HEADER = ZONE_HEADER_HEIGHT;
 
@@ -110,8 +169,8 @@ export function planZoneGroup(
     offsetY: member.y + member.height / 2 - centreY,
     order: index,
   }));
-  const orientation = zoneOrientation(offsets, requested);
-  const arrangement = arrangeZone(
+  const orientation = localOrientation(offsets, requested);
+  const arrangement = localArrange(
     members.map((member) => ({ id: member.id, width: member.width, height: member.height })),
     orientation,
     bounds,
