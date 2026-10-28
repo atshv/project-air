@@ -1,0 +1,100 @@
+$ pnpm test --affected
+[exit 0]
+
+
+   • turbo 2.11.10
+   • Packages in scope: //, @project-air/sdk, @project-air/sync
+   • Running test in 3 packages
+   • Remote caching disabled, using shared worktree cache
+
+@project-air/sdk:build: cache miss, executing 3fb4870504ae1446
+@project-air/sync:build: cache miss, executing 13198173e377bd51
+@project-air/sync:build: $ tsc --project tsconfig.json
+@project-air/sdk:build: $ tsc --project tsconfig.json
+@project-air/sdk:test: cache miss, executing 526421f6b49eb951
+@project-air/sdk:test: $ node --test test/*.test.mjs
+@project-air/sync:test: cache miss, executing 22e9c1e987b45c87
+@project-air/sync:test: $ node --test --test-concurrency=1 test/*.test.mjs
+@project-air/sdk:test: (node:97436) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.
+@project-air/sdk:test: (Use `node --trace-warnings ...` to show where the warning was created)
+@project-air/sdk:test: BMSG {"id":"01a184ba-e12a-724a-a4f8-ca381496cea0","type":"presence","clientId":"0192f0fa-7000-7000-8000-0000000000a1","boardId":"0192f0a3-7000-70
+@project-air/sdk:test: BMSG {"id":"01a184ba-e144-72a6-aa8e-99213101352a","type":"ack","clientId":"0192f0fa-7000-7000-8000-0000000000b1","boardId":"0192f0a3-7000-7000-80
+@project-air/sync:test: ✔ live socket integration: join, ack-after-commit, broadcast and reconnect catch-up (77.784334ms)
+@project-air/sdk:test: BMSG {"id":"01a184ba-e191-75d0-9d96-c5b984981496","type":"presence","clientId":"0192f0fa-7000-7000-8000-0000000000a1","boardId":"0192f0a3-7000-70
+@project-air/sdk:test: BMSG {"id":"01a184ba-e191-7b3c-b3e5-c4748ed92331","type":"operationBatch","clientId":"0192f0fa-7000-7000-8000-0000000000a1","boardId":"0192f0a3-7
+@project-air/sync:test: (node:97452) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.
+@project-air/sync:test: (Use `node --trace-warnings ...` to show where the warning was created)
+@project-air/sync:test: ✔ join replay rebuilds the committed state after compaction (real Pg store) (218.964084ms)
+@project-air/sync:test: ✔ a >1 MiB snapshot is delivered to a joining client (37.576917ms)
+@project-air/sdk:test: DEBUG aSeq=3 bSeq=3 updates=1 aOwn=1 aOffline=0 aErr=null aX=123 bX=123
+@project-air/sdk:test: BMSG {"id":"01a184ba-e4b4-7e79-a7fe-f504d56b5c5c","type":"operationBatch","clientId":"0192f0fa-7000-7000-8000-0000000000a1","boardId":"0192f0a3-7
+@project-air/sdk:test: stack proof evidence: reviews/evidence/P5-07-stack-20261028T225643Z.json
+@project-air/sdk:test: ✔ offline clients converge over the real stack and undo reverts only the client's own op (1150.940625ms)
+@project-air/sdk:test: ✔ handshake sends hello first, then joinBoard; welcome/snapshot install the document (6.482833ms)
+@project-air/sdk:test: ✔ operation batches are sent with a per-connection seq; acks advance only forward (0.589667ms)
+@project-air/sdk:test: ✔ offline operations queue in order and flush on join; duplicate remote batches apply once (0.744917ms)
+@project-air/sdk:test: ✔ a dropped socket reconnects with backoff and resyncs from the last serverSeq (0.280541ms)
+@project-air/sdk:test: ✔ close is idempotent and leaves the board once (0.158875ms)
+@project-air/sdk:test: ✔ autosave debounces 400 ms after the last keystroke, saves once and reports saving -> saved (0.245334ms)
+@project-air/sdk:test: ✔ the five flush triggers save immediately and visibility only flushes when hidden (0.212ms)
+@project-air/sdk:test: ✔ stale autosave responses never overwrite newer values; error -> retry (0.209916ms)
+@project-air/sdk:test: ✔ outgoing messages validate against sync.schema.json and ids are unique UUIDv7 (1.315583ms)
+@project-air/sdk:test: ✔ an injected authenticated clientId is used unchanged and must be a UUIDv7 (0.377417ms)
+@project-air/sdk:test: ✔ presence updates are throttled/coalesced and remote participants subscribe and clear (0.376375ms)
+@project-air/sdk:test: ✔ undoOwn applies only the client's own inverse; remote operations are never recorded (0.456667ms)
+@project-air/sdk:test: ✔ workspaces.list sends the session and requestId and parses the list envelope (23.223583ms)
+@project-air/sdk:test: ✔ a cookie session is sent as the cookie header (1.192625ms)
+@project-air/sdk:test: ✔ a string session is shorthand for the test session header (1.037042ms)
+@project-air/sdk:test: ✔ workspace create/get/update/delete use the contract envelopes (7.155834ms)
+@project-air/sdk:test: ✔ boards list/create/get/update/delete (4.513667ms)
+@project-air/sdk:test: ✔ notes list/create/get/update/delete (3.368375ms)
+@project-air/sdk:test: ✔ cards list/create/get/update/delete (5.704041ms)
+@project-air/sdk:test: ✔ pagination nextCursor is passed back as the cursor query (3.188458ms)
+@project-air/sdk:test: ✔ no session maps to a typed AUTH_REQUIRED ApiError (0.584ms)
+@project-air/sdk:test: ✔ a validation error exposes the field paths (0.581916ms)
+@project-air/sdk:test: ✔ a conflict maps to CONFLICT and unknown ids to NOT_FOUND (0.95875ms)
+@project-air/sdk:test: ✔ an unexpected success envelope becomes an INTERNAL ApiError (0.636958ms)
+@project-air/sdk:test: ✔ an invalid baseUrl is rejected by the client (0.097417ms)
+@project-air/sdk:test: ℹ tests 26
+@project-air/sdk:test: ℹ suites 0
+@project-air/sdk:test: ℹ pass 26
+@project-air/sdk:test: ℹ fail 0
+@project-air/sdk:test: ℹ cancelled 0
+@project-air/sdk:test: ℹ skipped 0
+@project-air/sdk:test: ℹ todo 0
+@project-air/sdk:test: ℹ duration_ms 1374.328041
+@project-air/sync:test: ✔ live presence: throttled, identity-derived, isolated, cleaned up and never blocking operations (551.055875ms)
+@project-air/sync:test: ✔ hello is required first and the first message rejection is explicit (1.313375ms)
+@project-air/sync:test: ✔ version and session validation reject before joinBoard (0.171041ms)
+@project-air/sync:test: ✔ the platform authorizer gates joinBoard and welcome/snapshot carry the durable seq (0.736875ms)
+@project-air/sync:test: ✔ operationBatch is persisted before the ack and the ack carries the new seq (0.546292ms)
+@project-air/sync:test: ✔ a failed append produces a reject and never an ack (0.208625ms)
+@project-air/sync:test: ✔ resyncRequest reads from the durable seq and leaveBoard broadcasts presence (0.237041ms)
+@project-air/sync:test: (node:97457) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.
+@project-air/sync:test: (Use `node --trace-warnings ...` to show where the warning was created)
+@project-air/sync:test: ✔ join/resync/compaction replay more than the 500-row page (1975.39725ms)
+@project-air/sync:test: restart harness evidence: /private/tmp/air-P5-08/reviews/evidence/P5-06-restart-20261028T225646Z.json
+@project-air/sync:test: ✔ restart, catch-up and snapshot compaction preserve every acked update (1047.978459ms)
+@project-air/sync:test: ✔ encodeFrame produces a valid 127-length frame for a 1.5 MiB outbound payload (0.956208ms)
+@project-air/sync:test: ✔ the default inbound bound still rejects >1 MiB frames (0.568959ms)
+@project-air/sync:test: ✔ the handshake accept value matches the RFC 6455 vector (1.019041ms)
+@project-air/sync:test: ✔ masked client frames decode and unmasked/reserved frames are rejected (0.517916ms)
+@project-air/sync:test: ✔ fragmentation reassembles and enforces the bounded size (0.416791ms)
+@project-air/sync:test: ✔ ping is answered with pong and close ends the connection (0.732375ms)
+@project-air/sync:test: ✔ an oversized declared frame closes with 1009 before allocating it (0.156208ms)
+@project-air/sync:test: ℹ tests 19
+@project-air/sync:test: ℹ suites 0
+@project-air/sync:test: ℹ pass 19
+@project-air/sync:test: ℹ fail 0
+@project-air/sync:test: ℹ cancelled 0
+@project-air/sync:test: ℹ skipped 0
+@project-air/sync:test: ℹ todo 0
+@project-air/sync:test: ℹ duration_ms 5508.653375
+
+ Tasks:    4 successful, 4 total
+Cached:    0 cached, 4 total
+  Time:    6.402s 
+
+$ turbo run test --affected
+ WARNING  no output files found for task @project-air/sdk#test. Please check your `outputs` key in `turbo.json`
+ WARNING  no output files found for task @project-air/sync#test. Please check your `outputs` key in `turbo.json`

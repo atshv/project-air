@@ -8,6 +8,7 @@ import type { Duplex } from "node:stream";
 
 export const WS_GUID = "258EAFA5-E914-47DA-95CA-C5AB0DC85B11";
 export const MAX_MESSAGE_BYTES = 1_048_576; // 1 MiB bounded inbound message
+export const MAX_OUTBOUND_BYTES = 64 * 1_048_576; // 64 MiB bounded outbound frame (snapshots must fit)
 
 export const OPCODE = { continuation: 0x0, text: 0x1, binary: 0x2, close: 0x8, ping: 0x9, pong: 0xa } as const;
 
@@ -46,9 +47,9 @@ export interface Frame {
 }
 
 /** Encodes one unmasked server frame. */
-export function encodeFrame(opcode: number, payload: Buffer | Uint8Array | string, fin = true): Buffer {
+export function encodeFrame(opcode: number, payload: Buffer | Uint8Array | string, fin = true, maxBytes = MAX_MESSAGE_BYTES): Buffer {
   const data = typeof payload === "string" ? Buffer.from(payload, "utf8") : Buffer.from(payload);
-  if (data.length > MAX_MESSAGE_BYTES) throw new WebSocketProtocolError("frame payload too large", 1009);
+  if (data.length > maxBytes) throw new WebSocketProtocolError("frame payload too large", 1009);
   const length = data.length;
   let headerLength = 2;
   if (length >= 126 && length <= 0xffff) headerLength += 2;
@@ -162,7 +163,7 @@ export function createWsConnection(socket: Duplex, remoteAddress = ""): WsConnec
   };
   const send = (opcode: number, payload: Buffer | string): void => {
     if (closed) return;
-    socket.write(encodeFrame(opcode, payload));
+    socket.write(encodeFrame(opcode, payload, true, MAX_OUTBOUND_BYTES));
   };
   const connection: WsConnection = {
     socket,

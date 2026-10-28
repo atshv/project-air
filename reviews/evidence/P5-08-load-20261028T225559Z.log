@@ -1,0 +1,9 @@
+$ node packages/sdk/test/load/run-load.mjs
+[exit 0]
+
+load: clients=25 ops=5000 window=31368ms p50=4.88 p95=15.22 p99=31.64 errors=0 converged=true result=pass
+evidence: reviews/evidence/P5-08-load-20261028T225640Z.json
+(node:97338) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:97339) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.
+(Use `node --trace-warnings ...` to show where the warning was created)

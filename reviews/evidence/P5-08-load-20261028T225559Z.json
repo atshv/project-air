@@ -1,0 +1,19 @@
+{
+  "task": "P5-08",
+  "gate": "load",
+  "command": "node packages/sdk/test/load/run-load.mjs",
+  "exit_code": 0,
+  "result": "pass",
+  "slot": null,
+  "exclusive": [
+    "load"
+  ],
+  "lock_wait_s": 0.0,
+  "lock_warning": null,
+  "started": "2026-10-28T22:55:59+00:00",
+  "finished": "2026-10-28T22:56:40+00:00",
+  "commit": "a06cde9296bd14740c291461391bb8560750a2fd",
+  "dirty": true,
+  "log": "P5-08-load-20261028T225559Z.log",
+  "log_sha256": "2cb90894820a0a9da3273d314147bf85e99ec9f3b6875c5dc12f8bc996c89252"
+}

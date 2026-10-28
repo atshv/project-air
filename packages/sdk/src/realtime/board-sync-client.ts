@@ -18,6 +18,7 @@ export type BoardSyncEvent =
   | { readonly type: "status"; readonly status: BoardSyncStatus; readonly serverSeq: number }
   | { readonly type: "snapshot"; readonly serverSeq: number }
   | { readonly type: "remote"; readonly batchId: string; readonly serverSeq: number }
+  | { readonly type: "ack"; readonly batchId: string; readonly serverSeq: number }
   | { readonly type: "error"; readonly error: unknown };
 
 export interface PresenceCursor {
@@ -224,6 +225,7 @@ export function createBoardSyncClient(options: BoardSyncClientOptions): BoardSyn
     // Only a newer durable sequence advances the client; stale acks are ignored.
     if (Number.isInteger(seq) && seq > serverSeq) serverSeq = seq;
     emit({ type: "status", status, serverSeq });
+    if (batchId.length > 0) emit({ type: "ack", batchId, serverSeq });
   };
 
   const onRemoteBatch = (message: Record<string, unknown>): void => {

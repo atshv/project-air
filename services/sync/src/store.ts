@@ -174,8 +174,11 @@ export class PgSyncStore implements SyncStore {
   }
 
   async updatesAfter(boardId: string, fromServerSeq: number, limit = 500): Promise<StoredUpdate[]> {
-    const result = await this.#pool.query<{ server_seq: string; encoded_update: Buffer }>(
-      "SELECT server_seq::text AS server_seq, encoded_update FROM sync_updates WHERE board_id = $1 AND server_seq > $2 ORDER BY server_seq ASC LIMIT $3",
+    // ORDER BY must bind to the numeric table column, not an output alias: a
+    // `server_seq::text AS server_seq` alias makes PostgreSQL order the page
+    // lexicographically (2, 10, 100, 1000...), which skips/overlaps pages.
+    const result = await this.#pool.query<{ server_seq: number | string; encoded_update: Buffer }>(
+      "SELECT server_seq, encoded_update FROM sync_updates WHERE board_id = $1 AND server_seq > $2 ORDER BY server_seq ASC LIMIT $3",
       [boardId, fromServerSeq, limit],
     );
     return result.rows.map((row) => ({ serverSeq: Number(row.server_seq), update: row.encoded_update.toString("base64") }));

@@ -5838,7 +5838,7 @@
       "satisfies": [
         "D11"
       ],
-      "status": "in_progress",
+      "status": "done",
       "depends_on": [
         "P5-03",
         "P5-04",
@@ -5879,11 +5879,16 @@
         "unit",
         "load"
       ],
-      "owner": "lead",
+      "owner": null,
       "branch": "task/P5-08",
-      "worktree": "/private/tmp/air-P5-08",
-      "round": 0,
-      "evidence": [],
+      "worktree": null,
+      "round": 6,
+      "evidence": [
+        "reviews/evidence/P5-08-board-check-20261028T225647Z.json",
+        "reviews/evidence/P5-08-boundaries-20261028T225432Z.json",
+        "reviews/evidence/P5-08-unit-20261028T225640Z.json",
+        "reviews/evidence/P5-08-load-20261028T225559Z.json"
+      ],
       "scope_write_forbidden": [
         "reference/"
       ],

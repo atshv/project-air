@@ -137,7 +137,7 @@ test("a failed append produces a reject and never an ack", async () => {
 
 test("resyncRequest reads from the durable seq and leaveBoard broadcasts presence", async () => {
   const store = fakeStore();
-  await store.appendUpdate({ boardId: BOARD_ID, clientId: CLIENT_ID, messageId: "m", update: "u1" });
+  await store.appendUpdate({ boardId: BOARD_ID, clientId: CLIENT_ID, messageId: "m", update: Buffer.from(JSON.stringify([{ id: "o1", boardId: BOARD_ID, type: "reorder", payload: { itemId: "i1", z: "a" } }])).toString("base64") });
   const { instance, sent, broadcast } = await session({ store });
   await instance.receive(JSON.stringify({ id: "h", type: "hello", clientId: CLIENT_ID, payload: { tokenRef: "valid", contractVersion: SYNC_CONTRACT_VERSION } }));
   await instance.receive(message("joinBoard"));

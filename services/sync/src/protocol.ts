@@ -257,6 +257,26 @@ export class SyncSession {
     }
   }
 
+  // Replay the durable operations log in 500-row pages (memory bound). Rows hold
+  // the batch's contract operations JSON (UTF-8, base64 in the bytea column), so a
+  // rebuilt document applies exactly the same operations the clients apply from
+  // the broadcast, in the same server order.
+  async #applyAllOperations(boardId: string, doc: { apply(operation: Record<string, unknown>): void }, fromServerSeq: number): Promise<number> {
+    let from = fromServerSeq;
+    let applied = 0;
+    for (;;) {
+      const page = await this.#options.store.updatesAfter(boardId, from);
+      for (const row of page) {
+        let operations: unknown;
+        try { operations = JSON.parse(Buffer.from(row.update, "base64").toString("utf8")); } catch { operations = null; }
+        if (!Array.isArray(operations)) throw new Error("legacy sync update row (expected operations JSON; the log format changed in stage 6)");
+        for (const operation of operations) { doc.apply(operation as Record<string, unknown>); applied += 1; }
+      }
+      if (page.length < 500) return applied;
+      from = page[page.length - 1]!.serverSeq;
+    }
+  }
+
   async #loadBoard(boardId: string): Promise<void> {
     const state = await this.#options.store.loadBoard(boardId);
     if (state === null) {
@@ -279,8 +299,7 @@ export class SyncSession {
     if (state.docState == null && hasEntities && typeof this.#options.store.saveSnapshotDocState === "function") {
       await this.#options.store.saveSnapshotDocState({ boardId, snapshotSeq: state.snapshotSeq, docState: doc.encodeUpdate() });
     }
-    const updates = await this.#options.store.updatesAfter(boardId, state.snapshotSeq);
-    for (const update of updates) doc.applyUpdate(update.update);
+    await this.#applyAllOperations(boardId, doc, state.snapshotSeq);
     this.#state.doc = doc;
   }
 
@@ -299,7 +318,9 @@ export class SyncSession {
     let update: string;
     try {
       for (const operation of operations) this.#state.doc.apply(operation);
-      update = this.#state.doc.encodeUpdate();
+      // Persist the batch's contract operations (not a full Yjs state): the log is
+      // an operations log and replay applies exactly the broadcast operations.
+      update = Buffer.from(JSON.stringify(operations)).toString("base64");
     } catch (error) {
       this.#reject(send, message, REJECT_CODES.invalidMessage, `operation rejected: ${String((error as Error).message)}`);
       return;
@@ -344,8 +365,7 @@ export class SyncSession {
       this.#reject(send, message, REJECT_CODES.invalidMessage, "fromServerSeq must be between 0 and the board serverSeq");
       return;
     }
-    const updates = await this.#options.store.updatesAfter(this.#state.joinedBoard, fromServerSeq);
-    for (const update of updates) this.#state.doc.applyUpdate(update.update);
+    await this.#applyAllOperations(this.#state.joinedBoard, this.#state.doc, fromServerSeq);
     send({
       id: message.id, type: "welcome", clientId: message.clientId, boardId: this.#state.joinedBoard,
       sentAt: sentAt(), serverSeq: this.#state.lastServerSeq,

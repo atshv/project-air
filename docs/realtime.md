@@ -159,3 +159,51 @@ at their sequence) and DB growth is bounded (the log is pruned). Compaction runs
 against the DB outside a client session, so it does not block operation batches;
 the restart harness proves a compacted restart reproduces exactly the
 uncompacted snapshot.
+
+## Stage 6 exit: load proof and handoff (P5-08)
+
+The `load` gate is proven by `packages/sdk/test/load/run-load.mjs` (exclusive):
+25 SDK `BoardSyncClient`s on one board against the real sync service and the
+slot PostgreSQL, explicit seed-ack and quiescence barriers, 5 s warm-up and a
+>= 30 s / >= 5,000-operation measurement window. Measured repetitions (send->ack
+per operation batch): p50 4.59 / 4.47 / 6.14 ms, p95 21.59 / 14.09 / 16.81 ms,
+p99 81.54 / 55.42 / 42.52 ms, 0 errors, throughput ~156-164 ops/s; every client
+document equals the fresh-join observer document in all three runs (canonical
+entity hashes recorded in `reviews/evidence/P5-08-load-*.json`). The gate is
+documented in `docs/gates/load.md`.
+
+Exit criteria status: load **pass**; restart durability/catch-up/compaction
+**pass** (P5-06); two offline browsers **pass** (P5-07 crdt-convergence); pure
+convergence 30,000 rounds **pass**; own-ops undo **pass**. Two real bugs found by
+this task are fixed and regression-protected: lexicographic page ordering in
+`PgSyncStore.updatesAfter` (numeric ORDER BY) and the 1 MiB outbound WebSocket
+bound (now a separate 64 MiB outbound bound, so large snapshots are delivered).
+
+Recorded changes/limits:
+
+- The durable log is an **operations log** since stage 6: `sync_updates.encoded_update`
+  holds the batch's contract operations JSON (UTF-8, base64 in the bytea column),
+  not a full Yjs state. Legacy full-state rows fail closed with a clear error
+  (pre-release data only; slot DBs are reset by gates). A future rename/migration
+  of the column is cosmetic.
+- Replay is paginated (500 rows/page, numeric `server_seq` order) for join,
+  resync and compaction; outbound frames may be up to 64 MiB (inbound remains
+  1 MiB).
+- **Auto-compaction scheduler is not wired**: compaction is invoked manually and
+  the log grows until it runs; replay pagination makes large logs correct but not
+  cheap.
+- **Platform board-content bootstrap remains open**: fresh Pg boards start from
+  the empty baseline; a non-empty platform board content path is not wired.
+- **Sync tables have no RLS** yet; access is enforced by the service authorizer
+  only.
+- **Presence removal sentinel** (empty selection + origin cursor) is a documented
+  follow-up for a contract minor; presence identity has no dedicated field.
+- **SDK clientId** should come from the authenticated session in the web app;
+  the SDK can generate one per client instance.
+- **L05 autosave UI wiring** in the web-app is not part of this stage.
+- The pure convergence harness takes ~8 minutes (state+snapshot compared every
+  round); the `crdt-convergence` gate is exclusive.
+- **docState** is stored inside the existing `sync_snapshots.snapshot` JSONB
+  wrapper (`{boardContent, docState}`), not in a dedicated column.
+- **Single service instance, no horizontal scaling**: broadcasts and the client
+  registry are in-process; multi-instance fan-out is future work.

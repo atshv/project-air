@@ -48,12 +48,11 @@
 
 ### Stage 6 — `realtime` Realtime
 
-- State: exit gates missing: load
+- State: complete
 - Owner decision: `continue`
-- Exit gates: `crdt-convergence`, `load` (missing record)
+- Exit gates: `crdt-convergence`, `load`
 - Exit criteria: Load test 25 clients p95 <= 150 ms; restart loses no acknowledged change.; Two offline browsers converge after reconnect.
 - Tasks: P5-01, P5-02, P5-03, P5-04, P5-05, P5-06, P5-07, P5-08
-- Tasks open: P5-08
 
 ### Stage 7 — `web-app` Web app
 
@@ -73,7 +72,7 @@
 
 - State: waiting for the owner decision
 - Owner decision: `pending`
-- Exit gates: `smoke` (missing record), `load` (missing record), `release-dry` (missing record)
+- Exit gates: `smoke` (missing record), `load`, `release-dry` (missing record)
 - Exit criteria: All product targets measured; no open high-severity security findings.; Two weeks of beta without data loss.
 
 ### Stage 10 — `remote` Remote
@@ -211,6 +210,7 @@
 - [x] `P5-05` Presence: cursors, selection, name and colour — status: `done` — owner: —
 - [x] `P5-06` Durability and reconnect: restart, catch-up and snapshot compaction — status: `done` — owner: —
 - [x] `P5-07` crdt-convergence proof: 10,000 rounds, offline clients and own-only undo — status: `done` — owner: —
+- [x] `P5-08` load proof: 25 clients per board at p95 <= 150 ms and the stage report — status: `done` — owner: —
 - [x] `P0-34` Live demo: move a zone with its members — status: `done` — owner: —
 - [x] `P0-35` Design system page: contract 0.3.0, missing tokens and engine chrome — status: `done` — owner: —
 - [x] `P0-36` Live demo: select and resize objects, photo without bar, edges behind — status: `done` — owner: —
@@ -225,7 +225,7 @@
 
 ## In progress
 
-- [ ] `P5-08` load proof: 25 clients per board at p95 <= 150 ms and the stage report — status: `in_progress` — owner: lead
+- none
 
 ## Blocked / failed
 
@@ -237,6 +237,13 @@
 - [ ] `P0-15` Release command and tag-based CI release — status: `pending` — owner: —
 - [ ] `P0-16` Dependency updates and Polier update check — status: `pending` — owner: —
 - [ ] `P0-17` RELEASING.md and release 0.0.1 — status: `pending` — owner: —
+
+<!-- polier:claims -->
+## Claims
+
+- `P5-08` in progress by dsh since 2026-10-28T22:57:05+00:00 — worktree: /private/tmp/air-P5-08 · slot 1
+
+<!-- /polier:claims -->
 
 ## Decisions
 
