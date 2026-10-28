@@ -159,7 +159,7 @@
         "design-check",
         "language-check"
       ],
-      "owner_decision": "pending",
+      "owner_decision": "continue",
       "depends_on": [
         "realtime"
       ]
@@ -6621,6 +6621,501 @@
       "exclusive": [],
       "satisfies": [
         "D3"
+      ]
+    },
+    {
+      "id": "P6-01",
+      "title": "Web app scaffold: React + Vite SPA, layout, i18n and base components",
+      "goal": "apps/web becomes a React 19 + Vite SPA on the slot web port: router with start/login/boards/board/settings routes, layout and navigation, ui-kit tokens/layers/icons, base components (button, icon button, menu, dialog), the i18n loader over apps/web/messages (en/de parity, persisted language with <html lang>), and pinned dependencies with licence/source in docs/versions.md (ADR-0013: no paid-tier libraries, editor stays own code).",
+      "why": "Every later web task builds on one shell, one design-token source and one message catalog; ADR-0013 fixes the stack (owner-approved).",
+      "satisfies": [
+        "D12"
+      ],
+      "status": "pending",
+      "depends_on": [],
+      "complexity": 6,
+      "stage": "web-app",
+      "parallel_group": null,
+      "scope_write": [
+        "apps/web/",
+        "pnpm-lock.yaml",
+        "docs/versions.md",
+        ".changes/"
+      ],
+      "scope_read": [
+        "ARCHITECTURE.md",
+        "AGENTS.md",
+        "STATUS.md",
+        "docs/module-map.md",
+        "docs/quality.md",
+        "docs/design-rules.md",
+        "docs/i18n/",
+        "docs/versions.md",
+        "packages/ui-kit/",
+        "packages/contracts/generated/types.ts",
+        "apps/web/messages/",
+        "apps/web/preview/"
+      ],
+      "acceptance": [
+        "A1",
+        "A2",
+        "A3"
+      ],
+      "gates": [
+        "board-check",
+        "boundaries",
+        "unit",
+        "typecheck",
+        "design-check",
+        "language-check"
+      ],
+      "owner": null,
+      "branch": "task/P6-01",
+      "worktree": null,
+      "round": 0,
+      "evidence": [],
+      "scope_write_forbidden": [
+        "reference/"
+      ]
+    },
+    {
+      "id": "P6-02",
+      "title": "Auth UI and session: Kratos login, registration and recovery",
+      "goal": "services/auth proxies the Kratos API login/registration/recovery flows (JSON endpoints, session cookie, no token in the SPA) and apps/web gets the login/registration/recovery pages, logout, session guard and the settings language switch; typed errors come from message files.",
+      "why": "The board list and every later page need an authenticated session; the own auth UI is the ADR-0007 promise.",
+      "satisfies": [
+        "D12"
+      ],
+      "status": "pending",
+      "depends_on": [
+        "P6-01"
+      ],
+      "complexity": 6,
+      "stage": "web-app",
+      "parallel_group": null,
+      "scope_write": [
+        "services/auth/",
+        "apps/web/",
+        "packages/sdk/",
+        ".changes/"
+      ],
+      "scope_read": [
+        "ARCHITECTURE.md",
+        "AGENTS.md",
+        "STATUS.md",
+        "docs/module-map.md",
+        "docs/quality.md",
+        "docs/adr/ADR-0007-auth.md",
+        "docs/i18n/",
+        "services/auth/",
+        "services/platform/src/api/session.ts",
+        "packages/sdk/",
+        "apps/web/messages/"
+      ],
+      "acceptance": [
+        "A1",
+        "A2",
+        "A3"
+      ],
+      "gates": [
+        "board-check",
+        "boundaries",
+        "unit",
+        "typecheck",
+        "design-check",
+        "language-check"
+      ],
+      "owner": null,
+      "branch": "task/P6-02",
+      "worktree": null,
+      "round": 0,
+      "evidence": [],
+      "scope_write_forbidden": [
+        "reference/"
+      ]
+    },
+    {
+      "id": "P6-03",
+      "title": "Boards start page: workspaces, board list and creation over the SDK",
+      "goal": "The start page lists workspaces and their boards through the SDK, creates a first workspace/board when none exists, creates/renames/deletes boards with confirmation and opens /boards/:id; loading, empty and error states use message files and the SDK is the only data path.",
+      "why": "The e2e flow login → board list → board needs this page, and it proves the SDK platform client in the product.",
+      "satisfies": [
+        "D12"
+      ],
+      "status": "pending",
+      "depends_on": [
+        "P6-02"
+      ],
+      "complexity": 5,
+      "stage": "web-app",
+      "parallel_group": null,
+      "scope_write": [
+        "apps/web/",
+        ".changes/"
+      ],
+      "scope_read": [
+        "ARCHITECTURE.md",
+        "AGENTS.md",
+        "STATUS.md",
+        "docs/module-map.md",
+        "docs/quality.md",
+        "packages/sdk/",
+        "packages/contracts/generated/types.ts",
+        "docs/design-rules.md",
+        "apps/web/messages/"
+      ],
+      "acceptance": [
+        "A1",
+        "A2",
+        "A3"
+      ],
+      "gates": [
+        "board-check",
+        "boundaries",
+        "unit",
+        "typecheck",
+        "design-check",
+        "language-check"
+      ],
+      "owner": null,
+      "branch": "task/P6-03",
+      "worktree": null,
+      "round": 0,
+      "evidence": [],
+      "scope_write_forbidden": [
+        "reference/"
+      ]
+    },
+    {
+      "id": "P6-04",
+      "title": "Board page host: engine, toolbar, zoom and view persistence (L00, L17)",
+      "goal": "The board page mounts the engine on a real WebGPU/WebGL2 surface, loads the board document through the SDK board-sync client, renders the toolbar (L00) and zoom controls, keeps camera/view per board persisted (L17) and maps pointer/keyboard input to engine tools; the empty board state is shown.",
+      "why": "The board page is the product's core surface; L00/L17 are the first two web canvas orders.",
+      "satisfies": [
+        "D12"
+      ],
+      "status": "pending",
+      "depends_on": [
+        "P6-03"
+      ],
+      "complexity": 6,
+      "stage": "web-app",
+      "parallel_group": null,
+      "scope_write": [
+        "apps/web/",
+        ".changes/"
+      ],
+      "scope_read": [
+        "ARCHITECTURE.md",
+        "AGENTS.md",
+        "STATUS.md",
+        "docs/module-map.md",
+        "docs/quality.md",
+        "docs/canvas-acceptance.md",
+        "apps/engine-playground/",
+        "packages/engine/",
+        "packages/sdk/",
+        "packages/ui-kit/"
+      ],
+      "acceptance": [
+        "A1",
+        "A2",
+        "A3"
+      ],
+      "gates": [
+        "board-check",
+        "boundaries",
+        "unit",
+        "typecheck",
+        "design-check",
+        "language-check"
+      ],
+      "owner": null,
+      "branch": "task/P6-04",
+      "worktree": null,
+      "round": 0,
+      "evidence": [],
+      "scope_write_forbidden": [
+        "reference/"
+      ]
+    },
+    {
+      "id": "P6-05",
+      "title": "Board interactions: context menu, keyboard and undo/redo UI (L12, L11 hint)",
+      "goal": "The board page gets the L12 keyboard map (Cmd/Ctrl+D duplicate, Delete/Backspace, Esc, arrow 16 px/Shift 160 px as one operation after 300 ms), the right-click context menu (200 px, 32 px items, muted shortcuts), and the L11 undo/redo hint; shortcuts never fire in fields.",
+      "why": "L12 and the L11 web half are remaining web canvas orders and complete the engine-web input wiring.",
+      "satisfies": [
+        "D12"
+      ],
+      "status": "pending",
+      "depends_on": [
+        "P6-04"
+      ],
+      "complexity": 5,
+      "stage": "web-app",
+      "parallel_group": null,
+      "scope_write": [
+        "apps/web/",
+        ".changes/"
+      ],
+      "scope_read": [
+        "ARCHITECTURE.md",
+        "AGENTS.md",
+        "STATUS.md",
+        "docs/module-map.md",
+        "docs/quality.md",
+        "docs/canvas-acceptance.md",
+        "packages/engine/",
+        "packages/sdk/",
+        "apps/web/messages/"
+      ],
+      "acceptance": [
+        "A1",
+        "A2",
+        "A3"
+      ],
+      "gates": [
+        "board-check",
+        "boundaries",
+        "unit",
+        "typecheck",
+        "design-check",
+        "language-check"
+      ],
+      "owner": null,
+      "branch": "task/P6-05",
+      "worktree": null,
+      "round": 0,
+      "evidence": [],
+      "scope_write_forbidden": [
+        "reference/"
+      ]
+    },
+    {
+      "id": "P6-06",
+      "title": "Panel and editor: overlay, own editor, note placeholder and title (L04, L06, L09)",
+      "goal": "packages/editor gets the own contenteditable editor (structured JSON, links, text extraction; no rich-text library) and apps/web the 400 px right panel overlay (L04, 12 px gap, 180 ms, Esc), the empty-note focus/placeholder (L06) and the title field (L09); cards/notes are edited through SDK operations.",
+      "why": "The panel/editor is the content-editing surface of the product; ADR-0013 keeps the editor our own code.",
+      "satisfies": [
+        "D12"
+      ],
+      "status": "pending",
+      "depends_on": [
+        "P6-04"
+      ],
+      "complexity": 6,
+      "stage": "web-app",
+      "parallel_group": null,
+      "scope_write": [
+        "packages/editor/",
+        "apps/web/",
+        ".changes/"
+      ],
+      "scope_read": [
+        "ARCHITECTURE.md",
+        "AGENTS.md",
+        "STATUS.md",
+        "docs/module-map.md",
+        "docs/quality.md",
+        "docs/canvas-acceptance.md",
+        "docs/design-rules.md",
+        "packages/contracts/",
+        "packages/sdk/",
+        "packages/ui-kit/"
+      ],
+      "acceptance": [
+        "A1",
+        "A2",
+        "A3"
+      ],
+      "gates": [
+        "board-check",
+        "boundaries",
+        "unit",
+        "typecheck",
+        "design-check",
+        "language-check"
+      ],
+      "owner": null,
+      "branch": "task/P6-06",
+      "worktree": null,
+      "round": 0,
+      "evidence": [],
+      "scope_write_forbidden": [
+        "reference/"
+      ]
+    },
+    {
+      "id": "P6-07",
+      "title": "Realtime UI: live changes, presence and save status (L05)",
+      "goal": "The board page shows live remote changes and presence cursors/selections (colour/name from the server), the L05 save status (Saving … → Saved 2 s → Not saved – retry, clickable), an offline notice that never loses input, reconnect/resync, and uses the authenticated session clientId.",
+      "why": "L05 is the remaining realtime web order; the stage exit e2e edits with two users and reloads.",
+      "satisfies": [
+        "D12"
+      ],
+      "status": "pending",
+      "depends_on": [
+        "P6-06"
+      ],
+      "complexity": 6,
+      "stage": "web-app",
+      "parallel_group": null,
+      "scope_write": [
+        "apps/web/",
+        ".changes/"
+      ],
+      "scope_read": [
+        "ARCHITECTURE.md",
+        "AGENTS.md",
+        "STATUS.md",
+        "docs/module-map.md",
+        "docs/quality.md",
+        "docs/canvas-acceptance.md",
+        "packages/sdk/",
+        "services/sync/",
+        "docs/realtime.md",
+        "apps/web/messages/"
+      ],
+      "acceptance": [
+        "A1",
+        "A2",
+        "A3"
+      ],
+      "gates": [
+        "board-check",
+        "boundaries",
+        "unit",
+        "typecheck",
+        "design-check",
+        "language-check"
+      ],
+      "owner": null,
+      "branch": "task/P6-07",
+      "worktree": null,
+      "round": 0,
+      "evidence": [],
+      "scope_write_forbidden": [
+        "reference/"
+      ]
+    },
+    {
+      "id": "P6-08",
+      "title": "e2e suite: main flows and the e2e gate on the slot ports",
+      "goal": "Playwright (Apache-2.0) config and the e2e suite run the app on the slot web ports (4100/4101) with the slot services: login → boards → create board → add/edit note and title → reload persists; two users edit live, go offline/reconnect, both converge; toolbar/zoom/context menu/panel/L17 covered; the e2e gate is documented and exclusive.",
+      "why": "The stage exit gate e2e and the blueprint P6-06 flow; the suite makes regressions visible.",
+      "satisfies": [
+        "D12"
+      ],
+      "status": "pending",
+      "depends_on": [
+        "P6-07"
+      ],
+      "complexity": 6,
+      "stage": "web-app",
+      "parallel_group": null,
+      "scope_write": [
+        "apps/web/",
+        "tools/dev/",
+        "docs/gates/playwright.md",
+        "docs/quality.md",
+        ".changes/"
+      ],
+      "scope_read": [
+        "ARCHITECTURE.md",
+        "AGENTS.md",
+        "STATUS.md",
+        "docs/module-map.md",
+        "docs/quality.md",
+        "docs/gates/playwright.md",
+        "docs/quality.md",
+        "docs/canvas-acceptance.md",
+        "services/platform/",
+        "services/auth/",
+        "services/sync/",
+        "tools/dev/"
+      ],
+      "acceptance": [
+        "A1",
+        "A2",
+        "A3"
+      ],
+      "gates": [
+        "board-check",
+        "boundaries",
+        "unit",
+        "typecheck",
+        "e2e"
+      ],
+      "owner": null,
+      "branch": "task/P6-08",
+      "worktree": null,
+      "round": 0,
+      "evidence": [],
+      "scope_write_forbidden": [
+        "reference/"
+      ],
+      "exclusive": [
+        "e2e"
+      ]
+    },
+    {
+      "id": "P6-09",
+      "title": "Canvas evidence, repo-wide checks and the web-app stage report",
+      "goal": "Every remaining web canvas order (L00, L02, L04, L05, L06, L09, L12, L17, L18) has evidence (screenshots and the e2e steps), design-check and language-check are green repo-wide (including the demo/playground texts), a11y/touch basics are checked, and docs/web-app.md is the stage report with exit-criteria status and open points; HANDOFF/STATUS updated.",
+      "why": "The stage exit criteria 'every canvas work order done with evidence; design-check and language-check green repo-wide' and the handoff to value/hardening.",
+      "satisfies": [
+        "D12"
+      ],
+      "status": "pending",
+      "depends_on": [
+        "P6-08"
+      ],
+      "complexity": 5,
+      "stage": "web-app",
+      "parallel_group": null,
+      "scope_write": [
+        "apps/web/",
+        "apps/web/messages/",
+        "docs/",
+        ".changes/",
+        "reviews/evidence/"
+      ],
+      "scope_read": [
+        "ARCHITECTURE.md",
+        "AGENTS.md",
+        "STATUS.md",
+        "docs/module-map.md",
+        "docs/quality.md",
+        "docs/canvas-acceptance.md",
+        "docs/design-rules.md",
+        "docs/quality.md",
+        "docs/gates/",
+        "apps/engine-playground/",
+        "packages/ui-kit/"
+      ],
+      "acceptance": [
+        "A1",
+        "A2",
+        "A3"
+      ],
+      "gates": [
+        "board-check",
+        "boundaries",
+        "unit",
+        "design-check",
+        "language-check",
+        "e2e"
+      ],
+      "owner": null,
+      "branch": "task/P6-09",
+      "worktree": null,
+      "round": 0,
+      "evidence": [],
+      "scope_write_forbidden": [
+        "reference/"
+      ],
+      "exclusive": [
+        "e2e"
       ]
     }
   ],

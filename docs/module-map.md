@@ -11,7 +11,7 @@
 | `packages/ui-kit/` | `package` | design tokens (CSS + C++), icons, base components | – | foundation |
 | `packages/engine/` | `package` | C++ → WebAssembly canvas engine + TS bridge | `packages/contracts`, `packages/ui-kit` | engine-spike |
 | `packages/crdt/` | `package` | board document as CRDT behind an own interface | `packages/contracts` | later |
-| `packages/editor/` | `package` | note editor (rich text, links) | `packages/contracts`, `packages/ui-kit` | later |
+| `packages/editor/` | `package` | note editor (rich text, links) | `packages/contracts`, `packages/ui-kit` | web-app |
 | `packages/sdk/` | `package` | typed client for platform and sync; owns the client-side board document and the one autosave path (ADR-0012) | `packages/contracts`, `packages/crdt` | later |
 | `packages/test-kit/` | `package` | fixtures, fake servers, slot helpers | `packages/contracts` | engine-spike |
 | `services/platform/` | `service` | HTTP API: workspaces, boards, notes, permissions | `packages/contracts` | later |
@@ -20,7 +20,7 @@
 | `services/media/` | `service` | uploads, thumbnails, PDF pages | `packages/contracts` | later |
 | `services/ai/` | `service` | coach, search, summaries | `packages/contracts` | later |
 | `services/worker/` | `service` | background jobs | `packages/contracts` | later |
-| `apps/web/` | `app` | the product UI | `packages/contracts`, `packages/ui-kit`, `packages/editor`, `packages/engine`, `packages/sdk` | later |
+| `apps/web/` | `app` | the product UI | `packages/contracts`, `packages/ui-kit`, `packages/editor`, `packages/engine`, `packages/sdk` | web-app |
 | `apps/engine-playground/` | `app` | engine demo without backend | `packages/contracts`, `packages/ui-kit`, `packages/engine`, `packages/test-kit` | engine-spike |
 | `tools/import-export/` | `tool` | import/export converters | `packages/contracts` | later |
 | `tools/design-check/` | `tool` | design rules gate | – | foundation |

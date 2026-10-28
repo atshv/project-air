@@ -57,10 +57,12 @@
 
 ### Stage 7 — `web-app` Web app
 
-- State: waiting for the owner decision
-- Owner decision: `pending`
+- State: exit gates missing: e2e
+- Owner decision: `continue`
 - Exit gates: `e2e` (missing record), `design-check`, `language-check`
 - Exit criteria: Main e2e flows green on a preview environment.; Every canvas work order done with evidence; design-check and language-check green repo-wide.
+- Tasks: P6-01, P6-02, P6-03, P6-04, P6-05, P6-06, P6-07, P6-08, P6-09
+- Tasks open: P6-01, P6-02, P6-03, P6-04, P6-05, P6-06, P6-07, P6-08, P6-09
 
 ### Stage 8 — `value` Import, export and AI
 
@@ -238,11 +240,20 @@
 - [ ] `P0-15` Release command and tag-based CI release — status: `pending` — owner: —
 - [ ] `P0-16` Dependency updates and Polier update check — status: `pending` — owner: —
 - [ ] `P0-17` RELEASING.md and release 0.0.1 — status: `pending` — owner: —
+- [ ] `P6-01` Web app scaffold: React + Vite SPA, layout, i18n and base components — status: `pending` — owner: —
+- [ ] `P6-02` Auth UI and session: Kratos login, registration and recovery — status: `pending` — owner: —
+- [ ] `P6-03` Boards start page: workspaces, board list and creation over the SDK — status: `pending` — owner: —
+- [ ] `P6-04` Board page host: engine, toolbar, zoom and view persistence (L00, L17) — status: `pending` — owner: —
+- [ ] `P6-05` Board interactions: context menu, keyboard and undo/redo UI (L12, L11 hint) — status: `pending` — owner: —
+- [ ] `P6-06` Panel and editor: overlay, own editor, note placeholder and title (L04, L06, L09) — status: `pending` — owner: —
+- [ ] `P6-07` Realtime UI: live changes, presence and save status (L05) — status: `pending` — owner: —
+- [ ] `P6-08` e2e suite: main flows and the e2e gate on the slot ports — status: `pending` — owner: —
+- [ ] `P6-09` Canvas evidence, repo-wide checks and the web-app stage report — status: `pending` — owner: —
 
 <!-- polier:claims -->
 ## Claims
 
-- `P0-44` in progress by dsh since 2026-10-28T23:01:57+00:00 — worktree: /private/tmp/air-P0-44 · slot 3
+- `P0-44` in progress by dsh since 2026-10-28T23:02:01+00:00 — worktree: /private/tmp/air-P0-44 · slot 1
 
 <!-- /polier:claims -->
 

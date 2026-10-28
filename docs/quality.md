@@ -46,6 +46,12 @@ v1) are added as D7 … when those stages are planned in detail.
   (`load`) and 10,000 randomized convergence rounds run without divergence (`crdt-convergence`);
   `packages/crdt` keeps the CRDT library behind its own `BoardDoc` interface (Yjs, MIT, ADR-0011) and
   the SDK exposes one autosave path with status and sequence numbers (L05 realtime half).
+- **D12** Web app (stage web-app): the product runs in `apps/web` on the SDK, engine and sync —
+  login and boards list over the platform API, the board page with engine, toolbar/zoom, context
+  menu/keyboard, panel with the own editor and title, live remote changes/presence and the L05 save
+  status; the main e2e flows are green on a preview environment (`e2e`), every remaining canvas work
+  order of the web phase has evidence, and `design-check` plus `language-check` are green repo-wide
+  (React + Vite SPA, own editor, ADR-0013).
 - **D6** Repository discipline: `main` accepts changes only through pull requests with green CI and
   one review; CI runs scope check, boundaries, board check, lint and typecheck on every pull
   request.
