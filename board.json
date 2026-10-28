@@ -5592,7 +5592,7 @@
       "satisfies": [
         "D11"
       ],
-      "status": "in_progress",
+      "status": "done",
       "depends_on": [
         "P5-01",
         "P5-02",
@@ -5633,11 +5633,16 @@
         "unit",
         "typecheck"
       ],
-      "owner": "lead",
+      "owner": null,
       "branch": "task/P5-04",
-      "worktree": "/private/tmp/air-P5-04",
-      "round": 0,
-      "evidence": [],
+      "worktree": null,
+      "round": 2,
+      "evidence": [
+        "reviews/evidence/P5-04-board-check-20261028T191830Z.json",
+        "reviews/evidence/P5-04-boundaries-20261028T191829Z.json",
+        "reviews/evidence/P5-04-unit-20261028T191828Z.json",
+        "reviews/evidence/P5-04-typecheck-20261028T191828Z.json"
+      ],
       "scope_write_forbidden": [
         "reference/"
       ]

@@ -1,0 +1,51 @@
+$ pnpm test --affected
+[exit 0]
+
+
+   • turbo 2.11.10
+   • Packages in scope: //, @project-air/sdk
+   • Running test in 2 packages
+   • Remote caching disabled, using shared worktree cache
+
+@project-air/sdk:build: cache miss, executing c5808c02661bb2e4
+@project-air/sdk:build: $ tsc --project tsconfig.json
+@project-air/sdk:test: cache miss, executing 5ccde19f4b2ed7d1
+@project-air/sdk:test: $ node --test test/*.test.mjs
+@project-air/sdk:test: ✔ handshake sends hello first, then joinBoard; welcome/snapshot install the document (4.975125ms)
+@project-air/sdk:test: ✔ operation batches are sent with a per-connection seq; acks advance only forward (0.422375ms)
+@project-air/sdk:test: ✔ offline operations queue in order and flush on join; duplicate remote batches apply once (0.559916ms)
+@project-air/sdk:test: ✔ a dropped socket reconnects with backoff and resyncs from the last serverSeq (0.322875ms)
+@project-air/sdk:test: ✔ close is idempotent and leaves the board once (0.189292ms)
+@project-air/sdk:test: ✔ autosave debounces 400 ms after the last keystroke, saves once and reports saving -> saved (0.256ms)
+@project-air/sdk:test: ✔ the five flush triggers save immediately and visibility only flushes when hidden (0.221541ms)
+@project-air/sdk:test: ✔ stale autosave responses never overwrite newer values; error -> retry (0.20625ms)
+@project-air/sdk:test: ✔ outgoing messages validate against sync.schema.json and ids are unique UUIDv7 (1.309209ms)
+@project-air/sdk:test: ✔ an injected authenticated clientId is used unchanged and must be a UUIDv7 (0.357958ms)
+@project-air/sdk:test: ✔ workspaces.list sends the session and requestId and parses the list envelope (18.059083ms)
+@project-air/sdk:test: ✔ a cookie session is sent as the cookie header (1.338833ms)
+@project-air/sdk:test: ✔ a string session is shorthand for the test session header (0.980417ms)
+@project-air/sdk:test: ✔ workspace create/get/update/delete use the contract envelopes (5.930541ms)
+@project-air/sdk:test: ✔ boards list/create/get/update/delete (4.175708ms)
+@project-air/sdk:test: ✔ notes list/create/get/update/delete (3.09225ms)
+@project-air/sdk:test: ✔ cards list/create/get/update/delete (4.194542ms)
+@project-air/sdk:test: ✔ pagination nextCursor is passed back as the cursor query (2.001291ms)
+@project-air/sdk:test: ✔ no session maps to a typed AUTH_REQUIRED ApiError (0.463959ms)
+@project-air/sdk:test: ✔ a validation error exposes the field paths (0.4935ms)
+@project-air/sdk:test: ✔ a conflict maps to CONFLICT and unknown ids to NOT_FOUND (0.687708ms)
+@project-air/sdk:test: ✔ an unexpected success envelope becomes an INTERNAL ApiError (0.433375ms)
+@project-air/sdk:test: ✔ an invalid baseUrl is rejected by the client (0.082667ms)
+@project-air/sdk:test: ℹ tests 23
+@project-air/sdk:test: ℹ suites 0
+@project-air/sdk:test: ℹ pass 23
+@project-air/sdk:test: ℹ fail 0
+@project-air/sdk:test: ℹ cancelled 0
+@project-air/sdk:test: ℹ skipped 0
+@project-air/sdk:test: ℹ todo 0
+@project-air/sdk:test: ℹ duration_ms 230.061542
+
+ Tasks:    2 successful, 2 total
+Cached:    0 cached, 2 total
+  Time:    740ms 
+
+$ turbo run test --affected
+ WARNING  no output files found for task @project-air/sdk#test. Please check your `outputs` key in `turbo.json`

@@ -69,3 +69,33 @@ The dev loop provides the slot environment (`SYNC_PORT` = slot `sync` port,
 `pnpm --filter @project-air/sync build` then `pnpm --filter @project-air/sync
 start`, or `bash tools/dev/setup`/`reset-db` for the slot database and
 `node services/platform/dist/db/migrate.js` for the migrations.
+
+## Client: the SDK board-sync client and the one autosave path (P5-04)
+
+`packages/sdk` owns the client document and the sync boundary (ADR-0012). The
+`createBoardSyncClient` factory holds one `BoardDoc` (created by an injected
+factory; the SDK sees only the CRDT interface, never Yjs), takes an injected
+WebSocket-like `SyncSocket` (browser/Node WebSocket in production, a fake pair in
+tests), and requires an authenticated **UUIDv7 `clientId`**: the caller may pass
+its session's client id, otherwise one is generated per client instance with the
+SDK's `createRequestId()` (UUIDv7, stable across reconnects; contract 0.3.0 types
+`clientId` as `$defs.uuid`). Every message and batch id is a fresh
+`createRequestId()` UUIDv7, so two clients never collide. The client speaks
+contract 0.3.0: hello first, joinBoard, snapshot install at its
+`serverSeq`, catch-up from the durable sequence; local operations go out as
+`operationBatch` with a per-connection `seq`; remote batches and acks are applied
+through the `BoardDoc`, acks only move `serverSeq` forward, duplicate remote
+batches are ignored, and a dropped socket reconnects with bounded exponential
+backoff and sends `resyncRequest` from the last known `serverSeq`. `close()` is
+idempotent and sends `leaveBoard` once. The offline operation queue is ordered and
+flushes on join/reconnect; the client emits `status`/`snapshot`/`remote`/`error`
+events.
+
+The one autosave path of L05 is `createAutosave`: a 400 ms debounce after the
+last keystroke, immediate flush on blur, panel close, navigation
+(`beforeunload`/`pagehide`) and `visibilitychange` while hidden, monotonic save
+sequences so an older response never overwrites a newer value, `saving` → `saved`
+→ `error` status events, `retry()` for the error state and no second writer or
+persistence in the SDK (the caller passes the one `save` function).
+`installFlushTriggers` wires the five triggers to a window/document and an
+optional panel-close registration.

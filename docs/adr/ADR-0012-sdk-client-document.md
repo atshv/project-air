@@ -25,6 +25,15 @@ SDK sees no Yjs type (ADR-0011).
 
 ## Consequences
 
+- **P5-04 implementation note (2026-10-28):** `packages/sdk` now exports
+  `createBoardSyncClient` (one `BoardDoc` per client, injected socket and document
+  factory, hello/join/snapshot/catch-up, ordered offline queue, ack/serverSeq
+  tracking, backoff reconnect + resyncRequest, idempotent close) and the one
+  autosave path (`createAutosave` + `installFlushTriggers`). The boundary held:
+  the SDK imports only the `BoardDoc` interface type from `packages/crdt` (no Yjs
+  type/API), and `apps/web` still imports only the SDK for sync.
+
+
 - One client library for browser and Node harnesses; the convergence/load proofs use the same code
   the web app will use.
 - Layering stays UI → logic → data: web app (UI) → SDK (logic/data boundary) → contracts/crdt.

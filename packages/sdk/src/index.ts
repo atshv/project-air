@@ -20,3 +20,26 @@ export type {
   Workspace,
   WorkspaceChanges,
 } from "./types.ts";
+
+export {
+  AUTOSAVE_DEBOUNCE_MS,
+  createAutosave,
+  createBoardSyncClient,
+  installFlushTriggers,
+  realTimers,
+  SYNC_CONTRACT_VERSION,
+} from "./realtime/index.ts";
+export type {
+  Autosave,
+  AutosaveEvent,
+  AutosaveOptions,
+  AutosaveStatus,
+  BoardSyncClient,
+  BoardSyncClientOptions,
+  BoardSyncEvent,
+  BoardSyncStatus,
+  CreateSocket,
+  FlushEventTarget,
+  SyncSocket,
+  Timers,
+} from "./realtime/index.ts";

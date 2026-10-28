@@ -52,3 +52,19 @@ or a string shorthand for the test session), `fetch` (host override, tests) and 
 The stage acceptance uses the SDK end to end: `node tools/dev/acceptance-backend.mjs` boots the
 real auth and platform services on the slot ports, creates two accounts and proves the second sees
 nothing of the first.
+
+## Realtime (P5-04)
+
+The SDK owns the client-side document and the sync boundary (ADR-0012). The
+realtime exports are `createBoardSyncClient` (one `BoardDoc` per board over an
+injected WebSocket-like connection: contract 0.3.0 hello/join/snapshot/catch-up,
+ordered offline queue, ack/serverSeq tracking, backoff reconnect + resyncRequest,
+idempotent close) and `createAutosave`/`installFlushTriggers` (the one L05
+autosave path: 400 ms debounce, blur/panel-close/navigation/visibility/pagehide
+flush, monotonic sequences, saving/saved/error with retry). No Yjs type or API is
+exported and the SDK has no second writer/persistence.
+
+The board-sync client takes an authenticated **UUIDv7 `clientId`** (or generates
+one per client instance with `createRequestId()`, stable across reconnects); every
+message and batch id is a fresh UUIDv7, so the outgoing messages validate against
+the contract 0.3.0 sync schema and two clients never collide.

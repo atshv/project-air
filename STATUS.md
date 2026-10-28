@@ -122,6 +122,7 @@
 
 ## Ready now
 
+- `P5-05` Presence: cursors, selection, name and colour
 - `P5-06` Durability and reconnect: restart, catch-up and snapshot compaction
 
 ## Done
@@ -205,12 +206,12 @@
 - [x] `P5-01` Sync contract 0.3.0: settle the pre-realtime open points — status: `done` — owner: —
 - [x] `P5-02` CRDT document core behind an own interface (Yjs) — status: `done` — owner: —
 - [x] `P5-03` Sync service: WebSocket protocol, auth and durable update log — status: `done` — owner: —
+- [x] `P5-04` SDK board-sync client and the one autosave path (L05 realtime half) — status: `done` — owner: —
 - [x] `P0-34` Live demo: move a zone with its members — status: `done` — owner: —
 - [x] `P0-35` Design system page: contract 0.3.0, missing tokens and engine chrome — status: `done` — owner: —
 
 ## In progress
 
-- [ ] `P5-04` SDK board-sync client and the one autosave path (L05 realtime half) — status: `in_progress` — owner: lead
 - [ ] `P0-36` Live demo: select and resize objects, photo without bar, edges behind — status: `in_progress` — owner: —
 
 ## Blocked / failed

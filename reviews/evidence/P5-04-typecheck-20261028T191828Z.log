@@ -1,0 +1,35 @@
+$ pnpm typecheck
+[exit 0]
+
+
+   • turbo 2.11.10
+   • Packages in scope: @project-air/auth, @project-air/contracts, @project-air/crdt, @project-air/design-check, @project-air/engine, @project-air/language-check, @project-air/platform, @project-air/release, @project-air/sdk, @project-air/sync, @project-air/test-kit, @project-air/ui-kit
+   • Running typecheck in 12 packages
+   • Remote caching disabled, using shared worktree cache
+
+@project-air/sdk:typecheck: cache miss, executing fbbb13392b3acad7
+@project-air/design-check:typecheck: cache hit, replaying logs 4350f26d74097bc5
+@project-air/crdt:typecheck: cache hit, replaying logs 53ea369add8865c6
+@project-air/sync:typecheck: cache hit, replaying logs 0bb55949b34d9eb2
+@project-air/platform:typecheck: cache hit, replaying logs a62a093f756b5334
+@project-air/engine:typecheck: cache hit, replaying logs 0a6bdbfb8f639ef0
+@project-air/design-check:typecheck: $ node --check check.mjs && node --check index.mjs && node --check test/design-check.test.mjs
+@project-air/crdt:typecheck: $ tsc --noEmit --project tsconfig.json
+@project-air/sync:typecheck: $ tsc --noEmit --project tsconfig.json
+@project-air/ui-kit:typecheck: cache hit, replaying logs 8e7c0dd07eb0cdfc
+@project-air/test-kit:typecheck: cache hit, replaying logs 1eb9430cc938a6d6
+@project-air/platform:typecheck: $ tsc --noEmit --project tsconfig.json
+@project-air/ui-kit:typecheck: $ tsc --noEmit --project tsconfig.json
+@project-air/test-kit:typecheck: $ tsc --noEmit --project tsconfig.json
+@project-air/engine:typecheck: $ tsc --noEmit --project tsconfig.json
+@project-air/auth:typecheck: cache hit, replaying logs ca6c05196fdc6594
+@project-air/auth:typecheck: $ tsc --noEmit --project tsconfig.json
+@project-air/contracts:typecheck: cache hit, replaying logs e1074bb254720e01
+@project-air/contracts:typecheck: $ tsc --noEmit --project tsconfig.json
+@project-air/sdk:typecheck: $ tsc --noEmit --project tsconfig.json
+
+ Tasks:    10 successful, 10 total
+Cached:    9 cached, 10 total
+  Time:    376ms 
+
+$ turbo run typecheck && tsc -b tsconfig.json
