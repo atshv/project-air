@@ -178,6 +178,7 @@ function copyArtefacts(tempRoot) {
     "packages/engine/dist/bridge/engine.js",
     "packages/engine/dist/bridge/backend.js",
     "packages/engine/dist/bridge/keyboard.js",
+    "packages/engine/dist/bridge/view-persistence.js",
     "packages/engine/dist/bridge/text-atlas.js",
     "packages/engine/dist/bridge/input.js",
     "packages/engine/dist/bridge/overlay.js",

@@ -760,6 +760,18 @@ previous `engine_create` sequence.
   `navigator.gpu` removed at the page boundary (→ WebGL2 with `webgpu-unavailable`); the record is
   under `reviews/evidence/P4-12-backend-selection-*.json`.
 
+## Remember view (L17, P4-22)
+
+The playground remembers the camera per board and device (L17) in a versioned
+`{version, boardId, deviceKey, panX, panY, zoom}` record (`src/bridge/view-persistence.ts`). The device
+key is a coarse viewport class (100 CSS px) plus the DPR; the storage key includes the board id, so
+two boards never overwrite each other's entry. All storage access is guarded (property access,
+`getItem`/`setItem`, quota and privacy mode can throw): an unavailable storage, a corrupt/foreign
+record, a wrong version or non-finite numbers are ignored and the L19 fit is used. A valid record is
+restored before the first fitted frame and the zoom is clamped to 0.1 … 8; a programmatic restore or
+fit never writes. Writes follow user camera actions only (pan/zoom), are debounced by 300 ms and are
+flushed on page hide (`pagehide`/hidden visibility). The deterministic harness/capture contexts pass `?store=off`, which turns persistence off so reference scenes always use the L19 fit.
+
 ## Undo/redo and the history hint (L11, P4-21)
 
 The P4-05 session history (`src/logic/history.ts`, depth 20 `{do, undo}` pairs) is wired to the P4-20

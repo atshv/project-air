@@ -4225,7 +4225,7 @@
       "satisfies": [
         "D10"
       ],
-      "status": "in_progress",
+      "status": "done",
       "depends_on": [
         "P4-07"
       ],
@@ -4261,11 +4261,15 @@
         "boundaries",
         "unit"
       ],
-      "owner": "lead",
+      "owner": null,
       "branch": "task/P4-22",
-      "worktree": "/private/tmp/air-P4-22",
-      "round": 0,
-      "evidence": [],
+      "worktree": null,
+      "round": 2,
+      "evidence": [
+        "reviews/evidence/P4-22-board-check-20261028T174720Z.json",
+        "reviews/evidence/P4-22-boundaries-20261028T174719Z.json",
+        "reviews/evidence/P4-22-unit-20261028T174719Z.json"
+      ],
       "scope_write_forbidden": [
         "reference/"
       ]

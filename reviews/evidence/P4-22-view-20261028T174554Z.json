@@ -1,0 +1,285 @@
+{
+  "task": "P4-22",
+  "gate": "view-persistence-capture",
+  "startedAt": "2026-10-28T17:45:40.939Z",
+  "chrome": "/Users/rasulatashev/Library/Caches/ms-playwright/chromium-1248/chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing",
+  "flags": [
+    "--headless=new",
+    "--use-angle=metal",
+    "--enable-gpu",
+    "--hide-scrollbars",
+    "--no-first-run",
+    "--no-default-browser-check",
+    "--window-size=1440,900",
+    "--no-sandbox"
+  ],
+  "checks": [
+    {
+      "name": "desktop: reload restores the saved section without writing",
+      "passed": true,
+      "actual": {
+        "initial": {
+          "camera": {
+            "panX": -4.060913705583516,
+            "panY": 0,
+            "zoom": 0.10928254437869822
+          },
+          "restored": false,
+          "writes": 0,
+          "identity": {
+            "boardId": "scene:sample",
+            "deviceKey": "1400x900@1"
+          },
+          "storageAvailable": true
+        },
+        "saved": {
+          "camera": {
+            "panX": 2241.396545822703,
+            "panY": 1262.6020173472598,
+            "zoom": 0.20519006145436886
+          },
+          "restored": false,
+          "writes": 1,
+          "identity": {
+            "boardId": "scene:sample",
+            "deviceKey": "1400x900@1"
+          },
+          "storageAvailable": true
+        },
+        "reloaded": {
+          "camera": {
+            "panX": 2241.396545822703,
+            "panY": 1262.6020173472598,
+            "zoom": 0.20519006145436886
+          },
+          "restored": true,
+          "writes": 0,
+          "identity": {
+            "boardId": "scene:sample",
+            "deviceKey": "1400x900@1"
+          },
+          "storageAvailable": true
+        }
+      }
+    },
+    {
+      "name": "desktop: a board without an entry starts fitted",
+      "passed": true,
+      "actual": {
+        "saved": {
+          "panX": 2241.396545822703,
+          "panY": 1262.6020173472598,
+          "zoom": 0.20519006145436886
+        },
+        "otherBoard": {
+          "camera": {
+            "panX": 0,
+            "panY": -0.18285714285713084,
+            "zoom": 1.025390625
+          },
+          "restored": false,
+          "writes": 0,
+          "identity": {
+            "boardId": "scene:layers",
+            "deviceKey": "1400x900@1"
+          },
+          "storageAvailable": false
+        }
+      }
+    },
+    {
+      "name": "desktop: boards keep separate entries (no leak)",
+      "passed": true,
+      "actual": {
+        "saved": {
+          "panX": 2241.396545822703,
+          "panY": 1262.6020173472598,
+          "zoom": 0.20519006145436886
+        },
+        "back": {
+          "camera": {
+            "panX": 2241.396545822703,
+            "panY": 1262.6020173472598,
+            "zoom": 0.20519006145436886
+          },
+          "restored": true,
+          "writes": 0,
+          "identity": {
+            "boardId": "scene:sample",
+            "deviceKey": "1400x900@1"
+          },
+          "storageAvailable": true
+        }
+      }
+    },
+    {
+      "name": "desktop: throwing storage falls back to the fitted view",
+      "passed": true,
+      "actual": {
+        "exception": {
+          "camera": {
+            "panX": -4.060913705583516,
+            "panY": 0,
+            "zoom": 0.10928254437869822
+          },
+          "restored": false,
+          "writes": 0,
+          "identity": {
+            "boardId": "scene:sample",
+            "deviceKey": "1400x900@1"
+          },
+          "storageAvailable": true
+        },
+        "exceptionReload": {
+          "camera": {
+            "panX": -4.060913705583516,
+            "panY": 0,
+            "zoom": 0.10928254437869822
+          },
+          "restored": false,
+          "writes": 0,
+          "identity": {
+            "boardId": "scene:sample",
+            "deviceKey": "1400x900@1"
+          },
+          "storageAvailable": true
+        }
+      }
+    },
+    {
+      "name": "mobile: reload restores the saved section without writing",
+      "passed": true,
+      "actual": {
+        "initial": {
+          "camera": {
+            "panX": 3340,
+            "panY": 1884,
+            "zoom": 0.1
+          },
+          "restored": false,
+          "writes": 0,
+          "identity": {
+            "boardId": "scene:sample",
+            "deviceKey": "400x800@1"
+          },
+          "storageAvailable": true
+        },
+        "saved": {
+          "camera": {
+            "panX": 4022.4159705299303,
+            "panY": 2266.3983328012323,
+            "zoom": 0.18776105792643433
+          },
+          "restored": false,
+          "writes": 1,
+          "identity": {
+            "boardId": "scene:sample",
+            "deviceKey": "400x800@1"
+          },
+          "storageAvailable": true
+        },
+        "reloaded": {
+          "camera": {
+            "panX": 4022.4159705299303,
+            "panY": 2266.3983328012323,
+            "zoom": 0.18776105792643433
+          },
+          "restored": true,
+          "writes": 0,
+          "identity": {
+            "boardId": "scene:sample",
+            "deviceKey": "400x800@1"
+          },
+          "storageAvailable": true
+        }
+      }
+    },
+    {
+      "name": "mobile: a board without an entry starts fitted",
+      "passed": true,
+      "actual": {
+        "saved": {
+          "panX": 4022.4159705299303,
+          "panY": 2266.3983328012323,
+          "zoom": 0.18776105792643433
+        },
+        "otherBoard": {
+          "camera": {
+            "panX": -0.780487804878021,
+            "panY": 0,
+            "zoom": 0.2847222222222222
+          },
+          "restored": false,
+          "writes": 0,
+          "identity": {
+            "boardId": "scene:layers",
+            "deviceKey": "400x800@1"
+          },
+          "storageAvailable": false
+        }
+      }
+    },
+    {
+      "name": "mobile: boards keep separate entries (no leak)",
+      "passed": true,
+      "actual": {
+        "saved": {
+          "panX": 4022.4159705299303,
+          "panY": 2266.3983328012323,
+          "zoom": 0.18776105792643433
+        },
+        "back": {
+          "camera": {
+            "panX": 4022.4159705299303,
+            "panY": 2266.3983328012323,
+            "zoom": 0.18776105792643433
+          },
+          "restored": true,
+          "writes": 0,
+          "identity": {
+            "boardId": "scene:sample",
+            "deviceKey": "400x800@1"
+          },
+          "storageAvailable": true
+        }
+      }
+    },
+    {
+      "name": "mobile: throwing storage falls back to the fitted view",
+      "passed": true,
+      "actual": {
+        "exception": {
+          "camera": {
+            "panX": 3340,
+            "panY": 1884,
+            "zoom": 0.1
+          },
+          "restored": false,
+          "writes": 0,
+          "identity": {
+            "boardId": "scene:sample",
+            "deviceKey": "400x800@1"
+          },
+          "storageAvailable": true
+        },
+        "exceptionReload": {
+          "camera": {
+            "panX": 3340,
+            "panY": 1884,
+            "zoom": 0.1
+          },
+          "restored": false,
+          "writes": 0,
+          "identity": {
+            "boardId": "scene:sample",
+            "deviceKey": "400x800@1"
+          },
+          "storageAvailable": true
+        }
+      }
+    }
+  ],
+  "result": "pass",
+  "exitCode": 0,
+  "finishedAt": "2026-10-28T17:45:54.746Z"
+}

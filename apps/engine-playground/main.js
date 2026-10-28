@@ -111,6 +111,13 @@ import {
   undoHintLabel,
 } from "@project-air/engine/keyboard.js";
 import {
+  deviceKeyFor,
+  loadView,
+  saveView,
+  safeBrowserStorage,
+  storageKeyFor,
+} from "@project-air/engine/view-persistence.js";
+import {
   anchorToScreen,
   applyInlineKey,
   OverlayHost,
@@ -2752,10 +2759,12 @@ function installPointerInput(engine, session, titlesController) {
       camera.panX -= deltaX / camera.zoom;
       camera.panY -= deltaY / camera.zoom;
       applyCamera(engine);
+      markViewChangedGlobal();
     },
     viewportSize: () => ({ width: canvas.clientWidth, height: canvas.clientHeight }),
     zoomByFactor: (factor, screenX, screenY) => {
       zoomAround(engine, screenX, screenY, camera.zoom * factor);
+      markViewChangedGlobal();
     },
     previewDrag: (target, position) => {
       session?.preview(target, position);
@@ -3523,6 +3532,9 @@ function verifyCullingAgainstVisibleSet(engine, loaded, perfState, cssWidth, css
   };
 }
 
+let viewPersistence = null;
+let markViewChangedGlobal = () => {};
+
 async function start() {
   try {
     const loaded = await loadScene();
@@ -3591,6 +3603,72 @@ async function start() {
     // fit clamped to the camera range. That view is the committed reference
     // contract of this task; the L19 "show all" fit action below uses the engine's
     // padded 100 % fit, and L17/P4-22 will reuse that helper for the restored view.
+    // P4-22 (L17): remember the camera per board and device. The record is read
+    // before the first fitted frame; the L19 fit remains the fallback when there
+    // is no valid record (or storage throws). Writes only follow user camera
+    // actions, debounced, and are flushed on page hide.
+    const viewIdentity = {
+      boardId: `scene:${loaded.name}`,
+      deviceKey: deviceKeyFor(window.innerWidth, window.innerHeight, window.devicePixelRatio || 1),
+    };
+    // Deterministic harness captures run with `?store=off`: persistence is off so
+    // the L19 fit always frames the reference scenes (no stale camera).
+    // Deterministic/automated contexts disable persistence so the L19 fit always
+    // frames a reference or evidence capture: `view=`/`backend=` are harness-only
+    // parameters and `store=off` is the deterministic-store switch.
+    const viewPersistenceEnabled =
+      query.get("store") !== "off" && query.get("view") === null && query.get("backend") === null;
+    const viewStorage = viewPersistenceEnabled ? safeBrowserStorage() : null;
+    const restoredView = viewStorage === null ? null : loadView(viewStorage, viewIdentity);
+    let restoreApplied = false;
+    let persistenceReady = false;
+    let pendingViewTimer = null;
+    let viewWrites = 0;
+    const persistView = () => {
+      pendingViewTimer = null;
+      if (!persistenceReady || viewStorage === null) {
+        return;
+      }
+      if (saveView(viewStorage, viewIdentity, camera)) {
+        viewWrites += 1;
+      }
+    };
+    const markViewChanged = () => {
+      if (!persistenceReady || viewStorage === null) {
+        return;
+      }
+      if (pendingViewTimer !== null) {
+        clearTimeout(pendingViewTimer);
+      }
+      pendingViewTimer = setTimeout(persistView, 300);
+    };
+    markViewChangedGlobal = markViewChanged;
+    const flushView = () => {
+      if (pendingViewTimer !== null) {
+        clearTimeout(pendingViewTimer);
+        pendingViewTimer = null;
+      }
+      persistView();
+    };
+    window.addEventListener("pagehide", flushView);
+    document.addEventListener("visibilitychange", () => {
+      if (document.visibilityState === "hidden") {
+        flushView();
+      }
+    });
+    globalThis.__engineView = {
+      identity: () => ({ ...viewIdentity }),
+      storageAvailable: viewStorage !== null,
+      restored: () => restoreApplied,
+      camera: () => ({ panX: camera.panX, panY: camera.panY, zoom: camera.zoom }),
+      writes: () => viewWrites,
+      saveNow: flushView,
+      clear: () => {
+        try {
+          viewStorage?.removeItem(storageKeyFor(viewIdentity.boardId, viewIdentity.deviceKey));
+        } catch { /* guarded */ }
+      },
+    };
     let cameraPlaced = false;
     const canvasViewport = () => {
       const bounds = canvas.getBoundingClientRect();
@@ -3600,12 +3678,24 @@ async function start() {
       };
     };
     const placeInitialCamera = () => {
+      if (restoredView !== null && !restoreApplied) {
+        // Restore before the first fitted frame; a programmatic restore never
+        // writes (persistenceReady stays false until after the initial fit).
+        restoreApplied = true;
+        camera.panX = restoredView.panX;
+        camera.panY = restoredView.panY;
+        camera.zoom = restoredView.zoom;
+        engine.setCamera(camera);
+        persistenceReady = true;
+        return;
+      }
       const viewport = canvasViewport();
       const rawZoom = Math.min(viewport.width / world.width, viewport.height / world.height);
       camera.zoom = clampNumber(rawZoom, zoomRange.minimumZoom, zoomRange.maximumZoom);
       camera.panX = (world.width - viewport.width / camera.zoom) / 2;
       camera.panY = (world.height - viewport.height / camera.zoom) / 2;
       engine.setCamera(camera);
+      persistenceReady = true;
     };
 
     // L19 fit action ("show all"): the engine's pure fit helper returns the padded,
