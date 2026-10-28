@@ -175,7 +175,51 @@ selected scenes/viewports and exits 0 with result `update`; it prints the writte
 that it is an update, not a gate pass. The committed images are the ones the next `visual` gate
 compares against, so an update needs a reviewer who saw both the old and the new images.
 
+## P4-13: two backends and the cross-backend comparison
+
+The gate now captures every scene at both viewports for **both** backends in one
+exclusive run: `?backend=webgl2` (the measured default) and `?backend=webgpu`
+(WebGPU behind the same command buffer). Each backend has its own committed
+reference set:
+
+- WebGL2: `<scene>-<viewport>-webgl2.png` (the 28 historical images, byte-identical).
+- WebGPU: `<scene>-<viewport>-webgpu.png` (28 new baselines, written only through
+  the reviewed per-backend `--update` path: `--backend webgpu --update`).
+
+Per-backend comparisons stay exact (0 differing pixels against that backend's own
+baseline). The capture record stores per capture: `backend`, `backendLabel`,
+`renderer` (WebGL2 ANGLE string) or `layout.state.backendAdapter` (WebGPU adapter
+identity), the full page state (`activeBackend`, `backendReason`,
+`backendFallback`), the baseline path/sha and the exact-match comparison.
+
+**Fail-closed renderer policy.** WebGL2 keeps the ANGLE/known-GPU rule. WebGPU
+requires a positively identified adapter: the record's `gpus.webgpu` must have
+`identified: true` (adapter vendor + architecture such as `apple`/`metal-3`);
+software, unknown or missing adapters make the run `infra`, never a pass.
+
+**Cross-backend comparison.** For every scene × viewport the record stores a
+`crossBackendComparison` entry over the **canvas region only** (the HUD backend
+label is intentionally different DOM outside the canvas): `differingPixels`,
+`differingPixelRatio`, `worstChannelDelta`, `interiorDifferingPixels`, the
+tolerance and a review note. The reviewed tolerance is: at most 3 % differing
+canvas pixels and **zero interior differing pixels**, i.e. differences are
+allowed only on antialiased colour boundaries (WebGL2 vs WebGPU rasterisation);
+any interior colour, draw-order or layout difference is a parity bug. The
+recorded numbers are: 28/28 pairs within tolerance, maximum 2.67 % differing
+pixels, worst channel delta 201 (boundary pixels only), 0 interior differing
+pixels. This is not claimed as an exact or pixel-identical cross-backend match.
+
 ### Baseline history
+
+- **2026-10-28 — P4-13 WebGPU backend: 28 reviewed images added.** The complete
+  scene × viewport set was captured through the WebGPU path (`?backend=webgpu`)
+  and written via the per-backend reviewed `--update` path
+  (`--backend webgpu --update`). The WebGPU capture was run twice before
+  committing and was byte-identical between runs; the WebGL2 set stayed 0-diff.
+  The record carries the adapter identity (`apple`/`metal-3`), the per-capture
+  backend/renderer and the cross-backend comparison with its reviewed tolerance.
+  The WebGPU baselines include the HUD's backend label (`WebGPU apple/metal-3`)
+  and the ported glyph/chrome/grid passes.
 
 - **2026-10-28 — P4-30 L08 lifecycle/names: six reviewed images added.** The deterministic scenes
   `zone-grouping-ghost`, `zone-emptied` and `zone-names` (layers scene at world (512, 288) zoom 1,

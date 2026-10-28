@@ -6,6 +6,7 @@
 
 #if defined(__EMSCRIPTEN__)
 
+#include "engine/render_webgpu.h"
 #include "engine/camera.h"
 #include "engine/doc.h"
 #include "engine/snap.h"
@@ -44,6 +45,10 @@ struct FrameView {
 FrameView frameView();
 void setLastError(const char* reason);
 bool parseRgbaToken(const char* value, float* rgba);
+
+// P4-13: WebGPU text/chrome data (implemented in text_gl.cpp).
+bool createTextDataOnly();
+bool webgpuTextFrame(webgpu::FrameText& out);
 
 // Implemented in text_gl.cpp: builds the glyph program once per context, and
 // draws the glyph runs after the object pass (blend state is set and restored

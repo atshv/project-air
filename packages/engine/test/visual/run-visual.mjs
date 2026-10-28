@@ -85,8 +85,23 @@ const HARNESS_RELATIVE = "packages/engine/test/visual/run-visual.mjs";
 // The default P4-04 is the gate's origin and stays compatible.
 let evidenceTask = "P4-04";
 const GATE = "visual";
-const BACKEND = "webgl2";
-const BACKEND_LABEL = "WebGL2";
+// P4-13: both render backends. The measured default is WebGL2; WebGPU is the
+// second backend behind the same command buffer. Each backend has its own
+// reference set; the page selects it with `?backend=`.
+const BACKENDS = [
+  { name: "webgl2", label: "WebGL2" },
+  { name: "webgpu", label: "WebGPU" },
+];
+const DEFAULT_BACKEND = "webgl2";
+const WEBGPU_FLAGS = ["--enable-unsafe-webgpu"];
+
+// Cross-backend comparison tolerance (documented in docs/gates/visual-diff.md and
+// approved in review): antialiasing text edges may differ slightly; colour, order
+// and layout differences beyond this tolerance are treated as a parity bug.
+const CROSS_MAX_DIFFERING_PIXEL_RATIO = 0.03;
+// Interior parity is exact: a differing pixel that is not adjacent to a colour
+// boundary in either image is a real parity bug, not antialiasing.
+const CROSS_MAX_INTERIOR_DIFFERING_PIXELS = 0;
 
 // Viewport set mirrored in docs/gates/visual-diff.md. The DevTools protocol sets
 // the exact metrics (browser flags alone cannot: Chrome clamps --window-size) and
@@ -286,7 +301,7 @@ const BASE_CHROME_FLAGS = [
   "--disable-backgrounding-occluded-windows",
   "--window-size=1440,900",
 ];
-const CHROME_FLAGS = [...BASE_CHROME_FLAGS, "--no-sandbox"];
+const CHROME_FLAGS = [...BASE_CHROME_FLAGS, "--no-sandbox", ...WEBGPU_FLAGS];
 
 // Documented local default: the Chrome for Testing binary in the Playwright cache
 // of the measurement machine. CHROME_PATH always wins and the source is recorded.
@@ -362,6 +377,8 @@ const LAYOUT_EXPRESSION = `(() => {
     inner: { width: window.innerWidth, height: window.innerHeight },
     devicePixelRatio: window.devicePixelRatio || 1,
     canvas: bounds === null ? null : {
+      x: Math.round(bounds.left),
+      y: Math.round(bounds.top),
       cssWidth: Math.round(bounds.width),
       cssHeight: Math.round(bounds.height),
       pixelWidth: canvas.width,
@@ -706,6 +723,22 @@ function assertPngCodec() {
 // Image comparison and diff images.
 // ---------------------------------------------------------------------------
 
+// P4-13: crops a decoded RGBA image to a CSS-px rectangle (device pixel ratio 1
+// captures); used to compare only the canvas region across backends, because the
+// HUD backend label is intentionally different DOM outside the canvas.
+function cropImage(image, rect) {
+  const x = Math.max(0, Math.min(rect.x, image.width - 1));
+  const y = Math.max(0, Math.min(rect.y, image.height - 1));
+  const width = Math.max(1, Math.min(rect.width, image.width - x));
+  const height = Math.max(1, Math.min(rect.height, image.height - y));
+  const rgba = new Uint8Array(width * height * 4);
+  for (let row = 0; row < height; row += 1) {
+    const source = ((y + row) * image.width + x) * 4;
+    rgba.set(image.rgba.subarray(source, source + width * 4), row * width * 4);
+  }
+  return { width, height, rgba };
+}
+
 function compareImages(reference, current) {
   const dimensionMismatch = reference.width !== current.width || reference.height !== current.height;
   const totalPixels = current.width * current.height;
@@ -822,6 +855,7 @@ const REQUIRED_ARTEFACTS = [
   "apps/engine-playground/playground.css",
   "packages/ui-kit/tokens.css",
   "packages/engine/dist/bridge/engine.js",
+  "packages/engine/dist/bridge/backend.js",
   "packages/engine/dist/bridge/text-atlas.js",
   "packages/engine/dist/bridge/input.js",
   "packages/engine/dist/bridge/overlay.js",
@@ -848,6 +882,7 @@ function copyArtefacts(tempRoot) {
   const files = [
     "packages/ui-kit/tokens.css",
     "packages/engine/dist/bridge/engine.js",
+    "packages/engine/dist/bridge/backend.js",
     "packages/engine/dist/bridge/text-atlas.js",
     "packages/engine/dist/bridge/input.js",
     "packages/engine/dist/bridge/overlay.js",
@@ -1246,6 +1281,23 @@ function selectScenes(scenes, names) {
   return selected;
 }
 
+function selectBackends(names) {
+  if (names.length === 0) {
+    return BACKENDS;
+  }
+  const selected = [];
+  for (const name of names) {
+    const backend = BACKENDS.find((candidate) => candidate.name === name);
+    if (backend === undefined) {
+      fail(`unknown --backend "${name}"; expected one of ${BACKENDS.map((candidate) => candidate.name).join(", ")}`);
+    }
+    if (!selected.includes(backend)) {
+      selected.push(backend);
+    }
+  }
+  return selected;
+}
+
 function selectViewports(names) {
   if (names.length === 0) {
     return VIEWPORTS;
@@ -1265,12 +1317,24 @@ function selectViewports(names) {
   return selected;
 }
 
-function baselineName(scene, viewport) {
-  return `${scene.name}-${viewport.name}-${BACKEND}.png`;
+function baselineName(scene, viewport, backend) {
+  return `${scene.name}-${viewport.name}-${backend}.png`;
+}
+
+function backendLabel(name) {
+  return BACKENDS.find((backend) => backend.name === name)?.label ?? name;
 }
 
 function sha256(bytes) {
   return createHash("sha256").update(bytes).digest("hex");
+}
+
+function classifyWebgpuAdapter(adapter) {
+  const vendor = String(adapter?.vendor ?? "");
+  const architecture = String(adapter?.architecture ?? "");
+  const software = SOFTWARE_RENDERER.test(vendor + " " + architecture);
+  const identified = !software && /(apple|nvidia|amd|intel|arm|qualcomm|imagination)/i.test(vendor) && /(metal|vulkan|d3d|gpu)/i.test(architecture);
+  return { adapter: { vendor, architecture }, software, identified };
 }
 
 function classifyRenderer(renderer) {
@@ -1283,14 +1347,14 @@ function classifyRenderer(renderer) {
 // Capture.
 // ---------------------------------------------------------------------------
 
-async function captureState({ send, scene, viewport, baseUrl }) {
+async function captureState({ send, scene, viewport, baseUrl, backend }) {
   await sendChecked(send, "Emulation.setDeviceMetricsOverride", {
     width: viewport.width,
     height: viewport.height,
     deviceScaleFactor: 1,
     mobile: viewport.mobile,
   });
-  const url = scene.url(baseUrl);
+  const url = `${scene.url(baseUrl)}&backend=${backend}`;
   await sendChecked(send, "Page.navigate", { url });
   const readyState = await waitForPlayground(send);
 
@@ -1304,6 +1368,25 @@ async function captureState({ send, scene, viewport, baseUrl }) {
   }
 
   await evaluate(send, HIDE_VOLATILE_HUD_EXPRESSION);
+  // P4-13: capture only stable consecutive frames. WebGPU presentation is
+  // asynchronous, so the first screenshot after load can show an empty canvas;
+  // requesting frames until two screenshots are byte-identical removes that race
+  // without touching either backend's rendering.
+  let stableScreenshot = null;
+  for (let attempt = 0; attempt < 8; attempt += 1) {
+    await evaluate(send, "globalThis.__enginePlayground.settleFrame()", { awaitPromise: true });
+    const candidate = await sendChecked(send, "Page.captureScreenshot", {
+      format: "png",
+      fromSurface: true,
+      captureBeyondViewport: false,
+    });
+    const candidateBytes = String(candidate.result?.data ?? "");
+    if (stableScreenshot !== null && candidateBytes === stableScreenshot) {
+      break;
+    }
+    stableScreenshot = candidateBytes;
+    await delay(40);
+  }
   await evaluate(send, "globalThis.__enginePlayground.pause()");
   await evaluate(send, SETTLE_EXPRESSION, { awaitPromise: true });
   await delay(CAPTURE_SETTLE_MS);
@@ -1313,12 +1396,7 @@ async function captureState({ send, scene, viewport, baseUrl }) {
     fail(`could not read the page layout of "${scene.name}" at "${viewport.name}"`, 3);
   }
   const layout = JSON.parse(layoutRaw);
-  const screencast = await sendChecked(send, "Page.captureScreenshot", {
-    format: "png",
-    fromSurface: true,
-    captureBeyondViewport: false,
-  });
-  const screenshotBytes = Buffer.from(String(screencast.result?.data ?? ""), "base64");
+  const screenshotBytes = Buffer.from(String(stableScreenshot ?? ""), "base64");
   if (screenshotBytes.length === 0) {
     fail(`the DevTools screenshot of "${scene.name}" at "${viewport.name}" was empty`, 3);
   }
@@ -1331,7 +1409,15 @@ async function captureState({ send, scene, viewport, baseUrl }) {
       3,
     );
   }
-  const renderer = String(await evaluate(send, RENDERER_EXPRESSION));
+  const renderer =
+    backend === "webgpu"
+      ? (() => {
+          const adapter = layout.state.backendAdapter;
+          return adapter === null || adapter === undefined
+            ? "unavailable"
+            : `webgpu:${adapter.vendor}/${adapter.architecture}`;
+        })()
+      : String(await evaluate(send, RENDERER_EXPRESSION));
 
   const expectedCamera = expectedCameraState(scene, layout);
   const assertions = {
@@ -1389,6 +1475,28 @@ async function captureState({ send, scene, viewport, baseUrl }) {
       expected: "",
       actual: layout.error,
     },
+    // P4-13: the page must render the requested backend, never a silent other one.
+    backend: {
+      passed: layout.state.backend === backendLabel(backend),
+      expected: backendLabel(backend),
+      actual: layout.state.backend,
+    },
+    backendReason: {
+      passed: layout.state.backendReason === "ok" && layout.state.backendFallback === false,
+      expected: { reason: "ok", fallback: false },
+      actual: { reason: layout.state.backendReason, fallback: layout.state.backendFallback },
+    },
+    webgpuAdapter:
+      backend === "webgpu"
+        ? {
+            passed:
+              layout.state.backendAdapter !== null &&
+              String(layout.state.backendAdapter?.vendor ?? "").length > 0 &&
+              /(metal|vulkan|d3d)/i.test(String(layout.state.backendAdapter?.architecture ?? "")),
+            expected: "positively identified real adapter (e.g. apple/metal-3)",
+            actual: layout.state.backendAdapter,
+          }
+        : { passed: true, expected: "not applicable", actual: null },
   };
 
   return {
@@ -1396,8 +1504,8 @@ async function captureState({ send, scene, viewport, baseUrl }) {
     sceneId: scene.scene,
     viewport: viewport.name,
     viewportSize: `${viewport.width}x${viewport.height}`,
-    backend: BACKEND,
-    backendLabel: BACKEND_LABEL,
+    backend,
+    backendLabel: backendLabel(backend),
     url,
     fitAction,
     ready: {
@@ -1462,6 +1570,54 @@ function expectedCameraState(scene, layout) {
     actual: camera,
     source: `?view=${scene.view.worldX},${scene.view.worldY},${scene.view.zoom}`,
   };
+}
+
+// P4-13 cross-backend analysis: separates antialiasing edge differences from
+// interior colour differences. A pixel that differs but is not adjacent (8-neigh-
+// bourhood) to a colour change in the reference image is an interior parity bug;
+// differences only on colour boundaries are rasterisation antialiasing.
+function analyzeCrossDifference(reference, current) {
+  const comparison = compareImages(reference, current);
+  if (comparison.dimensionMismatch) {
+    return { ...comparison, interiorDifferingPixels: comparison.totalPixels ?? 0 };
+  }
+  const { width, height, rgba } = reference;
+  const same = (data, x, y, pixel) => {
+    const offset = (y * width + x) * 4;
+    return data[offset] === pixel[0] && data[offset + 1] === pixel[1] &&
+      data[offset + 2] === pixel[2] && data[offset + 3] === pixel[3];
+  };
+  let interiorDifferingPixels = 0;
+  for (let y = 0; y < height; y += 1) {
+    for (let x = 0; x < width; x += 1) {
+      const offset = (y * width + x) * 4;
+      const referencePixel = [rgba[offset], rgba[offset + 1], rgba[offset + 2], rgba[offset + 3]];
+      if (
+        referencePixel[0] === current.rgba[offset] &&
+        referencePixel[1] === current.rgba[offset + 1] &&
+        referencePixel[2] === current.rgba[offset + 2] &&
+        referencePixel[3] === current.rgba[offset + 3]
+      ) {
+        continue;
+      }
+      let onBoundary = false;
+      for (let dy = -1; dy <= 1 && !onBoundary; dy += 1) {
+        for (let dx = -1; dx <= 1 && !onBoundary; dx += 1) {
+          if (dx === 0 && dy === 0) continue;
+          const nx = x + dx;
+          const ny = y + dy;
+          if (nx < 0 || ny < 0 || nx >= width || ny >= height) continue;
+          if (!same(rgba, nx, ny, referencePixel) || !same(current.rgba, nx, ny, referencePixel)) {
+            onBoundary = true;
+          }
+        }
+      }
+      if (!onBoundary) {
+        interiorDifferingPixels += 1;
+      }
+    }
+  }
+  return { ...comparison, interiorDifferingPixels };
 }
 
 function assertionFailures(capture) {
@@ -1544,7 +1700,7 @@ function commandLine(options) {
 }
 
 function parseArgs(argv) {
-  const options = { update: false, scenes: [], viewports: [], task: null, help: false };
+  const options = { update: false, scenes: [], viewports: [], backends: [], task: null, help: false };
   for (let index = 0; index < argv.length; index += 1) {
     const argument = argv[index];
     if (argument === "--update") {
@@ -1564,7 +1720,7 @@ function parseArgs(argv) {
       options.task = value;
     } else if (argument === "--help" || argument === "-h") {
       options.help = true;
-    } else if (argument === "--scene" || argument === "--viewport") {
+    } else if (argument === "--scene" || argument === "--viewport" || argument === "--backend") {
       const value = argv[index + 1];
       if (value === undefined || value.startsWith("--")) {
         fail(`${argument} needs a value`);
@@ -1572,11 +1728,15 @@ function parseArgs(argv) {
       index += 1;
       if (argument === "--scene") {
         options.scenes.push(value);
-      } else {
+      } else if (argument === "--viewport") {
         options.viewports.push(value);
+      } else {
+        options.backends.push(value);
       }
     } else if (argument.startsWith("--scene=")) {
       options.scenes.push(argument.slice("--scene=".length));
+    } else if (argument.startsWith("--backend=")) {
+      options.backends.push(argument.slice("--backend=".length));
     } else if (argument.startsWith("--viewport=")) {
       options.viewports.push(argument.slice("--viewport=".length));
     } else {
@@ -1616,7 +1776,11 @@ async function run(options) {
   const allScenes = sceneDefinitions(testKit);
   const scenes = selectScenes(allScenes, options.scenes);
   const viewports = selectViewports(options.viewports);
-  const partial = scenes.length !== allScenes.length || viewports.length !== VIEWPORTS.length;
+  const backends = selectBackends(options.backends);
+  const partial =
+    scenes.length !== allScenes.length ||
+    viewports.length !== VIEWPORTS.length ||
+    backends.length !== BACKENDS.length;
 
   const stderrLines = [];
   const captures = [];
@@ -1631,8 +1795,15 @@ async function run(options) {
     command,
     timestamp: startedAt.toISOString(),
     partial,
-    backend: BACKEND,
-    backendLabel: BACKEND_LABEL,
+    backends: backends.map((backend) => ({ ...backend })),
+    backend: backends.length === 1 ? backends[0].name : "both",
+    backendLabel: backends.map((backend) => backend.label).join(" + "),
+    crossBackendTolerance: {
+      maxDifferingPixelRatio: CROSS_MAX_DIFFERING_PIXEL_RATIO,
+      maxInteriorDifferingPixels: CROSS_MAX_INTERIOR_DIFFERING_PIXELS,
+      policy:
+        "per-backend reference sets are exact; the cross-backend canvas comparison requires zero interior colour differences and allows only antialiased boundary pixels up to the ratio, reviewed and never claimed exact",
+    },
     tolerance: {
       maxDifferingPixels: MAX_DIFFERING_PIXELS,
       maxDifferingPixelRatio: MAX_DIFFERING_PIXEL_RATIO,
@@ -1659,6 +1830,8 @@ async function run(options) {
     build: buildInfo(),
     browser: null,
     gpu: null,
+    gpus: {},
+    crossBackendComparison: [],
     port,
     captures,
     failures,
@@ -1677,7 +1850,7 @@ async function run(options) {
   console.log(`command: ${command}`);
   console.log(`started: ${startedAt.toISOString()}`);
   console.log(
-    `scenes: ${scenes.map((scene) => scene.name).join(", ")}; viewports: ${viewports.map((viewport) => viewport.name).join(", ")}; backend: ${BACKEND_LABEL}`,
+    `scenes: ${scenes.map((scene) => scene.name).join(", ")}; viewports: ${viewports.map((viewport) => viewport.name).join(", ")}; backends: ${backends.map((backend) => backend.label).join(", ")}`,
   );
   if (partial) {
     console.log("mode: partial run (--scene/--viewport filter); the gate runs the full set");
@@ -1704,12 +1877,22 @@ async function run(options) {
       flags: CHROME_FLAGS,
     };
 
-    let rendererChecked = false;
-    captureLoop: for (const scene of scenes) {
-      for (const viewport of viewports) {
+    const rendererChecked = new Set();
+    const captureImages = new Map();
+    const jobs = [];
+    for (const backend of backends) {
+      for (const scene of scenes) {
+        for (const viewport of viewports) {
+          jobs.push({ backend: backend.name, backendLabel: backend.label, scene, viewport });
+        }
+      }
+    }
+    captureLoop: for (const job of jobs) {
+      const { backend, scene, viewport } = job;
+      {
         let capture;
         try {
-          capture = await captureState({ send, scene, viewport, baseUrl });
+          capture = await captureState({ send, scene, viewport, baseUrl, backend });
         } catch (error) {
           if (error instanceof HarnessError && error.exitCode === 3) {
             result = "infra";
@@ -1737,22 +1920,34 @@ async function run(options) {
           baseline: null,
           comparison: null,
           diffPng: null,
-          baselineName: baselineName(scene, viewport),
+          baselineName: baselineName(scene, viewport, backend),
         };
         captures.push(captureRecord);
+        captureImages.set(`${scene.name}|${viewport.name}|${backend}`, { capture, captureRecord });
 
-        if (!rendererChecked) {
-          rendererChecked = true;
-          report.gpu = {
-            ...classifyRenderer(capture.renderer),
-            policy:
-              "fail-closed: renderer must match ANGLE (...) plus a known GPU hint and must not be software",
-          };
-          if (!report.gpu.identified) {
+        if (!rendererChecked.has(backend)) {
+          rendererChecked.add(backend);
+          const classified =
+            backend === "webgpu"
+              ? {
+                  ...classifyWebgpuAdapter(capture.layout.state.backendAdapter),
+                  policy:
+                    "fail-closed: WebGPU requires a positively identified real adapter (vendor + metal/vulkan/d3d); software/unknown/missing is infra",
+                }
+              : {
+                  ...classifyRenderer(capture.renderer),
+                  policy:
+                    "fail-closed: renderer must match ANGLE (...) plus a known GPU hint and must not be software",
+                };
+          report.gpus[backend] = classified;
+          if (report.gpu === null) {
+            report.gpu = classified;
+          }
+          if (!classified.identified) {
             result = "infra";
-            resultReason = report.gpu.software
-              ? `software WebGL renderer "${capture.renderer}" is not a valid visual pass`
-              : `renderer "${capture.renderer}" is not positively identified as a real GPU (fail-closed)`;
+            resultReason = classified.software
+              ? `software ${backend} renderer "${capture.renderer}" is not a valid visual pass`
+              : `${backend} renderer "${capture.renderer}" is not positively identified as a real GPU (fail-closed)`;
             break captureLoop;
           }
         }
@@ -1764,7 +1959,7 @@ async function run(options) {
             failures.push({
               scene: scene.name,
               viewport: viewport.name,
-              backend: BACKEND,
+              backend,
               kind: "assertion",
               ...failure,
             });
@@ -1792,7 +1987,7 @@ async function run(options) {
           updates.push({
             scene: scene.name,
             viewport: viewport.name,
-            backend: BACKEND,
+            backend,
             baseline: baselineRelative,
           });
           console.log(`baseline written: ${baselineRelative}; ${captureLogContext(captureRecord)}`);
@@ -1803,7 +1998,7 @@ async function run(options) {
         if (!existsSync(baselineAbsolute)) {
           missingBaselines.push({ scene: scene.name, viewport: viewport.name, baseline: baselineRelative });
           throw new HarnessError(
-            `missing baseline ${baselineRelative} for scene "${scene.name}" at viewport "${viewport.name}" (backend ${BACKEND_LABEL}); run "node ${HARNESS_RELATIVE} --update" to write the first reviewed baseline set`,
+            `missing baseline ${baselineRelative} for scene "${scene.name}" at viewport "${viewport.name}" (backend ${backendLabel(backend)}); run "node ${HARNESS_RELATIVE} --update" to write the first reviewed baseline set`,
             2,
           );
         }
@@ -1826,7 +2021,7 @@ async function run(options) {
         };
         captureRecord.comparison = comparison;
         if (!comparison.withinTolerance) {
-          const diffRelativeName = `${evidenceTask}-visual-${slug}-${scene.name}-${viewport.name}-${BACKEND}.diff.png`;
+          const diffRelativeName = `${evidenceTask}-visual-${slug}-${scene.name}-${viewport.name}-${backend}.diff.png`;
           const diffAbsolute = writeDiffPng(capture.image, baselineImage, diffRelativeName);
           captureRecord.diffPng = diffAbsolute.slice(REPO_ROOT.length);
           result = "fail";
@@ -1834,7 +2029,7 @@ async function run(options) {
           failures.push({
             scene: scene.name,
             viewport: viewport.name,
-            backend: BACKEND,
+            backend,
             kind: "difference",
             baseline: baselineRelative,
             diffPng: captureRecord.diffPng,
@@ -1846,13 +2041,59 @@ async function run(options) {
             dimensionMismatch: comparison.dimensionMismatch,
           });
           console.log(
-            `FAIL ${scene.name} ${viewport.name} ${BACKEND_LABEL}: ${comparison.differingPixels} differing pixel(s), worst channel delta ${comparison.worstChannelDelta} vs ${baselineRelative}; diff ${captureRecord.diffPng}; ${captureLogContext(captureRecord)}`,
+            `FAIL ${scene.name} ${viewport.name} ${backendLabel(backend)}: ${comparison.differingPixels} differing pixel(s), worst channel delta ${comparison.worstChannelDelta} vs ${baselineRelative}; diff ${captureRecord.diffPng}; ${captureLogContext(captureRecord)}`,
           );
           continue;
         }
         console.log(
-          `pass ${scene.name} ${viewport.name} ${BACKEND_LABEL}: ${comparison.differingPixels} differing pixel(s), worst channel delta ${comparison.worstChannelDelta} vs ${baselineRelative}; ${captureLogContext(captureRecord)}`,
+          `pass ${scene.name} ${viewport.name} ${backendLabel(backend)}: ${comparison.differingPixels} differing pixel(s), worst channel delta ${comparison.worstChannelDelta} vs ${baselineRelative}; ${captureLogContext(captureRecord)}`,
         );
+      }
+    }
+
+    // P4-13 cross-backend comparison: for every scene × viewport with both
+    // captures, compare the same frame across WebGL2 and WebGPU. Recorded with
+    // numbers and the documented tolerance; per-backend exact matches are the
+    // gate, the cross-backend numbers are reviewed evidence, never "exact".
+    for (const scene of scenes) {
+      for (const viewport of viewports) {
+        const webgl2 = captureImages.get(`${scene.name}|${viewport.name}|webgl2`);
+        const webgpu = captureImages.get(`${scene.name}|${viewport.name}|webgpu`);
+        if (webgl2 === undefined || webgpu === undefined) {
+          continue;
+        }
+        const canvasRect = webgl2.capture.layout.canvas;
+        const cropRect =
+          canvasRect === null || canvasRect === undefined
+            ? null
+            : { x: canvasRect.x, y: canvasRect.y, width: canvasRect.cssWidth, height: canvasRect.cssHeight };
+        const webgl2Canvas =
+          cropRect === null ? webgl2.capture.image : cropImage(webgl2.capture.image, cropRect);
+        const webgpuCanvas =
+          cropRect === null ? webgpu.capture.image : cropImage(webgpu.capture.image, cropRect);
+        const comparison = analyzeCrossDifference(webgl2Canvas, webgpuCanvas);
+        const withinTolerance =
+          comparison.differingPixelRatio <= CROSS_MAX_DIFFERING_PIXEL_RATIO &&
+          comparison.interiorDifferingPixels <= CROSS_MAX_INTERIOR_DIFFERING_PIXELS;
+        report.crossBackendComparison.push({
+          scene: scene.name,
+          viewport: viewport.name,
+          webgl2Baseline: webgl2.captureRecord.baselineName,
+          webgpuBaseline: webgpu.captureRecord.baselineName,
+          differingPixels: comparison.differingPixels,
+          differingPixelRatio: comparison.differingPixelRatio,
+          worstChannelDelta: comparison.worstChannelDelta,
+          interiorDifferingPixels: comparison.interiorDifferingPixels,
+          tolerance: {
+            maxDifferingPixelRatio: CROSS_MAX_DIFFERING_PIXEL_RATIO,
+            maxInteriorDifferingPixels: CROSS_MAX_INTERIOR_DIFFERING_PIXELS,
+          },
+          withinTolerance,
+          region: cropRect === null ? "full image" : "canvas region only (the HUD backend label is outside the compared region)",
+          note: withinTolerance
+            ? "only antialiased colour-boundary pixels differ (reviewed rasterisation tolerance); every interior pixel, colour, draw order and layout is identical"
+            : "cross-backend difference beyond the documented tolerance (interior colour parity or ratio): review the pair before claiming parity",
+        });
       }
     }
 

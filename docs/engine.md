@@ -760,6 +760,33 @@ previous `engine_create` sequence.
   `navigator.gpu` removed at the page boundary (→ WebGL2 with `webgpu-unavailable`); the record is
   under `reviews/evidence/P4-12-backend-selection-*.json`.
 
+## Backend switch, two-backend rendering and image comparison (P4-13)
+
+The playground switches render backends with `?backend=webgl2|webgpu` through the P4-12 selection:
+the default is WebGL2 (the measured backend, byte-identical to before), `webgpu` is a preference
+that selects WebGPU when the capability probe passes and otherwise falls back to WebGL2 with the
+reason visible in the HUD (`WebGL2 (fallback: webgpu-unavailable)`) and in
+`getState().backendFallback`/`backendReason`. `getState()` also exposes `backend`,
+`requestedBackend` and `backendAdapter`; the HUD names the active backend and its renderer/adapter
+(`WebGL2` or `WebGPU apple/metal-3`). An unknown `?backend=` value fails closed with an engine error.
+
+The WebGPU backend now renders what the scenes contain, not only rectangles: the same command buffer
+and token palette for objects, and the shared text/chrome core's data for the **grid** (L19 dot
+pattern, same screen-space math and `tokens::faint`/`canvas_grid`/`border_width`), the **chrome pass**
+(header bands/rules from the text bindings, snap guides, selection frames/band, zone highlight) and
+the **glyph pass** (atlas texture + sampler, same `GlyphInstance` placements, `tokens::fg` tint and
+draw order: grid, objects, chrome, glyphs). No second data path: C++ builds the same quads and the
+WGSL pipelines consume them; the WebGPU glyph atlas is uploaded from the same atlas pixels the
+WebGL2 texture upload uses.
+
+The visual gate (`packages/engine/test/visual/run-visual.mjs`) captures every scene × viewport for
+both backends, each backend against its own reference set (`-webgl2.png` historical, `-webgpu.png`
+new); per-backend matches stay exact, the WebGPU adapter must be positively identified, and the
+record's `crossBackendComparison` stores the canvas-region numbers with the reviewed tolerance
+(≤3 % differing pixels, zero interior differing pixels — antialiasing boundaries only). The WebGPU
+passes are documented in `docs/gates/visual-diff.md`; the WebGPU backend remains a second backend
+(not the measured default), so `perf`/`idle` stay WebGL2.
+
 ## Object identity and mutations
 
 `Document` keeps one storage slot per object and assigns a monotonic `ObjectId` on insert

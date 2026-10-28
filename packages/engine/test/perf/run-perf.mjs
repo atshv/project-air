@@ -181,6 +181,7 @@ function ensureArtefacts({ includeTestKit = false } = {}) {
     "apps/engine-playground/playground.css",
     "packages/ui-kit/tokens.css",
     "packages/engine/dist/bridge/engine.js",
+    "packages/engine/dist/bridge/backend.js",
     "packages/engine/dist/bridge/text-atlas.js",
     "packages/engine/dist/bridge/input.js",
     "packages/engine/dist/bridge/overlay.js",
@@ -207,6 +208,7 @@ function copyArtefacts(tempRoot, { includeTestKit = false } = {}) {
   const files = [
     "packages/ui-kit/tokens.css",
     "packages/engine/dist/bridge/engine.js",
+    "packages/engine/dist/bridge/backend.js",
     "packages/engine/dist/bridge/text-atlas.js",
     "packages/engine/dist/bridge/input.js",
     "packages/engine/dist/bridge/overlay.js",

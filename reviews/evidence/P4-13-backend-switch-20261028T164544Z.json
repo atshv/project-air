@@ -1,0 +1,117 @@
+{
+  "task": "P4-13",
+  "gate": "backend-switch-smoke",
+  "startedAt": "2026-10-28T16:45:40.950Z",
+  "chrome": "/Users/rasulatashev/Library/Caches/ms-playwright/chromium-1248/chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing",
+  "flags": [
+    "--headless=new",
+    "--use-angle=metal",
+    "--enable-gpu",
+    "--enable-unsafe-webgpu",
+    "--hide-scrollbars",
+    "--no-first-run",
+    "--no-default-browser-check",
+    "--window-size=1200,800",
+    "--no-sandbox"
+  ],
+  "runs": {
+    "webgpu": {
+      "ready": {
+        "ok": true,
+        "scene": "titles",
+        "counts": {
+          "zones": 2,
+          "blocks": 2,
+          "cards": 4,
+          "total": 8
+        },
+        "objectCount": 8,
+        "visibleCount": 8
+      },
+      "state": {
+        "scene": "titles",
+        "counts": {
+          "zones": 2,
+          "blocks": 2,
+          "cards": 4,
+          "total": 8
+        },
+        "objectCount": 8,
+        "visibleCount": 8,
+        "framesRendered": 2,
+        "backend": "WebGPU",
+        "requestedBackend": "webgpu",
+        "backendReason": "ok",
+        "backendAdapter": {
+          "vendor": "apple",
+          "architecture": "metal-3",
+          "description": ""
+        },
+        "backendFallback": false,
+        "camera": {
+          "panX": 0,
+          "panY": -0.18285714285713084,
+          "zoom": 1.025390625
+        },
+        "textAtlas": {
+          "width": 1024,
+          "height": 1024,
+          "rasterScale": 2,
+          "glyphCount": 404,
+          "maxTextureSize": 8192
+        }
+      }
+    },
+    "fallback": {
+      "ready": {
+        "ok": true,
+        "scene": "titles",
+        "counts": {
+          "zones": 2,
+          "blocks": 2,
+          "cards": 4,
+          "total": 8
+        },
+        "objectCount": 8,
+        "visibleCount": 8
+      },
+      "state": {
+        "scene": "titles",
+        "counts": {
+          "zones": 2,
+          "blocks": 2,
+          "cards": 4,
+          "total": 8
+        },
+        "objectCount": 8,
+        "visibleCount": 8,
+        "framesRendered": 2,
+        "backend": "WebGL2",
+        "requestedBackend": "webgpu",
+        "backendReason": "webgpu-unavailable",
+        "backendAdapter": null,
+        "backendFallback": true,
+        "camera": {
+          "panX": 0,
+          "panY": -0.18285714285713084,
+          "zoom": 1.025390625
+        },
+        "textAtlas": {
+          "width": 1024,
+          "height": 1024,
+          "rasterScale": 2,
+          "glyphCount": 404,
+          "maxTextureSize": 16384
+        }
+      }
+    },
+    "fallbackHud": "WebGL2 (fallback: webgpu-unavailable)",
+    "invalidReady": {
+      "ok": false,
+      "error": "Error: unknown backend \"gl\"; expected webgl2 or webgpu"
+    }
+  },
+  "result": "pass",
+  "exitCode": 0,
+  "finishedAt": "2026-10-28T16:45:44.193Z"
+}

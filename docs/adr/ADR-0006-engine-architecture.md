@@ -37,6 +37,19 @@ We build the engine as a C++20 core in `packages/engine`:
 
 ## Consequences
 
+P4-11/P4-13 implemented the WebGPU backend behind the same 24-byte command buffer and the same
+text/chrome core: objects, the dot grid, the chrome pass (header bands/rules, snap guides, selection
+frames/band, zone highlight) and the glyph pass (atlas + sampler, same placements/palette) render on
+WebGPU with one pipeline per pass, no second data path and the token palette. The playground selects
+it with `?backend=webgpu` through the P4-12 capability probe and falls back to WebGL2 with a visible
+reason; WebGL2 stays the measured default and its 28 reference images are byte-identical. WebGPU has
+its own 28 reviewed reference images and the visual gate records a cross-backend comparison with a
+reviewed antialiasing tolerance (≤3 % differing canvas pixels, zero interior differing pixels):
+colour, draw order and layout are identical, pixel-exactness is not claimed. WebGPU-specific
+performance is not claimed (perf/idle stay WebGL2).
+
+
+
 - **Positive:** measured frame-production headroom far below the 16.7 ms budget; a deterministic
   command buffer a second backend can reuse; contract and tokens stay the single source for data and
   visual values; native CTest suites run in under a second; the renderer is a seam, not an

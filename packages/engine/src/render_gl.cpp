@@ -287,6 +287,9 @@ class Renderer {
     if (!webgpu::create(canvasSelector, toneColors, clear)) {
       return fail(webgpu::lastError());
     }
+    if (!detail::createTextDataOnly()) {
+      return fail("could not prepare the WebGPU text data");
+    }
     backend_ = Backend::webgpu;
     backend_reason_ = 0;
     created_ = true;
@@ -492,10 +495,17 @@ class Renderer {
       return fail(status.reason);
     }
     if (backend_ == Backend::webgpu) {
-      // P4-11: one instanced draw over the same command-buffer bytes; the glyph
-      // and chrome passes are P4-13 (not part of this pipeline task).
+      // P4-11/P4-13: one instanced draw over the same command-buffer bytes, then
+      // the chrome and glyph passes built by the shared text core (same quads,
+      // palette, placements and draw order as WebGL2).
+      webgpu::FrameText text;
+      if (!detail::webgpuTextFrame(text)) {
+        return fail(g_last_error.c_str());
+      }
+      const bool gridVisible = Camera::gridVisibleAtZoom(camera_.zoom());
       if (!webgpu::frame(commands_.bytes(), commands_.size(), css_width_, css_height_,
-                         device_pixel_ratio_)) {
+                         device_pixel_ratio_, camera_.panX(), camera_.panY(), camera_.zoom(),
+                         gridVisible, &text)) {
         return fail(webgpu::lastError());
       }
       return 1;

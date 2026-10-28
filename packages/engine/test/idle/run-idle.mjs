@@ -77,6 +77,7 @@ const REQUIRED_ARTEFACTS = [
   "apps/engine-playground/playground.css",
   "packages/ui-kit/tokens.css",
   "packages/engine/dist/bridge/engine.js",
+  "packages/engine/dist/bridge/backend.js",
   "packages/engine/dist/bridge/text-atlas.js",
   "packages/engine/dist/bridge/input.js",
   "packages/engine/dist/bridge/overlay.js",
@@ -175,6 +176,7 @@ function copyArtefacts(tempRoot) {
   const files = [
     "packages/ui-kit/tokens.css",
     "packages/engine/dist/bridge/engine.js",
+    "packages/engine/dist/bridge/backend.js",
     "packages/engine/dist/bridge/text-atlas.js",
     "packages/engine/dist/bridge/input.js",
     "packages/engine/dist/bridge/overlay.js",

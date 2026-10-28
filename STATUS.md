@@ -191,6 +191,7 @@
 - [x] `P4-10` Titles, previews and visible quality (L02) — status: `done` — owner: —
 - [x] `P4-11` WebGPU render pipeline behind the command buffer — status: `done` — owner: —
 - [x] `P4-12` WebGPU backend selection, capability and fallback — status: `done` — owner: —
+- [x] `P4-13` WebGPU switch and two-backend image comparison — status: `done` — owner: —
 - [x] `P4-14` Dragging versus editing (L03) — status: `done` — owner: —
 - [x] `P4-15` Snapping (L07) — status: `done` — owner: —
 - [x] `P4-16` Multi-selection (L10) — status: `done` — owner: —
@@ -211,7 +212,7 @@
 
 ## In progress
 
-- [ ] `P4-13` WebGPU switch and two-backend image comparison — status: `in_progress` — owner: lead
+- none
 
 ## Blocked / failed
 
@@ -234,7 +235,7 @@
 <!-- polier:claims -->
 ## Claims
 
-- `P4-13` in progress by dsh since 2026-10-28T16:27:38+00:00 — worktree: /private/tmp/air-P4-13 · slot 1
+- `P4-13` in progress by dsh since 2026-10-28T16:46:50+00:00 — worktree: /private/tmp/air-P4-13 · slot 1
 
 <!-- /polier:claims -->
 

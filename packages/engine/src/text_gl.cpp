@@ -91,6 +91,7 @@ AIR_ENGINE_RENDER_GL_API int engine_text_plan_atlas(int glyph_count, double cell
 #include <cstring>
 #include <string>
 
+#include "engine/render_webgpu.h"
 #include "tokens.h"
 
 namespace air::engine {
@@ -344,6 +345,63 @@ class TextPass {
 
   int maxTextureSize() const { return created_ ? max_texture_size_ : -1; }
 
+  // P4-13: the WebGPU backend keeps the text data (atlas, runs, bindings) without
+  // any GL program or texture; the same core builds the glyph and chrome quads.
+  bool createDataOnly() {
+    if (created_) {
+      return true;
+    }
+    if (!detail::parseRgbaToken(tokens::fg, tint_) ||
+        !detail::parseRgbaToken(tokens::faint, chromeBandColor_) ||
+        !detail::parseRgbaToken(tokens::border, chromeRuleColor_) ||
+        !detail::parseRgbaToken(tokens::accent_soft, chromeSelectionFillColor_) ||
+        !detail::parseRgbaToken(tokens::accent_line, chromeHighlightColor_) ||
+        !parseHexToken(tokens::accent, chromeGuideColor_)) {
+      detail::setLastError("generated text/chrome tokens are not colours");
+      return false;
+    }
+    max_texture_size_ = 8192;  // conservative browser texture bound, no GL query
+    gl_ready_ = false;
+    created_ = true;
+    return true;
+  }
+
+  // P4-13: builds the glyph and chrome quads of one frame for the WebGPU
+  // pipelines; the object pass is untouched and the data is the same as the GL
+  // pass (same text core, placements, palette and draw order).
+  bool webgpuFrame(webgpu::FrameText& out) {
+    out = webgpu::FrameText{};
+    const detail::FrameView view = detail::frameView();
+    if (!created_) {
+      detail::setLastError("engine_create_webgpu must be called before drawing text");
+      return false;
+    }
+    if (runs_.runs().empty()) {
+      glyphs_.clear();
+    } else if (!buildGlyphs()) {
+      return false;
+    }
+    if (!syncBindings(view) || !buildBoundGlyphs(view)) {
+      return false;
+    }
+    buildWebgpuChrome(view);
+    out.ok = true;
+    out.glyphsA = glyphs_.instances().data();
+    out.glyphCountA = glyphs_.instances().size();
+    out.glyphsB = boundGlyphs_.instances().data();
+    out.glyphCountB = boundGlyphs_.instances().size();
+    out.chrome = webgpuChrome_.data();
+    out.chromeCount = webgpuChrome_.size();
+    out.atlasReady = atlas_.ready();
+    out.atlas = atlas_.pixels().data();
+    out.atlasWidth = atlas_.width();
+    out.atlasHeight = atlas_.height();
+    for (int index = 0; index < 4; ++index) {
+      out.tint[index] = tint_[index];
+    }
+    return true;
+  }
+
   int loadAtlas(int width, int height, double rasterScale, const unsigned char* rgba,
                 int byteLength, const float* metrics, int glyphCount) {
     if (!created_) {
@@ -363,7 +421,11 @@ class TextPass {
       return 0;
     }
     // One texture upload per accepted atlas build, never per frame. Rows are
-    // tightly packed RGBA; the alpha channel is the glyph coverage.
+    // tightly packed RGBA; the alpha channel is the glyph coverage. A WebGPU-only
+    // text pass keeps the pixels in memory and uploads them as a GPUTexture.
+    if (!gl_ready_) {
+      return 1;
+    }
     glBindTexture(GL_TEXTURE_2D, texture_);
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE,
@@ -552,6 +614,119 @@ class TextPass {
   }
 
  private:
+  // P4-13: the same chrome quads the GL pass uploads (header band/rule, snap
+  // guides, selection frames/band, zone highlight) in one instance list.
+  void buildWebgpuChrome(const detail::FrameView& view) {
+    webgpuChrome_.clear();
+    const auto append = [this](float x, float y, float width, float height, const float* color) {
+      ChromeGpuInstance instance;
+      instance.x = x;
+      instance.y = y;
+      instance.width = width;
+      instance.height = height;
+      instance.red = color[0];
+      instance.green = color[1];
+      instance.blue = color[2];
+      instance.alpha = color[3];
+      webgpuChrome_.push_back(instance);
+    };
+    for (const ChromeGpuInstance& header : chromeGpu_) {
+      webgpuChrome_.push_back(header);
+    }
+    if (view.camera == nullptr) {
+      return;
+    }
+    const double zoom = view.camera->zoom();
+    const double panX = view.camera->panX();
+    const double panY = view.camera->panY();
+    const double border = tokens::border_width;
+    const std::size_t guideCount =
+        view.guides == nullptr ? 0 : std::min(view.guideCount, air::engine::kMaxSnapGuides);
+    for (std::size_t index = 0; index < guideCount; ++index) {
+      const SnapGuide& guide = view.guides[index];
+      const double start = static_cast<double>(guide.start);
+      const double end = static_cast<double>(guide.end);
+      if (!(end > start)) {
+        continue;
+      }
+      if (guide.orientation == SnapOrientation::vertical) {
+        append(static_cast<float>((guide.position - panX) * zoom - border / 2.0),
+               static_cast<float>((start - panY) * zoom), static_cast<float>(border),
+               static_cast<float>((end - start) * zoom), chromeGuideColor_);
+      } else {
+        append(static_cast<float>((start - panX) * zoom),
+               static_cast<float>((guide.position - panY) * zoom - border / 2.0),
+               static_cast<float>((end - start) * zoom), static_cast<float>(border),
+               chromeGuideColor_);
+      }
+    }
+    if (view.band != nullptr) {
+      const Bounds& band = *view.band;
+      const double x = (band.x - panX) * zoom;
+      const double y = (band.y - panY) * zoom;
+      const double width = band.width * zoom;
+      const double height = band.height * zoom;
+      if (width > 0.0 && height > 0.0) {
+        append(static_cast<float>(x), static_cast<float>(y), static_cast<float>(width),
+               static_cast<float>(height), chromeSelectionFillColor_);
+        append(static_cast<float>(x), static_cast<float>(y), static_cast<float>(width),
+               static_cast<float>(border), chromeGuideColor_);
+        append(static_cast<float>(x), static_cast<float>(y + height - border),
+               static_cast<float>(width), static_cast<float>(border), chromeGuideColor_);
+        append(static_cast<float>(x), static_cast<float>(y), static_cast<float>(border),
+               static_cast<float>(height), chromeGuideColor_);
+        append(static_cast<float>(x + width - border), static_cast<float>(y),
+               static_cast<float>(border), static_cast<float>(height), chromeGuideColor_);
+      }
+    }
+    if (view.selectionCount > 0 && view.document != nullptr) {
+      for (std::size_t index = 0; index < view.selectionCount; ++index) {
+        const std::uint32_t slot = view.selectionSlots[index];
+        if (slot >= view.document->slotCount()) {
+          continue;
+        }
+        const Rectangle& rectangle = view.document->rectangles()[slot];
+        if (!rectangle.live) {
+          continue;
+        }
+        const double x = (rectangle.x - panX) * zoom;
+        const double y = (rectangle.y - panY) * zoom;
+        const double width = rectangle.width * zoom;
+        const double height = rectangle.height * zoom;
+        if (!(width > 0.0) || !(height > 0.0) || x + width < 0.0 || y + height < 0.0 ||
+            x > view.cssWidth || y > view.cssHeight) {
+          continue;
+        }
+        append(static_cast<float>(x), static_cast<float>(y), static_cast<float>(width),
+               static_cast<float>(border), chromeGuideColor_);
+        append(static_cast<float>(x), static_cast<float>(y + height - border),
+               static_cast<float>(width), static_cast<float>(border), chromeGuideColor_);
+        append(static_cast<float>(x), static_cast<float>(y), static_cast<float>(border),
+               static_cast<float>(height), chromeGuideColor_);
+        append(static_cast<float>(x + width - border), static_cast<float>(y),
+               static_cast<float>(border), static_cast<float>(height), chromeGuideColor_);
+      }
+    }
+    if (view.highlight != nullptr) {
+      const Bounds& highlight = *view.highlight;
+      const double x = (highlight.x - panX) * zoom;
+      const double y = (highlight.y - panY) * zoom;
+      const double width = highlight.width * zoom;
+      const double height = highlight.height * zoom;
+      if (width > 0.0 && height > 0.0 && x + width >= 0.0 && y + height >= 0.0 &&
+          x <= view.cssWidth && y <= view.cssHeight) {
+        append(static_cast<float>(x), static_cast<float>(y), static_cast<float>(width),
+               static_cast<float>(border), chromeHighlightColor_);
+        append(static_cast<float>(x), static_cast<float>(y + height - border),
+               static_cast<float>(width), static_cast<float>(border), chromeHighlightColor_);
+        append(static_cast<float>(x), static_cast<float>(y), static_cast<float>(border),
+               static_cast<float>(height), chromeHighlightColor_);
+        append(static_cast<float>(x + width - border), static_cast<float>(y),
+               static_cast<float>(border), static_cast<float>(height), chromeHighlightColor_);
+      }
+    }
+  }
+
   bool buildGlyphs() {
     const detail::FrameView view = detail::frameView();
     if (!created_ || !view.created || view.camera == nullptr) {
@@ -941,6 +1116,7 @@ class TextPass {
   GlyphBuffer boundGlyphs_;
   std::vector<ChromeInstance> chrome_;
   std::vector<ChromeGpuInstance> chromeGpu_;
+  std::vector<ChromeGpuInstance> webgpuChrome_;
   BindingSyncKey bindingSyncKey_{};
   bool bindingSyncValid_{false};
   std::uint64_t bindingsGeneration_{0};
@@ -964,6 +1140,7 @@ class TextPass {
   // L08 (P4-27): tokens::accent_line of the one-second zone drop highlight.
   float chromeHighlightColor_[4] = {};
   bool created_{false};
+  bool gl_ready_{true};
 };
 
 TextPass g_text;
@@ -975,6 +1152,10 @@ namespace detail {
 bool createTextPass() { return g_text.create(); }
 
 bool drawTextPass() { return g_text.draw(); }
+
+bool createTextDataOnly() { return g_text.createDataOnly(); }
+
+bool webgpuTextFrame(webgpu::FrameText& out) { return g_text.webgpuFrame(out); }
 
 }  // namespace detail
 }  // namespace air::engine

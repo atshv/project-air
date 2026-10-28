@@ -1101,7 +1101,7 @@ export async function createEngine(
     try {
       const selected = await selectBackend<void>({
         requested,
-        probe: createBrowserCapabilityProbe(),
+        probe: createBrowserCapabilityProbe({ timeoutMs: 3000 }),
         createWebgl2,
         createWebgpu: waitForWebgpu,
       });

@@ -219,6 +219,9 @@ const zoneLifecycleMode =
   !inlineDemoRequested
     ? query.get("zoneLifecycle")
     : null;
+// P4-13: backend switch. Default WebGL2 (the measured backend); an unknown value
+// fails closed with an engine error, never silently.
+const backendRequested = query.get("backend");
 const zoneParityRequested =
   query.get("zoneParity") === "1" &&
   !benchmarkRequested &&
@@ -235,7 +238,10 @@ const state = {
   counts: { cards: 0, zones: 0, blocks: 0 },
   objectCount: benchmarkScene === null ? 0 : benchmarkScene.rectangles.length,
   visibleCount: 0,
-  backend: "WebGL2",
+  backend: backendRequested === "webgpu" ? "WebGPU" : "WebGL2",
+  backendReason: "ok",
+  backendAdapter: null,
+  backendFallback: false,
   stopped: false,
   textAtlas: null,
 };
@@ -304,10 +310,24 @@ globalThis.__enginePlayground = {
     visibleCount: state.visibleCount,
     framesRendered,
     backend: state.backend,
+    requestedBackend: backendRequested === null ? "webgl2" : backendRequested,
+    backendReason: state.backendReason,
+    backendAdapter: state.backendAdapter === null ? null : { ...state.backendAdapter },
+    backendFallback: state.backendFallback,
     camera: { ...camera },
     textAtlas: state.textAtlas === null ? null : { ...state.textAtlas },
   }),
   frameCount: () => framesRendered,
+  // P4-13: requests one engine frame and waits three animation frames so a
+  // WebGPU canvas (asynchronous GPU queue/presentation) is composited before a
+  // screenshot; the visual harness captures only stable consecutive frames.
+  settleFrame: () =>
+    new Promise((resolve) => {
+      onDemand.request();
+      requestAnimationFrame(() =>
+        requestAnimationFrame(() => requestAnimationFrame(() => resolve(true))),
+      );
+    }),
   fit: () => {
     onDemand.fit();
   },
@@ -3038,7 +3058,15 @@ async function start() {
     hudCardsNode.textContent = String(loaded.counts.cards);
     hudZonesNode.textContent = String(loaded.counts.zones);
 
-    const engine = await createEngine(canvas);
+    if (backendRequested !== null && backendRequested !== "webgl2" && backendRequested !== "webgpu") {
+      throw new Error(`unknown backend ${JSON.stringify(backendRequested)}; expected webgl2 or webgpu`);
+    }
+    // P4-13: `?backend=webgpu` is a preference with automatic fallback (A1), so it
+    // selects through the P4-12 `auto` rule; an explicit `webgl2` stays direct and
+    // the default path passes no option (byte-identical WebGL2).
+    const backendOption =
+      backendRequested === "webgpu" ? "auto" : backendRequested === "webgl2" ? "webgl2" : null;
+    const engine = await createEngine(canvas, backendOption === null ? {} : { backend: backendOption });
     // The titles scene draws the scene as plain rectangles: its presentation text
     // is bound in the caller, not through the contract seam (AD-4).
     const layers =
@@ -3049,7 +3077,24 @@ async function start() {
       engine.loadRectangles(loaded.objects);
     }
     documentLoads += 1;
-    hudBackendNode.textContent = state.backend;
+    state.backend = engine.activeBackend === "webgpu" ? "WebGPU" : "WebGL2";
+    state.backendReason = engine.backendReason;
+    state.backendAdapter = engine.backendAdapter;
+    state.backendFallback = engine.backendFallback;
+    // HUD: the default WebGL2 label stays exactly "WebGL2" (the measured
+    // reference images are byte-identical); a WebGPU or fallback state names the
+    // active backend and its renderer/adapter.
+    if (engine.activeBackend === "webgpu") {
+      const identity = engine.backendAdapter;
+      hudBackendNode.textContent =
+        identity === null || identity.vendor.length === 0
+          ? "WebGPU"
+          : `WebGPU ${identity.vendor}/${identity.architecture}`;
+    } else if (engine.backendFallback) {
+      hudBackendNode.textContent = `WebGL2 (fallback: ${engine.backendReason})`;
+    } else {
+      hudBackendNode.textContent = "WebGL2";
+    }
 
     const benchmarkState = benchmarkRequested
       ? {
