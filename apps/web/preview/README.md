@@ -1,4 +1,4 @@
-# Design preview (P0-19, P0-20, P0-21, P0-22, P0-23, P0-24, P0-25, P0-26, P0-27, P0-28, P0-29, P0-30, P0-31, P0-32, P0-33, P0-34, P0-35, P0-36, P0-37, P0-38, P0-39, P0-40, P0-41, P0-42, P0-43, P0-44, P1-07)
+# Design preview (P0-19, P0-20, P0-21, P0-22, P0-23, P0-24, P0-25, P0-26, P0-27, P0-28, P0-29, P0-30, P0-31, P0-32, P0-33, P0-34, P0-35, P0-36, P0-37, P0-38, P0-39, P0-40, P0-41, P0-42, P0-43, P0-44, P0-45, P1-07)
 
 A design preview of the Project air design system. It is **not the product**: there is no engine,
 no data, no server and no build step. It exists so the owner can see the look and feel between
@@ -15,9 +15,9 @@ its two values come from:
   `0.0.1 – unreleased`; the status word comes from the same heading. `CHANGELOG.md` is the display
   source and currently agrees with the root `package.json` version `0.0.1`.
 - **Last change** — the newest preview change entry, currently
-  `.changes/P0-44-ink-documentation.md`; the line shows the task id and that task's title from
-  `board.json` / the task brief: `P0-44 — Live demo: document the pen and ink colours in the preview`. The line follows the
-  `P0-*` preview tasks (P0-19 … P0-44, P1-07); the engine tasks
+  `.changes/P0-45-project-areas.md`; the line shows the task id and that task's title from
+  `board.json` / the task brief: `P0-45 — Preview page: project areas, their tasks and purpose`. The line follows the
+  `P0-*` preview tasks (P0-19 … P0-45, P1-07); the engine tasks
   (`P4-*`) and the other stages run in parallel and do not move it, so "highest numeric id" alone is
   not the rule. If several files exist for the same preview task, the most recent one is used;
   `.changes/README.md` and `.changes/TEMPLATE.md` do not count as entries.
@@ -221,6 +221,26 @@ is cleared on reload.
   focus-visible, `aria-pressed`) and both appear in the DE/EN strings; the palette popover uses only
   token colours, the 4 px spacing series, `--radius-md`/`--radius-sm` and the `--shadow`. Under
   `prefers-reduced-motion: reduce` the swatch transition is off.
+
+## Page contents and project areas (P0-45)
+
+Owner requests of 2026-10-29: a clear list of the project's areas, their tasks and what they are
+for, and a contents list with the numbered sections.
+
+- **Contents** — below the masthead, one pill link per section, 01 to 13 (08a included). Each
+  label reuses the section's own eyebrow key, so number and name always match the heading. Each
+  link is a 32 px target, or 44 px on coarse pointers.
+- **13 — Project areas** — nine numbered cards: engine, web app, design system, data model,
+  server, database and storage, realtime, tools and quality, operations and release. Each card
+  has what it is for, the owner role with its folders, its parts (one simple sentence each, 53 in
+  total) with a status, and a "connected" line.
+- **Status** — done, in progress or planned, each shown as a dot plus a word (`--accent`,
+  `--tone-b`, an outlined `--muted` dot). The status reflects `board.json` on 2026-10-29.
+- **Roles at a glance** — eight roles mapped to what they are responsible for; the table scrolls
+  inside its own container on narrow screens. All texts live in `areas.*` and `toc.*`.
+
+Evidence: `P0-45-contents.png`, `P0-45-areas-dark-en.png`, `P0-45-areas-light-de.png`,
+`P0-45-areas-mobile.png` and `P0-45-preview.log` in `reviews/evidence/`.
 
 ## Ink and colour documentation (P0-44)
 
@@ -680,9 +700,9 @@ P0-26 markup with the old stylesheet and a broken-looking demo. The preview ther
 assets with a version query:
 
 ```html
-<link rel="stylesheet" href="../../../packages/ui-kit/tokens.css?v=P0-44" />
-<link rel="stylesheet" href="preview.css?v=P0-44" />
-<script src="preview.js?v=P0-44" defer></script>
+<link rel="stylesheet" href="../../../packages/ui-kit/tokens.css?v=P0-45" />
+<link rel="stylesheet" href="preview.css?v=P0-45" />
+<script src="preview.js?v=P0-45" defer></script>
 ```
 
 - **Bump rule:** every task that changes a file in `apps/web/preview/` — or the shared
@@ -691,7 +711,7 @@ assets with a version query:
   never cached and gets the current files, which also covers a changed design system that would
   otherwise be served from the cached token stylesheet.
 - The locale files reuse the script's version automatically: `preview.js` reads the `v` query of its
-  own script URL and appends it to the locale request (`locales/de.json?v=P0-44`), so one bump
+  own script URL and appends it to the locale request (`locales/de.json?v=P0-45`), so one bump
   covers the translations as well.
 - The icon SVGs are referenced from `preview.css` and keep stable, unversioned URLs; they only
   change with a design-system task, and every such task bumps the preview version anyway.

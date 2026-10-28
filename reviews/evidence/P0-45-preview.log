@@ -1,0 +1,16 @@
+# P0-45 preview evidence (2026-10-29)
+# serve: cd "/Users/rasulatashev/Desktop/KI Projekte/Project air-P0-45"; PORT=$(python3 -c "import json; print(json.load(open('.polier-slot'))['ports']['web'])"); python3 -m http.server "$PORT" --bind 127.0.0.1
+# drive: out-of-repo CDP helper (Chrome for Testing 1248, headless, fresh profile, real Input.dispatchMouseEvent) at 1440x900 and 390x844, dark+EN and light+DE
+# url: http://127.0.0.1:4200/apps/web/preview/index.html
+contents: 01 — Interactive demo→#demo | 02 — Contract→#contract | 03 — Colour→#colours | 04 — Typography→#type | 05 — Space, radii, shadows, borders→#space | 06 — Motion, interaction and layers→#motion | 07 — Icons→#icons | 08 — States→#states | 08a — Ink and colours→#ink | 09 — Components→#components | 10 — Canvas chrome→#chrome | 11 — Sample board→#board | 12 — Design rules→#rules | 13 — Project areas→#areas
+contents vs headings match: true; link height 32
+screenshot P0-45-contents.png
+after clicking 13: hash=#areas heading top=undefined
+areas: cards=9 parts=53 titles=Engine, Web app, Design system, Data model, Server, Database and storage, Realtime, Tools and quality, Operations and release roles=8 note present=false
+status counts: done=43 run=1 plan=9
+screenshot P0-45-areas-dark-en.png
+DE + light: light / Wer woran arbeitet / Speichert alle Daten dauerhaft. / Inhalt: 13 — Projektbereiche
+screenshot P0-45-areas-light-de.png
+overflow 1440: 0
+mobile: overflow 0, card width 358, toc rows wrap: 9 rows
+screenshot P0-45-areas-mobile.png

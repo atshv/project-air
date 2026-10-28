@@ -27,9 +27,9 @@
         document.documentElement.setAttribute("data-theme", theme);
       })();
     </script>
-    <link rel="stylesheet" href="../../../packages/ui-kit/tokens.css?v=P0-44" />
-    <link rel="stylesheet" href="preview.css?v=P0-44" />
-    <script src="preview.js?v=P0-44" defer></script>
+    <link rel="stylesheet" href="../../../packages/ui-kit/tokens.css?v=P0-45" />
+    <link rel="stylesheet" href="preview.css?v=P0-45" />
+    <script src="preview.js?v=P0-45" defer></script>
   </head>
   <body>
     <main class="page">
@@ -46,14 +46,14 @@
         <p class="masthead__version" data-preview-meta>
           <span data-preview-version data-i18n="masthead.version">Version 0.0.1</span>
           <span data-preview-status data-i18n="masthead.unreleased">unreleased</span>
-          <span data-preview-last-change data-i18n="masthead.lastChange">Last change: P0-44 — Live demo: document the pen and ink colours in the preview</span>
-          <span data-preview-last-change-time data-i18n="masthead.lastChangeTime">2026-10-29 00:06 (Europe/Zurich)</span>
+          <span data-preview-last-change data-i18n="masthead.lastChange">Last change: P0-45 — Preview page: project areas, their tasks and purpose</span>
+          <span data-preview-last-change-time data-i18n="masthead.lastChangeTime">2026-10-29 00:48 (Europe/Zurich)</span>
         </p>
         <div class="masthead__meta">
           <span data-i18n-html="masthead.tokensPackagesUiKitTokens">Tokens: <code>packages/ui-kit/tokens.css</code></span>
           <span data-i18n-html="masthead.iconsPackagesUiKitIcons">Icons: <code>packages/ui-kit/icons/</code></span>
           <span data-i18n-html="masthead.demoPreviewJs">Demo: <code>preview.js</code></span>
-          <span data-i18n="masthead.tasks">Tasks: P0-19, P0-20, P0-21, P0-22, P0-23, P0-24, P0-25, P0-26, P0-27, P0-28, P0-29, P0-30, P0-31, P0-32, P0-33, P0-34, P0-35, P0-36, P0-37, P0-38, P0-39, P0-40, P0-41, P0-42, P0-43, P0-44, P1-07</span>
+          <span data-i18n="masthead.tasks">Tasks: P0-19, P0-20, P0-21, P0-22, P0-23, P0-24, P0-25, P0-26, P0-27, P0-28, P0-29, P0-30, P0-31, P0-32, P0-33, P0-34, P0-35, P0-36, P0-37, P0-38, P0-39, P0-40, P0-41, P0-42, P0-43, P0-44, P0-45, P1-07</span>
           <div class="masthead__switches">
             <div
               class="preview-locale"
@@ -120,6 +120,26 @@
         </div>
       </header>
 
+      <nav class="page-toc" aria-labelledby="page-toc-title">
+        <h2 class="page-toc__title" id="page-toc-title" data-i18n="toc.title">Contents</h2>
+        <ol class="page-toc__list" aria-label="Sections of this page" data-i18n-attr="aria-label:toc.label">
+          <li><a class="page-toc__link" href="#demo" data-i18n="demo.eyebrow">01 — Interactive demo</a></li>
+          <li><a class="page-toc__link" href="#contract" data-i18n="contract.eyebrow">02 — Contract</a></li>
+          <li><a class="page-toc__link" href="#colours" data-i18n="colours.eyebrow">03 — Colour</a></li>
+          <li><a class="page-toc__link" href="#type" data-i18n="type.eyebrow">04 — Typography</a></li>
+          <li><a class="page-toc__link" href="#space" data-i18n="space.eyebrow">05 — Space, radii, shadows, borders</a></li>
+          <li><a class="page-toc__link" href="#motion" data-i18n="motion.eyebrow">06 — Motion, interaction and layers</a></li>
+          <li><a class="page-toc__link" href="#icons" data-i18n="icons.eyebrow">07 — Icons</a></li>
+          <li><a class="page-toc__link" href="#states" data-i18n="states.eyebrow">08 — States</a></li>
+          <li><a class="page-toc__link" href="#ink" data-i18n="ink.eyebrow">08a — Ink and colours</a></li>
+          <li><a class="page-toc__link" href="#components" data-i18n="components.eyebrow">09 — Components</a></li>
+          <li><a class="page-toc__link" href="#chrome" data-i18n="chrome.eyebrow">10 — Canvas chrome</a></li>
+          <li><a class="page-toc__link" href="#board" data-i18n="board.eyebrow">11 — Sample board</a></li>
+          <li><a class="page-toc__link" href="#rules" data-i18n="rules.eyebrow">12 — Design rules</a></li>
+          <li><a class="page-toc__link" href="#areas" data-i18n="areas.eyebrow">13 — Project areas</a></li>
+        </ol>
+      </nav>
+
       <section class="section" aria-labelledby="demo">
         <div class="section__head">
           <span class="eyebrow" data-i18n="demo.eyebrow">01 — Interactive demo</span>
@@ -134,7 +154,7 @@
             </p>
           </noscript>
           <nav class="demo-guide-list" id="demo-hint" aria-labelledby="demo-guide-title">
-            <h3 class="demo-guide-list__title" id="demo-guide-title" data-i18n="demo.guide.title">Contents</h3>
+            <h3 class="demo-guide-list__title" id="demo-guide-title" data-i18n="demo.guide.title">What you can try</h3>
             <ol class="demo-guide-list__items" aria-label="What you can try in the demo" data-i18n-attr="aria-label:demo.guide.label">
               <li class="demo-guide-list__item">
                 <details class="demo-guide-list__point">
@@ -2032,6 +2052,207 @@
             </ul>
             <p class="rule-card__where" data-i18n="rules.s14.where">Shown in: the DE/EN switch</p>
           </article>
+        </div>
+      </section>
+
+      <section class="section" aria-labelledby="areas">
+        <div class="section__head">
+          <span class="eyebrow" data-i18n="areas.eyebrow">13 — Project areas</span>
+          <h2 id="areas" data-i18n="areas.title">Who works on what</h2>
+          <p class="section__intro" data-i18n="areas.intro">Every area of Project air, what it is for and its parts in one sentence each. Use it to hand out tasks. Status as of 29 October 2026.</p>
+          <p class="area-legend"><span data-i18n="areas.legend">Status</span><span class="area-status area-status--done"><span class="area-status__dot" aria-hidden="true"></span><span data-i18n="areas.status.done">done</span></span><span class="area-status area-status--run"><span class="area-status__dot" aria-hidden="true"></span><span data-i18n="areas.status.run">in progress</span></span><span class="area-status area-status--plan"><span class="area-status__dot" aria-hidden="true"></span><span data-i18n="areas.status.plan">planned</span></span></p>
+        </div>
+        <ol class="areas-grid" aria-label="Project areas" data-i18n-attr="aria-label:areas.listLabel">
+          <li class="area-card" id="area-engine">
+            <div class="area-card__head">
+              <span class="area-card__number" aria-hidden="true">1</span>
+              <h3 class="area-card__title" data-i18n="areas.engine.title">Engine</h3>
+            </div>
+            <dl class="area-card__facts">
+              <div><dt data-i18n="areas.purpose">What for</dt><dd data-i18n="areas.engine.purpose">Draws the board and handles every gesture on the canvas.</dd></div>
+              <div><dt data-i18n="areas.owner">Owner</dt><dd><span data-i18n="areas.engine.role">Engine team</span> · <code>packages/engine</code>, <code>apps/engine-playground</code></dd></div>
+            </dl>
+            <ul class="area-parts">
+              <li class="area-part"><span class="area-part__name" data-i18n="areas.engine.core.name">C++ core</span><span class="area-part__what" data-i18n="areas.engine.core.what">Holds all objects, their order, zoom and hit tests.</span><span class="area-status area-status--done"><span class="area-status__dot" aria-hidden="true"></span><span data-i18n="areas.status.done">done</span></span></li>
+              <li class="area-part"><span class="area-part__name" data-i18n="areas.engine.draw.name">Drawing</span><span class="area-part__what" data-i18n="areas.engine.draw.what">Draws everything fast with WebGL2 or WebGPU.</span><span class="area-status area-status--done"><span class="area-status__dot" aria-hidden="true"></span><span data-i18n="areas.status.done">done</span></span></li>
+              <li class="area-part"><span class="area-part__name" data-i18n="areas.engine.text.name">Text</span><span class="area-part__what" data-i18n="areas.engine.text.what">Wraps titles and shortens them with an ellipsis.</span><span class="area-status area-status--done"><span class="area-status__dot" aria-hidden="true"></span><span data-i18n="areas.status.done">done</span></span></li>
+              <li class="area-part"><span class="area-part__name" data-i18n="areas.engine.bridge.name">Browser bridge</span><span class="area-part__what" data-i18n="areas.engine.bridge.what">Passes mouse, touch and keys to the core.</span><span class="area-status area-status--done"><span class="area-status__dot" aria-hidden="true"></span><span data-i18n="areas.status.done">done</span></span></li>
+              <li class="area-part"><span class="area-part__name" data-i18n="areas.engine.logic.name">Logic</span><span class="area-part__what" data-i18n="areas.engine.logic.what">Turns gestures into operations with undo.</span><span class="area-status area-status--done"><span class="area-status__dot" aria-hidden="true"></span><span data-i18n="areas.status.done">done</span></span></li>
+              <li class="area-part"><span class="area-part__name" data-i18n="areas.engine.build.name">Build</span><span class="area-part__what" data-i18n="areas.engine.build.what">CMake and Emscripten turn C++ into WebAssembly.</span><span class="area-status area-status--done"><span class="area-status__dot" aria-hidden="true"></span><span data-i18n="areas.status.done">done</span></span></li>
+              <li class="area-part"><span class="area-part__name" data-i18n="areas.engine.tests.name">Tests</span><span class="area-part__what" data-i18n="areas.engine.tests.what">C++ tests, image comparison and speed checks.</span><span class="area-status area-status--done"><span class="area-status__dot" aria-hidden="true"></span><span data-i18n="areas.status.done">done</span></span></li>
+              <li class="area-part"><span class="area-part__name" data-i18n="areas.engine.playground.name">Playground</span><span class="area-part__what" data-i18n="areas.engine.playground.what">A test stage for the engine without a server.</span><span class="area-status area-status--done"><span class="area-status__dot" aria-hidden="true"></span><span data-i18n="areas.status.done">done</span></span></li>
+              <li class="area-part"><span class="area-part__name" data-i18n="areas.engine.resize.name">Quiet resize frame</span><span class="area-part__what" data-i18n="areas.engine.resize.what">Resizes from the frame without square handles, like the demo.</span><span class="area-status area-status--plan"><span class="area-status__dot" aria-hidden="true"></span><span data-i18n="areas.status.plan">planned</span></span></li>
+            </ul>
+            <p class="area-card__connected"><span data-i18n="areas.connected">Connected</span>: <span data-i18n="areas.engine.connected">Uses the data model and the design system; the web app embeds it.</span></p>
+          </li>
+          <li class="area-card" id="area-web">
+            <div class="area-card__head">
+              <span class="area-card__number" aria-hidden="true">2</span>
+              <h3 class="area-card__title" data-i18n="areas.web.title">Web app</h3>
+            </div>
+            <dl class="area-card__facts">
+              <div><dt data-i18n="areas.purpose">What for</dt><dd data-i18n="areas.web.purpose">The product people use in the browser.</dd></div>
+              <div><dt data-i18n="areas.owner">Owner</dt><dd><span data-i18n="areas.web.role">Web team</span> · <code>apps/web</code>, <code>packages/editor</code></dd></div>
+            </dl>
+            <ul class="area-parts">
+              <li class="area-part"><span class="area-part__name" data-i18n="areas.web.stack.name">React 19, Router, Vite</span><span class="area-part__what" data-i18n="areas.web.stack.what">Build the interface, switch pages and bundle the app.</span><span class="area-status area-status--done"><span class="area-status__dot" aria-hidden="true"></span><span data-i18n="areas.status.done">done</span></span></li>
+              <li class="area-part"><span class="area-part__name" data-i18n="areas.web.login.name">Sign-in pages</span><span class="area-part__what" data-i18n="areas.web.login.what">Sign in, sign up and reset a password.</span><span class="area-status area-status--done"><span class="area-status__dot" aria-hidden="true"></span><span data-i18n="areas.status.done">done</span></span></li>
+              <li class="area-part"><span class="area-part__name" data-i18n="areas.web.boards.name">Board list</span><span class="area-part__what" data-i18n="areas.web.boards.what">Shows workspaces and boards and creates new ones.</span><span class="area-status area-status--done"><span class="area-status__dot" aria-hidden="true"></span><span data-i18n="areas.status.done">done</span></span></li>
+              <li class="area-part"><span class="area-part__name" data-i18n="areas.web.board.name">Board view</span><span class="area-part__what" data-i18n="areas.web.board.what">Embeds the engine with toolbar, menu, keys and undo.</span><span class="area-status area-status--done"><span class="area-status__dot" aria-hidden="true"></span><span data-i18n="areas.status.done">done</span></span></li>
+              <li class="area-part"><span class="area-part__name" data-i18n="areas.web.editor.name">Own editor and panel</span><span class="area-part__what" data-i18n="areas.web.editor.what">Writes notes with formatting in a side panel.</span><span class="area-status area-status--run"><span class="area-status__dot" aria-hidden="true"></span><span data-i18n="areas.status.run">in progress</span></span></li>
+              <li class="area-part"><span class="area-part__name" data-i18n="areas.web.live.name">Live view</span><span class="area-part__what" data-i18n="areas.web.live.what">Shows others&#x27; changes, cursors and the save status.</span><span class="area-status area-status--plan"><span class="area-status__dot" aria-hidden="true"></span><span data-i18n="areas.status.plan">planned</span></span></li>
+              <li class="area-part"><span class="area-part__name" data-i18n="areas.web.i18n.name">Translations</span><span class="area-part__what" data-i18n="areas.web.i18n.what">Every text in German and English.</span><span class="area-status area-status--done"><span class="area-status__dot" aria-hidden="true"></span><span data-i18n="areas.status.done">done</span></span></li>
+            </ul>
+            <p class="area-card__connected"><span data-i18n="areas.connected">Connected</span>: <span data-i18n="areas.web.connected">Uses the engine, the SDK, the editor and the design system.</span></p>
+          </li>
+          <li class="area-card" id="area-design">
+            <div class="area-card__head">
+              <span class="area-card__number" aria-hidden="true">3</span>
+              <h3 class="area-card__title" data-i18n="areas.design.title">Design system</h3>
+            </div>
+            <dl class="area-card__facts">
+              <div><dt data-i18n="areas.purpose">What for</dt><dd data-i18n="areas.design.purpose">One source for how everything looks.</dd></div>
+              <div><dt data-i18n="areas.owner">Owner</dt><dd><span data-i18n="areas.design.role">Design</span> · <code>packages/ui-kit</code>, <code>apps/web/preview</code>, <code>docs/design-rules.md</code></dd></div>
+            </dl>
+            <ul class="area-parts">
+              <li class="area-part"><span class="area-part__name" data-i18n="areas.design.tokens.name">Tokens</span><span class="area-part__what" data-i18n="areas.design.tokens.what">All colours, spacing, radii and layers in one file.</span><span class="area-status area-status--done"><span class="area-status__dot" aria-hidden="true"></span><span data-i18n="areas.status.done">done</span></span></li>
+              <li class="area-part"><span class="area-part__name" data-i18n="areas.design.codegen.name">Generator</span><span class="area-part__what" data-i18n="areas.design.codegen.what">Makes CSS for the web and a header for C++.</span><span class="area-status area-status--done"><span class="area-status__dot" aria-hidden="true"></span><span data-i18n="areas.status.done">done</span></span></li>
+              <li class="area-part"><span class="area-part__name" data-i18n="areas.design.icons.name">Icons</span><span class="area-part__what" data-i18n="areas.design.icons.what">Own icons, the same for web and engine.</span><span class="area-status area-status--done"><span class="area-status__dot" aria-hidden="true"></span><span data-i18n="areas.status.done">done</span></span></li>
+              <li class="area-part"><span class="area-part__name" data-i18n="areas.design.law.name">Design law</span><span class="area-part__what" data-i18n="areas.design.law.what">The binding rules for every screen.</span><span class="area-status area-status--done"><span class="area-status__dot" aria-hidden="true"></span><span data-i18n="areas.status.done">done</span></span></li>
+              <li class="area-part"><span class="area-part__name" data-i18n="areas.design.preview.name">This page</span><span class="area-part__what" data-i18n="areas.design.preview.what">Shows and tests the behaviour; the engine follows it.</span><span class="area-status area-status--done"><span class="area-status__dot" aria-hidden="true"></span><span data-i18n="areas.status.done">done</span></span></li>
+              <li class="area-part"><span class="area-part__name" data-i18n="areas.design.themes.name">Dark and light</span><span class="area-part__what" data-i18n="areas.design.themes.what">Two palettes with a switch.</span><span class="area-status area-status--done"><span class="area-status__dot" aria-hidden="true"></span><span data-i18n="areas.status.done">done</span></span></li>
+            </ul>
+            <p class="area-card__connected"><span data-i18n="areas.connected">Connected</span>: <span data-i18n="areas.design.connected">Feeds the web app and the engine with the same values.</span></p>
+          </li>
+          <li class="area-card" id="area-contract">
+            <div class="area-card__head">
+              <span class="area-card__number" aria-hidden="true">4</span>
+              <h3 class="area-card__title" data-i18n="areas.contract.title">Data model</h3>
+            </div>
+            <dl class="area-card__facts">
+              <div><dt data-i18n="areas.purpose">What for</dt><dd data-i18n="areas.contract.purpose">The shared language of all parts.</dd></div>
+              <div><dt data-i18n="areas.owner">Owner</dt><dd><span data-i18n="areas.contract.role">Data model</span> · <code>packages/contracts</code></dd></div>
+            </dl>
+            <ul class="area-parts">
+              <li class="area-part"><span class="area-part__name" data-i18n="areas.contract.schemas.name">Schemas</span><span class="area-part__what" data-i18n="areas.contract.schemas.what">Describe board, note, card, zone, block and connection.</span><span class="area-status area-status--done"><span class="area-status__dot" aria-hidden="true"></span><span data-i18n="areas.status.done">done</span></span></li>
+              <li class="area-part"><span class="area-part__name" data-i18n="areas.contract.ops.name">Operations</span><span class="area-part__what" data-i18n="areas.contract.ops.what">Every change has exactly one inverse.</span><span class="area-status area-status--done"><span class="area-status__dot" aria-hidden="true"></span><span data-i18n="areas.status.done">done</span></span></li>
+              <li class="area-part"><span class="area-part__name" data-i18n="areas.contract.sync.name">Sync protocol</span><span class="area-part__what" data-i18n="areas.contract.sync.what">Messages for working together live.</span><span class="area-status area-status--done"><span class="area-status__dot" aria-hidden="true"></span><span data-i18n="areas.status.done">done</span></span></li>
+              <li class="area-part"><span class="area-part__name" data-i18n="areas.contract.errors.name">API errors</span><span class="area-part__what" data-i18n="areas.contract.errors.what">The same errors for every server.</span><span class="area-status area-status--done"><span class="area-status__dot" aria-hidden="true"></span><span data-i18n="areas.status.done">done</span></span></li>
+              <li class="area-part"><span class="area-part__name" data-i18n="areas.contract.gen.name">Code generation</span><span class="area-part__what" data-i18n="areas.contract.gen.what">Types for TypeScript and C++.</span><span class="area-status area-status--done"><span class="area-status__dot" aria-hidden="true"></span><span data-i18n="areas.status.done">done</span></span></li>
+              <li class="area-part"><span class="area-part__name" data-i18n="areas.contract.body.name">Note body</span><span class="area-part__what" data-i18n="areas.contract.body.what">Describes the text inside a note (0.4.0).</span><span class="area-status area-status--done"><span class="area-status__dot" aria-hidden="true"></span><span data-i18n="areas.status.done">done</span></span></li>
+            </ul>
+            <p class="area-card__connected"><span data-i18n="areas.connected">Connected</span>: <span data-i18n="areas.contract.connected">Every other area builds on it.</span></p>
+          </li>
+          <li class="area-card" id="area-server">
+            <div class="area-card__head">
+              <span class="area-card__number" aria-hidden="true">5</span>
+              <h3 class="area-card__title" data-i18n="areas.server.title">Server</h3>
+            </div>
+            <dl class="area-card__facts">
+              <div><dt data-i18n="areas.purpose">What for</dt><dd data-i18n="areas.server.purpose">Stores data safely and decides who may do what.</dd></div>
+              <div><dt data-i18n="areas.owner">Owner</dt><dd><span data-i18n="areas.server.role">Server team</span> · <code>services/platform</code>, <code>services/auth</code></dd></div>
+            </dl>
+            <ul class="area-parts">
+              <li class="area-part"><span class="area-part__name" data-i18n="areas.server.platform.name">Platform API</span><span class="area-part__what" data-i18n="areas.server.platform.what">HTTP interface for workspaces, boards, notes and rights.</span><span class="area-status area-status--done"><span class="area-status__dot" aria-hidden="true"></span><span data-i18n="areas.status.done">done</span></span></li>
+              <li class="area-part"><span class="area-part__name" data-i18n="areas.server.auth.name">Auth</span><span class="area-part__what" data-i18n="areas.server.auth.what">Accounts, sessions and invitations, with Ory Kratos.</span><span class="area-status area-status--done"><span class="area-status__dot" aria-hidden="true"></span><span data-i18n="areas.status.done">done</span></span></li>
+              <li class="area-part"><span class="area-part__name" data-i18n="areas.server.media.name">Media</span><span class="area-part__what" data-i18n="areas.server.media.what">Uploads, thumbnails and PDF pages.</span><span class="area-status area-status--plan"><span class="area-status__dot" aria-hidden="true"></span><span data-i18n="areas.status.plan">planned</span></span></li>
+              <li class="area-part"><span class="area-part__name" data-i18n="areas.server.ai.name">AI</span><span class="area-part__what" data-i18n="areas.server.ai.what">Coach, search and summaries.</span><span class="area-status area-status--plan"><span class="area-status__dot" aria-hidden="true"></span><span data-i18n="areas.status.plan">planned</span></span></li>
+              <li class="area-part"><span class="area-part__name" data-i18n="areas.server.worker.name">Worker</span><span class="area-part__what" data-i18n="areas.server.worker.what">Runs jobs in the background.</span><span class="area-status area-status--plan"><span class="area-status__dot" aria-hidden="true"></span><span data-i18n="areas.status.plan">planned</span></span></li>
+            </ul>
+            <p class="area-card__connected"><span data-i18n="areas.connected">Connected</span>: <span data-i18n="areas.server.connected">Uses the database; the app reaches it through the SDK.</span></p>
+          </li>
+          <li class="area-card" id="area-db">
+            <div class="area-card__head">
+              <span class="area-card__number" aria-hidden="true">6</span>
+              <h3 class="area-card__title" data-i18n="areas.db.title">Database and storage</h3>
+            </div>
+            <dl class="area-card__facts">
+              <div><dt data-i18n="areas.purpose">What for</dt><dd data-i18n="areas.db.purpose">Keeps all data and files.</dd></div>
+              <div><dt data-i18n="areas.owner">Owner</dt><dd><span data-i18n="areas.db.role">Database</span> · <code>infra/</code></dd></div>
+            </dl>
+            <ul class="area-parts">
+              <li class="area-part"><span class="area-part__name" data-i18n="areas.db.pg.name">PostgreSQL 17</span><span class="area-part__what" data-i18n="areas.db.pg.what">Stores all data for good.</span><span class="area-status area-status--done"><span class="area-status__dot" aria-hidden="true"></span><span data-i18n="areas.status.done">done</span></span></li>
+              <li class="area-part"><span class="area-part__name" data-i18n="areas.db.rls.name">Row rights</span><span class="area-part__what" data-i18n="areas.db.rls.what">Each person only sees their own data.</span><span class="area-status area-status--done"><span class="area-status__dot" aria-hidden="true"></span><span data-i18n="areas.status.done">done</span></span></li>
+              <li class="area-part"><span class="area-part__name" data-i18n="areas.db.migrations.name">Migrations</span><span class="area-part__what" data-i18n="areas.db.migrations.what">Build the tables step by step.</span><span class="area-status area-status--done"><span class="area-status__dot" aria-hidden="true"></span><span data-i18n="areas.status.done">done</span></span></li>
+              <li class="area-part"><span class="area-part__name" data-i18n="areas.db.s3.name">File storage</span><span class="area-part__what" data-i18n="areas.db.s3.what">Keeps images and PDFs (S3, SeaweedFS).</span><span class="area-status area-status--done"><span class="area-status__dot" aria-hidden="true"></span><span data-i18n="areas.status.done">done</span></span></li>
+              <li class="area-part"><span class="area-part__name" data-i18n="areas.db.mail.name">Test mail</span><span class="area-part__what" data-i18n="areas.db.mail.what">Catches mails like invitations (Mailpit).</span><span class="area-status area-status--done"><span class="area-status__dot" aria-hidden="true"></span><span data-i18n="areas.status.done">done</span></span></li>
+              <li class="area-part"><span class="area-part__name" data-i18n="areas.db.compose.name">Docker Compose</span><span class="area-part__what" data-i18n="areas.db.compose.what">Starts everything locally with one command.</span><span class="area-status area-status--done"><span class="area-status__dot" aria-hidden="true"></span><span data-i18n="areas.status.done">done</span></span></li>
+            </ul>
+            <p class="area-card__connected"><span data-i18n="areas.connected">Connected</span>: <span data-i18n="areas.db.connected">Server and sync write into it.</span></p>
+          </li>
+          <li class="area-card" id="area-realtime">
+            <div class="area-card__head">
+              <span class="area-card__number" aria-hidden="true">7</span>
+              <h3 class="area-card__title" data-i18n="areas.realtime.title">Realtime</h3>
+            </div>
+            <dl class="area-card__facts">
+              <div><dt data-i18n="areas.purpose">What for</dt><dd data-i18n="areas.realtime.purpose">Several people edit one board at the same time.</dd></div>
+              <div><dt data-i18n="areas.owner">Owner</dt><dd><span data-i18n="areas.realtime.role">Realtime team</span> · <code>services/sync</code>, <code>packages/crdt</code>, <code>packages/sdk</code></dd></div>
+            </dl>
+            <ul class="area-parts">
+              <li class="area-part"><span class="area-part__name" data-i18n="areas.realtime.sync.name">Sync service</span><span class="area-part__what" data-i18n="areas.realtime.sync.what">Shares changes live over WebSocket.</span><span class="area-status area-status--done"><span class="area-status__dot" aria-hidden="true"></span><span data-i18n="areas.status.done">done</span></span></li>
+              <li class="area-part"><span class="area-part__name" data-i18n="areas.realtime.presence.name">Presence</span><span class="area-part__what" data-i18n="areas.realtime.presence.what">Shares cursor, selection, name and colour.</span><span class="area-status area-status--done"><span class="area-status__dot" aria-hidden="true"></span><span data-i18n="areas.status.done">done</span></span></li>
+              <li class="area-part"><span class="area-part__name" data-i18n="areas.realtime.crdt.name">CRDT</span><span class="area-part__what" data-i18n="areas.realtime.crdt.what">Merges changes made at the same time without loss.</span><span class="area-status area-status--done"><span class="area-status__dot" aria-hidden="true"></span><span data-i18n="areas.status.done">done</span></span></li>
+              <li class="area-part"><span class="area-part__name" data-i18n="areas.realtime.sdk.name">SDK</span><span class="area-part__what" data-i18n="areas.realtime.sdk.what">The app&#x27;s client: board data, offline queue, autosave.</span><span class="area-status area-status--done"><span class="area-status__dot" aria-hidden="true"></span><span data-i18n="areas.status.done">done</span></span></li>
+              <li class="area-part"><span class="area-part__name" data-i18n="areas.realtime.reconnect.name">Reconnect</span><span class="area-part__what" data-i18n="areas.realtime.reconnect.what">Catches up after a break.</span><span class="area-status area-status--done"><span class="area-status__dot" aria-hidden="true"></span><span data-i18n="areas.status.done">done</span></span></li>
+            </ul>
+            <p class="area-card__connected"><span data-i18n="areas.connected">Connected</span>: <span data-i18n="areas.realtime.connected">Connects the web app with the server and the database.</span></p>
+          </li>
+          <li class="area-card" id="area-quality">
+            <div class="area-card__head">
+              <span class="area-card__number" aria-hidden="true">8</span>
+              <h3 class="area-card__title" data-i18n="areas.quality.title">Tools and quality</h3>
+            </div>
+            <dl class="area-card__facts">
+              <div><dt data-i18n="areas.purpose">What for</dt><dd data-i18n="areas.quality.purpose">Lets many people work at once without breaking things.</dd></div>
+              <div><dt data-i18n="areas.owner">Owner</dt><dd><span data-i18n="areas.quality.role">Quality and DevOps</span> · <code>tools/</code>, <code>packages/test-kit</code></dd></div>
+            </dl>
+            <ul class="area-parts">
+              <li class="area-part"><span class="area-part__name" data-i18n="areas.quality.polier.name">Polier</span><span class="area-part__what" data-i18n="areas.quality.polier.what">Task board: one task, one folder, fixed checks.</span><span class="area-status area-status--done"><span class="area-status__dot" aria-hidden="true"></span><span data-i18n="areas.status.done">done</span></span></li>
+              <li class="area-part"><span class="area-part__name" data-i18n="areas.quality.workspace.name">pnpm and Turborepo</span><span class="area-part__what" data-i18n="areas.quality.workspace.what">Install packages and build only what changed.</span><span class="area-status area-status--done"><span class="area-status__dot" aria-hidden="true"></span><span data-i18n="areas.status.done">done</span></span></li>
+              <li class="area-part"><span class="area-part__name" data-i18n="areas.quality.checks.name">Design and language checks</span><span class="area-part__what" data-i18n="areas.quality.checks.what">Reject raw colours and German words in code.</span><span class="area-status area-status--done"><span class="area-status__dot" aria-hidden="true"></span><span data-i18n="areas.status.done">done</span></span></li>
+              <li class="area-part"><span class="area-part__name" data-i18n="areas.quality.slots.name">Slots</span><span class="area-part__what" data-i18n="areas.quality.slots.what">Give each folder its own ports and databases.</span><span class="area-status area-status--done"><span class="area-status__dot" aria-hidden="true"></span><span data-i18n="areas.status.done">done</span></span></li>
+              <li class="area-part"><span class="area-part__name" data-i18n="areas.quality.e2e.name">Browser tests</span><span class="area-part__what" data-i18n="areas.quality.e2e.what">Click through the main flows in the browser.</span><span class="area-status area-status--plan"><span class="area-status__dot" aria-hidden="true"></span><span data-i18n="areas.status.plan">planned</span></span></li>
+            </ul>
+            <p class="area-card__connected"><span data-i18n="areas.connected">Connected</span>: <span data-i18n="areas.quality.connected">Checks every area before it is merged.</span></p>
+          </li>
+          <li class="area-card" id="area-release">
+            <div class="area-card__head">
+              <span class="area-card__number" aria-hidden="true">9</span>
+              <h3 class="area-card__title" data-i18n="areas.release.title">Operations and release</h3>
+            </div>
+            <dl class="area-card__facts">
+              <div><dt data-i18n="areas.purpose">What for</dt><dd data-i18n="areas.release.purpose">Turns code into a delivered version.</dd></div>
+              <div><dt data-i18n="areas.owner">Owner</dt><dd><span data-i18n="areas.release.role">Quality and DevOps</span> · <code>.changes/</code>, <code>tools/release</code>, <code>.github/</code></dd></div>
+            </dl>
+            <ul class="area-parts">
+              <li class="area-part"><span class="area-part__name" data-i18n="areas.release.changes.name">Change entries</span><span class="area-part__what" data-i18n="areas.release.changes.what">Every change gets a short changelog entry.</span><span class="area-status area-status--done"><span class="area-status__dot" aria-hidden="true"></span><span data-i18n="areas.status.done">done</span></span></li>
+              <li class="area-part"><span class="area-part__name" data-i18n="areas.release.ci.name">CI</span><span class="area-part__what" data-i18n="areas.release.ci.what">Checks every state automatically on GitHub.</span><span class="area-status area-status--plan"><span class="area-status__dot" aria-hidden="true"></span><span data-i18n="areas.status.plan">planned</span></span></li>
+              <li class="area-part"><span class="area-part__name" data-i18n="areas.release.tags.name">Releases from tags</span><span class="area-part__what" data-i18n="areas.release.tags.what">CI builds versions from tags.</span><span class="area-status area-status--plan"><span class="area-status__dot" aria-hidden="true"></span><span data-i18n="areas.status.plan">planned</span></span></li>
+              <li class="area-part"><span class="area-part__name" data-i18n="areas.release.envs.name">Staging and production</span><span class="area-part__what" data-i18n="areas.release.envs.what">A test environment and the real one.</span><span class="area-status area-status--plan"><span class="area-status__dot" aria-hidden="true"></span><span data-i18n="areas.status.plan">planned</span></span></li>
+            </ul>
+            <p class="area-card__connected"><span data-i18n="areas.connected">Connected</span>: <span data-i18n="areas.release.connected">Takes the work of all areas to the users.</span></p>
+          </li>
+        </ol>
+        <div class="detail-grid">
+          <div class="detail-card">
+            <h3 data-i18n="areas.roles.title">Roles at a glance</h3>
+            <div class="area-roles-scroll">
+              <table class="area-roles">
+                <thead><tr><th scope="col" data-i18n="areas.roles.role">Role</th><th scope="col" data-i18n="areas.roles.areas">Responsible for</th></tr></thead>
+                <tbody>
+                  <tr><th scope="row" data-i18n="areas.roles.engine.name">Engine team</th><td data-i18n="areas.roles.engine.areas">Engine, playground</td></tr>
+                  <tr><th scope="row" data-i18n="areas.roles.web.name">Web team</th><td data-i18n="areas.roles.web.areas">Web app, editor, translations</td></tr>
+                  <tr><th scope="row" data-i18n="areas.roles.design.name">Design</th><td data-i18n="areas.roles.design.areas">Design system, design law, this page</td></tr>
+                  <tr><th scope="row" data-i18n="areas.roles.server.name">Server team</th><td data-i18n="areas.roles.server.areas">Platform API, auth, rights</td></tr>
+                  <tr><th scope="row" data-i18n="areas.roles.db.name">Database</th><td data-i18n="areas.roles.db.areas">Tables, migrations, storage, local containers</td></tr>
+                  <tr><th scope="row" data-i18n="areas.roles.realtime.name">Realtime team</th><td data-i18n="areas.roles.realtime.areas">Sync, CRDT, SDK</td></tr>
+                  <tr><th scope="row" data-i18n="areas.roles.contract.name">Data model</th><td data-i18n="areas.roles.contract.areas">Schemas, operations, code generation</td></tr>
+                  <tr><th scope="row" data-i18n="areas.roles.quality.name">Quality and DevOps</th><td data-i18n="areas.roles.quality.areas">Checks, tests, releases, CI</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
         </div>
       </section>
 

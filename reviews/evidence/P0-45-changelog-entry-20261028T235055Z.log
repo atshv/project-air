@@ -1,0 +1,5 @@
+$ node tools/release/check-changes.mjs --task P0-45 --base main
+[exit 0]
+
+check-changes: task P0-45, base main, 17 changed path(s), 5 code path(s)
+changelog-entry: OK (.changes/P0-45-project-areas.md)
