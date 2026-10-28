@@ -122,10 +122,7 @@
 
 ## Ready now
 
-- `P0-42` Live demo: light theme with sun/moon icons under DE/EN
-  - P0-41: Closed P0-41: selection/multi-select/teammate frames follow the object radius via --frame-radius; hovered corner is a 2 px arc bracket. Blocks/zones use --radius-lg, notes --radius-md.
-  - P0-41: Done checklist entries render --muted at opacity 0.6 with a full --accent tick and no strikethrough; design law section 6 row and L14 wording follow the demo.
-  - P0-41: The three intro blocks became one line plus a numbered, two-column <details> contents list (ten points, EN/DE, keyboard); screenshots and the headless-Chrome log are committed.
+- none
 
 ## Done
 
@@ -224,6 +221,7 @@
 ## In progress
 
 - [ ] `P5-07` crdt-convergence proof: 10,000 rounds, offline clients and own-only undo — status: `in_progress` — owner: lead
+- [ ] `P0-42` Live demo: light theme with sun/moon icons under DE/EN — status: `in_progress` — owner: lead
 
 ## Blocked / failed
 
@@ -236,7 +234,13 @@
 - [ ] `P0-16` Dependency updates and Polier update check — status: `pending` — owner: —
 - [ ] `P0-17` RELEASING.md and release 0.0.1 — status: `pending` — owner: —
 - [ ] `P5-08` load proof: 25 clients per board at p95 <= 150 ms and the stage report — status: `pending` — owner: —
-- [ ] `P0-42` Live demo: light theme with sun/moon icons under DE/EN — status: `pending` — owner: —
+
+<!-- polier:claims -->
+## Claims
+
+- `P0-42` in progress by dsh since 2026-10-28T20:56:10+00:00 — worktree: /private/tmp/air-P0-42 · slot 3
+
+<!-- /polier:claims -->
 
 ## Decisions
 

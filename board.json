@@ -6462,8 +6462,8 @@
       "id": "P0-42",
       "title": "Live demo: light theme with sun/moon icons under DE/EN",
       "stage": "foundation",
-      "status": "pending",
-      "owner": null,
+      "status": "in_progress",
+      "owner": "lead",
       "depends_on": [
         "P0-41"
       ],
@@ -6486,7 +6486,7 @@
       ],
       "evidence": [],
       "handoff": [],
-      "worktree": null,
+      "worktree": "/private/tmp/air-P0-42",
       "exclusive": [],
       "satisfies": [
         "D3"
