@@ -148,6 +148,15 @@ EM_JS(int, air_webgpu_resize_js, (int css_width, int css_height, float dpr), {
   return 1;
 });
 
+EM_JS(void, air_webgpu_shutdown_js, (), {
+  const state = globalThis.__airWebgpu;
+  if (state === undefined) return;
+  if (state.device !== null && state.device !== undefined && state.device.destroy !== undefined) {
+    try { state.device.destroy(); } catch (error) { /* already lost */ }
+  }
+  globalThis.__airWebgpu = undefined;
+});
+
 EM_JS(int, air_webgpu_status_js, (), {
   const state = globalThis.__airWebgpu;
   return state === undefined ? -2 : state.status;
@@ -260,6 +269,11 @@ bool frame(const void* instance_bytes, std::size_t instance_count, int css_width
   return true;
 }
 
+void shutdown() {
+  air_webgpu_shutdown_js();
+  g_error = "WebGPU renderer has not been created";
+}
+
 int ready() {
   const int status = air_webgpu_status_js();
   if (status == 1) {
@@ -294,6 +308,8 @@ bool frame(const void*, std::size_t, int, int, float) {
 }
 
 int ready() { return -1; }
+
+void shutdown() { g_error = "WebGPU renderer is only available in the WebAssembly build"; }
 
 const char* lastError() { return g_error; }
 

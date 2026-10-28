@@ -253,6 +253,8 @@ class Renderer {
     // An empty document is a valid document: index it now so a frame, a hit test
     // or the visible count works before the first engine_load_rectangles.
     spatial_.rebuild(document_);
+    backend_ = Backend::webgl2;
+    backend_reason_ = 0;
     created_ = true;
     return true;
   }
@@ -286,6 +288,7 @@ class Renderer {
       return fail(webgpu::lastError());
     }
     backend_ = Backend::webgpu;
+    backend_reason_ = 0;
     created_ = true;
     // An empty document is valid: index it so a frame or a hit test works before
     // the first engine_load_rectangles, exactly like the WebGL2 create path.
@@ -694,6 +697,46 @@ class Renderer {
     return status;
   }
 
+  // P4-12: the active backend and the stable fallback reason through the C ABI.
+  // Codes: 0 no backend, 1 WebGL2, 2 WebGPU; reason -1 before a backend exists,
+  // otherwise 0 ok / 1 webgpu-unavailable / 2 adapter-null / 3 device-rejected /
+  // 4 probe-timeout / 5 renderer-create-failed / 6 webgl2-unavailable.
+  int activeBackend() const {
+    if (!created_) {
+      return 0;
+    }
+    return backend_ == Backend::webgpu ? 2 : 1;
+  }
+
+  int backendReason() const { return created_ ? backend_reason_ : -1; }
+
+  int setBackendReason(int reason) {
+    if (!created_) {
+      return fail("engine_set_backend_reason needs a created backend");
+    }
+    if (reason < 0 || reason > 6) {
+      return fail("engine_set_backend_reason needs a reason code between 0 and 6");
+    }
+    backend_reason_ = reason;
+    return 1;
+  }
+
+  // P4-12: abandons a WebGPU backend that failed after creation (readiness), so
+  // exactly one renderer can then be created. No partial device stays active.
+  int abandonWebgpu() {
+    if (backend_ != Backend::webgpu) {
+      return 1;
+    }
+    webgpu::shutdown();
+    backend_ = Backend::webgl2;
+    backend_reason_ = 0;
+    created_ = false;
+    selection_.clear();
+    band_visible_ = false;
+    highlight_.clear();
+    return 1;
+  }
+
   const char* lastError() const { return g_last_error.c_str(); }
 
   detail::FrameView frameView() const {
@@ -882,6 +925,7 @@ class Renderer {
   }
 
   Backend backend_{Backend::webgl2};
+  int backend_reason_{0};
   Document document_;
   Camera camera_;
   SpatialIndex spatial_;
@@ -985,6 +1029,22 @@ AIR_ENGINE_RENDER_GL_API int engine_render_webgpu_frame() {
 }
 
 AIR_ENGINE_RENDER_GL_API int engine_webgpu_ready() { return air::engine::g_renderer.webgpuReady(); }
+
+AIR_ENGINE_RENDER_GL_API int engine_active_backend() {
+  return air::engine::g_renderer.activeBackend();
+}
+
+AIR_ENGINE_RENDER_GL_API int engine_backend_reason() {
+  return air::engine::g_renderer.backendReason();
+}
+
+AIR_ENGINE_RENDER_GL_API int engine_set_backend_reason(int reason) {
+  return air::engine::g_renderer.setBackendReason(reason);
+}
+
+AIR_ENGINE_RENDER_GL_API int engine_abandon_webgpu() {
+  return air::engine::g_renderer.abandonWebgpu();
+}
 
 AIR_ENGINE_RENDER_GL_API int engine_snap_position(int index, double x, double y, int free,
                                                   double* out_xy) {
@@ -1106,6 +1166,17 @@ AIR_ENGINE_RENDER_GL_API int engine_create_webgpu(const char* canvas_selector) {
 AIR_ENGINE_RENDER_GL_API int engine_render_webgpu_frame() { return 0; }
 
 AIR_ENGINE_RENDER_GL_API int engine_webgpu_ready() { return -1; }
+
+AIR_ENGINE_RENDER_GL_API int engine_active_backend() { return 0; }
+
+AIR_ENGINE_RENDER_GL_API int engine_backend_reason() { return -1; }
+
+AIR_ENGINE_RENDER_GL_API int engine_set_backend_reason(int reason) {
+  (void)reason;
+  return 0;
+}
+
+AIR_ENGINE_RENDER_GL_API int engine_abandon_webgpu() { return 0; }
 
 AIR_ENGINE_RENDER_GL_API int engine_snap_position(int index, double x, double y, int free,
                                                   double* out_xy) {

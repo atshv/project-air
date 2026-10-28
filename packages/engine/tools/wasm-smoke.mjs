@@ -97,6 +97,35 @@ if (webgpuReadyBeforeCreate !== -1 || lastError().length === 0) {
   fail("engine_webgpu_ready did not report -1 cleanly before a WebGPU create");
 }
 
+// P4-12: backend selection/reason entry points are exported and report the
+// pre-create state and the clean failure paths.
+for (const name of ["engine_active_backend", "engine_backend_reason", "engine_set_backend_reason",
+  "engine_abandon_webgpu"]) {
+  if (typeof module[`_${name}`] !== "function") {
+    fail(`${name} is not exported by the WebAssembly module`);
+  }
+}
+const activeBeforeCreate = module.ccall("engine_active_backend", "number", [], []);
+if (activeBeforeCreate !== 0) {
+  fail(`engine_active_backend reported ${activeBeforeCreate} before a backend was created`);
+}
+const reasonBeforeCreate = module.ccall("engine_backend_reason", "number", [], []);
+if (reasonBeforeCreate !== -1) {
+  fail(`engine_backend_reason reported ${reasonBeforeCreate} before a backend was created`);
+}
+const setReasonBeforeCreate = module.ccall("engine_set_backend_reason", "number", ["number"], [2]);
+if (setReasonBeforeCreate !== 0 || lastError().length === 0) {
+  fail("engine_set_backend_reason did not fail cleanly before a backend was created");
+}
+const setReasonOutOfRange = module.ccall("engine_set_backend_reason", "number", ["number"], [99]);
+if (setReasonOutOfRange !== 0 || lastError().length === 0) {
+  fail("engine_set_backend_reason accepted an out-of-range reason");
+}
+const abandonBeforeCreate = module.ccall("engine_abandon_webgpu", "number", [], []);
+if (abandonBeforeCreate !== 1) {
+  fail(`engine_abandon_webgpu reported ${abandonBeforeCreate} without a WebGPU backend`);
+}
+
 const OUT_BYTES = 7 * 8;
 const out = module._malloc(OUT_BYTES);
 const outValues = () => Array.from(module.HEAPF64.subarray(out / 8, out / 8 + 7));

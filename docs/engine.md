@@ -714,6 +714,52 @@ the core, there is no second data path and no JS call per object.
   readback of a WebGPU canvas is transparent, so the screenshot is the visual proof and the record
   carries that observation as an open point.
 
+## Backend selection, capability and fallback (P4-12)
+
+One selection decision point per engine instance lives in `src/bridge/backend.ts`: it probes the
+browser capability once, creates exactly one renderer (WebGL2 or WebGPU) and reports the active
+backend plus a stable reason. No second attempt, no partial renderer; the WebGL2 default path is
+byte-identical because an engine created without `backend` never probes and calls exactly the
+previous `engine_create` sequence.
+
+- **Capability probe.** `createBrowserCapabilityProbe()` uses the real
+  `navigator.gpu.requestAdapter()` and `adapter.requestDevice()` inside one bounded timeout
+  (default `PROBE_TIMEOUT_MS` = 750 ms; a slow probe never freezes the page). It records the adapter
+  identity (vendor/architecture/description) and releases the probe device immediately (a late
+  success after the timeout is destroyed too). Failures are typed results, never exceptions:
+  `webgpu-unavailable` (no `navigator.gpu` or a rejected adapter request), `adapter-null` (no
+  compatible adapter), `device-rejected`, `probe-timeout`. The probe is injectable
+  (`gpu`/`timeoutMs` options), so the Node tests drive every branch with fakes.
+- **Selection order.** `requested` is `auto`, `webgl2` or `webgpu` (`EngineOptions.backend`, default
+  `webgl2`). `webgl2` creates WebGL2 directly with no probe (the measured default path). `auto`
+  probes once: WebGPU when the probe passes; otherwise WebGL2 with the probe reason and
+  `fallback: true`. If the probe passes but WebGPU *creation* fails, `auto` abandons the failed
+  WebGPU backend (no partial device, `engine_abandon_webgpu`) and falls back to WebGL2 with
+  `renderer-create-failed`. An explicit `webgpu` request is strict: an unavailable capability or a
+  failed creation throws `BackendSelectionError` with the reason (`webgpu-unavailable`, `adapter-null`,
+  `device-rejected`, `probe-timeout`, `renderer-create-failed`) and creates no renderer — it never
+  silently renders WebGL2 while reporting WebGPU. A WebGL2 creation failure is
+  `webgl2-unavailable`.
+- **Async WebGPU contract (P4-11).** `engine_create_webgpu` starts device/pipeline creation and
+  returns; the bridge waits for `engine_webgpu_ready()` (bounded 3 s) before the engine object is
+  handed out. The first frame therefore never runs on a partial device; a readiness failure abandons
+  the WebGPU backend before any fallback.
+- **C ABI + bridge surface.** New C entries `engine_active_backend()` (0 none, 1 WebGL2, 2 WebGPU),
+  `engine_backend_reason()` (-1 before a backend exists, else the code) and
+  `engine_set_backend_reason(code)` report the state; codes: 0 `ok`, 1 `webgpu-unavailable`,
+  2 `adapter-null`, 3 `device-rejected`, 4 `probe-timeout`, 5 `renderer-create-failed`,
+  6 `webgl2-unavailable`. The bridge maps them to the stable strings above and exposes
+  `engine.activeBackend`, `engine.backendReason`, `engine.backendAdapter` and
+  `engine.backendFallback`. Native builds compile stubs for every new entry (clean failures, no
+  browser API at compile time) and `engine_render_backend_test` pins them; `wasm-smoke` covers the
+  exports and the pre-create failure paths.
+- **Scope.** The playground `?backend=` switch, HUD backend naming and the two-backend image
+  comparison are P4-13. An optional real-browser selection smoke
+  (`tools/backend-smoke.mjs`, not a board gate) runs the real probe through the decision point in a
+  WebGPU-enabled Chrome (adapter `apple`/`metal-3`, `auto` → WebGPU) and in a run with
+  `navigator.gpu` removed at the page boundary (→ WebGL2 with `webgpu-unavailable`); the record is
+  under `reviews/evidence/P4-12-backend-selection-*.json`.
+
 ## Object identity and mutations
 
 `Document` keeps one storage slot per object and assigns a monotonic `ObjectId` on insert

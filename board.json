@@ -3608,7 +3608,7 @@
       "satisfies": [
         "D10"
       ],
-      "status": "in_progress",
+      "status": "done",
       "depends_on": [
         "P4-11"
       ],
@@ -3647,11 +3647,18 @@
         "wasm-size",
         "typecheck"
       ],
-      "owner": "lead",
+      "owner": null,
       "branch": "task/P4-12",
-      "worktree": "/private/tmp/air-P4-12",
+      "worktree": null,
       "round": 0,
-      "evidence": [],
+      "evidence": [
+        "reviews/evidence/P4-12-board-check-20261028T162631Z.json",
+        "reviews/evidence/P4-12-boundaries-20261028T162635Z.json",
+        "reviews/evidence/P4-12-cpp-unit-20261028T162639Z.json",
+        "reviews/evidence/P4-12-wasm-build-20261028T162645Z.json",
+        "reviews/evidence/P4-12-wasm-size-20261028T162646Z.json",
+        "reviews/evidence/P4-12-typecheck-20261028T162646Z.json"
+      ],
       "scope_write_forbidden": [
         "reference/"
       ]

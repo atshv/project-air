@@ -8,6 +8,16 @@
 // reports (see text-atlas.ts) and uploaded to the core in one call.
 
 import {
+  BACKEND_REASON_CODES,
+  BackendSelectionError,
+  createBrowserCapabilityProbe,
+  selectBackend,
+  type ActiveBackend,
+  type AdapterIdentity,
+  type BackendReason,
+  type RequestedBackend,
+} from "./backend.js";
+import {
   atlasRasterScale,
   codePointsOf,
   defaultCodePoints,
@@ -134,10 +144,24 @@ export interface EngineTextAtlas {
 export interface EngineOptions {
   /** URL of the Emscripten engine.js; defaults to the build-wasm artifact. */
   readonly moduleUrl?: string | URL;
+  /**
+   * P4-12 backend selection. Defaults to "webgl2" (the measured default path,
+   * byte-identical to before); "auto" probes WebGPU and falls back to WebGL2;
+   * "webgpu" is strict and fails cleanly when WebGPU is unavailable.
+   */
+  readonly backend?: RequestedBackend;
 }
 
 export interface Engine {
   readonly canvas: HTMLCanvasElement;
+  /** P4-12: the backend that was actually created. */
+  readonly activeBackend: ActiveBackend;
+  /** P4-12: stable selection/fallback reason ("ok" when no fallback happened). */
+  readonly backendReason: BackendReason;
+  /** P4-12: adapter identity recorded by the capability probe (WebGPU only). */
+  readonly backendAdapter: AdapterIdentity | null;
+  /** P4-12: true when "auto" fell back from WebGPU to WebGL2. */
+  readonly backendFallback: boolean;
   /**
    * Replaces the document content. Every slot handle returned by `addRectangle`
    * is invalidated, even when the new content happens to reuse the same slots; a
@@ -380,15 +404,32 @@ function ensureCanvasSelector(canvas: HTMLCanvasElement): string {
 
 class WebGlEngine implements Engine {
   readonly canvas: HTMLCanvasElement;
+  readonly activeBackend: ActiveBackend;
+  readonly backendReason: BackendReason;
+  readonly backendAdapter: AdapterIdentity | null;
+  readonly backendFallback: boolean;
   readonly #module: EngineModule;
   #disposed = false;
   #devicePixelRatio = 1;
   #zoom = 1;
   #atlasRasterScale: number | null = null;
 
-  constructor(module: EngineModule, canvas: HTMLCanvasElement) {
+  constructor(
+    module: EngineModule,
+    canvas: HTMLCanvasElement,
+    backend: {
+      readonly active: ActiveBackend;
+      readonly reason: BackendReason;
+      readonly adapter: AdapterIdentity | null;
+      readonly fallback: boolean;
+    },
+  ) {
     this.#module = module;
     this.canvas = canvas;
+    this.activeBackend = backend.active;
+    this.backendReason = backend.reason;
+    this.backendAdapter = backend.adapter;
+    this.backendFallback = backend.fallback;
   }
 
   loadRectangles(rectangles: readonly EngineRectangle[]): void {
@@ -1012,8 +1053,73 @@ export async function createEngine(
     throw new EngineError(`engine module failed to start: ${errorMessage(error)}`);
   }
   const selector = ensureCanvasSelector(canvas);
-  if (callNumber(module, "engine_create", ["string"], [selector]) === 0) {
-    throw new EngineError(`engine_create failed: ${lastError(module)}`);
+  const requested = options.backend ?? "webgl2";
+
+  const createWebgl2 = (): void => {
+    if (callNumber(module, "engine_create", ["string"], [selector]) === 0) {
+      throw new EngineError(`engine_create failed: ${lastError(module)}`);
+    }
+  };
+
+  // P4-11/P4-12: WebGPU creation is asynchronous. The probe is the selection
+  // evidence; after engine_create_webgpu we wait for readiness (bounded) and a
+  // failure abandons the half-created WebGPU backend before any fallback, so
+  // exactly one renderer is active and a WebGL2 renderer never reports WebGPU.
+  const waitForWebgpu = async (): Promise<void> => {
+    if (callNumber(module, "engine_create_webgpu", ["string"], [selector]) === 0) {
+      throw new EngineError(`engine_create_webgpu failed: ${lastError(module)}`);
+    }
+    const deadline = Date.now() + 3000;
+    while (Date.now() < deadline) {
+      const status = callNumber(module, "engine_webgpu_ready", [], []);
+      if (status === 1) {
+        return;
+      }
+      if (status < 0) {
+        callNumber(module, "engine_abandon_webgpu", [], []);
+        throw new EngineError(`engine_create_webgpu failed: ${lastError(module)}`);
+      }
+      await new Promise((resolve) => setTimeout(resolve, 10));
+    }
+    callNumber(module, "engine_abandon_webgpu", [], []);
+    throw new EngineError("engine_create_webgpu timed out waiting for the device");
+  };
+
+  let selection:
+    | {
+        readonly active: ActiveBackend;
+        readonly reason: BackendReason;
+        readonly adapter: AdapterIdentity | null;
+        readonly fallback: boolean;
+      }
+    | null = null;
+  if (requested === "webgl2") {
+    // The measured default path: exactly the previous calls, no probe.
+    createWebgl2();
+    selection = { active: "webgl2", reason: "ok", adapter: null, fallback: false };
+  } else {
+    try {
+      const selected = await selectBackend<void>({
+        requested,
+        probe: createBrowserCapabilityProbe(),
+        createWebgl2,
+        createWebgpu: waitForWebgpu,
+      });
+      selection = {
+        active: selected.active,
+        reason: selected.reason,
+        adapter: selected.adapter,
+        fallback: selected.fallback,
+      };
+    } catch (error) {
+      const reason = error instanceof BackendSelectionError ? error.code : "renderer-create-failed";
+      throw new EngineError(`backend selection failed: ${reason} (${lastError(module)})`);
+    }
   }
-  return new WebGlEngine(module, canvas);
+  // Report the selection/fallback reason through the C ABI as well (0 ok … 6
+  // webgl2-unavailable); a rejection here is a bridge bug, not a renderer state.
+  callNumber(module, "engine_set_backend_reason", ["number"], [
+    BACKEND_REASON_CODES[selection.reason],
+  ]);
+  return new WebGlEngine(module, canvas, selection);
 }

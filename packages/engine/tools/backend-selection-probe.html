@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>P4-12 backend selection probe</title>
+  </head>
+  <body>
+    <pre id="out">running</pre>
+    <script type="module">
+      // P4-12 optional browser smoke: the real navigator.gpu capability probe and
+      // selection decision, with fake renderer factories so the page proves the
+      // probe/selection branch (not the P4-11 renderer creation, which has its own
+      // smoke). Not a board gate.
+      import { createBrowserCapabilityProbe, selectBackend } from "/packages/engine/dist/bridge/backend.js";
+      const out = document.querySelector("#out");
+      // Chrome 156 exposes WebGPU by default; the `?nogpu=1` run removes the
+      // capability at the page boundary to exercise the real probe's missing-gpu
+      // branch in a browser (the production branch is unit-tested directly).
+      if (new URLSearchParams(location.search).get("nogpu") === "1") {
+        Object.defineProperty(navigator, "gpu", { value: undefined, configurable: true });
+      }
+      const record = { hasGpu: typeof navigator !== "undefined" && navigator.gpu !== undefined,
+        result: null, error: null };
+      try {
+        const selected = await selectBackend({
+          requested: "auto",
+          probe: createBrowserCapabilityProbe({ timeoutMs: 3000 }),
+          createWebgl2: async () => ({ kind: "webgl2" }),
+          createWebgpu: async () => ({ kind: "webgpu" }),
+        });
+        record.result = { active: selected.active, reason: selected.reason,
+          adapter: selected.adapter, fallback: selected.fallback };
+      } catch (error) {
+        record.error = String(error && error.code ? error.code : error);
+      }
+      globalThis.__backendProbe = record;
+      out.textContent = JSON.stringify(record, null, 2);
+    </script>
+  </body>
+</html>

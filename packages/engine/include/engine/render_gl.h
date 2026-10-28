@@ -41,6 +41,18 @@ AIR_ENGINE_RENDER_GL_API int engine_render_webgpu_frame();
 // still running, -1 = failed or not created (engine_last_error has the reason).
 AIR_ENGINE_RENDER_GL_API int engine_webgpu_ready();
 
+// P4-12: the active backend (0 none, 1 WebGL2, 2 WebGPU) and the stable backend
+// reason code (-1 before a backend exists; 0 ok, 1 webgpu-unavailable,
+// 2 adapter-null, 3 device-rejected, 4 probe-timeout, 5 renderer-create-failed,
+// 6 webgl2-unavailable). The bridge maps the codes to stable strings.
+AIR_ENGINE_RENDER_GL_API int engine_active_backend();
+AIR_ENGINE_RENDER_GL_API int engine_backend_reason();
+AIR_ENGINE_RENDER_GL_API int engine_set_backend_reason(int reason);
+
+// P4-12: abandons a WebGPU backend that failed after creation so exactly one
+// renderer stays active (the bridge calls it before a WebGL2 fallback).
+AIR_ENGINE_RENDER_GL_API int engine_abandon_webgpu();
+
 // Records the CSS canvas size and the device pixel ratio. The drawing buffer size
 // is set by the caller; returns 1 on success, 0 on failure.
 AIR_ENGINE_RENDER_GL_API int engine_resize(int css_width, int css_height,

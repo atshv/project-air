@@ -121,6 +121,10 @@
 
 ## Ready now
 
+- `P4-13` WebGPU switch and two-backend image comparison
+  - P4-04: Closed P4-04: dependency-free visual gate, 8 committed baselines (4 scenes x 2 viewports, WebGL2), 0 differing pixels on ANGLE Metal M2; fail-closed renderer and exact viewports.
+  - P4-04: Baselines regenerated once after the OS move Darwin 25.5.0 -> 27.2.0 (text AA only, geometry unchanged), documented under 'Baseline history'; --update is a review action, never a pass.
+  - P4-04: Deterministic ?view= camera hook; gate log prints URL + camera; board-check + visual green. Stage-exit final gates are perf-final/visual-final, run by P4-28.
 - `P4-17` Resize (L14)
 - `P4-18` Auto-pan (L16)
 - `P4-19` Placement of new objects (L20)
@@ -190,6 +194,7 @@
 - [x] `P4-09` Glyph layout, text instances and ellipsis (L02) — status: `done` — owner: —
 - [x] `P4-10` Titles, previews and visible quality (L02) — status: `done` — owner: —
 - [x] `P4-11` WebGPU render pipeline behind the command buffer — status: `done` — owner: —
+- [x] `P4-12` WebGPU backend selection, capability and fallback — status: `done` — owner: —
 - [x] `P4-14` Dragging versus editing (L03) — status: `done` — owner: —
 - [x] `P4-15` Snapping (L07) — status: `done` — owner: —
 - [x] `P4-16` Multi-selection (L10) — status: `done` — owner: —
@@ -210,7 +215,7 @@
 
 ## In progress
 
-- [ ] `P4-12` WebGPU backend selection, capability and fallback — status: `in_progress` — owner: lead
+- none
 
 ## Blocked / failed
 
@@ -234,7 +239,7 @@
 <!-- polier:claims -->
 ## Claims
 
-- `P4-12` in progress by dsh since 2026-10-28T16:22:35+00:00 — worktree: /private/tmp/air-P4-12 · slot 1
+- `P4-12` in progress by dsh since 2026-10-28T16:26:59+00:00 — worktree: /private/tmp/air-P4-12 · slot 1
 
 <!-- /polier:claims -->
 

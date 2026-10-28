@@ -1,0 +1,65 @@
+{
+  "task": "P4-12",
+  "gate": "backend-selection-smoke",
+  "startedAt": "2026-10-28T16:26:17.241Z",
+  "chrome": "/Users/rasulatashev/Library/Caches/ms-playwright/chromium-1248/chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing",
+  "runs": [
+    {
+      "label": "webgpu",
+      "flags": [
+        "--headless=new",
+        "--use-angle=metal",
+        "--enable-gpu",
+        "--hide-scrollbars",
+        "--no-first-run",
+        "--no-default-browser-check",
+        "--window-size=1200,800",
+        "--no-sandbox",
+        "--enable-unsafe-webgpu"
+      ],
+      "probe": {
+        "hasGpu": true,
+        "result": {
+          "active": "webgpu",
+          "reason": "ok",
+          "adapter": {
+            "vendor": "apple",
+            "architecture": "metal-3",
+            "description": ""
+          },
+          "fallback": false
+        },
+        "error": null
+      }
+    },
+    {
+      "label": "webgl2-only",
+      "flags": [
+        "--headless=new",
+        "--use-angle=metal",
+        "--enable-gpu",
+        "--hide-scrollbars",
+        "--no-first-run",
+        "--no-default-browser-check",
+        "--window-size=1200,800",
+        "--no-sandbox"
+      ],
+      "probe": {
+        "hasGpu": false,
+        "result": {
+          "active": "webgl2",
+          "reason": "webgpu-unavailable",
+          "adapter": null,
+          "fallback": true
+        },
+        "error": null
+      }
+    }
+  ],
+  "openPoints": [
+    "Chrome 156 exposes WebGPU by default on this host, so the browser fallback run removes navigator.gpu at the page boundary (?nogpu=1) to exercise the real missing-gpu probe branch; the absent-capability branches are also covered by the injected-fake unit tests."
+  ],
+  "result": "pass",
+  "exitCode": 0,
+  "finishedAt": "2026-10-28T16:26:20.405Z"
+}

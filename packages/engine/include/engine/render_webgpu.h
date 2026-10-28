@@ -31,6 +31,10 @@ bool frame(const void* instance_bytes, std::size_t instance_count, int css_width
 // partial device.
 int ready();
 
+// Releases the browser WebGPU device and helper state (P4-12 fallback after a
+// failed readiness); a later WebGL2 create in the same module is unaffected.
+void shutdown();
+
 // Human-readable reason of the last failed call (never empty after a failure).
 const char* lastError();
 
