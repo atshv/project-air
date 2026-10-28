@@ -1,0 +1,24 @@
+# P0-40 preview evidence (2026-10-28)
+# serve: cd "/Users/rasulatashev/Desktop/KI Projekte/Project air-P0-40"; PORT=$(python3 -c "import json; print(json.load(open('.polier-slot'))['ports']['web'])"); python3 -m http.server "$PORT" --bind 127.0.0.1
+# drive: out-of-repo CDP helper (Chrome for Testing 1248, headless, fresh profile, real Input.dispatchMouseEvent) at 1440x900, 390x844 and reduced motion
+# url: http://127.0.0.1:4200/apps/web/preview/index.html
+# note: at deviceScaleFactor 1 Chrome reports the 1.5 px (--border-width-strong) frame border as 1px
+presence line: On this board: You Lena Jonas — simulated teammates, nothing is sent
+layer: z=7 pointer-events=none toolbar z=8 tones b/c=#d9bd8f,#b8a6e0
+t≈2s (Lena on checklist): lena: at 959,180 opacity=1 name="Lena" frame=882,66 240x248 border=1px rgb(217, 189, 143) shadow=none | jonas: at 1,1 opacity=0 name="Jonas" frame=off
+t≈4s: lena: at 1021,230 opacity=1 name="Lena" frame=882,66 240x248 border=1px rgb(217, 189, 143) shadow=none | jonas: at 574,343 opacity=1 name="Jonas" frame=449,276 240x140 border=1px rgb(184, 166, 224) shadow=none
+screenshot P0-40-team.png
+screenshot P0-40-team-zoom.png
+click through Lena's cursor hits: demo-checklist__item
+t≈12.6s (Lena resting on the table): lena: at 315,346 opacity=0.4 idle name="Lena" frame=66,178 336x289 border=1px rgb(217, 189, 143) shadow=none | jonas: at 940,398 opacity=1 name="Jonas" frame=866,322 176x123 border=1px rgb(184, 166, 224) shadow=none sheet={"x":65,"y":177,"w":336,"h":289,"cx":385,"cy":461.2578125}
+screenshot P0-40-team-idle.png
+note B before drag: {"x":865,"y":321,"w":176,"h":123,"cx":1105,"cy":522.1953125}; lena: at 237,237 opacity=1 name="Lena" frame=off | jonas: at 940,398 opacity=1 name="Jonas" frame=866,322 176x123 border=1px rgb(184, 166, 224) shadow=none
+note B after drag -96/+32: {"x":769,"y":353,"w":176,"h":123,"cx":1009,"cy":554.3953247070312}; lena: at 143,106 opacity=1 name="Lena" frame=off | jonas: at 844,430 opacity=0.4 idle name="Jonas" frame=770,354 176x123 border=1px rgb(184, 166, 224) shadow=none
+after zoom in: note B {"x":789,"y":365,"w":194,"h":135,"cx":1037.8999938964844,"cy":571.8536376953125}; lena: at 101,93 opacity=1 name="Lena" frame=off | jonas: at 871,449 opacity=0.4 idle name="Jonas" frame=790,366 194x135 border=1px rgb(184, 166, 224) shadow=none
+presence line DE: Auf diesem Board: Du Lena Jonas — simulierte Teammitglieder, nichts wird gesendet; names=Lena,Jonas
+screenshot P0-40-team-de.png
+overflow 1440: 0
+mobile: lena: at 205,508 opacity=1 name="Lena" frame=66,344 240x248 border=1px rgb(217, 189, 143) shadow=none | jonas: at 185,994 opacity=1 name="Jonas" frame=60,927 240x140 border=1px rgb(184, 166, 224) shadow=none overflow=0
+screenshot P0-40-team-mobile.png
+reduced motion: cursor transition=0s frame transition=0s; lena: at 1021,230 opacity=1 name="Lena" frame=882,66 240x248 border=1px rgb(217, 189, 143) shadow=none | jonas: at 574,343 opacity=1 name="Jonas" frame=449,276 240x140 border=1px rgb(184, 166, 224) shadow=none
+off screen for 3 s: Lena transform unchanged (loop paused)

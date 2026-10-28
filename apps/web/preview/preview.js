@@ -2862,6 +2862,213 @@
 
   // Preview-only toolbar: selecting a tool only flips aria-pressed; it never
   // changes the canvas. The note tool is the initial selection in the markup.
+  // ---------- teammates on the board (P0-40) ----------
+  //
+  // Two simulated teammates, Lena and Jonas, show what realtime presence looks
+  // like (design law §12, P5-05): a 16 px cursor with a 12 px name label in the
+  // person's colour on layer 7a, their selection as a 1.5 px frame in that
+  // colour without a ring, and a fade to 0.4 after 5 s without movement. Each
+  // cursor follows a looping route; a waypoint is a fraction of a demo object's
+  // rendered box, so cursors and frames stay on their objects through drags,
+  // resizes, zone moves and zoom. Teammates change no content, no history and
+  // no status line, and the loop only runs while the demo is visible.
+
+  var TEAM_IDLE_MS = 5000;
+  var TEAM_FRAME_CAP_MS = 100;
+  var TEAM = [
+    {
+      key: "lena",
+      delay: 600,
+      route: [
+        { target: '[data-demo-block="checklist"]', x: 0.32, y: 0.46, glide: 1000, dwell: 2600, select: true },
+        { target: '[data-demo-block="checklist"]', x: 0.58, y: 0.66, glide: 600, dwell: 1600, select: true },
+        { target: '[data-demo-block="sheet"]', x: 0.74, y: 0.58, glide: 1200, dwell: 6800, select: true },
+        { target: '[data-demo-card="a"]', x: 0.62, y: 0.72, glide: 1000, dwell: 2200, select: false },
+      ],
+    },
+    {
+      key: "jonas",
+      delay: 2400,
+      route: [
+        { target: '[data-zone-item="window"]', x: 0.52, y: 0.48, glide: 1000, dwell: 3000, select: true },
+        { target: "[data-demo-zone-card]", x: 0.36, y: 0.05, glide: 800, dwell: 2000, select: false },
+        { target: '[data-demo-card="b"]', x: 0.42, y: 0.62, glide: 1200, dwell: 7000, select: true },
+        { target: '[data-zone-item="notepad"]', x: 0.7, y: 0.3, glide: 900, dwell: 1800, select: false },
+      ],
+    },
+  ];
+
+  function reducedMotion() {
+    return typeof window.matchMedia === "function" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  }
+
+  function easeOutCubic(t) {
+    var inverse = 1 - t;
+    return 1 - inverse * inverse * inverse;
+  }
+
+  function setupTeam(demo) {
+    var surface = demo.querySelector("[data-demo-surface]");
+    if (surface === null) return;
+    var layer = document.createElement("div");
+    layer.className = "demo-team-layer";
+    layer.setAttribute("aria-hidden", "true");
+    surface.appendChild(layer);
+
+    var people = [];
+    for (var index = 0; index < TEAM.length; index += 1) {
+      var spec = TEAM[index];
+      var frame = document.createElement("div");
+      frame.className = "demo-remote-frame demo-remote--" + spec.key;
+      var cursor = document.createElement("div");
+      cursor.className = "demo-remote demo-remote--" + spec.key;
+      var pointer = document.createElement("span");
+      pointer.className = "demo-remote__pointer";
+      var name = document.createElement("span");
+      name.className = "demo-remote__name";
+      name.setAttribute("data-i18n", "demo.team." + spec.key);
+      name.textContent = translate("demo.team." + spec.key);
+      cursor.appendChild(pointer);
+      cursor.appendChild(name);
+      layer.appendChild(frame);
+      layer.appendChild(cursor);
+      people.push({
+        spec: spec,
+        frame: frame,
+        cursor: cursor,
+        leg: -1,
+        legStart: spec.delay,
+        from: null,
+        position: null,
+        restingSince: null,
+        shown: false,
+      });
+    }
+
+    var clock = 0;
+    var lastTick = null;
+    var visible = false;
+    var raf = 0;
+
+    function targetBox(selector, surfaceBox) {
+      var element = demo.querySelector(selector);
+      if (!(element instanceof HTMLElement) || element.offsetParent === null) return null;
+      var box = element.getBoundingClientRect();
+      if (box.width === 0 || box.height === 0) return null;
+      return {
+        x: box.left - surfaceBox.left,
+        y: box.top - surfaceBox.top,
+        w: box.width,
+        h: box.height,
+      };
+    }
+
+    function pointOf(step, box) {
+      return { x: box.x + box.w * step.x, y: box.y + box.h * step.y };
+    }
+
+    function nextLeg(person, surfaceBox) {
+      var route = person.spec.route;
+      for (var tries = 0; tries < route.length; tries += 1) {
+        person.leg = (person.leg + 1) % route.length;
+        if (targetBox(route[person.leg].target, surfaceBox) !== null) return true;
+      }
+      return false;
+    }
+
+    function place(person, point, box, selecting, moving) {
+      person.cursor.style.transform = "translate(" + point.x.toFixed(1) + "px, " + point.y.toFixed(1) + "px)";
+      if (!person.shown) {
+        person.shown = true;
+        person.cursor.classList.add("is-shown");
+      }
+      if (moving) {
+        person.restingSince = null;
+        person.cursor.classList.remove("is-idle");
+      } else {
+        if (person.restingSince === null) person.restingSince = clock;
+        person.cursor.classList.toggle("is-idle", clock - person.restingSince >= TEAM_IDLE_MS);
+      }
+      if (selecting && box !== null) {
+        person.frame.style.transform = "translate(" + box.x.toFixed(1) + "px, " + box.y.toFixed(1) + "px)";
+        person.frame.style.inlineSize = box.w.toFixed(1) + "px";
+        person.frame.style.blockSize = box.h.toFixed(1) + "px";
+        person.frame.classList.add("is-shown");
+      } else {
+        person.frame.classList.remove("is-shown");
+      }
+    }
+
+    function step(person, surfaceBox) {
+      if (clock < person.legStart) return;
+      if (person.leg === -1 || person.position === null) {
+        if (!nextLeg(person, surfaceBox)) return;
+        person.from = null;
+        person.legStart = clock;
+      }
+      var route = person.spec.route;
+      var current = route[person.leg];
+      var box = targetBox(current.target, surfaceBox);
+      if (box === null) {
+        person.position = person.position || { x: 0, y: 0 };
+        if (nextLeg(person, surfaceBox)) {
+          person.from = person.position;
+          person.legStart = clock;
+        }
+        return;
+      }
+      var goal = pointOf(current, box);
+      var glide = reducedMotion() || person.from === null ? 0 : current.glide;
+      var elapsed = clock - person.legStart;
+      var point = goal;
+      var moving = false;
+      if (elapsed < glide) {
+        var t = easeOutCubic(elapsed / glide);
+        point = {
+          x: person.from.x + (goal.x - person.from.x) * t,
+          y: person.from.y + (goal.y - person.from.y) * t,
+        };
+        moving = true;
+      }
+      person.position = point;
+      place(person, point, box, current.select && !moving, moving);
+      if (elapsed >= glide + current.dwell) {
+        person.from = point;
+        if (nextLeg(person, surfaceBox)) person.legStart = clock;
+      }
+    }
+
+    function tick(now) {
+      raf = 0;
+      if (!visible || document.hidden) {
+        lastTick = null;
+        return;
+      }
+      if (lastTick !== null) clock += Math.min(now - lastTick, TEAM_FRAME_CAP_MS);
+      lastTick = now;
+      var surfaceBox = surface.getBoundingClientRect();
+      for (var index = 0; index < people.length; index += 1) step(people[index], surfaceBox);
+      raf = window.requestAnimationFrame(tick);
+    }
+
+    function resume() {
+      if (raf === 0 && visible && !document.hidden) raf = window.requestAnimationFrame(tick);
+    }
+
+    if (typeof window.IntersectionObserver === "function") {
+      var observer = new window.IntersectionObserver(function (entries) {
+        for (var index = 0; index < entries.length; index += 1) visible = entries[index].isIntersecting;
+        resume();
+      });
+      observer.observe(surface);
+    } else {
+      visible = true;
+    }
+    document.addEventListener("visibilitychange", resume);
+    resume();
+  }
+
   function setupToolbar(demo) {
     var toolbar = demo.querySelector("[data-demo-toolbar]");
     if (toolbar === null) return;
@@ -2897,6 +3104,7 @@
     for (var i = 0; i < demos.length; i += 1) {
       setupToolbar(demos[i]);
       setupDemo(demos[i]);
+      setupTeam(demos[i]);
     }
     setupLocaleSwitcher();
     var stored = readStoredLocale();

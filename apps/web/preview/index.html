@@ -4,9 +4,9 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title data-i18n="page.projectAirDesignPreviewStatic">Project air design preview — static design preview</title>
-    <link rel="stylesheet" href="../../../packages/ui-kit/tokens.css?v=P0-39" />
-    <link rel="stylesheet" href="preview.css?v=P0-39" />
-    <script src="preview.js?v=P0-39" defer></script>
+    <link rel="stylesheet" href="../../../packages/ui-kit/tokens.css?v=P0-40" />
+    <link rel="stylesheet" href="preview.css?v=P0-40" />
+    <script src="preview.js?v=P0-40" defer></script>
   </head>
   <body>
     <main class="page">
@@ -23,14 +23,14 @@
         <p class="masthead__version" data-preview-meta>
           <span data-preview-version data-i18n="masthead.version">Version 0.0.1</span>
           <span data-preview-status data-i18n="masthead.unreleased">unreleased</span>
-          <span data-preview-last-change data-i18n="masthead.lastChange">Last change: P0-39 — Live demo: quiet resize frame, done items dimmed, design rules page</span>
-          <span data-preview-last-change-time data-i18n="masthead.lastChangeTime">2026-10-28 20:47 (Europe/Zurich)</span>
+          <span data-preview-last-change data-i18n="masthead.lastChange">Last change: P0-40 — Live demo: two teammates on the board</span>
+          <span data-preview-last-change-time data-i18n="masthead.lastChangeTime">2026-10-28 20:55 (Europe/Zurich)</span>
         </p>
         <div class="masthead__meta">
           <span data-i18n-html="masthead.tokensPackagesUiKitTokens">Tokens: <code>packages/ui-kit/tokens.css</code></span>
           <span data-i18n-html="masthead.iconsPackagesUiKitIcons">Icons: <code>packages/ui-kit/icons/</code></span>
           <span data-i18n-html="masthead.demoPreviewJs">Demo: <code>preview.js</code></span>
-          <span data-i18n="masthead.tasks">Tasks: P0-19, P0-20, P0-21, P0-22, P0-23, P0-24, P0-25, P0-26, P0-27, P0-28, P0-29, P0-30, P0-31, P0-32, P0-33, P0-34, P0-35, P0-36, P0-37, P0-38, P0-39, P1-07</span>
+          <span data-i18n="masthead.tasks">Tasks: P0-19, P0-20, P0-21, P0-22, P0-23, P0-24, P0-25, P0-26, P0-27, P0-28, P0-29, P0-30, P0-31, P0-32, P0-33, P0-34, P0-35, P0-36, P0-37, P0-38, P0-39, P0-40, P1-07</span>
           <div
             class="preview-locale"
             role="group"
@@ -95,7 +95,7 @@
             Escape restores the old one, an empty name returns to the default; a zone
             formed by grouping starts as “New zone”. Drag a zone by its frame or header
             to move it together with its items. Click any object to select it and drag
-            an edge or a corner of its frame to resize it; a photo dropped into a zone takes the
+            an edge or a corner of its frame to resize it; Lena and Jonas work on the same board as simulated teammates, each with a cursor, a name and a selection in their colour; a photo dropped into a zone takes the
             size of the other item. Dragged objects snap to their neighbours (Shift
             moves freely); Shift-drag on the empty canvas selects several objects;
             right-click opens the menu, Delete removes, Cmd/Ctrl+Z undoes. When both
@@ -109,8 +109,16 @@
             reorder · both out: zone fades · click name = rename · drag frame = move
             zone · checklist: click to tick · table: click a cell, arrows move · click =
             select · frame edge = resize · line behind all objects · snap guides ·
-            Shift-drag = band · right-click = menu · Cmd/Ctrl+Z = undo · curve ·
+            Shift-drag = band · right-click = menu · Cmd/Ctrl+Z = undo · coloured
+            cursors = teammates · curve ·
             --tone-d · 1.5 px
+          </p>
+          <p class="demo-team" data-demo-team>
+            <span data-i18n="demo.team.label">On this board:</span>
+            <span class="demo-team__person demo-team__person--you"><span class="demo-team__dot" aria-hidden="true"></span><span data-i18n="demo.team.you">You</span></span>
+            <span class="demo-team__person demo-remote--lena"><span class="demo-team__dot" aria-hidden="true"></span><span data-i18n="demo.team.lena">Lena</span></span>
+            <span class="demo-team__person demo-remote--jonas"><span class="demo-team__dot" aria-hidden="true"></span><span data-i18n="demo.team.jonas">Jonas</span></span>
+            <span data-i18n="demo.team.note">— simulated teammates, nothing is sent</span>
           </p>
           <div class="demo__surface" data-demo-surface>
             <div
@@ -1712,7 +1720,7 @@
               <li data-i18n-html="rules.s12.r2">After 5 s without movement a remote cursor fades to opacity 0.4.</li>
               <li data-i18n-html="rules.s12.r3">Another person's selection is a 1.5 px frame in their colour without a ring; the own selection follows §6.</li>
             </ul>
-            <p class="rule-card__where" data-i18n="rules.s12.where">Shown in: 06 — Layers (7a)</p>
+            <p class="rule-card__where" data-i18n="rules.s12.where">Shown in: 01 — Interactive demo (Lena, Jonas)</p>
           </article>
           <article class="rule-card" role="listitem">
             <h3 class="rule-card__title" data-i18n="rules.s13.title">§13 Engine</h3>

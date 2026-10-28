@@ -3129,3 +3129,106 @@ kbd {
   color: var(--muted);
   font-size: var(--text-12);
 }
+
+/* ---------- teammates on the board (P0-40) ---------- */
+
+/* Presence line above the canvas: not a floating element (design law §9). */
+.demo-team {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-4) var(--space-12);
+  color: var(--muted);
+  font-size: var(--text-12);
+}
+
+.demo-team__person {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-4);
+  color: var(--fg);
+}
+
+.demo-team__dot {
+  inline-size: var(--space-8);
+  block-size: var(--space-8);
+  border-radius: var(--radius-pill);
+  background-color: var(--person);
+}
+
+.demo-team__person--you { --person: var(--accent); }
+.demo-remote--lena { --person: var(--tone-b); }
+.demo-remote--jonas { --person: var(--tone-c); }
+
+/* Layer 7a (design law §8/§12): above the objects and guides, below the
+   canvas chrome; it never takes pointer input. */
+.demo-team-layer {
+  position: absolute;
+  inset: 0;
+  z-index: var(--layer-remote-cursors);
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.demo-remote {
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline-start: 0;
+  opacity: 0;
+  transition: opacity var(--motion-fade) ease;
+}
+
+.demo-remote.is-shown {
+  opacity: 1;
+}
+
+.demo-remote.is-shown.is-idle {
+  opacity: 0.4;
+}
+
+/* A 16 px pointer in the person's colour, its tip at the position. The ui-kit
+   has no cursor icon (its icon set is fixed at ten), so this is a CSS shape. */
+.demo-remote__pointer {
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline-start: 0;
+  inline-size: var(--space-16);
+  block-size: var(--space-16);
+  background-color: var(--person);
+  clip-path: polygon(0 0, 0 87.5%, 25% 65.5%, 43.75% 100%, 56.25% 93.75%, 40.5% 59.5%, 68.75% 59.5%);
+}
+
+.demo-remote__name {
+  position: absolute;
+  inset-block-start: var(--space-16);
+  inset-inline-start: var(--space-12);
+  padding: var(--space-4) var(--space-8);
+  border-radius: var(--radius-tooltip);
+  background-color: var(--person);
+  color: var(--bg);
+  font-size: var(--text-12);
+  font-weight: var(--weight-medium);
+  line-height: 1;
+  white-space: nowrap;
+}
+
+/* Another person's selection: 1.5 px in their colour, no ring (§12). */
+.demo-remote-frame {
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline-start: 0;
+  border: var(--border-width-strong) solid var(--person);
+  opacity: 0;
+  transition: opacity var(--motion-fade) ease;
+}
+
+.demo-remote-frame.is-shown {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .demo-remote,
+  .demo-remote-frame {
+    transition: none;
+  }
+}
