@@ -11,7 +11,7 @@ Read `AGENTS.md`, `ARCHITECTURE.md`, `STATUS.md`, `docs/module-map.md` and the t
 - **Stage 3 Engine spike:** complete, owner decision `continue`; C++20 core (doc/camera/spatial/render command buffer), WebGL2 instanced renderer, TS bridge `@project-air/engine`, `apps/engine-playground`, ADR-0006 + `docs/engine.md`; CMake 4.4.4 + Emscripten 6.0.13; WASM 49,925 B raw / 21,806 B gzip. Measured on the Mac mini M2 8 GB proxy: p95 2.00 ms (556 fps unlocked frame production), display-locked control p95 16.80 ms. **D8 caveat:** the MacBook Air M1 8 GB reference is unproven — re-measure before treating the hardware target as met.
 - **Stage 4 Backend core:** complete, owner decision `continue`; tasks `P3-01` … `P3-06` done. `services/platform` + `services/auth`, self-hosted Ory Kratos v26.2.0 (ADR-0007; `identity` profile, Mailpit courier, test-session mode for tests, admin API bound to localhost), PostgreSQL migrations `0001`–`0004` with RLS and contract-valid account-id mapping, 20 `/v1` contract routes + `GET /v1/session`, typed SDK `@project-air/sdk`, `api-tests` 32, `rls-tests` 7, platform unit 74, acceptance script `PASS backend-core acceptance`; ADR-0008 (API/session model).
 - **Stage 5 Engine core:** owner decision `continue`; 30 tasks (28 planned + `P4-29`/`P4-30` live-demo
-  zone parity). **Done and merged (2026-10-28 chain):** `P4-01` … `P4-30` **except** `P4-20`…`P4-24`. Each task has its review
+  zone parity). **Done and merged (2026-10-28 chain):** `P4-01` … `P4-30` **except** `P4-21`/`P4-22`/`P4-24`. Each task has its review
   (`reviews/P4-*.md`), one commit and its gate records; every merge was pushed. Highlights:
   `P4-14` L03 pointer input layer (4 px threshold, card/header grips, field/scroll suppression, one
   operation per drag); `P4-15` L07 snapping (pure native edge/centre matching, 6 px screen tolerance,
@@ -33,7 +33,10 @@ Read `AGENTS.md`, `ARCHITECTURE.md`, `STATUS.md`, `docs/module-map.md` and the t
   bounded ramp, drag-only rAF loop, preview follows, one operation on release; review
   `reviews/P4-18.md`); `P4-19` L20 placement (pure centre/grid rule, 32 px cascade with the ten-attempt
   cap and a documented post-cap free-grid-slot fallback — owner decision pending for the L20 catalogue
-  deviation, five-add capture 12/12; review `reviews/P4-19.md`); `P4-28`
+  deviation, five-add capture 12/12; review `reviews/P4-19.md`); `P4-20` L12 keyboard/context menu
+  (one intent layer, field suppression, `Esc` priority, 300 ms nudge series, 200/32 px keyboard menu;
+  review `reviews/P4-20.md` — lead fixed a design-check raw-colour false positive that P4-19 also
+  shipped, and recorded multi-select duplicate + inert Bring/Send as follow-ups); `P4-28`
   the L01 final proof: `perf-final` (10,000 objects p95 0.200 ms, 0 intervals > 16.7 ms; 500 cards + 50 zones proof
   max 0.600 ms with 100 culling checkpoints / 0 mismatches, all enforced metrics within basis + 10 %)
   and `visual-final` (56/56 across WebGL2 + WebGPU — 28 per backend — 0-diff at 1440×900 and
@@ -41,8 +44,8 @@ Read `AGENTS.md`, `ARCHITECTURE.md`, `STATUS.md`, `docs/module-map.md` and the t
   refreshed on the merged two-backend head (`…164907Z` perf, `…164920Z` visual) with the report
   updated to the refreshed numbers.
   **Still open in stage 5:** `P4-17` resize, `P4-18` auto-pan, `P4-19` placement, `P4-20`
-  keyboard/context menu, `P4-21` undo UI, `P4-22` remember view, `P4-24` trackpad/wheel (the WebGPU
-  two-backend set and the refreshed stage-exit records are done). Because the two stage-exit
+  `P4-21` undo UI, `P4-22` remember view, `P4-24` trackpad/wheel (the WebGPU two-backend set and the
+  refreshed stage-exit records are done). Because the two stage-exit
   records now exist, the generated `STATUS.md` renders stage 5 as "complete" mechanically; the exit
   criterion "all engine entries of the canvas work orders done" is NOT met and the owner decision to
   close the stage stays open. `docs/engine/stage-report.md` lists the same open points.
@@ -55,13 +58,13 @@ Read `AGENTS.md`, `ARCHITECTURE.md`, `STATUS.md`, `docs/module-map.md` and the t
   session, merged locally and pushed. Coordinate via claims/`in_progress` in `board.json`. Commit race
   documented below (`eff284b` carries the P4-07 content, `b4938dc` its bookkeeping). `origin/main` is
   at the latest main commit (check `git log` / `git status -sb`).
-- **Done overall:** 70 of 78 tasks. Open: the rest of stage 5 (the chain above plus `P4-11`…`P4-13`
+- **Done overall:** 71 of 78 tasks. Open: the rest of stage 5 (the chain above plus `P4-11`…`P4-13`
   WebGPU, `P4-17`/`P4-18` resize/auto-pan, `P4-19`…`P4-24` placement/keyboard/undo/view/trackpad)
   plus the remote-phase tasks `P0-02`, `P0-15`, `P0-16`, `P0-17` (after hardening) and the planning
   of the later stages (realtime, web-app, value, hardening).
 - **Preview:** `apps/web/preview/` has the permanent Contract 0.1.0 overview as section 02 and the live demo: top-centre ten-tool toolbar and a zone with notepad + image window (P0-26), **bilingual EN/DE with a themed top-right switch** via `apps/web/preview/locales/{en,de}.json` (all visible text/aria/alt; 260 identical keys; `<html lang>`, localStorage persistence, safe fallback) (P0-27), **zone items that can be dragged out onto the canvas and docked back** with a 28 px progressive detach animation, 8 px dock hysteresis, grid-snap, no edge connection, reduced-motion (P0-28); **when both items are out the empty zone fades/scales away and becomes hidden/inert, and dragging the two free items together (≥25 % overlap or ≤48 px centres) groups them into a newly animated zone** that re-orients/re-fits on resize, plus refined spring motion and a smaller zoom pill (36×104, 32 px buttons) (P0-29); **zone layout follows the drop (side by side or stacked), docked items can be reordered/swapped inside the zone, drags track the pointer 1:1 with commit-on-release (no magnetism) and the +/−/fit controls are smaller (32×96 pill, 28 px painted, 32 px hit, 12 px glyphs)** (P0-30). **Cache rule:** every preview change bumps `?v=` on `tokens.css`/`preview.css`/`preview.js` in `index.html`; locale fetches inherit the script version. A cached `index.html` may still need one hard reload (an old HTML document cannot reference the new CSS). Demo-cadence baseline screenshots: `P0-27-*` (desktop/mobile EN+DE, owner 1426×583 DPR2) `P0-28-*` (docked/mid-detach/detached/redocked) `P0-29-*` (zone fading/overlap/grouped/zoom/mobile/resize/toolbar) and `P0-30-*` (horizontal/vertical/swapped/drop-hint/controls/masthead/zoom-150).
 - **Checks:** `check.py` exit 0 (40 warnings, all historical evidence-record commits; run it in the main checkout only with `node_modules/` absent — a pnpm install materialises `node_modules/.pnpm`, whose package READMEs break `check_links`), `boundaries.py` exit 0, design-check tool tests 16/16, engine node tests 59/59, engine CTest 4/4, `codegen`/`wasm-*` clean; DB suites need a Polier slot (they cannot run in the main checkout). Repo-wide `pnpm test` is still red for pre-existing env reasons — `services/platform` tests need the slot database, the release-tool tests flake under turbo concurrency (28/28 alone) and `language-check` flags the P4-10 German demo strings in `apps/engine-playground/main.js`; the `unit` gate therefore uses the documented `pnpm test --affected`.
-- **Reviews:** `reviews/P1-04.md` … `reviews/P4-30.md` plus `P4-11`…`P4-13`/`P4-17`…`P4-19` committed; verdicts and findings are in the files.
+- **Reviews:** `reviews/P1-04.md` … `reviews/P4-30.md` plus `P4-11`…`P4-13`/`P4-17`…`P4-20` committed; verdicts and findings are in the files.
 
 ## Backend-core follow-ups (recorded, not blockers)
 
@@ -108,6 +111,14 @@ Read `AGENTS.md`, `ARCHITECTURE.md`, `STATUS.md`, `docs/module-map.md` and the t
   the zone (members follow on release) — P4-29 added member previews.
 - **P4-14:** `apps/engine-playground/ARCHITECTURE.md` still lacks the input layer; the P4-10 language
   and full-suite follow-ups stay as recorded above.
+
+- **Design-check gate coverage (2026-10-28):** P4-19 merged playground HTML/JS with an `#add-note`
+  id that the design-check scanner reads as raw colour `#add`; P4-19 had no `design-check` gate, so
+  it slipped until P4-20. P4-20 renamed it to `note-add` and repaired the merged files. Add
+  `design-check` to the gates of any task touching playground HTML/CSS/JS.
+- **P4-20 gaps:** multi-selection duplicate and the Bring-forward/Send-backward menu actions are
+  follow-ups (single duplicate works; the menu entries route to the intent layer but the generic
+  session has no reorder action yet — the contract `reorder`/engine z-order path exists).
 
 ## Contract open points (documented in `docs/contracts.md`)
 

@@ -883,6 +883,7 @@ function copyArtefacts(tempRoot) {
     "packages/ui-kit/tokens.css",
     "packages/engine/dist/bridge/engine.js",
     "packages/engine/dist/bridge/backend.js",
+    "packages/engine/dist/bridge/keyboard.js",
     "packages/engine/dist/bridge/text-atlas.js",
     "packages/engine/dist/bridge/input.js",
     "packages/engine/dist/bridge/overlay.js",

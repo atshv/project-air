@@ -4101,7 +4101,7 @@
       "satisfies": [
         "D10"
       ],
-      "status": "in_progress",
+      "status": "done",
       "depends_on": [
         "P4-14",
         "P4-16"
@@ -4142,11 +4142,17 @@
         "unit",
         "design-check"
       ],
-      "owner": "lead",
+      "owner": null,
       "branch": "task/P4-20",
-      "worktree": "/private/tmp/air-P4-20",
+      "worktree": null,
       "round": 0,
-      "evidence": [],
+      "evidence": [
+        "reviews/evidence/P4-20-board-check-20261028T172843Z.json",
+        "reviews/evidence/P4-20-boundaries-20261028T172847Z.json",
+        "reviews/evidence/P4-20-cpp-unit-20261028T172847Z.json",
+        "reviews/evidence/P4-20-unit-20261028T173023Z.json",
+        "reviews/evidence/P4-20-design-check-20261028T173022Z.json"
+      ],
       "scope_write_forbidden": [
         "reference/"
       ]

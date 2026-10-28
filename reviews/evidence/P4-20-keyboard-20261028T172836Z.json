@@ -1,0 +1,329 @@
+{
+  "task": "P4-20",
+  "gate": "keyboard-capture",
+  "startedAt": "2026-10-28T17:28:25.049Z",
+  "chrome": "/Users/rasulatashev/Library/Caches/ms-playwright/chromium-1248/chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing",
+  "flags": [
+    "--headless=new",
+    "--use-angle=metal",
+    "--enable-gpu",
+    "--hide-scrollbars",
+    "--no-first-run",
+    "--no-default-browser-check",
+    "--window-size=1440,900",
+    "--no-sandbox"
+  ],
+  "checks": [
+    {
+      "name": "desktop: a card is selected",
+      "passed": true,
+      "actual": [
+        "0192f0c1-7000-7000-8000-000000000606"
+      ]
+    },
+    {
+      "name": "desktop: an arrow series commits one keyboard-nudge after 300 ms",
+      "passed": true,
+      "actual": {
+        "pending": {
+          "selection": [
+            "0192f0c1-7000-7000-8000-000000000606"
+          ],
+          "keyboard": null,
+          "menu": {
+            "open": false,
+            "index": 0
+          },
+          "last": null
+        },
+        "nudged": {
+          "selection": [
+            "0192f0c1-7000-7000-8000-000000000606"
+          ],
+          "keyboard": {
+            "intent": "nudge",
+            "delta": {
+              "dx": 32,
+              "dy": 0
+            },
+            "operationId": "0192f0c1-7000-7000-8000-000000010001",
+            "kind": "keyboard-nudge",
+            "at": 1793208508335
+          },
+          "menu": {
+            "open": false,
+            "index": 0
+          },
+          "last": {
+            "operation": "moveCard",
+            "inverse": "moveCard"
+          }
+        }
+      }
+    },
+    {
+      "name": "desktop: Cmd/Ctrl+D duplicates as one create operation",
+      "passed": true,
+      "actual": {
+        "selection": [
+          "0192f0c1-7000-7000-8000-000000000606"
+        ],
+        "keyboard": {
+          "intent": "duplicate",
+          "operationId": "0192f0c1-7000-7000-8000-000000010001",
+          "offset": {
+            "x": 16,
+            "y": 16
+          },
+          "at": 1793208508627
+        },
+        "menu": {
+          "open": false,
+          "index": 0
+        },
+        "last": {
+          "operation": "createCard",
+          "inverse": "deleteCard"
+        }
+      }
+    },
+    {
+      "name": "desktop: Del deletes the selection as one operation",
+      "passed": true,
+      "actual": {
+        "selection": [],
+        "keyboard": {
+          "intent": "delete",
+          "at": 1793208509282
+        },
+        "menu": {
+          "open": false,
+          "index": 0
+        },
+        "last": {
+          "operation": "group",
+          "inverse": "group"
+        }
+      }
+    },
+    {
+      "name": "desktop: the context menu opens by keyboard, navigates and duplicates",
+      "passed": true,
+      "actual": {
+        "opened": {
+          "selection": [
+            "0192f0c1-7000-7000-8000-000000000605"
+          ],
+          "keyboard": {
+            "intent": "menu-open",
+            "at": 1793208509841
+          },
+          "menu": {
+            "open": true,
+            "index": 0
+          },
+          "last": {
+            "operation": "group",
+            "inverse": "group"
+          }
+        },
+        "moved": {
+          "selection": [
+            "0192f0c1-7000-7000-8000-000000000605"
+          ],
+          "keyboard": {
+            "intent": "menu-open",
+            "at": 1793208509841
+          },
+          "menu": {
+            "open": true,
+            "index": 1
+          },
+          "last": {
+            "operation": "group",
+            "inverse": "group"
+          }
+        },
+        "menuAction": {
+          "selection": [
+            "0192f0c1-7000-7000-8000-000000000605"
+          ],
+          "keyboard": {
+            "intent": "duplicate",
+            "operationId": "0192f0c1-7000-7000-8000-000000010002",
+            "offset": {
+              "x": 16,
+              "y": 16
+            },
+            "at": 1793208510170
+          },
+          "menu": {
+            "open": false,
+            "index": 0
+          },
+          "last": {
+            "operation": "createCard",
+            "inverse": "deleteCard"
+          }
+        }
+      }
+    },
+    {
+      "name": "mobile: a card is selected",
+      "passed": true,
+      "actual": [
+        "0192f0c1-7000-7000-8000-000000000606"
+      ]
+    },
+    {
+      "name": "mobile: an arrow series commits one keyboard-nudge after 300 ms",
+      "passed": true,
+      "actual": {
+        "pending": {
+          "selection": [
+            "0192f0c1-7000-7000-8000-000000000606"
+          ],
+          "keyboard": null,
+          "menu": {
+            "open": false,
+            "index": 0
+          },
+          "last": null
+        },
+        "nudged": {
+          "selection": [
+            "0192f0c1-7000-7000-8000-000000000606"
+          ],
+          "keyboard": {
+            "intent": "nudge",
+            "delta": {
+              "dx": 32,
+              "dy": 0
+            },
+            "operationId": "0192f0c1-7000-7000-8000-000000010001",
+            "kind": "keyboard-nudge",
+            "at": 1793208513863
+          },
+          "menu": {
+            "open": false,
+            "index": 0
+          },
+          "last": {
+            "operation": "moveCard",
+            "inverse": "moveCard"
+          }
+        }
+      }
+    },
+    {
+      "name": "mobile: Cmd/Ctrl+D duplicates as one create operation",
+      "passed": true,
+      "actual": {
+        "selection": [
+          "0192f0c1-7000-7000-8000-000000000606"
+        ],
+        "keyboard": {
+          "intent": "duplicate",
+          "operationId": "0192f0c1-7000-7000-8000-000000010001",
+          "offset": {
+            "x": 16,
+            "y": 16
+          },
+          "at": 1793208514154
+        },
+        "menu": {
+          "open": false,
+          "index": 0
+        },
+        "last": {
+          "operation": "createCard",
+          "inverse": "deleteCard"
+        }
+      }
+    },
+    {
+      "name": "mobile: Del deletes the selection as one operation",
+      "passed": true,
+      "actual": {
+        "selection": [],
+        "keyboard": {
+          "intent": "delete",
+          "at": 1793208514796
+        },
+        "menu": {
+          "open": false,
+          "index": 0
+        },
+        "last": {
+          "operation": "group",
+          "inverse": "group"
+        }
+      }
+    },
+    {
+      "name": "mobile: the context menu opens by keyboard, navigates and duplicates",
+      "passed": true,
+      "actual": {
+        "opened": {
+          "selection": [
+            "0192f0c1-7000-7000-8000-000000000605"
+          ],
+          "keyboard": {
+            "intent": "menu-open",
+            "at": 1793208515319
+          },
+          "menu": {
+            "open": true,
+            "index": 0
+          },
+          "last": {
+            "operation": "group",
+            "inverse": "group"
+          }
+        },
+        "moved": {
+          "selection": [
+            "0192f0c1-7000-7000-8000-000000000605"
+          ],
+          "keyboard": {
+            "intent": "menu-open",
+            "at": 1793208515319
+          },
+          "menu": {
+            "open": true,
+            "index": 1
+          },
+          "last": {
+            "operation": "group",
+            "inverse": "group"
+          }
+        },
+        "menuAction": {
+          "selection": [
+            "0192f0c1-7000-7000-8000-000000000605"
+          ],
+          "keyboard": {
+            "intent": "duplicate",
+            "operationId": "0192f0c1-7000-7000-8000-000000010002",
+            "offset": {
+              "x": 16,
+              "y": 16
+            },
+            "at": 1793208515648
+          },
+          "menu": {
+            "open": false,
+            "index": 0
+          },
+          "last": {
+            "operation": "createCard",
+            "inverse": "deleteCard"
+          }
+        }
+      }
+    }
+  ],
+  "result": "pass",
+  "exitCode": 0,
+  "finishedAt": "2026-10-28T17:28:36.068Z"
+}

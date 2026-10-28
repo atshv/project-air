@@ -121,6 +121,7 @@
 
 ## Ready now
 
+- `P4-21` Undo/redo (L11)
 - `P4-22` Remember view (L17)
   - P4-07: Closed P4-07: pure Camera::fitBounds (min(...,1.0), 0.1 floor, 64 px L02 padding from tokens), dot grid shader (tokens faint/canvas, 16 px, visible at >=0.5), on-demand rendering (0 idle frames).
   - P4-07: visual 10/10 0-diff incl. reviewed sample-zoom-in update + two one-card-fit baselines; perf p95 0.1 ms, 0 intervals > 16.7 ms; L01 final mean 0.049 vs basis 0.052.
@@ -188,6 +189,7 @@
 - [x] `P4-17` Resize (L14) — status: `done` — owner: —
 - [x] `P4-18` Auto-pan (L16) — status: `done` — owner: —
 - [x] `P4-19` Placement of new objects (L20) — status: `done` — owner: —
+- [x] `P4-20` Keyboard and context menu (L12) — status: `done` — owner: —
 - [x] `P4-23` DOM overlay for field editing and inline comfort (L18) — status: `done` — owner: —
 - [x] `P4-25` Contract 0.2.0: zone parent reference and reorder (z) operation (L08/L13) — status: `done` — owner: —
 - [x] `P4-26` Zones as containers II: platform migration and containment (L08) — status: `done` — owner: —
@@ -205,7 +207,7 @@
 
 ## In progress
 
-- [ ] `P4-20` Keyboard and context menu (L12) — status: `in_progress` — owner: lead
+- none
 
 ## Blocked / failed
 
@@ -224,7 +226,7 @@
 <!-- polier:claims -->
 ## Claims
 
-- `P4-20` in progress by dsh since 2026-10-28T17:23:32+00:00 — worktree: /private/tmp/air-P4-20 · slot 1
+- `P4-20` in progress by dsh since 2026-10-28T17:29:37+00:00 — worktree: /private/tmp/air-P4-20 · slot 1
 
 <!-- /polier:claims -->
 

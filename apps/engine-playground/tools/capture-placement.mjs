@@ -65,8 +65,8 @@ const inside = (rect, visible) =>
 async function run(send, vp) {
   const checks = [];
   await go(send, `http://127.0.0.1:${JSON.parse(readFileSync(join(ROOT, ".polier-slot"), "utf8")).ports.playground}/apps/engine-playground/?scene=layers&store=off&tools=1`);
-  const button = JSON.parse(await ev(send, `(() => { const b = document.querySelector("#add-note"); if (b === null) return "null"; const r = b.getBoundingClientRect(); return JSON.stringify({ x: r.left + r.width / 2, y: r.top + r.height / 2 }); })()`));
-  if (button === null || typeof button !== "object") fail("add-note button missing");
+  const button = JSON.parse(await ev(send, `(() => { const b = document.querySelector("#note-add"); if (b === null) return "null"; const r = b.getBoundingClientRect(); return JSON.stringify({ x: r.left + r.width / 2, y: r.top + r.height / 2 }); })()`));
+  if (button === null || typeof button !== "object") fail("note-add button missing");
   for (let index = 0; index < 5; index += 1) {
     await mouse(send, "mouseMoved", button);
     await mouse(send, "mousePressed", button);
@@ -76,7 +76,7 @@ async function run(send, vp) {
   const adds = JSON.parse(await ev(send, "JSON.stringify(globalThis.__enginePlacement.adds())"));
   const lastOperation = JSON.parse(await ev(send, `(() => { const pair = typeof globalThis.__engineDrag?.last === "function" ? globalThis.__engineDrag.last() : null; return JSON.stringify(pair === null ? null : { operation: pair.operation, inverse: pair.inverse }); })()`));
   const shotPath = await shot(send, `P4-19-placement-five-${vp.name}.png`);
-  checks.push({ name: `${vp.name}: five consecutive add-note actions create five cards`, passed: adds.length === 5 && adds.every((add) => add.operationId !== null), actual: adds.map((add) => add.operationId) });
+  checks.push({ name: `${vp.name}: five consecutive note-add actions create five cards`, passed: adds.length === 5 && adds.every((add) => add.operationId !== null), actual: adds.map((add) => add.operationId) });
   checks.push({ name: `${vp.name}: every placement is on the 16 px grid`, passed: adds.every((add) => Math.abs(add.x % GRID) < 1e-9 && Math.abs(add.y % GRID) < 1e-9), actual: adds.map((add) => [add.x, add.y]) });
   checks.push({ name: `${vp.name}: every placement is inside the visible area`, passed: adds.every((add) => inside(add, add.visible)), actual: adds.map((add) => ({ rect: { x: add.x, y: add.y, width: add.width, height: add.height }, visible: add.visible })) });
   checks.push({ name: `${vp.name}: the cascade never exceeds ten attempts`, passed: adds.every((add) => add.attempts >= 1 && add.attempts <= 10), actual: adds.map((add) => add.attempts) });

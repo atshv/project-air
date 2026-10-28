@@ -100,6 +100,15 @@ import {
   worldRectsIntersect,
 } from "@project-air/engine/input.js";
 import {
+  keyboardIntent,
+  NudgeSeries,
+  escapePriority,
+  ContextMenuModel,
+  CONTEXT_MENU_WIDTH_PX,
+  CONTEXT_MENU_ROW_PX,
+  NUDGE_STEP_PX,
+} from "@project-air/engine/keyboard.js";
+import {
   anchorToScreen,
   applyInlineKey,
   OverlayHost,
@@ -1201,6 +1210,53 @@ function createDragSession({ engine, port, context, history, seam, entries, scen
     onDemand.request();
     return { operationId: pair.operation.id, objectId: draft.id, position: { x: draft.x, y: draft.y }, size: { width: draft.width, height: draft.height } };
   };
+  const duplicateTargets = (targets) => {
+    if (targets.length !== 1) {
+      return null;
+    }
+    const target = targets[0];
+    const entity = port.read(target.kind, target.id);
+    if (entity === undefined) {
+      return null;
+    }
+    const zIndices = port.zIndices(target.kind);
+    let z = "0";
+    for (const key of zIndices) { if (key > z) z = key; }
+    z = operations !== null ? operations.keyAfter(z) : `${z}a`;
+    const draft = target.kind === "card"
+      ? { kind: "card", id: newUuidV7(), noteId: entity.noteId, x: entity.x + NUDGE_STEP_PX, y: entity.y + NUDGE_STEP_PX, width: entity.width, height: entity.height, z }
+      : target.kind === "block"
+        ? { kind: "block", id: newUuidV7(), type: entity.type, x: entity.x + NUDGE_STEP_PX, y: entity.y + NUDGE_STEP_PX, width: entity.width, height: entity.height, z }
+        : { kind: "zone", id: newUuidV7(), title: entity.title, x: entity.x + NUDGE_STEP_PX, y: entity.y + NUDGE_STEP_PX, width: entity.width, height: entity.height };
+    const pair = seam.buildOperation(port, context, { kind: "create", draft });
+    if (pair === null) return null;
+    seam.applyOperation(port, pair.operation);
+    history.push(pair.operation, pair.inverse);
+    recordPair(pair);
+    entries.push({ kind: draft.kind, id: draft.id });
+    onDemand.request();
+    return { operationId: pair.operation.id, objectId: draft.id, kind: draft.kind, offset: { x: NUDGE_STEP_PX, y: NUDGE_STEP_PX } };
+  };
+  const nudgeTargets = (targets, delta) => {
+    if (targets.length === 0) return null;
+    if (targets.length === 1) {
+      const target = targets[0];
+      const pair = seam.buildOperation(port, context, { kind: "keyboard-nudge", objectKind: target.kind, objectId: target.id, delta });
+      if (pair === null) return null;
+      seam.applyOperation(port, pair.operation);
+      history.push(pair.operation, pair.inverse);
+      recordPair(pair);
+      onDemand.request();
+      return { operationId: pair.operation.id, kind: "keyboard-nudge", delta };
+    }
+    const pair = seam.buildOperation(port, context, { kind: "drag-group", members: targets.map((target) => ({ objectKind: target.kind, objectId: target.id, position: { x: target.world.x + delta.x, y: target.world.y + delta.y } })) });
+    if (pair === null) return null;
+    seam.applyOperation(port, pair.operation);
+    history.push(pair.operation, pair.inverse);
+    recordPair(pair);
+    onDemand.request();
+    return { operationId: pair.operation.id, kind: "drag-group", delta };
+  };
   // L10: current geometry of the selected ids (the joint drag and the count bar).
   const selectionTargets = (ids) => {
     const wanted = ids === undefined ? null : new Set(ids);
@@ -1881,6 +1937,8 @@ function createDragSession({ engine, port, context, history, seam, entries, scen
     lastOperation,
     previewZoneDrag,
     commitZoneArrangement,
+    duplicateTargets,
+    nudgeTargets,
     visibleObjects,
     addCardAt,
     resizeMinimum,
@@ -2827,7 +2885,7 @@ function installPointerInput(engine, session, titlesController) {
       addNote: () => addNoteAction(),
     };
   }
-  const addNoteButton = document.querySelector("#add-note");
+  const addNoteButton = document.querySelector("#note-add");
   if (addNoteButton instanceof HTMLButtonElement) {
     addNoteButton.addEventListener("click", () => {
       void addNoteAction();
@@ -2934,6 +2992,133 @@ function installPointerInput(engine, session, titlesController) {
       input.clearSelection();
     }
   });
+  // P4-20 (L12): one keyboard intent layer and the DOM context menu. Shortcuts
+  // and menu entries call the same intents; fields (P4-14 suppression) win.
+  const nudgeSeries = new NudgeSeries();
+  const menuModel = new ContextMenuModel();
+  const menuElement = document.querySelector("#context-menu");
+  let nudgeTimer = null;
+  let lastIntent = null;
+  const recordIntent = (intent, extra = {}) => {
+    lastIntent = { intent, ...extra, at: Date.now() };
+    globalThis.__engineKeyboard?.push?.(lastIntent);
+    return lastIntent;
+  };
+  const commitNudge = () => {
+    nudgeTimer = null;
+    const delta = nudgeSeries.flush();
+    if (delta === null) return null;
+    const result = session?.nudgeTargets([...input.selection], { x: delta.dx, y: delta.dy }) ?? null;
+    refreshSelection();
+    return recordIntent("nudge", { delta, operationId: result?.operationId ?? null, kind: result?.kind ?? null });
+  };
+  const scheduleNudgeCommit = () => {
+    if (nudgeTimer !== null) clearTimeout(nudgeTimer);
+    nudgeTimer = setTimeout(() => { nudgeTimer = null; commitNudge(); }, 300);
+  };
+  const flushNudgeBefore = () => { if (nudgeSeries.pending) { if (nudgeTimer !== null) clearTimeout(nudgeTimer); commitNudge(); } };
+  const intentHandlers = {
+    open: () => { refreshSelection(); return recordIntent("open"); },
+    duplicate: () => {
+      flushNudgeBefore();
+      const result = session?.duplicateTargets([...input.selection]) ?? null;
+      refreshSelection();
+      return recordIntent("duplicate", { operationId: result?.operationId ?? null, offset: result?.offset ?? null });
+    },
+    "bring-forward": () => recordIntent("bring-forward", { supported: false }),
+    "send-backward": () => recordIntent("send-backward", { supported: false }),
+    delete: () => { flushNudgeBefore(); deleteSelection(); return recordIntent("delete"); },
+  };
+  const runIntent = (intent) => (intentHandlers[intent] === undefined ? null : intentHandlers[intent]());
+  const closeMenu = () => { if (menuModel.open) { menuModel.close(); menuElement?.setAttribute("hidden", ""); } };
+  const paintMenu = () => {
+    if (!(menuElement instanceof HTMLElement)) return;
+    const items = [...menuElement.querySelectorAll(".context-menu__item")];
+    items.forEach((item, index) => { item.dataset.active = String(index === menuModel.index); });
+  };
+  const openMenu = (clientX, clientY) => {
+    if (!(menuElement instanceof HTMLElement)) return null;
+    if (input.selection.length === 0) return null;
+    menuModel.openAt(0);
+    const width = CONTEXT_MENU_WIDTH_PX;
+    const height = CONTEXT_MENU_ROW_PX * 5 + 8;
+    menuElement.style.left = `${Math.max(0, Math.min(clientX, window.innerWidth - width))}px`;
+    menuElement.style.top = `${Math.max(0, Math.min(clientY, window.innerHeight - height))}px`;
+    menuElement.removeAttribute("hidden");
+    paintMenu();
+    recordIntent("menu-open");
+    return menuElement;
+  };
+  if (menuElement instanceof HTMLElement) {
+    for (const item of [...menuElement.querySelectorAll(".context-menu__item")]) {
+      item.addEventListener("click", () => {
+        const intent = item.dataset.intent;
+        menuModel.close();
+        menuElement.setAttribute("hidden", "");
+        if (typeof intent === "string") runIntent(intent);
+      });
+    }
+    document.addEventListener("mousedown", (event) => {
+      if (!menuModel.open) return;
+      if (event.target instanceof Node && menuElement.contains(event.target)) return;
+      menuModel.outsideClick();
+      menuElement.setAttribute("hidden", "");
+      recordIntent("menu-close", { by: "outside" });
+    }, true);
+    window.addEventListener("blur", () => { closeMenu(); });
+  }
+  canvas.addEventListener("contextmenu", (event) => {
+    event.preventDefault();
+    openMenu(event.clientX, event.clientY);
+  });
+  window.addEventListener("keydown", (event) => {
+    // Capture phase: the menu and field/overlay priority come before the
+    // existing selection/Delete handlers; fields suppress every shortcut.
+    const descriptor = describeSuppression(event.target);
+    if (menuModel.open) {
+      if (event.key === "Escape") { closeMenu(); recordIntent("menu-close", { by: "escape" }); event.preventDefault(); event.stopPropagation(); return; }
+      if (event.key === "ArrowDown" || event.key === "ArrowUp") { menuModel.move(event.key === "ArrowDown" ? 1 : -1); paintMenu(); event.preventDefault(); event.stopPropagation(); return; }
+      if (event.key === "Enter" || event.key === " ") { const intent = menuModel.activate(); if (intent !== null) runIntent(intent); paintMenu(); event.preventDefault(); event.stopPropagation(); return; }
+    }
+    const shortcutMenu = (event.key === "F10" && event.shiftKey) || event.key === "ContextMenu";
+    const intent = keyboardIntent({
+      key: event.key, ctrlKey: event.ctrlKey, metaKey: event.metaKey, shiftKey: event.shiftKey, altKey: event.altKey,
+      suppressed: descriptor.suppressed, contextMenuKey: shortcutMenu,
+    });
+    if (intent === null) return;
+    if (intent.kind === "escape") {
+      const target = escapePriority({ menuOpen: menuModel.open, overlayOpen: descriptor.editable || descriptor.suppressed, hasSelection: input.selection.length > 0 });
+      if (target === "menu") { closeMenu(); event.preventDefault(); event.stopPropagation(); return; }
+      if (target === "overlay") { if (event.target instanceof HTMLElement) event.target.blur(); event.preventDefault(); event.stopPropagation(); return; }
+      return; // selection Esc stays with the existing input/session handler
+    }
+    if (intent.kind === "menu-open") { openMenu(canvas.getBoundingClientRect().left + 40, canvas.getBoundingClientRect().top + 40); event.preventDefault(); event.stopPropagation(); return; }
+    if (descriptor.suppressed || input.selection.length === 0) return;
+    if (intent.kind === "nudge") {
+      nudgeSeries.add(intent.dx, intent.dy, Date.now());
+      const previewDelta = nudgeSeries.delta;
+      for (const target of input.selection) {
+        session?.preview?.(target, { x: target.world.x + previewDelta.dx, y: target.world.y + previewDelta.dy });
+      }
+      scheduleNudgeCommit();
+      event.preventDefault();
+      return;
+    }
+    if (intent.kind === "duplicate" || intent.kind === "delete") {
+      event.preventDefault();
+      if (intent.kind === "duplicate") flushNudgeBefore();
+      runIntent(intent.kind);
+      return;
+    }
+  }, true);
+  globalThis.__engineKeyboard = {
+    last: () => lastIntent,
+    menu: () => ({ open: menuModel.open, index: menuModel.index }),
+    series: () => ({ pending: nudgeSeries.pending, delta: nudgeSeries.delta }),
+    lastOperation: () => (session === null ? null : session.lastOperation()),
+    flushNudge: () => commitNudge(),
+  };
+
   // Evidence hook: the browser/manual check reads the layer state next to the
   // pixels (threshold, phase, hover target and cursor), never document state.
   globalThis.__engineInput = {

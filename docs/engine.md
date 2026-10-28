@@ -760,6 +760,29 @@ previous `engine_create` sequence.
   `navigator.gpu` removed at the page boundary (→ WebGL2 with `webgpu-unavailable`); the record is
   under `reviews/evidence/P4-12-backend-selection-*.json`.
 
+## Keyboard and context menu (L12, P4-20)
+
+One keyboard intent layer (`src/bridge/keyboard.ts`) maps keys to intents and is routed in the
+playground; shortcuts and context-menu entries call the same intents (one routing table, no second
+action path). Outside fields: `Cmd/Ctrl+D` duplicates the single selected object +16/+16 as exactly one
+`create` operation with inverse (a note-card duplicate places the same note again: AD-4 note-once, the
+note exists once and a card is only its placement), `Del`/`Backspace` reuses the P4-16 selection delete
+(one operation), and arrow keys accumulate a series (16 world px, `Shift` 160 px) that previews through
+the bridge without writing and commits as exactly one `keyboard-nudge` operation 300 ms after the last
+key (key repeat restarts the delay; flushing before duplicate/delete keeps series and actions apart).
+`Esc` priority is context menu, then an open overlay/editing field, then the selection. Field focus
+(input/textarea/select/contenteditable/[data-field], the P4-14 suppression predicate) blocks every
+shortcut; only `Esc` remains.
+
+The context menu is DOM chrome (ADR-0009), hidden by default so the reference images stay unchanged:
+200 px wide (`CONTEXT_MENU_WIDTH_PX`) with 32 px rows (`CONTEXT_MENU_ROW_PX`) and the entries "Open /
+Duplicate / Bring forward / Send backward / Delete", shortcuts right-aligned in `tokens::muted`,
+colours/spacing from tokens only. It opens on right-click, `Shift+F10` or the menu key, never in a
+field, and is operated by keyboard (arrow wrap, `Enter`/`Space`, `Esc`) or pointer; it closes on
+`Esc`, outside click, blur or an action. Two entries (bring forward/send backward) currently record
+the intent without a session capability for the generic boards (open question; the layers scene owns
+bring-to-front through its own path).
+
 ## Placement of new objects (L20, P4-19)
 
 Adding an object uses the pure placement rule in `src/bridge/placement.ts`. The candidate starts at the

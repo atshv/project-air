@@ -506,7 +506,7 @@ body {
 
 /* P4-19 (L20): the demo "add note" control. Hidden by default (the captured
    reference scenes never show it); the `?tools=1` capture run reveals it. */
-.add-note {
+.note-add {
   position: absolute;
   top: var(--space-16);
   left: var(--space-16);
@@ -519,6 +519,49 @@ body {
   font: inherit;
   cursor: pointer;
 }
-.add-note[hidden] {
+.note-add[hidden] {
   display: none;
+}
+
+/* P4-20 (L12): DOM context menu chrome (ADR-0009). The 200 px width and 32 px
+   row height are the documented L12 interaction values; colours/spacing come
+   from the generated tokens only. */
+.context-menu {
+  --context-menu-width: 200px;
+  --context-menu-row: 32px;
+  position: fixed;
+  z-index: 4;
+  width: var(--context-menu-width);
+  padding: var(--space-4) 0;
+  border: var(--border-width) solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  box-shadow: var(--card-shadow);
+  display: flex;
+  flex-direction: column;
+}
+.context-menu[hidden] {
+  display: none;
+}
+.context-menu__item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-8);
+  height: var(--context-menu-row);
+  padding: 0 var(--space-12);
+  border: 0;
+  background: transparent;
+  color: var(--fg);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.context-menu__item[data-active="true"] {
+  background: var(--accent-soft);
+  color: var(--fg);
+}
+.context-menu__shortcut {
+  color: var(--muted);
+  margin-left: auto;
 }

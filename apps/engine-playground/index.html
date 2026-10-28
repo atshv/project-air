@@ -15,6 +15,7 @@
           "@project-air/engine/zone-parity.js": "../../packages/engine/dist/bridge/zone-parity.js",
           "@project-air/engine/zone-lifecycle.js": "../../packages/engine/dist/bridge/zone-lifecycle.js",
           "@project-air/engine/placement.js": "../../packages/engine/dist/bridge/placement.js",
+          "@project-air/engine/keyboard.js": "../../packages/engine/dist/bridge/keyboard.js",
           "@project-air/test-kit": "../../packages/test-kit/dist/scenes.js",
           "@project-air/engine/logic/": "../../packages/engine/dist/logic/packages/engine/src/logic/"
         }
@@ -42,8 +43,8 @@
           Your browser does not support WebGL2.
         </canvas>
         <button
-          id="add-note"
-          class="add-note"
+          id="note-add"
+          class="note-add"
           type="button"
           hidden
           aria-label="Add note at the placed position"
@@ -85,5 +86,23 @@
       </footer>
       <p class="error" id="error" hidden></p>
     </main>
+
+    <div id="context-menu" class="context-menu" role="menu" aria-label="Object actions" hidden>
+      <button class="context-menu__item" type="button" role="menuitem" data-intent="open">
+        <span class="context-menu__label">Open</span><span class="context-menu__shortcut">Enter</span>
+      </button>
+      <button class="context-menu__item" type="button" role="menuitem" data-intent="duplicate">
+        <span class="context-menu__label">Duplicate</span><span class="context-menu__shortcut">⌘D</span>
+      </button>
+      <button class="context-menu__item" type="button" role="menuitem" data-intent="bring-forward">
+        <span class="context-menu__label">Bring forward</span><span class="context-menu__shortcut"></span>
+      </button>
+      <button class="context-menu__item" type="button" role="menuitem" data-intent="send-backward">
+        <span class="context-menu__label">Send backward</span><span class="context-menu__shortcut"></span>
+      </button>
+      <button class="context-menu__item" type="button" role="menuitem" data-intent="delete">
+        <span class="context-menu__label">Delete</span><span class="context-menu__shortcut">Del</span>
+      </button>
+    </div>
   </body>
 </html>
