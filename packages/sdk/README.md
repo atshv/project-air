@@ -68,3 +68,20 @@ The board-sync client takes an authenticated **UUIDv7 `clientId`** (or generates
 one per client instance with `createRequestId()`, stable across reconnects); every
 message and batch id is a fresh UUIDv7, so the outgoing messages validate against
 the contract 0.3.0 sync schema and two clients never collide.
+
+## Auth and session (P6-02)
+
+`createClient({ baseUrl, authBaseUrl })` exposes `auth`:
+
+```ts
+const user = await api.auth.getSession();            // GET /v1/session
+await api.auth.login(email, password);               // POST /v1/auth/login
+await api.auth.registration({ email, password, displayName }); // POST /v1/auth/registration
+await api.auth.recovery(email);                      // POST /v1/auth/recovery
+await api.auth.logout();                             // POST /v1/auth/logout
+```
+
+All calls send `credentials: "include"` so the HttpOnly session cookie travels; the
+SDK never reads or stores a token. Failures are typed `ApiError`s with the contract
+`code`/`messageKey`/`requestId` (e.g. 401 `AUTH_REQUIRED`, 400 `VALIDATION`, 503
+`INTERNAL` when the provider is unreachable).

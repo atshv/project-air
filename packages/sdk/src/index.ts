@@ -1,4 +1,5 @@
 export { createClient, type ClientOptions, type ContractClient } from "./client.ts";
+export { AuthResource, type SessionUser } from "./auth.ts";
 export { ApiError, type ApiErrorCode } from "./errors.ts";
 export { createRequestId } from "./uuid.ts";
 export type { SessionCredentials } from "./transport.ts";

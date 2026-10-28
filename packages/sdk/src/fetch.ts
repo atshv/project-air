@@ -13,6 +13,8 @@ export interface FetchRequest {
   readonly method: string;
   readonly headers: Readonly<Record<string, string>>;
   readonly body?: string | undefined;
+  /** `"include"` for cookie-authenticated browser requests (same-origin proxy). */
+  readonly credentials?: "include" | undefined;
 }
 
 export type FetchLike = (url: string, request: FetchRequest) => Promise<FetchResponse>;

@@ -1,0 +1,37 @@
+$ pnpm typecheck
+[exit 0]
+
+
+   • turbo 2.11.10
+   • Packages in scope: @project-air/auth, @project-air/contracts, @project-air/crdt, @project-air/design-check, @project-air/engine, @project-air/language-check, @project-air/platform, @project-air/release, @project-air/sdk, @project-air/sync, @project-air/test-kit, @project-air/ui-kit, @project-air/web
+   • Running typecheck in 13 packages
+   • Remote caching disabled, using shared worktree cache
+
+@project-air/sdk:typecheck: cache miss, executing ea43675b33ec3eee
+@project-air/auth:typecheck: cache miss, executing 26d65d9d21b5d910
+@project-air/web:typecheck: cache miss, executing d1b23a37a83e4788
+@project-air/contracts:typecheck: cache hit, replaying logs 06c9668b9670737a
+@project-air/contracts:typecheck: $ tsc --noEmit --project tsconfig.json
+@project-air/crdt:typecheck: cache hit, replaying logs 6c292696ac5ed493
+@project-air/crdt:typecheck: $ tsc --noEmit --project tsconfig.json
+@project-air/sync:typecheck: cache hit, replaying logs 4f400e3d51a2747d
+@project-air/sync:typecheck: $ tsc --noEmit --project tsconfig.json
+@project-air/engine:typecheck: cache hit, replaying logs 074412cac24549b5
+@project-air/engine:typecheck: $ tsc --noEmit --project tsconfig.json
+@project-air/test-kit:typecheck: cache hit, replaying logs 800db977c14a5b10
+@project-air/ui-kit:typecheck: cache hit, replaying logs 3a531df9dd2fdada
+@project-air/ui-kit:typecheck: $ tsc --noEmit --project tsconfig.json
+@project-air/test-kit:typecheck: $ tsc --noEmit --project tsconfig.json
+@project-air/design-check:typecheck: cache hit, replaying logs 7409bde6e21ab4cb
+@project-air/design-check:typecheck: $ node --check check.mjs && node --check index.mjs && node --check test/design-check.test.mjs
+@project-air/platform:typecheck: cache hit, replaying logs 568bcb37629847a1
+@project-air/platform:typecheck: $ tsc --noEmit --project tsconfig.json
+@project-air/sdk:typecheck: $ tsc --noEmit --project tsconfig.json
+@project-air/auth:typecheck: $ tsc --noEmit --project tsconfig.json
+@project-air/web:typecheck: $ tsc --noEmit --project tsconfig.json
+
+ Tasks:    11 successful, 11 total
+Cached:    8 cached, 11 total
+  Time:    1.163s 
+
+$ turbo run typecheck && tsc -b tsconfig.json

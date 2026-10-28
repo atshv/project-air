@@ -75,7 +75,38 @@
   },
   "auth": {
     "signedOut": "Nicht angemeldet",
-    "signIn": "Anmelden"
+    "signIn": "Anmelden",
+    "email": "E-Mail",
+    "password": "Passwort",
+    "displayName": "Anzeigename",
+    "login": {
+      "title": "Anmelden"
+    },
+    "signingIn": "Anmeldung läuft …",
+    "register": {
+      "title": "Konto erstellen",
+      "submit": "Konto erstellen"
+    },
+    "registering": "Konto wird erstellt …",
+    "forgotPassword": "Passwort vergessen?",
+    "createAccount": "Konto erstellen",
+    "backToSignIn": "Zurück zur Anmeldung",
+    "recovery": {
+      "title": "Passwort zurücksetzen",
+      "hint": "Gib deine E-Mail-Adresse ein, wir senden dir einen Link zum Zurücksetzen.",
+      "submit": "Link senden",
+      "sending": "Wird gesendet …",
+      "sent": "Wenn die Adresse existiert, ist ein Link unterwegs."
+    },
+    "signOut": "Abmelden",
+    "signedInAs": "Angemeldet als",
+    "checkingSession": "Sitzung wird geprüft …",
+    "validation": {
+      "email": "Gib eine gültige E-Mail-Adresse ein.",
+      "password": "Gib dein Passwort ein.",
+      "passwordLength": "Verwende mindestens 8 Zeichen.",
+      "displayName": "Gib einen Namen ein."
+    }
   },
   "language": {
     "label": "Sprache",
@@ -122,6 +153,8 @@
   },
   "settings": {
     "language": "Sprache",
-    "languageHint": "Wähle die Sprache der Oberfläche. Deine Wahl wird auf diesem Gerät gemerkt."
+    "languageHint": "Wähle die Sprache der Oberfläche. Deine Wahl wird auf diesem Gerät gemerkt.",
+    "account": "Konto",
+    "signedInAs": "Angemeldet als"
   }
 }

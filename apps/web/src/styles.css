@@ -41,3 +41,10 @@ body { margin: 0; background: var(--bg); color: var(--fg); font-family: var(--fo
 .dialog { width: min(720px, calc(100vw - var(--space-32))); background: var(--surface); border: var(--border-width) solid var(--border-strong); border-radius: var(--radius-md); box-shadow: var(--card-shadow); padding: var(--space-16); }
 .dialog-header { display: flex; align-items: center; justify-content: space-between; gap: var(--space-8); }
 .dialog-body { padding-top: var(--space-12); }
+.auth-card { max-width: 420px; }
+.form, .field { display: flex; flex-direction: column; gap: var(--space-8); }
+.field span { font-size: var(--text-12, 12px); color: var(--muted); }
+.input { min-height: var(--button-bar); padding: 0 var(--space-12); background: var(--surface); color: var(--fg); border: var(--border-width) solid var(--border-strong); border-radius: var(--radius-sm); font-family: var(--font-sans); font-size: var(--text-14, 14px); }
+.input[aria-invalid="true"] { border-color: var(--danger); }
+.field-error, .form-error { margin: 0; color: var(--danger); font-size: var(--text-12, 12px); }
+.auth-links { display: flex; justify-content: space-between; gap: var(--space-8); }

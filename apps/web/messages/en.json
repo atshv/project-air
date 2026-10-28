@@ -75,7 +75,38 @@
   },
   "auth": {
     "signedOut": "Not signed in",
-    "signIn": "Sign in"
+    "signIn": "Sign in",
+    "email": "Email",
+    "password": "Password",
+    "displayName": "Display name",
+    "login": {
+      "title": "Sign in"
+    },
+    "signingIn": "Signing in …",
+    "register": {
+      "title": "Create account",
+      "submit": "Create account"
+    },
+    "registering": "Creating account …",
+    "forgotPassword": "Forgot password?",
+    "createAccount": "Create account",
+    "backToSignIn": "Back to sign in",
+    "recovery": {
+      "title": "Reset password",
+      "hint": "Enter your email address and we will send a reset link.",
+      "submit": "Send reset link",
+      "sending": "Sending …",
+      "sent": "If the address exists, a reset link is on its way."
+    },
+    "signOut": "Sign out",
+    "signedInAs": "Signed in as",
+    "checkingSession": "Checking your session …",
+    "validation": {
+      "email": "Enter a valid email address.",
+      "password": "Enter your password.",
+      "passwordLength": "Use at least 8 characters.",
+      "displayName": "Enter a name."
+    }
   },
   "language": {
     "label": "Language",
@@ -122,6 +153,8 @@
   },
   "settings": {
     "language": "Language",
-    "languageHint": "Choose the language for the interface. Your choice is remembered on this device."
+    "languageHint": "Choose the language for the interface. Your choice is remembered on this device.",
+    "account": "Account",
+    "signedInAs": "Signed in as"
   }
 }

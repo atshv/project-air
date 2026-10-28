@@ -1,0 +1,170 @@
+$ pnpm test --affected
+[exit 0]
+
+
+   • turbo 2.11.10
+   • Packages in scope: //, @project-air/auth, @project-air/sdk, @project-air/web
+   • Running test in 4 packages
+   • Remote caching disabled, using shared worktree cache
+
+@project-air/sdk:build: cache miss, executing 6da5ce7a30b90952
+@project-air/web:build: cache miss, executing ab7e2aaacac56cba
+@project-air/auth:build: cache miss, executing af8948ef5b3ccb2f
+@project-air/sdk:build: $ tsc --project tsconfig.json
+@project-air/web:build: $ vite build
+@project-air/auth:build: $ tsc --project tsconfig.json
+@project-air/web:build: vite v8.3.5 building client environment for production...
+@project-air/web:build: transforming...
+@project-air/web:build: ✓ 118 modules transformed.
+@project-air/web:build: rendering chunks...
+@project-air/web:build: computing gzip size...
+@project-air/web:build: dist/index.html                   0.44 kB │ gzip:  0.27 kB
+@project-air/web:build: dist/assets/index-Bcn3EobJ.css    6.24 kB │ gzip:  1.85 kB
+@project-air/web:build: dist/assets/index-Dbz0ZSj_.js   284.52 kB │ gzip: 89.11 kB
+@project-air/web:build: 
+@project-air/web:build: ✓ built in 153ms
+@project-air/sdk:test: cache miss, executing 28655ef47a3d84c0
+@project-air/web:test: cache miss, executing b5325dfab83819c6
+@project-air/sdk:test: $ node --test test/*.test.mjs
+@project-air/web:test: $ node --test test/*.test.mjs
+@project-air/auth:test: cache miss, executing a62b6623270f6c81
+@project-air/auth:test: $ node --test test/*.test.mjs
+@project-air/web:test: ✔ en and de catalogs have identical key sets (1.536167ms)
+@project-air/web:test: ✔ translate resolves nested keys and interpolates values (0.168459ms)
+@project-air/web:test: ✔ German is the default and a stored choice persists (0.0995ms)
+@project-air/sdk:test: ✔ session.get uses GET /v1/session with credentials include (2.618083ms)
+@project-air/sdk:test: ✔ login/registration/recovery/logout hit the auth base with cookie mode and JSON bodies (0.724667ms)
+@project-air/sdk:test: ✔ error envelopes become typed ApiError with code/messageKey/requestId (0.34475ms)
+@project-air/web:test: ✔ every required route exists with message-backed title and body keys (1.401291ms)
+@project-air/web:test: ✔ route helpers stay pure and encode board ids (0.1735ms)
+@project-air/web:test: ✔ login validation mirrors the server rules (0.7545ms)
+@project-air/web:test: ✔ registration requires email, display name and at least 8 password characters (0.108875ms)
+@project-air/web:test: ✔ recovery validates the email and maps typed errors to message keys (0.102958ms)
+@project-air/web:test: ℹ tests 8
+@project-air/web:test: ℹ suites 0
+@project-air/web:test: ℹ pass 8
+@project-air/web:test: ℹ fail 0
+@project-air/web:test: ℹ cancelled 0
+@project-air/web:test: ℹ skipped 0
+@project-air/web:test: ℹ todo 0
+@project-air/web:test: ℹ duration_ms 291.782459
+@project-air/sdk:test: (node:14413) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.
+@project-air/sdk:test: (Use `node --trace-warnings ...` to show where the warning was created)
+@project-air/sdk:test: BMSG {"id":"01a184d4-b09c-79d0-9d4b-6fb132416306","type":"presence","clientId":"0192f0fa-7000-7000-8000-0000000000a1","boardId":"0192f0a3-7000-70
+@project-air/auth:test: ✔ login creates+submits the flow, forwards the session cookie and keeps credentials out of the response (77.623125ms)
+@project-air/auth:test: ✔ invalid credentials and provider failure are typed errors (18.165459ms)
+@project-air/sdk:test: BMSG {"id":"01a184d4-b0b6-7ebd-ab05-591fd0fa76aa","type":"ack","clientId":"0192f0fa-7000-7000-8000-0000000000b1","boardId":"0192f0a3-7000-7000-80
+@project-air/auth:test: ✔ registration, recovery and logout map success/conflict/cookie clear (7.683333ms)
+@project-air/auth:test: ✔ test-mode session path is untouched and still gated by the flag (2.815083ms)
+@project-air/auth:test: ✔ parses a complete environment and normalises the Kratos URLs (3.032458ms)
+@project-air/auth:test: ✔ defaults NODE_ENV, LOG_LEVEL and HOST (0.177333ms)
+@project-air/auth:test: ✔ AUTH_PORT is required and must be a valid port number (0.328917ms)
+@project-air/auth:test: ✔ secrets are required, long enough and never echoed (0.349791ms)
+@project-air/auth:test: ✔ the Kratos URLs are required http(s) URLs (0.628083ms)
+@project-air/auth:test: ✔ a missing or invalid DATABASE_URL fails fast (1.032125ms)
+@project-air/auth:test: ✔ NODE_ENV and LOG_LEVEL reject unknown values (0.3045ms)
+@project-air/auth:test: ✔ the test-session mode is opt-in and impossible in production (0.336292ms)
+@project-air/auth:test: ✔ liveness answers 200 while the database is down (81.917083ms)
+@project-air/auth:test: ✔ readiness answers 200 when the database ping succeeds (8.912166ms)
+@project-air/auth:test: ✔ readiness includes the Kratos check when wired (2.807125ms)
+@project-air/auth:test: ✔ readiness answers 503 when the database ping fails (5.247833ms)
+@project-air/auth:test: ✔ readiness answers 503 when the database is unreachable (3.47225ms)
+@project-air/auth:test: ✔ creates an identity through the Kratos admin API and returns its id (51.110541ms)
+@project-air/auth:test: ✔ a missing or wrong admin token is 401 AUTH_REQUIRED (3.059ms)
+@project-air/auth:test: ✔ an invalid invitation body is 400 VALIDATION with field details (7.823375ms)
+@project-air/auth:test: ✔ a duplicate e-mail is 409 CONFLICT (3.6385ms)
+@project-air/auth:test: ✔ a Kratos failure is a 503 INTERNAL (9.801833ms)
+@project-air/auth:test: ✔ whoami returns the mapped identity and forwards the cookie (46.653917ms)
+@project-air/auth:test: ✔ whoami returns null for a missing or expired session (3.558417ms)
+@project-air/auth:test: ✔ whoami rejects an unexpected Kratos status (14.43425ms)
+@project-air/auth:test: ✔ createIdentity sends the traits and returns the identity (16.384583ms)
+@project-air/auth:test: ✔ createIdentity maps a duplicate e-mail to conflict (1.51175ms)
+@project-air/auth:test: ✔ createRecoveryLink and listIdentities call the admin API (3.5965ms)
+@project-air/auth:test: ✔ the public flow clients return id and action (19.725916ms)
+@project-air/auth:test: ✔ ready is true for a healthy Kratos and false for 503 or a closed port (9.333ms)
+@project-air/auth:test: ✔ a slow Kratos times out as unavailable (54.2445ms)
+@project-air/auth:test: ✔ an invalid JSON body is a bad_response error (0.501584ms)
+@project-air/sdk:test: BMSG {"id":"01a184d4-b105-7742-b493-690e67b13eab","type":"presence","clientId":"0192f0fa-7000-7000-8000-0000000000a1","boardId":"0192f0a3-7000-70
+@project-air/sdk:test: BMSG {"id":"01a184d4-b105-7f3f-b332-afd1d6ac58d6","type":"operationBatch","clientId":"0192f0fa-7000-7000-8000-0000000000a1","boardId":"0192f0a3-7
+@project-air/auth:test: ✔ loads the migrations in file-name order with SHA-256 checksums (12.05525ms)
+@project-air/auth:test: ✔ returns the success envelope with a UUIDv7 request id in the header (29.099667ms)
+@project-air/auth:test: ✔ keeps a valid UUIDv7 client request id and replaces anything else (6.538541ms)
+@project-air/auth:test: ✔ parses the query string (3.971375ms)
+@project-air/auth:test: ✔ returns the contract error envelope for an unknown path (2.225375ms)
+@project-air/auth:test: ✔ returns 405 with an Allow header for a known path and the wrong method (2.519917ms)
+@project-air/auth:test: ✔ reads a JSON body and wraps the result (4.549333ms)
+@project-air/auth:test: ✔ rejects invalid JSON with a VALIDATION envelope (4.450125ms)
+@project-air/auth:test: ✔ rejects a non-JSON content type with 415 (2.483792ms)
+@project-air/auth:test: ✔ rejects a body above the limit with 413 (2.780667ms)
+@project-air/auth:test: ✔ a custom status and headers are preserved (5.869667ms)
+@project-air/auth:test: ✔ an empty handler result is a 204 without a body (0.632208ms)
+@project-air/auth:test: ✔ an unexpected error becomes a generic INTERNAL envelope (1.679292ms)
+@project-air/auth:test: ✔ a valid Kratos session returns the account id, e-mail and display name (16.722208ms)
+@project-air/auth:test: ✔ no session cookie is 401 AUTH_REQUIRED (1.292542ms)
+@project-air/auth:test: ✔ an invalid or expired Kratos session is 401 AUTH_REQUIRED (1.80075ms)
+@project-air/auth:test: ✔ an error response from Kratos is a 503 INTERNAL (2.177959ms)
+@project-air/auth:test: ✔ an unreachable Kratos is a 503 INTERNAL (1.686ms)
+@project-air/auth:test: ✔ POST /test/session mints a session that GET /session accepts (5.189959ms)
+@project-air/auth:test: ✔ a tampered or expired test session is 401, never 500 (1.898084ms)
+@project-air/auth:test: ✔ POST /test/session validates its body (1.4415ms)
+@project-air/auth:test: ✔ without test mode the test-session route does not exist and the header is ignored (0.961875ms)
+@project-air/auth:test: ✔ mints the documented three-part token and verifies it (2.267666ms)
+@project-air/auth:test: ✔ rejects a tampered signature and another secret (0.178667ms)
+@project-air/auth:test: ✔ rejects an expired token (0.100375ms)
+@project-air/auth:test: ✔ rejects malformed tokens (0.101541ms)
+@project-air/auth:test: ✔ rejects an invalid account id and an out-of-range TTL (0.229ms)
+@project-air/auth:test: ✔ the header name and the deterministic test profile are stable (0.127417ms)
+@project-air/auth:test: ℹ tests 60
+@project-air/auth:test: ℹ suites 0
+@project-air/auth:test: ℹ pass 60
+@project-air/auth:test: ℹ fail 0
+@project-air/auth:test: ℹ cancelled 0
+@project-air/auth:test: ℹ skipped 0
+@project-air/auth:test: ℹ todo 0
+@project-air/auth:test: ℹ duration_ms 722.159
+@project-air/sdk:test: DEBUG aSeq=3 bSeq=3 updates=1 aOwn=1 aOffline=0 aErr=null aX=123 bX=123
+@project-air/sdk:test: BMSG {"id":"01a184d4-b441-711b-91ca-ff0856c34247","type":"operationBatch","clientId":"0192f0fa-7000-7000-8000-0000000000a1","boardId":"0192f0a3-7
+@project-air/sdk:test: stack proof evidence: reviews/evidence/P5-07-stack-20261028T232454Z.json
+@project-air/sdk:test: ✔ offline clients converge over the real stack and undo reverts only the client's own op (1380.010625ms)
+@project-air/sdk:test: ✔ handshake sends hello first, then joinBoard; welcome/snapshot install the document (23.465208ms)
+@project-air/sdk:test: ✔ operation batches are sent with a per-connection seq; acks advance only forward (1.127459ms)
+@project-air/sdk:test: ✔ offline operations queue in order and flush on join; duplicate remote batches apply once (1.36775ms)
+@project-air/sdk:test: ✔ a dropped socket reconnects with backoff and resyncs from the last serverSeq (0.707958ms)
+@project-air/sdk:test: ✔ close is idempotent and leaves the board once (0.2755ms)
+@project-air/sdk:test: ✔ autosave debounces 400 ms after the last keystroke, saves once and reports saving -> saved (0.294833ms)
+@project-air/sdk:test: ✔ the five flush triggers save immediately and visibility only flushes when hidden (0.250292ms)
+@project-air/sdk:test: ✔ stale autosave responses never overwrite newer values; error -> retry (0.216417ms)
+@project-air/sdk:test: ✔ outgoing messages validate against sync.schema.json and ids are unique UUIDv7 (1.371375ms)
+@project-air/sdk:test: ✔ an injected authenticated clientId is used unchanged and must be a UUIDv7 (0.289458ms)
+@project-air/sdk:test: ✔ presence updates are throttled/coalesced and remote participants subscribe and clear (0.30925ms)
+@project-air/sdk:test: ✔ undoOwn applies only the client's own inverse; remote operations are never recorded (0.272209ms)
+@project-air/sdk:test: ✔ workspaces.list sends the session and requestId and parses the list envelope (27.278584ms)
+@project-air/sdk:test: ✔ a cookie session is sent as the cookie header (5.98325ms)
+@project-air/sdk:test: ✔ a string session is shorthand for the test session header (53.057ms)
+@project-air/sdk:test: ✔ workspace create/get/update/delete use the contract envelopes (26.409084ms)
+@project-air/sdk:test: ✔ boards list/create/get/update/delete (5.81125ms)
+@project-air/sdk:test: ✔ notes list/create/get/update/delete (7.133666ms)
+@project-air/sdk:test: ✔ cards list/create/get/update/delete (18.557625ms)
+@project-air/sdk:test: ✔ pagination nextCursor is passed back as the cursor query (11.040208ms)
+@project-air/sdk:test: ✔ no session maps to a typed AUTH_REQUIRED ApiError (3.268458ms)
+@project-air/sdk:test: ✔ a validation error exposes the field paths (1.560209ms)
+@project-air/sdk:test: ✔ a conflict maps to CONFLICT and unknown ids to NOT_FOUND (3.043834ms)
+@project-air/sdk:test: ✔ an unexpected success envelope becomes an INTERNAL ApiError (1.658834ms)
+@project-air/sdk:test: ✔ an invalid baseUrl is rejected by the client (0.272167ms)
+@project-air/sdk:test: ℹ tests 29
+@project-air/sdk:test: ℹ suites 0
+@project-air/sdk:test: ℹ pass 29
+@project-air/sdk:test: ℹ fail 0
+@project-air/sdk:test: ℹ cancelled 0
+@project-air/sdk:test: ℹ skipped 0
+@project-air/sdk:test: ℹ todo 0
+@project-air/sdk:test: ℹ duration_ms 1712.314625
+
+ Tasks:    6 successful, 6 total
+Cached:    0 cached, 6 total
+  Time:    2.512s 
+
+$ turbo run test --affected
+ WARNING  no output files found for task @project-air/auth#test. Please check your `outputs` key in `turbo.json`
+ WARNING  no output files found for task @project-air/sdk#test. Please check your `outputs` key in `turbo.json`
+ WARNING  no output files found for task @project-air/web#test. Please check your `outputs` key in `turbo.json`

@@ -13,6 +13,7 @@ import type { Server } from "node:http";
 import type { KratosClient } from "../kratos.ts";
 import type { Logger } from "../log.ts";
 import { registerHealthRoutes } from "./health.ts";
+import { registerAuthRoutes } from "../auth-routes.ts";
 import { registerInvitationRoutes } from "../invitations.ts";
 import { Router } from "./router.ts";
 import { registerSessionRoutes } from "../session.ts";
@@ -28,6 +29,8 @@ export interface AppOptions {
   readonly testMode?: boolean;
   readonly testSessionSecret?: string;
   readonly adminToken?: string;
+  /** `Secure` session cookie (production). */
+  readonly cookieSecure?: boolean;
 }
 
 export function createApp(options: AppOptions): Server {
@@ -43,6 +46,7 @@ export function createApp(options: AppOptions): Server {
 
   if (options.kratos !== undefined) {
     const testMode = options.testMode ?? false;
+    registerAuthRoutes(router, { kratos: options.kratos, ...(options.cookieSecure === undefined ? {} : { cookieSecure: options.cookieSecure }) });
     registerSessionRoutes(router, {
       kratos: options.kratos,
       testMode,

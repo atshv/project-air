@@ -191,6 +191,59 @@ export class KratosClient {
     return this.#flow(`${this.#publicUrl}/self-service/recovery/api`);
   }
 
+  /** Submit an API login flow; returns the session token and provider cookies. */
+  async submitLogin(flowId: string, identifier: string, password: string): Promise<{ sessionToken: string | null; setCookie: string[] }> {
+    const response = await this.#request(`${this.#publicUrl}/self-service/login?flow=${encodeURIComponent(flowId)}`, {
+      method: "POST",
+      headers: { "content-type": "application/json", accept: "application/json" },
+      body: JSON.stringify({ method: "password", identifier, password }),
+    });
+    return this.#sessionResult(response);
+  }
+
+  async submitRegistration(flowId: string, input: { email: string; password: string; displayName: string }): Promise<{ sessionToken: string | null; setCookie: string[] }> {
+    const response = await this.#request(`${this.#publicUrl}/self-service/registration?flow=${encodeURIComponent(flowId)}`, {
+      method: "POST",
+      headers: { "content-type": "application/json", accept: "application/json" },
+      body: JSON.stringify({ method: "password", traits: { email: input.email, display_name: input.displayName }, password: input.password }),
+    });
+    return this.#sessionResult(response);
+  }
+
+  async submitRecovery(flowId: string, email: string): Promise<void> {
+    const response = await this.#request(`${this.#publicUrl}/self-service/recovery?flow=${encodeURIComponent(flowId)}`, {
+      method: "POST",
+      headers: { "content-type": "application/json", accept: "application/json" },
+      body: JSON.stringify({ method: "link", email }),
+    });
+    if (!response.ok) throw this.#failure(response);
+  }
+
+  /** Provider logout; a failed call is returned as false (the route clears the cookie anyway). */
+  async logout(cookieHeader: string): Promise<boolean> {
+    try {
+      const response = await this.#request(`${this.#publicUrl}/self-service/logout/api`, {
+        method: "DELETE",
+        headers: { cookie: cookieHeader, accept: "application/json" },
+      });
+      return response.ok;
+    } catch {
+      return false;
+    }
+  }
+
+  async #sessionResult(response: Response): Promise<{ sessionToken: string | null; setCookie: string[] }> {
+    if (!response.ok) throw this.#failure(response);
+    const headers = response.headers as unknown as { getSetCookie?: () => string[] };
+    const setCookie = typeof headers.getSetCookie === "function" ? headers.getSetCookie() : (response.headers.get("set-cookie") === null ? [] : [String(response.headers.get("set-cookie"))]);
+    let sessionToken: string | null = null;
+    try {
+      const body = await this.#json(response);
+      if (isRecord(body) && typeof body["session_token"] === "string") sessionToken = body["session_token"];
+    } catch { /* a flow response may have no body */ }
+    return { sessionToken, setCookie };
+  }
+
   async #flow(url: string): Promise<KratosFlow> {
     const response = await this.#request(url, { method: "GET" });
     if (!response.ok) {

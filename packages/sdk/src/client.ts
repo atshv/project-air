@@ -12,6 +12,7 @@
  * contract `code`, `messageKey` and `requestId`.
  */
 
+import { AuthResource } from "./auth.ts";
 import { BoardsResource } from "./boards.ts";
 import { CardsResource } from "./cards.ts";
 import { NotesResource } from "./notes.ts";
@@ -28,6 +29,10 @@ export interface ClientOptions {
   readonly fetch?: FetchLike | undefined;
   /** Overrides the UUIDv7 request-id factory (tests). */
   readonly requestId?: (() => string) | undefined;
+  /** Auth service base URL for `/v1/auth/*` (defaults to baseUrl). */
+  readonly authBaseUrl?: string | undefined;
+  /** Session probe base URL (defaults to baseUrl; the auth service also serves it). */
+  readonly sessionBaseUrl?: string | undefined;
 }
 
 export interface ContractClient {
@@ -35,6 +40,7 @@ export interface ContractClient {
   readonly boards: BoardsResource;
   readonly notes: NotesResource;
   readonly cards: CardsResource;
+  readonly auth: AuthResource;
 }
 
 export function createClient(options: ClientOptions): ContractClient {
@@ -44,5 +50,6 @@ export function createClient(options: ClientOptions): ContractClient {
     boards: new BoardsResource(transport),
     notes: new NotesResource(transport),
     cards: new CardsResource(transport),
+    auth: new AuthResource({ baseUrl: options.baseUrl, authBaseUrl: options.authBaseUrl, sessionBaseUrl: options.sessionBaseUrl, fetch: options.fetch, requestId: options.requestId }),
   };
 }

@@ -1,0 +1,4 @@
+area: auth
+kind: minor
+
+Add auth UI and session (P6-02): services/auth JSON routes over the existing Kratos client (POST /v1/auth/login with create+submit flow and forwarded session cookie, registration, recovery, logout with cookie clear; typed 400/401/409/503 errors, no credential/token logging; GET /session and test-mode path untouched); packages/sdk AuthResource (session.get via platform or configured session base, login/registration/recovery/logout with credentials include and typed ApiError, no token storage); apps/web login/registration/recovery pages with message-backed labels/autocomplete/inline validation and submit/disabled/error states, session guard with loading state and return-to-intended-route, logout in the account area, signed-in account + language switch on settings, Vite same-origin /v1 proxy for platform/auth slot ports, messages en/de with parity, SDK auth tests and web validation tests; README/docs and auth change entry.

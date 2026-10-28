@@ -23,6 +23,9 @@ export async function startKratosStub(options = {}) {
     whoami: options.whoami ?? "identity",
     ready: options.ready ?? true,
     createIdentity: options.createIdentity ?? "created",
+    login: options.login ?? "success",
+    registration: options.registration ?? "success",
+    recovery: options.recovery ?? "success",
     delayMs: options.delayMs ?? 0,
   };
   const requests = [];
@@ -74,6 +77,29 @@ export async function startKratosStub(options = {}) {
     }
     if (url.pathname === "/self-service/login/api" || url.pathname === "/self-service/registration/api" || url.pathname === "/self-service/recovery/api") {
       json(response, 200, { id: "flow-1", ui: { action: `http://stub${url.pathname}` } });
+      return;
+    }
+    if (url.pathname === "/self-service/login" && request.method === "POST") {
+      if (state.login === "invalid") { json(response, 401, { error: { code: 401, message: "invalid credentials" } }); return; }
+      if (state.login === "unavailable") { json(response, 503, { error: { code: 503, message: "unavailable" } }); return; }
+      response.writeHead(200, { "content-type": "application/json", "set-cookie": "ory_kratos_session=stub-session; HttpOnly; Path=/; SameSite=Lax" });
+      response.end(JSON.stringify({ session_token: "stub-session", session: { active: true } }));
+      return;
+    }
+    if (url.pathname === "/self-service/registration" && request.method === "POST") {
+      if (state.registration === "conflict") { json(response, 409, { error: { code: 409, message: "exists" } }); return; }
+      response.writeHead(200, { "content-type": "application/json", "set-cookie": "ory_kratos_session=stub-session; HttpOnly; Path=/; SameSite=Lax" });
+      response.end(JSON.stringify({ session_token: "stub-session" }));
+      return;
+    }
+    if (url.pathname === "/self-service/recovery" && request.method === "POST") {
+      if (state.recovery === "unavailable") { json(response, 503, { error: { code: 503, message: "unavailable" } }); return; }
+      json(response, 200, { state: "sent_email" });
+      return;
+    }
+    if (url.pathname === "/self-service/logout/api" && request.method === "DELETE") {
+      response.writeHead(204);
+      response.end();
       return;
     }
     if (url.pathname === "/admin/identities" && request.method === "POST") {

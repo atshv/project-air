@@ -37,6 +37,7 @@ export async function startService(config: AuthConfig, logger: Logger): Promise<
     testMode: config.testMode,
     testSessionSecret: config.sessionSecret,
     adminToken: config.kratosAdminToken,
+    cookieSecure: config.nodeEnv === "production",
   });
 
   await new Promise<void>((resolve, reject) => {
