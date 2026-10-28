@@ -5771,7 +5771,7 @@
       "satisfies": [
         "D11"
       ],
-      "status": "pending",
+      "status": "in_progress",
       "depends_on": [
         "P5-04",
         "P5-06"
@@ -5813,9 +5813,9 @@
         "unit",
         "crdt-convergence"
       ],
-      "owner": null,
+      "owner": "lead",
       "branch": "task/P5-07",
-      "worktree": null,
+      "worktree": "/private/tmp/air-P5-07",
       "round": 0,
       "evidence": [],
       "scope_write_forbidden": [

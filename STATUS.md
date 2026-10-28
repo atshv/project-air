@@ -122,7 +122,7 @@
 
 ## Ready now
 
-- `P5-07` crdt-convergence proof: 10,000 rounds, offline clients and own-only undo
+- none
 
 ## Done
 
@@ -219,6 +219,7 @@
 
 ## In progress
 
+- [ ] `P5-07` crdt-convergence proof: 10,000 rounds, offline clients and own-only undo — status: `in_progress` — owner: lead
 - [ ] `P0-41` Live demo: rounded frames, darker done items, contents instead of text — status: `in_progress` — owner: —
 
 ## Blocked / failed
@@ -231,14 +232,13 @@
 - [ ] `P0-15` Release command and tag-based CI release — status: `pending` — owner: —
 - [ ] `P0-16` Dependency updates and Polier update check — status: `pending` — owner: —
 - [ ] `P0-17` RELEASING.md and release 0.0.1 — status: `pending` — owner: —
-- [ ] `P5-07` crdt-convergence proof: 10,000 rounds, offline clients and own-only undo — status: `pending` — owner: —
 - [ ] `P5-08` load proof: 25 clients per board at p95 <= 150 ms and the stage report — status: `pending` — owner: —
 - [ ] `P0-42` Live demo: light theme with sun/moon icons under DE/EN — status: `pending` — owner: —
 
 <!-- polier:claims -->
 ## Claims
 
-- `P5-06` in progress by dsh since 2026-10-28T20:44:27+00:00 — worktree: /private/tmp/air-P5-06 · slot 1
+- `P5-07` in progress by dsh since 2026-10-28T20:45:32+00:00 — worktree: /private/tmp/air-P5-07 · slot 1
 
 <!-- /polier:claims -->
 
