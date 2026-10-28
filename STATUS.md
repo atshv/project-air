@@ -124,10 +124,7 @@
 
 ## Ready now
 
-- `P0-44` Live demo: document the pen and ink colours in the preview
-  - P0-43: Closed P0-43: pen draws one smooth stroke per press above zones/notes/photos/tables, in world coords (pan/zoom), never selecting/moving; crosshair, Escape/tool exit.
-  - P0-43: Palette popover with six token colours (tone-a..e, fg), aria-pressed swatches, trigger dot, keyboard/Escape/outside; strokes store the tone so dark/light recolour them; one translated undo step each.
-  - P0-43: P0-41/P0-42 preserved; README documents preview-only ink; board-check (pinned Polier v1.0.0, 1.1.0 upgrade documented), design-check and changelog-entry pass; screenshots and browser log committed.
+- none
 
 ## Done
 
@@ -229,7 +226,7 @@
 
 ## In progress
 
-- none
+- [ ] `P0-44` Live demo: document the pen and ink colours in the preview — status: `in_progress` — owner: lead
 
 ## Blocked / failed
 
@@ -241,7 +238,13 @@
 - [ ] `P0-15` Release command and tag-based CI release — status: `pending` — owner: —
 - [ ] `P0-16` Dependency updates and Polier update check — status: `pending` — owner: —
 - [ ] `P0-17` RELEASING.md and release 0.0.1 — status: `pending` — owner: —
-- [ ] `P0-44` Live demo: document the pen and ink colours in the preview — status: `pending` — owner: —
+
+<!-- polier:claims -->
+## Claims
+
+- `P0-44` in progress by dsh since 2026-10-28T23:01:57+00:00 — worktree: /private/tmp/air-P0-44 · slot 3
+
+<!-- /polier:claims -->
 
 ## Decisions
 

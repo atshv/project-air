@@ -6581,8 +6581,8 @@
       "id": "P0-44",
       "title": "Live demo: document the pen and ink colours in the preview",
       "stage": "foundation",
-      "status": "pending",
-      "owner": null,
+      "status": "in_progress",
+      "owner": "lead",
       "depends_on": [
         "P0-43"
       ],
@@ -6617,7 +6617,7 @@
       ],
       "evidence": [],
       "handoff": [],
-      "worktree": null,
+      "worktree": "/private/tmp/air-P0-44",
       "exclusive": [],
       "satisfies": [
         "D3"
