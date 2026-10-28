@@ -123,10 +123,6 @@
 ## Ready now
 
 - `P5-06` Durability and reconnect: restart, catch-up and snapshot compaction
-- `P0-36` Live demo: select and resize objects, photo without bar, edges behind
-  - P0-35: Closed P0-35: contract overview now 0.3.0 (17 schemas, 20 ops incl. reorder, 86 fixtures 37/49, containment rule, 0.3.0 sync rules, version history).
-  - P0-35: New section 06 motion/interaction/layers (all 77 tokens now on the page) and section 10 canvas chrome (7 stage-5 specimens); sections renumbered 01-11; nothing removed.
-  - P0-35: Gates board-check/design-check/changelog-entry green; 5 screenshots + log; follow-up idea: a delete icon in packages/ui-kit/icons.
 
 ## Done
 
@@ -215,6 +211,7 @@
 ## In progress
 
 - [ ] `P5-04` SDK board-sync client and the one autosave path (L05 realtime half) — status: `in_progress` — owner: lead
+- [ ] `P0-36` Live demo: select and resize objects, photo without bar, edges behind — status: `in_progress` — owner: —
 
 ## Blocked / failed
 
@@ -230,13 +227,13 @@
 - [ ] `P5-06` Durability and reconnect: restart, catch-up and snapshot compaction — status: `pending` — owner: —
 - [ ] `P5-07` crdt-convergence proof: 10,000 rounds, offline clients and own-only undo — status: `pending` — owner: —
 - [ ] `P5-08` load proof: 25 clients per board at p95 <= 150 ms and the stage report — status: `pending` — owner: —
-- [ ] `P0-36` Live demo: select and resize objects, photo without bar, edges behind — status: `pending` — owner: —
 - [ ] `P0-37` Live demo: engine canvas chrome — status: `pending` — owner: —
 
 <!-- polier:claims -->
 ## Claims
 
-- `P5-04` in progress by dsh since 2026-10-28T19:16:47+00:00 — worktree: /private/tmp/air-P5-04 · slot 1
+- `P0-36` in progress by dsh since 2026-10-28T19:18:41+00:00 — worktree: /Users/rasulatashev/Desktop/KI Projekte/Project air-P0-36 · slot 2
+- `P5-04` in progress by dsh since 2026-10-28T19:18:39+00:00 — worktree: /private/tmp/air-P5-04 · slot 1
 
 <!-- /polier:claims -->
 
