@@ -143,13 +143,6 @@
   - P4-07: Closed P4-07: pure Camera::fitBounds (min(...,1.0), 0.1 floor, 64 px L02 padding from tokens), dot grid shader (tokens faint/canvas, 16 px, visible at >=0.5), on-demand rendering (0 idle frames).
   - P4-07: visual 10/10 0-diff incl. reviewed sample-zoom-in update + two one-card-fit baselines; perf p95 0.1 ms, 0 intervals > 16.7 ms; L01 final mean 0.049 vs basis 0.052.
   - P4-07: Harnesses gained --task evidence prefixes; docs updated. Two review rounds, four minors fixed (record commit base, visual --task, comment wording, baseline-history precision).
-- `P4-27` Zones as containers II: engine membership and zone move (L08)
-  - P4-25: Closed P4-25: contract 0.2.0 (17 schemas, root/schema ids/board entry), containment fixtures for the nullable zone parent, the reorder {itemId,z} operation with inverse, moveZone description fix.
-  - P4-25: Blocker fixed after review: packages/engine guard + C++ tests now assert 0.2.0 (fresh cpp-unit 2/2); typecheck 8/8. Codegen/parity green (96 contract tests, 86 fixtures).
-  - P4-25: Lead-approved contract_followups: packages/sdk (stale 0.1.0 wording), services/platform, services/auth (no contract import yet). ADR-0010 records the Q17 decision.
-  - P4-26: Closed P4-26: migration 0005 adds app.zones (contract fields, no parent column) and the composite key cards(board_id,zone_id)->zones(board_id,id) ON DELETE SET NULL (zone_id).
-  - P4-26: Zones carry the card RLS matrix; zones.board_id immutable; API answers 400 VALIDATION for a non-zone/foreign parent. unit 83+56, api 33, rls 8 green; review pass.
-  - P4-26: Follow-ups: no zone REST routes in contract 0.2.0 (sync later); blocks get the same key with block storage; ON DELETE SET NULL does not bump cards.updated_at (P4-27).
 
 ## Done
 
@@ -216,7 +209,7 @@
 
 ## In progress
 
-- none
+- [ ] `P4-27` Zones as containers II: engine membership and zone move (L08) — status: `in_progress` — owner: lead
 
 ## Blocked / failed
 
@@ -238,7 +231,6 @@
 - [ ] `P4-21` Undo/redo (L11) — status: `pending` — owner: —
 - [ ] `P4-22` Remember view (L17) — status: `pending` — owner: —
 - [ ] `P4-24` Trackpad and wheel defaults (L15, desktop part) — status: `pending` — owner: —
-- [ ] `P4-27` Zones as containers II: engine membership and zone move (L08) — status: `pending` — owner: —
 - [ ] `P4-28` L01 final proof, two-backend reference images and stage showcase — status: `pending` — owner: —
 - [ ] `P4-29` Zone parity with the live demo I: arrangement and release preview (L08) — status: `pending` — owner: —
 - [ ] `P4-30` Zone parity with the live demo II: lifecycle and names (L08) — status: `pending` — owner: —
@@ -246,7 +238,7 @@
 <!-- polier:claims -->
 ## Claims
 
-- `P4-23` in progress by dsh since 2026-10-28T07:15:50+00:00 — worktree: /private/tmp/air-P4-23 · slot 1
+- `P4-27` in progress by dsh since 2026-10-28T07:16:38+00:00 — worktree: /private/tmp/air-P4-27 · slot 1
 
 <!-- /polier:claims -->
 
