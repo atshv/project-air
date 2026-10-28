@@ -1,4 +1,4 @@
-# Design preview (P0-19, P0-20, P0-21, P0-22, P0-23, P0-24, P0-25, P0-26, P0-27, P0-28, P0-29, P0-30, P0-31, P0-32, P0-33, P0-34, P0-35, P0-36, P0-37, P0-38, P0-39, P0-40, P1-07)
+# Design preview (P0-19, P0-20, P0-21, P0-22, P0-23, P0-24, P0-25, P0-26, P0-27, P0-28, P0-29, P0-30, P0-31, P0-32, P0-33, P0-34, P0-35, P0-36, P0-37, P0-38, P0-39, P0-40, P0-41, P1-07)
 
 A design preview of the Project air design system. It is **not the product**: there is no engine,
 no data, no server and no build step. It exists so the owner can see the look and feel between
@@ -15,9 +15,9 @@ its two values come from:
   `0.0.1 – unreleased`; the status word comes from the same heading. `CHANGELOG.md` is the display
   source and currently agrees with the root `package.json` version `0.0.1`.
 - **Last change** — the newest preview change entry, currently
-  `.changes/P0-40-teammates.md`; the line shows the task id and that task's title from
-  `board.json` / the task brief: `P0-40 — Live demo: two teammates on the board`. The line follows the
-  `P0-*` preview tasks (P0-19 … P0-40, P1-07); the engine tasks
+  `.changes/P0-41-rounded-contents.md`; the line shows the task id and that task's title from
+  `board.json` / the task brief: `P0-41 — Live demo: rounded frames, darker done items, contents instead of text`. The line follows the
+  `P0-*` preview tasks (P0-19 … P0-41, P1-07); the engine tasks
   (`P4-*`) and the other stages run in parallel and do not move it, so "highest numeric id" alone is
   not the rule. If several files exist for the same preview task, the most recent one is used;
   `.changes/README.md` and `.changes/TEMPLATE.md` do not count as entries.
@@ -271,6 +271,23 @@ L02 asks for zones.
   live only in this page's memory, like everything else in the demo.
 - **Without script** — the title is the first row of the static card grid.
 
+## Rounded frames, darker done items, contents (P0-41)
+
+Owner feedback of 2026-10-28:
+
+- **Rounded frames** — the selection frame, the multi-selection frames and the teammates' frames
+  take the object's computed corner radius (`--frame-radius`; `--radius-md` for note cards and
+  zone items, `--radius-lg` for blocks and zones), scaled with the zoom. The lit edge covers the
+  straight part of the side; the corner bracket is a 2 px arc along the rounded corner whose arms
+  reach 8 px past the curve.
+- **Done entries** — `--muted` at opacity 0.6 (about 40 % white against 92 % for open entries),
+  no strikethrough; design law §6 states it.
+- **Contents instead of text** — the intro paragraph, the long hint and the "·" legend are gone.
+  One short intro line remains, followed by a numbered contents list of ten points (`<details>`,
+  closed by default, keyboard operable, two columns on desktop, one on mobile): move cards,
+  connection, dock/reorder/pull out, new zone, name and move a zone, select and resize, snap /
+  several / menu / undo, checklist and table, teammates, preview only (`demo.guide.*`).
+
 ## Two teammates on the board (P0-40)
 
 Owner request of 2026-10-28: show two more people working on the same board. Lena (`--tone-b`)
@@ -491,9 +508,9 @@ P0-26 markup with the old stylesheet and a broken-looking demo. The preview ther
 assets with a version query:
 
 ```html
-<link rel="stylesheet" href="../../../packages/ui-kit/tokens.css?v=P0-40" />
-<link rel="stylesheet" href="preview.css?v=P0-40" />
-<script src="preview.js?v=P0-40" defer></script>
+<link rel="stylesheet" href="../../../packages/ui-kit/tokens.css?v=P0-41" />
+<link rel="stylesheet" href="preview.css?v=P0-41" />
+<script src="preview.js?v=P0-41" defer></script>
 ```
 
 - **Bump rule:** every task that changes a file in `apps/web/preview/` — or the shared
@@ -502,7 +519,7 @@ assets with a version query:
   never cached and gets the current files, which also covers a changed design system that would
   otherwise be served from the cached token stylesheet.
 - The locale files reuse the script's version automatically: `preview.js` reads the `v` query of its
-  own script URL and appends it to the locale request (`locales/de.json?v=P0-40`), so one bump
+  own script URL and appends it to the locale request (`locales/de.json?v=P0-41`), so one bump
   covers the translations as well.
 - The icon SVGs are referenced from `preview.css` and keep stable, unversioned URLs; they only
   change with a design-system task, and every such task bumps the preview version anyway.
@@ -559,7 +576,7 @@ Serve the **repository root**, not this folder, so the relative token and icon p
 the slot's `web` port from `.polier-slot` (never hard-code it), then:
 
 ```sh
-cd "/Users/rasulatashev/Desktop/KI Projekte/Project air-P0-40"
+cd "/Users/rasulatashev/Desktop/KI Projekte/Project air-P0-41"
 PORT=$(python3 -c "import json; print(json.load(open('.polier-slot'))['ports']['web'])")
 python3 -m http.server "$PORT" --bind 127.0.0.1
 ```
@@ -650,11 +667,13 @@ line and tasks in English and German),
 `P0-39-frame-corner-zoom.png`, `P0-39-checklist.png`,
 `P0-39-rules.png`, `P0-39-rules-de.png` (1440×900) and `P0-39-rules-mobile.png` (390×844),
 `P0-40-team.png`, `P0-40-team-zoom.png`, `P0-40-team-idle.png`, `P0-40-team-de.png` (1440×900) and
-`P0-40-team-mobile.png` (390×844) and the
+`P0-40-team-mobile.png` (390×844),
+`P0-41-frame-round.png`, `P0-41-corner-arc.png`, `P0-41-checklist.png`, `P0-41-contents.png`,
+`P0-41-contents-open-de.png` (1440×900) and `P0-41-contents-mobile.png` (390×844) and the
 `P0-19-preview.log` / `P0-20-preview.log` / `P0-21-preview.log` / `P0-22-preview.log` /
 `P0-23-preview.log` / `P0-24-preview.log` / `P0-25-preview.log` / `P0-26-preview.log` /
 `P0-27-preview.log` / `P0-28-preview.log` / `P0-29-preview.log` / `P0-30-preview.log` /
-`P0-31-preview.log` / `P0-32-preview.log` / `P0-33-preview.log` / `P0-34-preview.log` / `P0-35-preview.log` / `P0-36-preview.log` / `P0-37-preview.log` / `P0-38-preview.log` / `P0-39-preview.log` / `P0-40-preview.log` /
+`P0-31-preview.log` / `P0-32-preview.log` / `P0-33-preview.log` / `P0-34-preview.log` / `P0-35-preview.log` / `P0-36-preview.log` / `P0-37-preview.log` / `P0-38-preview.log` / `P0-39-preview.log` / `P0-40-preview.log` / `P0-41-preview.log` /
 `P1-07-preview.log` files with the
 exact serve, curl and screenshot commands. The page has no horizontal overflow at 1440×900, 390×844
 or the owner's 1426 × 583 viewport.

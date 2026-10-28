@@ -4,9 +4,9 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title data-i18n="page.projectAirDesignPreviewStatic">Project air design preview — static design preview</title>
-    <link rel="stylesheet" href="../../../packages/ui-kit/tokens.css?v=P0-40" />
-    <link rel="stylesheet" href="preview.css?v=P0-40" />
-    <script src="preview.js?v=P0-40" defer></script>
+    <link rel="stylesheet" href="../../../packages/ui-kit/tokens.css?v=P0-41" />
+    <link rel="stylesheet" href="preview.css?v=P0-41" />
+    <script src="preview.js?v=P0-41" defer></script>
   </head>
   <body>
     <main class="page">
@@ -23,14 +23,14 @@
         <p class="masthead__version" data-preview-meta>
           <span data-preview-version data-i18n="masthead.version">Version 0.0.1</span>
           <span data-preview-status data-i18n="masthead.unreleased">unreleased</span>
-          <span data-preview-last-change data-i18n="masthead.lastChange">Last change: P0-40 — Live demo: two teammates on the board</span>
-          <span data-preview-last-change-time data-i18n="masthead.lastChangeTime">2026-10-28 20:55 (Europe/Zurich)</span>
+          <span data-preview-last-change data-i18n="masthead.lastChange">Last change: P0-41 — Live demo: rounded frames, darker done items, contents instead of text</span>
+          <span data-preview-last-change-time data-i18n="masthead.lastChangeTime">2026-10-28 21:01 (Europe/Zurich)</span>
         </p>
         <div class="masthead__meta">
           <span data-i18n-html="masthead.tokensPackagesUiKitTokens">Tokens: <code>packages/ui-kit/tokens.css</code></span>
           <span data-i18n-html="masthead.iconsPackagesUiKitIcons">Icons: <code>packages/ui-kit/icons/</code></span>
           <span data-i18n-html="masthead.demoPreviewJs">Demo: <code>preview.js</code></span>
-          <span data-i18n="masthead.tasks">Tasks: P0-19, P0-20, P0-21, P0-22, P0-23, P0-24, P0-25, P0-26, P0-27, P0-28, P0-29, P0-30, P0-31, P0-32, P0-33, P0-34, P0-35, P0-36, P0-37, P0-38, P0-39, P0-40, P1-07</span>
+          <span data-i18n="masthead.tasks">Tasks: P0-19, P0-20, P0-21, P0-22, P0-23, P0-24, P0-25, P0-26, P0-27, P0-28, P0-29, P0-30, P0-31, P0-32, P0-33, P0-34, P0-35, P0-36, P0-37, P0-38, P0-39, P0-40, P0-41, P1-07</span>
           <div
             class="preview-locale"
             role="group"
@@ -63,16 +63,7 @@
         <div class="section__head">
           <span class="eyebrow" data-i18n="demo.eyebrow">01 — Interactive demo</span>
           <h2 id="demo" data-i18n="demo.liveConnectionDemo">Live connection demo</h2>
-          <p class="section__intro" data-i18n-html="demo.twoNoteCardsAndOne">
-            Two note cards and one connection, plus a preview-only toolbar and a zone whose notepad
-            and photo can be pulled out and docked back. The zone lays its two items side by side or
-            stacked depending on where you drop them, a drag follows the pointer one to one, and a
-            docked item can be reordered inside the zone. When both items are out the empty zone
-            disappears, and dragging the two items together forms a new zone around them. Drag a
-            card with mouse, pen or finger — the whole card is the handle — or focus a card and use
-            the arrow keys (16 px per step, <kbd>Home</kbd> resets both).
-            <strong>interactive demo — not the engine; no data, no server</strong>.
-          </p>
+          <p class="section__intro" data-i18n-html="demo.intro">Try everything directly on the canvas. <strong>Interactive demo — not the engine; no data, no server.</strong></p>
         </div>
         <div class="demo" data-demo>
           <noscript>
@@ -81,38 +72,71 @@
               without it.
             </p>
           </noscript>
-          <p class="demo__hint" id="demo-hint" data-i18n="demo.aClickWithoutMovementUnder">
-            A click without movement (under 4 px) selects the card; the four
-            side-midpoint anchors are invisible geometry and the edge snaps to the
-            nearest pair. Drag the notepad or the photo: it follows the pointer one to
-            one and the zone shows what a release would do — a dashed slot where the
-            item lands, the other item making room, the frame shrinking around the
-            remaining item when you pull one out. Release over the other free item to
-            group both into a new zone (above/below stacks, left/right places side by
-            side); release away from the zone to keep the item free. Nothing is
-            committed before the release, and every settle uses the same calm ease-out.
-            Click the zone name in its header to rename it: Enter keeps the new name,
-            Escape restores the old one, an empty name returns to the default; a zone
-            formed by grouping starts as “New zone”. Drag a zone by its frame or header
-            to move it together with its items. Click any object to select it and drag
-            an edge or a corner of its frame to resize it; Lena and Jonas work on the same board as simulated teammates, each with a cursor, a name and a selection in their colour; a photo dropped into a zone takes the
-            size of the other item. Dragged objects snap to their neighbours (Shift
-            moves freely); Shift-drag on the empty canvas selects several objects;
-            right-click opens the menu, Delete removes, Cmd/Ctrl+Z undoes. When both
-            items are out the empty zone fades away; toolbar, zone and zoom pill are
-            preview-only: a tool click only selects it and changes nothing on the
-            canvas.
-          </p>
-          <p class="demo__legend token-caption" data-i18n="demo.toolbarPreviewOnlyZoneNotepad">
-            toolbar · preview-only · drag 1:1 · dashed slot = landing place · release
-            commits · above/below = stacked · left/right = side by side · drag inside =
-            reorder · both out: zone fades · click name = rename · drag frame = move
-            zone · checklist: click to tick · table: click a cell, arrows move · click =
-            select · frame edge = resize · line behind all objects · snap guides ·
-            Shift-drag = band · right-click = menu · Cmd/Ctrl+Z = undo · coloured
-            cursors = teammates · curve ·
-            --tone-d · 1.5 px
-          </p>
+          <nav class="demo-guide-list" id="demo-hint" aria-labelledby="demo-guide-title">
+            <h3 class="demo-guide-list__title" id="demo-guide-title" data-i18n="demo.guide.title">Contents</h3>
+            <ol class="demo-guide-list__items" aria-label="What you can try in the demo" data-i18n-attr="aria-label:demo.guide.label">
+              <li class="demo-guide-list__item">
+                <details class="demo-guide-list__point">
+                  <summary><span class="demo-guide-list__number" aria-hidden="true">01</span><span data-i18n="demo.guide.move.title">Move cards</span></summary>
+                  <p data-i18n-html="demo.guide.move.body">Drag with mouse, pen or finger — the whole card is the handle. Focus a card and use the arrow keys: 16 px per step, <kbd>Home</kbd> resets.</p>
+                </details>
+              </li>
+              <li class="demo-guide-list__item">
+                <details class="demo-guide-list__point">
+                  <summary><span class="demo-guide-list__number" aria-hidden="true">02</span><span data-i18n="demo.guide.edge.title">Connection</span></summary>
+                  <p data-i18n-html="demo.guide.edge.body">The line runs behind every object and jumps to the nearest pair of side midpoints.</p>
+                </details>
+              </li>
+              <li class="demo-guide-list__item">
+                <details class="demo-guide-list__point">
+                  <summary><span class="demo-guide-list__number" aria-hidden="true">03</span><span data-i18n="demo.guide.dock.title">Dock, reorder, pull out</span></summary>
+                  <p data-i18n-html="demo.guide.dock.body">Drag the notepad or the photo: a dashed slot shows where it lands. Above or below stacks, left or right places side by side; dragging inside the zone reorders.</p>
+                </details>
+              </li>
+              <li class="demo-guide-list__item">
+                <details class="demo-guide-list__point">
+                  <summary><span class="demo-guide-list__number" aria-hidden="true">04</span><span data-i18n="demo.guide.group.title">New zone</span></summary>
+                  <p data-i18n-html="demo.guide.group.body">Drop one free item onto the other to form a new zone. When both items are out, the empty zone fades away.</p>
+                </details>
+              </li>
+              <li class="demo-guide-list__item">
+                <details class="demo-guide-list__point">
+                  <summary><span class="demo-guide-list__number" aria-hidden="true">05</span><span data-i18n="demo.guide.zone.title">Name and move a zone</span></summary>
+                  <p data-i18n-html="demo.guide.zone.body">Click the name to rename it — Enter keeps, Escape restores. Drag the frame or header to move the zone with its items.</p>
+                </details>
+              </li>
+              <li class="demo-guide-list__item">
+                <details class="demo-guide-list__point">
+                  <summary><span class="demo-guide-list__number" aria-hidden="true">06</span><span data-i18n="demo.guide.resize.title">Select and resize</span></summary>
+                  <p data-i18n-html="demo.guide.resize.body">Click an object to select it, then drag an edge or a corner of its frame. A photo dropped into a zone takes the size of the other item.</p>
+                </details>
+              </li>
+              <li class="demo-guide-list__item">
+                <details class="demo-guide-list__point">
+                  <summary><span class="demo-guide-list__number" aria-hidden="true">07</span><span data-i18n="demo.guide.chrome.title">Snap, select several, menu, undo</span></summary>
+                  <p data-i18n-html="demo.guide.chrome.body">Dragged objects snap to their neighbours (Shift moves freely). Shift-drag selects several; right-click opens the menu; Delete removes; Cmd/Ctrl+Z undoes.</p>
+                </details>
+              </li>
+              <li class="demo-guide-list__item">
+                <details class="demo-guide-list__point">
+                  <summary><span class="demo-guide-list__number" aria-hidden="true">08</span><span data-i18n="demo.guide.blocks.title">Checklist and table</span></summary>
+                  <p data-i18n-html="demo.guide.blocks.body">Click an entry to tick it — done entries turn darker. Click a table cell and move with the arrow keys.</p>
+                </details>
+              </li>
+              <li class="demo-guide-list__item">
+                <details class="demo-guide-list__point">
+                  <summary><span class="demo-guide-list__number" aria-hidden="true">09</span><span data-i18n="demo.guide.team.title">Teammates</span></summary>
+                  <p data-i18n-html="demo.guide.team.body">Lena and Jonas are simulated teammates: a cursor, a name and a selection in their colour. Nothing is sent.</p>
+                </details>
+              </li>
+              <li class="demo-guide-list__item">
+                <details class="demo-guide-list__point">
+                  <summary><span class="demo-guide-list__number" aria-hidden="true">10</span><span data-i18n="demo.guide.preview.title">Preview only</span></summary>
+                  <p data-i18n-html="demo.guide.preview.body">Toolbar and zoom pill only show their states: a tool click changes nothing on the canvas.</p>
+                </details>
+              </li>
+            </ol>
+          </nav>
           <p class="demo-team" data-demo-team>
             <span data-i18n="demo.team.label">On this board:</span>
             <span class="demo-team__person demo-team__person--you"><span class="demo-team__dot" aria-hidden="true"></span><span data-i18n="demo.team.you">You</span></span>
@@ -1411,7 +1435,7 @@
             </div>
             <figcaption class="chrome-specimen__caption">
               <h3 data-i18n="chrome.selectionTitle">Selection, resize frame and count bar</h3>
-              <p data-i18n="chrome.selectionNote">A 1 px accent frame per selected object; on a single selection the frame’s edges and corners resize it — the hovered edge lights up as a 2 px line, a corner as a 16 px bracket — and one count bar with a delete button sits above the group (L10, L14).</p>
+              <p data-i18n="chrome.selectionNote">A 1 px accent frame per selected object; on a single selection the frame’s edges and corners resize it — the hovered edge lights up as a 2 px line, a corner as an arc along the rounded corner — and one count bar with a delete button sits above the group (L10, L14).</p>
               <code class="token-caption">--accent · --surface · --button-card</code>
             </figcaption>
           </figure>
@@ -1657,7 +1681,7 @@
               <li data-i18n-html="rules.s6.r2">Focus: 2 px <code>--accent</code> outline, 2 px offset — <strong>NEVER</strong> removed. Pressed: hover plus <code>scale(0.97)</code>.</li>
               <li data-i18n-html="rules.s6.r3">Selected card or block: 1.5 px <code>--accent</code> border with a 3 px <code>--accent-soft</code> ring. Being dragged: <code>--shadow</code>, opacity 1 — <strong>NEVER</strong> semi-transparent.</li>
               <li data-i18n-html="rules.s6.r4">Disabled: opacity 0.4, no hover. Saving / saved: 12 px <code>--muted</code> in a fixed-height status slot, “saved” fades after 2 s; errors stay in <code>--danger</code> and keep the input.</li>
-              <li data-i18n-html="rules.s6.r5">Done checklist entry: text <code>--muted</code>, tick in <code>--accent</code> — <strong>NEVER</strong> struck through.</li>
+              <li data-i18n-html="rules.s6.r5">Done checklist entry: text <code>--muted</code> at opacity 0.6, clearly darker than open entries, tick in <code>--accent</code> — <strong>NEVER</strong> struck through.</li>
               <li data-i18n-html="rules.s6.r6">Controls inside cards and blocks are invisible at rest and appear on hover, focus within or selection; they stay reachable by keyboard and show on touch when selected.</li>
             </ul>
             <p class="rule-card__where" data-i18n="rules.s6.where">Shown in: 08 — States</p>

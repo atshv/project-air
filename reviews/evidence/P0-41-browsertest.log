@@ -1,0 +1,20 @@
+[data-demo-card="a"]: object radius 14px frame radius 14px
+[data-demo-block="checklist"]: object radius 20px frame radius 20px
+hover SE corner of checklist frame: lit=1 bracket radius=20px
+screenshot P0-41-frame-round.png
+screenshot P0-41-corner-arc.png
+teammate frames: none shown
+after zoom in: own frame radius 20px (world px, scaled by the world transform); teammate frames: demo-remote--lena radius 22px
+multi frames: none
+checklist: done rgba(255, 255, 255, 0.66) opacity 0.6 none | open rgba(255, 255, 255, 0.92) opacity 1 none | done rgba(255, 255, 255, 0.66) opacity 0.6 none | open rgba(255, 255, 255, 0.92) opacity 1 none | open rgba(255, 255, 255, 0.92) opacity 1 none
+screenshot P0-41-checklist.png
+intro: Try everything directly on the canvas. Interactive demo — not the engine; no data, no server.; old blocks present: false
+contents: 01Move cards / 02Connection / 03Dock, reorder, pull out / 04New zone / 05Name and move a zone / 06Select and resize / 07Snap, select several, menu, undo / 08Checklist and table / 09Teammates / 10Preview only; open=0
+screenshot P0-41-contents.png
+pointer opens point 3: true
+Enter opens point 6: true; text: Click an object to select it, then drag an edge or a corner of its frame. A photo dropped into a zone takes the size of the other item.
+DE: Inhalt — 01Karten bewegen / 02Verbindung / 03Andocken, umsortieren, herausziehen … Zieh den Notizblock oder das Foto: ein gestrichelter Platz zeigt, wo es landet. Über oder unter stapelt, links oder rechts stellt nebeneinander; Ziehen in der Zone sortiert um.
+screenshot P0-41-contents-open-de.png
+overflow 1440: 0
+mobile: overflow 0, columns 358px, summary height 32
+screenshot P0-41-contents-mobile.png

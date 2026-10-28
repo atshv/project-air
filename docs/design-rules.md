@@ -127,7 +127,7 @@ The states also apply to objects drawn by the engine.
 | Selected (card/block) | border 1.5 px `--accent`, outer ring `0 0 0 3px var(--accent-soft)` |
 | Being dragged | shadow `--shadow`, cursor `grabbing`, opacity 1 (**NEVER** semi-transparent) |
 | Disabled | opacity 0.4, cursor `default`, no hover |
-| Done (checklist entry) | text `--muted`, tick in `--accent`; **NEVER** struck through |
+| Done (checklist entry) | text `--muted` at opacity 0.6, clearly darker than open entries; tick in `--accent`; **NEVER** struck through |
 | Saving | text "Speichert …" 12 px `--muted` in the status slot |
 | Saved | "Gespeichert" 12 px `--muted`, fades to 0 after 2 s |
 | Error | text 12 px `--danger`, stays, input is kept |

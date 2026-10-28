@@ -2071,6 +2071,13 @@
       return null;
     }
 
+    // The frame follows the rounded corner of its object (P0-41): the object's
+    // computed radius in world px, so it scales with the world like the frame.
+    function cornerRadius(element) {
+      var radius = parseFloat(window.getComputedStyle(element).borderTopLeftRadius);
+      return isFinite(radius) ? radius : 0;
+    }
+
     function renderSelection() {
       if (selectedTarget === null) {
         selectionChrome.classList.remove("is-visible");
@@ -2078,6 +2085,7 @@
       }
       var box = worldRectOf(selectedTarget.element);
       selectionChrome.style.setProperty("--chrome-inverse", (1 / scale).toFixed(4));
+      selectionChrome.style.setProperty("--frame-radius", cornerRadius(selectedTarget.element) + "px");
       selectionChrome.style.transform =
         "translate3d(" + box.x.toFixed(1) + "px, " + box.y.toFixed(1) + "px, 0)";
       selectionChrome.style.inlineSize = box.w.toFixed(1) + "px";
@@ -2497,6 +2505,7 @@
         frame.style.inlineSize = box.w.toFixed(1) + "px";
         frame.style.blockSize = box.h.toFixed(1) + "px";
         frame.style.setProperty("--chrome-inverse", (1 / scale).toFixed(4));
+        frame.style.setProperty("--frame-radius", cornerRadius(target.element) + "px");
         frame.classList.add("is-visible");
         union = union === null
           ? { left: box.x, top: box.y, right: box.x + box.w, bottom: box.y + box.h }
@@ -2956,11 +2965,13 @@
       if (!(element instanceof HTMLElement) || element.offsetParent === null) return null;
       var box = element.getBoundingClientRect();
       if (box.width === 0 || box.height === 0) return null;
+      var radius = parseFloat(window.getComputedStyle(element).borderTopLeftRadius);
       return {
         x: box.left - surfaceBox.left,
         y: box.top - surfaceBox.top,
         w: box.width,
         h: box.height,
+        radius: isFinite(radius) && element.offsetWidth > 0 ? radius * (box.width / element.offsetWidth) : 0,
       };
     }
 
@@ -2994,6 +3005,7 @@
         person.frame.style.transform = "translate(" + box.x.toFixed(1) + "px, " + box.y.toFixed(1) + "px)";
         person.frame.style.inlineSize = box.w.toFixed(1) + "px";
         person.frame.style.blockSize = box.h.toFixed(1) + "px";
+        person.frame.style.setProperty("--frame-radius", box.radius.toFixed(1) + "px");
         person.frame.classList.add("is-shown");
       } else {
         person.frame.classList.remove("is-shown");

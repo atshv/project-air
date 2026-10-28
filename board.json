@@ -6402,7 +6402,7 @@
       "satisfies": [
         "D3"
       ],
-      "status": "in_progress",
+      "status": "done",
       "depends_on": [
         "P0-40"
       ],
@@ -6442,13 +6442,21 @@
         "changelog-entry"
       ],
       "branch": "task/P0-41",
-      "worktree": "../Project air-P0-41",
-      "evidence": [],
+      "worktree": null,
+      "evidence": [
+        "reviews/evidence/P0-41-board-check-20261028T205525Z.json",
+        "reviews/evidence/P0-41-design-check-20261028T205529Z.json",
+        "reviews/evidence/P0-41-changelog-entry-20261028T205537Z.json"
+      ],
       "scope_write_forbidden": [
         "reference/",
         "docs/owner/"
       ],
-      "handoff": []
+      "handoff": [
+        "Closed P0-41: selection/multi-select/teammate frames follow the object radius via --frame-radius; hovered corner is a 2 px arc bracket. Blocks/zones use --radius-lg, notes --radius-md.",
+        "Done checklist entries render --muted at opacity 0.6 with a full --accent tick and no strikethrough; design law section 6 row and L14 wording follow the demo.",
+        "The three intro blocks became one line plus a numbered, two-column <details> contents list (ten points, EN/DE, keyboard); screenshots and the headless-Chrome log are committed."
+      ]
     },
     {
       "id": "P0-42",
