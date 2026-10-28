@@ -1,0 +1,37 @@
+$ cmake -S packages/engine -B packages/engine/build -DCMAKE_BUILD_TYPE=Debug && cmake --build packages/engine/build --parallel && ctest --test-dir packages/engine/build --output-on-failure
+[exit 0]
+
+-- Configuring done (0.1s)
+-- Generating done (0.0s)
+-- Build files have been written to: /tmp/air-P4-30/packages/engine/build
+[  7%] Built target engine_zone_tests
+[ 18%] Built target engine_zone_layout_tests
+[ 22%] Built target engine_zone_lifecycle_tests
+[ 59%] Built target air_engine_objects
+[ 62%] Built target air_engine
+[ 70%] Built target engine_unit_tests
+[ 77%] Built target engine_snap_tests
+[ 85%] Built target engine_binding_tests
+[100%] Built target engine_core_tests
+[100%] Built target engine_text_tests
+Test project /tmp/air-P4-30/packages/engine/build
+    Start 1: engine_unit_tests
+1/8 Test #1: engine_unit_tests ................   Passed    0.00 sec
+    Start 2: engine_core_tests
+2/8 Test #2: engine_core_tests ................   Passed    0.23 sec
+    Start 3: engine_text_tests
+3/8 Test #3: engine_text_tests ................   Passed    0.14 sec
+    Start 4: engine_binding_tests
+4/8 Test #4: engine_binding_tests .............   Passed    0.04 sec
+    Start 5: engine_zone_lifecycle_tests
+5/8 Test #5: engine_zone_lifecycle_tests ......   Passed    0.00 sec
+    Start 6: engine_zone_layout_tests
+6/8 Test #6: engine_zone_layout_tests .........   Passed    0.00 sec
+    Start 7: engine_zone_tests
+7/8 Test #7: engine_zone_tests ................   Passed    0.00 sec
+    Start 8: engine_snap_tests
+8/8 Test #8: engine_snap_tests ................   Passed    0.00 sec
+
+100% tests passed out of 8
+
+Total Test time (real) =   0.42 sec

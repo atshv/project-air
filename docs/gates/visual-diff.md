@@ -177,6 +177,14 @@ compares against, so an update needs a reviewer who saw both the old and the new
 
 ### Baseline history
 
+- **2026-10-28 — P4-30 L08 lifecycle/names: six reviewed images added.** The deterministic scenes
+  `zone-grouping-ghost`, `zone-emptied` and `zone-names` (layers scene at world (512, 288) zoom 1,
+  desktop and mobile, `?zoneLifecycle=...`) capture the dashed grouping ghost frame with its landing
+  slot, the emptied dashed/dimmed frame and the zone title in the 40 px header. They were written via
+  the documented per-scene `--update` review path and the full gate passes afterwards; every
+  pre-existing reference image stayed 0-diff.
+
+
 - **2026-10-28 — P4-29 L08 zone parity: two reviewed images added.** The `zone-parity-at-rest`
   scene (layers scene, `?zoneParity=1`, world (512, 288) at zoom 1, desktop and mobile) captures the
   deterministic auto-arranged zone (sizes + 16 px padding + 12 px gap below the 40 px header) with

@@ -111,6 +111,17 @@ import {
   ZONE_PADDING,
   zoneSettlePolicy,
 } from "@project-air/engine/zone-parity.js";
+import {
+  defaultZoneTitle,
+  headerGeometry,
+  normalizeZoneTitle,
+  planZoneGroup,
+  zoneFrameLook,
+  GROUP_OVERLAP,
+  GROUP_POINTER_PX,
+  ZONE_HEADER,
+  ZONE_TITLE_MAX,
+} from "@project-air/engine/zone-lifecycle.js";
 
 const canvas = document.querySelector("#canvas");
 const errorNode = document.querySelector("#error");
@@ -197,6 +208,14 @@ const inputDemoRequested =
 const inlineDemoRequested =
   query.get("edit") === "inline" && !benchmarkRequested && !perfRequested;
 // L08 (P4-29) zone parity demo: arrangement + release preview on the layers scene.
+// L08 (P4-30) lifecycle + names demo (grouping, emptied-zone removal, rename).
+const zoneLifecycleMode =
+  ["demo", "grouping", "emptied", "names"].includes(query.get("zoneLifecycle") ?? "") &&
+  !benchmarkRequested &&
+  !perfRequested &&
+  !inlineDemoRequested
+    ? query.get("zoneLifecycle")
+    : null;
 const zoneParityRequested =
   query.get("zoneParity") === "1" &&
   !benchmarkRequested &&
@@ -1488,6 +1507,131 @@ function createDragSession({ engine, port, context, history, seam, entries, scen
     };
   }
 
+  // L08 (P4-30) lifecycle + names: session operations (one operation each) and
+  // the deterministic demo states. Frames/fields below are presentation only.
+  let lifecycleRender = null;
+  let lifecycleCounter = 0;
+  let lastLifecycle = null;
+  const setLifecycleRenderer = (render) => {
+    lifecycleRender = render;
+  };
+  const lifecycleFreeObjects = () =>
+    entries
+      .filter((entry) => entry.kind !== "zone")
+      .map((entry) => {
+        const entity = port.read(entry.kind, entry.id);
+        return entity === undefined ? null : { objectKind: entry.kind, objectId: entry.id, world: { x: entity.x, y: entity.y, width: entity.width, height: entity.height }, zoneId: entity.zoneId ?? null };
+      })
+      .filter((object) => object !== null && object.zoneId === null);
+  const lifecycleZones = () =>
+    zoneTargets().map((zone) => {
+      const entity = port.read("zone", zone.id);
+      return { id: zone.id, slot: zone.slot, title: entity?.title ?? "", world: zone.world, members: zoneMembers(zone.id) };
+    });
+  const applyLifecycle = (pair, record) => {
+    if (pair === null) {
+      return null;
+    }
+    seam.applyOperation(port, pair.operation);
+    history.push(pair.operation, pair.inverse);
+    recordPair(pair);
+    lastLifecycle = record;
+    onDemand.request();
+    return { operation: pair.operation.type, inverse: pair.inverse.type, payload: record };
+  };
+  const detachAllZones = () => {
+    const results = [];
+    for (const zone of lifecycleZones()) {
+      const pair = seam.buildOperation(port, context, { kind: "delete-zone", zoneId: zone.id, policy: "keep" });
+      const record = applyLifecycle(pair, { kind: "emptied-zone-removal", zoneId: zone.id });
+      if (record !== null) {
+        results.push(record);
+      }
+    }
+    return results;
+  };
+  const removeAllMembers = (zoneId) => {
+    const members = zoneMembers(zoneId);
+    const pair = seam.buildOperation(port, context, {
+      kind: "delete-selection",
+      members: members.map((member) => ({ objectKind: member.objectKind, objectId: member.objectId })),
+    });
+    return applyLifecycle(pair, { kind: "remove-members", zoneId });
+  };
+  const removeEmptyZones = () => {
+    const results = [];
+    for (const zone of lifecycleZones()) {
+      if (zone.members.length > 0) {
+        continue;
+      }
+      const pair = seam.buildOperation(port, context, { kind: "delete-zone", zoneId: zone.id, policy: "keep" });
+      const record = applyLifecycle(pair, { kind: "emptied-zone-removal", zoneId: zone.id });
+      if (record !== null) {
+        results.push(record);
+      }
+    }
+    return results;
+  };
+  const renameZone = (zoneId, rawTitle, language = "en") => {
+    const entity = port.read("zone", zoneId);
+    if (entity === undefined) {
+      return null;
+    }
+    const normalized = normalizeZoneTitle(rawTitle, language);
+    const pair = seam.buildOperation(port, context, { kind: "zone-rename", zoneId, title: normalized.title });
+    const applied = applyLifecycle(pair, { kind: "zone-rename", zoneId, previousTitle: entity.title });
+    return { title: normalized.title, changed: normalized.changed, applied };
+  };
+  const groupTwo = (objectA, objectB, title = defaultZoneTitle("en")) => {
+    const a = lifecycleFreeObjects().find((object) => object.objectId === objectA);
+    const b = lifecycleFreeObjects().find((object) => object.objectId === objectB);
+    if (a === undefined || b === undefined) {
+      return null;
+    }
+    const layout = planZoneGroup([a.world, b.world].map((world, index) => ({ id: index === 0 ? a.objectId : b.objectId, ...world })), null, "vertical", visibleWorld());
+    const newZoneId = layersUuid(0x51000 + lifecycleCounter);
+    lifecycleCounter += 1;
+    const pair = seam.buildOperation(port, context, {
+      kind: "zone-group",
+      newZoneId,
+      title,
+      frame: layout.frame,
+      members: layout.members.map((member) => ({ objectKind: member.id === a.objectId ? a.objectKind : b.objectKind, objectId: member.id, position: { x: member.x, y: member.y } })),
+    });
+    const applied = applyLifecycle(pair, { kind: "group", zoneId: newZoneId, title });
+    if (applied !== null && !entries.some((entry) => entry.id === newZoneId)) {
+      entries.push({ kind: "zone", id: newZoneId });
+    }
+    return applied === null ? null : { zoneId: newZoneId, title, layout, applied };
+  };
+  globalThis.__zoneLifecycle = {
+    state: () => ({
+      zones: lifecycleZones(),
+      freeObjects: lifecycleFreeObjects(),
+      lastLifecycle,
+      header: headerGeometry(1),
+      titleMax: ZONE_TITLE_MAX,
+      thresholds: { overlap: GROUP_OVERLAP, pointer: GROUP_POINTER_PX, contact: 32 },
+      look: zoneFrameLook({ grouping: false, memberCount: lifecycleZones().reduce((sum, zone) => sum + zone.members.length, 0), lastMemberLeaving: false }),
+    }),
+    detachAllZones,
+    removeAllMembers,
+    removeEmptyZones,
+    renameZone,
+    groupTwo,
+    normalizeTitle: (raw, language) => normalizeZoneTitle(raw, language),
+    defaultTitle: (language) => defaultZoneTitle(language),
+    snapshot: () =>
+      JSON.stringify(
+        entries
+          .filter((entry) => port.read(entry.kind, entry.id) !== undefined)
+          .map((entry) => ({ kind: entry.kind, id: entry.id, entity: port.read(entry.kind, entry.id) }))
+          .sort((left, right) => (left.kind + left.id < right.kind + right.id ? -1 : 1)),
+      ),
+  };
+  const setLifecycleRender = (render) => setLifecycleRenderer(render);
+  const renderLifecycle = (state) => lifecycleRender?.(state);
+
   const tap = (target) => {
     if (target !== null && onTap !== null) {
       onTap(target);
@@ -1562,8 +1706,10 @@ function createDragSession({ engine, port, context, history, seam, entries, scen
     lastOperation,
     previewZoneDrag,
     commitZoneArrangement,
-    clearZonePreview,
+    setLifecycleRender,
+    renderLifecycle,
     setZoneParityRenderer,
+    clearZonePreview,
     arrangeZoneDemo,
   };
 }
@@ -2009,6 +2155,154 @@ function installInlineDemo(engine, session) {
     overlayVisible: () => !layer.hidden,
   };
   return { update };
+}
+
+// L08 (P4-30): lifecycle/name chrome in the DOM overlay: the dashed grouping /
+// emptying frame, the dashed landing slot, the 40 px header title label and the
+// inline rename field. Presentation only (ADR-0009).
+function installZoneLifecycleOverlay() {
+  const wrap = canvas.parentElement;
+  if (!(wrap instanceof HTMLElement)) {
+    return null;
+  }
+  const layer = document.createElement("div");
+  layer.className = "zone-lifecycle-layer";
+  layer.hidden = true;
+  const frame = document.createElement("div");
+  frame.className = "zone-lifecycle-frame";
+  const slot = document.createElement("div");
+  slot.className = "zone-lifecycle-slot";
+  const title = document.createElement("div");
+  title.className = "zone-lifecycle-title";
+  const rename = document.createElement("input");
+  rename.className = "zone-lifecycle-rename";
+  rename.type = "text";
+  rename.dataset.field = "";
+  rename.hidden = true;
+  layer.append(frame, slot, title, rename);
+  wrap.append(layer);
+  const place = (element, rect) => {
+    const bounds = canvas.getBoundingClientRect();
+    element.style.left = `${bounds.left + (rect.x - camera.panX) * camera.zoom}px`;
+    element.style.top = `${bounds.top + (rect.y - camera.panY) * camera.zoom}px`;
+    element.style.width = `${rect.width * camera.zoom}px`;
+    element.style.height = `${rect.height * camera.zoom}px`;
+  };
+  let editing = null;
+  const commitRename = (value) => {
+    if (editing === null) {
+      return;
+    }
+    const zoneId = editing;
+    editing = null;
+    rename.hidden = true;
+    window.__zoneLifecycle?.renameZone?.(zoneId, value);
+    const next = window.__zoneLifecycle?.state?.().zones.find((zone) => zone.id === zoneId);
+    if (next !== undefined) {
+      title.textContent = next.title;
+      title.hidden = false;
+    }
+  };
+  rename.addEventListener("keydown", (event) => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      commitRename(rename.value);
+    } else if (event.key === "Escape") {
+      event.preventDefault();
+      editing = null;
+      rename.hidden = true;
+      title.hidden = false;
+    }
+  });
+  rename.addEventListener("blur", () => commitRename(rename.value));
+  title.addEventListener("dblclick", () => {
+    const zoneId = title.dataset.zoneId;
+    if (zoneId === undefined) {
+      return;
+    }
+    editing = zoneId;
+    rename.value = title.textContent ?? "";
+    rename.hidden = false;
+    title.hidden = true;
+    rename.focus();
+    rename.select();
+  });
+  return {
+    render(state) {
+      if (state === null || state === undefined) {
+        layer.hidden = true;
+        return;
+      }
+      layer.hidden = false;
+      place(frame, state.frame);
+      frame.classList.toggle("is-dashed", state.dashed === true);
+      frame.classList.toggle("is-dimmed", state.dimmed === true);
+      if (state.slot === null || state.slot === undefined) {
+        slot.hidden = true;
+      } else {
+        slot.hidden = false;
+        place(slot, state.slot);
+      }
+      title.hidden = editing !== null;
+      title.textContent = state.title ?? "";
+      title.dataset.zoneId = state.zoneId ?? "";
+      title.classList.toggle("is-grouping", state.mode === "group");
+      const bounds = canvas.getBoundingClientRect();
+      title.style.left = `${bounds.left + (state.frame.x + ZONE_PADDING - camera.panX) * camera.zoom}px`;
+      title.style.top = `${bounds.top + (state.frame.y + 10 - camera.panY) * camera.zoom}px`;
+      onDemand.request();
+    },
+  };
+}
+
+function installZoneLifecycleDemo(session, mode) {
+  const overlay = installZoneLifecycleOverlay();
+  if (overlay === null) {
+    return null;
+  }
+  session.setLifecycleRender((state) => overlay.render(state));
+  const render = (state) => session.renderLifecycle(state);
+  window.__zoneLifecycle.render = render;
+  const zones = () => window.__zoneLifecycle.state().zones;
+  if (mode === "names") {
+    const zone = zones()[0];
+    if (zone !== undefined) {
+      window.__zoneLifecycle.renameZone(zone.id, "Lake trip");
+      const updated = window.__zoneLifecycle.state().zones[0];
+      render({ mode: "names", frame: updated.world, title: updated.title, zoneId: updated.id });
+    }
+    return overlay;
+  }
+  if (mode === "emptied") {
+    const zone = zones().find((candidate) => candidate.members.length > 0) ?? zones()[0];
+    if (zone !== undefined) {
+      window.__zoneLifecycle.removeAllMembers(zone.id);
+      const updated = window.__zoneLifecycle.state().zones.find((candidate) => candidate.id === zone.id);
+      render({ mode: "emptied", frame: updated?.world ?? zone.world, title: updated?.title ?? "", dashed: true, dimmed: true, zoneId: zone.id });
+    }
+    return overlay;
+  }
+  // grouping (also the default demo): free the zone members, then show the ghost
+  // frame and landing slot between the first two free objects.
+  window.__zoneLifecycle.detachAllZones();
+  const free = window.__zoneLifecycle.state().freeObjects;
+  if (free.length >= 2) {
+    const layout = planZoneGroup(
+      [free[0].world, free[1].world].map((world, index) => ({ id: index === 0 ? free[0].objectId : free[1].objectId, ...world })),
+      null,
+      "vertical",
+      { width: 4000, height: 4000 },
+    );
+    render({
+      mode: "group",
+      frame: layout.frame,
+      slot: { x: layout.frame.x + ZONE_PADDING, y: layout.frame.y + ZONE_HEADER + ZONE_PADDING, width: free[0].world.width, height: free[0].world.height },
+      title: defaultZoneTitle("en"),
+      dashed: true,
+      dimmed: false,
+    });
+  }
+  return overlay;
 }
 
 // L08 (P4-29): minimal release-preview chrome in the DOM overlay (ADR-0009):
@@ -2961,6 +3255,9 @@ async function start() {
     sceneSession = layers !== null ? layers.session : null;
     if (sceneSession === null && loaded.name === "sample" && !titlesRequested) {
       sceneSession = await loadRectangleDragSession(engine, loaded);
+    }
+    if (zoneLifecycleMode !== null && sceneSession !== null) {
+      installZoneLifecycleDemo(sceneSession, zoneLifecycleMode === "demo" ? "grouping" : zoneLifecycleMode);
     }
     if (zoneParityRequested && sceneSession !== null) {
       const overlay = installZoneParityOverlay();

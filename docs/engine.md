@@ -639,6 +639,29 @@ native suite.
   hysteresis, shrink-on-out, one operation per release with exact inverse, cancel and reduced motion;
   the native `engine_zone_layout_tests` pins orientation, order, fit, enter/stay and shrink.
 
+## Zone lifecycle and names (L08, P4-30)
+
+Zone lifecycle follows the live demo (`apps/web/preview`, read-only). Grouping two free objects shows
+a dashed ghost frame with the landing slot next to the object that is not moved; 20 % overlap of the
+smaller item or a 16 px pointer distance starts it, and 32 px contact keeps it (screen px converted by
+the zoom in the caller). The release creates the zone with both objects and the default title
+("New zone" / "Neue Zone" per playground language) as exactly one `zone-group` group operation
+(createZone + member moves) with one inverse; when the moved object is the only member of an existing
+zone, that zone wraps both and keeps its title (resizeZone + moves, no rename). The emptied-zone frame
+turns dashed and dimmed while the last member leaves (presentation only) and the release removes the
+zone with `deleteZone` keep-content as one undoable operation whose inverse restores title, slot and
+members. The contract `title` renders in the fixed 40 px header (one line, ellipsis at the token title
+role); inline rename uses the P4-23 overlay: click selects all, Enter/blur commits, Escape restores,
+whitespace is collapsed, an empty value returns the language default and the title is limited to 40
+characters. Contract 0.2.0 has no updateZone operation, so a rename is one `group` (deleteZone keep +
+createZone with the new title + the member reparent moves) with an inverse that restores the old
+title, slot and members; the header is not a child of the FLIP-scaled frame and never stretches.
+`window.__zoneLifecycle` exposes zones/titles/free objects/thresholds and the lifecycle operations for
+the deterministic capture (`tools/capture-zone-lifecycle.mjs`) and the new reviewed baselines
+(`zone-grouping-ghost`, `zone-emptied`, `zone-names`); the native `engine_zone_lifecycle_tests` and
+`test/zone-lifecycle.test.mjs` pin the thresholds, defaults, title rules, header geometry and the
+one-operation creation/removal/rename with inverse.
+
 ## Object identity and mutations
 
 `Document` keeps one storage slot per object and assigns a monotonic `ObjectId` on insert

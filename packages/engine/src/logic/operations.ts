@@ -35,6 +35,8 @@ import type {
   DeleteZoneGesture,
   DragGroupGesture,
   ZoneArrangeGesture,
+  ZoneGroupGesture,
+  ZoneRenameGesture,
   DragSingleGesture,
   GestureResult,
   KeyboardNudgeGesture,
@@ -830,6 +832,151 @@ function buildZoneArrange(
   return { operation, inverse: operation.inverse };
 }
 
+// L08 (P4-30): grouping two free objects (or wrapping a one-item zone) as one
+// `group` operation: the new zone (when created) and the arranged member moves,
+// with the reversed inverses as its inverse.
+function buildZoneGroup(
+  port: DocumentPort,
+  context: OperationContext,
+  gesture: ZoneGroupGesture,
+): OperationPair | null {
+  if (gesture.zoneId === undefined || gesture.zoneId === null) {
+    if (gesture.members.length < 2) {
+      throw new OperationError("grouping needs at least two members");
+    }
+  } else if (gesture.members.length < 1) {
+    throw new OperationError("wrapping a zone needs at least one member");
+  }
+  const children: Operation[] = [];
+  let zoneId = gesture.zoneId ?? null;
+  if (zoneId === null) {
+    if (gesture.newZoneId === undefined) {
+      throw new OperationError("creating a zone needs a new zone id");
+    }
+    assertUuidV7(gesture.newZoneId, "new zone id");
+    const timestamp = nextTimestamp(context);
+    const zone: Zone = {
+      id: gesture.newZoneId,
+      boardId: context.boardId,
+      title: gesture.title,
+      x: gesture.frame.x,
+      y: gesture.frame.y,
+      width: gesture.frame.width,
+      height: gesture.frame.height,
+      z: "0",
+      createdAt: timestamp,
+      updatedAt: timestamp,
+    };
+    const inverse = makeInverse(context, "deleteZone", { zone, policy: "delete", cards: [], blocks: [] });
+    children.push(makeOperation(context, "createZone", { zone }, inverse));
+    zoneId = gesture.newZoneId;
+  } else {
+    const zone = requiredObject(port, "zone", zoneId);
+    if (gesture.frame.width !== zone.width || gesture.frame.height !== zone.height) {
+      children.push(
+        makeOperation(
+          context,
+          "resizeZone",
+          { zoneId: zone.id, width: gesture.frame.width, height: gesture.frame.height },
+          makeInverse(context, "resizeZone", {
+            zoneId: zone.id,
+            width: zone.width,
+            height: zone.height,
+          }),
+        ),
+      );
+    }
+  }
+  const seen = new Set<string>();
+  for (const member of gesture.members) {
+    const key = `${member.objectKind}:${member.objectId}`;
+    if (seen.has(key)) {
+      throw new OperationError(`the group lists ${member.objectKind} ${member.objectId} twice`);
+    }
+    seen.add(key);
+    const child = buildMoveOperation(
+      port,
+      context,
+      member.objectKind,
+      member.objectId,
+      member.position,
+      zoneId,
+    );
+    if (child !== null) {
+      children.push(child);
+    }
+  }
+  if (children.length === 0) {
+    return null;
+  }
+  const inverseChildren: OperationInverse[] = children.map((child) => child.inverse).reverse();
+  const inverse = makeInverse(context, "group", { children: inverseChildren });
+  const operation = makeOperation(context, "group", { children }, inverse);
+  return { operation, inverse: operation.inverse };
+}
+
+// L08 (P4-30): inline rename stored through the contract seam as one operation
+// with inverse. Contract 0.2.0 has no updateZone operation, so the one `group`
+// replaces the zone entity (deleteZone keep + createZone with the new title +
+// the member reparent moves); the inverse restores the old title, slot and
+// members exactly.
+function buildZoneRename(
+  port: DocumentPort,
+  context: OperationContext,
+  gesture: ZoneRenameGesture,
+): OperationPair | null {
+  const zone = requiredObject(port, "zone", gesture.zoneId);
+  if (zone.title === gesture.title) {
+    return null;
+  }
+  const timestamp = nextTimestamp(context);
+  const members = port.members(zone.id);
+  const remove = buildDeleteZoneOperation(port, context, zone.id, "keep");
+  const recreated: Zone = {
+    ...zone,
+    title: gesture.title,
+    updatedAt: timestamp,
+  };
+  const children: Operation[] = [remove.operation];
+  const createInverse = makeInverse(context, "deleteZone", {
+    zone: recreated,
+    policy: "delete",
+    cards: [],
+    blocks: [],
+  });
+  children.push(makeOperation(context, "createZone", { zone: recreated }, createInverse));
+  for (const card of members.cards) {
+    const child = buildMoveOperation(
+      port,
+      context,
+      "card",
+      card.id,
+      { x: card.x, y: card.y },
+      zone.id,
+    );
+    if (child !== null) {
+      children.push(child);
+    }
+  }
+  for (const block of members.blocks) {
+    const child = buildMoveOperation(
+      port,
+      context,
+      "block",
+      block.id,
+      { x: block.x, y: block.y },
+      zone.id,
+    );
+    if (child !== null) {
+      children.push(child);
+    }
+  }
+  const inverseChildren: OperationInverse[] = children.map((child) => child.inverse).reverse();
+  const inverse = makeInverse(context, "group", { children: inverseChildren });
+  const operation = makeOperation(context, "group", { children }, inverse);
+  return { operation, inverse: operation.inverse };
+}
+
 function buildNudgeOperation(
   port: DocumentPort,
   context: OperationContext,
@@ -932,6 +1079,10 @@ export function buildOperation(
       return buildDeleteZoneOperation(port, context, gesture.zoneId, gesture.policy);
     case "zone-arrange":
       return buildZoneArrange(port, context, gesture);
+    case "zone-group":
+      return buildZoneGroup(port, context, gesture);
+    case "zone-rename":
+      return buildZoneRename(port, context, gesture);
     case "keyboard-nudge": {
       const operation = buildNudgeOperation(port, context, gesture);
       return operation === null ? null : { operation, inverse: operation.inverse };

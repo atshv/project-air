@@ -32,7 +32,10 @@ Read `AGENTS.md`, `ARCHITECTURE.md`, `STATUS.md`, `docs/module-map.md` and the t
   member-extent + 16 px guard and the 1 s `accent_line` highlight; review `reviews/P4-27.md` pass with
   notes) and `P4-29` (L08 zone parity I: pure auto-arrangement, live release preview with 25 %/24 px
   hysteresis, one `zone-arrange` operation, 300 ms settle, 2 reviewed `zone-parity-at-rest` baselines;
-  review `reviews/P4-29.md` pass with notes) are merged. **Next chain to the zone demo:**
+  review `reviews/P4-29.md` pass with notes) and `P4-30` (L08 zone parity II: one-operation grouping
+  and emptied-zone removal, inline rename rules, 40 px header title, 6 reviewed lifecycle/name
+  baselines; review `reviews/P4-30.md` pass with notes, `updateZone` contract follow-up) are merged.
+  **Next chain to the zone demo:**
   `P4-23` (L18 overlay/inline) → `P4-27` (L08 engine membership/move) → `P4-29` → `P4-30` (zone parity
   I/II) → `P4-28` (L01 final proof + `visual-final`/`perf-final` + showcase). All chain briefs exist
   (`P4-14/15/16/23/27/28/29/30`). Exit gates: `cpp-unit` green; `visual-final`/`perf-final` only pass
@@ -44,13 +47,13 @@ Read `AGENTS.md`, `ARCHITECTURE.md`, `STATUS.md`, `docs/module-map.md` and the t
   `597185b`, `b50cd26`). Coordinate via claims/`in_progress` in `board.json`. Commit race documented
   below (`eff284b` carries the P4-07 content, `b4938dc` its bookkeeping). `origin/main` is pushed at
   the latest main commit (check `git log` / `git status -sb`).
-- **Done overall:** 62 of 78 tasks. Open: the rest of stage 5 (the chain above plus `P4-11`…`P4-13`
+- **Done overall:** 63 of 78 tasks. Open: the rest of stage 5 (the chain above plus `P4-11`…`P4-13`
   WebGPU, `P4-17`/`P4-18` resize/auto-pan, `P4-19`…`P4-24` placement/keyboard/undo/view/trackpad)
   plus the remote-phase tasks `P0-02`, `P0-15`, `P0-16`, `P0-17` (after hardening) and the planning
   of the later stages (realtime, web-app, value, hardening).
 - **Preview:** `apps/web/preview/` has the permanent Contract 0.1.0 overview as section 02 and the live demo: top-centre ten-tool toolbar and a zone with notepad + image window (P0-26), **bilingual EN/DE with a themed top-right switch** via `apps/web/preview/locales/{en,de}.json` (all visible text/aria/alt; 260 identical keys; `<html lang>`, localStorage persistence, safe fallback) (P0-27), **zone items that can be dragged out onto the canvas and docked back** with a 28 px progressive detach animation, 8 px dock hysteresis, grid-snap, no edge connection, reduced-motion (P0-28); **when both items are out the empty zone fades/scales away and becomes hidden/inert, and dragging the two free items together (≥25 % overlap or ≤48 px centres) groups them into a newly animated zone** that re-orients/re-fits on resize, plus refined spring motion and a smaller zoom pill (36×104, 32 px buttons) (P0-29); **zone layout follows the drop (side by side or stacked), docked items can be reordered/swapped inside the zone, drags track the pointer 1:1 with commit-on-release (no magnetism) and the +/−/fit controls are smaller (32×96 pill, 28 px painted, 32 px hit, 12 px glyphs)** (P0-30). **Cache rule:** every preview change bumps `?v=` on `tokens.css`/`preview.css`/`preview.js` in `index.html`; locale fetches inherit the script version. A cached `index.html` may still need one hard reload (an old HTML document cannot reference the new CSS). Demo-cadence baseline screenshots: `P0-27-*` (desktop/mobile EN+DE, owner 1426×583 DPR2) `P0-28-*` (docked/mid-detach/detached/redocked) `P0-29-*` (zone fading/overlap/grouped/zoom/mobile/resize/toolbar) and `P0-30-*` (horizontal/vertical/swapped/drop-hint/controls/masthead/zoom-150).
 - **Checks:** `check.py` exit 0 (40 warnings, all historical evidence-record commits; run it in the main checkout only with `node_modules/` absent — a pnpm install materialises `node_modules/.pnpm`, whose package READMEs break `check_links`), `boundaries.py` exit 0, design-check tool tests 16/16, engine node tests 59/59, engine CTest 4/4, `codegen`/`wasm-*` clean; DB suites need a Polier slot (they cannot run in the main checkout). Repo-wide `pnpm test` is still red for pre-existing env reasons — `services/platform` tests need the slot database, the release-tool tests flake under turbo concurrency (28/28 alone) and `language-check` flags the P4-10 German demo strings in `apps/engine-playground/main.js`; the `unit` gate therefore uses the documented `pnpm test --affected`.
-- **Reviews:** `reviews/P1-04.md` … `reviews/P4-29.md` committed; verdicts and findings are in the files.
+- **Reviews:** `reviews/P1-04.md` … `reviews/P4-30.md` committed; verdicts and findings are in the files.
 
 ## Backend-core follow-ups (recorded, not blockers)
 

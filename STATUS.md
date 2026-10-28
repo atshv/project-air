@@ -208,10 +208,11 @@
 - [x] `P0-31` Refined live demo: smooth merge/split and calm motion — status: `done` — owner: —
 - [x] `P0-32` Zone titles: named, editable zone headers in the live demo — status: `done` — owner: —
 - [x] `P4-29` Zone parity with the live demo I: arrangement and release preview (L08) — status: `done` — owner: —
+- [x] `P4-30` Zone parity with the live demo II: lifecycle and names (L08) — status: `done` — owner: —
 
 ## In progress
 
-- [ ] `P4-30` Zone parity with the live demo II: lifecycle and names (L08) — status: `in_progress` — owner: lead
+- none
 
 ## Blocked / failed
 
@@ -238,7 +239,7 @@
 <!-- polier:claims -->
 ## Claims
 
-- `P4-30` in progress by dsh since 2026-10-28T07:35:00+00:00 — worktree: /private/tmp/air-P4-30 · slot 1
+- `P4-30` in progress by dsh since 2026-10-28T07:46:37+00:00 — worktree: /private/tmp/air-P4-30 · slot 1
 
 <!-- /polier:claims -->
 

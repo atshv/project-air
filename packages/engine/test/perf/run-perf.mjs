@@ -185,6 +185,7 @@ function ensureArtefacts({ includeTestKit = false } = {}) {
     "packages/engine/dist/bridge/input.js",
     "packages/engine/dist/bridge/overlay.js",
     "packages/engine/dist/bridge/zone-parity.js",
+    "packages/engine/dist/bridge/zone-lifecycle.js",
     "packages/engine/build-wasm/engine.js",
     "packages/engine/build-wasm/engine.wasm",
   ];
@@ -210,6 +211,7 @@ function copyArtefacts(tempRoot, { includeTestKit = false } = {}) {
     "packages/engine/dist/bridge/input.js",
     "packages/engine/dist/bridge/overlay.js",
     "packages/engine/dist/bridge/zone-parity.js",
+    "packages/engine/dist/bridge/zone-lifecycle.js",
     "packages/engine/build-wasm/engine.js",
     "packages/engine/build-wasm/engine.wasm",
   ];

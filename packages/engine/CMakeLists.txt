@@ -79,6 +79,10 @@ else()
   target_link_libraries(engine_binding_tests PRIVATE air_engine)
   add_test(NAME engine_binding_tests COMMAND engine_binding_tests)
 
+  add_executable(engine_zone_lifecycle_tests test/engine_zone_lifecycle_test.cpp)
+  target_include_directories(engine_zone_lifecycle_tests PRIVATE include ${CMAKE_CURRENT_SOURCE_DIR}/../ui-kit)
+  add_test(NAME engine_zone_lifecycle_tests COMMAND engine_zone_lifecycle_tests)
+
   add_executable(engine_zone_layout_tests test/engine_zone_layout_test.cpp)
   target_include_directories(engine_zone_layout_tests PRIVATE include ${CMAKE_CURRENT_SOURCE_DIR}/../ui-kit)
   add_test(NAME engine_zone_layout_tests COMMAND engine_zone_layout_tests)

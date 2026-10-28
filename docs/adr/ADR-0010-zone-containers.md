@@ -46,6 +46,15 @@ release is still exactly one operation with inverse. The arrangement is a presen
 behaviour: the stored zone orientation request is never changed by a viewport fallback, and the
 engine mirrors the demo's thresholds rather than defining a second interaction model.
 
+## Amendment 2026-10-28 (P4-30): lifecycle and names
+
+The owner approved the live demo's lifecycle: two free objects dropped together create a zone with the
+default title as one operation; an emptied zone is removed as one undoable operation; and every zone
+shows and renames its contract `title` in the 40 px header. Grouping/removal previews are presentation
+state only. Contract 0.2.0 has no updateZone operation, so the seam expresses grouping and rename with
+the existing `group` (creation) and `deleteZone` + `createZone` (rename) operations, each with an
+inverse; a rename never creates a second title copy and the stored title stays contract state.
+
 ## Consequences
 
 - **Positive:** membership survives reloads and sync, matches the visual model, allows "keep content"

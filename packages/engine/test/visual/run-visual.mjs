@@ -208,6 +208,36 @@ const SCENE_DEFINITIONS = [
     camera: "titles gallery centred at world (512, 288) at zoom 1 (100 %)",
   },
   {
+    // L08 (P4-30): deterministic grouping ghost frame and landing slot.
+    name: "zone-grouping-ghost",
+    scene: "layers",
+    view: { worldX: 512, worldY: 288, zoom: 1 },
+    extra: { store: "off", zoneLifecycle: "grouping" },
+    expectedCounts: { zones: 2, blocks: 2, cards: 4, total: 8 },
+    expectedWorld: { width: 1024, height: 576 },
+    camera: "layers world at (512, 288) zoom 1 with the grouping ghost frame",
+  },
+  {
+    // L08 (P4-30): deterministic emptied-zone (dashed, dimmed) frame.
+    name: "zone-emptied",
+    scene: "layers",
+    view: { worldX: 512, worldY: 288, zoom: 1 },
+    extra: { store: "off", zoneLifecycle: "emptied" },
+    expectedCounts: { zones: 2, blocks: 2, cards: 4, total: 8 },
+    expectedWorld: { width: 1024, height: 576 },
+    camera: "layers world at (512, 288) zoom 1 with the emptied-zone frame",
+  },
+  {
+    // L08 (P4-30): deterministic zone title in the 40 px header.
+    name: "zone-names",
+    scene: "layers",
+    view: { worldX: 512, worldY: 288, zoom: 1 },
+    extra: { store: "off", zoneLifecycle: "names" },
+    expectedCounts: { zones: 2, blocks: 2, cards: 4, total: 8 },
+    expectedWorld: { width: 1024, height: 576 },
+    camera: "layers world at (512, 288) zoom 1 with the zone title header",
+  },
+  {
     // L08 (P4-29): deterministic zone parity at rest — the auto-arranged members
     // (vertical, sizes + 16 px padding + 12 px gap below the 40 px header) and
     // the dashed landing slot of the release preview. Page-owned deterministic
@@ -796,6 +826,7 @@ const REQUIRED_ARTEFACTS = [
   "packages/engine/dist/bridge/input.js",
   "packages/engine/dist/bridge/overlay.js",
   "packages/engine/dist/bridge/zone-parity.js",
+  "packages/engine/dist/bridge/zone-lifecycle.js",
   "packages/engine/build-wasm/engine.js",
   "packages/engine/build-wasm/engine.wasm",
   "packages/test-kit/dist/scenes.js",
@@ -821,6 +852,7 @@ function copyArtefacts(tempRoot) {
     "packages/engine/dist/bridge/input.js",
     "packages/engine/dist/bridge/overlay.js",
     "packages/engine/dist/bridge/zone-parity.js",
+    "packages/engine/dist/bridge/zone-lifecycle.js",
     "packages/engine/build-wasm/engine.js",
     "packages/engine/build-wasm/engine.wasm",
     "packages/test-kit/dist/scenes.js",

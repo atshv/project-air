@@ -149,6 +149,34 @@ export interface ZoneArrangeGesture {
   readonly members: readonly ZoneArrangeMember[];
 }
 
+/** One member of an L08 (P4-30) grouping/wrap release. */
+export interface ZoneGroupMember {
+  readonly objectKind: "card" | "block";
+  readonly objectId: string;
+  readonly position: WorldPoint;
+}
+
+/**
+ * L08 (P4-30): grouping two free objects or wrapping a one-item zone. Without
+ * `zoneId` a new zone is created with `title`; with `zoneId` the existing zone
+ * wraps the members and keeps its title. One `group` operation with inverse.
+ */
+export interface ZoneGroupGesture {
+  readonly kind: "zone-group";
+  readonly newZoneId?: string;
+  readonly zoneId?: string | null;
+  readonly title: string;
+  readonly frame: { readonly x: number; readonly y: number; readonly width: number; readonly height: number };
+  readonly members: readonly ZoneGroupMember[];
+}
+
+/** L08 (P4-30): a committed inline rename; one operation with inverse. */
+export interface ZoneRenameGesture {
+  readonly kind: "zone-rename";
+  readonly zoneId: string;
+  readonly title: string;
+}
+
 /** L08: deletion of one zone with its content policy, one operation with inverse. */
 export interface DeleteZoneGesture {
   readonly kind: "delete-zone";
@@ -185,5 +213,7 @@ export type GestureResult =
   | DeleteSelectionGesture
   | DeleteZoneGesture
   | ZoneArrangeGesture
+  | ZoneGroupGesture
+  | ZoneRenameGesture
   | KeyboardNudgeGesture
   | BringToFrontGesture;

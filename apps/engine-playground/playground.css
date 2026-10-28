@@ -374,6 +374,73 @@ body {
   }
 }
 
+/* L08 (P4-30) lifecycle/name chrome: dashed grouping and emptying frames, the
+   dashed landing slot, the 40 px header title and the inline rename field. */
+.zone-lifecycle-layer {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.zone-lifecycle-frame {
+  position: absolute;
+  box-sizing: border-box;
+  border: var(--border-width) solid var(--accent);
+  border-radius: var(--radius-md);
+  background-color: var(--accent-soft);
+}
+
+.zone-lifecycle-frame.is-dashed {
+  border-style: dashed;
+  border-color: var(--accent-line);
+  background-color: transparent;
+}
+
+.zone-lifecycle-frame.is-dimmed {
+  opacity: 0.7;
+}
+
+.zone-lifecycle-slot {
+  position: absolute;
+  box-sizing: border-box;
+  border: var(--border-width) dashed var(--accent-line);
+  border-radius: var(--radius-sm);
+  background-color: var(--accent-soft);
+}
+
+.zone-lifecycle-title {
+  position: absolute;
+  max-width: calc(var(--space-48) * 8);
+  overflow: hidden;
+  color: var(--fg);
+  font-family: var(--font-sans);
+  font-size: var(--text-15);
+  font-weight: 600;
+  line-height: var(--space-24);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  pointer-events: auto;
+}
+
+.zone-lifecycle-title.is-grouping {
+  color: var(--muted);
+}
+
+.zone-lifecycle-rename {
+  position: absolute;
+  box-sizing: border-box;
+  height: var(--space-24);
+  border: var(--border-width) solid var(--accent);
+  border-radius: var(--radius-sm);
+  background-color: var(--surface);
+  color: var(--fg);
+  font-family: var(--font-sans);
+  font-size: var(--text-15);
+  font-weight: 600;
+  pointer-events: auto;
+}
+
 .canvas {
   display: block;
   width: 100%;

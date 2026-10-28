@@ -1,0 +1,543 @@
+{
+  "task": "P4-30",
+  "gate": "zone-lifecycle-capture",
+  "startedAt": "2026-10-28T07:45:49.848Z",
+  "chrome": "/Users/rasulatashev/Library/Caches/ms-playwright/chromium-1248/chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing",
+  "viewports": [
+    {
+      "viewport": {
+        "name": "desktop",
+        "width": 1440,
+        "height": 900,
+        "mobile": false
+      },
+      "initial": {
+        "state": {
+          "zones": [],
+          "freeObjects": [
+            {
+              "objectKind": "block",
+              "objectId": "0192f0c1-7000-7000-8000-000000000602",
+              "world": {
+                "x": 112,
+                "y": 128,
+                "width": 256,
+                "height": 160
+              },
+              "zoneId": null
+            },
+            {
+              "objectKind": "block",
+              "objectId": "0192f0c1-7000-7000-8000-000000000603",
+              "world": {
+                "x": 544,
+                "y": 336,
+                "width": 288,
+                "height": 176
+              },
+              "zoneId": null
+            },
+            {
+              "objectKind": "card",
+              "objectId": "0192f0c1-7000-7000-8000-000000000604",
+              "world": {
+                "x": 160,
+                "y": 176,
+                "width": 224,
+                "height": 128
+              },
+              "zoneId": null
+            },
+            {
+              "objectKind": "card",
+              "objectId": "0192f0c1-7000-7000-8000-000000000605",
+              "world": {
+                "x": 288,
+                "y": 224,
+                "width": 224,
+                "height": 128
+              },
+              "zoneId": null
+            },
+            {
+              "objectKind": "card",
+              "objectId": "0192f0c1-7000-7000-8000-000000000606",
+              "world": {
+                "x": 416,
+                "y": 272,
+                "width": 224,
+                "height": 128
+              },
+              "zoneId": null
+            },
+            {
+              "objectKind": "card",
+              "objectId": "0192f0c1-7000-7000-8000-000000000607",
+              "world": {
+                "x": 704,
+                "y": 64,
+                "width": 224,
+                "height": 128
+              },
+              "zoneId": null
+            }
+          ],
+          "lastLifecycle": {
+            "kind": "emptied-zone-removal",
+            "zoneId": "0192f0c1-7000-7000-8000-000000000601"
+          },
+          "header": {
+            "height": 40,
+            "scale": 1
+          },
+          "titleMax": 40,
+          "thresholds": {
+            "overlap": 0.2,
+            "pointer": 16,
+            "contact": 32
+          },
+          "look": {
+            "dashed": true,
+            "dimmed": true
+          }
+        },
+        "snapshot": "[{\"kind\":\"block\",\"id\":\"0192f0c1-7000-7000-8000-000000000602\",\"entity\":{\"id\":\"0192f0c1-7000-7000-8000-000000000602\",\"boardId\":\"0192f0c1-7000-7000-8000-00000000b0a1\",\"x\":112,\"y\":128,\"width\":256,\"height\":160,\"z\":\"z\",\"createdAt\":\"2026-10-27T12:00:00Z\",\"updatedAt\":\"2026-10-27T12:00:00Z\",\"zoneId\":null,\"type\":\"checklist\"}},{\"kind\":\"block\",\"id\":\"0192f0c1-7000-7000-8000-000000000603\",\"entity\":{\"id\":\"0192f0c1-7000-7000-8000-000000000603\",\"boardId\":\"0192f0c1-7000-7000-8000-00000000b0a1\",\"x\":544,\"y\":336,\"width\":288,\"height\":176,\"z\":\"a0\",\"createdAt\":\"2026-10-27T12:00:00Z\",\"updatedAt\":\"2026-10-27T12:00:00Z\",\"zoneId\":null,\"type\":\"checklist\"}},{\"kind\":\"card\",\"id\":\"0192f0c1-7000-7000-8000-000000000604\",\"entity\":{\"id\":\"0192f0c1-7000-7000-8000-000000000604\",\"boardId\":\"0192f0c1-7000-7000-8000-00000000b0a1\",\"x\":160,\"y\":176,\"width\":224,\"height\":128,\"z\":\"0\",\"createdAt\":\"2026-10-27T12:00:00Z\",\"updatedAt\":\"2026-10-27T12:00:00Z\",\"zoneId\":null,\"noteId\":\"0192f0c1-7000-7000-8000-000000000704\"}},{\"kind\":\"card\",\"id\":\"0192f0c1-7000-7000-8000-000000000605\",\"entity\":{\"id\":\"0192f0c1-7000-7000-8000-000000000605\",\"boardId\":\"0192f0c1-7000-7000-8000-00000000b0a1\",\"x\":288,\"y\":224,\"width\":224,\"height\":128,\"z\":\"a1\",\"createdAt\":\"2026-10-27T12:00:00Z\",\"updatedAt\":\"2026-10-27T12:00:00Z\",\"zoneId\":null,\"noteId\":\"0192f0c1-7000-7000-8000-000000000705\"}},{\"kind\":\"card\",\"id\":\"0192f0c1-7000-7000-8000-000000000606\",\"entity\":{\"id\":\"0192f0c1-7000-7000-8000-000000000606\",\"boardId\":\"0192f0c1-7000-7000-8000-00000000b0a1\",\"x\":416,\"y\":272,\"width\":224,\"height\":128,\"z\":\"a1\",\"createdAt\":\"2026-10-27T12:00:00Z\",\"updatedAt\":\"2026-10-27T12:00:00Z\",\"zoneId\":null,\"noteId\":\"0192f0c1-7000-7000-8000-000000000706\"}},{\"kind\":\"card\",\"id\":\"0192f0c1-7000-7000-8000-000000000607\",\"entity\":{\"id\":\"0192f0c1-7000-7000-8000-000000000607\",\"boardId\":\"0192f0c1-7000-7000-8000-00000000b0a1\",\"x\":704,\"y\":64,\"width\":224,\"height\":128,\"z\":\"a2\",\"createdAt\":\"2026-10-27T12:00:00Z\",\"updatedAt\":\"2026-10-27T12:00:00Z\",\"noteId\":\"0192f0c1-7000-7000-8000-000000000707\"}}]"
+      },
+      "grouped": {
+        "zoneId": "0192f0c1-7000-7000-8000-000000051000",
+        "title": "New zone",
+        "layout": {
+          "orientation": "horizontal",
+          "frame": {
+            "x": 96,
+            "y": 72,
+            "width": 588,
+            "height": 248
+          },
+          "members": [
+            {
+              "id": "0192f0c1-7000-7000-8000-000000000602",
+              "x": 112,
+              "y": 128
+            },
+            {
+              "id": "0192f0c1-7000-7000-8000-000000000603",
+              "x": 380,
+              "y": 128
+            }
+          ]
+        },
+        "applied": {
+          "operation": "group",
+          "inverse": "group",
+          "payload": {
+            "kind": "group",
+            "zoneId": "0192f0c1-7000-7000-8000-000000051000",
+            "title": "New zone"
+          }
+        }
+      },
+      "emptied": {
+        "operation": "group",
+        "inverse": "group",
+        "payload": {
+          "kind": "remove-members",
+          "zoneId": "0192f0c1-7000-7000-8000-000000051000"
+        }
+      },
+      "removed": [
+        {
+          "operation": "deleteZone",
+          "inverse": "group",
+          "payload": {
+            "kind": "emptied-zone-removal",
+            "zoneId": "0192f0c1-7000-7000-8000-000000051000"
+          }
+        }
+      ],
+      "renamed": {
+        "title": "Lake trip",
+        "changed": true,
+        "applied": {
+          "operation": "group",
+          "inverse": "group",
+          "payload": {
+            "kind": "zone-rename",
+            "zoneId": "0192f0c1-7000-7000-8000-000000051000",
+            "previousTitle": "New zone"
+          }
+        }
+      },
+      "screenshots": [
+        "reviews/evidence/P4-30-lifecycle-grouping-desktop.png",
+        "reviews/evidence/P4-30-lifecycle-grouped-desktop.png",
+        "reviews/evidence/P4-30-lifecycle-emptied-desktop.png",
+        "reviews/evidence/P4-30-lifecycle-renamed-desktop.png",
+        "reviews/evidence/P4-30-live-demo-desktop.png"
+      ]
+    },
+    {
+      "viewport": {
+        "name": "mobile",
+        "width": 390,
+        "height": 844,
+        "mobile": true
+      },
+      "initial": {
+        "state": {
+          "zones": [],
+          "freeObjects": [
+            {
+              "objectKind": "block",
+              "objectId": "0192f0c1-7000-7000-8000-000000000602",
+              "world": {
+                "x": 112,
+                "y": 128,
+                "width": 256,
+                "height": 160
+              },
+              "zoneId": null
+            },
+            {
+              "objectKind": "block",
+              "objectId": "0192f0c1-7000-7000-8000-000000000603",
+              "world": {
+                "x": 544,
+                "y": 336,
+                "width": 288,
+                "height": 176
+              },
+              "zoneId": null
+            },
+            {
+              "objectKind": "card",
+              "objectId": "0192f0c1-7000-7000-8000-000000000604",
+              "world": {
+                "x": 160,
+                "y": 176,
+                "width": 224,
+                "height": 128
+              },
+              "zoneId": null
+            },
+            {
+              "objectKind": "card",
+              "objectId": "0192f0c1-7000-7000-8000-000000000605",
+              "world": {
+                "x": 288,
+                "y": 224,
+                "width": 224,
+                "height": 128
+              },
+              "zoneId": null
+            },
+            {
+              "objectKind": "card",
+              "objectId": "0192f0c1-7000-7000-8000-000000000606",
+              "world": {
+                "x": 416,
+                "y": 272,
+                "width": 224,
+                "height": 128
+              },
+              "zoneId": null
+            },
+            {
+              "objectKind": "card",
+              "objectId": "0192f0c1-7000-7000-8000-000000000607",
+              "world": {
+                "x": 704,
+                "y": 64,
+                "width": 224,
+                "height": 128
+              },
+              "zoneId": null
+            }
+          ],
+          "lastLifecycle": {
+            "kind": "emptied-zone-removal",
+            "zoneId": "0192f0c1-7000-7000-8000-000000000601"
+          },
+          "header": {
+            "height": 40,
+            "scale": 1
+          },
+          "titleMax": 40,
+          "thresholds": {
+            "overlap": 0.2,
+            "pointer": 16,
+            "contact": 32
+          },
+          "look": {
+            "dashed": true,
+            "dimmed": true
+          }
+        },
+        "snapshot": "[{\"kind\":\"block\",\"id\":\"0192f0c1-7000-7000-8000-000000000602\",\"entity\":{\"id\":\"0192f0c1-7000-7000-8000-000000000602\",\"boardId\":\"0192f0c1-7000-7000-8000-00000000b0a1\",\"x\":112,\"y\":128,\"width\":256,\"height\":160,\"z\":\"z\",\"createdAt\":\"2026-10-27T12:00:00Z\",\"updatedAt\":\"2026-10-27T12:00:00Z\",\"zoneId\":null,\"type\":\"checklist\"}},{\"kind\":\"block\",\"id\":\"0192f0c1-7000-7000-8000-000000000603\",\"entity\":{\"id\":\"0192f0c1-7000-7000-8000-000000000603\",\"boardId\":\"0192f0c1-7000-7000-8000-00000000b0a1\",\"x\":544,\"y\":336,\"width\":288,\"height\":176,\"z\":\"a0\",\"createdAt\":\"2026-10-27T12:00:00Z\",\"updatedAt\":\"2026-10-27T12:00:00Z\",\"zoneId\":null,\"type\":\"checklist\"}},{\"kind\":\"card\",\"id\":\"0192f0c1-7000-7000-8000-000000000604\",\"entity\":{\"id\":\"0192f0c1-7000-7000-8000-000000000604\",\"boardId\":\"0192f0c1-7000-7000-8000-00000000b0a1\",\"x\":160,\"y\":176,\"width\":224,\"height\":128,\"z\":\"0\",\"createdAt\":\"2026-10-27T12:00:00Z\",\"updatedAt\":\"2026-10-27T12:00:00Z\",\"zoneId\":null,\"noteId\":\"0192f0c1-7000-7000-8000-000000000704\"}},{\"kind\":\"card\",\"id\":\"0192f0c1-7000-7000-8000-000000000605\",\"entity\":{\"id\":\"0192f0c1-7000-7000-8000-000000000605\",\"boardId\":\"0192f0c1-7000-7000-8000-00000000b0a1\",\"x\":288,\"y\":224,\"width\":224,\"height\":128,\"z\":\"a1\",\"createdAt\":\"2026-10-27T12:00:00Z\",\"updatedAt\":\"2026-10-27T12:00:00Z\",\"zoneId\":null,\"noteId\":\"0192f0c1-7000-7000-8000-000000000705\"}},{\"kind\":\"card\",\"id\":\"0192f0c1-7000-7000-8000-000000000606\",\"entity\":{\"id\":\"0192f0c1-7000-7000-8000-000000000606\",\"boardId\":\"0192f0c1-7000-7000-8000-00000000b0a1\",\"x\":416,\"y\":272,\"width\":224,\"height\":128,\"z\":\"a1\",\"createdAt\":\"2026-10-27T12:00:00Z\",\"updatedAt\":\"2026-10-27T12:00:00Z\",\"zoneId\":null,\"noteId\":\"0192f0c1-7000-7000-8000-000000000706\"}},{\"kind\":\"card\",\"id\":\"0192f0c1-7000-7000-8000-000000000607\",\"entity\":{\"id\":\"0192f0c1-7000-7000-8000-000000000607\",\"boardId\":\"0192f0c1-7000-7000-8000-00000000b0a1\",\"x\":704,\"y\":64,\"width\":224,\"height\":128,\"z\":\"a2\",\"createdAt\":\"2026-10-27T12:00:00Z\",\"updatedAt\":\"2026-10-27T12:00:00Z\",\"noteId\":\"0192f0c1-7000-7000-8000-000000000707\"}}]"
+      },
+      "grouped": {
+        "zoneId": "0192f0c1-7000-7000-8000-000000051000",
+        "title": "New zone",
+        "layout": {
+          "orientation": "horizontal",
+          "frame": {
+            "x": 96,
+            "y": 72,
+            "width": 588,
+            "height": 248
+          },
+          "members": [
+            {
+              "id": "0192f0c1-7000-7000-8000-000000000602",
+              "x": 112,
+              "y": 128
+            },
+            {
+              "id": "0192f0c1-7000-7000-8000-000000000603",
+              "x": 380,
+              "y": 128
+            }
+          ]
+        },
+        "applied": {
+          "operation": "group",
+          "inverse": "group",
+          "payload": {
+            "kind": "group",
+            "zoneId": "0192f0c1-7000-7000-8000-000000051000",
+            "title": "New zone"
+          }
+        }
+      },
+      "emptied": {
+        "operation": "group",
+        "inverse": "group",
+        "payload": {
+          "kind": "remove-members",
+          "zoneId": "0192f0c1-7000-7000-8000-000000051000"
+        }
+      },
+      "removed": [
+        {
+          "operation": "deleteZone",
+          "inverse": "group",
+          "payload": {
+            "kind": "emptied-zone-removal",
+            "zoneId": "0192f0c1-7000-7000-8000-000000051000"
+          }
+        }
+      ],
+      "renamed": {
+        "title": "Lake trip",
+        "changed": true,
+        "applied": {
+          "operation": "group",
+          "inverse": "group",
+          "payload": {
+            "kind": "zone-rename",
+            "zoneId": "0192f0c1-7000-7000-8000-000000051000",
+            "previousTitle": "New zone"
+          }
+        }
+      },
+      "screenshots": [
+        "reviews/evidence/P4-30-lifecycle-grouping-mobile.png",
+        "reviews/evidence/P4-30-lifecycle-grouped-mobile.png",
+        "reviews/evidence/P4-30-lifecycle-emptied-mobile.png",
+        "reviews/evidence/P4-30-lifecycle-renamed-mobile.png",
+        "reviews/evidence/P4-30-live-demo-mobile.png"
+      ]
+    }
+  ],
+  "checks": [
+    {
+      "name": "desktop: grouping shows the dashed ghost frame and landing slot",
+      "passed": true,
+      "actual": {
+        "free": 6
+      }
+    },
+    {
+      "name": "desktop: grouping creates one zone operation with inverse and the default title",
+      "passed": true,
+      "actual": {
+        "zoneId": "0192f0c1-7000-7000-8000-000000051000",
+        "title": "New zone",
+        "layout": {
+          "orientation": "horizontal",
+          "frame": {
+            "x": 96,
+            "y": 72,
+            "width": 588,
+            "height": 248
+          },
+          "members": [
+            {
+              "id": "0192f0c1-7000-7000-8000-000000000602",
+              "x": 112,
+              "y": 128
+            },
+            {
+              "id": "0192f0c1-7000-7000-8000-000000000603",
+              "x": 380,
+              "y": 128
+            }
+          ]
+        },
+        "applied": {
+          "operation": "group",
+          "inverse": "group",
+          "payload": {
+            "kind": "group",
+            "zoneId": "0192f0c1-7000-7000-8000-000000051000",
+            "title": "New zone"
+          }
+        }
+      }
+    },
+    {
+      "name": "desktop: rename normalises and commits one operation with inverse",
+      "passed": true,
+      "actual": {
+        "title": "Lake trip",
+        "changed": true,
+        "applied": {
+          "operation": "group",
+          "inverse": "group",
+          "payload": {
+            "kind": "zone-rename",
+            "zoneId": "0192f0c1-7000-7000-8000-000000051000",
+            "previousTitle": "New zone"
+          }
+        }
+      }
+    },
+    {
+      "name": "desktop: emptying removes the members in one operation",
+      "passed": true,
+      "actual": {
+        "operation": "group",
+        "inverse": "group",
+        "payload": {
+          "kind": "remove-members",
+          "zoneId": "0192f0c1-7000-7000-8000-000000051000"
+        }
+      }
+    },
+    {
+      "name": "desktop: the emptied zone is removed as one undoable operation",
+      "passed": true,
+      "actual": [
+        {
+          "operation": "deleteZone",
+          "inverse": "group",
+          "payload": {
+            "kind": "emptied-zone-removal",
+            "zoneId": "0192f0c1-7000-7000-8000-000000051000"
+          }
+        }
+      ]
+    },
+    {
+      "name": "desktop: the live-demo reference page loads",
+      "passed": true,
+      "actual": "reviews/evidence/P4-30-live-demo-desktop.png"
+    },
+    {
+      "name": "mobile: grouping shows the dashed ghost frame and landing slot",
+      "passed": true,
+      "actual": {
+        "free": 6
+      }
+    },
+    {
+      "name": "mobile: grouping creates one zone operation with inverse and the default title",
+      "passed": true,
+      "actual": {
+        "zoneId": "0192f0c1-7000-7000-8000-000000051000",
+        "title": "New zone",
+        "layout": {
+          "orientation": "horizontal",
+          "frame": {
+            "x": 96,
+            "y": 72,
+            "width": 588,
+            "height": 248
+          },
+          "members": [
+            {
+              "id": "0192f0c1-7000-7000-8000-000000000602",
+              "x": 112,
+              "y": 128
+            },
+            {
+              "id": "0192f0c1-7000-7000-8000-000000000603",
+              "x": 380,
+              "y": 128
+            }
+          ]
+        },
+        "applied": {
+          "operation": "group",
+          "inverse": "group",
+          "payload": {
+            "kind": "group",
+            "zoneId": "0192f0c1-7000-7000-8000-000000051000",
+            "title": "New zone"
+          }
+        }
+      }
+    },
+    {
+      "name": "mobile: rename normalises and commits one operation with inverse",
+      "passed": true,
+      "actual": {
+        "title": "Lake trip",
+        "changed": true,
+        "applied": {
+          "operation": "group",
+          "inverse": "group",
+          "payload": {
+            "kind": "zone-rename",
+            "zoneId": "0192f0c1-7000-7000-8000-000000051000",
+            "previousTitle": "New zone"
+          }
+        }
+      }
+    },
+    {
+      "name": "mobile: emptying removes the members in one operation",
+      "passed": true,
+      "actual": {
+        "operation": "group",
+        "inverse": "group",
+        "payload": {
+          "kind": "remove-members",
+          "zoneId": "0192f0c1-7000-7000-8000-000000051000"
+        }
+      }
+    },
+    {
+      "name": "mobile: the emptied zone is removed as one undoable operation",
+      "passed": true,
+      "actual": [
+        {
+          "operation": "deleteZone",
+          "inverse": "group",
+          "payload": {
+            "kind": "emptied-zone-removal",
+            "zoneId": "0192f0c1-7000-7000-8000-000000051000"
+          }
+        }
+      ]
+    },
+    {
+      "name": "mobile: the live-demo reference page loads",
+      "passed": true,
+      "actual": "reviews/evidence/P4-30-live-demo-mobile.png"
+    }
+  ],
+  "result": "pass",
+  "exitCode": 0,
+  "finishedAt": "2026-10-28T07:45:59.463Z"
+}
