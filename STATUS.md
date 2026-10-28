@@ -143,7 +143,6 @@
   - P4-07: Closed P4-07: pure Camera::fitBounds (min(...,1.0), 0.1 floor, 64 px L02 padding from tokens), dot grid shader (tokens faint/canvas, 16 px, visible at >=0.5), on-demand rendering (0 idle frames).
   - P4-07: visual 10/10 0-diff incl. reviewed sample-zoom-in update + two one-card-fit baselines; perf p95 0.1 ms, 0 intervals > 16.7 ms; L01 final mean 0.049 vs basis 0.052.
   - P4-07: Harnesses gained --task evidence prefixes; docs updated. Two review rounds, four minors fixed (record commit base, visual --task, comment wording, baseline-history precision).
-- `P4-30` Zone parity with the live demo II: lifecycle and names (L08)
 
 ## Done
 
@@ -212,7 +211,7 @@
 
 ## In progress
 
-- none
+- [ ] `P4-30` Zone parity with the live demo II: lifecycle and names (L08) — status: `in_progress` — owner: lead
 
 ## Blocked / failed
 
@@ -235,12 +234,11 @@
 - [ ] `P4-22` Remember view (L17) — status: `pending` — owner: —
 - [ ] `P4-24` Trackpad and wheel defaults (L15, desktop part) — status: `pending` — owner: —
 - [ ] `P4-28` L01 final proof, two-backend reference images and stage showcase — status: `pending` — owner: —
-- [ ] `P4-30` Zone parity with the live demo II: lifecycle and names (L08) — status: `pending` — owner: —
 
 <!-- polier:claims -->
 ## Claims
 
-- `P4-29` in progress by dsh since 2026-10-28T07:34:08+00:00 — worktree: /private/tmp/air-P4-29 · slot 1
+- `P4-30` in progress by dsh since 2026-10-28T07:35:00+00:00 — worktree: /private/tmp/air-P4-30 · slot 1
 
 <!-- /polier:claims -->
 
