@@ -125,7 +125,6 @@
   - P4-06: Closed P4-06: draw order layer > fractional z (byte-wise) > insertion; bring-to-front is one contract reorder via the seam (keyAfter, inverse = old key); reload keeps order.
   - P4-06: Port: kindOf/zIndices, adapter toneOf + objectAt; logic browser build dist/logic (tsconfig.logic.json); test-kit layers scene; playground ?scene=layers click-to-front, localStorage.
   - P4-06: Gates board-check/boundaries/cpp-unit/visual (14 captures, +4 layers refs)/typecheck; native layerOrderAndFront, 9 Node + 3 test-kit tests; docs engine.md, visual-diff.md.
-- `P4-16` Multi-selection (L10)
 - `P4-17` Resize (L14)
 - `P4-18` Auto-pan (L16)
 - `P4-19` Placement of new objects (L20)
@@ -208,7 +207,7 @@
 
 ## In progress
 
-- none
+- [ ] `P4-16` Multi-selection (L10) — status: `in_progress` — owner: lead
 
 ## Blocked / failed
 
@@ -223,7 +222,6 @@
 - [ ] `P4-11` WebGPU render pipeline behind the command buffer — status: `pending` — owner: —
 - [ ] `P4-12` WebGPU backend selection, capability and fallback — status: `pending` — owner: —
 - [ ] `P4-13` WebGPU switch and two-backend image comparison — status: `pending` — owner: —
-- [ ] `P4-16` Multi-selection (L10) — status: `pending` — owner: —
 - [ ] `P4-17` Resize (L14) — status: `pending` — owner: —
 - [ ] `P4-18` Auto-pan (L16) — status: `pending` — owner: —
 - [ ] `P4-19` Placement of new objects (L20) — status: `pending` — owner: —
@@ -240,7 +238,7 @@
 <!-- polier:claims -->
 ## Claims
 
-- `P4-15` in progress by dsh since 2026-10-28T06:20:02+00:00 — worktree: /private/tmp/air-P4-15 · slot 1
+- `P4-16` in progress by dsh since 2026-10-28T06:21:41+00:00 — worktree: /private/tmp/air-P4-16 · slot 1
 
 <!-- /polier:claims -->
 
