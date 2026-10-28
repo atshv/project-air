@@ -44,7 +44,7 @@
 - Owner decision: `continue`
 - Exit gates: `cpp-unit`, `visual-final`, `perf-final`
 - Exit criteria: 10,000 objects at 60 fps in the playground.; All engine entries of the canvas work orders done; reference images green.
-- Tasks: P4-01, P4-02, P4-03, P4-04, P4-05, P4-06, P4-07, P4-08, P4-09, P4-10, P4-11, P4-12, P4-13, P4-14, P4-15, P4-16, P4-17, P4-18, P4-19, P4-20, P4-21, P4-22, P4-23, P4-24, P4-25, P4-26, P4-27, P4-28, P4-29, P4-30
+- Tasks: P4-01, P4-02, P4-03, P4-04, P4-05, P4-06, P4-07, P4-08, P4-09, P4-10, P4-11, P4-12, P4-13, P4-14, P4-15, P4-16, P4-17, P4-18, P4-19, P4-20, P4-21, P4-22, P4-23, P4-24, P4-25, P4-26, P4-27, P4-28, P4-29, P4-30, P4-31
 
 ### Stage 6 — `realtime` Realtime
 
@@ -121,7 +121,10 @@
 
 ## Ready now
 
-- none
+- `P4-31` English sample text in the engine playground (language-check)
+  - P4-09: Closed P4-09: layoutText flows line/ellipsis/wrap in CSS px, cached per atlas generation; engine_text_add_box_run; bridge flow/box; glyph set adds dashes, quotes, bullet, U+2026.
+  - P4-09: Fixed: visual/perf/idle harnesses now copy dist/bridge/text-atlas.js (broken since P4-08); perf and idle not re-run. text-layout visual reference at zoom 1 (blur at zoom 2 is P4-10).
+  - P4-09: Gates board-check/boundaries/cpp-unit/wasm-build/wasm-size/visual (16 captures)/typecheck green; 4 new native layout sections; playground ?text=layout.
 
 ## Done
 
@@ -215,6 +218,7 @@
 - [ ] `P0-15` Release command and tag-based CI release — status: `pending` — owner: —
 - [ ] `P0-16` Dependency updates and Polier update check — status: `pending` — owner: —
 - [ ] `P0-17` RELEASING.md and release 0.0.1 — status: `pending` — owner: —
+- [ ] `P4-31` English sample text in the engine playground (language-check) — status: `pending` — owner: —
 
 ## Decisions
 

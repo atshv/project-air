@@ -5321,6 +5321,68 @@
         "Both draggable on the blocks layer (no drag from checkbox/label, no click after drag), desktop homes data-home, compact homes data-home-compact, compact world grid x 104.",
         "Gates board-check/design-check/changelog-entry green; 4 screenshots + log; follow-up: language-check flags German demo strings in apps/engine-playground/main.js."
       ]
+    },
+    {
+      "id": "P4-31",
+      "title": "English sample text in the engine playground (language-check)",
+      "goal": "The engine playground text demos (?text=layout from P4-09, ?text=titles from P4-10) use English sample content instead of German strings in code, keeping umlaut and accent coverage through names, so language-check passes repo-wide; the affected visual references are re-captured and reviewed for both backends.",
+      "why": "language-check rejects German words in code (docs/quality.md); the owner asked to clean up the ten findings in apps/engine-playground/main.js.",
+      "satisfies": [
+        "D10"
+      ],
+      "status": "pending",
+      "depends_on": [
+        "P4-09",
+        "P4-10"
+      ],
+      "complexity": 3,
+      "stage": "engine-core",
+      "parallel_group": null,
+      "scope_write": [
+        "apps/engine-playground/",
+        "reviews/evidence/visual-baselines/",
+        "docs/engine.md",
+        "docs/gates/visual-diff.md",
+        ".changes/"
+      ],
+      "scope_read": [
+        "ARCHITECTURE.md",
+        "AGENTS.md",
+        "STATUS.md",
+        "docs/module-map.md",
+        "docs/quality.md",
+        "docs/design-rules.md",
+        "docs/canvas-acceptance.md",
+        "docs/engine.md",
+        "packages/engine/",
+        "packages/contracts/generated/types.ts",
+        "packages/ui-kit/tokens.h",
+        "apps/engine-playground/",
+        "docs/gates/visual-diff.md"
+      ],
+      "acceptance": [
+        "A1",
+        "A2",
+        "A3"
+      ],
+      "gates": [
+        "board-check",
+        "language-check",
+        "visual",
+        "changelog-entry"
+      ],
+      "owner": null,
+      "branch": "task/P4-31",
+      "worktree": null,
+      "round": 0,
+      "evidence": [],
+      "scope_write_forbidden": [
+        "reference/"
+      ],
+      "exclusive": [
+        "perf",
+        "visual"
+      ]
     }
   ],
   "decisions": [
