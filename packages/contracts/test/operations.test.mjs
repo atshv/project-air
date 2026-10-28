@@ -1,4 +1,4 @@
-// Tests for the operation contract 0.2.0 (AD-1).
+// Tests for the operation contract 0.3.0 (AD-1).
 //
 // The suite checks the operation schema, the fixture coverage per operation type,
 // schema validity of the fixtures, and the model rules that JSON Schema cannot
@@ -219,7 +219,7 @@ function modelProblems(operation) {
 test("the operation schema is versioned JSON Schema 2020-12 with the operation vocabulary", () => {
   assert.equal(OPERATION_SCHEMA.$schema, "https://json-schema.org/draft/2020-12/schema");
   assert.equal(OPERATION_SCHEMA.$id, schemaId("operation"));
-  assert.ok(OPERATION_SCHEMA.$id.includes("/0.2.0/"));
+  assert.ok(OPERATION_SCHEMA.$id.includes("/0.3.0/"));
   assert.equal(OPERATION_SCHEMA.$ref, "#/$defs/operation");
   assert.deepEqual(OPERATION_SCHEMA.$defs.operationType.enum, EXPECTED_TYPES);
   assert.deepEqual([...OPERATION_TYPES], EXPECTED_TYPES);

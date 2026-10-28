@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://project-air.dev/contracts/0.2.0/operation.schema.json",
+  "$id": "https://project-air.dev/contracts/0.3.0/operation.schema.json",
   "title": "Board operation",
   "description": "One board change with exactly one inverse (AD-1): one gesture is one operation. A group bundles ordered child operations and reverses their inverses.",
   "$ref": "#/$defs/operation",

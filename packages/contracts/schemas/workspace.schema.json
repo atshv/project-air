@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://project-air.dev/contracts/0.2.0/workspace.schema.json",
+  "$id": "https://project-air.dev/contracts/0.3.0/workspace.schema.json",
   "title": "Workspace",
   "description": "A workspace owned by one account; boards and notes belong to a workspace.",
   "type": "object",

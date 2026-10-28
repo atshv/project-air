@@ -1,9 +1,9 @@
-# Contract 0.2.0
+# Contract 0.3.0
 
 The contract is the common language: everything two parts exchange is in
 [`packages/contracts`](../packages/contracts/README.md), the JSON Schema source of truth for board
-content, operations, sync protocol and API resources/errors. Version **0.2.0**; base URI
-`https://project-air.dev/contracts/0.2.0/`, a placeholder until the domain is decided (Q1), changed
+content, operations, sync protocol and API resources/errors. Version **0.3.0**; base URI
+`https://project-air.dev/contracts/0.3.0/`, a placeholder until the domain is decided (Q1), changed
 only with a version bump (ADR-0004). It binds `AD-1`
 (operation inverses), `AD-2` (durable acks), `AD-3` (versioned schemas with fixtures), `AD-4` (one
 note, many placements) and `AD-8` (translated `messageKey`). The engine includes
@@ -18,7 +18,7 @@ All 17 are JSON Schema 2020-12, closed, UUIDv7/ISO-8601, versioned `$id`.
   `schemas/zone.schema.json`, `schemas/block.schema.json`, `schemas/edge.schema.json`,
   `schemas/operation.schema.json` (20 types, one inverse each; ordered non-nesting `group`),
   `schemas/reorder-payload.schema.json` (the payload shared by `reorder` and its inverse) and the
-  root `schemas/board-content.schema.json` (`contractVersion` const `0.2.0`).
+  root `schemas/board-content.schema.json` (`contractVersion` const `0.3.0`).
 - **Sync**: `schemas/sync/sync.schema.json` — one `oneOf` envelope, 12 message types (6
   client→server, 6 server→client) plus reconnect and session sequences.
 - **REST API**: `schemas/api/workspace.schema.json`, `schemas/api/board.schema.json`,
@@ -110,6 +110,7 @@ The server understands current/previous major; never rename: add, deprecate, rem
 | --- | --- |
 | 0.1.0 | Initial contract: board-content model, 19 operations with inverses, sync protocol and REST API envelopes. |
 | 0.2.0 | Zone parent reference documented and fixtures added (cards and blocks nullable `zoneId`, no nested zones), `reorder` operation with inverse, `moveZone` `zoneId` description corrected. Limits, visibility and error codes unchanged (ADR-0004); additive fields only. |
+| 0.3.0 | Pre-realtime sync: once-per-connection version negotiation (`hello`/`welcome`), fresh-board `serverSeq` 1 / `fromServerSeq` 0 empty catch-up, `snapshotRef = <boardId>:<serverSeq>`, hello-first and reconnect ordering enforced by fixtures; 0.2.0 content/operation semantics unchanged. |
 
 Per task: edit schemas; add valid and invalid fixtures; run codegen and commit generated files;
 update every dependant in the same task (AD-3), or list a deferred one in `contract_followups` for
@@ -149,13 +150,30 @@ P1-04/P1-05 review points, settle before realtime/SDK:
 1. ~~**GET request transport**~~ — resolved in P3-04/P3-05: a GET takes `?requestId=` (or the
    `x-request-id` header) and echoes a valid UUIDv7 client value; mutations carry `requestId` in the
    JSON body and echo it. Recorded in [ADR-0008](adr/ADR-0008-api-session-model.md).
-2. **Version negotiation** — `contractVersion` is set once per connection (`hello`/`welcome`);
-   blueprint §5.1 wants one on every message; confirm before SDK.
-3. **`serverSeq` bootstrap** — `welcome` requires ≥1 and `snapshotRef` a positive sequence while
-   `fromServerSeq` allows 0; start a fresh board at 1 and add a from-0 fixture.
-4. **`hello`-first rule** — docs say first, the session test does not enforce it; add the rule and a
-   fixture.
-5. **Reconnect order and `snapshotRef`** — wrong-order is only checked for a problem, and
-   `<boardId>:<serverSeq>` is not verified; tighten both.
+2. ~~**Version negotiation**~~ — resolved in P5-01: `contractVersion` is sent once per connection in
+   the `hello` payload and echoed in `welcome`; the blueprint §5.1 per-message version is replaced by
+   this documented, fixture-tested alternative. The sync schema carries `contractVersion` in the `hello` payload (an optional field so 0.3.0 is a
+   minor addition) and requires it on `welcome`; the session rule rejects a missing/mismatched version, and
+   `client-hello-missing-contract-version.json` / `client-hello-wrong-contract-version.json` are the
+   invalid fixtures (the valid `client-hello.json` and the gate specimen pin the rule).
+3. ~~**`serverSeq` bootstrap**~~ — resolved in P5-01: a fresh board starts at **1**, `fromServerSeq: 0`
+   names the empty catch-up (`reconnect-empty-catchup-sequence.json`), and `snapshotRef` is exactly
+   `<boardId>:<serverSeq>` (schema pattern plus the reconnect cross-field rule; the mismatched
+   `reconnect-mismatched-snapshot-ref.json` is invalid, `welcome.serverSeq >= 1` stays required).
+4. ~~**`hello`-first rule**~~ — resolved in P5-01: the session rule requires the first client message
+   to be `hello`; a fixture sequence with a client message before hello is rejected.
+5. ~~**Reconnect order and `snapshotRef`**~~ — resolved in P5-01: the session rule rejects
+   `resyncRequest` before `joinBoard` (`session-resync-before-join.json`), and the reconnect rule
+   verifies the exact `<boardId>:<serverSeq>` snapshot reference. The 0.3.0 fixtures above are the
+   enforcement; `docs/quality.md` records the gates.
+
+## The 0.3.0 tag
+
+0.3.0 is the pre-realtime sync contract: version negotiation once per connection (`hello`/`welcome`),
+the fresh-board `serverSeq`/`fromServerSeq` rules, `snapshotRef = <boardId>:<serverSeq>`, the
+`hello`-first session rule and the reconnect ordering. Contents and operation semantics of 0.2.0 are
+unchanged; the version bump covers the schema `$id`s, the root `contractVersion`, `board.contracts[]`,
+the fixtures and the regenerated TS/C++ codegen. The fixtures-gate corpus carries the valid
+`client-hello` and the invalid missing-version specimen next to the board-content specimens.
 
 Notes only; schema changes need the procedure above.

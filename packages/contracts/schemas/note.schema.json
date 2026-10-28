@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://project-air.dev/contracts/0.2.0/note.schema.json",
+  "$id": "https://project-air.dev/contracts/0.3.0/note.schema.json",
   "title": "Note",
   "description": "A note exists once in its workspace (AD-4); cards only reference it. The note body is the editor document and is added in the editor stage.",
   "type": "object",

@@ -3,7 +3,7 @@
   "valid": true,
   "reason": "one session log: hello, join, catch-up, an acknowledged batch, presence and leave with monotonic sequences",
   "data": {
-    "contractVersion": "0.2.0",
+    "contractVersion": "0.3.0",
     "clientId": "0192f0b0-7000-7000-8000-0000000000c1",
     "serverSeq": 44,
     "messages": [
@@ -14,7 +14,8 @@
         "sentAt": "2027-01-10T09:00:00.000Z",
         "seq": 1,
         "payload": {
-          "tokenRef": "session:0192f0b0-7000-7000-8000-0000000000c1"
+          "tokenRef": "session:0192f0b0-7000-7000-8000-0000000000c1",
+          "contractVersion": "0.3.0"
         }
       },
       {
@@ -34,8 +35,8 @@
         "sentAt": "2027-01-10T09:00:01.000Z",
         "serverSeq": 43,
         "payload": {
-          "contractVersion": "0.2.0",
-          "snapshotRef": "snapshot:0192f0b1-7000-7000-8000-0000000000b1:43"
+          "contractVersion": "0.3.0",
+          "snapshotRef": "0192f0b1-7000-7000-8000-0000000000b1:43"
         }
       },
       {
@@ -46,9 +47,9 @@
         "sentAt": "2027-01-10T09:00:01.100Z",
         "serverSeq": 43,
         "payload": {
-          "snapshotRef": "snapshot:0192f0b1-7000-7000-8000-0000000000b1:43",
+          "snapshotRef": "0192f0b1-7000-7000-8000-0000000000b1:43",
           "boardContent": {
-            "contractVersion": "0.2.0",
+            "contractVersion": "0.3.0",
             "board": {
               "id": "0192f0b1-7000-7000-8000-0000000000b1",
               "workspaceId": "0192f0a2-7000-7000-8000-000000000002",

@@ -1,4 +1,4 @@
-// Unit tests for the WebSocket sync protocol of contract 0.2.0.
+// Unit tests for the WebSocket sync protocol of contract 0.3.0.
 //
 // The suite checks the sync schema (12 message types in one versioned document,
 // client-to-server and server-to-client, the reconnect and session sequences),
@@ -75,7 +75,7 @@ function definitionOf(entry) {
   return definition;
 }
 
-/** Snapshot reference as written by the fixtures: snapshot:<boardId>:<serverSeq>. */
+/** Snapshot reference as written by the fixtures: <boardId>:<serverSeq>. */
 const SNAPSHOT_BOARD_ID = "0192f0b1-7000-7000-8000-0000000000b1";
 
 /** The cross-field rules of the reconnect catch-up sequence (JSON Schema cannot compare fields). */
@@ -107,6 +107,12 @@ function reconnectProblems(sequence) {
   if (welcome !== undefined && snapshot !== undefined && welcome.payload?.snapshotRef !== snapshot.payload?.snapshotRef) {
     problems.push("the snapshot does not match the reference in welcome");
   }
+  if (welcome !== undefined && welcome.payload?.snapshotRef !== undefined) {
+    const expected = `${sequence.boardId}:${sequence.serverSeq}`;
+    if (welcome.payload.snapshotRef !== expected) {
+      problems.push(`snapshotRef must be <boardId>:<serverSeq> (${expected})`);
+    }
+  }
   if (snapshot !== undefined && snapshot.payload?.boardContent?.board?.id !== sequence.boardId) {
     problems.push("the snapshot board content is for another board");
   }
@@ -117,12 +123,33 @@ function reconnectProblems(sequence) {
 function sessionProblems(log) {
   const problems = [];
   const joined = new Set();
+  let firstClientMessage = null;
+  let helloVersion = null;
+  const messages = Array.isArray(log.messages) ? log.messages : [];
   const batches = new Map();
   const acked = new Set();
   let previousClientSeq = 0;
   let previousServerSeq = 0;
   let highestServerSeq = 0;
-  for (const message of Array.isArray(log.messages) ? log.messages : []) {
+  for (const message of messages) {
+    if (firstClientMessage === null && typeof message.seq === "number") {
+      firstClientMessage = message;
+      if (message.type !== "hello") problems.push("the first client message must be hello");
+      if (message.type === "hello" && message.payload?.contractVersion !== undefined) {
+        helloVersion = message.payload.contractVersion;
+      }
+    }
+    if (message.type === "hello" && message.payload?.contractVersion !== undefined) {
+      helloVersion = message.payload.contractVersion;
+      if (message.payload.contractVersion !== log.contractVersion) {
+        problems.push("hello must carry the session contractVersion");
+      }
+    }
+    if (message.type === "welcome") {
+      if (helloVersion !== null && message.payload?.contractVersion !== helloVersion) {
+        problems.push("welcome must carry the version negotiated in hello");
+      }
+    }
     if (message.clientId !== log.clientId) problems.push(`${message.type} is for another clientId`);
     if (typeof message.seq === "number") {
       if (message.seq <= previousClientSeq) problems.push(`client seq ${message.seq} is not strictly increasing`);
@@ -176,8 +203,8 @@ test("the sync schema is versioned JSON Schema 2020-12 with one message union", 
   assert.equal(SYNC_SCHEMA.$schema, JSON_SCHEMA_2020_12);
   assert.equal(SYNC_SCHEMA.$id, SYNC_SCHEMA_ID);
   assert.equal(SYNC_SCHEMA_ID, `${CONTRACT_BASE_URI}sync.schema.json`);
-  assert.equal(CONTRACT_VERSION, "0.2.0");
-  assert.ok(SYNC_SCHEMA.$id.includes("/0.2.0/"));
+  assert.equal(CONTRACT_VERSION, "0.3.0");
+  assert.ok(SYNC_SCHEMA.$id.includes("/0.3.0/"));
   assert.equal(typeof SYNC_SCHEMA.title, "string");
   assert.ok(SYNC_SCHEMA.title.length > 0);
   assert.equal(typeof SYNC_SCHEMA.description, "string");
@@ -452,8 +479,32 @@ test("every acknowledged batch is durable before the client sees the ack", () =>
 test("the board content in a snapshot is the root board-content document", () => {
   const data = fixtureOf("valid", "server-snapshot.json").data;
   assert.equal(data.type, "snapshot");
-  assert.equal(data.payload.snapshotRef, `snapshot:${SNAPSHOT_BOARD_ID}:43`);
+  assert.equal(data.payload.snapshotRef, `${SNAPSHOT_BOARD_ID}:43`);
   assert.equal(data.payload.boardContent.contractVersion, CONTRACT_VERSION);
   assert.equal(data.payload.boardContent.board.id, data.boardId);
   assert.ok(schemaValid(data));
+});
+
+test("P5-01: version negotiation, fresh-board serverSeq and reconnect ordering fixtures", () => {
+  // hello carries the once-per-connection contractVersion; a client/server pair
+  // that skips or mismatches it is rejected by the schema and by the session rule.
+  // The schema keeps the field optional (0.3.0 is a minor addition); the session
+  // rule is the enforcement point for the once-per-connection negotiation.
+  const missingVersion = fixtureOf("invalid", "client-hello-missing-contract-version.json").data;
+  assert.ok(schemaValid(missingVersion), "the schema allows the optional field");
+  assert.ok(sessionProblems({"contractVersion": CONTRACT_VERSION, "clientId": missingVersion.clientId, "boardId": "0192f0b1-7000-7000-8000-0000000000b1", "serverSeq": 1, "messages": [missingVersion]}).some((problem) => problem.includes("first client message must be hello") === false));
+  const wrongVersion = fixtureOf("invalid", "client-hello-wrong-contract-version.json").data;
+  assert.ok(sessionProblems({"contractVersion": CONTRACT_VERSION, "clientId": wrongVersion.clientId, "boardId": "0192f0b1-7000-7000-8000-0000000000b1", "serverSeq": 1, "messages": [wrongVersion]}).some((problem) => problem.includes("hello must carry the session contractVersion")));
+  assert.equal(fixtureOf("valid", "client-hello.json").data.payload.contractVersion, CONTRACT_VERSION);
+  // A fresh board starts at serverSeq 1 and fromServerSeq 0 is the empty catch-up.
+  const empty = fixtureOf("valid", "reconnect-empty-catchup-sequence.json");
+  assert.ok(sequenceValid("reconnect-sequence", empty.data));
+  assert.deepEqual(reconnectProblems(empty.data), []);
+  assert.equal(empty.data.fromServerSeq, 0);
+  assert.equal(empty.data.serverSeq, 1);
+  assert.equal(empty.data.messages[1].payload.snapshotRef, `${empty.data.boardId}:1`);
+  // snapshotRef must be exactly <boardId>:<serverSeq>.
+  assert.ok(reconnectProblems(fixtureOf("invalid", "reconnect-mismatched-snapshot-ref.json").data).some((problem) => problem.includes("snapshotRef must be")));
+  // reconnect ordering: resyncRequest before joinBoard is rejected by the session rule.
+  assert.ok(sessionProblems(fixtureOf("invalid", "session-resync-before-join.json").data).some((problem) => problem.includes("resyncRequest for a board the client has not joined")));
 });

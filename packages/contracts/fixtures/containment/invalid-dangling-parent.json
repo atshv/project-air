@@ -3,7 +3,7 @@
   "valid": false,
   "reason": "the first card zoneId names a zone that is not in the zones array; JSON Schema cannot compare the reference, so the containment rule rejects the dangling parent",
   "data": {
-    "contractVersion": "0.2.0",
+    "contractVersion": "0.3.0",
     "board": {
       "id": "0192f0a3-7000-7000-8000-000000000003",
       "workspaceId": "0192f0a2-7000-7000-8000-000000000002",

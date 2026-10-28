@@ -1,4 +1,4 @@
-// Unit tests for the REST API error envelope of contract 0.2.0 (AD-8).
+// Unit tests for the REST API error envelope of contract 0.3.0 (AD-8).
 //
 // The suite checks the fixed UPPER_SNAKE error-code enum, the required
 // messageKey mapping errors.<camelCase(code)>, the closed details shape (field
@@ -80,8 +80,8 @@ test("the error schema is versioned JSON Schema 2020-12 with the fixed code enum
   assert.equal(ERRORS_SCHEMA.$schema, JSON_SCHEMA_2020_12);
   assert.equal(ERRORS_SCHEMA.$id, apiSchemaId("errors"));
   assert.equal(ERRORS_SCHEMA.$id, `${CONTRACT_BASE_URI}api/errors.schema.json`);
-  assert.ok(ERRORS_SCHEMA.$id.includes("/0.2.0/"));
-  assert.equal(CONTRACT_VERSION, "0.2.0");
+  assert.ok(ERRORS_SCHEMA.$id.includes("/0.3.0/"));
+  assert.equal(CONTRACT_VERSION, "0.3.0");
   assert.equal(typeof ERRORS_SCHEMA.title, "string");
   assert.equal(typeof ERRORS_SCHEMA.description, "string");
   assert.equal(ERRORS_SCHEMA.type, "object");

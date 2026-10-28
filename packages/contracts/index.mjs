@@ -1,4 +1,4 @@
-// Entry point of the Project air contract, version 0.2.0.
+// Entry point of the Project air contract, version 0.3.0.
 //
 // The contract is the single JSON Schema source for the board data model: one
 // schema per entity, one root board-content schema, and valid/invalid fixtures
@@ -11,12 +11,12 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 /** Contract version carried by every schema `$id` and the root document. */
-export const CONTRACT_VERSION = "0.2.0";
+export const CONTRACT_VERSION = "0.3.0";
 
 /** Base URI of the versioned schemas. It is a namespace, not a fetched URL. */
 export const CONTRACT_BASE_URI = `https://project-air.dev/contracts/${CONTRACT_VERSION}/`;
 
-/** Operation types of contract 0.2.0 (AD-1: one gesture = one operation). */
+/** Operation types of contract 0.3.0 (AD-1: one gesture = one operation). */
 export const OPERATION_TYPES = Object.freeze([
   "createNote",
   "updateNote",
@@ -103,7 +103,7 @@ export const API_SCHEMA_FILES = Object.freeze({
   errors: "schemas/api/errors.schema.json",
 });
 
-/** Error codes of contract 0.2.0: stable UPPER_SNAKE wire codes, never translated. */
+/** Error codes of contract 0.3.0: stable UPPER_SNAKE wire codes, never translated. */
 export const ERROR_CODES = Object.freeze([
   "AUTH_REQUIRED",
   "FORBIDDEN",

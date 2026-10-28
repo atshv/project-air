@@ -3,7 +3,7 @@
   "valid": false,
   "reason": "a batch id must be sent once; a duplicate batch is invalid",
   "data": {
-    "contractVersion": "0.2.0",
+    "contractVersion": "0.3.0",
     "clientId": "0192f0b0-7000-7000-8000-0000000000c1",
     "serverSeq": 44,
     "messages": [

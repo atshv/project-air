@@ -1,4 +1,4 @@
-// Tests for the zone parent rule of contract 0.2.0 (L08, AD-1).
+// Tests for the zone parent rule of contract 0.3.0 (L08, AD-1).
 //
 // Cards and blocks carry an optional nullable zone parent; a zone never carries one
 // (no nested zones in v1). JSON Schema validates the shape of the reference but

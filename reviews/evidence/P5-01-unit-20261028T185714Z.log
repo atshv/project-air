@@ -1,0 +1,124 @@
+$ pnpm test --affected
+[exit 0]
+
+
+   • turbo 2.11.10
+   • Packages in scope: //, @project-air/contracts
+   • Running test in 2 packages
+   • Remote caching disabled, using shared worktree cache
+
+@project-air/contracts:test: cache miss, executing d170bec58b4e4a7a
+@project-air/contracts:test: $ node --test test/*.test.mjs
+@project-air/contracts:test: ✔ the error schema is versioned JSON Schema 2020-12 with the fixed code enum (2.304541ms)
+@project-air/contracts:test: ✔ the wire codes stay UPPER_SNAKE and the message keys are lowerCamelCase (0.273625ms)
+@project-air/contracts:test: ✔ the oneOf ties every code to exactly one message key (0.636875ms)
+@project-air/contracts:test: ✔ every error code has a valid fixture and the invalid ones are rejected (2.598042ms)
+@project-air/contracts:test: ✔ details carry field paths, never user text (0.146291ms)
+@project-air/contracts:test: ✔ every error code has exactly one message key in de, en and en-XA (1.644875ms)
+@project-air/contracts:test: ✔ the German error messages follow the style rules and the English ones differ (0.21725ms)
+@project-air/contracts:test: ✔ the pseudo locale carries the generated values for the error keys (0.212333ms)
+@project-air/contracts:test: ✔ the index exports the error code table and the API schema path (0.229709ms)
+@project-air/contracts:test: ✔ the four API resource schemas are versioned JSON Schema 2020-12 with closed envelopes (2.089791ms)
+@project-air/contracts:test: ✔ the envelopes cover list, get, create, update and delete (0.845959ms)
+@project-air/contracts:test: ✔ the envelopes reference the P1-01 entity schemas instead of restating them (1.035875ms)
+@project-air/contracts:test: ✔ card create and changes mirror the P1-01 minimum sizes and the nullable zone parent (0.11225ms)
+@project-air/contracts:test: ✔ every resource envelope has a valid fixture that satisfies it (3.633917ms)
+@project-air/contracts:test: ✔ the invalid fixtures violate their envelope and name the rule (1.444875ms)
+@project-air/contracts:test: ✔ every API fixture has the wrapper and maps to an API schema (1.565042ms)
+@project-air/contracts:test: ✔ valid API fixtures use UUIDv7 ids and ISO-8601 timestamps (1.294625ms)
+@project-air/contracts:test: ✔ an empty list is valid with items [] and nextCursor null (0.15725ms)
+@project-air/contracts:test: ✔ pagination bounds are encoded in the schema (0.154791ms)
+@project-air/contracts:test: ✔ update requests need a non-empty changes object (0.227333ms)
+@project-air/contracts:test: ✔ delete envelopes name the resource id (0.711333ms)
+@project-air/contracts:test: ✔ the index exports the API resources, schema paths and fixture paths (0.317666ms)
+@project-air/contracts:test: ✔ the generated directory holds exactly the two committed files (3.096125ms)
+@project-air/contracts:test: ✔ the committed generated files equal the generator output (1.678334ms)
+@project-air/contracts:test: ✔ codegen is deterministic and free of timestamps and absolute paths (1.068334ms)
+@project-air/contracts:test: ✔ the TypeScript output exposes the entities, enums, union and inverse pair (0.240834ms)
+@project-air/contracts:test: ✔ the generated files carry the 0.3.0 reorder payload in both languages (0.209458ms)
+@project-air/contracts:test: ✔ the generated operation vocabulary matches the contract index (0.144958ms)
+@project-air/contracts:test: ✔ the C++ output exposes the model, enums and the operation envelope (0.146208ms)
+@project-air/contracts:test: ✔ the containment corpus is additive and uses the board-content schema (3.298ms)
+@project-air/contracts:test: ✔ valid containment fixtures are schema-valid and follow the parent rule (1.121333ms)
+@project-air/contracts:test: ✔ the dangling parent fixture is rejected by the containment rule (0.324916ms)
+@project-air/contracts:test: ✔ a nested zone is rejected by the zone schema (0.577708ms)
+@project-air/contracts:test: ✔ cards and blocks carry an optional nullable parent and zones carry none (0.519ms)
+@project-air/contracts:test: ✔ index exports the versioned schema and fixture paths (3.799791ms)
+@project-air/contracts:test: ✔ board.contracts metadata names the current version and all 17 schema files (3.243834ms)
+@project-air/contracts:test: ✔ every schema is JSON Schema 2020-12 with a versioned $id and required fields (1.427625ms)
+@project-air/contracts:test: ✔ every schema has at least one valid and one invalid fixture with the wrapper (4.887917ms)
+@project-air/contracts:test: ✔ every fixture schema path resolves to a schema (3.363375ms)
+@project-air/contracts:test: ✔ valid fixtures satisfy their schema (1.92425ms)
+@project-air/contracts:test: ✔ invalid fixtures violate their schema and name the broken rule (4.68675ms)
+@project-air/contracts:test: ✔ valid fixtures carry every required top-level field (2.23775ms)
+@project-air/contracts:test: ✔ valid ids are UUIDv7 and valid timestamps are ISO-8601 with timezone (1.483042ms)
+@project-air/contracts:test: ✔ minimum sizes are encoded in the schemas (0.272667ms)
+@project-air/contracts:test: ✔ valid fixtures sit exactly on the minimum sizes (0.297666ms)
+@project-air/contracts:test: ✔ invalid minimum-size fixtures are below their type minimum (0.256542ms)
+@project-air/contracts:test: ✔ fixed enums are part of the schemas (0.731ms)
+@project-air/contracts:test: ✔ the fractional index is a string (0.534792ms)
+@project-air/contracts:test: ✔ timestamps are ISO-8601 strings with timezone (1.059ms)
+@project-air/contracts:test: ✔ AD-4: a note exists once and cards only reference it (0.232875ms)
+@project-air/contracts:test: ✔ the parent relation is board to zone to card, without nested zones (0.26ms)
+@project-air/contracts:test: ✔ edges connect cards only (0.16025ms)
+@project-air/contracts:test: ✔ the root schema references every board-content entity (0.482167ms)
+@project-air/contracts:test: ✔ the package has no runtime dependencies and defines the test command (0.083708ms)
+@project-air/contracts:test: ✔ the gate specimens are byte-identical copies of canonical fixtures (1.955583ms)
+@project-air/contracts:test: ✔ the gate fixture directories hold direct JSON files for Polier (0.464833ms)
+@project-air/contracts:test: ✔ the gate specimens keep the fixture wrapper (0.219334ms)
+@project-air/contracts:test: ✔ the sync gate specimens are byte-identical copies of canonical fixtures (4.410083ms)
+@project-air/contracts:test: ✔ the operation schema is versioned JSON Schema 2020-12 with the operation vocabulary (0.955708ms)
+@project-air/contracts:test: ✔ index exports the operation schema path, id and type vocabulary (0.990458ms)
+@project-air/contracts:test: ✔ every operation type has a valid and at least one invalid fixture (0.370042ms)
+@project-air/contracts:test: ✔ every operation fixture maps to the operation schema with the fixture wrapper (1.565167ms)
+@project-air/contracts:test: ✔ valid operation fixtures satisfy the schema and the inverse model (3.055959ms)
+@project-air/contracts:test: ✔ invalid operation fixtures break the schema or the inverse model and name the rule (2.322625ms)
+@project-air/contracts:test: ✔ every operation carries exactly one inverse with board, type and payload (0.672625ms)
+@project-air/contracts:test: ✔ operation ids are UUIDv7 and timestamps are ISO-8601 (0.651334ms)
+@project-air/contracts:test: ✔ each operation type pairs with its documented inverse type (0.631541ms)
+@project-air/contracts:test: ✔ groups have ordered children and the inverse reverses the child inverses (0.206ms)
+@project-air/contracts:test: ✔ groups do not nest and need at least one child (0.156833ms)
+@project-air/contracts:test: ✔ updates store only changed fields and the inverse stores the previous values (0.122042ms)
+@project-air/contracts:test: ✔ deletes store the object and creates have the matching delete as inverse (0.327959ms)
+@project-air/contracts:test: ✔ the reorder operation stores the new z and its inverse the previous z (0.175792ms)
+@project-air/contracts:test: ✔ resize operations respect the P1-01 minimum sizes (0.36425ms)
+@project-air/contracts:test: ✔ move payloads carry a position and an optional zone parent (0.0815ms)
+@project-air/contracts:test: ✔ the group inverse is checked against the reversed child inverses (0.470208ms)
+@project-air/contracts:test: ✔ an inverse with a mismatching board or target is invalid (0.169667ms)
+@project-air/contracts:test: ✔ every valid operation payload object still satisfies the P1-01 entity schemas (1.380875ms)
+@project-air/contracts:test: ✔ every fixture has a canonical TypeScript result (0.496834ms)
+@project-air/contracts:test: ✔ the canonical TypeScript description is deterministic (0.880958ms)
+@project-air/contracts:test: ✔ the parity program compiles with the local C++ compiler (1046.205958ms)
+@project-air/contracts:test: ✔ TypeScript and C++ canonical results match for every fixture (66.798666ms)
+@project-air/contracts:test: ✔ a tampered canonical line is detected as a parity difference (0.202583ms)
+@project-air/contracts:test: ✔ invalid fixtures keep their validity verdict and model fields in the canonical form (0.376917ms)
+@project-air/contracts:test: ✔ the sync schema is versioned JSON Schema 2020-12 with one message union (1.155333ms)
+@project-air/contracts:test: ✔ every message type is documented with its direction and the required metadata (0.832417ms)
+@project-air/contracts:test: ✔ the index exports the sync schema, message table and fixture paths (0.265542ms)
+@project-air/contracts:test: ✔ every message type has a valid and an invalid fixture in the wrapper (3.945458ms)
+@project-air/contracts:test: ✔ every sync fixture names the sync schema and its validity (1.450666ms)
+@project-air/contracts:test: ✔ valid message fixtures use UUIDv7 ids and ISO-8601 timestamps (0.789916ms)
+@project-air/contracts:test: ✔ operation batches carry P1-02 operations through the operation schema reference (0.846709ms)
+@project-air/contracts:test: ✔ presence messages carry presence only, never operation data (0.218458ms)
+@project-air/contracts:test: ✔ message ids and sequence rules live in the envelope (0.563833ms)
+@project-air/contracts:test: ✔ no unknown message type matches the envelope (0.498458ms)
+@project-air/contracts:test: ✔ the reconnect sequence starts from a known serverSeq and ends with the snapshot (0.415375ms)
+@project-air/contracts:test: ✔ the session sequence keeps join order, sequences, duplicate batches and ack coverage (0.867834ms)
+@project-air/contracts:test: ✔ every acknowledged batch is durable before the client sees the ack (0.119625ms)
+@project-air/contracts:test: ✔ the board content in a snapshot is the root board-content document (0.137667ms)
+@project-air/contracts:test: ✔ P5-01: version negotiation, fresh-board serverSeq and reconnect ordering fixtures (0.414958ms)
+@project-air/contracts:test: ℹ tests 98
+@project-air/contracts:test: ℹ suites 0
+@project-air/contracts:test: ℹ pass 98
+@project-air/contracts:test: ℹ fail 0
+@project-air/contracts:test: ℹ cancelled 0
+@project-air/contracts:test: ℹ skipped 0
+@project-air/contracts:test: ℹ todo 0
+@project-air/contracts:test: ℹ duration_ms 1502.655292
+
+ Tasks:    1 successful, 1 total
+Cached:    0 cached, 1 total
+  Time:    1.695s 
+
+$ turbo run test --affected
+ WARNING  no output files found for task @project-air/contracts#test. Please check your `outputs` key in `turbo.json`

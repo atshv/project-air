@@ -1,0 +1,17 @@
+{
+  "task": "P5-01",
+  "gate": "unit",
+  "command": "pnpm test --affected",
+  "exit_code": 0,
+  "result": "pass",
+  "slot": null,
+  "exclusive": [],
+  "lock_wait_s": 0.0,
+  "lock_warning": null,
+  "started": "2026-10-28T18:56:38+00:00",
+  "finished": "2026-10-28T18:56:40+00:00",
+  "commit": "ef739ad10a1cf0b13d8ce54ae2bfa60a66b1bb70",
+  "dirty": true,
+  "log": "P5-01-unit-20261028T185638Z.log",
+  "log_sha256": "7847b68c6809b1c0c1483e9e1c40c93b0c72b3c06f78b5162fa0648e81b3c19a"
+}

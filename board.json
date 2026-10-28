@@ -387,7 +387,7 @@
     {
       "name": "project-air-contract",
       "path": "packages/contracts",
-      "version": "0.2.0",
+      "version": "0.3.0",
       "schema_files": [
         "packages/contracts/schemas/account.schema.json",
         "packages/contracts/schemas/workspace.schema.json",
@@ -5402,7 +5402,7 @@
       "satisfies": [
         "D11"
       ],
-      "status": "in_progress",
+      "status": "done",
       "depends_on": [
         "P1-04"
       ],
@@ -5438,13 +5438,25 @@
         "codegen",
         "unit"
       ],
-      "owner": "lead",
+      "owner": null,
       "branch": "task/P5-01",
-      "worktree": "/private/tmp/air-P5-01",
+      "worktree": null,
       "round": 0,
-      "evidence": [],
+      "evidence": [
+        "reviews/evidence/P5-01-board-check-20261028T185710Z.json",
+        "reviews/evidence/P5-01-boundaries-20261028T185713Z.json",
+        "reviews/evidence/P5-01-contracts-20261028T185709Z.json",
+        "reviews/evidence/P5-01-codegen-20261028T185709Z.json",
+        "reviews/evidence/P5-01-unit-20261028T185714Z.json"
+      ],
       "scope_write_forbidden": [
         "reference/"
+      ],
+      "contract_followups": [
+        "packages/engine/",
+        "packages/sdk/",
+        "services/platform/",
+        "services/auth/"
       ]
     },
     {

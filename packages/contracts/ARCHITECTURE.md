@@ -6,7 +6,7 @@
 
 The common language of the workspace: the board-content model, its operations with exactly one
 inverse, the sync protocol and the REST API resources with their error codes, as JSON Schema
-2020-12 (contract `0.2.0`) with fixtures, generated TypeScript/C++ types and a parity harness.
+2020-12 (contract `0.3.0`) with fixtures, generated TypeScript/C++ types and a parity harness.
 
 ## Inputs
 
@@ -18,7 +18,7 @@ inverse, the sync protocol and the REST API resources with their error codes, as
 
 ## Outputs
 
-- Versioned schemas with `$id` `0.2.0`; deterministic `generated/types.ts` and
+- Versioned schemas with `$id` `0.3.0`; deterministic `generated/types.ts` and
   `generated/contract.h`, committed and never hand-edited.
 - `index.mjs`: version, operation vocabulary, sync message table, error-code table, schema and
   fixture paths.

@@ -9,7 +9,8 @@
     "sentAt": "2027-01-10T09:00:00.000Z",
     "seq": 1,
     "payload": {
-      "tokenRef": "session:0192f0b0-7000-7000-8000-0000000000c1"
+      "tokenRef": "session:0192f0b0-7000-7000-8000-0000000000c1",
+      "contractVersion": "0.3.0"
     }
   }
 }
