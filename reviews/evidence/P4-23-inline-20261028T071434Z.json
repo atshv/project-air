@@ -1,0 +1,1054 @@
+{
+  "task": "P4-23",
+  "gate": "inline-capture",
+  "startedAt": "2026-10-28T07:13:00.535Z",
+  "chrome": "/Users/rasulatashev/Library/Caches/ms-playwright/chromium-1248/chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing",
+  "flags": [
+    "--headless=new",
+    "--use-angle=metal",
+    "--enable-gpu",
+    "--hide-scrollbars",
+    "--disable-frame-rate-limit",
+    "--disable-gpu-vsync",
+    "--no-first-run",
+    "--no-default-browser-check",
+    "--disable-background-timer-throttling",
+    "--disable-renderer-backgrounding",
+    "--disable-backgrounding-occluded-windows",
+    "--window-size=1440,900",
+    "--no-sandbox"
+  ],
+  "viewports": [
+    {
+      "viewport": {
+        "name": "desktop",
+        "width": 1440,
+        "height": 900
+      },
+      "camera": {
+        "panX": 0,
+        "panY": -0.18285714285713084,
+        "zoom": 1.025390625
+      },
+      "fields": [
+        {
+          "id": "entry-1",
+          "group": "checklist",
+          "kind": "text",
+          "world": {
+            "x": 128,
+            "y": 184,
+            "width": 224,
+            "height": 24
+          },
+          "value": "",
+          "focused": false,
+          "visible": true,
+          "screen": {
+            "x": 131.25,
+            "y": 188.859375,
+            "width": 229.6875,
+            "height": 24.609375,
+            "visible": true
+          }
+        },
+        {
+          "id": "entry-2",
+          "group": "checklist",
+          "kind": "text",
+          "world": {
+            "x": 128,
+            "y": 214,
+            "width": 224,
+            "height": 24
+          },
+          "value": "",
+          "focused": false,
+          "visible": true,
+          "screen": {
+            "x": 131.25,
+            "y": 219.62109375,
+            "width": 229.6875,
+            "height": 24.609375,
+            "visible": true
+          }
+        },
+        {
+          "id": "entry-3",
+          "group": "checklist",
+          "kind": "text",
+          "world": {
+            "x": 128,
+            "y": 244,
+            "width": 224,
+            "height": 24
+          },
+          "value": "",
+          "focused": false,
+          "visible": true,
+          "screen": {
+            "x": 131.25,
+            "y": 250.3828125,
+            "width": 229.6875,
+            "height": 24.609375,
+            "visible": true
+          }
+        },
+        {
+          "id": "entry-4",
+          "group": "column",
+          "kind": "text",
+          "world": {
+            "x": 560,
+            "y": 392,
+            "width": 200,
+            "height": 24
+          },
+          "value": "",
+          "focused": false,
+          "visible": true,
+          "screen": {
+            "x": 574.21875,
+            "y": 402.140625,
+            "width": 205.078125,
+            "height": 24.609375,
+            "visible": true
+          }
+        },
+        {
+          "id": "entry-5",
+          "group": "column",
+          "kind": "text",
+          "world": {
+            "x": 560,
+            "y": 422,
+            "width": 200,
+            "height": 24
+          },
+          "value": "",
+          "focused": false,
+          "visible": true,
+          "screen": {
+            "x": 574.21875,
+            "y": 432.90234375,
+            "width": 205.078125,
+            "height": 24.609375,
+            "visible": true
+          }
+        },
+        {
+          "id": "entry-6",
+          "group": "table",
+          "kind": "text",
+          "world": {
+            "x": 368,
+            "y": 216,
+            "width": 220,
+            "height": 24
+          },
+          "value": "",
+          "focused": false,
+          "visible": true,
+          "screen": {
+            "x": 377.34375,
+            "y": 221.671875,
+            "width": 225.5859375,
+            "height": 24.609375,
+            "visible": true
+          }
+        },
+        {
+          "id": "entry-7",
+          "group": "table",
+          "kind": "text",
+          "world": {
+            "x": 368,
+            "y": 246,
+            "width": 220,
+            "height": 24
+          },
+          "value": "",
+          "focused": false,
+          "visible": true,
+          "screen": {
+            "x": 377.34375,
+            "y": 252.43359375,
+            "width": 225.5859375,
+            "height": 24.609375,
+            "visible": true
+          }
+        },
+        {
+          "id": "scroll-8",
+          "group": "scroll",
+          "kind": "scroll",
+          "world": {
+            "x": 368,
+            "y": 300,
+            "width": 220,
+            "height": 48
+          },
+          "value": "A scrollable note: keep your wheel here, the canvas stays still. This text is deliberately longer than the field so the field scrolls, while stopping the wheel at the field keeps the canvas from zooming and never prevents the native scrolling.",
+          "focused": true,
+          "visible": true,
+          "screen": {
+            "x": 377.34375,
+            "y": 307.8046875,
+            "width": 225.5859375,
+            "height": 49.21875,
+            "visible": true
+          }
+        },
+        {
+          "id": "colour-9",
+          "group": "colour",
+          "kind": "colour",
+          "world": {
+            "x": 560,
+            "y": 456,
+            "width": 24,
+            "height": 24
+          },
+          "value": "#8fbfaf",
+          "focused": false,
+          "visible": true,
+          "screen": {
+            "x": 574.21875,
+            "y": 467.765625,
+            "width": 24.609375,
+            "height": 24.609375,
+            "visible": true
+          }
+        }
+      ],
+      "counts": {
+        "initial": {
+          "text": 7,
+          "checklist": 3,
+          "column": 2,
+          "table": 2,
+          "colour": 1,
+          "scroll": 1
+        },
+        "final": {
+          "text": 8,
+          "checklist": 4,
+          "column": 2,
+          "table": 2,
+          "colour": 1,
+          "scroll": 1
+        }
+      },
+      "colourSize": {
+        "width": 24,
+        "height": 24
+      },
+      "focus": {
+        "afterClick": {
+          "tag": "input",
+          "label": "Checklist entry 1"
+        },
+        "afterEnter": "entry-10",
+        "afterTab": "entry-2",
+        "afterShiftTab": "entry-10",
+        "afterEscape": {
+          "tag": "body",
+          "label": null
+        }
+      },
+      "intents": {
+        "afterEnter": {
+          "kind": "insert",
+          "afterIndex": 0,
+          "focusIndex": 1,
+          "key": "Enter",
+          "id": "entry-1"
+        },
+        "afterTab": {
+          "kind": "focus",
+          "index": 2,
+          "key": "Tab",
+          "id": "entry-10"
+        },
+        "afterEmptyBackspace": {
+          "kind": "remove",
+          "index": 2,
+          "focusIndex": 1,
+          "key": "Backspace",
+          "id": "entry-11"
+        },
+        "afterNonEmptyBackspace": {
+          "kind": "none",
+          "key": "Backspace",
+          "id": "entry-2"
+        },
+        "afterEscape": {
+          "kind": "close",
+          "id": "entry-2"
+        }
+      },
+      "scroll": {
+        "scrollable": true,
+        "scrollTop": 90,
+        "defaultPrevented": false
+      },
+      "boardWrites": 0,
+      "screenshots": [
+        {
+          "file": "reviews/evidence/P4-23-inline-desktop.png",
+          "bytes": 78341
+        },
+        {
+          "file": "reviews/evidence/P4-23-inline-focused-desktop.png",
+          "bytes": 80764
+        }
+      ]
+    },
+    {
+      "viewport": {
+        "name": "mobile",
+        "width": 390,
+        "height": 844
+      },
+      "camera": {
+        "panX": -0.780487804878021,
+        "panY": 0,
+        "zoom": 0.2847222222222222
+      },
+      "fields": [
+        {
+          "id": "entry-1",
+          "group": "checklist",
+          "kind": "text",
+          "world": {
+            "x": 128,
+            "y": 184,
+            "width": 224,
+            "height": 24
+          },
+          "value": "",
+          "focused": false,
+          "visible": true,
+          "screen": {
+            "x": 36.66666666666666,
+            "y": 52.388888888888886,
+            "width": 63.77777777777777,
+            "height": 6.833333333333333,
+            "visible": true
+          }
+        },
+        {
+          "id": "entry-2",
+          "group": "checklist",
+          "kind": "text",
+          "world": {
+            "x": 128,
+            "y": 214,
+            "width": 224,
+            "height": 24
+          },
+          "value": "",
+          "focused": false,
+          "visible": true,
+          "screen": {
+            "x": 36.66666666666666,
+            "y": 60.93055555555555,
+            "width": 63.77777777777777,
+            "height": 6.833333333333333,
+            "visible": true
+          }
+        },
+        {
+          "id": "entry-3",
+          "group": "checklist",
+          "kind": "text",
+          "world": {
+            "x": 128,
+            "y": 244,
+            "width": 224,
+            "height": 24
+          },
+          "value": "",
+          "focused": false,
+          "visible": true,
+          "screen": {
+            "x": 36.66666666666666,
+            "y": 69.47222222222221,
+            "width": 63.77777777777777,
+            "height": 6.833333333333333,
+            "visible": true
+          }
+        },
+        {
+          "id": "entry-4",
+          "group": "column",
+          "kind": "text",
+          "world": {
+            "x": 560,
+            "y": 392,
+            "width": 200,
+            "height": 24
+          },
+          "value": "",
+          "focused": false,
+          "visible": true,
+          "screen": {
+            "x": 159.66666666666666,
+            "y": 111.6111111111111,
+            "width": 56.94444444444444,
+            "height": 6.833333333333333,
+            "visible": true
+          }
+        },
+        {
+          "id": "entry-5",
+          "group": "column",
+          "kind": "text",
+          "world": {
+            "x": 560,
+            "y": 422,
+            "width": 200,
+            "height": 24
+          },
+          "value": "",
+          "focused": false,
+          "visible": true,
+          "screen": {
+            "x": 159.66666666666666,
+            "y": 120.15277777777777,
+            "width": 56.94444444444444,
+            "height": 6.833333333333333,
+            "visible": true
+          }
+        },
+        {
+          "id": "entry-6",
+          "group": "table",
+          "kind": "text",
+          "world": {
+            "x": 368,
+            "y": 216,
+            "width": 220,
+            "height": 24
+          },
+          "value": "",
+          "focused": false,
+          "visible": true,
+          "screen": {
+            "x": 104.99999999999999,
+            "y": 61.5,
+            "width": 62.638888888888886,
+            "height": 6.833333333333333,
+            "visible": true
+          }
+        },
+        {
+          "id": "entry-7",
+          "group": "table",
+          "kind": "text",
+          "world": {
+            "x": 368,
+            "y": 246,
+            "width": 220,
+            "height": 24
+          },
+          "value": "",
+          "focused": false,
+          "visible": true,
+          "screen": {
+            "x": 104.99999999999999,
+            "y": 70.04166666666666,
+            "width": 62.638888888888886,
+            "height": 6.833333333333333,
+            "visible": true
+          }
+        },
+        {
+          "id": "scroll-8",
+          "group": "scroll",
+          "kind": "scroll",
+          "world": {
+            "x": 368,
+            "y": 300,
+            "width": 220,
+            "height": 48
+          },
+          "value": "A scrollable note: keep your wheel here, the canvas stays still. This text is deliberately longer than the field so the field scrolls, while stopping the wheel at the field keeps the canvas from zooming and never prevents the native scrolling.",
+          "focused": true,
+          "visible": true,
+          "screen": {
+            "x": 104.99999999999999,
+            "y": 85.41666666666666,
+            "width": 62.638888888888886,
+            "height": 13.666666666666666,
+            "visible": true
+          }
+        },
+        {
+          "id": "colour-9",
+          "group": "colour",
+          "kind": "colour",
+          "world": {
+            "x": 560,
+            "y": 456,
+            "width": 24,
+            "height": 24
+          },
+          "value": "#8fbfaf",
+          "focused": false,
+          "visible": true,
+          "screen": {
+            "x": 159.66666666666666,
+            "y": 129.83333333333331,
+            "width": 6.833333333333333,
+            "height": 6.833333333333333,
+            "visible": true
+          }
+        }
+      ],
+      "counts": {
+        "initial": {
+          "text": 7,
+          "checklist": 3,
+          "column": 2,
+          "table": 2,
+          "colour": 1,
+          "scroll": 1
+        },
+        "final": {
+          "text": 8,
+          "checklist": 4,
+          "column": 2,
+          "table": 2,
+          "colour": 1,
+          "scroll": 1
+        }
+      },
+      "colourSize": {
+        "width": 24,
+        "height": 24
+      },
+      "focus": {
+        "afterClick": {
+          "tag": "input",
+          "label": "Checklist entry 1"
+        },
+        "afterEnter": "entry-10",
+        "afterTab": "entry-2",
+        "afterShiftTab": "entry-10",
+        "afterEscape": {
+          "tag": "body",
+          "label": null
+        }
+      },
+      "intents": {
+        "afterEnter": {
+          "kind": "insert",
+          "afterIndex": 0,
+          "focusIndex": 1,
+          "key": "Enter",
+          "id": "entry-1"
+        },
+        "afterTab": {
+          "kind": "focus",
+          "index": 2,
+          "key": "Tab",
+          "id": "entry-10"
+        },
+        "afterEmptyBackspace": {
+          "kind": "remove",
+          "index": 2,
+          "focusIndex": 1,
+          "key": "Backspace",
+          "id": "entry-11"
+        },
+        "afterNonEmptyBackspace": {
+          "kind": "none",
+          "key": "Backspace",
+          "id": "entry-2"
+        },
+        "afterEscape": {
+          "kind": "close",
+          "id": "entry-2"
+        }
+      },
+      "scroll": {
+        "scrollable": true,
+        "scrollTop": 618,
+        "defaultPrevented": false
+      },
+      "boardWrites": 0,
+      "screenshots": [
+        {
+          "file": "reviews/evidence/P4-23-inline-mobile.png",
+          "bytes": 37076
+        },
+        {
+          "file": "reviews/evidence/P4-23-inline-focused-mobile.png",
+          "bytes": 38752
+        }
+      ]
+    }
+  ],
+  "checks": [
+    {
+      "name": "desktop: the scrollable field keeps its wheel and the canvas does not zoom",
+      "passed": true,
+      "actual": {
+        "defaultPrevented": false,
+        "cameraBefore": "{\"panX\":0,\"panY\":-0.18285714285713084,\"zoom\":1.025390625}",
+        "cameraAfter": "{\"panX\":0,\"panY\":-0.18285714285713084,\"zoom\":1.025390625}",
+        "scrollable": true,
+        "focused": true,
+        "scrollTop": 90,
+        "x": 685.1328125,
+        "y": 427.59375
+      },
+      "expected": "the field scrollable, its wheel default allowed and the camera unchanged"
+    },
+    {
+      "name": "desktop: the overlay anchors plain fields over the board",
+      "passed": true,
+      "actual": {
+        "counts": {
+          "text": 7,
+          "checklist": 3,
+          "column": 2,
+          "table": 2,
+          "colour": 1,
+          "scroll": 1
+        },
+        "objectCount": 8
+      },
+      "expected": "7 text entries + 1 colour + 1 scrollable field, all visible"
+    },
+    {
+      "name": "desktop: the colour field is the 24 px token size",
+      "passed": true,
+      "actual": {
+        "width": 24,
+        "height": 24
+      },
+      "expected": {
+        "width": 24,
+        "height": 24
+      }
+    },
+    {
+      "name": "desktop: clicking a field focuses it and starts no drag",
+      "passed": true,
+      "actual": {
+        "activeElement": {
+          "tag": "input",
+          "label": "Checklist entry 1"
+        },
+        "inputPhase": "idle",
+        "lastOperation": null,
+        "objectCount": 8
+      },
+      "expected": "the field focused, the input layer idle and no operation"
+    },
+    {
+      "name": "desktop: Enter creates a new entry below and focuses it",
+      "passed": true,
+      "actual": {
+        "counts": {
+          "text": 8,
+          "checklist": 4,
+          "column": 2,
+          "table": 2,
+          "colour": 1,
+          "scroll": 1
+        },
+        "focused": "entry-10",
+        "intent": {
+          "kind": "insert",
+          "afterIndex": 0,
+          "focusIndex": 1,
+          "key": "Enter",
+          "id": "entry-1"
+        }
+      },
+      "expected": "one more text entry, focused, directly below the previous one"
+    },
+    {
+      "name": "desktop: Tab and Shift+Tab move focus with the wrap rule",
+      "passed": true,
+      "actual": {
+        "before": "entry-10",
+        "afterTab": "entry-2",
+        "afterShiftTab": "entry-10"
+      },
+      "expected": "focus moves forward on Tab and back to the same field on Shift+Tab"
+    },
+    {
+      "name": "desktop: Backspace removes an empty entry and focuses the previous",
+      "passed": true,
+      "actual": {
+        "before": {
+          "text": 9,
+          "checklist": 5,
+          "column": 2,
+          "table": 2,
+          "colour": 1,
+          "scroll": 1
+        },
+        "after": {
+          "text": 8,
+          "checklist": 4,
+          "column": 2,
+          "table": 2,
+          "colour": 1,
+          "scroll": 1
+        },
+        "focused": "entry-10",
+        "intent": {
+          "kind": "remove",
+          "index": 2,
+          "focusIndex": 1,
+          "key": "Backspace",
+          "id": "entry-11"
+        }
+      },
+      "expected": "the empty entry removed and the previous entry focused"
+    },
+    {
+      "name": "desktop: Backspace in a non-empty entry only deletes a character",
+      "passed": true,
+      "actual": {
+        "counts": {
+          "text": 8,
+          "checklist": 4,
+          "column": 2,
+          "table": 2,
+          "colour": 1,
+          "scroll": 1
+        },
+        "focusedValue": "Keep m",
+        "intent": {
+          "kind": "none",
+          "key": "Backspace",
+          "id": "entry-2"
+        }
+      },
+      "expected": "the entry stays and its text loses one character"
+    },
+    {
+      "name": "desktop: Escape closes the editing field",
+      "passed": true,
+      "actual": {
+        "activeElement": {
+          "tag": "body",
+          "label": null
+        },
+        "intent": {
+          "kind": "close",
+          "id": "entry-2"
+        }
+      },
+      "expected": "focus leaves the field and no operation is written"
+    },
+    {
+      "name": "desktop: the fields stay anchored while the camera pans",
+      "passed": true,
+      "actual": {
+        "camera": {
+          "panX": 204.8,
+          "panY": -0.18285714285713084,
+          "zoom": 1.025390625
+        },
+        "fieldScreenX": -78.75000000000001,
+        "expectedX": -78.75000000000001
+      },
+      "expected": "a field at (world - pan) * zoom after the pan"
+    },
+    {
+      "name": "desktop: fields hide when their objects leave the viewport",
+      "passed": true,
+      "actual": [
+        {
+          "id": "entry-1",
+          "visible": false
+        },
+        {
+          "id": "entry-10",
+          "visible": false
+        },
+        {
+          "id": "entry-2",
+          "visible": false
+        },
+        {
+          "id": "entry-3",
+          "visible": false
+        },
+        {
+          "id": "entry-4",
+          "visible": false
+        },
+        {
+          "id": "entry-5",
+          "visible": false
+        },
+        {
+          "id": "entry-6",
+          "visible": false
+        },
+        {
+          "id": "entry-7",
+          "visible": false
+        },
+        {
+          "id": "scroll-8",
+          "visible": false
+        },
+        {
+          "id": "colour-9",
+          "visible": false
+        }
+      ],
+      "expected": "every anchored field hidden after the camera pan"
+    },
+    {
+      "name": "desktop: the inline demo writes no board content",
+      "passed": true,
+      "actual": {
+        "objectCount": 8,
+        "lastOperation": null,
+        "boardWrites": 0
+      },
+      "expected": "the same object count, no operation, zero board writes"
+    },
+    {
+      "name": "mobile: the scrollable field keeps its wheel and the canvas does not zoom",
+      "passed": true,
+      "actual": {
+        "defaultPrevented": false,
+        "cameraBefore": "{\"panX\":-0.780487804878021,\"panY\":0,\"zoom\":0.2847222222222222}",
+        "cameraAfter": "{\"panX\":-0.780487804878021,\"panY\":0,\"zoom\":0.2847222222222222}",
+        "scrollable": true,
+        "focused": true,
+        "scrollTop": 618,
+        "x": 185.3125,
+        "y": 228.59375
+      },
+      "expected": "the field scrollable, its wheel default allowed and the camera unchanged"
+    },
+    {
+      "name": "mobile: the overlay anchors plain fields over the board",
+      "passed": true,
+      "actual": {
+        "counts": {
+          "text": 7,
+          "checklist": 3,
+          "column": 2,
+          "table": 2,
+          "colour": 1,
+          "scroll": 1
+        },
+        "objectCount": 8
+      },
+      "expected": "7 text entries + 1 colour + 1 scrollable field, all visible"
+    },
+    {
+      "name": "mobile: the colour field is the 24 px token size",
+      "passed": true,
+      "actual": {
+        "width": 24,
+        "height": 24
+      },
+      "expected": {
+        "width": 24,
+        "height": 24
+      }
+    },
+    {
+      "name": "mobile: clicking a field focuses it and starts no drag",
+      "passed": true,
+      "actual": {
+        "activeElement": {
+          "tag": "input",
+          "label": "Checklist entry 1"
+        },
+        "inputPhase": "idle",
+        "lastOperation": null,
+        "objectCount": 8
+      },
+      "expected": "the field focused, the input layer idle and no operation"
+    },
+    {
+      "name": "mobile: Enter creates a new entry below and focuses it",
+      "passed": true,
+      "actual": {
+        "counts": {
+          "text": 8,
+          "checklist": 4,
+          "column": 2,
+          "table": 2,
+          "colour": 1,
+          "scroll": 1
+        },
+        "focused": "entry-10",
+        "intent": {
+          "kind": "insert",
+          "afterIndex": 0,
+          "focusIndex": 1,
+          "key": "Enter",
+          "id": "entry-1"
+        }
+      },
+      "expected": "one more text entry, focused, directly below the previous one"
+    },
+    {
+      "name": "mobile: Tab and Shift+Tab move focus with the wrap rule",
+      "passed": true,
+      "actual": {
+        "before": "entry-10",
+        "afterTab": "entry-2",
+        "afterShiftTab": "entry-10"
+      },
+      "expected": "focus moves forward on Tab and back to the same field on Shift+Tab"
+    },
+    {
+      "name": "mobile: Backspace removes an empty entry and focuses the previous",
+      "passed": true,
+      "actual": {
+        "before": {
+          "text": 9,
+          "checklist": 5,
+          "column": 2,
+          "table": 2,
+          "colour": 1,
+          "scroll": 1
+        },
+        "after": {
+          "text": 8,
+          "checklist": 4,
+          "column": 2,
+          "table": 2,
+          "colour": 1,
+          "scroll": 1
+        },
+        "focused": "entry-10",
+        "intent": {
+          "kind": "remove",
+          "index": 2,
+          "focusIndex": 1,
+          "key": "Backspace",
+          "id": "entry-11"
+        }
+      },
+      "expected": "the empty entry removed and the previous entry focused"
+    },
+    {
+      "name": "mobile: Backspace in a non-empty entry only deletes a character",
+      "passed": true,
+      "actual": {
+        "counts": {
+          "text": 8,
+          "checklist": 4,
+          "column": 2,
+          "table": 2,
+          "colour": 1,
+          "scroll": 1
+        },
+        "focusedValue": "Keep m",
+        "intent": {
+          "kind": "none",
+          "key": "Backspace",
+          "id": "entry-2"
+        }
+      },
+      "expected": "the entry stays and its text loses one character"
+    },
+    {
+      "name": "mobile: Escape closes the editing field",
+      "passed": true,
+      "actual": {
+        "activeElement": {
+          "tag": "body",
+          "label": null
+        },
+        "intent": {
+          "kind": "close",
+          "id": "entry-2"
+        }
+      },
+      "expected": "focus leaves the field and no operation is written"
+    },
+    {
+      "name": "mobile: the fields stay anchored while the camera pans",
+      "passed": true,
+      "actual": {
+        "camera": {
+          "panX": 202.92682926829272,
+          "panY": 0,
+          "zoom": 0.2847222222222222
+        },
+        "fieldScreenX": -21.333333333333343,
+        "expectedX": -21.333333333333343
+      },
+      "expected": "a field at (world - pan) * zoom after the pan"
+    },
+    {
+      "name": "mobile: fields hide when their objects leave the viewport",
+      "passed": true,
+      "actual": [
+        {
+          "id": "entry-1",
+          "visible": false
+        },
+        {
+          "id": "entry-10",
+          "visible": false
+        },
+        {
+          "id": "entry-2",
+          "visible": false
+        },
+        {
+          "id": "entry-3",
+          "visible": false
+        },
+        {
+          "id": "entry-4",
+          "visible": false
+        },
+        {
+          "id": "entry-5",
+          "visible": false
+        },
+        {
+          "id": "entry-6",
+          "visible": false
+        },
+        {
+          "id": "entry-7",
+          "visible": false
+        },
+        {
+          "id": "scroll-8",
+          "visible": false
+        },
+        {
+          "id": "colour-9",
+          "visible": false
+        }
+      ],
+      "expected": "every anchored field hidden after the camera pan"
+    },
+    {
+      "name": "mobile: the inline demo writes no board content",
+      "passed": true,
+      "actual": {
+        "objectCount": 8,
+        "lastOperation": null,
+        "boardWrites": 0
+      },
+      "expected": "the same object count, no operation, zero board writes"
+    }
+  ],
+  "result": "pass",
+  "exitCode": 0,
+  "finishedAt": "2026-10-28T07:14:34.471Z"
+}

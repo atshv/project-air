@@ -19,6 +19,7 @@ the network (AD-2), and reads the contract and tokens from generated headers.
 | `text` | `text.h`, `text.cpp` | L02 runtime glyph atlas: token text styles, atlas plan with the texture-limit fallback, validated glyph table with a placeholder per role, glyph runs and the 32-byte glyph command buffer | token typography / glyph count, cell, DPR, texture limit / RGBA pixels + packed metrics / runs + camera → plan, CSS-px glyph metrics, glyph quads | camera, geometry, status, `tokens.h` |
 | `text_gl` | `text_gl.h`, `text_gl.cpp` | Text C ABI (pure style/plan calls in both builds), the WebGL2 glyph pass (atlas texture upload, one instanced glyph draw after the object pass), the bound title/preview runs and the header/snap-guide/selection chrome pass (P4-10/P4-15/P4-16) | C ABI calls / glyph buffer / bound text / snap guides / selection → texture, pixels | text, text_binding, snap, `tokens.h`, GLES3 |
 | `text_binding` | `text_binding.h`, `text_binding.cpp` | L02 (P4-10) presentation binding: caller-supplied titles and previews bound to visible objects (ellipsis titles, wrapped/clipped previews), the 40 px header/inset chrome geometry, block growth, header chrome quads | document + camera + viewport + index + caller text → runs, chrome quads, required preview height | doc, spatial, text, geometry, status, `tokens.h` |
+| `overlay` (bridge) | `src/bridge/overlay.ts`, `include/engine/` (none) | L18 (P4-23) DOM overlay host: pure anchor math through the camera (pan/zoom/DPR), viewport hide, focus wrap, the inline Enter/Tab/Shift+Tab/Backspace intents and the 24 px colour field, plus the DOM host that positions anchored fields, owns focus open/close/restore and stops field pointer events at the field | world rect + camera/viewport → CSS rectangle; field list + key → intent; pointer events → stopped at the field | none (DOM APIs only, ADR-0009) |
 | `input` (bridge) | `src/bridge/input.ts` | L03/L07/L10 (P4-14/P4-15/P4-16) DOM-free pointer input layer: click/drag threshold, card/header grip policy, field/scroll suppression, pointer capture/cancel, right-button and multi-touch rejection, cursor and header-hover state, snap requests, the selection set, the Shift rubber band, joint drags and injected seam commits | pointer samples + hit test + camera/selection callbacks → drag preview/commit/revert, joint-drag members, selection/band state, hover, cursor, pan/zoom | none at runtime (types only) |
 | `snap` | `snap.h`, `snap.cpp`, `snap_gl.h` | L07 (P4-15) snapping core: pure edge/centre candidates of visible neighbours and zones within the token screen tolerance, per-axis line-over-grid decision, Shift free, deterministic guide selection (at most three) and the guide C ABI | document + spatial index + camera + viewport + dragged slot and position → snapped world position + up to three world guide lines | camera, doc, spatial, status, `tokens.h` |
 | C ABI | `engine.h`, `engine.cpp` | `air_engine_version()` and compile-time checks of `kContractVersion`/`tokens.h` | – → version string | `contract.h`, `tokens.h` |
@@ -34,7 +35,9 @@ across the C ABI). The C API exports `engine_create`, `engine_resize`, `engine_s
 `engine_text_clear_bindings`, `engine_text_required_height` (P4-10), the snapping calls
 `engine_snap_position`, `engine_snap_guide`, `engine_snap_clear` (P4-15), the selection chrome calls
 `engine_set_selection`, `engine_set_band` (P4-16) and `engine_last_error`; the TypeScript bridge
-exposes the same surface as typed methods.
+exposes the same surface as typed methods. The L18 field overlay is DOM-only and adds no C ABI: it
+anchors through the same camera transform the renderer uses and never touches the document or the
+command buffer.
 
 ## Gesture logic layers (TypeScript)
 
@@ -523,6 +526,53 @@ payload and the command-buffer instance counts never contain the selection, the 
   native suites are unchanged (`cpp-unit`); the selection chrome is selection/drag-only, so the
   committed reference images and the perf scene stay untouched.
 
+## Field overlay and inline comfort (L18, P4-23)
+
+The canvas draws the board; every field people type into is a plain DOM element in a transparent
+layer above it. The overlay is presentation and input only (ADR-0009): it owns no board state, is not
+a save path and never writes the document — L05's single autosave stays out of scope.
+
+- **Anchoring.** `OverlayHost.register({id, world, element})` puts one field element into the layer;
+  `update(camera, viewport, devicePixelRatio)` positions it in CSS px with
+  `anchorToScreen` — `x = (world.x - panX) * zoom`, the same transform as the object pass — and sets
+  `hidden` while `rectIntersectsViewport` is false (the field's object left the viewport). The update
+  only changes styles and visibility, never the nodes, so focus survives every camera change. The
+  device pixel ratio does not change the anchor (the DOM is CSS px; only the canvas backing store is
+  scaled). A stale/non-finite camera or a disposed engine hides the fields (`anchorToScreen` returns
+  a hidden zero rectangle; `OverlayHost.dispose()` removes them). `setWorld` re-anchors a field after
+  an inline insert/remove.
+- **Focus and routing.** `OverlayHost.open(id)` remembers the previously focused element and focuses
+  the field; `close()` restores that focus; `onFocusChange` reports the active field for a HUD or the
+  demo. `bindFieldPointerRouting(element)` stops pointer/mouse/click/wheel events at the field, so the
+  P4-14 input layer on the canvas wrapper never sees them and can never start a drag, a selection or a
+  canvas zoom from a field — while never calling `preventDefault`, so a scrollable field keeps its
+  native wheel scrolling.
+- **Inline keyboard policy.** `applyInlineKey(fields, focusedIndex, {key, shiftKey})` is a pure
+  function over the focus-ordered field list: `Enter` inserts a new entry directly below the focused
+  one and focuses it (`insert`), `Tab`/`Shift+Tab` move focus to the next/previous field with the
+  documented wrap rule (`nextFocusIndex`: past the last wraps to the first, before the first wraps to
+  the last), `Backspace` in an empty entry removes it and focuses the previous field (`remove`; the
+  first entry focuses the new first, the last remaining field leaves focus empty), and every other
+  key — including `Backspace` in a non-empty entry — stays with the field (`none`). The policy returns
+  intents only: it never mutates the field list, carries no content and never persists anything. The
+  demo applies the intents to its own DOM, which is the seam `packages/editor` will consume.
+- **Colour field.** The colour control is a 24 px field (`COLOUR_FIELD_PX`, the `space-24` token
+  value; the playground CSS sizes `.inline-colour` with `var(--space-24)`), keyboard-reachable, not an
+  oversized native colour button.
+- **Playground demo.** `apps/engine-playground/?edit=inline` forces the layers scene and overlays a
+  checklist (three entries over block-0001), a column (two entries over block-0002), a table (two
+  entries over zone-0002), a scrollable note and the colour field; `Esc` closes the editing field. The
+  page exposes `window.__inlineDemo` (fields with world/screen anchors, focus, last intent, colour
+  size, counts, board writes) for evidence, and the caption states that nothing writes board content.
+  `tools/capture-inline.mjs` drives click/Enter/Tab/Shift+Tab/Backspace/Escape, the wheel and a camera
+  pan at 1440×900 and 390×844 and writes the screenshots plus a record with the anchors, focus order,
+  intents and the zero board writes (`reviews/evidence/P4-23-inline-*.json`).
+- **Tests.** `test/inline-overlay.test.mjs` covers the anchor math at pan/zoom (and the DPR
+  independence), the viewport hide rule, the stale-camera result, the focus wrap at both ends, the
+  `Enter`/`Tab`/`Shift+Tab`/`Backspace` intents (empty vs non-empty, first/last/single entry), the
+  policy writing nothing, the 24 px token colour field and the field pointer routing (stop at the
+  field, wheel default allowed). The overlay adds no C++ and no visual baseline.
+
 ## Object identity and mutations
 
 `Document` keeps one storage slot per object and assigns a monotonic `ObjectId` on insert
@@ -693,7 +743,10 @@ snapping section above. **L10 — Multi-select** is delivered for the engine-own
 Shift-click toggling, the plain-click replace, the Shift rubber band with the world-intersection
 rule, the 1 px accent frames and accent-soft band in the chrome pass, the count bar with its
 single-operation delete and the one-group joint drag, documented in the selection section above.
-**L02 — Visible quality** is
+**L18 — Inline comfort** is delivered for the engine-owned part by P4-23: the DOM field overlay
+anchored through the camera, focus open/close/restore, the Enter/Tab/Shift+Tab/Backspace policy over
+the field list, the 24 px token colour field and the playground `?edit=inline` demo with a
+deterministic capture, documented in the field-overlay section above. **L02 — Visible quality** is
 delivered by P4-08, P4-09 and P4-10 for
 the engine-owned part: the runtime atlas, the layout flows and, since P4-10, the title/preview
 binding, the 40 px header geometry with the zone content inset, the grown block, the quiet delete
@@ -712,8 +765,9 @@ implemented.
 - **Canvas behaviours:** the playground has demo-level pan/zoom over a fixed scene plus the L19 fit
   action and dot grid; the L03 click/drag/edit separation with its pan/zoom (P4-14), the L07
   snapping (P4-15) and the L10 multi-selection, rubber band, joint drag and selection delete (P4-16)
-  are implemented above, while editing, zone membership, the undo UI, keyboard input, title editing
-  (L09 owns it), images, edges and the accessibility mirror are not. The input layer is
+  are implemented above, while document editing/persistence, zone membership, the undo UI, keyboard
+  input beyond the inline field comfort rules, title editing (L09 owns it), images, edges and the
+  accessibility mirror are not. The input layer is
   DOM-driven: a real e2e for fields inside a block arrives with the editor overlay (P4-23). Text is presentation input: titles and previews are bound to visible
   objects by the caller (P4-10), but the engine document still stores no note content, and a
   title/preview that overlaps a higher-layer object is not clipped per pixel (the titles scene and

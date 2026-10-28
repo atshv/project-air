@@ -98,6 +98,11 @@ import {
   isSuppressedTarget,
   worldRectsIntersect,
 } from "@project-air/engine/input.js";
+import {
+  anchorToScreen,
+  applyInlineKey,
+  OverlayHost,
+} from "@project-air/engine/overlay.js";
 
 const canvas = document.querySelector("#canvas");
 const errorNode = document.querySelector("#error");
@@ -178,6 +183,11 @@ const titlesRequested =
 // block body of the layers scene. Off by default, so no reference image changes.
 const inputDemoRequested =
   query.get("input") === "demo" && !benchmarkRequested && !perfRequested;
+// L18 (P4-23) inline comfort demo: DOM fields anchored over the layers scene.
+// Off by default, so the reference images and the perf/idle harnesses are
+// unchanged; it never writes board content.
+const inlineDemoRequested =
+  query.get("edit") === "inline" && !benchmarkRequested && !perfRequested;
 const requestedCount = clampInteger(parseInteger(benchQuery, COLUMNS * ROWS), 0, 1000000);
 const warmupFrames = clampInteger(parseInteger(query.get("warmup"), 120), 0, 10000);
 const sampleFrames = clampInteger(parseInteger(query.get("samples"), 600), 1, 10000);
@@ -214,6 +224,8 @@ let hoverHeaderTarget = null;
 let dragTokens = null;
 // L10 (P4-16): repositions the DOM selection count bar after a camera change.
 let selectionBarUpdate = null;
+// L18 (P4-23): the inline-editing overlay demo (null outside `?edit=inline`).
+let inlineDemo = null;
 let pendingFrameHandle = 0;
 const onDemand = {
   active: false,
@@ -477,6 +489,17 @@ function readTokenPixels(names) {
   return values;
 }
 
+// Reads one generated CSS colour token (e.g. --accent) so the page never holds a
+// raw colour value; the colour field starts from the accent token.
+function readTokenColour(name) {
+  const raw = getComputedStyle(document.documentElement).getPropertyValue(`--${name}`).trim();
+  const match = /^#([0-9a-f]{6})$/i.exec(raw);
+  if (match === null) {
+    throw new Error(`engine-playground: token --${name} is missing or not a hex colour`);
+  }
+  return raw.toLowerCase();
+}
+
 /**
  * Binds the gallery's presentation text through the engine's P4-10 binding (L02),
  * grows the blocks to their preview height and installs one quiet DOM delete
@@ -684,11 +707,13 @@ async function loadScene() {
   // the test-kit bundle.
   const testKit = await import("@project-air/test-kit");
   const requestedScene = query.get("scene");
-  const name = testKit.isSceneName(requestedScene)
-    ? requestedScene
-    : perfRequested
-      ? PERF_DEFAULT_SCENE
-      : "sample";
+  const name = inlineDemoRequested
+    ? "layers"
+    : testKit.isSceneName(requestedScene)
+      ? requestedScene
+      : perfRequested
+        ? PERF_DEFAULT_SCENE
+        : "sample";
   const count = clampInteger(
     parseInteger(query.get("count"), testKit.STRESS_DEFAULT_OBJECT_COUNT),
     0,
@@ -707,6 +732,9 @@ async function loadScene() {
 function sceneCaption(loaded) {
   if (titlesRequested) {
     return `${loaded.counts.total} objects — zone names, card titles cut with an ellipsis and block previews bound to the visible objects; blocks grow to their preview height and the delete affordance appears on hover, focus or selection.`;
+  }
+  if (inlineDemoRequested) {
+    return `${loaded.counts.total} objects — L18 inline comfort demo: plain DOM fields anchored to the layers board. Click a field to edit it; Enter inserts a new entry below, Tab/Shift+Tab move through the fields, Backspace removes an empty entry, Esc closes the field. Nothing here writes board content.`;
   }
   if (inputDemoRequested && loaded.name === "layers") {
     return `${loaded.counts.total} objects — L03 input demo: drag a card body or a 40 px block/zone header to move one object as one operation; the block body below the header, the field and the scroll area start no drag, and the scroll area keeps its own wheel.`;
@@ -1304,7 +1332,248 @@ function updateChrome() {
     positionHeaderSurface();
   }
   selectionBarUpdate?.();
+  inlineDemo?.update();
   inputDemo?.update();
+}
+
+// L18 (P4-23) inline comfort demo: plain DOM fields anchored over the layers
+// scene, a 24 px colour control and the pure keyboard policy. The demo owns no
+// board state: it never writes the engine document, an operation or storage — it
+// only creates, focuses and removes its own DOM fields in memory.
+function installInlineDemo(engine, session) {
+  const wrap = canvas.parentElement;
+  if (!(wrap instanceof HTMLElement) || session === null) {
+    return null;
+  }
+  const layer = document.createElement("div");
+  layer.className = "field-overlay";
+  wrap.append(layer);
+  let update = () => {};
+
+  let focusedId = null;
+  let lastIntent = null;
+  let nextEntryId = 1;
+  const host = new OverlayHost({
+    layer,
+    canvas,
+    onFocusChange: (id) => {
+      focusedId = id;
+    },
+  });
+  // The entries in focus order: checklist entries, column entries, table entries,
+  // then the scrollable note and the colour field.
+  const entries = [];
+  const groups = [
+    { id: "checklist", title: "Checklist", base: { x: 128, y: 184 }, width: 224, count: 3 },
+    { id: "column", title: "Column", base: { x: 560, y: 392 }, width: 200, count: 2 },
+    { id: "table", title: "Table", base: { x: 368, y: 216 }, width: 220, count: 2 },
+  ];
+  const ENTRY_HEIGHT = 24;
+  const ENTRY_STEP = 30;
+
+  const entryWorld = (group, index) => ({
+    x: group.base.x,
+    y: group.base.y + index * ENTRY_STEP,
+    width: group.width,
+    height: ENTRY_HEIGHT,
+  });
+  const reflowGroup = (groupId) => {
+    const group = groups.find((candidate) => candidate.id === groupId);
+    if (group === undefined) {
+      return;
+    }
+    let index = 0;
+    for (const entry of entries) {
+      if (entry.group !== groupId || entry.kind !== "text") {
+        continue;
+      }
+      entry.world = entryWorld(group, index);
+      host.setWorld(entry.id, entry.world);
+      index += 1;
+    }
+  };
+  const fieldList = () =>
+    entries.map((entry) => ({ id: entry.id, empty: entry.input.value.trim().length === 0 }));
+  const entryIndex = (id) => entries.findIndex((entry) => entry.id === id);
+  const focusEntry = (id) => {
+    const entry = entries.find((candidate) => candidate.id === id);
+    if (entry === undefined) {
+      return;
+    }
+    host.open(id);
+    entry.input.focus();
+  };
+  const removeEntry = (entry, focusIndex) => {
+    const index = entryIndex(entry.id);
+    if (index < 0) {
+      return;
+    }
+    entries.splice(index, 1);
+    host.unregister(entry.id);
+    entry.input.remove();
+    reflowGroup(entry.group);
+    update();
+    if (focusIndex === null) {
+      host.close();
+      return;
+    }
+    const target = entries[focusIndex];
+    if (target !== undefined) {
+      focusEntry(target.id);
+    } else {
+      host.close();
+    }
+  };
+  const insertEntry = (focused) => {
+    const group = groups.find((candidate) => candidate.id === focused.group);
+    if (group === undefined) {
+      return;
+    }
+    const index = entryIndex(focused.id);
+    const entry = createTextEntry(group, index + 1);
+    entries.splice(index + 1, 0, entry);
+    host.register({ id: entry.id, world: entry.world, element: entry.input });
+    reflowGroup(group.id);
+    update();
+    focusEntry(entry.id);
+  };
+  const handleFieldKey = (entry, event) => {
+    if (event.key === "Escape") {
+      event.preventDefault();
+      lastIntent = { kind: "close", id: entry.id };
+      host.close();
+      canvas.focus();
+      return;
+    }
+    if (entry.kind !== "text") {
+      lastIntent = { kind: "none", key: event.key, id: entry.id };
+      return;
+    }
+    const intent = applyInlineKey(fieldList(), entryIndex(entry.id), {
+      key: event.key,
+      shiftKey: event.shiftKey,
+    });
+    lastIntent = { ...intent, key: event.key, id: entry.id };
+    if (intent.kind === "none") {
+      return;
+    }
+    event.preventDefault();
+    if (intent.kind === "insert") {
+      insertEntry(entries[entryIndex(entry.id)]);
+    } else if (intent.kind === "focus") {
+      const target = entries[intent.index];
+      if (target !== undefined) {
+        focusEntry(target.id);
+      }
+    } else if (intent.kind === "remove") {
+      removeEntry(entry, intent.focusIndex);
+    }
+  };
+  const createTextEntry = (group, index) => {
+    const id = `entry-${nextEntryId}`;
+    nextEntryId += 1;
+    const input = document.createElement("input");
+    input.type = "text";
+    input.className = "inline-field";
+    input.dataset.field = "";
+    input.setAttribute("aria-label", `${group.title} entry ${index + 1}`);
+    const entry = { id, group: group.id, kind: "text", world: entryWorld(group, index), input };
+    input.addEventListener("keydown", (event) => handleFieldKey(entry, event));
+    input.addEventListener("focus", () => host.open(id));
+    return entry;
+  };
+  const createSpecialEntry = (kind, world, element, label) => {
+    const id = `${kind}-${nextEntryId}`;
+    nextEntryId += 1;
+    element.dataset.field = "";
+    element.setAttribute("aria-label", label);
+    element.classList.add("inline-field");
+    if (kind === "colour") {
+      element.classList.add("inline-colour");
+    } else if (kind === "scroll") {
+      element.classList.add("inline-scroll");
+    }
+    const entry = { id, group: kind, kind, world, input: element };
+    element.addEventListener("keydown", (event) => handleFieldKey(entry, event));
+    element.addEventListener("focus", () => host.open(id));
+    return entry;
+  };
+  for (const group of groups) {
+    for (let index = 0; index < group.count; index += 1) {
+      entries.push(createTextEntry(group, index));
+    }
+  }
+  const note = document.createElement("textarea");
+  note.value =
+    "A scrollable note: keep your wheel here, the canvas stays still. This text is deliberately longer than the field so the field scrolls, while stopping the wheel at the field keeps the canvas from zooming and never prevents the native scrolling.";
+  entries.push(
+    createSpecialEntry("scroll", { x: 368, y: 300, width: 220, height: 48 }, note, "Scrollable note"),
+  );
+  const colour = document.createElement("input");
+  colour.type = "color";
+  colour.value = readTokenColour("accent");
+  entries.push(createSpecialEntry("colour", { x: 560, y: 456, width: 24, height: 24 }, colour, "Colour"));
+  for (const entry of entries) {
+    host.register({ id: entry.id, world: entry.world, element: entry.input });
+  }
+
+  update = () => {
+    host.update(
+      camera,
+      { width: Math.max(1, canvas.clientWidth), height: Math.max(1, canvas.clientHeight) },
+      window.devicePixelRatio,
+    );
+    // The colour control keeps its 24 px token size instead of the anchored
+    // width (L18: a 24 px colour field, not a scaled native button).
+    colour.style.removeProperty("width");
+    colour.style.removeProperty("height");
+  };
+  update();
+
+  // Evidence hook: anchored fields, focus, intents, the colour control and the
+  // (always zero) board writes of the demo.
+  globalThis.__inlineDemo = {
+    fields: () =>
+      entries.map((entry) => {
+        const anchor = anchorToScreen(
+          entry.world,
+          camera,
+          { width: Math.max(1, canvas.clientWidth), height: Math.max(1, canvas.clientHeight) },
+          window.devicePixelRatio,
+        );
+        return {
+          id: entry.id,
+          group: entry.group,
+          kind: entry.kind,
+          world: entry.world,
+          value: entry.input.value,
+          focused: entry.input === document.activeElement,
+          visible: entry.input.hidden !== true && anchor.visible,
+          screen: anchor,
+        };
+      }),
+    focusedId: () => focusedId,
+    focus: (id) => {
+      focusEntry(id);
+      return focusedId;
+    },
+    lastIntent: () => lastIntent,
+    colourSize: () => {
+      const rect = colour.getBoundingClientRect();
+      return { width: rect.width, height: rect.height };
+    },
+    boardWrites: () => 0,
+    counts: () => ({
+      text: entries.filter((entry) => entry.kind === "text").length,
+      checklist: entries.filter((entry) => entry.group === "checklist").length,
+      column: entries.filter((entry) => entry.group === "column").length,
+      table: entries.filter((entry) => entry.group === "table").length,
+      colour: entries.filter((entry) => entry.kind === "colour").length,
+      scroll: entries.filter((entry) => entry.kind === "scroll").length,
+    }),
+    overlayVisible: () => !layer.hidden,
+  };
+  return { update };
 }
 
 // Installs the one pointer input layer of the page. `session` is the drag
@@ -2190,6 +2459,9 @@ async function start() {
     pointerInput = installPointerInput(engine, sceneSession, titlesOverlay);
     if (inputDemoRequested && layers !== null) {
       inputDemo = installInputDemo(true);
+    }
+    if (inlineDemoRequested) {
+      inlineDemo = installInlineDemo(engine, layers !== null ? layers.session : null);
     }
     installFitKey();
     // One frame is requested by the initial resize; a document or camera change

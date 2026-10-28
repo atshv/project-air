@@ -279,6 +279,67 @@ body {
   height: var(--icon-card);
 }
 
+/* L18 (P4-23) DOM overlay for field editing: a transparent layer above the
+   canvas whose field nodes are anchored to world rectangles by the overlay host.
+   The layer itself never takes pointer events; each field does and stops them at
+   the field (ADR-0009: presentation and input only, no canvas glyph). */
+.field-overlay {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.inline-field {
+  position: absolute;
+  box-sizing: border-box;
+  height: var(--space-24);
+  margin: 0;
+  padding: 0 var(--space-8);
+  border: var(--border-width) solid var(--border);
+  border-radius: var(--radius-sm);
+  background-color: var(--surface);
+  color: var(--fg);
+  font-family: var(--font-sans);
+  font-size: var(--text-13);
+  pointer-events: auto;
+  transition:
+    border-color var(--motion-hover) ease,
+    background-color var(--motion-hover) ease;
+}
+
+.inline-field:focus-visible {
+  border-color: var(--accent);
+  outline: var(--outline-width) solid var(--accent);
+  outline-offset: var(--outline-offset);
+}
+
+/* L18: a 24 px token-sized colour field instead of an oversized native colour
+   button. The size is the space-24 token value; no raw pixel value is used. */
+.inline-colour {
+  width: var(--space-24);
+  height: var(--space-24);
+  padding: var(--space-4);
+}
+
+.inline-colour::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+
+.inline-colour::-webkit-color-swatch {
+  border: 0;
+  border-radius: var(--radius-tooltip);
+}
+
+/* A scrollable field keeps its own wheel handling: the overlay host stops the
+   wheel at the field without preventing its default, so the canvas never zooms. */
+.inline-scroll {
+  height: var(--space-48);
+  padding: var(--space-4) var(--space-8);
+  resize: none;
+  overflow-y: auto;
+}
+
 .canvas {
   display: block;
   width: 100%;

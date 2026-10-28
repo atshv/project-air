@@ -183,6 +183,7 @@ function ensureArtefacts({ includeTestKit = false } = {}) {
     "packages/engine/dist/bridge/engine.js",
     "packages/engine/dist/bridge/text-atlas.js",
     "packages/engine/dist/bridge/input.js",
+    "packages/engine/dist/bridge/overlay.js",
     "packages/engine/build-wasm/engine.js",
     "packages/engine/build-wasm/engine.wasm",
   ];
@@ -206,6 +207,7 @@ function copyArtefacts(tempRoot, { includeTestKit = false } = {}) {
     "packages/engine/dist/bridge/engine.js",
     "packages/engine/dist/bridge/text-atlas.js",
     "packages/engine/dist/bridge/input.js",
+    "packages/engine/dist/bridge/overlay.js",
     "packages/engine/build-wasm/engine.js",
     "packages/engine/build-wasm/engine.wasm",
   ];

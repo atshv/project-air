@@ -39,6 +39,11 @@ Emscripten module through an import map.
    (`P4-15-snap-shift-<viewport>.png`) and writes a record with the snapped position, guides, camera,
    tokens and the committed move operation (`reviews/evidence/<task>-snap-<timestamp>.json`).
 10. L10 selection evidence (P4-16): `node apps/engine-playground/tools/capture-selection.mjs --task P4-16`
+11. L18 inline-comfort evidence (P4-23): `node apps/engine-playground/tools/capture-inline.mjs --task P4-23`
+    Click/Enter/Tab/Shift+Tab/Backspace/Escape over the anchored fields at 1440×900 and 390×844; it
+    writes the anchored-field/focused-entry screenshots and a record with the anchors, focus order,
+    intents, the 24 px colour field and the zero board writes
+    (`reviews/evidence/<task>-inline-<timestamp>.json`).
     Shift-clicks three cards, drags them as one group, deletes the selection from the count bar and
     drags a rubber band on the layers board at 1440×900 and 390×844; it writes the selection/band
     screenshots and a record with the selection, band, bar and operation children
@@ -75,6 +80,12 @@ Emscripten module through an import map.
   Use `?view=<worldX>,<worldY>,<zoom>` for a deterministic camera; zoom buckets 25/50/100/200/400 %
   re-rasterise the atlas so text stays sharp when zooming in. The `text-titles` and
   `text-titles-zoom-200` visual scenes use it at 100 % and 200 %.
+- Inline editing (P4-23, L18): `?edit=inline` (forces the layers scene) overlays plain DOM fields
+  anchored through the camera: a checklist, a column, a table, a scrollable note and a 24 px colour
+  field. Click or tab into a field; `Enter` inserts a new entry directly below and focuses it,
+  `Tab`/`Shift+Tab` move through the fields with the wrap rule, `Backspace` in an empty entry removes
+  it and focuses the previous entry, `Esc` closes the field. A field click or wheel never drags or
+  zooms the canvas, and nothing writes board content — the overlay is presentation and input only.
 - Selection (P4-16, L10): `Shift`-click adds or removes an object, a plain click replaces the
   selection, `Esc` (or a plain empty click) clears it, and `Shift`-dragging on the empty canvas
   rubber-bands (a plain empty drag still pans). Selected objects are framed with a 1 px `--accent`

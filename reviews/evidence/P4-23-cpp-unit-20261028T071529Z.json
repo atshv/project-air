@@ -1,0 +1,17 @@
+{
+  "task": "P4-23",
+  "gate": "cpp-unit",
+  "command": "cmake -S packages/engine -B packages/engine/build -DCMAKE_BUILD_TYPE=Debug && cmake --build packages/engine/build --parallel && ctest --test-dir packages/engine/build --output-on-failure",
+  "exit_code": 0,
+  "result": "pass",
+  "slot": null,
+  "exclusive": [],
+  "lock_wait_s": 0.0,
+  "lock_warning": null,
+  "started": "2026-10-28T07:15:29+00:00",
+  "finished": "2026-10-28T07:15:34+00:00",
+  "commit": "192d3acb56f79f2454ddffe7bef4ff18b064593a",
+  "dirty": true,
+  "log": "P4-23-cpp-unit-20261028T071529Z.log",
+  "log_sha256": "4a80b74e3a17c1c790f71a41316b156a24a9faf3618e8cbf6f3ae4615dc881ee"
+}
