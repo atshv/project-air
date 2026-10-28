@@ -431,7 +431,7 @@ function buildTitlesGallery() {
       height: 368,
       tone: "tone-b",
       layer: "zones",
-      title: "Sommer am Walensee",
+      title: "Summer at Walensee",
       preview: "",
     },
     {
@@ -443,7 +443,7 @@ function buildTitlesGallery() {
       height: 368,
       tone: "tone-d",
       layer: "zones",
-      title: "Wanderung an den Walensee mit \u00dcbernachtung im Berghaus am See",
+      title: "Hike from Z\u00fcrich to the Walensee with a night at the lake hut",
       preview: "",
     },
     {
@@ -455,9 +455,9 @@ function buildTitlesGallery() {
       height: 96,
       tone: "neutral",
       layer: "blocks",
-      title: "Packliste",
+      title: "Packing list",
       preview:
-        "Zelt, Schlafsack, Isomatte, Kocher, Wasser, Caf\u00e9, Tee und eine warme Jacke f\u00fcr die Nacht am See. Am Morgen Fr\u00fchst\u00fcck am Ufer, danach gemeinsam aufr\u00e4umen und die R\u00fcckfahrt planen.",
+        "Tent, sleeping bag, mat, stove, water, caf\u00e9 au lait, tea and a warm jacket for the night by the lake. In the morning breakfast on the shore, then tidy up together and plan the trip home.",
     },
     {
       id: "block-0002",
@@ -468,9 +468,9 @@ function buildTitlesGallery() {
       height: 96,
       tone: "neutral",
       layer: "blocks",
-      title: "Ablauf",
+      title: "Schedule",
       preview:
-        "Treffpunkt am Bahnhof um neun Uhr, danach gemeinsam zum Ufer. Picknick mitbringen und bei Regen ins Caf\u00e9 am Hafen.",
+        "Meet at the station at nine, then walk to the shore together. Bring a picnic and go to the caf\u00e9 by the harbour if it rains.",
     },
     {
       id: "card-0001",
@@ -482,7 +482,7 @@ function buildTitlesGallery() {
       tone: "tone-a",
       layer: "note-cards",
       title: "Moodboard",
-      preview: "Fotos, Farben und Referenzen f\u00fcr die Reise.",
+      preview: "Photos, colours and references for the trip.",
     },
     {
       id: "card-0002",
@@ -493,9 +493,9 @@ function buildTitlesGallery() {
       height: 112,
       tone: "tone-c",
       layer: "note-cards",
-      title: "Ausflug an den Walensee mit \u00dcbernachtung",
+      title: "Trip to the Walensee with a Z\u00fcrich stopover",
       preview:
-        "Am Ufer entlang bis zur Br\u00fccke, dann zur\u00fcck \u00fcber den Hof. Bei Regen ins Caf\u00e9 am Hafen.",
+        "Along the shore to the bridge, then back past M\u00fcller's farm. If it rains, the caf\u00e9 by the harbour.",
     },
     {
       id: "card-0003",
@@ -506,7 +506,7 @@ function buildTitlesGallery() {
       height: 112,
       tone: "tone-e",
       layer: "note-cards",
-      title: "Caf\u00e9-Notizen f\u00fcr die Reise",
+      title: "Caf\u00e9 notes for the trip",
       preview: "",
     },
     {
@@ -518,8 +518,8 @@ function buildTitlesGallery() {
       height: 112,
       tone: "neutral",
       layer: "note-cards",
-      title: "Ideen",
-      preview: "Kurz und gut.",
+      title: "Ideas",
+      preview: "Short and sweet.",
     },
   ];
   const counts = { zones: 0, blocks: 0, cards: 0 };
@@ -3895,7 +3895,7 @@ async function start() {
         role: "title",
         flow: "ellipsis",
         box: { width: 176, height: 0 },
-        text: "Ausflug an den Walensee mit \u00dcbernachtung",
+        text: "Trip to the Walensee with a Z\u00fcrich stopover",
       });
       engine.addTextRun({
         x: 256,
@@ -3903,7 +3903,7 @@ async function start() {
         role: "title",
         flow: "ellipsis",
         box: { width: 240, height: 0 },
-        text: "Sommer am Walensee \u2014 Fotos und Notizen f\u00fcr die Planung",
+        text: "Summer at Walensee \u2014 photos and notes for the planning",
       });
       engine.addTextRun({
         x: 32,
@@ -3911,7 +3911,7 @@ async function start() {
         role: "body",
         flow: "wrap",
         box: { width: 240, height: 60 },
-        text: "Treffpunkt am Bahnhof um neun Uhr.\nDanach gemeinsam zum Ufer, Picknick mitbringen, bei Regen ins Caf\u00e9 am Hafen und sp\u00e4ter zur\u00fcck.",
+        text: "Meet at the station at nine o'clock.\nThen walk to the shore together, bring a picnic, go to the caf\u00e9 by the harbour if it rains and come back later.",
       });
       engine.addTextRun({
         x: 288,
@@ -3919,7 +3919,7 @@ async function start() {
         role: "body",
         flow: "wrap",
         box: { width: 176, height: 120 },
-        text: "Kurzer Text passt.",
+        text: "Short text fits.",
       });
       onDemand.request();
     }

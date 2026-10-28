@@ -200,10 +200,11 @@
 - [x] `P4-29` Zone parity with the live demo I: arrangement and release preview (L08) — status: `done` — owner: —
 - [x] `P4-30` Zone parity with the live demo II: lifecycle and names (L08) — status: `done` — owner: —
 - [x] `P0-33` Live demo: checklist block and spreadsheet table card — status: `done` — owner: —
+- [x] `P4-31` English sample text in the engine playground (language-check) — status: `done` — owner: —
 
 ## In progress
 
-- [ ] `P4-31` English sample text in the engine playground (language-check) — status: `in_progress` — owner: —
+- none
 
 ## Blocked / failed
 
@@ -215,13 +216,6 @@
 - [ ] `P0-15` Release command and tag-based CI release — status: `pending` — owner: —
 - [ ] `P0-16` Dependency updates and Polier update check — status: `pending` — owner: —
 - [ ] `P0-17` RELEASING.md and release 0.0.1 — status: `pending` — owner: —
-
-<!-- polier:claims -->
-## Claims
-
-- `P4-31` in progress by dsh since 2026-10-28T18:46:30+00:00 — worktree: /Users/rasulatashev/Desktop/KI Projekte/Project air-P4-31 · slot 1
-
-<!-- /polier:claims -->
 
 ## Decisions
 

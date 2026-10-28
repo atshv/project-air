@@ -5330,7 +5330,7 @@
       "satisfies": [
         "D10"
       ],
-      "status": "in_progress",
+      "status": "done",
       "depends_on": [
         "P4-09",
         "P4-10"
@@ -5373,15 +5373,24 @@
       ],
       "owner": null,
       "branch": "task/P4-31",
-      "worktree": "../Project air-P4-31",
+      "worktree": null,
       "round": 0,
-      "evidence": [],
+      "evidence": [
+        "reviews/evidence/P4-31-board-check-20261028T184840Z.json",
+        "reviews/evidence/P4-31-changelog-entry-20261028T184830Z.json",
+        "reviews/evidence/P4-31-language-check-20261028T184800Z.json",
+        "reviews/evidence/P4-31-visual-20261028T184800Z.json"
+      ],
       "scope_write_forbidden": [
         "reference/"
       ],
       "exclusive": [
         "perf",
         "visual"
+      ],
+      "handoff": [
+        "Closed P4-31: playground ?text=layout and ?text=titles samples now English (Zürich, Müller, café keep accent coverage); language-check passes repo-wide.",
+        "Re-captured and reviewed 12 text-* references (desktop/mobile, WebGL2/WebGPU); visual 56 captures green, other references unchanged; no engine code touched."
       ]
     }
   ],

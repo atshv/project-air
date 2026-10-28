@@ -1,0 +1,20 @@
+{
+  "task": "P4-31",
+  "gate": "changelog-entry",
+  "command": "node tools/release/check-changes.mjs --task P4-31 --base main",
+  "exit_code": 0,
+  "result": "pass",
+  "slot": null,
+  "exclusive": [
+    "perf",
+    "visual"
+  ],
+  "lock_wait_s": 0.0,
+  "lock_warning": null,
+  "started": "2026-10-28T18:48:30+00:00",
+  "finished": "2026-10-28T18:48:30+00:00",
+  "commit": "aadf46c48b9be119bc0b005ae168438577c78855",
+  "dirty": true,
+  "log": "P4-31-changelog-entry-20261028T184830Z.log",
+  "log_sha256": "07e7af312654aee4c2e01d6a190382aa750b2d4b522480886fab337ee10fac74"
+}
