@@ -6075,7 +6075,7 @@
       "satisfies": [
         "D3"
       ],
-      "status": "in_progress",
+      "status": "done",
       "depends_on": [
         "P0-36"
       ],
@@ -6114,10 +6114,19 @@
         "changelog-entry"
       ],
       "branch": "task/P0-37",
-      "worktree": "../Project air-P0-37",
-      "evidence": [],
+      "worktree": null,
+      "evidence": [
+        "reviews/evidence/P0-37-board-check-20261028T193108Z.json",
+        "reviews/evidence/P0-37-changelog-entry-20261028T193113Z.json",
+        "reviews/evidence/P0-37-design-check-20261028T193113Z.json"
+      ],
       "scope_write_forbidden": [
         "reference/"
+      ],
+      "handoff": [
+        "Closed P0-37: snap guides (6 px, one per axis, Shift free), zone drop highlight 1 s, Shift rubber band with frames and count bar (clamped inside the canvas), delete.",
+        "Snapshot undo (depth 20, labels from the change) with the 3 s hint; context menu (open/duplicate preview-only, forward/backward, delete; arrows, Enter, Esc); quiet zone-header delete.",
+        "Gates board-check/design-check/changelog-entry green; 7 screenshots + log. Not in the demo: group drag of a multi-selection, keyboard resize."
       ]
     }
   ],

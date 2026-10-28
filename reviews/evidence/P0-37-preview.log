@@ -1,0 +1,30 @@
+# P0-37 — live demo: engine canvas chrome: evidence
+
+- Date: 2026-10-28 (Europe/Zurich) · worktree `../Project air-P0-37` (branch `task/P0-37`, slot 2, web port 4200); assets `?v=P0-37`.
+- Method: out-of-repo CDP helper, Chrome for Testing 156 headless, real `Input.dispatchMouseEvent` (left and right button, Shift modifier) and `Input.dispatchKeyEvent` (Cmd+Z, arrows, Enter with text, Esc).
+
+```
+snap mid-drag: guide x 1033,189 1x411 card B {"x":1033,"y":461,"w":176,"h":123} checklist x 1033
+after release guides: hidden
+Cmd+Z: card B {"x":1017,"y":461,"w":176,"h":123} (start {"x":1017,"y":461,"w":176,"h":123}) hint "Undo: Move" 671,571 99x36
+after dock: highlight true status "Image window docked back in the zone."
+1.1 s later highlight false
+band mid-drag: 165,167 140x190
+band released: frames 2 count bar "2 selected" 313,581 113x30 status "2 selected"
+count bar delete: A hidden true table hidden true status "2 deleted — Cmd/Ctrl+Z brings it back."
+Cmd+Z: A hidden false table hidden false hint "Undo: Delete"
+context menu: 1089,258 200x170 entries "Open | Duplicate⌘D | Bring forward | Send backward | DeleteDel" focus "open"
+arrows down, up, up (wrap): focus "delete"
+Enter on delete: checklist hidden true menu hidden
+Cmd+Z: checklist hidden false
+Esc closes the menu: hidden
+zone delete on hover: 823,263 28x28
+zone deleted: frame true notepad detached status "Zone deleted — its items stay on the canvas."
+Cmd+Z: frame collapsed false notepad docked photo docked hint "Undo: Delete zone"
+de menu: "Öffnen | Duplizieren⌘D | Nach vorn | Nach hinten | LöschenDel"
+mobile overflow=0
+```
+
+Reading: note B dragged to within 4 px of the checklist's left edge snaps to it (x 1033) and shows a 1 px guide, hidden after release; Cmd+Z returns it to its start and shows "Undo: Move"; docking the photo outlines the zone for 1 s; Shift-drag selects note A and the table (two frames, "2 selected"); the count bar delete hides both and Cmd+Z restores them ("Undo: Delete"); the context menu opens at the pointer with five entries, arrows wrap, Enter on Delete deletes and Cmd+Z restores, Esc closes; the zone header trash appears on hover, deletes the zone keeping its items, and Cmd+Z restores it ("Undo: Delete zone"); German menu labels; no overflow at 390 px. Earlier runs found the count bar clipped outside the canvas (now clamped inside) and a test-only Enter without key text; both resolved.
+
+Screenshots: `P0-37-snap.png`, `P0-37-undo-hint.png`, `P0-37-highlight.png`, `P0-37-band.png`, `P0-37-count-bar.png`, `P0-37-menu.png`, `P0-37-zone-delete.png` (1440×900).

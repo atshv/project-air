@@ -2798,3 +2798,212 @@ kbd {
 .demo-zone__item.is-floating.is-resizing {
   transition: none;
 }
+
+/* ---------- engine canvas chrome in the live demo (P0-37) ---------- */
+
+/* Snap guides (L07), multi-selection frames and the rubber band (L10) sit on
+   the snap-guide layer and keep 1 screen px at every zoom (--chrome-inverse). */
+.demo-guide,
+.demo-band,
+.demo-multi-frame {
+  --chrome-inverse: 1;
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline-start: 0;
+  z-index: var(--layer-snap-guides);
+  display: none;
+  pointer-events: none;
+}
+
+.demo-guide.is-visible,
+.demo-band.is-visible,
+.demo-multi-frame.is-visible {
+  display: block;
+}
+
+.demo-guide {
+  background-color: var(--accent);
+}
+
+.demo-guide--vertical {
+  inline-size: calc(var(--border-width) * var(--chrome-inverse));
+}
+
+.demo-guide--horizontal {
+  block-size: calc(var(--border-width) * var(--chrome-inverse));
+}
+
+.demo-band {
+  border: calc(var(--border-width) * var(--chrome-inverse)) solid var(--accent);
+  background-color: var(--accent-soft);
+}
+
+.demo-multi-frame {
+  border: calc(var(--border-width) * var(--chrome-inverse)) solid var(--accent);
+}
+
+/* Count bar above a multi-selection: "n selected" and a delete button. It
+   sits centred above the selection's top edge and keeps its screen size at
+   every zoom; the script composes position, inverse scale and centring. */
+.demo-count {
+  --chrome-inverse: 1;
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline-start: 0;
+  z-index: var(--layer-canvas-chrome);
+  display: none;
+  align-items: center;
+  gap: var(--space-8);
+  padding-inline: var(--space-12) var(--space-4);
+  border: var(--border-width) solid var(--border);
+  border-radius: var(--radius-pill);
+  background-color: var(--surface);
+  box-shadow: var(--card-shadow);
+  color: var(--fg);
+  font-size: var(--text-12);
+  white-space: nowrap;
+  transform-origin: 0 0;
+}
+
+.demo-count.is-visible {
+  display: flex;
+}
+
+.demo-count__delete,
+.demo-zone__delete {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: var(--button-card);
+  block-size: var(--button-card);
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background-color: transparent;
+  color: var(--fg);
+  cursor: pointer;
+  transition: background-color var(--motion-hover) ease, opacity var(--motion-hover) ease;
+}
+
+.demo-count__delete svg,
+.demo-zone__delete svg {
+  inline-size: var(--icon-card);
+  block-size: var(--icon-card);
+}
+
+.demo-count__delete:hover,
+.demo-zone__delete:hover {
+  background-color: var(--faint);
+}
+
+.demo-count__delete:focus-visible,
+.demo-zone__delete:focus-visible {
+  outline: var(--outline-width) solid var(--accent);
+  outline-offset: var(--outline-offset);
+}
+
+/* Zone header delete (L02): invisible at rest, shown on hover or focus. */
+.demo-zone__delete {
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline-start: 0;
+  z-index: var(--layer-blocks);
+  opacity: 0;
+  pointer-events: auto;
+}
+
+.demo-zone__delete.is-near,
+.demo-zone__delete:hover,
+.demo-zone__delete:focus-visible {
+  opacity: 1;
+}
+
+.demo-zone__delete.is-hidden {
+  display: none;
+}
+
+/* Zone drop highlight (L08): one second in accent-line. */
+.demo-zone__card.is-positioned.is-highlighted {
+  outline: var(--outline-width) solid var(--accent-line);
+  outline-offset: 0;
+}
+
+/* Undo hint (L11): bottom-centre slot of the canvas (design law §9). */
+.demo-undo-hint {
+  position: absolute;
+  inset-block-end: var(--space-12);
+  inset-inline-start: 50%;
+  z-index: var(--layer-canvas-chrome);
+  padding: var(--space-8) var(--space-12);
+  border: var(--border-width) solid var(--border);
+  border-radius: var(--radius-md);
+  background-color: var(--surface);
+  box-shadow: var(--shadow);
+  color: var(--fg);
+  font-size: var(--text-13);
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(-50%);
+  transition: opacity var(--motion-fade) ease;
+}
+
+.demo-undo-hint.is-visible {
+  opacity: 1;
+}
+
+/* Context menu (L12): 200 px wide, 32 px rows, shortcuts in muted. */
+.demo-menu {
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline-start: 0;
+  z-index: var(--layer-context-menu);
+  inline-size: calc(var(--space-48) * 4 + var(--space-8));
+  margin: 0;
+  padding: var(--space-4);
+  border: var(--border-width) solid var(--border);
+  border-radius: var(--radius-md);
+  background-color: var(--surface);
+  box-shadow: var(--shadow);
+  list-style: none;
+}
+
+.demo-menu[hidden] {
+  display: none;
+}
+
+.demo-menu__item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  inline-size: 100%;
+  block-size: var(--click-target);
+  padding-inline: var(--space-8);
+  border: 0;
+  border-radius: var(--radius-tooltip);
+  background-color: transparent;
+  color: var(--fg);
+  font: inherit;
+  font-size: var(--text-13);
+  text-align: start;
+  cursor: pointer;
+}
+
+.demo-menu__item:hover,
+.demo-menu__item:focus-visible {
+  background-color: var(--faint);
+  outline: none;
+}
+
+.demo-menu__key {
+  color: var(--muted);
+  font-size: var(--text-12);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .demo-undo-hint,
+  .demo-count__delete,
+  .demo-zone__delete {
+    transition: none;
+  }
+}

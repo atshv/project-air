@@ -1,4 +1,4 @@
-# Design preview (P0-19, P0-20, P0-21, P0-22, P0-23, P0-24, P0-25, P0-26, P0-27, P0-28, P0-29, P0-30, P0-31, P0-32, P0-33, P0-34, P0-35, P0-36, P1-07)
+# Design preview (P0-19, P0-20, P0-21, P0-22, P0-23, P0-24, P0-25, P0-26, P0-27, P0-28, P0-29, P0-30, P0-31, P0-32, P0-33, P0-34, P0-35, P0-36, P0-37, P1-07)
 
 A design preview of the Project air design system. It is **not the product**: there is no engine,
 no data, no server and no build step. It exists so the owner can see the look and feel between
@@ -15,9 +15,9 @@ its two values come from:
   `0.0.1 – unreleased`; the status word comes from the same heading. `CHANGELOG.md` is the display
   source and currently agrees with the root `package.json` version `0.0.1`.
 - **Last change** — the newest preview change entry, currently
-  `.changes/P0-36-select-resize.md`; the line shows the task id and that task's title from
-  `board.json` / the task brief: `P0-36 — Live demo: select and resize objects, photo without bar,
-  edges behind`. The line follows the `P0-*` preview tasks (P0-19 … P0-36, P1-07); the engine tasks
+  `.changes/P0-37-canvas-chrome.md`; the line shows the task id and that task's title from
+  `board.json` / the task brief: `P0-37 — Live demo: engine canvas chrome`. The line follows the
+  `P0-*` preview tasks (P0-19 … P0-37, P1-07); the engine tasks
   (`P4-*`) and the other stages run in parallel and do not move it, so "highest numeric id" alone is
   not the rule. If several files exist for the same preview task, the most recent one is used;
   `.changes/README.md` and `.changes/TEMPLATE.md` do not count as entries.
@@ -271,6 +271,35 @@ L02 asks for zones.
   live only in this page's memory, like everything else in the demo.
 - **Without script** — the title is the first row of the static card grid.
 
+## Engine canvas chrome in the live demo (P0-37)
+
+The stage-5 chrome that the design page shows in section 10 now works on the demo objects (rules
+from `docs/engine.md`):
+
+- **Snap guides (L07)** — dragging a note card, a block or a free zone item snaps its edges and
+  centre to those of the other objects and the zone frame within `--snap-tolerance` (6 screen px);
+  one 1 px accent guide per axis, 16 px past both objects; Shift moves freely. Docked members do not
+  snap (they reorder).
+- **Zone drop highlight (L08)** — a dock or a group outlines the zone in `--accent-line` for 1 s.
+- **Rubber band and multi-selection (L10)** — Shift-drag on the empty canvas draws the band
+  (`--accent-soft` fill, 1 px accent border); on release every touched object gets a 1 px accent
+  frame and the count bar "n selected" with a delete button appears — centred above the selection,
+  below it when there is no room, always inside the visible canvas, the same screen size at every
+  zoom. A press on one object replaces the multi-selection. Moving a multi-selection as a group is
+  not part of the demo.
+- **Delete and undo (L11)** — the count bar, `Delete`/`Backspace` and the menu delete hide the
+  selected objects (a docked member leaves its zone). `Cmd/Ctrl+Z` undoes the last step (depth 20):
+  every press records the demo state, a release that changed it becomes one step labelled by what
+  changed (move, resize, dock, take out, group, move zone, rearrange, delete, delete zone). The hint
+  "Undo: …" shows for 3 s in the bottom-centre slot (design law §9). Checklist ticks and title
+  edits are content, not history.
+- **Context menu (L12)** — right-click on an object, `Shift+F10` or the menu key: Open, Duplicate
+  (⌘D), Bring forward, Send backward, Delete (Del); 200 px wide, 32 px rows, shortcuts in `--muted`,
+  arrows wrap, Enter/Space run, Esc/outside/blur close. Open and Duplicate only announce that they
+  come with the web app and the board data; forward/backward reorder within the layer.
+- **Zone header delete (L02)** — the quiet trash in the zone header appears on hover or focus and
+  deletes the zone while keeping its items on the canvas (undoable).
+
 ## Select and resize, photo, edges behind (P0-36)
 
 Owner request 2026-10-28: everything can be enlarged and lengthened, the photo has no bar, a photo
@@ -408,9 +437,9 @@ P0-26 markup with the old stylesheet and a broken-looking demo. The preview ther
 assets with a version query:
 
 ```html
-<link rel="stylesheet" href="../../../packages/ui-kit/tokens.css?v=P0-36" />
-<link rel="stylesheet" href="preview.css?v=P0-36" />
-<script src="preview.js?v=P0-36" defer></script>
+<link rel="stylesheet" href="../../../packages/ui-kit/tokens.css?v=P0-37" />
+<link rel="stylesheet" href="preview.css?v=P0-37" />
+<script src="preview.js?v=P0-37" defer></script>
 ```
 
 - **Bump rule:** every task that changes a file in `apps/web/preview/` — or the shared
@@ -419,7 +448,7 @@ assets with a version query:
   never cached and gets the current files, which also covers a changed design system that would
   otherwise be served from the cached token stylesheet.
 - The locale files reuse the script's version automatically: `preview.js` reads the `v` query of its
-  own script URL and appends it to the locale request (`locales/de.json?v=P0-36`), so one bump
+  own script URL and appends it to the locale request (`locales/de.json?v=P0-37`), so one bump
   covers the translations as well.
 - The icon SVGs are referenced from `preview.css` and keep stable, unversioned URLs; they only
   change with a design-system task, and every such task bumps the preview version anyway.
@@ -476,7 +505,7 @@ Serve the **repository root**, not this folder, so the relative token and icon p
 the slot's `web` port from `.polier-slot` (never hard-code it), then:
 
 ```sh
-cd "/Users/rasulatashev/Desktop/KI Projekte/Project air-P0-36"
+cd "/Users/rasulatashev/Desktop/KI Projekte/Project air-P0-37"
 PORT=$(python3 -c "import json; print(json.load(open('.polier-slot'))['ports']['web'])")
 python3 -m http.server "$PORT" --bind 127.0.0.1
 ```
@@ -559,11 +588,13 @@ line and tasks in English and German),
 `P0-35-contract.png`, `P0-35-motion-layers.png`, `P0-35-chrome.png`, `P0-35-chrome-de.png`
 (1440×900) and `P0-35-chrome-mobile.png` (390×844),
 `P0-36-docked-resize.png`, `P0-36-free-photo.png`, `P0-36-photo-adopted.png`,
-`P0-36-zoom-selection.png` (1440×900) and the
+`P0-36-zoom-selection.png` (1440×900),
+`P0-37-snap.png`, `P0-37-undo-hint.png`, `P0-37-highlight.png`, `P0-37-band.png`,
+`P0-37-count-bar.png`, `P0-37-menu.png`, `P0-37-zone-delete.png` (1440×900) and the
 `P0-19-preview.log` / `P0-20-preview.log` / `P0-21-preview.log` / `P0-22-preview.log` /
 `P0-23-preview.log` / `P0-24-preview.log` / `P0-25-preview.log` / `P0-26-preview.log` /
 `P0-27-preview.log` / `P0-28-preview.log` / `P0-29-preview.log` / `P0-30-preview.log` /
-`P0-31-preview.log` / `P0-32-preview.log` / `P0-33-preview.log` / `P0-34-preview.log` / `P0-35-preview.log` / `P0-36-preview.log` /
+`P0-31-preview.log` / `P0-32-preview.log` / `P0-33-preview.log` / `P0-34-preview.log` / `P0-35-preview.log` / `P0-36-preview.log` / `P0-37-preview.log` /
 `P1-07-preview.log` files with the
 exact serve, curl and screenshot commands. The page has no horizontal overflow at 1440×900, 390×844
 or the owner's 1426 × 583 viewport.

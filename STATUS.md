@@ -210,11 +210,11 @@
 - [x] `P0-34` Live demo: move a zone with its members — status: `done` — owner: —
 - [x] `P0-35` Design system page: contract 0.3.0, missing tokens and engine chrome — status: `done` — owner: —
 - [x] `P0-36` Live demo: select and resize objects, photo without bar, edges behind — status: `done` — owner: —
+- [x] `P0-37` Live demo: engine canvas chrome — status: `done` — owner: —
 
 ## In progress
 
 - [ ] `P5-06` Durability and reconnect: restart, catch-up and snapshot compaction — status: `in_progress` — owner: lead
-- [ ] `P0-37` Live demo: engine canvas chrome — status: `in_progress` — owner: —
 
 ## Blocked / failed
 
@@ -232,7 +232,6 @@
 <!-- polier:claims -->
 ## Claims
 
-- `P0-37` in progress by dsh since 2026-10-28T19:24:29+00:00 — worktree: /Users/rasulatashev/Desktop/KI Projekte/Project air-P0-37 · slot 2
 - `P5-06` in progress by dsh since 2026-10-28T19:22:36+00:00 — worktree: /private/tmp/air-P5-06 · slot 1
 
 <!-- /polier:claims -->

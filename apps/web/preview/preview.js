@@ -73,6 +73,8 @@
     "demo.sheet.sumFunction": "SUM",
     "demo.status.zoneMoved": "Zone moved.",
     "demo.status.resized": "Size changed.",
+    "demo.chrome.undoHint": "Undo: {action}",
+    "demo.chrome.selected": "{count} selected",
     "demo.status.checklistCount": "{done} of {total} done",
     "demo.status.checklistDone": "\u201c{item}\u201d done \u2014 {done} of {total}.",
     "demo.status.checklistOpen": "\u201c{item}\u201d open again \u2014 {done} of {total}.",
@@ -561,8 +563,10 @@
         card.element.classList.add("is-dragging");
       }
       // Pointer deltas are screen pixels; the card lives on the scaled world layer.
-      card.x = activePointer.startX + screenX / scale;
-      card.y = activePointer.startY + screenY / scale;
+      var snappedCard = snapPosition(card.element, activePointer.startX + screenX / scale,
+        activePointer.startY + screenY / scale, event.shiftKey);
+      card.x = snappedCard.x;
+      card.y = snappedCard.y;
       clampCard(card);
       place(card);
       drawEdge();
@@ -573,6 +577,7 @@
       if (activePointer.pointerId !== event.pointerId || activePointer.card !== card) return;
       var moved = activePointer.dragging;
       activePointer = null;
+      hideGuides();
       card.element.classList.remove("is-dragging");
       drawEdge();
       if (moved) announce(card);
@@ -716,8 +721,10 @@
         }
       }
       event.preventDefault();
-      block.x = drag.startX + screenX / scale;
-      block.y = drag.startY + screenY / scale;
+      var snappedBlock = snapPosition(block.element, drag.startX + screenX / scale,
+        drag.startY + screenY / scale, event.shiftKey);
+      block.x = snappedBlock.x;
+      block.y = snappedBlock.y;
       clampCard(block);
       place(block);
     }
@@ -726,6 +733,7 @@
       var drag = blockPointer;
       if (drag === null || drag.block !== block || drag.pointerId !== event.pointerId) return;
       blockPointer = null;
+      hideGuides();
       if (!drag.dragging) return;
       block.element.classList.remove("is-dragging");
       // A drag must not end in a click on whatever lies under the pointer.
@@ -1624,6 +1632,7 @@
           entry.progress = 0;
           moveZoneItem(entry, slotPosition(target, entry.key));
         }
+        flashZone();
         if (intent.type === "group") {
           announceZoneStatus(target.orientation === "horizontal"
             ? "demo.status.groupedHorizontal"
@@ -1818,7 +1827,10 @@
         item.element.classList.add("is-dragging");
       }
       var point = zoneWorldPoint(event.clientX, event.clientY);
-      var next = clampToBounds(item, point.x - drag.grabX, point.y - drag.grabY, worldBounds());
+      var wanted = { x: point.x - drag.grabX, y: point.y - drag.grabY };
+      // A free item snaps to its neighbours (L07); a docked item reorders instead.
+      if (!drag.startDocked) wanted = snapPosition(item.element, wanted.x, wanted.y, event.shiftKey);
+      var next = clampToBounds(item, wanted.x, wanted.y, worldBounds());
       item.x = next.x;
       item.y = next.y;
       drag.intent = decideIntent(drag, event.clientX, event.clientY);
@@ -1831,6 +1843,7 @@
       var drag = zoneDrag;
       if (drag === null || drag.item !== item || drag.pointerId !== event.pointerId) return;
       zoneDrag = null;
+      hideGuides();
       // Dropping the dragging state first re-enables the settle transition, so
       // the commit below glides from the release point instead of jumping.
       item.element.classList.remove("is-dragging");
@@ -2190,6 +2203,646 @@
     selectionChrome.addEventListener("pointermove", onHandleMove);
     selectionChrome.addEventListener("pointerup", onHandleEnd);
     selectionChrome.addEventListener("pointercancel", onHandleEnd);
+
+    // ---------- engine canvas chrome in the demo (P0-37) ----------
+    //
+    // The chrome of engine core (docs/engine.md, design page section 10) on the
+    // demo objects: snap guides while dragging (L07), the zone drop highlight
+    // (L08), undo with the history hint (L11), the context menu (L12), the
+    // rubber band with multi-selection, frames and the count bar (L10) and the
+    // quiet delete in the zone header (L02). Undo works on snapshots of the demo
+    // state: a press records the state, and a release that changed it becomes
+    // one undoable step whose label comes from what changed.
+
+    var SNAP_TOLERANCE = readPixelToken("--snap-tolerance", 6);
+    var GUIDE_OVERHANG = readPixelToken("--space-16", 16);
+    var HISTORY_DEPTH = 20;
+    var HINT_MS = 3000;
+    var HIGHLIGHT_MS = 1000;
+
+    function chromeElement(className, parent) {
+      var element = document.createElement("div");
+      element.className = className;
+      element.setAttribute("aria-hidden", "true");
+      (parent || world).appendChild(element);
+      return element;
+    }
+
+    // ----- snap guides (L07) -----
+    var guideX = chromeElement("demo-guide demo-guide--vertical");
+    var guideY = chromeElement("demo-guide demo-guide--horizontal");
+
+    function isShown(element) {
+      return !element.hidden && element.offsetParent !== null;
+    }
+
+    function snapCandidates(exclude) {
+      var rects = [];
+      selectionTargets.forEach(function (target) {
+        if (target.element === exclude || !isShown(target.element)) return;
+        rects.push(worldRectOf(target.element));
+      });
+      if (zoneFrame !== null && frameShown()) rects.push(zoneFrame);
+      return rects;
+    }
+
+    // Edges and centres within the tolerance (6 screen px) snap; each axis is
+    // decided on its own and draws at most one guide, 16 px past both objects.
+    // Shift moves freely.
+    function snapPosition(element, x, y, free) {
+      hideGuides();
+      if (free) return { x: x, y: y };
+      var width = element.offsetWidth;
+      var height = element.offsetHeight;
+      var tolerance = SNAP_TOLERANCE / scale;
+      var best = { x: null, y: null };
+      snapCandidates(element).forEach(function (other) {
+        var ownX = [x, x + width / 2, x + width];
+        var otherX = [other.x, other.x + other.w / 2, other.x + other.w];
+        var ownY = [y, y + height / 2, y + height];
+        var otherY = [other.y, other.y + other.h / 2, other.y + other.h];
+        for (var a = 0; a < 3; a += 1) {
+          for (var b = 0; b < 3; b += 1) {
+            var dx = otherX[b] - ownX[a];
+            if (Math.abs(dx) <= tolerance && (best.x === null || Math.abs(dx) < Math.abs(best.x.delta))) {
+              best.x = { delta: dx, line: otherX[b], other: other };
+            }
+            var dy = otherY[b] - ownY[a];
+            if (Math.abs(dy) <= tolerance && (best.y === null || Math.abs(dy) < Math.abs(best.y.delta))) {
+              best.y = { delta: dy, line: otherY[b], other: other };
+            }
+          }
+        }
+      });
+      var nextX = best.x === null ? x : x + best.x.delta;
+      var nextY = best.y === null ? y : y + best.y.delta;
+      var thickness = (1 / scale).toFixed(4);
+      if (best.x !== null) {
+        var top = Math.min(nextY, best.x.other.y) - GUIDE_OVERHANG;
+        var bottom = Math.max(nextY + height, best.x.other.y + best.x.other.h) + GUIDE_OVERHANG;
+        guideX.style.transform = "translate3d(" + best.x.line.toFixed(1) + "px, " + top.toFixed(1) + "px, 0)";
+        guideX.style.blockSize = (bottom - top).toFixed(1) + "px";
+        guideX.style.setProperty("--chrome-inverse", thickness);
+        guideX.classList.add("is-visible");
+      }
+      if (best.y !== null) {
+        var left = Math.min(nextX, best.y.other.x) - GUIDE_OVERHANG;
+        var right = Math.max(nextX + width, best.y.other.x + best.y.other.w) + GUIDE_OVERHANG;
+        guideY.style.transform = "translate3d(" + left.toFixed(1) + "px, " + best.y.line.toFixed(1) + "px, 0)";
+        guideY.style.inlineSize = (right - left).toFixed(1) + "px";
+        guideY.style.setProperty("--chrome-inverse", thickness);
+        guideY.classList.add("is-visible");
+      }
+      return { x: nextX, y: nextY };
+    }
+
+    function hideGuides() {
+      guideX.classList.remove("is-visible");
+      guideY.classList.remove("is-visible");
+    }
+
+    // ----- zone drop highlight (L08) -----
+    var highlightTimer = null;
+    function flashZone() {
+      if (zoneCard === null) return;
+      zoneCard.classList.add("is-highlighted");
+      window.clearTimeout(highlightTimer);
+      highlightTimer = window.setTimeout(function () {
+        zoneCard.classList.remove("is-highlighted");
+      }, prefersReducedMotion() ? HIGHLIGHT_MS : HIGHLIGHT_MS);
+    }
+
+    // ----- history and the undo hint (L11) -----
+    var undoHint = chromeElement("demo-undo-hint", surface);
+    undoHint.setAttribute("role", "status");
+    undoHint.removeAttribute("aria-hidden");
+    var hintTimer = null;
+    var historyStack = [];
+    var pressSnapshot = null;
+
+    function sizeOf(element) {
+      return { w: element.style.inlineSize, h: element.style.blockSize };
+    }
+
+    function takeSnapshot() {
+      return {
+        cards: cards.map(function (card) {
+          return { x: card.x, y: card.y, size: sizeOf(card.element), hidden: card.element.hidden };
+        }),
+        blocks: blocks.map(function (block) {
+          return { x: block.x, y: block.y, size: sizeOf(block.element), hidden: block.element.hidden };
+        }),
+        items: zoneItems.map(function (item) {
+          return { x: item.x, y: item.y, docked: item.docked, size: sizeOf(item.element), hidden: item.element.hidden };
+        }),
+        zone: {
+          docked: zoneDocked.slice(),
+          orientation: zoneOrientation,
+          origin: { x: zoneOrigin.x, y: zoneOrigin.y },
+          name: { key: zoneName.key, custom: zoneName.custom },
+        },
+      };
+    }
+
+    function setSize(element, size) {
+      element.style.inlineSize = size.w;
+      element.style.blockSize = size.h;
+    }
+
+    function restoreSnapshot(snapshot) {
+      snapshot.cards.forEach(function (saved, index) {
+        var card = cards[index];
+        card.element.hidden = saved.hidden;
+        setSize(card.element, saved.size);
+        card.x = saved.x;
+        card.y = saved.y;
+        place(card);
+      });
+      edge.style.visibility = cards.every(function (card) { return !card.element.hidden; }) ? "" : "hidden";
+      drawEdge();
+      snapshot.blocks.forEach(function (saved, index) {
+        var block = blocks[index];
+        block.element.hidden = saved.hidden;
+        setSize(block.element, saved.size);
+        block.x = saved.x;
+        block.y = saved.y;
+        place(block);
+      });
+      snapshot.items.forEach(function (saved, index) {
+        var item = zoneItems[index];
+        item.element.hidden = saved.hidden;
+        setSize(item.element, saved.size);
+        setZoneItemState(item, saved.docked);
+        item.progress = saved.docked ? 0 : 1;
+      });
+      refreshItemSizes();
+      zoneDocked = snapshot.zone.docked.slice();
+      zoneOrientation = snapshot.zone.orientation;
+      zoneOrigin = { x: snapshot.zone.origin.x, y: snapshot.zone.origin.y };
+      zoneName = { key: snapshot.zone.name.key, custom: snapshot.zone.name.custom };
+      renderTitle();
+      var layout = committedLayout();
+      if (layout === null) {
+        collapseFrame();
+      } else {
+        showFrame(layout, "solid");
+      }
+      snapshot.items.forEach(function (saved, index) {
+        var item = zoneItems[index];
+        moveZoneItem(item, saved.docked && layout !== null ? slotPosition(layout, item.key) : { x: saved.x, y: saved.y });
+      });
+      setSelection([]);
+    }
+
+    function describeChange(before, after) {
+      if (JSON.stringify(before.zone.docked) !== JSON.stringify(after.zone.docked)) {
+        if (after.zone.docked.length > before.zone.docked.length) return before.zone.docked.length === 0 ? "group" : "dock";
+        return "detach";
+      }
+      var hidden = function (list) { return list.filter(function (entry) { return entry.hidden; }).length; };
+      if (hidden(after.cards) + hidden(after.blocks) + hidden(after.items) !==
+          hidden(before.cards) + hidden(before.blocks) + hidden(before.items)) return "delete";
+      var sized = JSON.stringify(before.cards.concat(before.blocks, before.items).map(function (entry) { return entry.size; })) !==
+        JSON.stringify(after.cards.concat(after.blocks, after.items).map(function (entry) { return entry.size; }));
+      if (sized) return "resize";
+      if (before.zone.origin.x !== after.zone.origin.x || before.zone.origin.y !== after.zone.origin.y) return "moveZone";
+      if (before.zone.orientation !== after.zone.orientation) return "reorder";
+      return "move";
+    }
+
+    function recordChange(before, label) {
+      var after = takeSnapshot();
+      if (JSON.stringify(after) === JSON.stringify(before)) return;
+      // A button that records its own step (delete) is followed by the release
+      // recorder with the same starting state: keep one step only.
+      var last = historyStack[historyStack.length - 1];
+      if (last !== undefined && JSON.stringify(last.snapshot) === JSON.stringify(before)) return;
+      historyStack.push({ label: label || describeChange(before, after), snapshot: before });
+      if (historyStack.length > HISTORY_DEPTH) historyStack.shift();
+    }
+
+    function undo() {
+      var entry = historyStack.pop();
+      if (entry === undefined) return;
+      restoreSnapshot(entry.snapshot);
+      undoHint.textContent = translate("demo.chrome.undoHint", {
+        action: translate("demo.chrome.action." + entry.label),
+      });
+      undoHint.classList.add("is-visible");
+      window.clearTimeout(hintTimer);
+      hintTimer = window.setTimeout(function () {
+        undoHint.classList.remove("is-visible");
+      }, HINT_MS);
+    }
+
+    surface.addEventListener(
+      "pointerdown",
+      function () {
+        pressSnapshot = takeSnapshot();
+      },
+      true,
+    );
+    // Bubble phase: every object handler has committed its change by now.
+    surface.addEventListener("pointerup", function () {
+      if (pressSnapshot === null) return;
+      var before = pressSnapshot;
+      pressSnapshot = null;
+      window.setTimeout(function () {
+        recordChange(before);
+      }, 0);
+    });
+
+    // ----- multi-selection, rubber band and the count bar (L10) -----
+    var band = chromeElement("demo-band");
+    var countBar = document.createElement("div");
+    countBar.className = "demo-count";
+    countBar.innerHTML =
+      '<span class="demo-count__label"></span>' +
+      '<button class="demo-count__delete" type="button" data-i18n-attr="aria-label:demo.chrome.deleteSelection" aria-label="Delete selection">' +
+      '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>' +
+      "</button>";
+    world.appendChild(countBar);
+    var countLabel = countBar.querySelector(".demo-count__label");
+    var countDelete = countBar.querySelector(".demo-count__delete");
+    var multiSelection = [];
+    var multiFrames = [];
+    var bandDrag = null;
+
+    function setSelection(targets) {
+      multiSelection = targets.filter(function (target) { return isShown(target.element); });
+      while (multiFrames.length < multiSelection.length) multiFrames.push(chromeElement("demo-multi-frame"));
+      if (multiSelection.length === 1) {
+        setSelectedTarget(multiSelection[0]);
+      } else {
+        setSelectedTarget(null);
+      }
+      renderMultiSelection();
+    }
+
+    function renderMultiSelection() {
+      var multi = multiSelection.length > 1;
+      var union = null;
+      multiFrames.forEach(function (frame, index) {
+        var target = multi ? multiSelection[index] : null;
+        if (target === undefined || target === null) {
+          frame.classList.remove("is-visible");
+          return;
+        }
+        var box = worldRectOf(target.element);
+        frame.style.transform = "translate3d(" + box.x.toFixed(1) + "px, " + box.y.toFixed(1) + "px, 0)";
+        frame.style.inlineSize = box.w.toFixed(1) + "px";
+        frame.style.blockSize = box.h.toFixed(1) + "px";
+        frame.style.setProperty("--chrome-inverse", (1 / scale).toFixed(4));
+        frame.classList.add("is-visible");
+        union = union === null
+          ? { left: box.x, top: box.y, right: box.x + box.w, bottom: box.y + box.h }
+          : {
+            left: Math.min(union.left, box.x),
+            top: Math.min(union.top, box.y),
+            right: Math.max(union.right, box.x + box.w),
+            bottom: Math.max(union.bottom, box.y + box.h),
+          };
+      });
+      if (!multi || union === null) {
+        countBar.classList.remove("is-visible");
+        return;
+      }
+      countLabel.textContent = translate("demo.chrome.selected", { count: multiSelection.length });
+      // Centred over the selection, 8 px above its frames — or 8 px below when
+      // there is no room above — and always clamped into the visible canvas,
+      // which clips everything outside it. The bar keeps its screen size at
+      // every zoom (inverse scale from its top-left corner).
+      var gap = readPixelToken("--space-8", 8) / scale;
+      var barHeight = countBar.offsetHeight / scale;
+      var visible = visibleWorldBounds();
+      var barTop = union.top - gap - barHeight;
+      if (barTop < visible.y + gap) barTop = union.bottom + gap;
+      barTop = clamp(barTop, visible.y + gap, Math.max(visible.y + gap, visible.y + visible.h - barHeight - gap));
+      countBar.style.transform =
+        "translate3d(" + ((union.left + union.right) / 2).toFixed(1) + "px, " + barTop.toFixed(1) + "px, 0) " +
+        "scale(" + (1 / scale).toFixed(4) + ") translate(-50%, 0)";
+      countBar.classList.add("is-visible");
+    }
+
+    function intersects(a, b) {
+      return a.x < b.x + b.w && b.x < a.x + a.w && a.y < b.y + b.h && b.y < a.y + a.h;
+    }
+
+    function isEmptyCanvas(target) {
+      return target === surface || target === world ||
+        (target instanceof Element && target.closest(".demo__edge") !== null);
+    }
+
+    surface.addEventListener("pointerdown", function (event) {
+      if (!event.shiftKey || !isEmptyCanvas(event.target)) return;
+      if (event.pointerType === "mouse" && event.button !== 0) return;
+      event.preventDefault();
+      var point = zoneWorldPoint(event.clientX, event.clientY);
+      bandDrag = { pointerId: event.pointerId, x: point.x, y: point.y, rect: null };
+      try {
+        surface.setPointerCapture(event.pointerId);
+      } catch (error) {
+        // Pointer capture is best effort; the band keeps working without it.
+      }
+    });
+
+    surface.addEventListener("pointermove", function (event) {
+      if (bandDrag === null || bandDrag.pointerId !== event.pointerId) return;
+      var point = zoneWorldPoint(event.clientX, event.clientY);
+      var rect = {
+        x: Math.min(bandDrag.x, point.x),
+        y: Math.min(bandDrag.y, point.y),
+        w: Math.abs(point.x - bandDrag.x),
+        h: Math.abs(point.y - bandDrag.y),
+      };
+      bandDrag.rect = rect;
+      band.style.transform = "translate3d(" + rect.x.toFixed(1) + "px, " + rect.y.toFixed(1) + "px, 0)";
+      band.style.inlineSize = rect.w.toFixed(1) + "px";
+      band.style.blockSize = rect.h.toFixed(1) + "px";
+      band.style.setProperty("--chrome-inverse", (1 / scale).toFixed(4));
+      band.classList.add("is-visible");
+    });
+
+    function endBand(event, cancelled) {
+      if (bandDrag === null || bandDrag.pointerId !== event.pointerId) return;
+      var rect = bandDrag.rect;
+      bandDrag = null;
+      band.classList.remove("is-visible");
+      if (cancelled || rect === null) return;
+      var touched = selectionTargets.filter(function (target) {
+        return isShown(target.element) && intersects(rect, worldRectOf(target.element));
+      });
+      setSelection(touched);
+      if (status !== null && touched.length > 0) {
+        status.textContent = translate("demo.chrome.selected", { count: touched.length });
+      }
+    }
+    surface.addEventListener("pointerup", function (event) { endBand(event, false); });
+    surface.addEventListener("pointercancel", function (event) { endBand(event, true); });
+
+    // The frames and the count bar follow their objects like the single chrome.
+    function tickMulti() {
+      renderMultiSelection();
+      window.requestAnimationFrame(tickMulti);
+    }
+    window.requestAnimationFrame(tickMulti);
+
+    // A press on one object (no Shift) replaces a multi-selection with it.
+    surface.addEventListener(
+      "pointerdown",
+      function (event) {
+        var target = event.target;
+        if (!(target instanceof Element) || event.shiftKey) return;
+        if (target.closest(".demo-count, .demo-menu, .demo-selection")) return;
+        if (multiSelection.length > 1) {
+          multiSelection = [];
+          renderMultiSelection();
+        }
+      },
+      true,
+    );
+
+    // ----- delete (selection, count bar, menu, zone header) -----
+    function deleteTargets(targets) {
+      var before = takeSnapshot();
+      targets.forEach(function (target) {
+        target.element.hidden = true;
+        zoneItems.forEach(function (item) {
+          if (item.element !== target.element) return;
+          if (item.docked) {
+            zoneDocked = dockedWithout(item);
+            setZoneItemState(item, false);
+          }
+        });
+      });
+      if (cards.some(function (card) { return card.element.hidden; })) edge.style.visibility = "hidden";
+      var layout = committedLayout();
+      if (layout === null) {
+        collapseFrame();
+      } else {
+        zoneOrigin = { x: layout.x, y: layout.y };
+        showFrame(layout, "solid");
+        layout.keys.forEach(function (key) {
+          var member = zoneItemByKey(key);
+          if (member !== null) moveZoneItem(member, slotPosition(layout, key));
+        });
+      }
+      setSelection([]);
+      recordChange(before);
+      if (status !== null) status.textContent = translate("demo.chrome.deleted", { count: targets.length });
+    }
+
+    countDelete.addEventListener("click", function () {
+      deleteTargets(multiSelection.slice());
+    });
+
+    // Zone header delete: removes the zone and keeps its content on the canvas.
+    var zoneDelete = document.createElement("button");
+    zoneDelete.type = "button";
+    zoneDelete.className = "demo-zone__delete";
+    zoneDelete.setAttribute("data-i18n-attr", "aria-label:demo.chrome.deleteZone");
+    zoneDelete.setAttribute("aria-label", translate("demo.chrome.deleteZone") || "Delete zone, keep its items");
+    zoneDelete.innerHTML = countDelete.innerHTML;
+    zone.appendChild(zoneDelete);
+
+    function placeZoneDelete() {
+      if (zoneFrame === null || !frameShown() || zoneDocked.length === 0) {
+        zoneDelete.classList.add("is-hidden");
+        return;
+      }
+      zoneDelete.classList.remove("is-hidden");
+      var size = readPixelToken("--button-card", 28);
+      var inset = (zoneHeader - size) / 2;
+      zoneDelete.style.transform = "translate3d(" + (zoneFrame.x + zoneFrame.w - inset - size).toFixed(1) + "px, " +
+        (zoneFrame.y + inset).toFixed(1) + "px, 0)";
+    }
+    (function trackZoneDelete() {
+      placeZoneDelete();
+      window.requestAnimationFrame(trackZoneDelete);
+    })();
+
+    zoneDelete.addEventListener("click", function () {
+      var before = takeSnapshot();
+      zoneDocked.forEach(function (key) {
+        var member = zoneItemByKey(key);
+        if (member === null) return;
+        setZoneItemState(member, false);
+        member.progress = 1;
+        placeZoneItem(member);
+      });
+      zoneDocked = [];
+      collapseFrame();
+      recordChange(before, "deleteZone");
+      if (status !== null) status.textContent = translate("demo.chrome.zoneDeleted");
+    });
+    zone.addEventListener("pointerover", function () {
+      zoneDelete.classList.add("is-near");
+    });
+    zone.addEventListener("pointerout", function (event) {
+      if (!(event.relatedTarget instanceof Node) || !zone.contains(event.relatedTarget)) {
+        zoneDelete.classList.remove("is-near");
+      }
+    });
+    zoneCard.addEventListener("pointerenter", function () {
+      zoneDelete.classList.add("is-near");
+    });
+    zoneCard.addEventListener("pointerleave", function (event) {
+      if (event.relatedTarget !== zoneDelete && event.relatedTarget !== zoneTitle) zoneDelete.classList.remove("is-near");
+    });
+
+    // ----- context menu (L12) -----
+    var MENU_ENTRIES = [
+      { id: "open", key: "" },
+      { id: "duplicate", key: "⌘D" },
+      { id: "forward", key: "" },
+      { id: "backward", key: "" },
+      { id: "delete", key: "Del" },
+    ];
+    var menu = document.createElement("ul");
+    menu.className = "demo-menu";
+    menu.setAttribute("role", "menu");
+    menu.hidden = true;
+    MENU_ENTRIES.forEach(function (entry) {
+      var row = document.createElement("li");
+      row.setAttribute("role", "none");
+      var button = document.createElement("button");
+      button.type = "button";
+      button.className = "demo-menu__item";
+      button.setAttribute("role", "menuitem");
+      button.setAttribute("data-menu", entry.id);
+      button.innerHTML = '<span class="demo-menu__label" data-i18n="demo.chrome.menu.' + entry.id + '"></span>' +
+        (entry.key ? '<span class="demo-menu__key">' + entry.key + "</span>" : "");
+      row.appendChild(button);
+      menu.appendChild(row);
+    });
+    surface.appendChild(menu);
+    var menuTargets = [];
+
+    function labelMenu() {
+      var labels = menu.querySelectorAll("[data-i18n]");
+      for (var index = 0; index < labels.length; index += 1) {
+        labels[index].textContent = translate(labels[index].getAttribute("data-i18n"));
+      }
+      menu.setAttribute("aria-label", translate("demo.chrome.menu.label"));
+    }
+    labelMenu();
+    localeListeners.push(labelMenu);
+
+    function menuItems() {
+      return Array.prototype.slice.call(menu.querySelectorAll(".demo-menu__item"));
+    }
+
+    function openMenu(targets, clientX, clientY) {
+      menuTargets = targets;
+      labelMenu();
+      menu.hidden = false;
+      var surfaceBox = surface.getBoundingClientRect();
+      var x = clamp(clientX - surfaceBox.left, 0, Math.max(0, surfaceBox.width - menu.offsetWidth));
+      var y = clamp(clientY - surfaceBox.top, 0, Math.max(0, surfaceBox.height - menu.offsetHeight));
+      menu.style.transform = "translate3d(" + x.toFixed(0) + "px, " + y.toFixed(0) + "px, 0)";
+      menuItems()[0].focus({ preventScroll: true });
+    }
+
+    function closeMenu() {
+      if (menu.hidden) return;
+      menu.hidden = true;
+      menuTargets = [];
+    }
+
+    function currentTargets() {
+      if (multiSelection.length > 1) return multiSelection.slice();
+      return selectedTarget === null ? [] : [selectedTarget];
+    }
+
+    world.addEventListener("contextmenu", function (event) {
+      var target = event.target;
+      if (!(target instanceof Element)) return;
+      var hit = null;
+      selectionTargets.forEach(function (candidate) {
+        if (candidate.element.contains(target)) hit = candidate;
+      });
+      if (hit === null) return;
+      event.preventDefault();
+      var targets = multiSelection.indexOf(hit) !== -1 ? multiSelection.slice() : [hit];
+      if (targets.length === 1) setSelection([hit]);
+      openMenu(targets, event.clientX, event.clientY);
+    });
+
+    function bringToFront(target, front) {
+      var parent = target.element.parentNode;
+      if (parent === null) return;
+      if (front) {
+        parent.appendChild(target.element);
+      } else {
+        target.element.classList.remove("is-raised", "is-selected");
+        parent.insertBefore(target.element, parent.firstChild);
+      }
+    }
+
+    function runMenu(id, targets) {
+      closeMenu();
+      if (targets.length === 0) return;
+      if (id === "delete") {
+        deleteTargets(targets);
+        return;
+      }
+      if (id === "forward" || id === "backward") {
+        targets.forEach(function (target) { bringToFront(target, id === "forward"); });
+      }
+      if (status !== null) status.textContent = translate("demo.chrome.menuStatus." + id);
+    }
+
+    menu.addEventListener("click", function (event) {
+      var button = event.target instanceof Element ? event.target.closest("[data-menu]") : null;
+      if (button !== null) runMenu(button.getAttribute("data-menu"), menuTargets);
+    });
+
+    menu.addEventListener("keydown", function (event) {
+      var items = menuItems();
+      var index = items.indexOf(document.activeElement);
+      if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+        event.preventDefault();
+        var step = event.key === "ArrowDown" ? 1 : -1;
+        items[(index + step + items.length) % items.length].focus();
+      } else if (event.key === "Escape") {
+        event.preventDefault();
+        event.stopPropagation();
+        closeMenu();
+      }
+    });
+
+    document.addEventListener("pointerdown", function (event) {
+      if (!menu.hidden && !(event.target instanceof Node && menu.contains(event.target))) closeMenu();
+    }, true);
+    menu.addEventListener("focusout", function (event) {
+      if (!(event.relatedTarget instanceof Node) || !menu.contains(event.relatedTarget)) closeMenu();
+    });
+
+    // ----- keyboard: undo, delete, duplicate, menu key -----
+    document.addEventListener("keydown", function (event) {
+      var focus = document.activeElement;
+      if (focus instanceof HTMLElement && (focus.isContentEditable || focus.closest("input, textarea, select"))) return;
+      if (!demo.contains(focus) && focus !== document.body) return;
+      var command = event.metaKey || event.ctrlKey;
+      if (command && !event.shiftKey && (event.key === "z" || event.key === "Z")) {
+        event.preventDefault();
+        undo();
+        return;
+      }
+      var targets = currentTargets();
+      if (targets.length === 0) return;
+      if (event.key === "Delete" || event.key === "Backspace") {
+        event.preventDefault();
+        deleteTargets(targets);
+      } else if (command && (event.key === "d" || event.key === "D")) {
+        event.preventDefault();
+        runMenu("duplicate", targets);
+      } else if (event.key === "ContextMenu" || (event.shiftKey && event.key === "F10")) {
+        event.preventDefault();
+        var box = targets[0].element.getBoundingClientRect();
+        openMenu(targets, box.left, box.bottom);
+      }
+    });
 
     window.addEventListener("resize", function () {
       if (resizePending) return;
