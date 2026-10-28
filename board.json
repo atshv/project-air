@@ -5268,7 +5268,7 @@
       "satisfies": [
         "D3"
       ],
-      "status": "in_progress",
+      "status": "done",
       "depends_on": [
         "P0-32"
       ],
@@ -5307,10 +5307,19 @@
         "changelog-entry"
       ],
       "branch": "task/P0-33",
-      "worktree": "../Project air-P0-33",
-      "evidence": [],
+      "worktree": null,
+      "evidence": [
+        "reviews/evidence/P0-33-board-check-20261028T184049Z.json",
+        "reviews/evidence/P0-33-changelog-entry-20261028T184053Z.json",
+        "reviews/evidence/P0-33-design-check-20261028T184109Z.json"
+      ],
       "scope_write_forbidden": [
         "reference/"
+      ],
+      "handoff": [
+        "Closed P0-33: checklist block (5 items, 2 done, counter + status, real checkboxes) and spreadsheet card (A-D, rows 1-6, formula bar, computed totals, click/arrow selection).",
+        "Both draggable on the blocks layer (no drag from checkbox/label, no click after drag), desktop homes data-home, compact homes data-home-compact, compact world grid x 104.",
+        "Gates board-check/design-check/changelog-entry green; 4 screenshots + log; follow-up: language-check flags German demo strings in apps/engine-playground/main.js."
       ]
     }
   ],

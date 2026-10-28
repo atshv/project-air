@@ -4,9 +4,9 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title data-i18n="page.projectAirDesignPreviewStatic">Project air design preview — static design preview</title>
-    <link rel="stylesheet" href="../../../packages/ui-kit/tokens.css?v=P0-32" />
-    <link rel="stylesheet" href="preview.css?v=P0-32" />
-    <script src="preview.js?v=P0-32" defer></script>
+    <link rel="stylesheet" href="../../../packages/ui-kit/tokens.css?v=P0-33" />
+    <link rel="stylesheet" href="preview.css?v=P0-33" />
+    <script src="preview.js?v=P0-33" defer></script>
   </head>
   <body>
     <main class="page">
@@ -22,14 +22,14 @@
         <p class="masthead__version" data-preview-meta>
           <span data-preview-version data-i18n="masthead.version">Version 0.0.1</span>
           <span data-preview-status data-i18n="masthead.unreleased">unreleased</span>
-          <span data-preview-last-change data-i18n="masthead.lastChange">Last change: P0-32 — Zone titles: named, editable zone headers in the live demo</span>
-          <span data-preview-last-change-time data-i18n="masthead.lastChangeTime">2026-10-27 20:56 (Europe/Zurich)</span>
+          <span data-preview-last-change data-i18n="masthead.lastChange">Last change: P0-33 — Live demo: checklist block and spreadsheet table card</span>
+          <span data-preview-last-change-time data-i18n="masthead.lastChangeTime">2026-10-28 19:39 (Europe/Zurich)</span>
         </p>
         <div class="masthead__meta">
           <span data-i18n-html="masthead.tokensPackagesUiKitTokens">Tokens: <code>packages/ui-kit/tokens.css</code></span>
           <span data-i18n-html="masthead.iconsPackagesUiKitIcons">Icons: <code>packages/ui-kit/icons/</code></span>
           <span data-i18n-html="masthead.demoPreviewJs">Demo: <code>preview.js</code></span>
-          <span data-i18n="masthead.tasks">Tasks: P0-19, P0-20, P0-21, P0-22, P0-23, P0-24, P0-25, P0-26, P0-27, P0-28, P0-29, P0-30, P0-31, P0-32, P1-07</span>
+          <span data-i18n="masthead.tasks">Tasks: P0-19, P0-20, P0-21, P0-22, P0-23, P0-24, P0-25, P0-26, P0-27, P0-28, P0-29, P0-30, P0-31, P0-32, P0-33, P1-07</span>
           <div
             class="preview-locale"
             role="group"
@@ -99,8 +99,8 @@
           <p class="demo__legend token-caption" data-i18n="demo.toolbarPreviewOnlyZoneNotepad">
             toolbar · preview-only · drag 1:1 · dashed slot = landing place · release
             commits · above/below = stacked · left/right = side by side · drag inside =
-            reorder · both out: zone fades · click name = rename · curve · --tone-d ·
-            1.5 px
+            reorder · both out: zone fades · click name = rename · checklist: click to
+            tick · table: click a cell, arrows move · curve · --tone-d · 1.5 px
           </p>
           <div class="demo__surface" data-demo-surface>
             <div
@@ -207,6 +207,126 @@
                 </div>
                 <h3 class="note-card__title" data-i18n="demo.tokenSource">Token source</h3>
                 <p class="note-card__body" data-i18n="demo.oneSourceForCSSAnd">One source for CSS and C++.</p>
+              </article>
+              <section
+                class="demo-block demo-checklist"
+                data-demo-block="checklist"
+                data-home="0.98,0.28"
+                data-home-compact="0.5,0.174"
+                aria-labelledby="demo-checklist-title"
+              >
+                <div class="demo-block__head">
+                  <span class="type-label" data-i18n="demo.checklist.label">Checklist</span>
+                  <span class="demo-checklist__count" data-checklist-count>2/5</span>
+                </div>
+                <h3 class="demo-block__title" id="demo-checklist-title" data-i18n="demo.checklist.title">Trip checklist</h3>
+                <ul class="demo-checklist__list">
+                  <li>
+                    <label class="demo-checklist__item">
+                      <input class="demo-checklist__box" type="checkbox" data-checklist-item checked />
+                      <span class="demo-checklist__text" data-i18n="demo.checklist.item1">Book the train</span>
+                    </label>
+                  </li>
+                  <li>
+                    <label class="demo-checklist__item">
+                      <input class="demo-checklist__box" type="checkbox" data-checklist-item />
+                      <span class="demo-checklist__text" data-i18n="demo.checklist.item2">Pack the picnic</span>
+                    </label>
+                  </li>
+                  <li>
+                    <label class="demo-checklist__item">
+                      <input class="demo-checklist__box" type="checkbox" data-checklist-item checked />
+                      <span class="demo-checklist__text" data-i18n="demo.checklist.item3">Check the weather</span>
+                    </label>
+                  </li>
+                  <li>
+                    <label class="demo-checklist__item">
+                      <input class="demo-checklist__box" type="checkbox" data-checklist-item />
+                      <span class="demo-checklist__text" data-i18n="demo.checklist.item4">Charge the camera</span>
+                    </label>
+                  </li>
+                  <li>
+                    <label class="demo-checklist__item">
+                      <input class="demo-checklist__box" type="checkbox" data-checklist-item />
+                      <span class="demo-checklist__text" data-i18n="demo.checklist.item5">Share the photos</span>
+                    </label>
+                  </li>
+                </ul>
+              </section>
+              <article
+                class="demo-block demo-sheet"
+                data-demo-block="sheet"
+                data-home="0.08,0.92"
+                data-home-compact="0.5,0.78"
+                aria-labelledby="demo-sheet-title"
+              >
+                <div class="demo-block__head">
+                  <span class="type-label" data-i18n="demo.sheet.label">Table</span>
+                </div>
+                <h3 class="demo-block__title" id="demo-sheet-title" data-i18n="demo.sheet.title">Trip budget</h3>
+                <div class="demo-sheet__formula" data-sheet-formula>
+                  <span class="demo-sheet__ref" data-sheet-ref>D6</span>
+                  <span class="demo-sheet__fx" aria-hidden="true">fx</span>
+                  <output class="demo-sheet__value" data-sheet-value aria-live="polite">=SUM(D2:D5)</output>
+                </div>
+                <div class="demo-sheet__frame">
+                  <table class="demo-sheet__table" data-sheet>
+                    <caption class="visually-hidden" data-i18n="demo.sheet.caption">Trip budget in Swiss francs; the total sums the row totals.</caption>
+                    <thead>
+                      <tr>
+                        <th class="demo-sheet__corner" scope="col"><span class="visually-hidden" data-i18n="demo.sheet.rowNumber">Row</span></th>
+                        <th class="demo-sheet__colhead" scope="col">A</th>
+                        <th class="demo-sheet__colhead" scope="col">B</th>
+                        <th class="demo-sheet__colhead" scope="col">C</th>
+                        <th class="demo-sheet__colhead" scope="col">D</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr class="demo-sheet__header-row">
+                        <th class="demo-sheet__rowhead" scope="row">1</th>
+                        <td class="demo-sheet__cell" data-cell="A1" data-i18n="demo.sheet.colItem">Item</td>
+                        <td class="demo-sheet__cell demo-sheet__cell--number" data-cell="B1" data-i18n="demo.sheet.colQty">Qty</td>
+                        <td class="demo-sheet__cell demo-sheet__cell--number" data-cell="C1" data-i18n="demo.sheet.colPrice">Price</td>
+                        <td class="demo-sheet__cell demo-sheet__cell--number" data-cell="D1" data-i18n="demo.sheet.colTotal">Total</td>
+                      </tr>
+                      <tr>
+                        <th class="demo-sheet__rowhead" scope="row">2</th>
+                        <td class="demo-sheet__cell" data-cell="A2" data-i18n="demo.sheet.rowTrain">Train tickets</td>
+                        <td class="demo-sheet__cell demo-sheet__cell--number" data-cell="B2">2</td>
+                        <td class="demo-sheet__cell demo-sheet__cell--number" data-cell="C2">38.00</td>
+                        <td class="demo-sheet__cell demo-sheet__cell--number" data-cell="D2" data-formula="=B2*C2">76.00</td>
+                      </tr>
+                      <tr>
+                        <th class="demo-sheet__rowhead" scope="row">3</th>
+                        <td class="demo-sheet__cell" data-cell="A3" data-i18n="demo.sheet.rowPicnic">Picnic</td>
+                        <td class="demo-sheet__cell demo-sheet__cell--number" data-cell="B3">1</td>
+                        <td class="demo-sheet__cell demo-sheet__cell--number" data-cell="C3">45.50</td>
+                        <td class="demo-sheet__cell demo-sheet__cell--number" data-cell="D3" data-formula="=B3*C3">45.50</td>
+                      </tr>
+                      <tr>
+                        <th class="demo-sheet__rowhead" scope="row">4</th>
+                        <td class="demo-sheet__cell" data-cell="A4" data-i18n="demo.sheet.rowBoat">Boat rental</td>
+                        <td class="demo-sheet__cell demo-sheet__cell--number" data-cell="B4">2</td>
+                        <td class="demo-sheet__cell demo-sheet__cell--number" data-cell="C4">25.00</td>
+                        <td class="demo-sheet__cell demo-sheet__cell--number" data-cell="D4" data-formula="=B4*C4">50.00</td>
+                      </tr>
+                      <tr>
+                        <th class="demo-sheet__rowhead" scope="row">5</th>
+                        <td class="demo-sheet__cell" data-cell="A5" data-i18n="demo.sheet.rowCafe">Café</td>
+                        <td class="demo-sheet__cell demo-sheet__cell--number" data-cell="B5">4</td>
+                        <td class="demo-sheet__cell demo-sheet__cell--number" data-cell="C5">6.50</td>
+                        <td class="demo-sheet__cell demo-sheet__cell--number" data-cell="D5" data-formula="=B5*C5">26.00</td>
+                      </tr>
+                      <tr class="demo-sheet__total-row">
+                        <th class="demo-sheet__rowhead" scope="row">6</th>
+                        <td class="demo-sheet__cell" data-cell="A6" data-i18n="demo.sheet.rowTotal">Total CHF</td>
+                        <td class="demo-sheet__cell" data-cell="B6"></td>
+                        <td class="demo-sheet__cell" data-cell="C6"></td>
+                        <td class="demo-sheet__cell demo-sheet__cell--number" data-cell="D6" data-formula="=SUM(D2:D5)">197.50</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
               </article>
             </div>
             <div class="demo-zoom" role="group" aria-label="Demo zoom controls" data-demo-zoom data-i18n-attr="aria-label:demo.demoZoomControls">

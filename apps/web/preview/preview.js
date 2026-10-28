@@ -70,6 +70,10 @@
     "demo.zone.nameInitial": "Lake trip",
     "demo.zone.nameNew": "New zone",
     "demo.zone.nameLabel": "Zone name, click to rename",
+    "demo.sheet.sumFunction": "SUM",
+    "demo.status.checklistCount": "{done} of {total} done",
+    "demo.status.checklistDone": "\u201c{item}\u201d done \u2014 {done} of {total}.",
+    "demo.status.checklistOpen": "\u201c{item}\u201d open again \u2014 {done} of {total}.",
   };
   var localeMessages = null;
   // Called after a locale was applied, for text the script owns (zone names).
@@ -502,6 +506,7 @@
       place(cards[1]);
       applyZoom();
       drawEdge();
+      layoutBlocks(ratioX, ratioY);
       if (zoneReady) syncZoneGeometry(ratioX, ratioY);
       else initZone();
       demo.classList.add("is-ready");
@@ -614,6 +619,270 @@
         onKeyDown(card, event);
       });
     });
+
+    // ---------- checklist block and spreadsheet card (P0-33) ----------
+    //
+    // Both are blocks on the canvas: positioned like the note cards (home as a
+    // share of the free world space, rescaled on resize), dragged 1:1 after the
+    // 4 px threshold, the last touched block raised above the other blocks.
+    // A drag never starts on a checkbox or its label, and a press without
+    // movement is a click (toggle a checkbox, select a cell), so pointer capture
+    // is only taken once a drag really starts.
+
+    var blocks = [];
+    var blockPointer = null;
+    var blockElements = world.querySelectorAll("[data-demo-block]");
+    for (var blockIndex = 0; blockIndex < blockElements.length; blockIndex += 1) {
+      var blockElement = blockElements[blockIndex];
+      if (!(blockElement instanceof HTMLElement)) continue;
+      var shares = (blockElement.getAttribute("data-home") || "0,0").split(",");
+      var compactShares = (blockElement.getAttribute("data-home-compact") || shares.join(",")).split(",");
+      blocks.push({
+        element: blockElement,
+        shareX: clamp(parseFloat(shares[0]) || 0, 0, 1),
+        shareY: clamp(parseFloat(shares[1]) || 0, 0, 1),
+        compactShareX: clamp(parseFloat(compactShares[0]) || 0, 0, 1),
+        compactShareY: clamp(parseFloat(compactShares[1]) || 0, 0, 1),
+        x: 0,
+        y: 0,
+        placed: false,
+      });
+    }
+
+    function layoutBlocks(ratioX, ratioY) {
+      for (var index = 0; index < blocks.length; index += 1) {
+        var block = blocks[index];
+        if (!block.placed) {
+          // The compact layout (toolbar row above a tall world, the same 900 px
+          // breakpoint as preview.css) stacks the blocks between the notes and
+          // the zone instead of beside them.
+          var compact = typeof window.matchMedia === "function" &&
+            window.matchMedia("(max-width: 900px)").matches;
+          var home = compact
+            ? homeFor(block, block.compactShareX, block.compactShareY)
+            : homeFor(block, block.shareX, block.shareY);
+          block.x = home.x;
+          block.y = home.y;
+          block.placed = true;
+        } else if (ratioX !== 1 || ratioY !== 1) {
+          rescaleCard(block, ratioX, ratioY);
+        }
+        clampCard(block);
+        place(block);
+      }
+    }
+
+    function raiseBlock(block) {
+      for (var index = 0; index < blocks.length; index += 1) {
+        blocks[index].element.classList.toggle("is-raised", blocks[index] === block);
+      }
+    }
+
+    function onBlockPointerDown(block, event) {
+      if (blockPointer !== null || activePointer !== null) return;
+      if (event.pointerType === "mouse" && event.button !== 0) return;
+      var target = event.target;
+      if (target instanceof Element && target.closest("input, label, button, a, textarea, select")) {
+        raiseBlock(block);
+        return;
+      }
+      raiseBlock(block);
+      blockPointer = {
+        pointerId: event.pointerId,
+        block: block,
+        startClientX: event.clientX,
+        startClientY: event.clientY,
+        startX: block.x,
+        startY: block.y,
+        dragging: false,
+      };
+    }
+
+    function onBlockPointerMove(block, event) {
+      var drag = blockPointer;
+      if (drag === null || drag.block !== block || drag.pointerId !== event.pointerId) return;
+      var screenX = event.clientX - drag.startClientX;
+      var screenY = event.clientY - drag.startClientY;
+      if (!drag.dragging) {
+        if (Math.hypot(screenX, screenY) < threshold) return;
+        drag.dragging = true;
+        block.element.classList.add("is-dragging");
+        try {
+          block.element.setPointerCapture(event.pointerId);
+        } catch (error) {
+          // Pointer capture is best effort; the drag keeps working without it.
+        }
+      }
+      event.preventDefault();
+      block.x = drag.startX + screenX / scale;
+      block.y = drag.startY + screenY / scale;
+      clampCard(block);
+      place(block);
+    }
+
+    function onBlockPointerEnd(block, event) {
+      var drag = blockPointer;
+      if (drag === null || drag.block !== block || drag.pointerId !== event.pointerId) return;
+      blockPointer = null;
+      if (!drag.dragging) return;
+      block.element.classList.remove("is-dragging");
+      // A drag must not end in a click on whatever lies under the pointer.
+      block.suppressClick = true;
+      window.setTimeout(function () {
+        block.suppressClick = false;
+      }, 0);
+    }
+
+    blocks.forEach(function (block) {
+      block.element.addEventListener("pointerdown", function (event) {
+        onBlockPointerDown(block, event);
+      });
+      block.element.addEventListener("pointermove", function (event) {
+        onBlockPointerMove(block, event);
+      });
+      block.element.addEventListener("pointerup", function (event) {
+        onBlockPointerEnd(block, event);
+      });
+      block.element.addEventListener("pointercancel", function (event) {
+        onBlockPointerEnd(block, event);
+      });
+      block.element.addEventListener(
+        "click",
+        function (event) {
+          if (block.suppressClick) {
+            event.preventDefault();
+            event.stopPropagation();
+          }
+        },
+        true,
+      );
+    });
+
+    // Checklist: the counter and the status line follow every toggle.
+    var checklist = world.querySelector('[data-demo-block="checklist"]');
+    var checklistCount = checklist === null ? null : checklist.querySelector("[data-checklist-count]");
+    var checklistItems = checklist === null ? [] : checklist.querySelectorAll("[data-checklist-item]");
+
+    function checklistDone() {
+      var done = 0;
+      for (var index = 0; index < checklistItems.length; index += 1) {
+        if (checklistItems[index].checked) done += 1;
+      }
+      return done;
+    }
+
+    function updateChecklistCount() {
+      if (checklistCount === null) return;
+      var done = checklistDone();
+      checklistCount.textContent = done + "/" + checklistItems.length;
+      checklistCount.setAttribute(
+        "aria-label",
+        translate("demo.status.checklistCount", { done: done, total: checklistItems.length }),
+      );
+    }
+
+    for (var itemIndex = 0; itemIndex < checklistItems.length; itemIndex += 1) {
+      checklistItems[itemIndex].addEventListener("change", function (event) {
+        var box = event.currentTarget;
+        updateChecklistCount();
+        if (status === null || !(box instanceof HTMLInputElement)) return;
+        var label = box.closest("label");
+        status.textContent = translate(box.checked ? "demo.status.checklistDone" : "demo.status.checklistOpen", {
+          item: label === null ? "" : label.textContent.trim(),
+          done: checklistDone(),
+          total: checklistItems.length,
+        });
+      });
+    }
+    updateChecklistCount();
+    localeListeners.push(updateChecklistCount);
+
+    // Spreadsheet: totals are computed from the rows (D = B × C, D6 = SUM),
+    // a click or the arrow keys select a cell and the formula bar shows its
+    // reference and its formula (localised function name) or value.
+    var sheet = world.querySelector("[data-sheet]");
+    var sheetRef = world.querySelector("[data-sheet-ref]");
+    var sheetValue = world.querySelector("[data-sheet-value]");
+    var sheetCells = sheet === null ? [] : sheet.querySelectorAll("[data-cell]");
+    var activeCell = null;
+
+    function cellAt(reference) {
+      return sheet === null ? null : sheet.querySelector('[data-cell="' + reference + '"]');
+    }
+
+    function numberIn(reference) {
+      var cell = cellAt(reference);
+      var value = cell === null ? NaN : parseFloat(cell.textContent);
+      return Number.isFinite(value) ? value : 0;
+    }
+
+    function computeSheet() {
+      var sum = 0;
+      for (var row = 2; row <= 5; row += 1) {
+        var total = numberIn("B" + row) * numberIn("C" + row);
+        var totalCell = cellAt("D" + row);
+        if (totalCell !== null) totalCell.textContent = total.toFixed(2);
+        sum += total;
+      }
+      var sumCell = cellAt("D6");
+      if (sumCell !== null) sumCell.textContent = sum.toFixed(2);
+    }
+
+    function formulaText(cell) {
+      var formula = cell.getAttribute("data-formula");
+      if (formula === null) return cell.textContent.trim();
+      return formula.replace("SUM(", translate("demo.sheet.sumFunction") + "(");
+    }
+
+    function selectCell(cell, focus) {
+      if (!(cell instanceof HTMLElement)) return;
+      for (var index = 0; index < sheetCells.length; index += 1) {
+        var each = sheetCells[index];
+        var active = each === cell;
+        each.classList.toggle("is-active", active);
+        each.setAttribute("aria-selected", active ? "true" : "false");
+        each.setAttribute("tabindex", active ? "0" : "-1");
+      }
+      activeCell = cell;
+      var reference = cell.getAttribute("data-cell") || "";
+      if (sheetRef !== null) sheetRef.textContent = reference;
+      if (sheetValue !== null) sheetValue.textContent = formulaText(cell);
+      if (focus) cell.focus({ preventScroll: true });
+    }
+
+    function moveSelection(columnStep, rowStep) {
+      if (activeCell === null) return;
+      var reference = activeCell.getAttribute("data-cell") || "A1";
+      var column = clamp(reference.charCodeAt(0) - 65 + columnStep, 0, 3);
+      var row = clamp(parseInt(reference.slice(1), 10) + rowStep, 1, 6);
+      selectCell(cellAt(String.fromCharCode(65 + column) + row), true);
+    }
+
+    if (sheet !== null) {
+      // A grid: one cell is in the tab order, the arrow keys move the selection.
+      sheet.setAttribute("role", "grid");
+      computeSheet();
+      sheet.addEventListener("click", function (event) {
+        var target = event.target;
+        if (target instanceof Element) selectCell(target.closest("[data-cell]"), true);
+      });
+      sheet.addEventListener("keydown", function (event) {
+        var steps = {
+          ArrowLeft: [-1, 0],
+          ArrowRight: [1, 0],
+          ArrowUp: [0, -1],
+          ArrowDown: [0, 1],
+        }[event.key];
+        if (steps === undefined) return;
+        event.preventDefault();
+        moveSelection(steps[0], steps[1]);
+      });
+      selectCell(cellAt("D6"), false);
+      localeListeners.push(function () {
+        computeSheet();
+        if (activeCell !== null) selectCell(activeCell, false);
+      });
+    }
 
     zoomIn.addEventListener("click", function () {
       zoomBy(1);
