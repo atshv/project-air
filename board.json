@@ -5800,6 +5800,9 @@
       "evidence": [],
       "scope_write_forbidden": [
         "reference/"
+      ],
+      "exclusive": [
+        "crdt-convergence"
       ]
     },
     {
@@ -5858,6 +5861,9 @@
       "evidence": [],
       "scope_write_forbidden": [
         "reference/"
+      ],
+      "exclusive": [
+        "load"
       ]
     },
     {
@@ -5907,7 +5913,7 @@
         "changelog-entry"
       ],
       "branch": "task/P0-34",
-      "worktree": null,
+      "worktree": "../Project air-P0-34",
       "evidence": [],
       "scope_write_forbidden": [
         "reference/"
