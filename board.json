@@ -5942,7 +5942,7 @@
       "satisfies": [
         "D3"
       ],
-      "status": "in_progress",
+      "status": "done",
       "depends_on": [
         "P0-34"
       ],
@@ -5981,10 +5981,19 @@
         "changelog-entry"
       ],
       "branch": "task/P0-35",
-      "worktree": "../Project air-P0-35",
-      "evidence": [],
+      "worktree": null,
+      "evidence": [
+        "reviews/evidence/P0-35-board-check-20261028T191519Z.json",
+        "reviews/evidence/P0-35-changelog-entry-20261028T191524Z.json",
+        "reviews/evidence/P0-35-design-check-20261028T191524Z.json"
+      ],
       "scope_write_forbidden": [
         "reference/"
+      ],
+      "handoff": [
+        "Closed P0-35: contract overview now 0.3.0 (17 schemas, 20 ops incl. reorder, 86 fixtures 37/49, containment rule, 0.3.0 sync rules, version history).",
+        "New section 06 motion/interaction/layers (all 77 tokens now on the page) and section 10 canvas chrome (7 stage-5 specimens); sections renumbered 01-11; nothing removed.",
+        "Gates board-check/design-check/changelog-entry green; 5 screenshots + log; follow-up idea: a delete icon in packages/ui-kit/icons."
       ]
     }
   ],

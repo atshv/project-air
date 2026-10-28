@@ -4,9 +4,9 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title data-i18n="page.projectAirDesignPreviewStatic">Project air design preview — static design preview</title>
-    <link rel="stylesheet" href="../../../packages/ui-kit/tokens.css?v=P0-34" />
-    <link rel="stylesheet" href="preview.css?v=P0-34" />
-    <script src="preview.js?v=P0-34" defer></script>
+    <link rel="stylesheet" href="../../../packages/ui-kit/tokens.css?v=P0-35" />
+    <link rel="stylesheet" href="preview.css?v=P0-35" />
+    <script src="preview.js?v=P0-35" defer></script>
   </head>
   <body>
     <main class="page">
@@ -14,22 +14,23 @@
         <span class="badge" data-i18n="masthead.staticDesignPreview">static design preview</span>
         <h1 data-i18n="masthead.projectAirDesignSystem">Project air design system</h1>
         <p class="lead" data-i18n="masthead.aStaticDesignPreviewOf">
-          A static design preview of the Project air canvas design system: tokens, type, icons,
-          component states, the contract 0.1.0 overview and a sample board, plus a small live
-          connection demo with a preview-only toolbar and a zone. This page is not the product —
-          there is no engine, no data and no server; the demo at the top is illustrative only.
+          A static design preview of the Project air canvas design system: tokens, type,
+          motion, layers, icons, component states, the canvas chrome of the engine, the
+          contract 0.3.0 overview and a sample board, plus a live demo with notes, a zone,
+          a checklist and a table card. This page is not the product — it runs no engine,
+          no data and no server; the demo at the top is illustrative only.
         </p>
         <p class="masthead__version" data-preview-meta>
           <span data-preview-version data-i18n="masthead.version">Version 0.0.1</span>
           <span data-preview-status data-i18n="masthead.unreleased">unreleased</span>
-          <span data-preview-last-change data-i18n="masthead.lastChange">Last change: P0-34 — Live demo: move a zone with its members</span>
-          <span data-preview-last-change-time data-i18n="masthead.lastChangeTime">2026-10-28 20:06 (Europe/Zurich)</span>
+          <span data-preview-last-change data-i18n="masthead.lastChange">Last change: P0-35 — Design system page: contract 0.3.0, missing tokens and engine chrome</span>
+          <span data-preview-last-change-time data-i18n="masthead.lastChangeTime">2026-10-28 20:14 (Europe/Zurich)</span>
         </p>
         <div class="masthead__meta">
           <span data-i18n-html="masthead.tokensPackagesUiKitTokens">Tokens: <code>packages/ui-kit/tokens.css</code></span>
           <span data-i18n-html="masthead.iconsPackagesUiKitIcons">Icons: <code>packages/ui-kit/icons/</code></span>
           <span data-i18n-html="masthead.demoPreviewJs">Demo: <code>preview.js</code></span>
-          <span data-i18n="masthead.tasks">Tasks: P0-19, P0-20, P0-21, P0-22, P0-23, P0-24, P0-25, P0-26, P0-27, P0-28, P0-29, P0-30, P0-31, P0-32, P0-33, P0-34, P1-07</span>
+          <span data-i18n="masthead.tasks">Tasks: P0-19, P0-20, P0-21, P0-22, P0-23, P0-24, P0-25, P0-26, P0-27, P0-28, P0-29, P0-30, P0-31, P0-32, P0-33, P0-34, P0-35, P1-07</span>
           <div
             class="preview-locale"
             role="group"
@@ -350,26 +351,26 @@
       <section
         class="section contract"
         aria-labelledby="contract"
-        data-contract-version="0.1.0"
-        data-contract-schema-files="16"
-        data-contract-operation-types="19"
+        data-contract-version="0.3.0"
+        data-contract-schema-files="17"
+        data-contract-operation-types="20"
         data-contract-sync-message-types="6+6"
         data-contract-error-codes="7"
-        data-contract-parity-fixtures="77"
-        data-contract-parity-valid="32"
-        data-contract-parity-invalid="45"
+        data-contract-parity-fixtures="86"
+        data-contract-parity-valid="37"
+        data-contract-parity-invalid="49"
       >
         <div class="section__head">
           <span class="eyebrow" data-i18n="contract.eyebrow">02 — Contract</span>
-          <h2 id="contract" data-i18n="contract.contract010The">Contract 0.1.0 — the shared language</h2>
+          <h2 id="contract" data-i18n="contract.contract010The">Contract 0.3.0 — the shared language</h2>
           <p class="section__intro" data-i18n-html="contract.everythingTheEngineTheBackend">
             Everything the engine, the backend and the web exchange is versioned JSON Schema in
             <code>packages/contracts</code>: board content, its operations with exactly one inverse
             each, the WebSocket sync protocol and the REST API resources and errors, with valid and
-            invalid fixtures and generated TypeScript and C++. Version 0.1.0 is logical in this
-            stage: the <code>contracts@0.1.0</code> tag is created by the owner or CI in the remote
+            invalid fixtures and generated TypeScript and C++. Version 0.3.0 is logical in this
+            stage: the <code>contracts@0.3.0</code> tag is created by the owner or CI in the remote
             phase (ADR-0002, ADR-0003). The <code>$id</code> base
-            <code>https://project-air.dev/contracts/0.1.0/</code> is a placeholder until the domain
+            <code>https://project-air.dev/contracts/0.3.0/</code> is a placeholder until the domain
             is decided (Q1).
           </p>
         </div>
@@ -377,17 +378,17 @@
         <dl class="contract-facts">
           <div class="contract-fact">
             <dt class="contract-label" data-i18n="contract.version">Version</dt>
-            <dd class="contract-fact__value">0.1.0</dd>
+            <dd class="contract-fact__value">0.3.0</dd>
             <dd class="contract-fact__note" data-i18n="contract.logicalTheTagWaitsFor">logical; the tag waits for the remote phase</dd>
           </div>
           <div class="contract-fact">
             <dt class="contract-label" data-i18n="contract.schemaFiles">Schema files</dt>
-            <dd class="contract-fact__value">16</dd>
-            <dd class="contract-fact__note" data-i18n="contract.text10BoardContent1Sync">10 board content, 1 sync, 5 REST API</dd>
+            <dd class="contract-fact__value">17</dd>
+            <dd class="contract-fact__note" data-i18n="contract.text10BoardContent1Sync">11 board content, 1 sync, 5 REST API</dd>
           </div>
           <div class="contract-fact">
             <dt class="contract-label" data-i18n="contract.operationTypes">Operation types</dt>
-            <dd class="contract-fact__value">19</dd>
+            <dd class="contract-fact__value">20</dd>
             <dd class="contract-fact__note" data-i18n="contract.oneGestureOneInverseAD">one gesture, one inverse (AD-1)</dd>
           </div>
           <div class="contract-fact">
@@ -402,8 +403,8 @@
           </div>
           <div class="contract-fact">
             <dt class="contract-label" data-i18n="contract.parityFixtures">Parity fixtures</dt>
-            <dd class="contract-fact__value">77</dd>
-            <dd class="contract-fact__note" data-i18n="contract.text32Valid45Invalid">32 valid, 45 invalid</dd>
+            <dd class="contract-fact__value">86</dd>
+            <dd class="contract-fact__note" data-i18n="contract.text32Valid45Invalid">37 valid, 49 invalid</dd>
           </div>
         </dl>
 
@@ -436,6 +437,15 @@
                 </span>
               </li>
               <li class="contract-family">
+                <span class="contract-family__name" data-i18n="contract.containmentRule">Containment rule</span>
+                <code class="contract-family__path">fixtures/containment/</code>
+                <span class="contract-family__note" data-i18n-html="contract.containmentNote">
+                  Since 0.2.0 a card or block may name a zone of the same board as its parent
+                  (nullable <code>zoneId</code>, no nested zones); the fixtures and
+                  <code>test/containment.test.mjs</code> hold the rule, the platform database enforces it.
+                </span>
+              </li>
+              <li class="contract-family">
                 <span class="contract-family__name" data-i18n="contract.gateSpecimens">Gate specimens</span>
                 <code class="contract-family__path">fixtures-gate/</code>
                 <span class="contract-family__note" data-i18n-html="contract.twoDirectPolierSpecimensCopy">
@@ -453,7 +463,7 @@
               AD-1: every change to board content is one operation with exactly one inverse, and
               <code>group</code> is ordered and never nested.
             </p>
-            <ul class="contract-chips" aria-label="Operation types of contract 0.1.0" data-i18n-attr="aria-label:contract.operationTypesOfContract0">
+            <ul class="contract-chips" aria-label="Operation types of contract 0.3.0" data-i18n-attr="aria-label:contract.operationTypesOfContract0">
               <li class="contract-chip">createNote</li>
               <li class="contract-chip">updateNote</li>
               <li class="contract-chip">deleteNote</li>
@@ -473,7 +483,12 @@
               <li class="contract-chip">createEdge</li>
               <li class="contract-chip">deleteEdge</li>
               <li class="contract-chip">group</li>
+              <li class="contract-chip contract-chip--new">reorder</li>
             </ul>
+            <p class="contract-block__note" data-i18n-html="contract.reorderNote">
+              New in 0.2.0: <code>reorder</code> moves one card, block or zone to a new fractional
+              <code>z</code>; its inverse carries the previous key (L13, the front of a layer).
+            </p>
           </div>
 
           <div class="contract-block">
@@ -502,7 +517,13 @@
                 </ul>
               </div>
             </div>
-            <p class="contract-block__note" data-i18n-html="contract.aDurableAckCoversEvery">
+            <p class="contract-block__note" data-i18n-html="contract.syncRules030">
+                Since 0.3.0 the contract version is negotiated once per connection
+                (<code>hello</code> first, <code>welcome</code> answers), a fresh board starts at
+                <code>serverSeq</code> 1 with an empty catch-up from 0, and <code>snapshotRef</code>
+                is <code>&lt;boardId&gt;:&lt;serverSeq&gt;</code>.
+              </p>
+              <p class="contract-block__note" data-i18n-html="contract.aDurableAckCoversEvery">
               A durable <code>ack</code> covers every operation id of its batch (AD-2); presence is
               ephemeral and carries no operations.
             </p>
@@ -547,6 +568,23 @@
             </ul>
           </div>
 
+          <div class="contract-block">
+            <h3 class="contract-block__title" data-i18n="contract.versionHistory">Version history</h3>
+            <ol class="contract-versions">
+              <li class="contract-version">
+                <code class="contract-version__number">0.1.0</code>
+                <span class="contract-version__note" data-i18n="contract.version010">Initial contract: board content, 19 operations with inverses, sync protocol and REST API envelopes.</span>
+              </li>
+              <li class="contract-version">
+                <code class="contract-version__number">0.2.0</code>
+                <span class="contract-version__note" data-i18n="contract.version020">Zone parent reference with containment fixtures (no nested zones) and the reorder operation; additive only.</span>
+              </li>
+              <li class="contract-version">
+                <code class="contract-version__number">0.3.0</code>
+                <span class="contract-version__note" data-i18n="contract.version030">Pre-realtime sync rules: version negotiated once per connection, fresh-board sequence numbers and the snapshot reference; content unchanged.</span>
+              </li>
+            </ol>
+          </div>
           <div class="contract-block contract-block--proof">
             <h3 class="contract-block__title" data-i18n="contract.fixtureProofAndCodegen">Fixture proof and codegen</h3>
             <p class="contract-block__note" data-i18n-html="contract.everyFixtureInTheParity">
@@ -823,9 +861,151 @@
         </div>
       </section>
 
+      <section class="section" aria-labelledby="motion">
+        <div class="section__head">
+          <span class="eyebrow" data-i18n="motion.eyebrow">06 — Motion, interaction and layers</span>
+          <h2 id="motion" data-i18n="motion.title">Motion, interaction and layers</h2>
+          <p class="section__intro" data-i18n="motion.intro">Durations, thresholds and the stacking order the canvas and its chrome share. Things move with transform and opacity only, never with springs; under reduced motion every transition is 0 ms (design law §7). Point at a duration to play it.</p>
+        </div>
+        <div class="detail-grid detail-grid--pair">
+          <div class="detail-card">
+            <h3 data-i18n="motion.durations">Durations</h3>
+            <ul class="token-list">
+              <li class="token-row">
+                <span class="motion-sample motion-sample--hover" aria-hidden="true"></span><code class="token-row__name">--motion-hover</code>
+                <span class="token-row__value">120 ms</span>
+                <span class="token-row__note" data-i18n="motion.hover">hover and colour, ease</span>
+              </li>
+              <li class="token-row">
+                <span class="motion-sample motion-sample--fade" aria-hidden="true"></span><code class="token-row__name">--motion-fade</code>
+                <span class="token-row__value">150 ms</span>
+                <span class="token-row__note" data-i18n="motion.fade">show and hide: tooltip, menu</span>
+              </li>
+              <li class="token-row">
+                <span class="motion-sample motion-sample--panel" aria-hidden="true"></span><code class="token-row__name">--motion-panel</code>
+                <span class="token-row__value">180 ms</span>
+                <span class="token-row__note" data-i18n="motion.panel">panels, ease-out; transform and opacity only</span>
+              </li>
+              <li class="token-row">
+                <span class="motion-sample motion-sample--tooltip" aria-hidden="true"></span><code class="token-row__name">--motion-tooltip</code>
+                <span class="token-row__value">300 ms</span>
+                <span class="token-row__note" data-i18n="motion.tooltip">tooltip delay; instant on keyboard focus</span>
+              </li>
+              <li class="token-row">
+                <span class="motion-sample motion-sample--saved" aria-hidden="true"></span><code class="token-row__name">--motion-saved</code>
+                <span class="token-row__value">2000 ms</span>
+                <span class="token-row__note" data-i18n="motion.saved">how long “Saved” stays</span>
+              </li>
+            </ul>
+          </div>
+          <div class="detail-card">
+            <h3 data-i18n="motion.interaction">Interaction</h3>
+            <ul class="token-list">
+              <li class="token-row">
+                <code class="token-row__name">--drag-threshold</code>
+                <span class="token-row__value">4 px</span>
+                <span class="token-row__note" data-i18n="interaction.drag">a press that moves less is a click</span>
+              </li>
+              <li class="token-row">
+                <code class="token-row__name">--snap-tolerance</code>
+                <span class="token-row__value">6 px</span>
+                <span class="token-row__note" data-i18n="interaction.snap">screen distance to a snap line (L07)</span>
+              </li>
+              <li class="token-row">
+                <code class="token-row__name">--click-target</code>
+                <span class="token-row__value">32 px</span>
+                <span class="token-row__note" data-i18n="interaction.target">click target with a mouse</span>
+              </li>
+              <li class="token-row">
+                <code class="token-row__name">--click-target-coarse</code>
+                <span class="token-row__value">44 px</span>
+                <span class="token-row__note" data-i18n="interaction.targetCoarse">touch target (pointer: coarse)</span>
+              </li>
+              <li class="token-row">
+                <code class="token-row__name">--header-height</code>
+                <span class="token-row__value">40 px</span>
+                <span class="token-row__note" data-i18n="interaction.header">zone and block header (L02)</span>
+              </li>
+              <li class="token-row">
+                <code class="token-row__name">--outline-width / -offset</code>
+                <span class="token-row__value">2 px / 2 px</span>
+                <span class="token-row__note" data-i18n="interaction.focus">keyboard focus ring</span>
+              </li>
+            </ul>
+            <span class="focus-sample" data-i18n="motion.focusSample">Focus</span>
+          </div>
+          <div class="detail-card detail-card--wide">
+            <h3 data-i18n="motion.layers">Layers, bottom to top</h3>
+            <ol class="layer-list">
+              <li class="layer-row">
+                <span class="layer-row__order">1</span>
+                <span class="layer-row__name" data-i18n="layers.background">Canvas background (dot grid)</span>
+                <code class="layer-row__token">--layer-canvas-background</code>
+              </li>
+              <li class="layer-row">
+                <span class="layer-row__order">2</span>
+                <span class="layer-row__name" data-i18n="layers.zones">Zones</span>
+                <code class="layer-row__token">--layer-zones</code>
+              </li>
+              <li class="layer-row">
+                <span class="layer-row__order">3</span>
+                <span class="layer-row__name" data-i18n="layers.edges">Edges (connections)</span>
+                <code class="layer-row__token">--layer-edges</code>
+              </li>
+              <li class="layer-row">
+                <span class="layer-row__order">4</span>
+                <span class="layer-row__name" data-i18n="layers.blocks">Blocks: checklist, palette, columns, timeline, table</span>
+                <code class="layer-row__token">--layer-blocks</code>
+              </li>
+              <li class="layer-row">
+                <span class="layer-row__order">5</span>
+                <span class="layer-row__name" data-i18n="layers.cards">Note cards</span>
+                <code class="layer-row__token">--layer-note-cards</code>
+              </li>
+              <li class="layer-row">
+                <span class="layer-row__order">6</span>
+                <span class="layer-row__name" data-i18n="layers.dragged">Just dragged or selected — top of its own layer</span>
+                <code class="layer-row__token">--layer-dragged-or-selected</code>
+              </li>
+              <li class="layer-row">
+                <span class="layer-row__order">7</span>
+                <span class="layer-row__name" data-i18n="layers.guides">Snap guides, selection frame</span>
+                <code class="layer-row__token">--layer-snap-guides</code>
+              </li>
+              <li class="layer-row">
+                <span class="layer-row__order">7a</span>
+                <span class="layer-row__name" data-i18n="layers.cursors">Remote cursors (z-index 7, drawn after the guides)</span>
+                <code class="layer-row__token">--layer-remote-cursors</code>
+              </li>
+              <li class="layer-row">
+                <span class="layer-row__order">8</span>
+                <span class="layer-row__name" data-i18n="layers.chrome">Canvas chrome: toolbar, zoom, count bar, hints</span>
+                <code class="layer-row__token">--layer-canvas-chrome</code>
+              </li>
+              <li class="layer-row">
+                <span class="layer-row__order">9</span>
+                <span class="layer-row__name" data-i18n="layers.panel">Side panel</span>
+                <code class="layer-row__token">--layer-side-panel</code>
+              </li>
+              <li class="layer-row">
+                <span class="layer-row__order">10</span>
+                <span class="layer-row__name" data-i18n="layers.menu">Context menu and tooltip</span>
+                <code class="layer-row__token">--layer-context-menu</code>
+              </li>
+              <li class="layer-row">
+                <span class="layer-row__order">11</span>
+                <span class="layer-row__name" data-i18n="layers.dialogs">Dialogs and toasts</span>
+                <code class="layer-row__token">--layer-dialogs</code>
+              </li>
+            </ol>
+            <p class="token-caption" data-i18n="motion.layersNote">From packages/ui-kit/layers.ts (design law §8); nothing above 10 without an entry there.</p>
+          </div>
+        </div>
+      </section>
+
       <section class="section" aria-labelledby="icons">
         <div class="section__head">
-          <span class="eyebrow" data-i18n="icons.eyebrow">06 — Icons</span>
+          <span class="eyebrow" data-i18n="icons.eyebrow">07 — Icons</span>
           <h2 id="icons" data-i18n="icons.toolbarIcons">Toolbar icons</h2>
           <p class="section__intro" data-i18n-html="icons.theTenIconsShipAs">
             The ten icons ship as SVG files in <code>packages/ui-kit/icons/</code>, drawn on a 24
@@ -950,7 +1130,7 @@
 
       <section class="section" aria-labelledby="states">
         <div class="section__head">
-          <span class="eyebrow" data-i18n="states.eyebrow">07 — States</span>
+          <span class="eyebrow" data-i18n="states.eyebrow">08 — States</span>
           <h2 id="states" data-i18n="states.componentStates">Component states</h2>
           <p class="section__intro" data-i18n="states.everyInteractiveElementHasRest">
             Every interactive element has rest, hover, pressed, keyboard focus and disabled; cards
@@ -1037,7 +1217,7 @@
 
       <section class="section" aria-labelledby="components">
         <div class="section__head">
-          <span class="eyebrow" data-i18n="components.eyebrow">08 — Components</span>
+          <span class="eyebrow" data-i18n="components.eyebrow">09 — Components</span>
           <h2 id="components" data-i18n="components.canvasComponents">Canvas components</h2>
           <p class="section__intro" data-i18n="components.oneExampleEachOfA">
             One example each of a note card, a block, a zone, a connection, a side-panel header and
@@ -1184,9 +1364,117 @@
         </div>
       </section>
 
+      <section class="section" aria-labelledby="chrome">
+        <div class="section__head">
+          <span class="eyebrow" data-i18n="chrome.eyebrow">10 — Canvas chrome</span>
+          <h2 id="chrome" data-i18n="chrome.title">Canvas chrome from the engine</h2>
+          <p class="section__intro" data-i18n="chrome.intro">What the engine draws around the content since engine core (stage 5): quiet and thin, in the accent only where it marks a selection, a snap or a drop. The specimens are static and built from the same tokens.</p>
+        </div>
+        <div class="chrome-grid">
+          <figure class="chrome-specimen">
+            <div class="chrome-stage">
+              <div class="chrome-zone">
+                <div class="chrome-zone__header">
+                  <span class="chrome-zone__title" data-i18n="chrome.zoneName">Summer at Walensee</span>
+                  <button class="chrome-delete" type="button" aria-label="Delete zone" data-i18n-attr="aria-label:chrome.deleteZone"><svg class="chrome-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+                </div>
+              </div>
+            </div>
+            <figcaption class="chrome-specimen__caption">
+              <h3 data-i18n="chrome.headerTitle">Zone and block header</h3>
+              <p data-i18n="chrome.headerNote">40 px band in faint with a hairline rule; the name is one line with an ellipsis; the delete button stays invisible until hover, focus or selection (L02).</p>
+              <code class="token-caption">--header-height · --faint · --border · --button-card</code>
+            </figcaption>
+          </figure>
+          <figure class="chrome-specimen">
+            <div class="chrome-stage">
+              <div class="chrome-count">
+                <span data-i18n="chrome.selectedCount">2 selected</span>
+                <button class="chrome-delete chrome-delete--visible" type="button" aria-label="Delete selection" data-i18n-attr="aria-label:chrome.deleteSelection"><svg class="chrome-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+              </div>
+              <div class="chrome-card chrome-card--selected chrome-card--one"><span data-i18n="chrome.cardTitle">Moodboard</span>
+                <span class="chrome-handle chrome-handle--nw"></span><span class="chrome-handle chrome-handle--n"></span><span class="chrome-handle chrome-handle--ne"></span><span class="chrome-handle chrome-handle--e"></span><span class="chrome-handle chrome-handle--se"></span><span class="chrome-handle chrome-handle--s"></span><span class="chrome-handle chrome-handle--sw"></span><span class="chrome-handle chrome-handle--w"></span>
+              </div>
+              <div class="chrome-card chrome-card--selected chrome-card--two"><span data-i18n="chrome.cardTitle2">Packing list</span></div>
+            </div>
+            <figcaption class="chrome-specimen__caption">
+              <h3 data-i18n="chrome.selectionTitle">Selection, handles and count bar</h3>
+              <p data-i18n="chrome.selectionNote">A 1 px accent frame per selected object, eight 8 px handles on a single selection, and one count bar with a delete button above the group (L10, L14).</p>
+              <code class="token-caption">--accent · --surface · --button-card</code>
+            </figcaption>
+          </figure>
+          <figure class="chrome-specimen">
+            <div class="chrome-stage">
+              <div class="chrome-card chrome-card--one"><span data-i18n="chrome.cardTitle">Moodboard</span></div>
+              <div class="chrome-card chrome-card--two"><span data-i18n="chrome.cardTitle2">Packing list</span></div>
+              <span class="chrome-band" aria-hidden="true"></span>
+            </div>
+            <figcaption class="chrome-specimen__caption">
+              <h3 data-i18n="chrome.bandTitle">Rubber band</h3>
+              <p data-i18n="chrome.bandNote">Shift-drag on the empty canvas: a soft accent fill with a 1 px accent border; on release every touched object is selected (L10).</p>
+              <code class="token-caption">--accent-soft · --accent</code>
+            </figcaption>
+          </figure>
+          <figure class="chrome-specimen">
+            <div class="chrome-stage">
+              <div class="chrome-card chrome-card--one"><span data-i18n="chrome.cardTitle">Moodboard</span></div>
+              <div class="chrome-card chrome-card--snapped"><span data-i18n="chrome.cardTitle2">Packing list</span></div>
+              <span class="chrome-guide chrome-guide--vertical" aria-hidden="true"></span>
+              <span class="chrome-guide chrome-guide--horizontal" aria-hidden="true"></span>
+            </div>
+            <figcaption class="chrome-specimen__caption">
+              <h3 data-i18n="chrome.snapTitle">Snap guides</h3>
+              <p data-i18n="chrome.snapNote">Edges and centres within 6 screen px snap; at most three 1 px accent guides, 16 px past both objects; Shift moves freely (L07).</p>
+              <code class="token-caption">--snap-tolerance · --accent · --space-16</code>
+            </figcaption>
+          </figure>
+          <figure class="chrome-specimen">
+            <div class="chrome-stage">
+              <div class="chrome-zone chrome-zone--highlight">
+                <div class="chrome-zone__header">
+                  <span class="chrome-zone__title" data-i18n="chrome.zoneName">Summer at Walensee</span>
+                </div>
+                <div class="chrome-card chrome-card--member"><span data-i18n="chrome.cardTitle">Moodboard</span></div>
+              </div>
+            </div>
+            <figcaption class="chrome-specimen__caption">
+              <h3 data-i18n="chrome.highlightTitle">Zone drop highlight</h3>
+              <p data-i18n="chrome.highlightNote">A drop with the centre inside a zone makes the object a member; the zone is outlined in accent-line for one second (L08).</p>
+              <code class="token-caption">--accent-line · --outline-width</code>
+            </figcaption>
+          </figure>
+          <figure class="chrome-specimen">
+            <div class="chrome-stage">
+              <span class="chrome-hint" data-i18n="chrome.undoHint">Undo: Move card</span>
+            </div>
+            <figcaption class="chrome-specimen__caption">
+              <h3 data-i18n="chrome.undoTitle">Undo hint</h3>
+              <p data-i18n="chrome.undoNote">After an undo the bottom-centre slot shows what was undone for 3 s; no toast queue, no layout shift (L11, design law §9).</p>
+              <code class="token-caption">--surface · --border · --radius-md · --shadow</code>
+            </figcaption>
+          </figure>
+          <figure class="chrome-specimen">
+            <div class="chrome-stage">
+              <ul class="chrome-menu" aria-label="Context menu specimen" data-i18n-attr="aria-label:chrome.menuLabel">
+                <li class="chrome-menu__row"><span data-i18n="chrome.menuOpen">Open</span></li>
+                <li class="chrome-menu__row"><span data-i18n="chrome.menuDuplicate">Duplicate</span><kbd class="chrome-menu__key">⌘D</kbd></li>
+                <li class="chrome-menu__row"><span data-i18n="chrome.menuForward">Bring forward</span></li>
+                <li class="chrome-menu__row"><span data-i18n="chrome.menuBackward">Send backward</span></li>
+                <li class="chrome-menu__row"><span data-i18n="chrome.menuDelete">Delete</span><kbd class="chrome-menu__key">Del</kbd></li>
+              </ul>
+            </div>
+            <figcaption class="chrome-specimen__caption">
+              <h3 data-i18n="chrome.menuTitle">Context menu</h3>
+              <p data-i18n="chrome.menuNote">Right-click, Shift+F10 or the menu key: 200 px wide, 32 px rows, shortcuts right-aligned in muted; arrow keys, Enter and Esc (L12).</p>
+              <code class="token-caption">--surface · --click-target · --muted · --layer-context-menu</code>
+            </figcaption>
+          </figure>
+        </div>
+      </section>
+
       <section class="section" aria-labelledby="board">
         <div class="section__head">
-          <span class="eyebrow" data-i18n="board.eyebrow">09 — Sample board</span>
+          <span class="eyebrow" data-i18n="board.eyebrow">11 — Sample board</span>
           <h2 id="board" data-i18n="board.sampleBoardComposition">Sample board composition</h2>
           <div class="board-label">
             <span class="badge" data-i18n="board.staticDesignPreview">static design preview</span>

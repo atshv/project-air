@@ -1,0 +1,16 @@
+# P0-35 — design system page refresh: evidence
+
+- Date: 2026-10-28 (Europe/Zurich) · worktree `../Project air-P0-35` (branch `task/P0-35`, slot 2, web port 4200); assets `?v=P0-35`.
+- Audit sources: `board.json` `contracts[]` (0.3.0), `docs/contracts.md` (17 schema files, 20 operation types, 86 parity fixtures 37/49, sync 6 + 6, 7 error codes), `packages/ui-kit/tokens.css` (77 tokens), `packages/ui-kit/layers.ts` (12 layers), `packages/ui-kit/icons/` (10 icons, all shown before), `docs/engine.md` (stage-5 chrome: L02 headers, L07 guides, L10 selection/band/count bar, L14 handles, L08 highlight, L11 undo hint, L12 context menu).
+- Token coverage check (script): every one of the 77 tokens appears on the page, by full name or in an abbreviated caption (`--radius-sm / -md / …`); before the task 21 were missing (5 motion, 12 layers, drag threshold, snap tolerance, coarse click target, outline offset).
+- Method: out-of-repo CDP helper, Chrome for Testing 156 headless; `Runtime.evaluate` reads the page and clicks the DE/EN switch.
+
+```
+desktop en: {"version":"0.3.0","values":["0.3.0","17","20","6 + 6","7","86"],"ops":32,"newChip":"reorder","versions":["0.1.0","0.2.0","0.3.0"],"eyebrows":"01 02 03 04 05 06 07 08 09 10 11","layers":12,"chrome":7,"overflow":0}
+desktop de: h2 chrome="Rahmenelemente aus der Engine" menu="Öffnen / Duplizieren / Nach vorn / Nach hinten / Löschen" contract="Vertrag 0.3.0 — die gemeinsame Sprache"
+mobile: {"version":"0.3.0","values":["0.3.0","17","20","6 + 6","7","86"],"ops":32,"newChip":"reorder","versions":["0.1.0","0.2.0","0.3.0"],"eyebrows":"01 02 03 04 05 06 07 08 09 10 11","layers":12,"chrome":7,"overflow":0}
+```
+
+Reading: the contract facts read 0.3.0 / 17 / 20 / 6 + 6 / 7 / 86 with `reorder` marked new and the version history 0.1.0–0.3.0 (`ops` counts every chip on the page: 20 operation types + 12 sync messages); sections are numbered 01–11; section 06 lists 12 layers; section 10 shows 7 chrome specimens; German strings are complete; no horizontal overflow at 1440 and 390.
+
+Screenshots: `P0-35-contract.png`, `P0-35-motion-layers.png`, `P0-35-chrome.png`, `P0-35-chrome-de.png` (1440×900), `P0-35-chrome-mobile.png` (390×844).

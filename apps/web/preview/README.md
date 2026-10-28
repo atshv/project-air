@@ -1,4 +1,4 @@
-# Design preview (P0-19, P0-20, P0-21, P0-22, P0-23, P0-24, P0-25, P0-26, P0-27, P0-28, P0-29, P0-30, P0-31, P0-32, P0-33, P0-34, P1-07)
+# Design preview (P0-19, P0-20, P0-21, P0-22, P0-23, P0-24, P0-25, P0-26, P0-27, P0-28, P0-29, P0-30, P0-31, P0-32, P0-33, P0-34, P0-35, P1-07)
 
 A design preview of the Project air design system. It is **not the product**: there is no engine,
 no data, no server and no build step. It exists so the owner can see the look and feel between
@@ -15,9 +15,9 @@ its two values come from:
   `0.0.1 – unreleased`; the status word comes from the same heading. `CHANGELOG.md` is the display
   source and currently agrees with the root `package.json` version `0.0.1`.
 - **Last change** — the newest preview change entry, currently
-  `.changes/P0-34-zone-move.md`; the line shows the task id and that task's title from
-  `board.json` / the task brief: `P0-34 — Live demo: move a zone with its members`.
-  The line follows the `P0-*` preview tasks (P0-19 … P0-34, P1-07); the engine tasks
+  `.changes/P0-35-design-system-refresh.md`; the line shows the task id and that task's title from
+  `board.json` / the task brief: `P0-35 — Design system page: contract 0.3.0, missing tokens and
+  engine chrome`. The line follows the `P0-*` preview tasks (P0-19 … P0-35, P1-07); the engine tasks
   (`P4-*`) and the other stages run in parallel and do not move it, so "highest numeric id" alone is
   not the rule. If several files exist for the same preview task, the most recent one is used;
   `.changes/README.md` and `.changes/TEMPLATE.md` do not count as entries.
@@ -271,6 +271,29 @@ L02 asks for zones.
   live only in this page's memory, like everything else in the demo.
 - **Without script** — the title is the first row of the static card grid.
 
+## Design system refresh (P0-35)
+
+An audit on 2026-10-28 compared the page with the repository and updated it:
+
+- **Contract overview → 0.3.0** (was 0.1.0): 17 schema files (11 board content incl. the `reorder`
+  payload, 1 sync, 5 REST API), 20 operation types (`reorder` marked new), sync 6 + 6 and 7 error
+  codes unchanged, 86 parity fixtures (37 valid, 49 invalid), a "Containment rule" family
+  (`fixtures/containment/`, 0.2.0), the 0.3.0 sync rules (version negotiated once per connection,
+  fresh-board `serverSeq`, `snapshotRef`) and a version history 0.1.0 / 0.2.0 / 0.3.0. Sources:
+  `board.json` `contracts[]`, `docs/contracts.md`.
+- **06 — Motion, interaction and layers** (new): every token that was missing — the five motion
+  durations (point at a row to play it), drag threshold, snap tolerance, mouse and touch targets,
+  header height, focus ring width/offset with a focus specimen, and the twelve layers of
+  `packages/ui-kit/layers.ts` including 7a. Now every token of `tokens.css` appears on the page.
+- **10 — Canvas chrome** (new): static token-only specimens of the stage-5 engine chrome — zone and
+  block header (40 px band in `--faint`, rule in `--border`, quiet delete), selection frame with
+  eight 8 px handles and the count bar, rubber band, snap guides, the one-second zone highlight in
+  `--accent-line`, the undo hint in the bottom-centre slot and the 200 px context menu. The delete
+  icon is the inline stroke trash the engine playground uses (`packages/ui-kit/icons` has no delete
+  icon yet).
+- **Removed:** nothing left the system; only the 0.1.0 counts and texts went away. Sections 06–09
+  moved to 07–09/11.
+
 ## Moving a zone (P0-34)
 
 A zone moves as a whole, the way ADR-0010 describes containers (the engine follows in P4-27/P4-29):
@@ -360,9 +383,9 @@ P0-26 markup with the old stylesheet and a broken-looking demo. The preview ther
 assets with a version query:
 
 ```html
-<link rel="stylesheet" href="../../../packages/ui-kit/tokens.css?v=P0-34" />
-<link rel="stylesheet" href="preview.css?v=P0-34" />
-<script src="preview.js?v=P0-34" defer></script>
+<link rel="stylesheet" href="../../../packages/ui-kit/tokens.css?v=P0-35" />
+<link rel="stylesheet" href="preview.css?v=P0-35" />
+<script src="preview.js?v=P0-35" defer></script>
 ```
 
 - **Bump rule:** every task that changes a file in `apps/web/preview/` — or the shared
@@ -371,7 +394,7 @@ assets with a version query:
   never cached and gets the current files, which also covers a changed design system that would
   otherwise be served from the cached token stylesheet.
 - The locale files reuse the script's version automatically: `preview.js` reads the `v` query of its
-  own script URL and appends it to the locale request (`locales/de.json?v=P0-34`), so one bump
+  own script URL and appends it to the locale request (`locales/de.json?v=P0-35`), so one bump
   covers the translations as well.
 - The icon SVGs are referenced from `preview.css` and keep stable, unversioned URLs; they only
   change with a design-system task, and every such task bumps the preview version anyway.
@@ -428,7 +451,7 @@ Serve the **repository root**, not this folder, so the relative token and icon p
 the slot's `web` port from `.polier-slot` (never hard-code it), then:
 
 ```sh
-cd "/Users/rasulatashev/Desktop/KI Projekte/Project air-P0-34"
+cd "/Users/rasulatashev/Desktop/KI Projekte/Project air-P0-35"
 PORT=$(python3 -c "import json; print(json.load(open('.polier-slot'))['ports']['web'])")
 python3 -m http.server "$PORT" --bind 127.0.0.1
 ```
@@ -507,11 +530,13 @@ line and tasks in English and German),
 `P0-33-interaction.png` (1440×900, an item ticked, a cell selected, the card dragged),
 `P0-33-mobile.png` (390×844, the stacked compact layout),
 `P0-34-moving.png` / `P0-34-moved.png` (1440×900, a zone mid-move and after the release),
-`P0-34-mobile.png` (390×844, a zone moved upwards) and the
+`P0-34-mobile.png` (390×844, a zone moved upwards),
+`P0-35-contract.png`, `P0-35-motion-layers.png`, `P0-35-chrome.png`, `P0-35-chrome-de.png`
+(1440×900) and `P0-35-chrome-mobile.png` (390×844) and the
 `P0-19-preview.log` / `P0-20-preview.log` / `P0-21-preview.log` / `P0-22-preview.log` /
 `P0-23-preview.log` / `P0-24-preview.log` / `P0-25-preview.log` / `P0-26-preview.log` /
 `P0-27-preview.log` / `P0-28-preview.log` / `P0-29-preview.log` / `P0-30-preview.log` /
-`P0-31-preview.log` / `P0-32-preview.log` / `P0-33-preview.log` / `P0-34-preview.log` /
+`P0-31-preview.log` / `P0-32-preview.log` / `P0-33-preview.log` / `P0-34-preview.log` / `P0-35-preview.log` /
 `P1-07-preview.log` files with the
 exact serve, curl and screenshot commands. The page has no horizontal overflow at 1440×900, 390×844
 or the owner's 1426 × 583 viewport.
