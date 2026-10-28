@@ -760,6 +760,32 @@ previous `engine_create` sequence.
   `navigator.gpu` removed at the page boundary (→ WebGL2 with `webgpu-unavailable`); the record is
   under `reviews/evidence/P4-12-backend-selection-*.json`.
 
+## Resize gesture (L14, P4-17)
+
+A selected object shows eight **8 screen px** `tokens::accent` handles (four corners + four edge
+midpoints) on the existing `tokens::accent` 1 px frame. They are drawn by the chrome pass only
+(presentation state, never command-buffer instances, so object counts and reference images are
+unchanged), follow the camera 1:1, never scale with the object and disappear when the object is not
+selected. The handle size equals its screen hit area (8 px, zoom-independent); the cursors are
+`nwse-resize` (NW/SE), `nesw-resize` (NE/SW), `ns-resize` (N/S) and `ew-resize` (E/W). A press
+inside a handle starts a resize candidate; a press elsewhere keeps the click/drag/selection
+behaviour.
+
+The drag computes the new size in world px against the **opposite edge/corner**, which stays
+anchored. Width/height snap to `tokens::canvas_grid` (16 world px) unless `Shift` is held; free
+resizing still clamps at the minima. The minima mirror the logic layer: card 176×80, checklist and
+palette 224×128, table 288×160, columns 368×192, timeline 320×160, zone 256×192 plus the zone
+member extent + `tokens::space_16` (the P4-27 `minimumZoneSize` rule). The preview goes through the
+bridge geometry update without a document write.
+
+Release commits **exactly one operation** through the P4-05 seam and its inverse: a `resizeCard`,
+`resizeBlock` or `resizeZone` operation for handles that keep the top-left (south/east/SE). Because
+the contract resize payload carries only width/height, a west/north handle that must keep the
+opposite edge anchored commits one `group` of that resize plus the anchoring move (with the
+reversed inverse). `Escape`, `pointercancel` or a lost capture restores the committed size and
+writes no operation and no history entry. The size is part of the document/snapshot, so it survives
+a reload round trip.
+
 ## Backend switch, two-backend rendering and image comparison (P4-13)
 
 The playground switches render backends with `?backend=webgl2|webgpu` through the P4-12 selection:

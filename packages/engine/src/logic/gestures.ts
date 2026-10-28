@@ -56,6 +56,12 @@ export interface ResizeGesture {
   readonly objectKind: BoardObjectKind;
   readonly objectId: string;
   readonly size: WorldSize;
+  /**
+   * P4-17: optional new top-left position. The contract resize payload only
+   * carries width/height, so a west/north handle that must keep the opposite
+   * edge anchored commits one `group` of the resize plus the anchoring move.
+   */
+  readonly position?: WorldPoint;
 }
 
 /** Draft of a new card placement; the builder fills board id and timestamps. */

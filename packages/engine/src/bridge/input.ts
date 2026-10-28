@@ -33,7 +33,15 @@
 export type InputTargetKind = "card" | "zone" | "block";
 
 /** Cursor values of L03/design rule §6. */
-export type InputCursor = "default" | "grab" | "grabbing" | "text";
+export type InputCursor =
+  | "default"
+  | "grab"
+  | "grabbing"
+  | "text"
+  | "ns-resize"
+  | "ew-resize"
+  | "nwse-resize"
+  | "nesw-resize";
 
 /** Screen (CSS) point relative to the canvas. */
 export interface InputScreenPoint {
@@ -163,6 +171,19 @@ export interface InputHost {
   onSelectionChange?(targets: readonly InputTarget[]): void;
   /** L10: the live rubber band in world px, or null when it disappears. */
   onBandChange?(band: InputWorldRect | null): void;
+  /**
+   * P4-17 (L14): project a world point to canvas-relative screen px (the inverse
+   * of `screenToWorld`), used for the handle hit area.
+   */
+  worldToScreen?(world: InputWorldPoint): InputScreenPoint;
+  /** P4-17: preview a resize through the bridge geometry update (no write). */
+  previewResize?(target: InputTarget, rect: InputWorldRect): void;
+  /** P4-17: commit exactly one resize gesture through the seam. */
+  commitResize?(target: InputTarget, rect: InputWorldRect): void;
+  /** P4-17: restore the committed geometry after a cancelled resize. */
+  revertResize?(target: InputTarget): void;
+  /** P4-17: the clamped minimum of one target (per type and, for a zone, members). */
+  resizeMinimum?(target: InputTarget): { readonly width: number; readonly height: number };
   /** A press below the threshold was released: a click, and no position write. */
   onTap(target: InputTarget | null, screen: InputScreenPoint): void;
   /** Hover presentation changed (grip, header band and cursor). */
@@ -216,6 +237,193 @@ export function isGrip(
   }
   return Number.isFinite(localWorldY) && Number.isFinite(headerHeightPx) &&
     localWorldY >= 0 && localWorldY <= headerHeightPx;
+}
+
+// P4-17 (L14): resize handles, anchor math, 16 px snap and the minima.
+// The handle hit area and the handle size are the same 8 screen px (documented
+// next to the other interaction constants); the grid is tokens::canvas_grid
+// (16 world px) and the per-type minima mirror the logic layer's resize seam.
+
+/** Handle size and hit area in screen px (L14 interaction value: 8 px). */
+export const RESIZE_HANDLE_PX = 8;
+/** Size snap in world px (tokens::canvas_grid). */
+export const RESIZE_GRID_PX = 16;
+/** Zone content inset in world px (tokens::space_16, P4-27 rule). */
+export const RESIZE_ZONE_INSET_PX = 16;
+
+/** The eight handles: four corners and four edge midpoints. */
+export type ResizeHandle = "nw" | "n" | "ne" | "e" | "se" | "s" | "sw" | "w";
+export const RESIZE_HANDLES: readonly ResizeHandle[] = ["nw", "n", "ne", "e", "se", "s", "sw", "w"];
+
+/** Per-type minimum sizes, mirroring the logic layer's resize minima. */
+export const RESIZE_MINIMA = {
+  card: { width: 176, height: 80 },
+  zone: { width: 256, height: 192 },
+  block: {
+    checklist: { width: 224, height: 128 },
+    palette: { width: 224, height: 128 },
+    columns: { width: 368, height: 192 },
+    timeline: { width: 320, height: 160 },
+    table: { width: 288, height: 160 },
+  },
+} as const;
+
+export type InputBlockType = "checklist" | "palette" | "columns" | "timeline" | "table";
+
+/** Minimum size of one resize target; a zone also keeps its member extent + 16 px. */
+export function resizeMinimumFor(
+  kind: "card" | "block" | "zone",
+  blockType: InputBlockType = "checklist",
+  memberRects: readonly InputWorldRect[] = [],
+): { readonly width: number; readonly height: number } {
+  const type = kind === "zone" ? RESIZE_MINIMA.zone : kind === "card" ? RESIZE_MINIMA.card : RESIZE_MINIMA.block[blockType];
+  if (kind !== "zone" || memberRects.length === 0) {
+    return { width: type.width, height: type.height };
+  }
+  let left = Number.POSITIVE_INFINITY;
+  let top = Number.POSITIVE_INFINITY;
+  let right = Number.NEGATIVE_INFINITY;
+  let bottom = Number.NEGATIVE_INFINITY;
+  for (const member of memberRects) {
+    left = Math.min(left, member.x);
+    top = Math.min(top, member.y);
+    right = Math.max(right, member.x + member.width);
+    bottom = Math.max(bottom, member.y + member.height);
+  }
+  return {
+    width: Math.max(type.width, right - left + RESIZE_ZONE_INSET_PX),
+    height: Math.max(type.height, bottom - top + RESIZE_ZONE_INSET_PX),
+  };
+}
+
+/** World positions of the eight handles of one rectangle. */
+export function resizeHandlePositions(
+  rect: InputWorldRect,
+): { readonly handle: ResizeHandle; readonly x: number; readonly y: number }[] {
+  const midX = rect.x + rect.width / 2;
+  const midY = rect.y + rect.height / 2;
+  const right = rect.x + rect.width;
+  const bottom = rect.y + rect.height;
+  return [
+    { handle: "nw", x: rect.x, y: rect.y },
+    { handle: "n", x: midX, y: rect.y },
+    { handle: "ne", x: right, y: rect.y },
+    { handle: "e", x: right, y: midY },
+    { handle: "se", x: right, y: bottom },
+    { handle: "s", x: midX, y: bottom },
+    { handle: "sw", x: rect.x, y: bottom },
+    { handle: "w", x: rect.x, y: midY },
+  ];
+}
+
+/**
+ * The handle under a screen point: nearest handle centre within the 8 screen px
+ * hit area (zoom-independent). Corners win ties because they are tested first.
+ */
+export function resizeHandleAt(
+  screen: InputScreenPoint,
+  rect: InputWorldRect,
+  worldToScreen: (world: InputWorldPoint) => InputScreenPoint,
+  hitPx = RESIZE_HANDLE_PX,
+): ResizeHandle | null {
+  let best: ResizeHandle | null = null;
+  let bestDistance = Number.POSITIVE_INFINITY;
+  for (const position of resizeHandlePositions(rect)) {
+    const projected = worldToScreen({ x: position.x, y: position.y });
+    const dx = Math.abs(screen.x - projected.x);
+    const dy = Math.abs(screen.y - projected.y);
+    if (dx <= hitPx && dy <= hitPx) {
+      const distance = Math.hypot(dx, dy);
+      if (distance < bestDistance) {
+        bestDistance = distance;
+        best = position.handle;
+      }
+    }
+  }
+  return best;
+}
+
+/** Cursor of a handle (`nwse` on the NW/SE diagonal, `nesw` on NE/SW). */
+export function resizeCursor(handle: ResizeHandle): InputCursor {
+  switch (handle) {
+    case "n":
+    case "s":
+      return "ns-resize";
+    case "e":
+    case "w":
+      return "ew-resize";
+    case "nw":
+    case "se":
+      return "nwse-resize";
+    case "ne":
+    case "sw":
+      return "nesw-resize";
+  }
+}
+
+/** Which rectangle edges the handle moves and which stay anchored. */
+export function resizeAnchor(handle: ResizeHandle): {
+  readonly horizontal: "left" | "right" | null;
+  readonly vertical: "top" | "bottom" | null;
+} {
+  return {
+    horizontal: handle.includes("w") ? "right" : handle.includes("e") ? "left" : null,
+    vertical: handle.includes("n") ? "bottom" : handle.includes("s") ? "top" : null,
+  };
+}
+
+function snapDimension(value: number, grid: number): number {
+  if (!Number.isFinite(value) || !(grid > 0)) {
+    return value;
+  }
+  return Math.round(value / grid) * grid;
+}
+
+/**
+ * New rectangle for a handle drag: the opposite edge/corner stays anchored; the
+ * resulting width/height snaps to the 16 px grid unless `free`, then clamps at
+ * the minimum (which also keeps the anchored edge fixed).
+ */
+export function resizeFromPointer(input: {
+  readonly handle: ResizeHandle;
+  readonly rect: InputWorldRect;
+  readonly pointer: InputWorldPoint;
+  readonly snap: boolean;
+  readonly minimum: { readonly width: number; readonly height: number };
+  readonly gridPx?: number;
+}): InputWorldRect {
+  const grid = input.gridPx ?? RESIZE_GRID_PX;
+  const right = input.rect.x + input.rect.width;
+  const bottom = input.rect.y + input.rect.height;
+  let left = input.rect.x;
+  let top = input.rect.y;
+  let width = input.rect.width;
+  let height = input.rect.height;
+  const movesWest = input.handle.includes("w");
+  const movesEast = input.handle.includes("e");
+  const movesNorth = input.handle.includes("n");
+  const movesSouth = input.handle.includes("s");
+  if (movesWest) {
+    width = right - input.pointer.x;
+    if (input.snap) width = snapDimension(width, grid);
+    width = Math.max(width, input.minimum.width);
+    left = right - width;
+  } else if (movesEast) {
+    width = input.pointer.x - left;
+    if (input.snap) width = snapDimension(width, grid);
+    width = Math.max(width, input.minimum.width);
+  }
+  if (movesNorth) {
+    height = bottom - input.pointer.y;
+    if (input.snap) height = snapDimension(height, grid);
+    height = Math.max(height, input.minimum.height);
+    top = bottom - height;
+  } else if (movesSouth) {
+    height = input.pointer.y - top;
+    if (input.snap) height = snapDimension(height, grid);
+    height = Math.max(height, input.minimum.height);
+  }
+  return { x: left, y: top, width, height };
 }
 
 /** Screen descriptor of the DOM target, used for the suppression policy. */
@@ -288,7 +496,7 @@ export function wheelZoomFactor(deltaY: number, deltaMode: number): number {
   return Math.exp(-normaliseWheelDelta(deltaY, deltaMode) * WHEEL_ZOOM_SENSITIVITY);
 }
 
-type Phase = "idle" | "pressed" | "dragging" | "panning" | "pinch" | "blocked" | "band";
+type Phase = "idle" | "pressed" | "dragging" | "resizing" | "panning" | "pinch" | "blocked" | "band";
 
 interface PinchState {
   readonly distance: number;
@@ -330,6 +538,12 @@ export class PointerInput {
   #group: InputTarget[] | null = null;
   #groupAnchor: InputTarget | null = null;
   #groupMembers: InputDragMember[] | null = null;
+  // P4-17 (L14) resize state: presentation-only preview of one selected object.
+  #resize: {
+    readonly target: InputTarget;
+    readonly handle: ResizeHandle;
+    last: InputWorldRect;
+  } | null = null;
 
   constructor(options: PointerInputOptions) {
     if (!Number.isFinite(options.thresholdPx) || options.thresholdPx < 0) {
@@ -371,6 +585,13 @@ export class PointerInput {
   keyDown(key: string): boolean {
     if (key !== "Escape") {
       return false;
+    }
+    if (this.#phase === "resizing" && this.#resize !== null) {
+      const state = this.#resize;
+      this.#resize = null;
+      this.#host.revertResize?.(state.target);
+      this.#finish();
+      return true;
     }
     if (this.#selection.length === 0 && this.#band === null) {
       return false;
@@ -462,6 +683,20 @@ export class PointerInput {
       }
       return;
     }
+    if (this.#phase === "resizing" && this.#resize !== null) {
+      const state = this.#resize;
+      const rect = state.last;
+      const changed =
+        rect.x !== state.target.world.x || rect.y !== state.target.world.y ||
+        rect.width !== state.target.world.width || rect.height !== state.target.world.height;
+      this.#resize = null;
+      this.#setCursor("default");
+      this.#finish();
+      if (changed) {
+        this.#host.commitResize?.(state.target, rect);
+      }
+      return;
+    }
     if (this.#phase === "dragging" && this.#target !== null && this.#grabOffset !== null) {
       // L10: a joint drag commits exactly one drag-group gesture; the selection
       // survives the release. A single drag keeps the P4-14 path.
@@ -512,6 +747,12 @@ export class PointerInput {
     if (this.#phase === "dragging") {
       this.#cancelDrag();
     }
+    if (this.#phase === "resizing" && this.#resize !== null) {
+      const state = this.#resize;
+      this.#resize = null;
+      this.#host.revertResize?.(state.target);
+      this.#setCursor("default");
+    }
     this.#clearBand();
     this.#finish();
   }
@@ -530,6 +771,24 @@ export class PointerInput {
   pointerHover(sample: PointerSample): void {
     if (this.#pointers.size > 0) {
       return;
+    }
+    // P4-17: over a handle of a selected object the cursor becomes the resize
+    // cursor (the handle chrome itself is drawn by the native chrome pass).
+    if (
+      this.#selection.length > 0 &&
+      sample.suppressed !== true &&
+      this.#host.worldToScreen !== undefined
+    ) {
+      const selected = this.#host.selectionTargets?.() ?? this.#selection;
+      for (const candidate of selected) {
+        const handle = resizeHandleAt(sample.screen, candidate.world, this.#host.worldToScreen);
+        if (handle !== null) {
+          const cursor = resizeCursor(handle);
+          this.#setCursor(cursor);
+          this.#host.onHover({ target: candidate, grip: false, header: false, cursor, screen: sample.screen });
+          return;
+        }
+      }
     }
     const suppressed = sample.suppressed === true;
     const target = this.#host.hitTest(sample.screen.x, sample.screen.y);
@@ -588,6 +847,29 @@ export class PointerInput {
       this.#phase = "blocked";
       return;
     }
+    // P4-17: a press inside a handle of a selected object starts the resize
+    // candidate before any drag/selection logic; the handle hit area is 8 screen
+    // px and the other handles/edges keep their usual behaviour.
+    if (
+      this.#selection.length > 0 &&
+      this.#host.worldToScreen !== undefined &&
+      this.#host.previewResize !== undefined
+    ) {
+      const selected = this.#host.selectionTargets?.() ?? this.#selection;
+      for (const candidate of selected) {
+        const handle = resizeHandleAt(sample.screen, candidate.world, this.#host.worldToScreen);
+        if (handle !== null) {
+          this.#host.capturePointer(sample.pointerId);
+          this.#phase = "resizing";
+          this.#target = candidate;
+          this.#resize = { target: candidate, handle, last: { ...candidate.world } };
+          this.#pendingToggle = false;
+          this.#bandCandidate = false;
+          this.#setCursor(resizeCursor(handle));
+          return;
+        }
+      }
+    }
     this.#host.capturePointer(sample.pointerId);
     const target = this.#host.hitTest(sample.screen.x, sample.screen.y);
     this.#target = target;
@@ -615,6 +897,24 @@ export class PointerInput {
   }
 
   #movePrimary(screen: InputScreenPoint, free: boolean): void {
+    if (this.#phase === "resizing" && this.#resize !== null) {
+      const state = this.#resize;
+      const minimum =
+        this.#host.resizeMinimum?.(state.target) ??
+        resizeMinimumFor(state.target.kind === "zone" ? "zone" : state.target.kind === "card" ? "card" : "block");
+      const world = this.#host.screenToWorld(screen.x, screen.y);
+      const rect = resizeFromPointer({
+        handle: state.handle,
+        rect: state.target.world,
+        pointer: world,
+        snap: !free,
+        minimum,
+      });
+      state.last = rect;
+      this.#host.previewResize?.(state.target, rect);
+      this.#setCursor(resizeCursor(state.handle));
+      return;
+    }
     if (this.#phase === "pressed" && this.#downScreen !== null) {
       const deltaX = screen.x - this.#downScreen.x;
       const deltaY = screen.y - this.#downScreen.y;
@@ -827,6 +1127,7 @@ export class PointerInput {
     this.#group = null;
     this.#groupAnchor = null;
     this.#groupMembers = null;
+    this.#resize = null;
     this.#host.clearSnap?.();
     this.#setCursor("default");
   }

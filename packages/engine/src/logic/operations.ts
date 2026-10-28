@@ -1067,7 +1067,23 @@ export function buildOperation(
       return buildDragGroup(port, context, gesture);
     case "resize": {
       const operation = buildResizeOperation(port, context, gesture);
-      return operation === null ? null : { operation, inverse: operation.inverse };
+      if (operation === null) {
+        return null;
+      }
+      if (gesture.position === undefined) {
+        return { operation, inverse: operation.inverse };
+      }
+      const move = buildMoveOperation(port, context, gesture.objectKind, gesture.objectId,
+                                      gesture.position);
+      if (move === null) {
+        return { operation, inverse: operation.inverse };
+      }
+      // West/north handles keep the opposite edge anchored: the one operation is a
+      // group of the resize and the anchoring move, with the reversed inverses.
+      const inverseChildren: OperationInverse[] = [operation.inverse, move.inverse].reverse();
+      const inverse = makeInverse(context, "group", { children: inverseChildren });
+      const grouped = makeOperation(context, "group", { children: [operation, move] }, inverse);
+      return { operation: grouped, inverse: grouped.inverse };
     }
     case "create":
       return buildCreateOperation(context, gesture.draft);

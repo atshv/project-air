@@ -677,6 +677,18 @@ class TextPass {
                static_cast<float>(height), chromeGuideColor_);
         append(static_cast<float>(x + width - border), static_cast<float>(y),
                static_cast<float>(border), static_cast<float>(height), chromeGuideColor_);
+        // P4-17: the same eight 8 px accent handles for the WebGPU chrome pass.
+        const double handle = tokens::space_8;
+        const double half = handle / 2.0;
+        const double midX = x + width / 2.0;
+        const double midY = y + height / 2.0;
+        const double handleX[8] = {x, midX, x + width, x + width, x + width, midX, x, x};
+        const double handleY[8] = {y, y, y, midY, y + height, y + height, y + height, midY};
+        for (int index = 0; index < 8; ++index) {
+          append(static_cast<float>(handleX[index] - half),
+                 static_cast<float>(handleY[index] - half), static_cast<float>(handle),
+                 static_cast<float>(handle), chromeGuideColor_);
+        }
       }
     }
     if (view.selectionCount > 0 && view.document != nullptr) {
@@ -974,6 +986,18 @@ class TextPass {
           appendQuad(x, y + height - border, width, border, chromeGuideColor_);
           appendQuad(x, y, border, height, chromeGuideColor_);
           appendQuad(x + width - border, y, border, height, chromeGuideColor_);
+          // P4-17 (L14): eight 8 px accent handles in the chrome pass only; they
+          // sit on the frame and never scale with the object or become instances.
+          const double handle = tokens::space_8;
+          const double half = handle / 2.0;
+          const double midX = x + width / 2.0;
+          const double midY = y + height / 2.0;
+          const double handleX[8] = {x, midX, x + width, x + width, x + width, midX, x, x};
+          const double handleY[8] = {y, y, y, midY, y + height, y + height, y + height, midY};
+          for (int index = 0; index < 8; ++index) {
+            appendQuad(handleX[index] - half, handleY[index] - half, handle, handle,
+                       chromeGuideColor_);
+          }
         }
         flush();
       }

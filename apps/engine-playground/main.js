@@ -96,6 +96,7 @@ import {
   createPointerInput,
   cursorForSuppressed,
   isSuppressedTarget,
+  resizeMinimumFor,
   worldRectsIntersect,
 } from "@project-air/engine/input.js";
 import {
@@ -1658,6 +1659,95 @@ function createDragSession({ engine, port, context, history, seam, entries, scen
   const setLifecycleRender = (render) => setLifecycleRenderer(render);
   const renderLifecycle = (state) => lifecycleRender?.(state);
 
+  // P4-17 (L14) resize: preview through the bridge geometry update, one resize
+  // gesture per release (a group with the anchoring move for west/north handles),
+  // and the clamped minimum per type and, for a zone, its member extent + 16 px.
+  const resizeMinimum = (target) => {
+    if (target.kind === "card") {
+      return resizeMinimumFor("card");
+    }
+    if (target.kind === "zone") {
+      const members = port.members(target.id);
+      return resizeMinimumFor("zone", "checklist", [
+        ...members.cards.map((card) => ({ x: card.x, y: card.y, width: card.width, height: card.height })),
+        ...members.blocks.map((block) => ({ x: block.x, y: block.y, width: block.width, height: block.height })),
+      ]);
+    }
+    const entity = port.read("block", target.id);
+    return resizeMinimumFor("block", entity?.type ?? "checklist");
+  };
+  const previewResize = (target, rect) => {
+    engine.updateGeometry(target.slot, rect);
+    onDemand.request();
+  };
+  const revertResize = (target) => {
+    const entity = port.read(target.kind, target.id);
+    if (entity !== undefined) {
+      engine.updateGeometry(target.slot, {
+        x: entity.x,
+        y: entity.y,
+        width: entity.width,
+        height: entity.height,
+      });
+      onDemand.request();
+    }
+  };
+  const commitResize = (target, rect) => {
+    const entity = port.read(target.kind, target.id);
+    if (entity === undefined) {
+      return;
+    }
+    const position =
+      rect.x !== entity.x || rect.y !== entity.y ? { x: rect.x, y: rect.y } : undefined;
+    const pair = seam.buildOperation(port, context, {
+      kind: "resize",
+      objectKind: target.kind,
+      objectId: target.id,
+      size: { width: rect.width, height: rect.height },
+      ...(position === undefined ? {} : { position }),
+    });
+    if (pair === null) {
+      return;
+    }
+    seam.applyOperation(port, pair.operation);
+    history.push(pair.operation, pair.inverse);
+    recordPair(pair);
+    onDemand.request();
+  };
+  const resizeInfo = (ids) => {
+    const targets = selectionTargets(ids);
+    const target = targets[0];
+    if (target === undefined) {
+      return null;
+    }
+    return {
+      id: target.id,
+      kind: target.kind,
+      world: target.world,
+      minimum: resizeMinimum(target),
+      handles: Array.from({ length: 8 }, (_, index) => index),
+      last: lastPair === null
+        ? null
+        : {
+            operation: lastPair.operation.type,
+            inverse: lastPair.inverse.type,
+            children:
+              lastPair.operation.type === "group"
+                ? lastPair.operation.payload.children.map((child) => child.type)
+                : undefined,
+          },
+    };
+  };
+  if (typeof globalThis !== "undefined") {
+    globalThis.__engineResize = {
+      info: (ids) => resizeInfo(ids),
+      worldToScreen: (world) => ({
+        x: (world.x - camera.panX) * camera.zoom,
+        y: (world.y - camera.panY) * camera.zoom,
+      }),
+    };
+  }
+
   const tap = (target) => {
     if (target !== null && onTap !== null) {
       onTap(target);
@@ -1732,6 +1822,10 @@ function createDragSession({ engine, port, context, history, seam, entries, scen
     lastOperation,
     previewZoneDrag,
     commitZoneArrangement,
+    resizeMinimum,
+    previewResize,
+    commitResize,
+    revertResize,
     setLifecycleRender,
     renderLifecycle,
     setZoneParityRenderer,
@@ -2581,6 +2675,21 @@ function installPointerInput(engine, session, titlesController) {
     onCursor: (cursor) => {
       canvas.style.cursor = cursor;
     },
+    worldToScreen: (world) => ({
+      x: (world.x - camera.panX) * camera.zoom,
+      y: (world.y - camera.panY) * camera.zoom,
+    }),
+    previewResize: (target, rect) => {
+      session?.previewResize(target, rect);
+    },
+    commitResize: (target, rect) => {
+      session?.commitResize(target, rect);
+    },
+    revertResize: (target) => {
+      session?.revertResize(target);
+    },
+    resizeMinimum: (target) =>
+      session?.resizeMinimum(target) ?? resizeMinimumFor(target.kind, "checklist"),
     capturePointer: (pointerId) => {
       try {
         wrap.setPointerCapture(pointerId);

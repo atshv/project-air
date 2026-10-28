@@ -1,0 +1,581 @@
+{
+  "task": "P4-17",
+  "gate": "resize-capture",
+  "startedAt": "2026-10-28T16:59:03.966Z",
+  "chrome": "/Users/rasulatashev/Library/Caches/ms-playwright/chromium-1248/chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing",
+  "flags": [
+    "--headless=new",
+    "--use-angle=metal",
+    "--enable-gpu",
+    "--hide-scrollbars",
+    "--no-first-run",
+    "--no-default-browser-check",
+    "--window-size=1440,900",
+    "--no-sandbox"
+  ],
+  "viewports": [
+    {
+      "viewport": {
+        "name": "desktop",
+        "width": 1440,
+        "height": 900,
+        "mobile": false
+      },
+      "checks": [
+        {
+          "name": "desktop: selecting a card shows 8 px handles and its minimum",
+          "passed": true,
+          "actual": {
+            "ids": [
+              "0192f0c1-7000-7000-8000-000000000607"
+            ],
+            "minimum": {
+              "width": 176,
+              "height": 80
+            }
+          }
+        },
+        {
+          "name": "desktop: a handle drag snaps the size to the 16 px grid in one operation",
+          "passed": true,
+          "actual": {
+            "last": {
+              "operation": "resizeCard",
+              "inverse": "resizeCard"
+            },
+            "beforeSnap": {
+              "x": 704,
+              "y": 64,
+              "width": 224,
+              "height": 128
+            },
+            "snapped": {
+              "x": 704,
+              "y": 64,
+              "width": 272,
+              "height": 160
+            }
+          }
+        },
+        {
+          "name": "desktop: Shift frees the snap but still resizes",
+          "passed": true,
+          "actual": {
+            "beforeFree": {
+              "x": 704,
+              "y": 64,
+              "width": 272,
+              "height": 160
+            },
+            "free": {
+              "x": 704,
+              "y": 64,
+              "width": 285,
+              "height": 166.703125
+            }
+          }
+        },
+        {
+          "name": "desktop: the per-type minimum (card 176x80) is never crossed",
+          "passed": true,
+          "actual": {
+            "minimum": {
+              "width": 176,
+              "height": 80
+            },
+            "world": {
+              "x": 704,
+              "y": 64,
+              "width": 176,
+              "height": 80
+            }
+          }
+        },
+        {
+          "name": "desktop: Escape restores the committed card size with no operation",
+          "passed": true,
+          "actual": {
+            "before": {
+              "x": 704,
+              "y": 64,
+              "width": 176,
+              "height": 80
+            },
+            "after": {
+              "x": 704,
+              "y": 64,
+              "width": 176,
+              "height": 80
+            }
+          }
+        },
+        {
+          "name": "desktop: a zone resize commits one operation and clamps at the member minimum",
+          "passed": true,
+          "actual": {
+            "last": {
+              "operation": "resizeZone",
+              "inverse": "resizeZone"
+            },
+            "minimum": {
+              "width": 416,
+              "height": 240
+            },
+            "world": {
+              "x": 64,
+              "y": 64,
+              "width": 416,
+              "height": 240
+            }
+          }
+        }
+      ],
+      "card": {
+        "selected": [
+          "0192f0c1-7000-7000-8000-000000000607"
+        ],
+        "snapped": {
+          "x": 704,
+          "y": 64,
+          "width": 272,
+          "height": 160
+        },
+        "free": {
+          "x": 704,
+          "y": 64,
+          "width": 285,
+          "height": 166.703125
+        },
+        "minimum": {
+          "width": 176,
+          "height": 80
+        },
+        "cancelled": {
+          "x": 704,
+          "y": 64,
+          "width": 176,
+          "height": 80
+        }
+      },
+      "zone": {
+        "minimum": {
+          "width": 416,
+          "height": 240
+        },
+        "before": {
+          "x": 64,
+          "y": 64,
+          "width": 448,
+          "height": 320
+        },
+        "after": {
+          "x": 64,
+          "y": 64,
+          "width": 416,
+          "height": 240
+        },
+        "last": {
+          "operation": "resizeZone",
+          "inverse": "resizeZone"
+        }
+      },
+      "screenshots": [
+        "reviews/evidence/P4-17-resize-handles-desktop.png",
+        "reviews/evidence/P4-17-resize-snapped-desktop.png",
+        "reviews/evidence/P4-17-resize-free-desktop.png",
+        "reviews/evidence/P4-17-resize-zone-desktop.png"
+      ]
+    },
+    {
+      "viewport": {
+        "name": "mobile",
+        "width": 390,
+        "height": 844,
+        "mobile": true
+      },
+      "checks": [
+        {
+          "name": "mobile: selecting a card shows 8 px handles and its minimum",
+          "passed": true,
+          "actual": {
+            "ids": [
+              "0192f0c1-7000-7000-8000-000000000607"
+            ],
+            "minimum": {
+              "width": 176,
+              "height": 80
+            }
+          }
+        },
+        {
+          "name": "mobile: a handle drag snaps the size to the 16 px grid in one operation",
+          "passed": true,
+          "actual": {
+            "last": {
+              "operation": "resizeCard",
+              "inverse": "resizeCard"
+            },
+            "beforeSnap": {
+              "x": 704,
+              "y": 64,
+              "width": 224,
+              "height": 128
+            },
+            "snapped": {
+              "x": 704,
+              "y": 64,
+              "width": 304,
+              "height": 176
+            }
+          }
+        },
+        {
+          "name": "mobile: Shift frees the snap but still resizes",
+          "passed": true,
+          "actual": {
+            "beforeFree": {
+              "x": 704,
+              "y": 64,
+              "width": 304,
+              "height": 176
+            },
+            "free": {
+              "x": 704,
+              "y": 64,
+              "width": 325.33333333333326,
+              "height": 187.02083333333331
+            }
+          }
+        },
+        {
+          "name": "mobile: the per-type minimum (card 176x80) is never crossed",
+          "passed": true,
+          "actual": {
+            "minimum": {
+              "width": 176,
+              "height": 80
+            },
+            "world": {
+              "x": 704,
+              "y": 64,
+              "width": 176,
+              "height": 80
+            }
+          }
+        },
+        {
+          "name": "mobile: Escape restores the committed card size with no operation",
+          "passed": true,
+          "actual": {
+            "before": {
+              "x": 704,
+              "y": 64,
+              "width": 176,
+              "height": 80
+            },
+            "after": {
+              "x": 704,
+              "y": 64,
+              "width": 176,
+              "height": 80
+            }
+          }
+        },
+        {
+          "name": "mobile: a zone resize commits one operation and clamps at the member minimum",
+          "passed": true,
+          "actual": {
+            "last": {
+              "operation": "resizeZone",
+              "inverse": "resizeZone"
+            },
+            "minimum": {
+              "width": 416,
+              "height": 240
+            },
+            "world": {
+              "x": 64,
+              "y": 64,
+              "width": 416,
+              "height": 240
+            }
+          }
+        }
+      ],
+      "card": {
+        "selected": [
+          "0192f0c1-7000-7000-8000-000000000607"
+        ],
+        "snapped": {
+          "x": 704,
+          "y": 64,
+          "width": 304,
+          "height": 176
+        },
+        "free": {
+          "x": 704,
+          "y": 64,
+          "width": 325.33333333333326,
+          "height": 187.02083333333331
+        },
+        "minimum": {
+          "width": 176,
+          "height": 80
+        },
+        "cancelled": {
+          "x": 704,
+          "y": 64,
+          "width": 176,
+          "height": 80
+        }
+      },
+      "zone": {
+        "minimum": {
+          "width": 416,
+          "height": 240
+        },
+        "before": {
+          "x": 64,
+          "y": 64,
+          "width": 448,
+          "height": 320
+        },
+        "after": {
+          "x": 64,
+          "y": 64,
+          "width": 416,
+          "height": 240
+        },
+        "last": {
+          "operation": "resizeZone",
+          "inverse": "resizeZone"
+        }
+      },
+      "screenshots": [
+        "reviews/evidence/P4-17-resize-handles-mobile.png",
+        "reviews/evidence/P4-17-resize-snapped-mobile.png",
+        "reviews/evidence/P4-17-resize-free-mobile.png",
+        "reviews/evidence/P4-17-resize-zone-mobile.png"
+      ]
+    }
+  ],
+  "checks": [
+    {
+      "name": "desktop: selecting a card shows 8 px handles and its minimum",
+      "passed": true,
+      "actual": {
+        "ids": [
+          "0192f0c1-7000-7000-8000-000000000607"
+        ],
+        "minimum": {
+          "width": 176,
+          "height": 80
+        }
+      }
+    },
+    {
+      "name": "desktop: a handle drag snaps the size to the 16 px grid in one operation",
+      "passed": true,
+      "actual": {
+        "last": {
+          "operation": "resizeCard",
+          "inverse": "resizeCard"
+        },
+        "beforeSnap": {
+          "x": 704,
+          "y": 64,
+          "width": 224,
+          "height": 128
+        },
+        "snapped": {
+          "x": 704,
+          "y": 64,
+          "width": 272,
+          "height": 160
+        }
+      }
+    },
+    {
+      "name": "desktop: Shift frees the snap but still resizes",
+      "passed": true,
+      "actual": {
+        "beforeFree": {
+          "x": 704,
+          "y": 64,
+          "width": 272,
+          "height": 160
+        },
+        "free": {
+          "x": 704,
+          "y": 64,
+          "width": 285,
+          "height": 166.703125
+        }
+      }
+    },
+    {
+      "name": "desktop: the per-type minimum (card 176x80) is never crossed",
+      "passed": true,
+      "actual": {
+        "minimum": {
+          "width": 176,
+          "height": 80
+        },
+        "world": {
+          "x": 704,
+          "y": 64,
+          "width": 176,
+          "height": 80
+        }
+      }
+    },
+    {
+      "name": "desktop: Escape restores the committed card size with no operation",
+      "passed": true,
+      "actual": {
+        "before": {
+          "x": 704,
+          "y": 64,
+          "width": 176,
+          "height": 80
+        },
+        "after": {
+          "x": 704,
+          "y": 64,
+          "width": 176,
+          "height": 80
+        }
+      }
+    },
+    {
+      "name": "desktop: a zone resize commits one operation and clamps at the member minimum",
+      "passed": true,
+      "actual": {
+        "last": {
+          "operation": "resizeZone",
+          "inverse": "resizeZone"
+        },
+        "minimum": {
+          "width": 416,
+          "height": 240
+        },
+        "world": {
+          "x": 64,
+          "y": 64,
+          "width": 416,
+          "height": 240
+        }
+      }
+    },
+    {
+      "name": "mobile: selecting a card shows 8 px handles and its minimum",
+      "passed": true,
+      "actual": {
+        "ids": [
+          "0192f0c1-7000-7000-8000-000000000607"
+        ],
+        "minimum": {
+          "width": 176,
+          "height": 80
+        }
+      }
+    },
+    {
+      "name": "mobile: a handle drag snaps the size to the 16 px grid in one operation",
+      "passed": true,
+      "actual": {
+        "last": {
+          "operation": "resizeCard",
+          "inverse": "resizeCard"
+        },
+        "beforeSnap": {
+          "x": 704,
+          "y": 64,
+          "width": 224,
+          "height": 128
+        },
+        "snapped": {
+          "x": 704,
+          "y": 64,
+          "width": 304,
+          "height": 176
+        }
+      }
+    },
+    {
+      "name": "mobile: Shift frees the snap but still resizes",
+      "passed": true,
+      "actual": {
+        "beforeFree": {
+          "x": 704,
+          "y": 64,
+          "width": 304,
+          "height": 176
+        },
+        "free": {
+          "x": 704,
+          "y": 64,
+          "width": 325.33333333333326,
+          "height": 187.02083333333331
+        }
+      }
+    },
+    {
+      "name": "mobile: the per-type minimum (card 176x80) is never crossed",
+      "passed": true,
+      "actual": {
+        "minimum": {
+          "width": 176,
+          "height": 80
+        },
+        "world": {
+          "x": 704,
+          "y": 64,
+          "width": 176,
+          "height": 80
+        }
+      }
+    },
+    {
+      "name": "mobile: Escape restores the committed card size with no operation",
+      "passed": true,
+      "actual": {
+        "before": {
+          "x": 704,
+          "y": 64,
+          "width": 176,
+          "height": 80
+        },
+        "after": {
+          "x": 704,
+          "y": 64,
+          "width": 176,
+          "height": 80
+        }
+      }
+    },
+    {
+      "name": "mobile: a zone resize commits one operation and clamps at the member minimum",
+      "passed": true,
+      "actual": {
+        "last": {
+          "operation": "resizeZone",
+          "inverse": "resizeZone"
+        },
+        "minimum": {
+          "width": 416,
+          "height": 240
+        },
+        "world": {
+          "x": 64,
+          "y": 64,
+          "width": 416,
+          "height": 240
+        }
+      }
+    }
+  ],
+  "result": "pass",
+  "exitCode": 0,
+  "finishedAt": "2026-10-28T16:59:15.969Z"
+}

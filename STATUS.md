@@ -194,6 +194,7 @@
 - [x] `P4-14` Dragging versus editing (L03) — status: `done` — owner: —
 - [x] `P4-15` Snapping (L07) — status: `done` — owner: —
 - [x] `P4-16` Multi-selection (L10) — status: `done` — owner: —
+- [x] `P4-17` Resize (L14) — status: `done` — owner: —
 - [x] `P4-23` DOM overlay for field editing and inline comfort (L18) — status: `done` — owner: —
 - [x] `P4-25` Contract 0.2.0: zone parent reference and reorder (z) operation (L08/L13) — status: `done` — owner: —
 - [x] `P4-26` Zones as containers II: platform migration and containment (L08) — status: `done` — owner: —
@@ -211,7 +212,7 @@
 
 ## In progress
 
-- [ ] `P4-17` Resize (L14) — status: `in_progress` — owner: lead
+- none
 
 ## Blocked / failed
 
@@ -233,7 +234,7 @@
 <!-- polier:claims -->
 ## Claims
 
-- `P4-17` in progress by dsh since 2026-10-28T16:50:41+00:00 — worktree: /private/tmp/air-P4-17 · slot 1
+- `P4-17` in progress by dsh since 2026-10-28T17:00:37+00:00 — worktree: /private/tmp/air-P4-17 · slot 1
 
 <!-- /polier:claims -->
 
