@@ -235,6 +235,7 @@
 
 ## In progress
 
+- [ ] `P6-07` Panel and editor: overlay, own editor, note placeholder and title (L04, L06, L09) — status: `in_progress` — owner: lead
 - [ ] `P0-45` Preview page: project areas, their tasks and purpose — status: `in_progress` — owner: —
 
 ## Blocked / failed
@@ -247,7 +248,6 @@
 - [ ] `P0-15` Release command and tag-based CI release — status: `pending` — owner: —
 - [ ] `P0-16` Dependency updates and Polier update check — status: `pending` — owner: —
 - [ ] `P0-17` RELEASING.md and release 0.0.1 — status: `pending` — owner: —
-- [ ] `P6-07` Panel and editor: overlay, own editor, note placeholder and title (L04, L06, L09) — status: `pending` — owner: —
 - [ ] `P6-08` Realtime UI: live changes, presence and save status (L05) — status: `pending` — owner: —
 - [ ] `P6-09` e2e suite: main flows and the e2e gate on the slot ports — status: `pending` — owner: —
 - [ ] `P6-10` Canvas evidence, repo-wide checks and the web-app stage report — status: `pending` — owner: —
@@ -256,7 +256,7 @@
 ## Claims
 
 - `P0-45` in progress by dsh since 2026-10-28T23:45:11+00:00 — worktree: /Users/rasulatashev/Desktop/KI Projekte/Project air-P0-45 · slot 4
-- `P6-06` in progress by dsh since 2026-10-28T23:42:27+00:00 — worktree: /private/tmp/air-P6-06 · slot 3
+- `P6-07` in progress by dsh since 2026-10-28T23:45:44+00:00 — worktree: /private/tmp/air-P6-07 · slot 3
 
 <!-- /polier:claims -->
 
