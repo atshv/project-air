@@ -1,0 +1,4 @@
+area: web
+kind: minor
+
+Add board interactions (P6-05): L12 keyboard layer (Cmd/Ctrl+D duplicate card+note group operation, Delete/Backspace delete, Esc, arrow 16/160 px grouped into one operation after a 300 ms burst, modifier-aware, suppressed in input/textarea/contenteditable/dialog with documented menu allow-list), right-click L12 context menu (200 px, 32 px items Open/Duplicate/Bring forward/Send backward/Delete, muted shortcuts, roving focus/Escape, focus restored to canvas, layers z-index), L11 undo/redo UI (Cmd/Ctrl+Z and Shift variant using the SDK's undoOwn/redoOwn single own-op history, bottom-centre 3 s 'Undo: …' hint, no parallel engine history writer), contract reorder fractional z helper with inverse and duplicate group operation/inverse, pure node --test helpers for keyboard mapping/field suppression, arrow burst grouping, context menu model, hint keys and fractional z, messages en/de parity, README notes.

@@ -1,0 +1,61 @@
+$ pnpm test --affected
+[exit 0]
+
+
+   • turbo 2.11.10
+   • Packages in scope: //, @project-air/web
+   • Running test in 2 packages
+   • Remote caching disabled, using shared worktree cache
+
+@project-air/web:build: cache miss, executing 724a204b3e8452ed
+@project-air/web:build: $ vite build
+@project-air/web:build: vite v8.3.5 building client environment for production...
+@project-air/web:build: transforming...
+@project-air/web:build: ✓ 175 modules transformed.
+@project-air/web:build: rendering chunks...
+@project-air/web:build: computing gzip size...
+@project-air/web:build: dist/index.html                   0.44 kB │ gzip:   0.27 kB
+@project-air/web:build: dist/assets/index-DUs-vO45.css   10.03 kB │ gzip:   2.49 kB
+@project-air/web:build: dist/assets/index-DkrpH4Yd.js   420.26 kB │ gzip: 129.32 kB
+@project-air/web:build: 
+@project-air/web:build: ✓ built in 169ms
+@project-air/web:test: cache miss, executing 608d0688780572a3
+@project-air/web:test: $ node --test test/*.test.mjs
+@project-air/web:test: ✔ toolbar has groups, one primary accent tool and a default active tool (0.651041ms)
+@project-air/web:test: ✔ view camera clamps zoom and rejects foreign/corrupt records (0.734ms)
+@project-air/web:test: ✔ backend selection defaults to WebGL2 and fails closed without an adapter (0.077791ms)
+@project-air/web:test: ✔ board titles are trimmed, non-empty and at most 120 characters (2.400916ms)
+@project-air/web:test: ✔ boards sort by updatedAt descending without mutating the input (0.491167ms)
+@project-air/web:test: ✔ dates format with Intl for the active language and invalid dates are empty (38.215833ms)
+@project-air/web:test: ✔ workspace selection uses the stored id when present, otherwise the first workspace (0.145208ms)
+@project-air/web:test: (node:34898) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.
+@project-air/web:test: (Use `node --trace-warnings ...` to show where the warning was created)
+@project-air/web:test: ✔ the duplicated note is contract-valid with the board workspaceId and no extra fields (7.348791ms)
+@project-air/web:test: ✔ delete and reorder operations carry inverses and never empty metadata (2.769417ms)
+@project-air/web:test: ✔ en and de catalogs have identical key sets (2.769875ms)
+@project-air/web:test: ✔ translate resolves nested keys and interpolates values (0.416292ms)
+@project-air/web:test: ✔ German is the default and a stored choice persists (0.233958ms)
+@project-air/web:test: ✔ keyboard map handles modifiers, delete, escape and arrows; fields suppress shortcuts (0.680458ms)
+@project-air/web:test: ✔ arrows group into one delta after the 300 ms burst (1.316166ms)
+@project-air/web:test: ✔ context menu model has the L12 items, shortcuts and disabled states (0.393209ms)
+@project-air/web:test: ✔ fractional z sits between neighbours and carries the previous z as inverse (0.671375ms)
+@project-air/web:test: ✔ every required route exists with message-backed title and body keys (0.740875ms)
+@project-air/web:test: ✔ route helpers stay pure and encode board ids (0.93525ms)
+@project-air/web:test: ✔ login validation mirrors the server rules (3.358041ms)
+@project-air/web:test: ✔ registration requires email, display name and at least 8 password characters (0.417209ms)
+@project-air/web:test: ✔ recovery validates the email and maps typed errors to message keys (0.162875ms)
+@project-air/web:test: ℹ tests 21
+@project-air/web:test: ℹ suites 0
+@project-air/web:test: ℹ pass 21
+@project-air/web:test: ℹ fail 0
+@project-air/web:test: ℹ cancelled 0
+@project-air/web:test: ℹ skipped 0
+@project-air/web:test: ℹ todo 0
+@project-air/web:test: ℹ duration_ms 576.496125
+
+ Tasks:    2 successful, 2 total
+Cached:    0 cached, 2 total
+  Time:    1.341s 
+
+$ turbo run test --affected
+ WARNING  no output files found for task @project-air/web#test. Please check your `outputs` key in `turbo.json`

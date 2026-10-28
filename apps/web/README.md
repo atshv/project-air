@@ -80,3 +80,16 @@ to platform/auth, so cookies and the sync socket are same-origin in development.
   tests (they are typechecked/built only).
 - Toolbar -> engine tool binding and pointer gesture mapping stay P6-05; P6-04
   only selects the active tool state.
+
+## Board interactions (P6-05)
+
+The board page implements the L12 keyboard map (Cmd/Ctrl+D duplicate card+note as one group
+operation with inverse, Delete/Backspace delete, Esc close, arrows 16 px / Shift 160 px grouped
+into one operation after a 300 ms burst), the right-click L12 context menu (200 px, 32 px items
+Open/Duplicate/Bring forward/Send backward/Delete with muted shortcuts, roving focus, Escape and
+focus restored to the canvas), and the L11 undo/redo UI (Cmd/Ctrl+Z / Shift variant as the SDK's
+own-op history only — no parallel engine-history writer — with a bottom-centre 3 s "Undo: …"
+hint). Shortcuts are suppressed while an input/textarea/contenteditable/dialog owns focus. Bring/
+Send use the contract `reorder` with fractional z and its inverse; duplicate is card+note group
+operation with inverse (multi-select duplicate stays disabled with a message, recorded gap).
+Browser/DOM behaviour is P6-09 e2e and not claimed here; live sync auth remains P6-08.

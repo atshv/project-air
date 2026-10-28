@@ -6886,7 +6886,7 @@
       "satisfies": [
         "D12"
       ],
-      "status": "in_progress",
+      "status": "done",
       "depends_on": [
         "P6-04"
       ],
@@ -6923,11 +6923,18 @@
         "design-check",
         "language-check"
       ],
-      "owner": "lead",
+      "owner": null,
       "branch": "task/P6-05",
-      "worktree": "/private/tmp/air-P6-05",
-      "round": 0,
-      "evidence": [],
+      "worktree": null,
+      "round": 2,
+      "evidence": [
+        "reviews/evidence/P6-05-board-check-20261028T233708Z.json",
+        "reviews/evidence/P6-05-boundaries-20261028T233715Z.json",
+        "reviews/evidence/P6-05-unit-20261028T233715Z.json",
+        "reviews/evidence/P6-05-typecheck-20261028T233717Z.json",
+        "reviews/evidence/P6-05-design-check-20261028T233719Z.json",
+        "reviews/evidence/P6-05-language-check-20261028T233719Z.json"
+      ],
       "scope_write_forbidden": [
         "reference/"
       ]

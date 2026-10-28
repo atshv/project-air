@@ -227,6 +227,23 @@
     "errors": {
       "title": "Board konnte nicht geöffnet werden",
       "engine": "Die Canvas-Engine konnte auf diesem Gerät nicht starten."
+    },
+    "menu": {
+      "label": "Board-Aktionen",
+      "open": "Öffnen",
+      "duplicate": "Duplizieren",
+      "bringForward": "Nach vorne",
+      "sendBackward": "Nach hinten",
+      "delete": "Löschen",
+      "noSelection": "Wähle zuerst ein Objekt aus",
+      "multiUnsupported": "Mehrfachauswahl wird noch nicht unterstützt"
+    },
+    "undo": {
+      "undo": "Rückgängig: letzte Aktion",
+      "redo": "Wiederholen: letzte Aktion"
+    },
+    "duplicate": {
+      "title": "Kopie"
     }
   }
 }

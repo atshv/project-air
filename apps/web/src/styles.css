@@ -72,3 +72,9 @@ body { margin: 0; background: var(--bg); color: var(--fg); font-family: var(--fo
 .toolbar-button-wrap { position: relative; display: inline-flex; }
 .icon-button.active { background: var(--accent-soft); border-color: var(--accent-line); color: var(--accent); }
 .tooltip { position: absolute; top: calc(var(--space-32) + var(--space-4)); left: 50%; transform: translateX(-50%); padding: var(--space-4) var(--space-8); background: var(--surface); color: var(--fg); border: var(--border-width) solid var(--border); border-radius: var(--radius-tooltip); font-size: var(--text-12, 12px); white-space: nowrap; pointer-events: none; box-shadow: var(--card-shadow); }
+.context-menu { position: fixed; width: 200px; padding: var(--space-4); background: var(--surface); border: var(--border-width) solid var(--border); border-radius: var(--radius-md); box-shadow: var(--card-shadow); display: flex; flex-direction: column; gap: var(--space-4); }
+.context-menu-item { display: flex; align-items: center; justify-content: space-between; gap: var(--space-8); min-height: var(--button-card); padding: 0 var(--space-8); background: transparent; color: var(--fg); border: none; border-radius: var(--radius-sm); font-family: var(--font-sans); font-size: var(--text-13, 13px); cursor: pointer; text-align: left; }
+.context-menu-item:hover:not(:disabled), .context-menu-item:focus-visible { background: var(--faint); }
+.context-menu-item:disabled { color: var(--muted); cursor: default; }
+.context-menu-shortcut { color: var(--muted); font-size: var(--text-12, 12px); }
+.undo-hint { position: fixed; bottom: var(--space-24); left: 50%; transform: translateX(-50%); margin: 0; padding: var(--space-8) var(--space-16); background: var(--surface); color: var(--fg); border: var(--border-width) solid var(--border); border-radius: var(--radius-pill); font-size: var(--text-12, 12px); box-shadow: var(--card-shadow); }

@@ -4,8 +4,11 @@ import { Link, useNavigate, useParams } from "react-router";
 import { createEngine, EngineError, type Engine, type EngineCamera, type EngineGeometry } from "../../../../packages/engine/src/bridge/engine.ts";
 import { deviceKeyFor, parseViewRecord, storageKeyFor } from "../../../../packages/engine/src/bridge/view-persistence.ts";
 import { createBoardSyncClient, createRequestId, type BoardSyncClient } from "../../../../packages/sdk/src/index.ts";
+import { LAYER_Z_INDEX } from "../../../../packages/ui-kit/layers.ts";
 import { api } from "../auth/client.ts";
 import { toolGroups, type ToolId } from "../board/toolbar.ts";
+import { createArrowBurst, arrowDelta, contextMenuModel, shortcutFor, suppressesShortcuts, undoHintKey, type FocusLike } from "../board/interactions.ts";
+import { buildDeleteOperation, buildDuplicateCardOperation, buildReorderOperation } from "../board/operations.ts";
 import { DEFAULT_CAMERA, backendChoice, clampCamera, zoomBy } from "../board/view.ts";
 import { Button } from "../components/Button.tsx";
 import { ToolbarButton } from "../components/ToolbarButton.tsx";
@@ -46,6 +49,11 @@ export function BoardPage({ t, language, clientId }: BoardPageProps) {
   const engineRef = useRef<Engine | null>(null); const syncRef = useRef<BoardSyncClient | null>(null); const cameraRef = useRef<EngineCamera>(DEFAULT_CAMERA); const saveTimer = useRef<number | null>(null); const contentRef = useRef<BoardContent | null>(null);
   const [state, setState] = useState<{ loading: boolean; errorKey: string | null; board: Board | null; backend: string | null; empty: boolean; syncStatus: string }>({ loading: true, errorKey: null, board: null, backend: null, empty: true, syncStatus: "idle" });
   const [tool, setTool] = useState<ToolId>("select");
+  const [selected, setSelected] = useState<{ kind: "card" | "zone" | "block"; id: string } | null>(null);
+  const [menu, setMenu] = useState<{ x: number; y: number } | null>(null);
+  const [hint, setHint] = useState<string | null>(null);
+  const hintTimer = useRef<number | null>(null);
+  const burstRef = useRef<ReturnType<typeof createArrowBurst> | null>(null);
 
   const applyCamera = useCallback((camera: EngineCamera) => { const engine = engineRef.current; if (engine === null) return; cameraRef.current = clampCamera(camera); engine.setCamera(cameraRef.current); engine.visibleInstanceCount(); }, []);
   const persistCamera = useCallback(() => {
@@ -132,6 +140,85 @@ export function BoardPage({ t, language, clientId }: BoardPageProps) {
     return true;
   }, []);
 
+  const showHint = useCallback((action: "undo" | "redo") => {
+    setHint(t(undoHintKey(action)));
+    if (hintTimer.current !== null) window.clearTimeout(hintTimer.current);
+    hintTimer.current = window.setTimeout(() => setHint(null), 3000);
+  }, [t]);
+  const selectedObject = useCallback(() => {
+    const content = contentRef.current; if (selected === null || content === null) return null;
+    const list = selected.kind === "card" ? content.cards : selected.kind === "zone" ? content.zones : content.blocks;
+    const found = (list as readonly { id: string; x: number; y: number; width?: number; height?: number; z?: string; noteId?: string; boardId?: string }[]).find((object) => object.id === selected.id);
+    if (found === undefined) return null;
+    return { ...found, boardId: found.boardId ?? state.board?.id ?? "" };
+  }, [selected, state.board]);
+  const deleteSelected = useCallback(() => {
+    const object = selectedObject(); if (object === null || selected === null) return;
+    if (commitOperation(buildDeleteOperation(selected.kind, object, clientId))) setSelected(null);
+  }, [selectedObject, selected, clientId, commitOperation]);
+
+  const duplicateSelected = useCallback(() => {
+    const object = selectedObject();
+    if (object === null || selected === null || selected.kind !== "card") return;
+    if (state.board === null) return;
+    const sourceNote = contentRef.current?.notes.find((note) => note.id === object.noteId);
+    const noteId = object.noteId ?? createRequestId();
+    const built = buildDuplicateCardOperation({ board: state.board, card: { ...object, boardId: object.boardId, noteId }, sourceNoteTitle: sourceNote?.title ?? t("board.duplicate.title"), actorId: clientId });
+    if (commitOperation(built.operation)) setSelected({ kind: "card", id: built.cardId });
+  }, [selectedObject, selected, clientId, commitOperation, t, state.board]);
+
+  const reorderSelected = useCallback((direction: "forward" | "backward") => {
+    const object = selectedObject(); if (object === null) return;
+    commitOperation(buildReorderOperation(object, direction, clientId));
+  }, [selectedObject, clientId, commitOperation]);
+
+  useEffect(() => {
+    const burst = createArrowBurst((delta) => {
+      const object = selectedObject(); if (object === null) return;
+      const moves = delta.dx * delta.dx + delta.dy * delta.dy === 0 ? null : { x: (object.x ?? 0) + delta.dx, y: (object.y ?? 0) + delta.dy };
+      if (moves === null || selected === null) return;
+      const operation = selected.kind === "card"
+        ? { id: createRequestId(), boardId: object.boardId, actorId: clientId, createdAt: new Date().toISOString(), type: "moveCard", payload: { cardId: object.id, ...moves }, inverse: { type: "moveCard", payload: { cardId: object.id, x: object.x ?? 0, y: object.y ?? 0 } } }
+        : selected.kind === "zone"
+          ? { id: createRequestId(), boardId: object.boardId, actorId: clientId, createdAt: new Date().toISOString(), type: "moveZone", payload: { zoneId: object.id, ...moves }, inverse: { type: "moveZone", payload: { zoneId: object.id, x: object.x ?? 0, y: object.y ?? 0 } } }
+          : { id: createRequestId(), boardId: object.boardId, actorId: clientId, createdAt: new Date().toISOString(), type: "moveBlock", payload: { blockId: object.id, ...moves }, inverse: { type: "moveBlock", payload: { blockId: object.id, x: object.x ?? 0, y: object.y ?? 0 } } };
+      commitOperation(operation);
+    });
+    burstRef.current = burst;
+    const onKey = (event: KeyboardEvent) => {
+      const target = event.target as unknown as FocusLike | null;
+      if (suppressesShortcuts(target)) return;
+      if (menu !== null && event.key === "Escape") { event.preventDefault(); setMenu(null); canvasRef.current?.focus(); return; }
+      const action = shortcutFor(event);
+      if (action === null) return;
+      const sync = syncRef.current;
+      if (action === "undo" || action === "redo") { event.preventDefault(); const used = action === "undo" ? sync?.undoOwn() : sync?.redoOwn(); if (used === true) showHint(action); return; }
+      if (action === "escape") { setMenu(null); setSelected(null); return; }
+      if (action === "delete") { event.preventDefault(); deleteSelected(); return; }
+      if (action === "duplicate") { event.preventDefault(); duplicateSelected(); return; }
+      const delta = arrowDelta(action, event.shiftKey === true);
+      if (delta.dx !== 0 || delta.dy !== 0) { event.preventDefault(); burst.push(delta.dx, delta.dy); }
+    };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [menu, selected, selectedObject, commitOperation, deleteSelected, duplicateSelected, showHint]);
+  useEffect(() => () => { if (hintTimer.current !== null) window.clearTimeout(hintTimer.current); }, []);
+  const openMenu = (event: React.MouseEvent<HTMLCanvasElement>) => {
+    event.preventDefault();
+    const rect = event.currentTarget.getBoundingClientRect();
+    const x = Math.min(event.clientX, window.innerWidth - 208); const y = Math.min(event.clientY, window.innerHeight - 200);
+    setMenu({ x: Math.max(8, x), y: Math.max(8, y) }); void rect;
+  };
+  const pickAt = (event: React.MouseEvent<HTMLCanvasElement>) => {
+    const engine = engineRef.current; const canvas = event.currentTarget;
+    if (engine === null) return;
+    const rect = canvas.getBoundingClientRect();
+    const slot = engine.hitTest(event.clientX - rect.left, event.clientY - rect.top);
+    if (slot < 0) { setSelected(null); setMenu(null); return; }
+    const content = contentRef.current; if (content === null) return;
+    const ordered = [...content.zones.map((zone) => ({ kind: "zone" as const, id: zone.id })), ...content.blocks.map((block) => ({ kind: "block" as const, id: block.id })), ...content.cards.map((card) => ({ kind: "card" as const, id: card.id }))];
+    const hit = ordered[slot]; if (hit !== undefined) setSelected(hit);
+  };
   if (state.loading) return <section className="page" aria-busy="true"><p className="muted">{t("board.loading")}</p></section>;
   if (state.errorKey !== null) return <section className="page"><h1 className="page-title">{t("board.errors.title")}</h1><p className="form-error" role="alert">{t(state.errorKey)}</p><Link className="text-link" to="/boards">{t("boards.backToList")}</Link></section>;
   const groups = toolGroups();
@@ -143,7 +230,7 @@ export function BoardPage({ t, language, clientId }: BoardPageProps) {
         <span className="muted small" aria-live="polite">{t("board.sync." + state.syncStatus)}</span>
       </header>
       <div className="board-canvas-wrap">
-        <canvas ref={canvasRef} className="board-canvas" aria-label={t("board.canvasLabel")} />
+        <canvas ref={canvasRef} className="board-canvas" tabIndex={-1} aria-label={t("board.canvasLabel")} onClick={pickAt} onContextMenu={openMenu} />
         {state.empty ? <p className="board-empty muted">{t("canvas.empty")}</p> : null}
       </div>
       <div className="toolbar" role="toolbar" aria-label={t("canvas.toolbar.label")}>
@@ -158,11 +245,27 @@ export function BoardPage({ t, language, clientId }: BoardPageProps) {
       </div>
       <div className="zoom-controls" role="group" aria-label={t("canvas.zoom.label")}>
         <Button size="bar" variant="ghost" aria-label={t("canvas.zoom.out")} onClick={() => applyCamera(zoomBy(cameraRef.current, 0.9))}>{t("canvas.zoom.out")}</Button>
-        <Button size="bar" variant="ghost" aria-label={t("canvas.zoom.fit")} onClick={() => { const engine = engineRef.current; const canvas = canvasRef.current; if (engine !== null && canvas !== null) applyCamera(engine.fitView(bounds(contentRef.current ?? emptyContentFor(id ?? "")), { width: canvas.clientWidth, height: canvas.clientHeight })); }}>{t("canvas.zoom.fit")}</Button>
+        <Button size="bar" variant="ghost" aria-label={t("canvas.zoom.fit")} onClick={() => { const engine = engineRef.current; const canvas = canvasRef.current; const fallback = contentRef.current ?? (state.board !== null ? EMPTY_CONTENT(state.board) : null); if (engine !== null && canvas !== null && fallback !== null) applyCamera(engine.fitView(bounds(fallback), { width: canvas.clientWidth, height: canvas.clientHeight })); }}>{t("canvas.zoom.fit")}</Button>
         <Button size="bar" variant="ghost" aria-label={t("canvas.zoom.in")} onClick={() => applyCamera(zoomBy(cameraRef.current, 1.1))}>{t("canvas.zoom.in")}</Button>
       </div>
+      {menu === null ? null : (
+        <div className="context-menu" role="menu" aria-label={t("board.menu.label")} style={{ left: menu.x, top: menu.y, zIndex: LAYER_Z_INDEX["context-menu"] }}>
+          {contextMenuModel({ hasSelection: selected !== null, multiSelection: false }).map((item) => (
+            <button key={item.id} type="button" role="menuitem" className="context-menu-item" disabled={item.disabled} onClick={() => {
+              setMenu(null); canvasRef.current?.focus();
+              if (item.id === "delete") deleteSelected();
+              else if (item.id === "duplicate") duplicateSelected();
+              else if (item.id === "bringForward") reorderSelected("forward");
+              else if (item.id === "sendBackward") reorderSelected("backward");
+            }}>
+              <span>{item.disabled && item.disabledKey !== undefined ? t(item.disabledKey) : t(item.labelKey)}</span>
+              <span className="context-menu-shortcut">{item.shortcut}</span>
+            </button>
+          ))}
+        </div>
+      )}
+      {hint === null ? null : <p className="undo-hint" role="status" aria-live="polite">{hint}</p>}
       <span className="visually-hidden" data-commit-operation={String(commitOperation.length)} />
     </section>
   );
 }
-function emptyContentFor(boardId: string): BoardContent { return { contractVersion: "0.3.0", board: { id: boardId, workspaceId: "", ownerId: "", title: "", visibility: "private", archived: false, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() }, zones: [], blocks: [], cards: [], notes: [], edges: [] }; }

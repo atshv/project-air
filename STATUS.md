@@ -61,7 +61,7 @@
 - Exit gates: `e2e` (missing record), `design-check`, `language-check`
 - Exit criteria: Main e2e flows green on a preview environment.; Every canvas work order done with evidence; design-check and language-check green repo-wide.
 - Tasks: P6-01, P6-02, P6-03, P6-04, P6-05, P6-06, P6-07, P6-08, P6-09, P6-10
-- Tasks open: P6-05, P6-06, P6-07, P6-08, P6-09, P6-10
+- Tasks open: P6-06, P6-07, P6-08, P6-09, P6-10
 
 ### Stage 8 — `value` Import, export and AI
 
@@ -229,10 +229,11 @@
 - [x] `P6-02` Auth UI and session: Kratos login, registration and recovery — status: `done` — owner: —
 - [x] `P6-03` Boards start page: workspaces, board list and creation over the SDK — status: `done` — owner: —
 - [x] `P6-04` Board page host: engine, toolbar, zoom and view persistence (L00, L17) — status: `done` — owner: —
+- [x] `P6-05` Board interactions: context menu, keyboard and undo/redo UI (L12, L11 hint) — status: `done` — owner: —
 
 ## In progress
 
-- [ ] `P6-05` Board interactions: context menu, keyboard and undo/redo UI (L12, L11 hint) — status: `in_progress` — owner: lead
+- none
 
 ## Blocked / failed
 
@@ -253,7 +254,7 @@
 <!-- polier:claims -->
 ## Claims
 
-- `P6-05` in progress by dsh since 2026-10-28T23:34:13+00:00 — worktree: /private/tmp/air-P6-05 · slot 3
+- `P6-05` in progress by dsh since 2026-10-28T23:37:25+00:00 — worktree: /private/tmp/air-P6-05 · slot 3
 
 <!-- /polier:claims -->
 
