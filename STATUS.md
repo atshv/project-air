@@ -122,10 +122,7 @@
 
 ## Ready now
 
-- `P0-35` Design system page: contract 0.3.0, missing tokens and engine chrome
-  - P0-34: Closed P0-34: a zone drags by its frame/header; frame, name and docked members move 1:1 (transitions off, lifted frame), clamped by positionLayout; release announces, cancel glides back.
-  - P0-34: Member drag, release preview and rename unchanged; moves and member drags exclusive; sync deferred; ghost/collapsed inert; frame stays on --layer-zones (passes under blocks).
-  - P0-34: Gates board-check/design-check/changelog-entry green; 3 screenshots + log. Note: the brief and board entry were first committed inside P5-02 (1038ba3, shared checkout).
+- none
 
 ## Done
 
@@ -212,6 +209,7 @@
 ## In progress
 
 - [ ] `P5-03` Sync service: WebSocket protocol, auth and durable update log — status: `in_progress` — owner: lead
+- [ ] `P0-35` Design system page: contract 0.3.0, missing tokens and engine chrome — status: `in_progress` — owner: —
 
 ## Blocked / failed
 
@@ -228,11 +226,11 @@
 - [ ] `P5-06` Durability and reconnect: restart, catch-up and snapshot compaction — status: `pending` — owner: —
 - [ ] `P5-07` crdt-convergence proof: 10,000 rounds, offline clients and own-only undo — status: `pending` — owner: —
 - [ ] `P5-08` load proof: 25 clients per board at p95 <= 150 ms and the stage report — status: `pending` — owner: —
-- [ ] `P0-35` Design system page: contract 0.3.0, missing tokens and engine chrome — status: `pending` — owner: —
 
 <!-- polier:claims -->
 ## Claims
 
+- `P0-35` in progress by dsh since 2026-10-28T19:10:07+00:00 — worktree: /Users/rasulatashev/Desktop/KI Projekte/Project air-P0-35 · slot 2
 - `P5-03` in progress by dsh since 2026-10-28T19:08:22+00:00 — worktree: /private/tmp/air-P5-03 · slot 1
 
 <!-- /polier:claims -->
