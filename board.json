@@ -6013,7 +6013,7 @@
       "satisfies": [
         "D3"
       ],
-      "status": "in_progress",
+      "status": "done",
       "depends_on": [
         "P0-35"
       ],
@@ -6052,10 +6052,19 @@
         "changelog-entry"
       ],
       "branch": "task/P0-36",
-      "worktree": "../Project air-P0-36",
-      "evidence": [],
+      "worktree": null,
+      "evidence": [
+        "reviews/evidence/P0-36-board-check-20261028T192314Z.json",
+        "reviews/evidence/P0-36-changelog-entry-20261028T192319Z.json",
+        "reviews/evidence/P0-36-design-check-20261028T192318Z.json"
+      ],
       "scope_write_forbidden": [
         "reference/"
+      ],
+      "handoff": [
+        "Closed P0-36: click selects (accent frame + 8 handles, 8 screen px at any zoom); handles resize cards, notepad, photo, checklist, table against the opposite edge with minimums.",
+        "Photo has no bar, resizes freely and takes the zone member width/height with its aspect when docked; member resize keeps the zone corner; last touched object on top.",
+        "Edges behind all objects (owner decision vs design law §8, open question). Gates green; 4 screenshots + log. Next: P0-37 engine chrome in the demo."
       ]
     },
     {

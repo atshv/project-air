@@ -1,0 +1,24 @@
+# P0-36 — live demo: select and resize, photo, edges behind: evidence
+
+- Date: 2026-10-28 (Europe/Zurich) · worktree `../Project air-P0-36` (branch `task/P0-36`, slot 2, web port 4200); assets `?v=P0-36`.
+- Method: out-of-repo CDP helper, Chrome for Testing 156 headless, real `Input.dispatchMouseEvent` / `Input.dispatchKeyEvent`. Sizes are screen px at 1440×900, zoom 1 unless noted.
+
+```
+edge z-index 1 below zone z-index 2; photo bar present: false
+start: notepad {"x":600,"y":314,"w":240,"h":89} photo {"x":600,"y":415,"w":240,"h":140} {"selected":null,"chrome":false,"status":"","zone":"274pxx315px","window":"docked"}
+click notepad: {"selected":"notepad","chrome":true,"status":"","zone":"274pxx315px","window":"docked"}
+notepad east +80 (docked): notepad {"x":600,"y":314,"w":320,"h":89} {"selected":"notepad","chrome":true,"status":"Size changed.","zone":"354pxx315px","window":"docked"}
+table south -150 (content minimum): before {"x":217,"y":317,"w":336,"h":289} after {"x":217,"y":317,"w":336,"h":289}
+table east +120: {"x":217,"y":317,"w":456,"h":289}
+photo pulled out: {"x":601,"y":477,"w":240,"h":140} {"selected":"window","chrome":true,"status":"Image window detached — free on the canvas.","zone":"354pxx163px","window":"detached"}
+free photo se +120,+60: {"x":601,"y":477,"w":360,"h":142} {"selected":"window","chrome":true,"status":"Size changed.","zone":"354pxx163px","window":"detached"}
+photo docked again: photo {"x":600,"y":415,"w":320,"h":126} notepad {"x":600,"y":314,"w":320,"h":89} {"selected":"window","chrome":true,"status":"Image window docked back in the zone.","zone":"354pxx301px","window":"docked"}
+click on empty canvas: {"selected":null,"chrome":false,"status":"Image window docked back in the zone.","zone":"354pxx301px","window":"docked"}
+card A then Esc: {"selected":null,"chrome":false,"status":"Image window docked back in the zone.","zone":"354pxx301px","window":"docked"}
+zoom 120 %, handle size 8.0x8.0 screen px
+mobile: overflow=0
+```
+
+Reading: the edge (z-index 1) lies below the zone frame (2) and the photo has no bar; a click selects the notepad and shows the chrome; its east handle +80 widens it to 320 px and the zone grows to the right keeping its corner; the table cannot get lower than its content and widens to 456 px; the free photo grows to 360 px wide and stops at the canvas bottom (142 px high); docked again it takes the notepad width (320) with its aspect ratio (126 high); a click on the empty canvas and Esc clear the selection; at 120 % zoom the handles stay 8 screen px; no horizontal overflow at 390 px. A first run showed the zone shifting 40 px left on a member resize (centre kept) and a stale raised table covering the selected photo; both were fixed before this run.
+
+Screenshots: `P0-36-docked-resize.png`, `P0-36-free-photo.png`, `P0-36-photo-adopted.png`, `P0-36-zoom-selection.png` (1440×900).

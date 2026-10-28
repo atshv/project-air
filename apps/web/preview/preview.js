@@ -72,6 +72,7 @@
     "demo.zone.nameLabel": "Zone name, click to rename",
     "demo.sheet.sumFunction": "SUM",
     "demo.status.zoneMoved": "Zone moved.",
+    "demo.status.resized": "Size changed.",
     "demo.status.checklistCount": "{done} of {total} done",
     "demo.status.checklistDone": "\u201c{item}\u201d done \u2014 {done} of {total}.",
     "demo.status.checklistOpen": "\u201c{item}\u201d open again \u2014 {done} of {total}.",
@@ -1577,6 +1578,26 @@
       item.progress = intent.progress;
     }
 
+    // P0-36: a photo that docks into a zone with another member takes that
+    // member's size along the flow — the same width when stacked, the same
+    // height side by side — and keeps its own aspect ratio. The layout is then
+    // rebuilt at the same origin with the new size.
+    function adoptMemberSize(item, candidate) {
+      if (item.key !== "window" || candidate.keys.length < 2) return candidate;
+      var other = null;
+      for (var index = 0; index < candidate.keys.length; index += 1) {
+        if (candidate.keys[index] !== item.key) other = zoneItemByKey(candidate.keys[index]);
+      }
+      if (other === null || item.width <= 0 || item.height <= 0) return candidate;
+      var aspect = item.width / item.height;
+      var width = candidate.orientation === "horizontal" ? other.height * aspect : other.width;
+      var height = candidate.orientation === "horizontal" ? other.height : other.width / aspect;
+      item.element.style.inlineSize = Math.round(width) + "px";
+      item.element.style.blockSize = Math.round(height) + "px";
+      refreshItemSizes();
+      return positionLayout(fittedLayout(candidate.keys, candidate.orientation), candidate.x, candidate.y);
+    }
+
     function commitRelease(drag) {
       var item = drag.item;
       var intent = drag.intent;
@@ -1587,7 +1608,7 @@
         var before = zoneDocked.slice();
         var beforeLayout = committedLayout();
         var beforeOrientation = beforeLayout === null ? null : beforeLayout.orientation;
-        var target = intent.layout;
+        var target = adoptMemberSize(item, intent.layout);
         if (intent.type === "group" && before.length === 0) {
           zoneName = { key: "demo.zone.nameNew", custom: null };
           renderTitle();
@@ -1677,10 +1698,13 @@
         if (zoneDocked.length === 0) return;
         var target = fittedLayout(zoneDocked, zoneOrientation);
         var previous = zoneFrame === null ? target : zoneFrame;
+        // A window resize keeps the zone's centre ratio; a content or member
+        // size change (ratio 1) keeps its top-left corner, so a member resized
+        // to the right grows the zone to the right (P0-36).
         positionLayout(
           target,
-          (zoneOrigin.x + previous.w / 2) * ratioX - target.w / 2,
-          (zoneOrigin.y + previous.h / 2) * ratioY - target.h / 2,
+          ratioX === 1 ? zoneOrigin.x : (zoneOrigin.x + previous.w / 2) * ratioX - target.w / 2,
+          ratioY === 1 ? zoneOrigin.y : (zoneOrigin.y + previous.h / 2) * ratioY - target.h / 2,
         );
         zoneOrigin = { x: target.x, y: target.y };
         renderFrame(target, true);
@@ -1924,6 +1948,248 @@
         onZoneItemPointerEnd(item, event, true);
       });
     });
+
+    // ---------- selection chrome and resize (P0-36) ----------
+    //
+    // A click selects one object (note card, notepad, photo, checklist, table
+    // card); the engine's selection chrome — a 1 px accent frame and eight 8 px
+    // handles — follows its rendered box every frame while something is
+    // selected, so it stays on the object through drags, settles and zoom. A
+    // handle drag resizes against the opposite edge or corner, 1:1, clamped to
+    // the canvas and to each object's minimum; blocks and the notepad never get
+    // lower than their content. A click on the empty canvas or Esc clears it.
+
+    var HANDLES = ["nw", "n", "ne", "e", "se", "s", "sw", "w"];
+    var selectionChrome = document.createElement("div");
+    selectionChrome.className = "demo-selection";
+    selectionChrome.setAttribute("aria-hidden", "true");
+    for (var handleIndex = 0; handleIndex < HANDLES.length; handleIndex += 1) {
+      var handleElement = document.createElement("span");
+      handleElement.className = "demo-selection__handle";
+      handleElement.setAttribute("data-handle", HANDLES[handleIndex]);
+      selectionChrome.appendChild(handleElement);
+    }
+    world.appendChild(selectionChrome);
+
+    var selectionTargets = [];
+    var selectedTarget = null;
+    var selectionFrame = 0;
+    var resizeDrag = null;
+
+    function contentHeight(element, width) {
+      var previous = element.style.blockSize;
+      element.style.inlineSize = width + "px";
+      element.style.blockSize = "auto";
+      var height = element.offsetHeight;
+      element.style.blockSize = previous;
+      return height;
+    }
+
+    cards.forEach(function (card) {
+      selectionTargets.push({
+        element: card.element,
+        minWidth: 176,
+        minHeight: 80,
+        growsWithContent: false,
+        rect: function () {
+          return { x: card.x, y: card.y, w: card.element.offsetWidth, h: card.element.offsetHeight };
+        },
+        apply: function (next) {
+          card.x = next.x;
+          card.y = next.y;
+          card.element.style.inlineSize = next.w + "px";
+          card.element.style.blockSize = next.h + "px";
+          place(card);
+          drawEdge();
+        },
+      });
+    });
+    blocks.forEach(function (block) {
+      var isSheet = block.element.getAttribute("data-demo-block") === "sheet";
+      selectionTargets.push({
+        element: block.element,
+        minWidth: isSheet ? 288 : 224,
+        minHeight: 0,
+        growsWithContent: true,
+        rect: function () {
+          return { x: block.x, y: block.y, w: block.element.offsetWidth, h: block.element.offsetHeight };
+        },
+        apply: function (next) {
+          block.x = next.x;
+          block.y = next.y;
+          block.element.style.inlineSize = next.w + "px";
+          block.element.style.blockSize = next.h + "px";
+          place(block);
+        },
+      });
+    });
+    zoneItems.forEach(function (item) {
+      var isPhoto = item.key === "window";
+      selectionTargets.push({
+        element: item.element,
+        minWidth: isPhoto ? 128 : 176,
+        minHeight: isPhoto ? 96 : 0,
+        growsWithContent: !isPhoto,
+        rect: function () {
+          return { x: item.x, y: item.y, w: item.element.offsetWidth, h: item.element.offsetHeight };
+        },
+        apply: function (next) {
+          item.element.style.inlineSize = next.w + "px";
+          item.element.style.blockSize = next.h + "px";
+          item.width = item.element.offsetWidth;
+          item.height = item.element.offsetHeight;
+          if (item.docked) {
+            // A docked member keeps its slot origin; the zone re-lays around it.
+            syncZoneGeometry(1, 1);
+          } else {
+            item.x = next.x;
+            item.y = next.y;
+            placeZoneItem(item);
+          }
+        },
+      });
+    });
+
+    function targetFor(element) {
+      for (var index = 0; index < selectionTargets.length; index += 1) {
+        if (selectionTargets[index].element === element) return selectionTargets[index];
+      }
+      return null;
+    }
+
+    function renderSelection() {
+      if (selectedTarget === null) {
+        selectionChrome.classList.remove("is-visible");
+        return;
+      }
+      var box = worldRectOf(selectedTarget.element);
+      selectionChrome.style.setProperty("--chrome-inverse", (1 / scale).toFixed(4));
+      selectionChrome.style.transform =
+        "translate3d(" + box.x.toFixed(1) + "px, " + box.y.toFixed(1) + "px, 0)";
+      selectionChrome.style.inlineSize = box.w.toFixed(1) + "px";
+      selectionChrome.style.blockSize = box.h.toFixed(1) + "px";
+      selectionChrome.classList.add("is-visible");
+    }
+
+    function tickSelection() {
+      selectionFrame = 0;
+      renderSelection();
+      if (selectedTarget !== null) selectionFrame = window.requestAnimationFrame(tickSelection);
+    }
+
+    function setSelectedTarget(target) {
+      if (selectedTarget !== null) selectedTarget.element.classList.remove("is-chrome-selected");
+      selectedTarget = target;
+      if (target !== null) target.element.classList.add("is-chrome-selected");
+      renderSelection();
+      if (target !== null && selectionFrame === 0) {
+        selectionFrame = window.requestAnimationFrame(tickSelection);
+      }
+    }
+
+    // Capture phase: the selection follows every press before the object's own
+    // drag handler runs; chrome, toolbar and zoom controls never change it.
+    surface.addEventListener(
+      "pointerdown",
+      function (event) {
+        var target = event.target;
+        if (!(target instanceof Element)) return;
+        if (target.closest(".demo-selection, .demo-toolbar, .demo-zoom")) return;
+        var hit = null;
+        for (var index = 0; index < selectionTargets.length && hit === null; index += 1) {
+          if (selectionTargets[index].element.contains(target)) hit = selectionTargets[index];
+        }
+        // Only the last touched object stays on top of its layer (design law
+        // §8): blocks and zone items drop their raised state when another
+        // object is pressed.
+        for (var blockIndex = 0; blockIndex < blocks.length; blockIndex += 1) {
+          if (hit === null || blocks[blockIndex].element !== hit.element) {
+            blocks[blockIndex].element.classList.remove("is-raised");
+          }
+        }
+        for (var itemIndex = 0; itemIndex < zoneItems.length; itemIndex += 1) {
+          if (hit === null || zoneItems[itemIndex].element !== hit.element) {
+            zoneItems[itemIndex].element.classList.remove("is-selected");
+          }
+        }
+        setSelectedTarget(hit);
+      },
+      true,
+    );
+
+    document.addEventListener("keydown", function (event) {
+      if (event.key !== "Escape" || selectedTarget === null) return;
+      var focus = document.activeElement;
+      if (focus instanceof HTMLElement && (focus.isContentEditable || focus.closest("input, textarea, select"))) {
+        return;
+      }
+      setSelectedTarget(null);
+    });
+
+    function onHandleDown(event) {
+      var handle = event.target;
+      if (!(handle instanceof Element) || selectedTarget === null || resizeDrag !== null) return;
+      if (event.pointerType === "mouse" && event.button !== 0) return;
+      event.preventDefault();
+      event.stopPropagation();
+      resizeDrag = {
+        pointerId: event.pointerId,
+        handle: handle.getAttribute("data-handle") || "se",
+        target: selectedTarget,
+        start: selectedTarget.rect(),
+        startClientX: event.clientX,
+        startClientY: event.clientY,
+      };
+      selectedTarget.element.classList.add("is-resizing");
+      try {
+        handle.setPointerCapture(event.pointerId);
+      } catch (error) {
+        // Pointer capture is best effort; the resize keeps working without it.
+      }
+    }
+
+    function onHandleMove(event) {
+      var drag = resizeDrag;
+      if (drag === null || drag.pointerId !== event.pointerId) return;
+      var ratio = worldRatio(world.getBoundingClientRect());
+      var dx = (event.clientX - drag.startClientX) / ratio;
+      var dy = (event.clientY - drag.startClientY) / ratio;
+      var start = drag.start;
+      var target = drag.target;
+      var bounds = worldBounds();
+      var west = drag.handle.indexOf("w") !== -1;
+      var east = drag.handle.indexOf("e") !== -1;
+      var north = drag.handle.indexOf("n") !== -1;
+      var south = drag.handle.indexOf("s") !== -1;
+      var left = start.x;
+      var right = start.x + start.w;
+      var top = start.y;
+      var bottom = start.y + start.h;
+      if (west) left = clamp(start.x + dx, bounds.x, right - target.minWidth);
+      if (east) right = clamp(right + dx, left + target.minWidth, bounds.x + bounds.w);
+      var width = right - left;
+      var minHeight = target.growsWithContent
+        ? Math.max(target.minHeight, contentHeight(target.element, width))
+        : target.minHeight;
+      if (north) top = clamp(start.y + dy, bounds.y, bottom - minHeight);
+      if (south) bottom = clamp(bottom + dy, top + minHeight, bounds.y + bounds.h);
+      var height = Math.max(bottom - top, minHeight);
+      if (north) top = bottom - height;
+      target.apply({ x: left, y: top, w: Math.round(width), h: Math.round(height) });
+    }
+
+    function onHandleEnd(event) {
+      var drag = resizeDrag;
+      if (drag === null || drag.pointerId !== event.pointerId) return;
+      resizeDrag = null;
+      drag.target.element.classList.remove("is-resizing");
+      if (status !== null) status.textContent = translate("demo.status.resized");
+    }
+
+    selectionChrome.addEventListener("pointerdown", onHandleDown);
+    selectionChrome.addEventListener("pointermove", onHandleMove);
+    selectionChrome.addEventListener("pointerup", onHandleEnd);
+    selectionChrome.addEventListener("pointercancel", onHandleEnd);
 
     window.addEventListener("resize", function () {
       if (resizePending) return;

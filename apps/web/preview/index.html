@@ -4,9 +4,9 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title data-i18n="page.projectAirDesignPreviewStatic">Project air design preview — static design preview</title>
-    <link rel="stylesheet" href="../../../packages/ui-kit/tokens.css?v=P0-35" />
-    <link rel="stylesheet" href="preview.css?v=P0-35" />
-    <script src="preview.js?v=P0-35" defer></script>
+    <link rel="stylesheet" href="../../../packages/ui-kit/tokens.css?v=P0-36" />
+    <link rel="stylesheet" href="preview.css?v=P0-36" />
+    <script src="preview.js?v=P0-36" defer></script>
   </head>
   <body>
     <main class="page">
@@ -23,14 +23,14 @@
         <p class="masthead__version" data-preview-meta>
           <span data-preview-version data-i18n="masthead.version">Version 0.0.1</span>
           <span data-preview-status data-i18n="masthead.unreleased">unreleased</span>
-          <span data-preview-last-change data-i18n="masthead.lastChange">Last change: P0-35 — Design system page: contract 0.3.0, missing tokens and engine chrome</span>
-          <span data-preview-last-change-time data-i18n="masthead.lastChangeTime">2026-10-28 20:14 (Europe/Zurich)</span>
+          <span data-preview-last-change data-i18n="masthead.lastChange">Last change: P0-36 — Live demo: select and resize objects, photo without bar, edges behind</span>
+          <span data-preview-last-change-time data-i18n="masthead.lastChangeTime">2026-10-28 20:22 (Europe/Zurich)</span>
         </p>
         <div class="masthead__meta">
           <span data-i18n-html="masthead.tokensPackagesUiKitTokens">Tokens: <code>packages/ui-kit/tokens.css</code></span>
           <span data-i18n-html="masthead.iconsPackagesUiKitIcons">Icons: <code>packages/ui-kit/icons/</code></span>
           <span data-i18n-html="masthead.demoPreviewJs">Demo: <code>preview.js</code></span>
-          <span data-i18n="masthead.tasks">Tasks: P0-19, P0-20, P0-21, P0-22, P0-23, P0-24, P0-25, P0-26, P0-27, P0-28, P0-29, P0-30, P0-31, P0-32, P0-33, P0-34, P0-35, P1-07</span>
+          <span data-i18n="masthead.tasks">Tasks: P0-19, P0-20, P0-21, P0-22, P0-23, P0-24, P0-25, P0-26, P0-27, P0-28, P0-29, P0-30, P0-31, P0-32, P0-33, P0-34, P0-35, P0-36, P1-07</span>
           <div
             class="preview-locale"
             role="group"
@@ -94,16 +94,19 @@
             Click the zone name in its header to rename it: Enter keeps the new name,
             Escape restores the old one, an empty name returns to the default; a zone
             formed by grouping starts as “New zone”. Drag a zone by its frame or header
-            to move it together with its items. When both items are out the empty zone
-            fades away; toolbar, zone and zoom pill are preview-only: a tool click only
-            selects it and changes nothing on the canvas.
+            to move it together with its items. Click any object to select it and drag
+            one of its eight handles to resize it; a photo dropped into a zone takes the
+            size of the other item. When both items are out the empty zone fades away;
+            toolbar, zone and zoom pill are preview-only: a tool click only selects it
+            and changes nothing on the canvas.
           </p>
           <p class="demo__legend token-caption" data-i18n="demo.toolbarPreviewOnlyZoneNotepad">
             toolbar · preview-only · drag 1:1 · dashed slot = landing place · release
             commits · above/below = stacked · left/right = side by side · drag inside =
             reorder · both out: zone fades · click name = rename · drag frame = move
-            zone · checklist: click to tick · table: click a cell, arrows move · curve ·
-            --tone-d · 1.5 px
+            zone · checklist: click to tick · table: click a cell, arrows move · click =
+            select · handles = resize · line behind all objects · curve · --tone-d · 1.5
+            px
           </p>
           <div class="demo__surface" data-demo-surface>
             <div
@@ -173,9 +176,6 @@
                     data-zone-state="docked"
                   >
                     <div class="demo-zone__window-inner">
-                      <figcaption class="demo-zone__window-bar">
-                        <span class="demo-zone__window-title" data-i18n="demo.photo">Photo</span>
-                      </figcaption>
                       <img
                         class="demo-zone__window-image"
                         src="assets/demo-zone-image.webp"

@@ -971,10 +971,13 @@ button {
   will-change: transform;
 }
 
+/* Owner decision 2026-10-28 (P0-36): the connection line runs behind every
+   object, zones included — below the zone layer instead of design law §8's
+   edge layer above the zones. */
 .demo__edge {
   position: absolute;
   inset: 0;
-  z-index: var(--layer-edges);
+  z-index: var(--layer-canvas-background);
   inline-size: 100%;
   block-size: 100%;
   visibility: hidden;
@@ -1422,37 +1425,20 @@ button {
 /* The clipping lives on an inner wrapper: the zone item itself must not clip,
    so its ring (::before) and card shadow (::after) stay visible while it is
    dragged and after it is detached. */
+/* P0-36: the photo has no title bar; the image fills the window. */
 .demo-zone__window-inner {
   display: grid;
-  grid-template-rows: var(--space-32) 1fr;
+  grid-template-rows: 1fr;
   block-size: 100%;
   overflow: hidden;
   border-radius: calc(var(--radius-md) - var(--border-width));
-}
-
-.demo-zone__window-bar {
-  display: flex;
-  align-items: center;
-  gap: var(--space-8);
-  padding-inline: var(--space-12);
-  border-block-end: var(--border-width) solid var(--border);
-  background-color: var(--surface);
-}
-
-.demo-zone__window-title {
-  color: var(--muted);
-  font-size: var(--text-12);
-  font-weight: var(--weight-medium);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 .demo-zone__window-image {
   display: block;
   inline-size: 100%;
   block-size: 100%;
-  border-radius: var(--radius-sm);
+  min-block-size: 0;
   background-color: var(--canvas);
   object-fit: cover;
 }
@@ -2750,4 +2736,65 @@ kbd {
   .chrome-delete {
     transition: none;
   }
+}
+
+/* ---------- selection chrome and resize (P0-36) ---------- */
+
+/* The engine's selection chrome (L10/L14): a 1 px accent frame and eight 8 px
+   handles that stay the same size on screen at every zoom (--chrome-inverse is
+   1 / zoom). It sits on the snap-guide layer, which holds the selection frame
+   (design law §8). */
+.demo-selection {
+  --chrome-inverse: 1;
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline-start: 0;
+  z-index: var(--layer-snap-guides);
+  display: none;
+  border: calc(var(--border-width) * var(--chrome-inverse)) solid var(--accent);
+  pointer-events: none;
+}
+
+.demo-selection.is-visible {
+  display: block;
+}
+
+.demo-selection__handle {
+  position: absolute;
+  inline-size: calc(var(--space-8) * var(--chrome-inverse));
+  block-size: calc(var(--space-8) * var(--chrome-inverse));
+  background-color: var(--accent);
+  pointer-events: auto;
+  touch-action: none;
+  transform: translate(-50%, -50%);
+}
+
+/* An invisible 16 px hit area around the 8 px handle. */
+.demo-selection__handle::before {
+  content: "";
+  position: absolute;
+  inset: calc(-1 * var(--space-4) * var(--chrome-inverse));
+}
+
+.demo-selection__handle[data-handle="nw"] { inset-block-start: 0; inset-inline-start: 0; cursor: nwse-resize; }
+.demo-selection__handle[data-handle="n"] { inset-block-start: 0; inset-inline-start: 50%; cursor: ns-resize; }
+.demo-selection__handle[data-handle="ne"] { inset-block-start: 0; inset-inline-start: 100%; cursor: nesw-resize; }
+.demo-selection__handle[data-handle="e"] { inset-block-start: 50%; inset-inline-start: 100%; cursor: ew-resize; }
+.demo-selection__handle[data-handle="se"] { inset-block-start: 100%; inset-inline-start: 100%; cursor: nwse-resize; }
+.demo-selection__handle[data-handle="s"] { inset-block-start: 100%; inset-inline-start: 50%; cursor: ns-resize; }
+.demo-selection__handle[data-handle="sw"] { inset-block-start: 100%; inset-inline-start: 0; cursor: nesw-resize; }
+.demo-selection__handle[data-handle="w"] { inset-block-start: 50%; inset-inline-start: 0; cursor: ew-resize; }
+
+/* A resized note card clips its text to its box (its shadow is its own box
+   shadow, so the clip keeps it); the notepad and the blocks never get lower
+   than their content instead (they grow, L02). Transitions are off while a
+   handle is dragged so the object follows the pointer 1:1. */
+.demo-card {
+  overflow: hidden;
+}
+
+.demo-card.is-resizing,
+.demo-block.is-resizing,
+.demo-zone__item.is-floating.is-resizing {
+  transition: none;
 }

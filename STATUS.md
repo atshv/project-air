@@ -122,7 +122,10 @@
 
 ## Ready now
 
-- none
+- `P0-37` Live demo: engine canvas chrome
+  - P0-36: Closed P0-36: click selects (accent frame + 8 handles, 8 screen px at any zoom); handles resize cards, notepad, photo, checklist, table against the opposite edge with minimums.
+  - P0-36: Photo has no bar, resizes freely and takes the zone member width/height with its aspect when docked; member resize keeps the zone corner; last touched object on top.
+  - P0-36: Edges behind all objects (owner decision vs design law §8, open question). Gates green; 4 screenshots + log. Next: P0-37 engine chrome in the demo.
 
 ## Done
 
@@ -209,11 +212,11 @@
 - [x] `P5-05` Presence: cursors, selection, name and colour — status: `done` — owner: —
 - [x] `P0-34` Live demo: move a zone with its members — status: `done` — owner: —
 - [x] `P0-35` Design system page: contract 0.3.0, missing tokens and engine chrome — status: `done` — owner: —
+- [x] `P0-36` Live demo: select and resize objects, photo without bar, edges behind — status: `done` — owner: —
 
 ## In progress
 
 - [ ] `P5-06` Durability and reconnect: restart, catch-up and snapshot compaction — status: `in_progress` — owner: lead
-- [ ] `P0-36` Live demo: select and resize objects, photo without bar, edges behind — status: `in_progress` — owner: —
 
 ## Blocked / failed
 
@@ -232,7 +235,6 @@
 <!-- polier:claims -->
 ## Claims
 
-- `P0-36` in progress by dsh since 2026-10-28T19:18:41+00:00 — worktree: /Users/rasulatashev/Desktop/KI Projekte/Project air-P0-36 · slot 2
 - `P5-06` in progress by dsh since 2026-10-28T19:22:36+00:00 — worktree: /private/tmp/air-P5-06 · slot 1
 
 <!-- /polier:claims -->
