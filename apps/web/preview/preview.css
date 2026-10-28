@@ -1,5 +1,70 @@
 /* P0-19 static design preview — layout only, all visual values from
-   packages/ui-kit/tokens.css. No raw colours, no external assets. */
+   packages/ui-kit/tokens.css. No raw colours outside the preview-scoped
+   light theme below, no external assets. */
+
+/* ---------- light theme (P0-42, preview-scoped) ----------
+
+   The dark palette is the design's base and comes unchanged from
+   packages/ui-kit/tokens.css. This block overrides the colour tokens for the
+   whole preview: page, canvas, surfaces, cards, checklists, zones, blocks,
+   toolbar, selection frames and teammate chips. The accent and the five tones
+   are darker variants of the dark tokens' hues; text keeps at least 4.5:1,
+   icons and lines at least 3:1 on their surface.
+
+   Token      light value                      contrast on --bg / --card
+   --bg       oklch(0.966 0.006 150)           — page background
+   --canvas   oklch(0.947 0.008 150)           — canvas surface
+   --surface  oklch(0.985 0.004 150)           — panels, bars, menus
+   --card     oklch(0.998 0.001 150)           — cards and blocks
+   --fg       oklch(0.21 0.008 150)            16.0 / 17.6
+   --muted    oklch(0.43 0.012 150)             7.3 / 8.0
+   --accent   oklch(0.455 0.065 165)            6.4 / 7.0
+   --danger   oklch(0.455 0.13 25)              7.1 / 7.7
+   --tone-a   oklch(0.455 0.065 165)            6.4 / 7.0
+   --tone-b   oklch(0.455 0.09 80)              6.7 / 7.3
+   --tone-c   oklch(0.45 0.09 295)              7.0 / 7.7
+   --tone-d   oklch(0.45 0.08 255)              6.8 / 7.4
+   --tone-e   oklch(0.455 0.1 40)               6.9 / 7.6
+
+   Translucent tokens use the same dark hue with light-mode alphas. The control
+   boundaries need a solid edge on the light surfaces: --border-strong 50 % and
+   --accent-line 70 % keep the unchecked box border and the zone-drop outline
+   at >= 3:1 on --card and --canvas. The two shadows become soft light shadows.
+   The sRGB equivalents and the full table are in README.md.
+
+   The palette is preview-scoped on purpose: promoting it into
+   packages/ui-kit/tokens.json is a follow-up owner decision, and the shared
+   design tokens stay the single source for the product. */
+
+:root[data-theme="light"] {
+  color-scheme: light;
+
+  --bg: oklch(0.966 0.006 150);
+  --canvas: oklch(0.947 0.008 150);
+  --surface: oklch(0.985 0.004 150);
+  --card: oklch(0.998 0.001 150);
+  --fg: oklch(0.21 0.008 150);
+  --muted: oklch(0.43 0.012 150);
+  --faint: oklch(0.21 0.008 150 / 0.06);
+  --border: oklch(0.21 0.008 150 / 0.14);
+  --border-strong: oklch(0.21 0.008 150 / 0.5);
+  --accent: oklch(0.455 0.065 165);
+  --accent-soft: oklch(0.455 0.065 165 / 0.12);
+  --accent-line: oklch(0.455 0.065 165 / 0.7);
+  --danger: oklch(0.455 0.13 25);
+  --tone-a: oklch(0.455 0.065 165);
+  --tone-b: oklch(0.455 0.09 80);
+  --tone-c: oklch(0.45 0.09 295);
+  --tone-d: oklch(0.45 0.08 255);
+  --tone-e: oklch(0.455 0.1 40);
+  --card-shadow: 0 10px 30px -16px oklch(0.25 0.012 150 / 0.22);
+  --shadow: 0 1px 0 oklch(1 0 0 / 0.7) inset,
+    0 24px 60px -24px oklch(0.25 0.012 150 / 0.16);
+
+  /* The done entry keeps the design-law dim of 0.6; in light mode it uses the
+     main text colour so the dimmed result still clears 4.5:1 on --card. */
+  --demo-done-text: var(--fg);
+}
 
 *,
 *::before,
@@ -117,10 +182,21 @@ button {
   color: var(--fg);
 }
 
-/* ---------- locale switch (preview-only) ---------- */
+/* ---------- language and theme switches (preview-only) ---------- */
+
+/* The theme group sits below the DE/EN switch at the top right of the meta
+   row (P0-42); on narrow viewports the wrapper stays right-aligned when the
+   meta spans wrap above it. */
+.masthead__switches {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--space-8);
+  margin-inline-start: auto;
+}
 
 .masthead__meta .preview-locale {
-  margin-inline-start: auto;
+  margin-inline-start: 0;
 }
 
 .preview-locale {
@@ -176,6 +252,103 @@ button {
   inline-size: var(--border-width);
   block-size: var(--space-12);
   background-color: var(--border);
+}
+
+/* Sun/moon theme switch (P0-42): the same segmented pill and the same states
+   as the locale switch, one step lower in the masthead. */
+.preview-theme {
+  display: inline-flex;
+  align-items: stretch;
+  border: var(--border-width) solid var(--border);
+  border-radius: var(--radius-pill);
+  background-color: var(--surface);
+}
+
+.preview-theme__option {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-inline-size: var(--click-target);
+  min-block-size: var(--click-target);
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-pill);
+  background-color: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  transition: background-color var(--motion-hover) ease, color var(--motion-hover) ease;
+}
+
+.preview-theme__option:hover {
+  background-color: var(--faint);
+  color: var(--fg);
+}
+
+.preview-theme__option:active {
+  background-color: var(--faint);
+  color: var(--fg);
+  transform: scale(0.97);
+}
+
+.preview-theme__option:focus-visible {
+  outline: var(--outline-width) solid var(--accent);
+  outline-offset: var(--outline-offset);
+}
+
+.preview-theme__option[aria-pressed="true"],
+:root[data-theme="light"] .preview-theme__option[data-preview-theme="light"],
+:root[data-theme="dark"] .preview-theme__option[data-preview-theme="dark"] {
+  background-color: var(--accent-soft);
+  color: var(--accent);
+}
+
+.preview-theme__icon {
+  inline-size: var(--icon-card);
+  block-size: var(--icon-card);
+}
+
+.preview-theme__divider {
+  align-self: center;
+  inline-size: var(--border-width);
+  block-size: var(--space-12);
+  background-color: var(--border);
+}
+
+.preview-theme__option::after {
+  content: attr(data-label);
+  position: absolute;
+  inset-block-start: 50%;
+  inset-inline-end: calc(100% + var(--space-8));
+  z-index: var(--layer-context-menu);
+  padding: var(--space-4) var(--space-8);
+  border: var(--border-width) solid var(--border);
+  border-radius: var(--radius-tooltip);
+  background-color: var(--surface);
+  color: var(--fg);
+  font-size: var(--text-12);
+  font-weight: var(--weight-medium);
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-50%);
+  transition: opacity var(--motion-fade) ease var(--motion-tooltip);
+}
+
+.preview-theme__option:hover::after,
+.preview-theme__option:focus-visible::after {
+  opacity: 1;
+}
+
+.preview-theme__option:focus-visible::after {
+  transition-delay: 0s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .preview-theme__option,
+  .preview-theme__option::after {
+    transition: none;
+  }
 }
 
 /* ---------- sections ---------- */
@@ -2235,10 +2408,12 @@ kbd {
   outline-offset: var(--outline-offset);
 }
 
-/* A done entry is clearly darker than an open one, never struck through
-   (design law §6, P0-39/P0-41): --muted at opacity 0.6. */
+/* A done entry is clearly dimmer than an open one, never struck through
+   (design law §6, P0-39/P0-41): --muted at opacity 0.6. The light theme
+   supplies --demo-done-text so the dimmed result stays above 4.5:1; dark
+   keeps the --muted fallback unchanged. */
 .demo-checklist__box:checked + .demo-checklist__text {
-  color: var(--muted);
+  color: var(--demo-done-text, var(--muted));
   opacity: 0.6;
 }
 
@@ -2629,6 +2804,15 @@ kbd {
   cursor: pointer;
   opacity: 0;
   transition: opacity var(--motion-hover) ease, background-color var(--motion-hover) ease;
+}
+
+/* The zone specimen fills with --tone-d, so its faint header is dark in both
+   themes. In the light theme the P0-35 specimen keeps its fill but the title and
+   delete icon take the card colour: 7.8:1 instead of the 2.2:1 of --fg. The
+   dark specimen is unchanged. */
+:root[data-theme="light"] .chrome-zone__title,
+:root[data-theme="light"] .chrome-delete {
+  color: var(--card);
 }
 
 .chrome-zone:hover .chrome-delete,
@@ -3266,7 +3450,9 @@ kbd {
   opacity: 1;
 }
 
-.demo-remote.is-shown.is-idle {
+/* The idle cue fades the pointer only: the name chip keeps its contrast, so the
+   label stays readable while the resting pointer still reads as idle (P0-42). */
+.demo-remote.is-shown.is-idle .demo-remote__pointer {
   opacity: 0.4;
 }
 

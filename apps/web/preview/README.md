@@ -1,4 +1,4 @@
-# Design preview (P0-19, P0-20, P0-21, P0-22, P0-23, P0-24, P0-25, P0-26, P0-27, P0-28, P0-29, P0-30, P0-31, P0-32, P0-33, P0-34, P0-35, P0-36, P0-37, P0-38, P0-39, P0-40, P0-41, P1-07)
+# Design preview (P0-19, P0-20, P0-21, P0-22, P0-23, P0-24, P0-25, P0-26, P0-27, P0-28, P0-29, P0-30, P0-31, P0-32, P0-33, P0-34, P0-35, P0-36, P0-37, P0-38, P0-39, P0-40, P0-41, P0-42, P1-07)
 
 A design preview of the Project air design system. It is **not the product**: there is no engine,
 no data, no server and no build step. It exists so the owner can see the look and feel between
@@ -15,9 +15,9 @@ its two values come from:
   `0.0.1 – unreleased`; the status word comes from the same heading. `CHANGELOG.md` is the display
   source and currently agrees with the root `package.json` version `0.0.1`.
 - **Last change** — the newest preview change entry, currently
-  `.changes/P0-41-rounded-contents.md`; the line shows the task id and that task's title from
-  `board.json` / the task brief: `P0-41 — Live demo: rounded frames, darker done items, contents instead of text`. The line follows the
-  `P0-*` preview tasks (P0-19 … P0-41, P1-07); the engine tasks
+  `.changes/P0-42-light-theme.md`; the line shows the task id and that task's title from
+  `board.json` / the task brief: `P0-42 — Live demo: light theme with sun/moon icons under DE/EN`. The line follows the
+  `P0-*` preview tasks (P0-19 … P0-42, P1-07); the engine tasks
   (`P4-*`) and the other stages run in parallel and do not move it, so "highest numeric id" alone is
   not the rule. If several files exist for the same preview task, the most recent one is used;
   `.changes/README.md` and `.changes/TEMPLATE.md` do not count as entries.
@@ -55,7 +55,10 @@ task.
   32 px pill, 12 px glyphs, 32 × 32 px hit areas).
 - A **DE/EN switch** at the top right of the masthead: the whole page (all text, `aria-label`s,
   `alt` texts and the document title) switches between English and German, the choice persists in
-  `localStorage`, and `<html lang>` follows the switch.
+  `localStorage`, and `<html lang>` follows the switch. Below it a **sun/moon theme switch** turns
+  the page and the demo board light or dark; without a stored choice the page follows the system
+  `prefers-color-scheme` (dark is the fallback), the choice persists in
+  `localStorage.preview-theme` and the theme is independent of the language.
 - Colour swatches with their token names (`--bg` … `--tone-e`), including the translucent tokens over
   `--card`.
 - The typography scale (serif and sans, 28/24/22/15/13/12/11 px, weights, line height, type label).
@@ -68,9 +71,12 @@ task.
 - A sample board composition (zones, note cards, a block, a connection), clearly labelled as a
   static design preview.
 
-All colour, spacing, radius, typography, motion, shadow and layer values are read as
-`var(--…)` from the generated [`packages/ui-kit/tokens.css`](../../../packages/ui-kit/tokens.css); the
-preview files contain no raw colour values and no new tokens. Icons are loaded from
+All colour, spacing, radius, typography, motion, shadow and layer values of the dark theme are read
+as `var(--…)` from the generated
+[`packages/ui-kit/tokens.css`](../../../packages/ui-kit/tokens.css); the preview files contain no raw
+colour values outside the preview-scoped light theme block and no new shared tokens. That light
+palette and its contrast values are documented in
+[Light theme and the sun/moon switch](#light-theme-and-the-sunmoon-switch-p0-42) below. Icons are loaded from
 [`packages/ui-kit/icons/`](../../../packages/ui-kit/icons/). There are no external fonts, no CDNs, no
 remote images and no framework, and no build step: the bilingual texts are plain JSON files that
 `preview.js` fetches over HTTP (`locales/en.json`, `locales/de.json`). The old "no images" rule has
@@ -305,8 +311,8 @@ of P5-05 (cursor, selection, name, colour; ephemeral):
 - **Selections** — while dwelling with a selection, the object shows a 1.5 px frame in the
   person's colour, without a ring. The viewer's selection, content, undo history and status line
   are never touched.
-- **Idle** — after 5 s at rest a cursor fades to 0.4 (`--motion-fade`); one long dwell per loop
-  shows it.
+- **Idle** — after 5 s at rest the pointer dot fades to 0.4 (`--motion-fade`) while the name chip
+  keeps its full contrast, so the label stays readable; one long dwell per loop shows it.
 - **Presence line** — "On this board: You, Lena, Jonas — simulated teammates, nothing is sent"
   above the canvas (not a floating element, §9), with 8 px colour dots.
 - **Cost** — the loop runs only while the canvas is on screen and the page is visible
@@ -501,6 +507,96 @@ preview renders English before any script runs and still works without JavaScrip
   placeholders; switching the language clears the status line so no mixed-language sentence stays on
   screen.
 
+## Light theme and the sun/moon switch (P0-42)
+
+The preview has a light variant next to the dark palette. The dark palette stays the design's base
+and still reads every value from `packages/ui-kit/tokens.css`; the light variant is a preview-scoped
+`:root[data-theme="light"]` block in [`preview.css`](preview.css) that overrides the colour tokens
+for the whole page and the demo board — page, canvas, surfaces, cards, checklists, zones, blocks,
+toolbar, selection frames and teammate chips — sets `color-scheme: light` and swaps the two shadows
+for soft light-mode shadows. No layout, spacing, radius or motion value changes.
+
+### Palette
+
+The accent and the five tones are darker variants of the dark tokens' hues. Text keeps at least
+4.5:1 and icons/lines at least 3:1 on their surface. The values are written as `oklch()` in
+`preview.css` (perceptually uniform, same-hue darker variants); this table lists the sRGB
+equivalents for review:
+
+| Token | sRGB | oklch | Contrast on `--bg` / `--card` |
+| --- | --- | --- | --- |
+| `--bg` | `#f1f5f2` | 0.966 0.006 150 | page background |
+| `--canvas` | `#eaefeb` | 0.947 0.008 150 | canvas surface |
+| `--surface` | `#f8fbf9` | 0.985 0.004 150 | panels, bars, menus |
+| `--card` | `#fefffe` | 0.998 0.001 150 | cards and blocks |
+| `--fg` | `#161916` | 0.21 0.008 150 | 16.1 / 17.6 |
+| `--muted` | `#4b524c` | 0.43 0.012 150 | 7.3 / 8.0 |
+| `--accent` | `#30624e` | 0.455 0.065 165 | 6.4 / 7.0 |
+| `--danger` | `#91312f` | 0.455 0.13 25 | 7.1 / 7.7 |
+| `--tone-a` | `#30624e` | 0.455 0.065 165 | 6.4 / 7.0 |
+| `--tone-b` | `#71500a` | 0.455 0.09 80 | 6.7 / 7.3 |
+| `--tone-c` | `#594a82` | 0.45 0.09 295 | 7.0 / 7.7 |
+| `--tone-d` | `#355781` | 0.45 0.08 255 | 6.8 / 7.4 |
+| `--tone-e` | `#844128` | 0.455 0.1 40 | 6.9 / 7.6 |
+
+The translucent tokens use the same dark hue with light-mode alphas: `--faint` 6 %, `--border`
+14 %, `--border-strong` 50 %, `--accent-soft` 12 % and `--accent-line` 70 %. The two control
+boundaries need a solid edge on the light surfaces: `--border-strong` composites to `#8a8c8a` on
+`--card` (3.37:1) and `#808480` on `--canvas` (3.26:1) for the unchecked checkbox border, and
+`--accent-line` to `#6d9182` (3.46:1) and `#678c7d` (3.19:1) for the zone-drop outline. Both stay
+above the 3:1 non-text target; the dark alphas are unchanged. The two shadows become soft light
+shadows: `--card-shadow` and `--shadow` use a 16–22 % dark green-grey instead of the dark theme's
+60–70 % black.
+
+The P0-35 chrome zone specimen fills with `--tone-d`, so its faint header stays dark in both
+themes. In the dark theme its title and delete icon keep the inherited `--fg` (1.91:1, the
+pre-existing specimen value, unchanged). In the light theme those two elements take `--card` on
+the same fill: `#fefffe` on `#33537b`, 7.84:1 measured for both, so the light page meets the text
+target there without changing the dark specimen.
+
+The idle teammate state fades only the 16 px pointer dot to 0.4; the name chip keeps its normal
+`--bg`-on-`--person` text (6.69:1 in light, unchanged in dark), so the resting pointer reads as
+idle while the label stays readable.
+
+The P0-41 done entry keeps design law §6's 0.6 opacity. In the light theme it takes `--fg` at that
+opacity (4.6:1 on `--card`) through `--demo-done-text`, because `--muted` at 0.6 would fall below
+4.5:1 when composited; the dark theme keeps `--muted` at 0.6 unchanged. Rounded frames, the
+contents list and every other P0-41 behaviour are shared by both themes.
+
+The palette is preview-scoped on purpose: promoting it into `packages/ui-kit/tokens.json` — and with
+it the generated CSS, C++ header and layers — is a follow-up owner decision. The shared design
+tokens stay the single source for the product.
+
+### The sun/moon switch
+
+Below the DE/EN switch sits a theme group with two icon-only buttons: **sun** for light and
+**moon** for dark. The icons are inline SVG line icons in the ui-kit style (24 grid, 1.6 stroke,
+`currentColor`, round caps); there are no character icons, no emoji and no external assets. The
+group and both buttons take their accessible names from `theme.group`, `theme.light` and
+`theme.dark` in both locale files; the selected button has `aria-pressed="true"`. The group is the
+same segmented pill as the locale switch, with rest `--muted`, hover `--faint`, pressed
+`scale(0.97)`, a visible focus-visible `--accent` outline and the selected `--accent-soft`
+background. `Tab` reaches both buttons and `Enter`/`Space` toggle them; none of this touches the
+`<details>` keyboard behaviour of the P0-41 contents list.
+
+The theme resolves in this order: a stored `preview-theme` (`light` or `dark`) wins; without a
+valid stored value the page follows the system `prefers-color-scheme` (a light system shows the
+light page, a dark system the dark page); dark is the final fallback when the preference is
+unavailable. A small inline script in `<head>`, before the stylesheets, reads the key, falls back
+to `matchMedia("(prefers-color-scheme: light)")` and sets `<html data-theme>`; it therefore applies
+before the first paint in both directions, so a light system first load and a light reload never
+flash the dark page. `preview.js` resolves the same order if it runs without the inline bootstrap,
+syncs `aria-pressed`, applies later choices and stores them under `localStorage.preview-theme`.
+The theme is independent of `preview-locale`: switching the language never changes the theme and
+switching the theme never reloads a locale.
+
+Evidence for the theme layer: `P0-42-dark-en-desktop.png`, `P0-42-light-en-desktop.png`,
+`P0-42-light-de-desktop.png`, `P0-42-light-de-mobile.png` (1440 × 900 and 390 × 844), plus the
+extra dark/light board, selection, contents, mobile and reload captures, the
+`P0-42-light-system-desktop.png` default capture (CDP-emulated light `prefers-color-scheme`, no
+stored value) and `P0-42-browsertest.log` under
+[`reviews/evidence/`](../../../reviews/evidence/).
+
 ## Cache-busted preview assets (P0-27)
 
 A changed preview must never be rendered with cached CSS or JavaScript — the owner once saw the new
@@ -508,9 +604,9 @@ P0-26 markup with the old stylesheet and a broken-looking demo. The preview ther
 assets with a version query:
 
 ```html
-<link rel="stylesheet" href="../../../packages/ui-kit/tokens.css?v=P0-41" />
-<link rel="stylesheet" href="preview.css?v=P0-41" />
-<script src="preview.js?v=P0-41" defer></script>
+<link rel="stylesheet" href="../../../packages/ui-kit/tokens.css?v=P0-42" />
+<link rel="stylesheet" href="preview.css?v=P0-42" />
+<script src="preview.js?v=P0-42" defer></script>
 ```
 
 - **Bump rule:** every task that changes a file in `apps/web/preview/` — or the shared
@@ -519,7 +615,7 @@ assets with a version query:
   never cached and gets the current files, which also covers a changed design system that would
   otherwise be served from the cached token stylesheet.
 - The locale files reuse the script's version automatically: `preview.js` reads the `v` query of its
-  own script URL and appends it to the locale request (`locales/de.json?v=P0-41`), so one bump
+  own script URL and appends it to the locale request (`locales/de.json?v=P0-42`), so one bump
   covers the translations as well.
 - The icon SVGs are referenced from `preview.css` and keep stable, unversioned URLs; they only
   change with a design-system task, and every such task bumps the preview version anyway.
@@ -562,9 +658,9 @@ fetch, no build step and no framework — so it also renders from `file://`. Eve
 
 | File | Purpose |
 | --- | --- |
-| `index.html` | The page, including the demo markup. |
-| `preview.css` | Layout only; every visual value is a token. |
-| `preview.js` | The dependency-free pointer and keyboard demo, the toolbar selection state and the DE/EN locale controller. |
+| `index.html` | The page, the demo markup, the masthead switches and the pre-paint theme bootstrap. |
+| `preview.css` | Layout; every visual value is a token, plus the preview-scoped light theme block. |
+| `preview.js` | The dependency-free pointer and keyboard demo, the toolbar selection state, the DE/EN locale controller and the theme controller. |
 | `locales/en.json` | English strings and translated attributes for the whole page. |
 | `locales/de.json` | German strings and translated attributes, same key set as `en.json`. |
 | `assets/demo-zone-image.webp` | The single owner-supplied demo photo in the static zone. |
@@ -576,7 +672,10 @@ Serve the **repository root**, not this folder, so the relative token and icon p
 the slot's `web` port from `.polier-slot` (never hard-code it), then:
 
 ```sh
-cd "/Users/rasulatashev/Desktop/KI Projekte/Project air-P0-41"
+# Replace <worktree> with the repository root of your task checkout
+# (P0-42 ran in /tmp/air-P0-42 on branch task/P0-42; the path is worktree-specific
+# and goes stale after merge).
+cd "<worktree>"
 PORT=$(python3 -c "import json; print(json.load(open('.polier-slot'))['ports']['web'])")
 python3 -m http.server "$PORT" --bind 127.0.0.1
 ```
@@ -669,7 +768,15 @@ line and tasks in English and German),
 `P0-40-team.png`, `P0-40-team-zoom.png`, `P0-40-team-idle.png`, `P0-40-team-de.png` (1440×900) and
 `P0-40-team-mobile.png` (390×844),
 `P0-41-frame-round.png`, `P0-41-corner-arc.png`, `P0-41-checklist.png`, `P0-41-contents.png`,
-`P0-41-contents-open-de.png` (1440×900) and `P0-41-contents-mobile.png` (390×844) and the
+`P0-41-contents-open-de.png` (1440×900) and `P0-41-contents-mobile.png` (390×844),
+`P0-42-dark-en-desktop.png`, `P0-42-light-en-desktop.png`, `P0-42-light-de-desktop.png`,
+`P0-42-dark-de-desktop.png` (1440×900), `P0-42-light-en-mobile.png`, `P0-42-light-de-mobile.png`,
+`P0-42-dark-en-mobile.png`, `P0-42-dark-de-mobile.png` (390×844),
+`P0-42-light-de-board-desktop.png`, `P0-42-light-de-selection.png` (1440×900),
+`P0-42-light-de-board-mobile.png` (390×1800), `P0-42-light-de-contents.png` (1440×900),
+`P0-42-light-en-reload-desktop.png` and `P0-42-light-system-desktop.png` (1440×900, light system
+preference with no stored value) and the
+`P0-42-browsertest.log` verification log; the older
 `P0-19-preview.log` / `P0-20-preview.log` / `P0-21-preview.log` / `P0-22-preview.log` /
 `P0-23-preview.log` / `P0-24-preview.log` / `P0-25-preview.log` / `P0-26-preview.log` /
 `P0-27-preview.log` / `P0-28-preview.log` / `P0-29-preview.log` / `P0-30-preview.log` /

@@ -217,11 +217,11 @@
 - [x] `P0-39` Live demo: quiet resize frame, done items dimmed, design rules page — status: `done` — owner: —
 - [x] `P0-40` Live demo: two teammates on the board — status: `done` — owner: —
 - [x] `P0-41` Live demo: rounded frames, darker done items, contents instead of text — status: `done` — owner: —
+- [x] `P0-42` Live demo: light theme with sun/moon icons under DE/EN — status: `done` — owner: —
 
 ## In progress
 
 - [ ] `P5-07` crdt-convergence proof: 10,000 rounds, offline clients and own-only undo — status: `in_progress` — owner: lead
-- [ ] `P0-42` Live demo: light theme with sun/moon icons under DE/EN — status: `in_progress` — owner: lead
 
 ## Blocked / failed
 
@@ -238,7 +238,7 @@
 <!-- polier:claims -->
 ## Claims
 
-- `P0-42` in progress by dsh since 2026-10-28T20:56:10+00:00 — worktree: /private/tmp/air-P0-42 · slot 3
+- `P5-07` in progress by dsh since 2026-10-28T21:36:55+00:00 — worktree: /private/tmp/air-P5-07 · slot 1
 
 <!-- /polier:claims -->
 

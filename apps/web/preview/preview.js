@@ -5,7 +5,8 @@
 // P0-28/P0-29 the zone detach, collapse and re-grouping interaction, P0-30 the
 // placement-driven orientation, reorder/swap and release-commit drag model and
 // P0-31 the live release preview (landing slot, room-making, shrinking and ghost
-// frames) with one calm settle curve.
+// frames) with one calm settle curve, and P0-42 the light/dark theme controller
+// (the stored theme is applied by an inline script before first paint).
 // Plain DOM, pointer events and one SVG path: no dependencies, no engine, no data.
 // Card positions, edge anchors and zoom maths use the world layer, which equals
 // the demo surface on desktop and is the grid row below the toolbar strip in the
@@ -49,6 +50,12 @@
   var LOCALE_DEFAULT = "en";
   var LOCALE_LANGUAGES = ["en", "de"];
   var LOCALE_ASSET_QUERY = "v";
+  // The inline script in index.html resolves the same key and the system
+  // preference before the stylesheets paint; preview.js only syncs the buttons
+  // and stores later choices (P0-42).
+  var THEME_STORAGE_KEY = "preview-theme";
+  var THEME_DEFAULT = "dark";
+  var THEME_THEMES = ["dark", "light"];
   // English fallbacks for the status strings when the locale file cannot be loaded.
   var STATUS_FALLBACK = {
     "demo.status.card": "Card {label} at column {column}, row {row}.",
@@ -248,6 +255,79 @@
         });
       })(options[o]);
     }
+  }
+
+  function readStoredTheme() {
+    try {
+      var value = window.localStorage.getItem(THEME_STORAGE_KEY);
+      return typeof value === "string" ? value : null;
+    } catch (error) {
+      return null;
+    }
+  }
+
+  function storeTheme(theme) {
+    try {
+      window.localStorage.setItem(THEME_STORAGE_KEY, theme);
+    } catch (error) {
+      // Storage can be unavailable (private mode, file://); the switch still works.
+    }
+  }
+
+  function prefersLightTheme() {
+    try {
+      return window.matchMedia("(prefers-color-scheme: light)").matches;
+    } catch (error) {
+      return false;
+    }
+  }
+
+  // A stored valid choice wins; otherwise the system preference decides, and
+  // dark stays the final fallback (P0-42).
+  function resolveTheme() {
+    var stored = readStoredTheme();
+    if (THEME_THEMES.indexOf(stored) !== -1) return stored;
+    return prefersLightTheme() ? "light" : THEME_DEFAULT;
+  }
+
+  function updateThemeSwitch(theme) {
+    var options = document.querySelectorAll("[data-preview-theme]");
+    for (var o = 0; o < options.length; o += 1) {
+      var active = options[o].getAttribute("data-preview-theme") === theme;
+      options[o].setAttribute("aria-pressed", active ? "true" : "false");
+    }
+  }
+
+  // Applies the theme on the root element; the CSS tokens do the rest. The
+  // inline script already set the resolved theme before first paint, so this is
+  // mostly the aria-pressed sync and the store after a click.
+  function applyTheme(theme, persist) {
+    if (THEME_THEMES.indexOf(theme) === -1) theme = THEME_DEFAULT;
+    document.documentElement.setAttribute("data-theme", theme);
+    updateThemeSwitch(theme);
+    if (persist) storeTheme(theme);
+  }
+
+  function setupThemeSwitcher() {
+    var group = document.querySelector("[data-preview-theme-group]");
+    if (group === null) return;
+    var options = group.querySelectorAll("[data-preview-theme]");
+    for (var o = 0; o < options.length; o += 1) {
+      (function (option) {
+        option.addEventListener("click", function () {
+          var theme = option.getAttribute("data-preview-theme");
+          if (theme !== null) applyTheme(theme, true);
+        });
+      })(options[o]);
+    }
+  }
+
+  // The pre-paint value wins; if the script runs without the inline bootstrap,
+  // resolve the stored choice, then the system preference, then dark.
+  function initTheme() {
+    var preapplied = document.documentElement.getAttribute("data-theme");
+    var theme = THEME_THEMES.indexOf(preapplied) !== -1 ? preapplied : resolveTheme();
+    applyTheme(theme, false);
   }
 
   function readPixelToken(name, fallback) {
@@ -3119,6 +3199,8 @@
       setupTeam(demos[i]);
     }
     setupLocaleSwitcher();
+    setupThemeSwitcher();
+    initTheme();
     var stored = readStoredLocale();
     var initial = LOCALE_LANGUAGES.indexOf(stored) === -1 || stored === null ? LOCALE_DEFAULT : stored;
     activateLocale(initial, false);

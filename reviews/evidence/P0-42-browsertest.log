@@ -1,0 +1,149 @@
+P0-42 — light theme and sun/moon switch: headless-Chrome verification
+=====================================================================
+
+Worktree: /tmp/air-P0-42 (branch task/P0-42, base main 2c83541)
+Date: 2026-10-28 22:29–22:36 Europe/Zurich (rework pass; first pass 22:07–22:15)
+
+## Serve
+
+The preview is served from the repository root on the slot's `web` port (read from
+`.polier-slot`, never hard-coded):
+
+  PORT=$(python3 -c "import json; print(json.load(open('.polier-slot'))['ports']['web'])")
+  python3 -m http.server "$PORT" --bind 127.0.0.1
+
+  curl -s -o /dev/null -w '%{http_code}' "http://127.0.0.1:$PORT/apps/web/preview/"        -> 200
+  curl -s -o /dev/null -w '%{http_code}' "http://127.0.0.1:$PORT/apps/web/preview/locales/en.json" -> 200
+  curl -s -o /dev/null -w '%{http_code}' "http://127.0.0.1:$PORT/apps/web/preview/locales/de.json" -> 200
+
+## Browser and capture
+
+Chrome for Testing from the Playwright cache, version 156.0.8078.4:
+
+  "/Users/rasulatashev/Library/Caches/ms-playwright/chromium-1248/chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing" \
+    --headless=new --disable-gpu --hide-scrollbars --no-sandbox \
+    --remote-debugging-port=9334 --user-data-dir=/tmp/p042-chrome-profile-2 about:blank
+
+A temporary out-of-repo helper (`/tmp/p042-cdp.mjs`, Node built-ins only: `fetch` + the
+global `WebSocket`) drove the DevTools Protocol and was removed after the run. It used
+`Emulation.setDeviceMetricsOverride {width, height, deviceScaleFactor: 1, mobile: width < 500}`
+for the exact 1440 x 900 and 390 x 844 viewports (Chrome clamps a command-line window at
+mobile widths), `Emulation.setEmulatedMedia` with `prefers-color-scheme` for the system
+cases, `Page.captureScreenshot`, real `Input.dispatchMouseEvent`/`Input.dispatchKeyEvent`
+events, and `Page.addScriptToEvaluateOnNewDocument` to record the theme, the stored value
+and the root background at the first animation frame after a reload. Colours are the
+computed style values; the WCAG contrast is computed from their sRGB values (translucent
+tokens are composited over the named surface first).
+
+## Default, stored, reload and system cases (owner rule)
+
+Rule: a stored `preview-theme` wins; without a valid stored value the page follows
+`prefers-color-scheme`; dark is the final fallback. Storage was cleared before the two
+default cases and the first-frame probe recorded `stored: null`.
+
+| Case | Emulated system | Stored value | First frame `data-theme` | First frame root background | Final `aria-pressed` |
+| --- | --- | --- | --- | --- | --- |
+| no stored value | light | `null` | `light` | `oklch(0.966 0.006 150)` | sun `true`, moon `false` |
+| no stored value | dark | `null` | `dark` | `rgb(18, 20, 18)` | moon `true`, sun `false` |
+| stored light, system dark | dark | `light` | `light` | `oklch(0.966 0.006 150)` | sun `true`, moon `false` |
+| stored dark, system light | light | `dark` | `dark` | `rgb(18, 20, 18)` | moon `true`, sun `false` |
+| reload with stored light | dark | `light` | `light` | `oklch(0.966 0.006 150)` | sun `true`, moon `false` |
+
+- The inline head script runs before the stylesheets; the first animation frame already has
+  the resolved theme and background, so neither a light system first load nor a stored-light
+  reload flashes the dark page. The dark cases stay dark.
+- The light-system capture (`P0-42-light-system-desktop.png`) was taken with fresh storage
+  (`localStorage.getItem("preview-theme") === null`), emulated light `prefers-color-scheme`,
+  1440 x 900; `data-theme="light"`, `color-scheme: light`, sun pressed.
+- A clean load logs no console error and no page exception. The browser may request
+  `/favicon.ico` automatically, which is a 404 because the preview has no favicon. The rapid
+  reload cycle additionally aborts in-flight icon requests (`net::ERR_CONNECTION_RESET` /
+  `ERR_SOCKET_NOT_CONNECTED`); those are cancelled requests, not page errors, and a clean
+  single load has none of them.
+
+## Toggle (both languages)
+
+- group sits below the DE/EN pill, right-aligned with it, at 1440 and 390.
+- EN: group label `Theme`, buttons `Light theme` / `Dark theme`; DE: `Darstellung`,
+  `Helles Design` / `Dunkles Design`. `data-label` equals the accessible name.
+- `aria-pressed`: exactly one `true`, matching `data-theme`, after every click, reload and
+  keyboard toggle.
+- pointer, 1440: light default -> click dark -> `data-theme=dark`, stored `dark`, moon
+  pressed; click light -> `data-theme=light`, stored `light`, sun pressed.
+- keyboard: focus + Enter on the dark button switched light -> dark and stored `dark`;
+  focus + Space on the light button switched dark -> light and stored `light`.
+- language and theme are independent: DE + light and DE + dark both seen;
+  `preview-theme` is the only theme key and `preview-locale` the only language key.
+
+## Light theme and the rework findings
+
+The page, masthead, demo board, cards, checklist, table, zone, toolbar and chips render
+light; root and body background `oklch(0.966 0.006 150)` (`rgb(241, 245, 242)`), `color-scheme:
+light`, no horizontal overflow at 1440 or 390 (`scrollWidth - clientWidth` 0). The first-pass
+text measurements remain valid because `--fg`, `--muted`, `--accent`, `--danger` and the tones
+are unchanged: `.lead` 7.31, `.eyebrow` 6.40, contents summary 16.11, open checklist entry
+17.68, done checklist entry 4.64, zone title 15.23.
+
+F1 — zone specimen title and delete icon (light-scoped):
+- light: `.chrome-zone__title` and `.chrome-delete` compute `#fefffe` (`--card`) on the
+  faint header `#33537b` (6 % `--fg` over `--tone-d`), **7.84:1**.
+- dark: unchanged `#ffffff` on `#9cb9e0`, **2.0:1** — the pre-existing P0-35 specimen value,
+  deliberately not changed by this rework.
+
+F2 — idle teammate chip:
+- with the idle classes applied, the cursor parent computes `opacity: 1`, the pointer
+  `.demo-remote__pointer` computes `opacity: 0.4` and the name `.demo-remote__name` computes
+  `opacity: 1`; the idle cue is now only the faded pointer.
+- light name chip: `#f1f5f2` (`--bg`) on `#71500a` (`--tone-b`) = **6.69:1**; dark =
+  10.25:1. The chip no longer inherits the 0.4 fade.
+
+F3 — light control boundaries (light tokens only; dark unchanged):
+- `--border-strong` 50 % over `--card` = `#8a8c8a`, **3.37:1**; over `--canvas` = `#808480`,
+  **3.26:1** (unchecked checklist box border).
+- `--accent-line` 70 % over `--card` = `#6d9182`, **3.46:1**; over `--canvas` = `#678c7d`,
+  **3.19:1** (zone-drop outline).
+- dark tokens still compute `--accent-line: rgba(143, 191, 175, 0.4)` and
+  `--border-strong: rgba(255, 255, 255, 0.16)`, exactly the dark values.
+
+P0-41 preservation: the rounded frames, the ten-point contents list and the dimmed done
+entries are unchanged in code and style; this rework touched only colour tokens, the two
+light-scoped chrome colours and the idle selector.
+
+## Screenshots (PNG, 1440 x 900 / 390 x 844)
+
+- P0-42-light-system-desktop.png — 1440x900, 135093 bytes, sha256 a00867d6… — emulated light
+  system preference, no stored value, sun pressed (new capture)
+- P0-42-light-en-reload-desktop.png — 1440x900, 135611 bytes, sha256 cb36d658… — reload with
+  `preview-theme=light` (re-captured on the final tree)
+- P0-42-dark-en-desktop.png — 1440x900, 122569 bytes, dark default, sun/moon under DE/EN
+- P0-42-light-en-desktop.png — 1440x900, 135535 bytes, light EN, sun pressed
+- P0-42-light-de-desktop.png — 1440x900, 144969 bytes, light DE, `Darstellung` labels
+- P0-42-dark-de-desktop.png — 1440x900, 132072 bytes, dark DE
+- P0-42-light-en-mobile.png — 390x844, 81073 bytes, light EN
+- P0-42-light-de-mobile.png — 390x844, 90213 bytes, light DE, no overflow
+- P0-42-dark-en-mobile.png — 390x844, 74663 bytes, dark EN
+- P0-42-dark-de-mobile.png — 390x844, 83057 bytes, dark DE
+- P0-42-light-de-board-desktop.png — 1440x900, 218780 bytes, scrolled board, light DE,
+  card/checklist/table/zone/toolbar/teammate chips
+- P0-42-light-de-board-mobile.png — 390x1800, 161587 bytes, tall capture of the light board
+- P0-42-light-de-selection.png — 1440x900, 203692 bytes, selected note A with the rounded
+  light frame
+- P0-42-light-de-contents.png — 1440x900, 204001 bytes, P0-41 contents point 3 open in light DE
+
+## Gates (through gate.py on the final tree)
+
+The current record set in this folder is the three P0-42 records created by this final run:
+
+  python3 "$POLIER/tools/gate.py" --task P0-42 --name board-check \
+    --shell "python3 $POLIER/tools/check.py ."                         -> PASS (exit 0)
+  python3 "$POLIER/tools/gate.py" --task P0-42 --name design-check \
+    --shell "node tools/design-check/index.mjs ."                      -> PASS (exit 0, 0 findings)
+  python3 "$POLIER/tools/gate.py" --task P0-42 --name changelog-entry \
+    --shell "node tools/release/check-changes.mjs --task P0-42 --base main" -> PASS (exit 0)
+
+## Notes
+
+- The palette is preview-scoped in `apps/web/preview/preview.css`. Promoting it into
+  `packages/ui-kit/tokens.json` is a follow-up owner decision (see README).
+- The preview has no favicon; a browser may request `/favicon.ico` automatically, which is not
+  a preview resource and does not affect the page.

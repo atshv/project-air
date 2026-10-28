@@ -1,0 +1,5 @@
+$ node tools/release/check-changes.mjs --base main --task P0-42
+[exit 0]
+
+check-changes: task P0-42, base main, 27 changed path(s), 6 code path(s)
+changelog-entry: OK (.changes/P0-42-light-theme.md)

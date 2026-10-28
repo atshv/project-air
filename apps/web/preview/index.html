@@ -4,9 +4,32 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title data-i18n="page.projectAirDesignPreviewStatic">Project air design preview — static design preview</title>
-    <link rel="stylesheet" href="../../../packages/ui-kit/tokens.css?v=P0-41" />
-    <link rel="stylesheet" href="preview.css?v=P0-41" />
-    <script src="preview.js?v=P0-41" defer></script>
+    <script>
+      // Apply the preview theme before the stylesheets paint so a reload never
+      // flashes the wrong theme (P0-42): a stored choice wins, otherwise the
+      // system preference decides, and dark is the final fallback.
+      (function () {
+        var theme = null;
+        try {
+          theme = window.localStorage.getItem("preview-theme");
+        } catch (error) {
+          theme = null;
+        }
+        if (theme !== "light" && theme !== "dark") {
+          var prefersLight = false;
+          try {
+            prefersLight = window.matchMedia("(prefers-color-scheme: light)").matches;
+          } catch (error) {
+            prefersLight = false;
+          }
+          theme = prefersLight ? "light" : "dark";
+        }
+        document.documentElement.setAttribute("data-theme", theme);
+      })();
+    </script>
+    <link rel="stylesheet" href="../../../packages/ui-kit/tokens.css?v=P0-42" />
+    <link rel="stylesheet" href="preview.css?v=P0-42" />
+    <script src="preview.js?v=P0-42" defer></script>
   </head>
   <body>
     <main class="page">
@@ -23,38 +46,76 @@
         <p class="masthead__version" data-preview-meta>
           <span data-preview-version data-i18n="masthead.version">Version 0.0.1</span>
           <span data-preview-status data-i18n="masthead.unreleased">unreleased</span>
-          <span data-preview-last-change data-i18n="masthead.lastChange">Last change: P0-41 — Live demo: rounded frames, darker done items, contents instead of text</span>
-          <span data-preview-last-change-time data-i18n="masthead.lastChangeTime">2026-10-28 21:01 (Europe/Zurich)</span>
+          <span data-preview-last-change data-i18n="masthead.lastChange">Last change: P0-42 — Live demo: light theme with sun/moon icons under DE/EN</span>
+          <span data-preview-last-change-time data-i18n="masthead.lastChangeTime">2026-10-28 22:07 (Europe/Zurich)</span>
         </p>
         <div class="masthead__meta">
           <span data-i18n-html="masthead.tokensPackagesUiKitTokens">Tokens: <code>packages/ui-kit/tokens.css</code></span>
           <span data-i18n-html="masthead.iconsPackagesUiKitIcons">Icons: <code>packages/ui-kit/icons/</code></span>
           <span data-i18n-html="masthead.demoPreviewJs">Demo: <code>preview.js</code></span>
-          <span data-i18n="masthead.tasks">Tasks: P0-19, P0-20, P0-21, P0-22, P0-23, P0-24, P0-25, P0-26, P0-27, P0-28, P0-29, P0-30, P0-31, P0-32, P0-33, P0-34, P0-35, P0-36, P0-37, P0-38, P0-39, P0-40, P0-41, P1-07</span>
-          <div
-            class="preview-locale"
-            role="group"
-            aria-label="Language"
-            data-i18n-attr="aria-label:locale.group"
-            data-preview-locale-group
-          >
-            <button
-              class="preview-locale__option"
-              type="button"
-              data-preview-locale="de"
-              aria-label="German"
-              data-i18n-attr="aria-label:locale.german"
-              aria-pressed="false"
-            >DE</button>
-            <span class="preview-locale__divider" aria-hidden="true"></span>
-            <button
-              class="preview-locale__option"
-              type="button"
-              data-preview-locale="en"
-              aria-label="English"
-              data-i18n-attr="aria-label:locale.english"
-              aria-pressed="true"
-            >EN</button>
+          <span data-i18n="masthead.tasks">Tasks: P0-19, P0-20, P0-21, P0-22, P0-23, P0-24, P0-25, P0-26, P0-27, P0-28, P0-29, P0-30, P0-31, P0-32, P0-33, P0-34, P0-35, P0-36, P0-37, P0-38, P0-39, P0-40, P0-41, P0-42, P1-07</span>
+          <div class="masthead__switches">
+            <div
+              class="preview-locale"
+              role="group"
+              aria-label="Language"
+              data-i18n-attr="aria-label:locale.group"
+              data-preview-locale-group
+            >
+              <button
+                class="preview-locale__option"
+                type="button"
+                data-preview-locale="de"
+                aria-label="German"
+                data-i18n-attr="aria-label:locale.german"
+                aria-pressed="false"
+              >DE</button>
+              <span class="preview-locale__divider" aria-hidden="true"></span>
+              <button
+                class="preview-locale__option"
+                type="button"
+                data-preview-locale="en"
+                aria-label="English"
+                data-i18n-attr="aria-label:locale.english"
+                aria-pressed="true"
+              >EN</button>
+            </div>
+            <div
+              class="preview-theme"
+              role="group"
+              aria-label="Theme"
+              data-i18n-attr="aria-label:theme.group"
+              data-preview-theme-group
+            >
+              <button
+                class="preview-theme__option"
+                type="button"
+                data-preview-theme="light"
+                aria-label="Light theme"
+                data-label="Light theme"
+                data-i18n-attr="aria-label:theme.light data-label:theme.light"
+                aria-pressed="false"
+              >
+                <svg class="preview-theme__icon" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
+                  <circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="1.6" />
+                  <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+                </svg>
+              </button>
+              <span class="preview-theme__divider" aria-hidden="true"></span>
+              <button
+                class="preview-theme__option"
+                type="button"
+                data-preview-theme="dark"
+                aria-label="Dark theme"
+                data-label="Dark theme"
+                data-i18n-attr="aria-label:theme.dark data-label:theme.dark"
+                aria-pressed="true"
+              >
+                <svg class="preview-theme__icon" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
+                  <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+              </button>
+            </div>
           </div>
         </div>
       </header>
@@ -120,7 +181,7 @@
               <li class="demo-guide-list__item">
                 <details class="demo-guide-list__point">
                   <summary><span class="demo-guide-list__number" aria-hidden="true">08</span><span data-i18n="demo.guide.blocks.title">Checklist and table</span></summary>
-                  <p data-i18n-html="demo.guide.blocks.body">Click an entry to tick it — done entries turn darker. Click a table cell and move with the arrow keys.</p>
+                  <p data-i18n-html="demo.guide.blocks.body">Click an entry to tick it — done entries recede. Click a table cell and move with the arrow keys.</p>
                 </details>
               </li>
               <li class="demo-guide-list__item">
@@ -655,8 +716,9 @@
           <h2 id="colours" data-i18n="colours.colourTokens">Colour tokens</h2>
           <p class="section__intro" data-i18n-html="colours.everySwatchReadsAGenerated">
             Every swatch reads a generated custom property from the design tokens. Translucent
-            tokens are shown over <code>--card</code> so their effect is visible. No raw colour
-            values appear in this preview.
+            tokens are shown over <code>--card</code> so their effect is visible. The preview-scoped
+            light theme overrides the colour tokens in one <code>:root[data-theme="light"]</code>
+            block; promoting that palette into the shared tokens is an owner decision.
           </p>
         </div>
         <ul class="swatches">
