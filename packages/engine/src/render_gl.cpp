@@ -16,6 +16,8 @@
 #include "engine/camera.h"
 #include "engine/doc.h"
 #include "engine/render.h"
+#include "engine/snap.h"
+#include "engine/snap_gl.h"
 #include "engine/spatial.h"
 #include "renderer_internal.h"
 #include "tokens.h"
@@ -489,10 +491,62 @@ class Renderer {
     return drawText();
   }
 
+  // L07 (P4-15): computes and stores the snap of the current drag. The pure core
+  // in snap.cpp does the work; the renderer owns the scratch buffer and the guide
+  // state the chrome pass reads. Returns the guide count or -1 on failure.
+  int requestSnap(int index, double x, double y, int free, double* out) {
+    if (!created_) {
+      return fail("engine_create must be called before engine_snap_position");
+    }
+    if (css_width_ <= 0 || css_height_ <= 0) {
+      return fail("engine_resize must be called before engine_snap_position");
+    }
+    if (out == nullptr) {
+      return fail("engine_snap_position needs an output buffer");
+    }
+    std::uint32_t slot = 0;
+    const Status status = objectSlot(index, slot);
+    if (!status) {
+      return fail(status.reason);
+    }
+    ensureSpatialCurrent();
+    SnapResult result;
+    const Status snapped = air::engine::snapPosition(
+        document_, spatial_, camera_, slot, static_cast<double>(css_width_),
+        static_cast<double>(css_height_), x, y, free != 0, snap_scratch_, result);
+    if (!snapped) {
+      return fail(snapped.reason);
+    }
+    snap_result_ = result;
+    out[0] = result.x;
+    out[1] = result.y;
+    return static_cast<int>(result.guideCount);
+  }
+
+  int guideAt(int guideIndex, double* out) const {
+    if (out == nullptr || guideIndex < 0 ||
+        static_cast<std::size_t>(guideIndex) >= snap_result_.guideCount) {
+      return 0;
+    }
+    const SnapGuide& guide = snap_result_.guides[guideIndex];
+    out[0] = static_cast<double>(guide.orientation);
+    out[1] = guide.position;
+    out[2] = guide.start;
+    out[3] = guide.end;
+    return 1;
+  }
+
+  int clearSnap() {
+    snap_result_.guideCount = 0;
+    return 1;
+  }
+
   const char* lastError() const { return g_last_error.c_str(); }
 
   detail::FrameView frameView() const {
-    return detail::FrameView{created_, &camera_, css_width_, css_height_, &document_, &spatial_};
+    return detail::FrameView{created_,           &camera_,          css_width_,
+                             css_height_,        &document_,       &spatial_,
+                             snap_result_.guides, snap_result_.guideCount};
   }
 
  private:
@@ -667,6 +721,8 @@ class Renderer {
   float tone_colors_[kToneCount][3] = {};
   float clear_color_[3] = {};
   float grid_color_[4] = {};
+  SnapScratch snap_scratch_;
+  SnapResult snap_result_{};
   int css_width_{0};
   int css_height_{0};
   int uniform_width_{-1};
@@ -736,6 +792,17 @@ AIR_ENGINE_RENDER_GL_API int engine_visible_instance_count() {
 AIR_ENGINE_RENDER_GL_API int engine_render_frame() {
   return air::engine::g_renderer.renderFrame();
 }
+
+AIR_ENGINE_RENDER_GL_API int engine_snap_position(int index, double x, double y, int free,
+                                                  double* out_xy) {
+  return air::engine::g_renderer.requestSnap(index, x, y, free, out_xy);
+}
+
+AIR_ENGINE_RENDER_GL_API int engine_snap_guide(int guide_index, double* out_guide) {
+  return air::engine::g_renderer.guideAt(guide_index, out_guide);
+}
+
+AIR_ENGINE_RENDER_GL_API int engine_snap_clear() { return air::engine::g_renderer.clearSnap(); }
 
 AIR_ENGINE_RENDER_GL_API const char* engine_last_error() {
   return air::engine::g_renderer.lastError();
@@ -818,6 +885,24 @@ AIR_ENGINE_RENDER_GL_API int engine_hit_test(double screen_x, double screen_y) {
 AIR_ENGINE_RENDER_GL_API int engine_visible_instance_count() { return -1; }
 
 AIR_ENGINE_RENDER_GL_API int engine_render_frame() { return 0; }
+
+AIR_ENGINE_RENDER_GL_API int engine_snap_position(int index, double x, double y, int free,
+                                                  double* out_xy) {
+  (void)index;
+  (void)x;
+  (void)y;
+  (void)free;
+  (void)out_xy;
+  return -1;
+}
+
+AIR_ENGINE_RENDER_GL_API int engine_snap_guide(int guide_index, double* out_guide) {
+  (void)guide_index;
+  (void)out_guide;
+  return 0;
+}
+
+AIR_ENGINE_RENDER_GL_API int engine_snap_clear() { return 0; }
 
 AIR_ENGINE_RENDER_GL_API const char* engine_last_error() { return kRendererUnavailable; }
 

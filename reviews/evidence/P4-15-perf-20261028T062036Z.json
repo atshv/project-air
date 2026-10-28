@@ -1,0 +1,19 @@
+{
+  "task": "P4-15",
+  "gate": "perf",
+  "command": "node packages/engine/test/perf/run-perf.mjs --scenario engine-core --task P4-15",
+  "exit_code": 0,
+  "result": "pass",
+  "slot": null,
+  "exclusive": [
+    "perf"
+  ],
+  "lock_wait_s": 0.0,
+  "lock_warning": null,
+  "started": "2026-10-28T06:20:36+00:00",
+  "finished": "2026-10-28T06:20:47+00:00",
+  "commit": "924fc46f4a3bba528f2e83997a8776cb525e4568",
+  "dirty": true,
+  "log": "P4-15-perf-20261028T062036Z.log",
+  "log_sha256": "2359ceaab61cd7a4449fea0147e7992edc05df55b175a4ebca6506c942cd4c70"
+}

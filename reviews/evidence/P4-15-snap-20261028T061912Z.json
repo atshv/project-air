@@ -1,0 +1,310 @@
+{
+  "task": "P4-15",
+  "gate": "snap-capture",
+  "startedAt": "2026-10-28T06:18:53.032Z",
+  "chrome": "/Users/rasulatashev/Library/Caches/ms-playwright/chromium-1248/chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing",
+  "flags": [
+    "--headless=new",
+    "--use-angle=metal",
+    "--enable-gpu",
+    "--hide-scrollbars",
+    "--disable-frame-rate-limit",
+    "--disable-gpu-vsync",
+    "--no-first-run",
+    "--no-default-browser-check",
+    "--disable-background-timer-throttling",
+    "--disable-renderer-backgrounding",
+    "--disable-backgrounding-occluded-windows",
+    "--window-size=1440,900",
+    "--no-sandbox"
+  ],
+  "tolerances": {
+    "snapTolerancePx": 6,
+    "gridPx": 16
+  },
+  "viewports": [
+    {
+      "viewport": {
+        "name": "desktop",
+        "width": 1440,
+        "height": 900
+      },
+      "camera": {
+        "panX": 0,
+        "panY": -0.18285714285713084,
+        "zoom": 1.025390625
+      },
+      "tokens": {
+        "drag-threshold": 4,
+        "header-height": 40,
+        "motion-hover": 120,
+        "snap-tolerance": 6,
+        "canvas-grid": 16
+      },
+      "press": {
+        "world": {
+          "x": 400,
+          "y": 288
+        },
+        "screen": {
+          "x": 605.15625,
+          "y": 391.296875
+        }
+      },
+      "rawTarget": {
+        "world": {
+          "x": 227,
+          "y": 196
+        },
+        "screen": {
+          "x": 427.763671875,
+          "y": 296.9609375
+        }
+      },
+      "snapped": {
+        "position": {
+          "x": 112,
+          "y": 128
+        },
+        "guides": [
+          {
+            "orientation": "vertical",
+            "position": 112,
+            "start": 112,
+            "end": 304
+          },
+          {
+            "orientation": "horizontal",
+            "position": 128,
+            "start": 96,
+            "end": 384
+          }
+        ],
+        "free": false
+      },
+      "free": {
+        "position": {
+          "x": 121.2342857142857,
+          "y": 138.17904761904762
+        },
+        "guides": [],
+        "free": true
+      },
+      "committed": {
+        "operation": "moveCard",
+        "inverse": "moveCard"
+      },
+      "screenshots": [
+        {
+          "file": "reviews/evidence/P4-15-snap-desktop.png",
+          "bytes": 58615
+        },
+        {
+          "file": "reviews/evidence/P4-15-snap-shift-desktop.png",
+          "bytes": 58477
+        }
+      ]
+    },
+    {
+      "viewport": {
+        "name": "mobile",
+        "width": 390,
+        "height": 844
+      },
+      "camera": {
+        "panX": -0.780487804878021,
+        "panY": 0,
+        "zoom": 0.2847222222222222
+      },
+      "tokens": {
+        "drag-threshold": 4,
+        "header-height": 40,
+        "motion-hover": 120,
+        "snap-tolerance": 6,
+        "canvas-grid": 16
+      },
+      "press": {
+        "world": {
+          "x": 400,
+          "y": 288
+        },
+        "screen": {
+          "x": 163.1111111111111,
+          "y": 201.1875
+        }
+      },
+      "rawTarget": {
+        "world": {
+          "x": 227,
+          "y": 196
+        },
+        "screen": {
+          "x": 113.85416666666664,
+          "y": 174.99305555555554
+        }
+      },
+      "snapped": {
+        "position": {
+          "x": 112,
+          "y": 128
+        },
+        "guides": [
+          {
+            "orientation": "vertical",
+            "position": 112,
+            "start": 112,
+            "end": 304
+          },
+          {
+            "orientation": "horizontal",
+            "position": 128,
+            "start": 96,
+            "end": 384
+          }
+        ],
+        "free": false
+      },
+      "free": {
+        "position": {
+          "x": 136.97560975609753,
+          "y": 153.75609756097558
+        },
+        "guides": [],
+        "free": true
+      },
+      "committed": {
+        "operation": "moveCard",
+        "inverse": "moveCard"
+      },
+      "screenshots": [
+        {
+          "file": "reviews/evidence/P4-15-snap-mobile.png",
+          "bytes": 27009
+        },
+        {
+          "file": "reviews/evidence/P4-15-snap-shift-mobile.png",
+          "bytes": 26768
+        }
+      ]
+    }
+  ],
+  "checks": [
+    {
+      "name": "desktop: the drag snaps to the neighbour edges with guides",
+      "passed": true,
+      "actual": {
+        "position": {
+          "x": 112,
+          "y": 128
+        },
+        "guides": [
+          {
+            "orientation": "vertical",
+            "position": 112,
+            "start": 112,
+            "end": 304
+          },
+          {
+            "orientation": "horizontal",
+            "position": 128,
+            "start": 96,
+            "end": 384
+          }
+        ],
+        "free": false
+      },
+      "expected": {
+        "position": {
+          "x": 112,
+          "y": 128
+        },
+        "guides": 2
+      }
+    },
+    {
+      "name": "desktop: Shift positions freely without guides",
+      "passed": true,
+      "actual": {
+        "position": {
+          "x": 121.2342857142857,
+          "y": 138.17904761904762
+        },
+        "guides": [],
+        "free": true
+      },
+      "expected": "free position, no guides"
+    },
+    {
+      "name": "desktop: the released drag is one move operation",
+      "passed": true,
+      "actual": {
+        "operation": "moveCard",
+        "inverse": "moveCard"
+      },
+      "expected": {
+        "operation": "moveCard",
+        "inverse": "moveCard"
+      }
+    },
+    {
+      "name": "mobile: the drag snaps to the neighbour edges with guides",
+      "passed": true,
+      "actual": {
+        "position": {
+          "x": 112,
+          "y": 128
+        },
+        "guides": [
+          {
+            "orientation": "vertical",
+            "position": 112,
+            "start": 112,
+            "end": 304
+          },
+          {
+            "orientation": "horizontal",
+            "position": 128,
+            "start": 96,
+            "end": 384
+          }
+        ],
+        "free": false
+      },
+      "expected": {
+        "position": {
+          "x": 112,
+          "y": 128
+        },
+        "guides": 2
+      }
+    },
+    {
+      "name": "mobile: Shift positions freely without guides",
+      "passed": true,
+      "actual": {
+        "position": {
+          "x": 136.97560975609753,
+          "y": 153.75609756097558
+        },
+        "guides": [],
+        "free": true
+      },
+      "expected": "free position, no guides"
+    },
+    {
+      "name": "mobile: the released drag is one move operation",
+      "passed": true,
+      "actual": {
+        "operation": "moveCard",
+        "inverse": "moveCard"
+      },
+      "expected": {
+        "operation": "moveCard",
+        "inverse": "moveCard"
+      }
+    }
+  ],
+  "result": "pass",
+  "exitCode": 0,
+  "finishedAt": "2026-10-28T06:19:12.289Z"
+}

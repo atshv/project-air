@@ -79,6 +79,8 @@ export interface PointerSample {
   readonly suppressed?: boolean;
   /** True when the suppressed target is an editable field (`text` cursor). */
   readonly editable?: boolean;
+  /** Shift: L07 frees the snapped position (no line, no grid, no guide). */
+  readonly shiftKey?: boolean;
 }
 
 /** Hover presentation state the playground applies as DOM chrome. */
@@ -108,6 +110,14 @@ export interface InputHost {
   commitDrag(target: InputTarget, position: InputWorldPoint): void;
   /** Restore the object after a cancelled drag (no operation, no history entry). */
   revertDrag(target: InputTarget): void;
+  /**
+   * L07 (P4-15): snap the dragged world position. Called on every drag move with
+   * the Shift state; `free` returns the position unchanged. The returned position
+   * is previewed and committed. Optional for hosts without a snapping core.
+   */
+  snapDrag?(target: InputTarget, position: InputWorldPoint, free: boolean): InputWorldPoint;
+  /** Clears the guides after a drag ends or is cancelled. */
+  clearSnap?(): void;
   /** A press below the threshold was released: a click, and no position write. */
   onTap(target: InputTarget | null, screen: InputScreenPoint): void;
   /** Hover presentation changed (grip, header band and cursor). */
@@ -262,6 +272,7 @@ export class PointerInput {
   #lastScreen: InputScreenPoint | null = null;
   #target: InputTarget | null = null;
   #grabOffset: InputWorldPoint | null = null;
+  #snappedPosition: InputWorldPoint | null = null;
   #pinch: PinchState | null = null;
   #hover: InputHover | null = null;
   #cursor: InputCursor = "default";
@@ -342,7 +353,7 @@ export class PointerInput {
     if (this.#pointers.size !== 1 || sample.pointerId !== this.#primaryPointer) {
       return;
     }
-    this.#movePrimary(sample.screen);
+    this.#movePrimary(sample.screen, sample.shiftKey === true);
   }
 
   pointerUp(sample: PointerSample): void {
@@ -350,7 +361,10 @@ export class PointerInput {
       return;
     }
     if (this.#phase === "dragging" && this.#target !== null && this.#grabOffset !== null) {
-      const position = this.#positionFor(sample.screen, this.#grabOffset);
+      // Commit exactly the position the preview showed (the snapped one, or the
+      // free pointer position while Shift was held at the last move).
+      const position =
+        this.#snappedPosition ?? this.#positionFor(sample.screen, this.#grabOffset);
       const target = this.#target;
       this.#target = null;
       this.#grabOffset = null;
@@ -468,7 +482,7 @@ export class PointerInput {
     this.#phase = "pressed";
   }
 
-  #movePrimary(screen: InputScreenPoint): void {
+  #movePrimary(screen: InputScreenPoint, free: boolean): void {
     if (this.#phase === "pressed" && this.#downScreen !== null) {
       const deltaX = screen.x - this.#downScreen.x;
       const deltaY = screen.y - this.#downScreen.y;
@@ -479,20 +493,33 @@ export class PointerInput {
         this.#phase = "dragging";
         this.#grabOffset = this.#grabOffsetFor(this.#downScreen, this.#target);
         this.#setCursor("grabbing");
-        this.#host.previewDrag(this.#target, this.#positionFor(screen, this.#grabOffset));
+        this.#previewSnapped(this.#target, screen, free);
         return;
       }
       this.#phase = "panning";
       this.#lastScreen = this.#downScreen;
     }
     if (this.#phase === "dragging" && this.#target !== null && this.#grabOffset !== null) {
-      this.#host.previewDrag(this.#target, this.#positionFor(screen, this.#grabOffset));
+      this.#previewSnapped(this.#target, screen, free);
       return;
     }
     if (this.#phase === "panning" && this.#lastScreen !== null) {
       this.#host.panByScreen(screen.x - this.#lastScreen.x, screen.y - this.#lastScreen.y);
       this.#lastScreen = screen;
     }
+  }
+
+  // L07 (P4-15): snap the raw pointer position through the host, remember it (the
+  // release commits exactly this position) and preview the snapped rectangle.
+  // Panning and zooming never call this, so no snap work runs outside a drag.
+  #previewSnapped(target: InputTarget, screen: InputScreenPoint, free: boolean): void {
+    if (this.#grabOffset === null) {
+      return;
+    }
+    const raw = this.#positionFor(screen, this.#grabOffset);
+    const snapped = this.#host.snapDrag?.(target, raw, free) ?? raw;
+    this.#snappedPosition = snapped;
+    this.#host.previewDrag(target, snapped);
   }
 
   #beginPinch(): void {
@@ -530,6 +557,8 @@ export class PointerInput {
     const target = this.#target;
     this.#target = null;
     this.#grabOffset = null;
+    this.#snappedPosition = null;
+    this.#host.clearSnap?.();
     if (target !== null) {
       this.#host.revertDrag(target);
     }
@@ -547,6 +576,8 @@ export class PointerInput {
     this.#pinch = null;
     this.#target = null;
     this.#grabOffset = null;
+    this.#snappedPosition = null;
+    this.#host.clearSnap?.();
     this.#setCursor("default");
   }
 

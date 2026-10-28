@@ -86,6 +86,9 @@ AIR_ENGINE_RENDER_GL_API int engine_text_plan_atlas(int glyph_count, double cell
 
 #include <GLES3/gl3.h>
 
+#include <algorithm>
+#include <cmath>
+#include <cstring>
 #include <string>
 
 #include "tokens.h"
@@ -195,6 +198,35 @@ bool sameKey(const BindingSyncKey& left, const BindingSyncKey& right) {
          left.bindingsGeneration == right.bindingsGeneration;
 }
 
+// Parses a generated hexadecimal colour token ("#rrggbb") into straight-alpha
+// floats. tokens::accent is stored as hex (faint/border are rgba() strings), and
+// a guide must use exactly the token value, never a raw colour.
+bool parseHexToken(const char* value, float* rgba) {
+  if (value == nullptr || value[0] != '#' || std::strlen(value) != 7 || rgba == nullptr) {
+    return false;
+  }
+  for (int channel = 0; channel < 3; ++channel) {
+    int parsed = 0;
+    for (int digit = 0; digit < 2; ++digit) {
+      const char character = value[1 + channel * 2 + digit];
+      int nibble = 0;
+      if (character >= '0' && character <= '9') {
+        nibble = character - '0';
+      } else if (character >= 'a' && character <= 'f') {
+        nibble = character - 'a' + 10;
+      } else if (character >= 'A' && character <= 'F') {
+        nibble = character - 'A' + 10;
+      } else {
+        return false;
+      }
+      parsed = parsed * 16 + nibble;
+    }
+    rgba[channel] = static_cast<float>(parsed) / 255.0F;
+  }
+  rgba[3] = 1.0F;
+  return true;
+}
+
 GLuint compileShader(GLenum type, const char* source, const char* label) {
   const GLuint shader = glCreateShader(type);
   glShaderSource(shader, 1, &source, nullptr);
@@ -220,8 +252,9 @@ class TextPass {
       return false;
     }
     if (!detail::parseRgbaToken(tokens::faint, chromeBandColor_) ||
-        !detail::parseRgbaToken(tokens::border, chromeRuleColor_)) {
-      detail::setLastError("generated faint/border tokens are not rgba colours");
+        !detail::parseRgbaToken(tokens::border, chromeRuleColor_) ||
+        !parseHexToken(tokens::accent, chromeGuideColor_)) {
+      detail::setLastError("generated faint/border/accent tokens are not colours");
       return false;
     }
     const GLuint vertexShader =
@@ -481,12 +514,15 @@ class TextPass {
   }
 
   bool draw() {
-    // No runs and no bindings: nothing is built, bound or uploaded, so a
-    // text-free frame keeps the measured cost of the object pass alone.
-    if (!atlas_.ready() || (runs_.runs().empty() && bindings_.empty())) {
+    const detail::FrameView view = detail::frameView();
+    const std::size_t guideCount =
+        view.guides == nullptr ? 0 : std::min(view.guideCount, air::engine::kMaxSnapGuides);
+    // No runs, no bindings and no snap guides: nothing is built, bound or
+    // uploaded, so a text-free frame keeps the measured cost of the object pass
+    // alone (the perf scene never drags, so it has no guides).
+    if (guideCount == 0 && (!atlas_.ready() || (runs_.runs().empty() && bindings_.empty()))) {
       return true;
     }
-    const detail::FrameView view = detail::frameView();
     if (runs_.runs().empty()) {
       glyphs_.clear();
     } else if (!buildGlyphs()) {
@@ -495,7 +531,7 @@ class TextPass {
     if (!syncBindings(view) || !buildBoundGlyphs(view)) {
       return false;
     }
-    if (glyphs_.empty() && boundGlyphs_.empty() && chromeGpu_.empty()) {
+    if (glyphs_.empty() && boundGlyphs_.empty() && chromeGpu_.empty() && guideCount == 0) {
       return true;
     }
     glEnable(GL_BLEND);
@@ -611,7 +647,9 @@ class TextPass {
   }
 
   void drawChrome(const detail::FrameView& view) {
-    if (chromeGpu_.empty()) {
+    const std::size_t guideCount =
+        view.guides == nullptr ? 0 : std::min(view.guideCount, air::engine::kMaxSnapGuides);
+    if (chromeGpu_.empty() && guideCount == 0) {
       return;
     }
     glUseProgram(chrome_program_);
@@ -619,10 +657,56 @@ class TextPass {
                 static_cast<GLfloat>(view.cssHeight));
     glBindVertexArray(chrome_vertex_array_);
     glBindBuffer(GL_ARRAY_BUFFER, chrome_instance_buffer_);
-    glBufferSubData(GL_ARRAY_BUFFER, 0,
-                    static_cast<GLsizeiptr>(chromeGpu_.size() * sizeof(ChromeGpuInstance)),
-                    chromeGpu_.data());
-    glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, static_cast<GLsizei>(chromeGpu_.size()));
+    if (!chromeGpu_.empty()) {
+      glBufferSubData(GL_ARRAY_BUFFER, 0,
+                      static_cast<GLsizeiptr>(chromeGpu_.size() * sizeof(ChromeGpuInstance)),
+                      chromeGpu_.data());
+      glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, static_cast<GLsizei>(chromeGpu_.size()));
+    }
+    if (guideCount > 0 && view.camera != nullptr) {
+      // L07 (P4-15): the snap lines are chrome, not command-buffer instances.
+      // Each guide is one screen-space quad of tokens::border_width thickness in
+      // tokens::accent; the span is the world span from the snapping core, so it
+      // stays continuous across both elements plus 16 px at every zoom.
+      ChromeGpuInstance guides[air::engine::kMaxSnapGuides];
+      std::size_t count = 0;
+      const double zoom = view.camera->zoom();
+      const double panX = view.camera->panX();
+      const double panY = view.camera->panY();
+      for (std::size_t index = 0; index < guideCount; ++index) {
+        const SnapGuide& guide = view.guides[index];
+        const double start = static_cast<double>(guide.start);
+        const double end = static_cast<double>(guide.end);
+        if (!(end > start)) {
+          continue;
+        }
+        ChromeGpuInstance instance;
+        if (guide.orientation == SnapOrientation::vertical) {
+          instance.x = static_cast<float>((guide.position - panX) * zoom -
+                                          tokens::border_width / 2.0);
+          instance.y = static_cast<float>((start - panY) * zoom);
+          instance.width = static_cast<float>(tokens::border_width);
+          instance.height = static_cast<float>((end - start) * zoom);
+        } else {
+          instance.x = static_cast<float>((start - panX) * zoom);
+          instance.y = static_cast<float>((guide.position - panY) * zoom -
+                                          tokens::border_width / 2.0);
+          instance.width = static_cast<float>((end - start) * zoom);
+          instance.height = static_cast<float>(tokens::border_width);
+        }
+        instance.red = chromeGuideColor_[0];
+        instance.green = chromeGuideColor_[1];
+        instance.blue = chromeGuideColor_[2];
+        instance.alpha = chromeGuideColor_[3];
+        guides[count] = instance;
+        count += 1;
+      }
+      if (count > 0) {
+        glBufferSubData(GL_ARRAY_BUFFER, 0,
+                        static_cast<GLsizeiptr>(count * sizeof(ChromeGpuInstance)), guides);
+        glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, static_cast<GLsizei>(count));
+      }
+    }
   }
 
   void drawGlyphBuffers(const detail::FrameView& view) {
@@ -748,6 +832,7 @@ class TextPass {
   GLint chrome_resolution_uniform_{-1};
   float chromeBandColor_[4] = {};
   float chromeRuleColor_[4] = {};
+  float chromeGuideColor_[4] = {};
   bool created_{false};
 };
 

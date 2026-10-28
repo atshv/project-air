@@ -1165,7 +1165,16 @@ function installPointerInput(engine, session, titlesController) {
     throw new Error("engine-playground: the canvas needs a .canvas-wrap parent");
   }
   headerSurface = document.querySelector("#header-surface");
-  dragTokens = readTokenPixels(["drag-threshold", "header-height", "motion-hover"]);
+  dragTokens = readTokenPixels([
+    "drag-threshold",
+    "header-height",
+    "motion-hover",
+    "snap-tolerance",
+    "canvas-grid",
+  ]);
+  // L07 (P4-15): the last snap of the current drag, for the capture record and
+  // manual verification (presentation state, never board state).
+  let lastSnap = null;
 
   const targetAt = (screenX, screenY) => {
     if (session !== null) {
@@ -1199,6 +1208,15 @@ function installPointerInput(engine, session, titlesController) {
     },
     revertDrag: (target) => {
       session?.revert(target);
+    },
+    snapDrag: (target, position, free) => {
+      const snapped = engine.snapDrag(target.slot, position, free);
+      lastSnap = { position: snapped.position, guides: snapped.guides, free };
+      return snapped.position;
+    },
+    clearSnap: () => {
+      engine.clearSnapGuides();
+      lastSnap = null;
     },
     onTap: (target) => {
       session?.tap(target);
@@ -1248,6 +1266,7 @@ function installPointerInput(engine, session, titlesController) {
       screen: point,
       suppressed: suppression.suppressed,
       editable: suppression.editable,
+      shiftKey: event.shiftKey,
     };
   };
 
@@ -1299,6 +1318,11 @@ function installPointerInput(engine, session, titlesController) {
     hover: () => input.hover,
     tokens: () => ({ ...dragTokens }),
     dragSession: session !== null,
+  };
+  // Evidence hook: the capture record reads the live snap (position, guides and
+  // the free/Shift state) next to the pixels.
+  globalThis.__engineSnap = {
+    last: () => lastSnap,
   };
   return input;
 }

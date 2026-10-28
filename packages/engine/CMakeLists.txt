@@ -32,6 +32,7 @@ add_library(air_engine_objects OBJECT
   src/engine.cpp
   src/render.cpp
   src/render_gl.cpp
+  src/snap.cpp
   src/spatial.cpp
   src/text.cpp
   src/text_binding.cpp
@@ -51,7 +52,7 @@ if(EMSCRIPTEN)
   )
   target_link_options(engine PRIVATE
     "--no-entry"
-    "-sEXPORTED_FUNCTIONS=_air_engine_version,_engine_create,_engine_resize,_engine_set_camera,_engine_load_rectangles,_engine_add_rectangle,_engine_update_geometry,_engine_update_z,_engine_remove_object,_engine_hit_test,_engine_visible_instance_count,_engine_render_frame,_engine_fit_view,_engine_text_style,_engine_text_font_family,_engine_text_plan_atlas,_engine_text_max_texture_size,_engine_text_load_atlas,_engine_text_add_run,_engine_text_add_box_run,_engine_text_clear_runs,_engine_visible_glyph_count,_engine_text_bind_object,_engine_text_clear_bindings,_engine_text_required_height,_engine_last_error,_malloc,_free"
+    "-sEXPORTED_FUNCTIONS=_air_engine_version,_engine_create,_engine_resize,_engine_set_camera,_engine_load_rectangles,_engine_add_rectangle,_engine_update_geometry,_engine_update_z,_engine_remove_object,_engine_hit_test,_engine_visible_instance_count,_engine_render_frame,_engine_fit_view,_engine_snap_position,_engine_snap_guide,_engine_snap_clear,_engine_text_style,_engine_text_font_family,_engine_text_plan_atlas,_engine_text_max_texture_size,_engine_text_load_atlas,_engine_text_add_run,_engine_text_add_box_run,_engine_text_clear_runs,_engine_visible_glyph_count,_engine_text_bind_object,_engine_text_clear_bindings,_engine_text_required_height,_engine_last_error,_malloc,_free"
     "-sEXPORTED_RUNTIME_METHODS=ccall,cwrap,UTF8ToString,HEAPU8,HEAPU32,HEAPF32,HEAPF64"
     "-sMODULARIZE=1"
     "-sEXPORT_NAME=createAirEngine"
@@ -77,4 +78,8 @@ else()
   add_executable(engine_binding_tests test/engine_binding_test.cpp)
   target_link_libraries(engine_binding_tests PRIVATE air_engine)
   add_test(NAME engine_binding_tests COMMAND engine_binding_tests)
+
+  add_executable(engine_snap_tests test/engine_snap_test.cpp)
+  target_link_libraries(engine_snap_tests PRIVATE air_engine)
+  add_test(NAME engine_snap_tests COMMAND engine_snap_tests)
 endif()

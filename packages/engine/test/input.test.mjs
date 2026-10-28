@@ -447,3 +447,67 @@ test("the 200 % state keeps the same token rule set", () => {
   assert.equal(input.headerHeightPx, 40);
   assert.equal(input.hoverTransitionMs, 120);
 });
+
+test("a drag previews and commits the snapped position from the host", () => {
+  const { host, calls } = createHost();
+  const snaps = [];
+  let cleared = 0;
+  host.snapDrag = (target, position, free) => {
+    snaps.push({ target, position, free });
+    // Deterministic stand-in for the native L07 core: the 16 px grid.
+    return { x: Math.round(position.x / 16) * 16, y: Math.round(position.y / 16) * 16 };
+  };
+  host.clearSnap = () => {
+    cleared += 1;
+  };
+  const input = inputFor(host);
+  const start = { x: 200, y: 160 };
+  input.pointerDown(pointer(1, start));
+  input.pointerMove(pointer(1, { x: start.x + 30, y: start.y + 20 }));
+  input.pointerUp(pointer(1, { x: start.x + 30, y: start.y + 20 }));
+  assert.equal(snaps.length, 1, "one snap request per drag move");
+  assert.equal(snaps[0].free, false, "the Shift state travels with the request");
+  assert.equal(calls.commit.length, 1);
+  // Grab offset (100, 60) at the card top-left (100, 100); the raw target is
+  // (130, 120) and the stand-in core snaps both axes to 128.
+  assert.deepEqual(calls.preview.at(-1).position, { x: 128, y: 128 });
+  assert.deepEqual(
+    calls.commit[0].position,
+    calls.preview.at(-1).position,
+    "the released position is exactly the snapped preview",
+  );
+  assert.ok(cleared >= 1, "the guides are cleared when the drag ends");
+});
+
+test("Shift asks the host for a free position and commits the pointer position", () => {
+  const { host, calls } = createHost();
+  const frees = [];
+  host.snapDrag = (_target, position, free) => {
+    frees.push(free);
+    return free ? position : { x: 0, y: 0 };
+  };
+  const input = inputFor(host);
+  const start = { x: 200, y: 160 };
+  input.pointerDown(pointer(1, start));
+  input.pointerMove(pointer(1, { x: start.x + 30, y: start.y + 20 }, { shiftKey: true }));
+  input.pointerUp(pointer(1, { x: start.x + 30, y: start.y + 20 }, { shiftKey: true }));
+  assert.deepEqual(frees, [true], "the layer passes the Shift state to the snap");
+  assert.deepEqual(calls.commit[0].position, { x: 130, y: 120 });
+});
+
+test("panning and zooming never request a snap", () => {
+  const { host, calls } = createHost();
+  let snaps = 0;
+  host.snapDrag = (_target, position) => {
+    snaps += 1;
+    return position;
+  };
+  const input = inputFor(host);
+  input.pointerDown(pointer(1, { x: 10, y: 10 }));
+  input.pointerMove(pointer(1, { x: 30, y: 25 }));
+  input.pointerMove(pointer(1, { x: 40, y: 30 }));
+  input.pointerUp(pointer(1, { x: 40, y: 30 }));
+  assert.equal(snaps, 0, "no snap work runs during a pan");
+  assert.equal(calls.pan.length, 2);
+  assert.equal(calls.commit.length, 0);
+});

@@ -17,9 +17,10 @@ the network (AD-2), and reads the contract and tokens from generated headers.
 | `render` | `render.h`, `render.cpp` | Deterministic command buffer: culling, stable order, 24-byte instances, empty-on-failure `Status`; command-buffer hit testing | document + camera + viewport + index → instances, hit result | camera, doc, spatial, status, `tokens.h` |
 | `render_gl` | `render_gl.h`, `render_gl.cpp` | WebGL2 instanced renderer (per-instance attributes, one `drawArraysInstanced`, inline GLSL 300 es) plus the exported C API; native stubs | command buffer / mutation and hit-test calls → pixels / C ABI results | render, camera, doc, spatial, `tokens.h`, GLES3, Emscripten |
 | `text` | `text.h`, `text.cpp` | L02 runtime glyph atlas: token text styles, atlas plan with the texture-limit fallback, validated glyph table with a placeholder per role, glyph runs and the 32-byte glyph command buffer | token typography / glyph count, cell, DPR, texture limit / RGBA pixels + packed metrics / runs + camera → plan, CSS-px glyph metrics, glyph quads | camera, geometry, status, `tokens.h` |
-| `text_gl` | `text_gl.h`, `text_gl.cpp` | Text C ABI (pure style/plan calls in both builds), the WebGL2 glyph pass (atlas texture upload, one instanced glyph draw after the object pass) and, since P4-10, the bound title/preview runs and the header-chrome pass | C ABI calls / glyph buffer / bound text → texture, pixels | text, text_binding, `tokens.h`, GLES3 |
+| `text_gl` | `text_gl.h`, `text_gl.cpp` | Text C ABI (pure style/plan calls in both builds), the WebGL2 glyph pass (atlas texture upload, one instanced glyph draw after the object pass), the bound title/preview runs and the header/snap-guide chrome pass (P4-10/P4-15) | C ABI calls / glyph buffer / bound text / snap guides → texture, pixels | text, text_binding, snap, `tokens.h`, GLES3 |
 | `text_binding` | `text_binding.h`, `text_binding.cpp` | L02 (P4-10) presentation binding: caller-supplied titles and previews bound to visible objects (ellipsis titles, wrapped/clipped previews), the 40 px header/inset chrome geometry, block growth, header chrome quads | document + camera + viewport + index + caller text → runs, chrome quads, required preview height | doc, spatial, text, geometry, status, `tokens.h` |
 | `input` (bridge) | `src/bridge/input.ts` | L03 (P4-14) DOM-free pointer input layer: click/drag threshold, card/header grip policy, field/scroll suppression, pointer capture/cancel, right-button and multi-touch rejection, cursor and header-hover state, injected seam commit | pointer samples + hit test + camera callbacks → drag preview/commit/revert, hover, cursor, pan/zoom | none at runtime (types only) |
+| `snap` | `snap.h`, `snap.cpp`, `snap_gl.h` | L07 (P4-15) snapping core: pure edge/centre candidates of visible neighbours and zones within the token screen tolerance, per-axis line-over-grid decision, Shift free, deterministic guide selection (at most three) and the guide C ABI | document + spatial index + camera + viewport + dragged slot and position → snapped world position + up to three world guide lines | camera, doc, spatial, status, `tokens.h` |
 | C ABI | `engine.h`, `engine.cpp` | `air_engine_version()` and compile-time checks of `kContractVersion`/`tokens.h` | – → version string | `contract.h`, `tokens.h` |
 
 Support headers: `geometry.h` (`Point`, `Bounds`) and `status.h` (`Status`; no exceptions
@@ -30,7 +31,8 @@ across the C ABI). The C API exports `engine_create`, `engine_resize`, `engine_s
 `engine_text_plan_atlas`, `engine_text_max_texture_size`, `engine_text_load_atlas`,
 `engine_text_add_run`, `engine_text_add_box_run`, `engine_text_clear_runs`,
 `engine_visible_glyph_count` (P4-08/P4-09), the binding calls `engine_text_bind_object`,
-`engine_text_clear_bindings`, `engine_text_required_height` (P4-10) and `engine_last_error`; the
+`engine_text_clear_bindings`, `engine_text_required_height` (P4-10), the snapping calls
+`engine_snap_position`, `engine_snap_guide`, `engine_snap_clear` (P4-15) and `engine_last_error`; the
 TypeScript bridge exposes the same surface as typed methods.
 
 ## Gesture logic layers (TypeScript)
@@ -404,6 +406,61 @@ bridge and has no runtime imports, so it runs in Node tests and the page alike.
   repeats the engine-owned cases in a real browser with trusted pointer/wheel events
   (`reviews/evidence/<task>-input-<timestamp>.json`). The native suites are unchanged (`cpp-unit`).
 
+## Snapping and guide chrome (L07, P4-15)
+
+L07 ("everything stands neatly aligned to its neighbours automatically") is a pure native core plus a
+presentation pass: the core decides one snapped world position and up to three world guide lines per
+drag frame; the chrome pass draws the guides as 1 px `tokens::accent` quads. Nothing enters the
+document, an operation payload or the command-buffer instance counts, and nothing runs during a pan,
+a zoom or an idle frame.
+
+- **Candidates.** From the dragged rectangle's live document slot the core queries the spatial index
+  with the camera's visible world bounds and visits the candidates in document slot order. Candidates
+  are the left/centre/right and top/middle/bottom lines of every live, visible neighbour and zone;
+  the dragged object's own slot is skipped, so a drag can never stick to itself. The tolerance is the
+  token `snap_tolerance` (6 px) in **screen** px, converted to world px by dividing by the camera zoom
+  (`world = 6 / zoom`), so the tolerance is the same on screen at 50 %, 100 % and 200 %. The same
+  conversion keeps a world-px guide span stable while zooming.
+- **One decision per axis.** For each axis the nearest candidate line pair within tolerance wins (a
+  line match); on an equal distance the first visited pair wins, which keeps the result deterministic.
+  A line match beats `Camera::snapToGrid`; only when no line is in tolerance does the 16 px grid apply
+  (`tokens::canvas_grid`). `Shift` (`free`) bypasses both: the pointer position is returned unchanged
+  and no guide is produced. The two axes are decided independently, so a drag can snap to an x line
+  and fall back to the grid on y.
+- **Guides.** The matched line is the first guide; the core then adds the other lines of the same
+  neighbour that coincide with a dragged line after the snap (a same-width neighbour aligns left,
+  centre and right at once). Vertical guides come before horizontal ones, line kinds in their fixed
+  order, and the total is capped at `kMaxSnapGuides = 3` (L07 "no lines beyond 3"). A guide's span is
+  the union of the dragged and the matched element on the perpendicular axis plus the token 16 px
+  (`tokens::space_16`) on both ends, continuous across both elements.
+- **No hot-path allocation.** The renderer owns one `SnapScratch` (a slot vector reserved once) and
+  one `SnapResult`; a drag frame reuses them. The C ABI is `engine_snap_position(index, x, y, free,
+  out_xy)` (returns the guide count, `-1` on failure), `engine_snap_guide(i, out_guide)` (orientation,
+  position, start, end) and `engine_snap_clear()`. The bridge wraps them as
+  `snapDrag(index, position, free) → { position, guides }` and `clearSnapGuides()`.
+- **Guide chrome.** `text_gl.cpp` reads the world guides from the renderer's frame view and draws
+  each as one screen-space quad of `tokens::border_width` (1 px) in `tokens::accent`, mapping position
+  and span through the camera. The guides use the same instanced chrome program as the P4-10 header
+  band (a per-instance tint), never the object command buffer; a frame without guides touches no
+  extra GL state. The 1 px line is centred on the guide coordinate and an empty span draws nothing.
+- **Input and playground.** The P4-14 input layer asks for a snap on every drag move (and at the drag
+  start) with the event's `shiftKey`, previews the returned position and, on release, commits exactly
+  that snapped position through the P4-05 seam as one `drag-single` operation with its inverse. A
+  `Shift` move returns the free pointer position and clears the guides; the layer clears the guides on
+  commit, cancel and pointer loss. The playground exposes `window.__engineSnap.last()` (position,
+  guides, free) for evidence and shows the guides natively; the cursor and header hover band keep
+  their P4-14 behaviour.
+- **Tests and evidence.** `engine_snap_tests` (fifth CTest suite) covers edge and centre matches, the
+  tolerance just below/at/above 6 px at zooms 0.5, 1 and 2, line-over-grid precedence, grid fallback,
+  Shift free, at most three guides with deterministic order, dragged-object exclusion,
+  invisible-candidate filtering, guide spans (+16 px), byte-identical repeatability and the
+  invalid-input paths. `test/input.test.mjs` adds the snap integration: the previewed and released
+  position is the snapped one, Shift travels to the host, and panning/zooming never request a snap.
+  `apps/engine-playground/tools/capture-snap.mjs` drives a real drag on the layers scene at 1440×900
+  and 390×844, writes the screenshots and a record with the live snapped position/guides and the
+  committed operation (`reviews/evidence/P4-15-snap-*.json`). The guide chrome is drag-only, so the
+  committed reference images stay 0-diff and the `perf` scene never runs the snapping core.
+
 ## Object identity and mutations
 
 `Document` keeps one storage slot per object and assigns a monotonic `ObjectId` on insert
@@ -567,13 +624,16 @@ documented above, with native fit/grid tests, the `visual` reference image `one-
 `P4-07-idle-*` browser record (re-run for P4-10 as `P4-10-idle-*`). **L03 — Dragging vs editing** is
 delivered for the engine-owned part by P4-14: the 4 px click/drag threshold, the card/header grip
 policy, field/scroll suppression, the header hover band, cursors and one move operation per drag,
-documented in the pointer-input section above. **L02 — Visible quality** is
+documented in the pointer-input section above. **L07 — Snapping** is delivered for the
+engine-owned part by P4-15: the 6 px screen tolerance, edge/centre line matching with grid fallback,
+Shift free, the three-guide accent chrome and the snapped release as one operation, documented in the
+snapping section above. **L02 — Visible quality** is
 delivered by P4-08, P4-09 and P4-10 for
 the engine-owned part: the runtime atlas, the layout flows and, since P4-10, the title/preview
 binding, the 40 px header geometry with the zone content inset, the grown block, the quiet delete
 affordance in the DOM overlay and the sharp zoom buckets, with native binding tests, the
 `text-titles` reference images and the `P4-10` capture records. The remaining engine-owned entries —
-L03, L07, L08, L10–L18, L20 — belong to those stages; their interaction behaviours are not
+L08, L10–L18, L20 — belong to those stages; their interaction behaviours are not
 implemented.
 
 ## What the spike does not prove yet

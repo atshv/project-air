@@ -100,6 +100,28 @@ export interface EngineObjectText {
   readonly preview?: string;
 }
 
+/** Orientation of one L07 snap guide (P4-15). */
+export type SnapGuideOrientation = "vertical" | "horizontal";
+
+/**
+ * One L07 guide line in world px (P4-15): a vertical line at world `position`
+ * with the world span `start`..`end`, or a horizontal line at world `position`
+ * with the world x span. The span is continuous across the dragged and the
+ * matched element plus 16 px.
+ */
+export interface EngineSnapGuide {
+  readonly orientation: SnapGuideOrientation;
+  readonly position: number;
+  readonly start: number;
+  readonly end: number;
+}
+
+/** Result of one L07 snap request: the snapped world top-left and up to three guides. */
+export interface EngineSnapResult {
+  readonly position: { readonly x: number; readonly y: number };
+  readonly guides: readonly EngineSnapGuide[];
+}
+
 /** Result of `buildTextAtlas`: the uploaded atlas size and raster scale. */
 export interface EngineTextAtlas {
   readonly width: number;
@@ -182,6 +204,21 @@ export interface Engine {
    * built atlas for a non-empty preview.
    */
   requiredTextHeight(index: number): number;
+  /**
+   * L07 (P4-15): snaps the dragged object's world top-left with the pure native
+   * core. Candidates are the left/centre/right and top/middle/bottom lines of
+   * visible neighbours and zones within the token 6 px screen tolerance; a line
+   * match beats the 16 px grid and `free` (Shift) bypasses both. Returns the
+   * position to preview/commit and the guides the chrome pass draws (at most
+   * three). Call it only while a drag is in progress.
+   */
+  snapDrag(
+    index: number,
+    position: { readonly x: number; readonly y: number },
+    free: boolean,
+  ): EngineSnapResult;
+  /** Clears the snap guides (a drag ended, was cancelled or is no longer live). */
+  clearSnapGuides(): void;
   /**
    * Atlas zoom bucket of the current camera (P4-10): the atlas re-rasterises only
    * when `setCamera`/`resize` cross a bucket, so text stays sharp when zooming in
@@ -681,6 +718,86 @@ class WebGlEngine implements Engine {
     } finally {
       this.#module._free(pointer);
     }
+  }
+
+  snapDrag(
+    index: number,
+    position: { readonly x: number; readonly y: number },
+    free: boolean,
+  ): EngineSnapResult {
+    this.#assertUsable("snapDrag");
+    if (!Number.isInteger(index) || index < 0) {
+      throw new EngineError("snapDrag needs a non-negative integer slot index");
+    }
+    if (!Number.isFinite(position.x) || !Number.isFinite(position.y)) {
+      throw new EngineError("snapDrag needs a finite world position");
+    }
+    const module = this.#module;
+    const positionPointer = module._malloc(2 * Float64Array.BYTES_PER_ELEMENT);
+    const guidePointer = module._malloc(4 * Float64Array.BYTES_PER_ELEMENT);
+    if (positionPointer === 0 || guidePointer === 0) {
+      if (positionPointer !== 0) {
+        module._free(positionPointer);
+      }
+      if (guidePointer !== 0) {
+        module._free(guidePointer);
+      }
+      throw new EngineError("engine_snap_position: could not allocate the result buffers");
+    }
+    try {
+      const guideCount = callNumber(
+        module,
+        "engine_snap_position",
+        ["number", "number", "number", "number", "number"],
+        [index, position.x, position.y, free ? 1 : 0, positionPointer],
+      );
+      if (guideCount < 0) {
+        throw new EngineError(`engine_snap_position failed: ${lastError(module)}`);
+      }
+      const positionOffset = positionPointer / Float64Array.BYTES_PER_ELEMENT;
+      const x = module.HEAPF64[positionOffset];
+      const y = module.HEAPF64[positionOffset + 1];
+      if (x === undefined || y === undefined) {
+        throw new EngineError("engine_snap_position: the result buffer was not readable");
+      }
+      const guideOffset = guidePointer / Float64Array.BYTES_PER_ELEMENT;
+      const guides: EngineSnapGuide[] = [];
+      for (let guideIndex = 0; guideIndex < guideCount; guideIndex += 1) {
+        if (
+          callNumber(module, "engine_snap_guide", ["number", "number"], [guideIndex, guidePointer]) !==
+          1
+        ) {
+          throw new EngineError(`engine_snap_guide failed: ${lastError(module)}`);
+        }
+        const orientation = module.HEAPF64[guideOffset];
+        const guidePosition = module.HEAPF64[guideOffset + 1];
+        const start = module.HEAPF64[guideOffset + 2];
+        const end = module.HEAPF64[guideOffset + 3];
+        if (
+          orientation === undefined ||
+          guidePosition === undefined ||
+          start === undefined ||
+          end === undefined
+        ) {
+          throw new EngineError("engine_snap_guide: the result buffer was not readable");
+        }
+        guides.push({
+          orientation: orientation === 0 ? "vertical" : "horizontal",
+          position: guidePosition,
+          start,
+          end,
+        });
+      }
+      return { position: { x, y }, guides };
+    } finally {
+      module._free(positionPointer);
+      module._free(guidePointer);
+    }
+  }
+
+  clearSnapGuides(): void {
+    this.#assertUsable("clearSnapGuides");
+    this.#requireOk("engine_snap_clear", [], []);
   }
 
   atlasRasterScale(): number {

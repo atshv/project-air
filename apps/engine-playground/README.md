@@ -33,6 +33,11 @@ Emscripten module through an import map.
    drag commits exactly one move operation, a block body, a field and a scroll area start no drag,
    empty-canvas drags pan the view only, the header hover band appears and the titles hover still
    works. It writes `reviews/evidence/<task>-input-<timestamp>.json`.
+9. L07 snapping evidence (P4-15): `node apps/engine-playground/tools/capture-snap.mjs --task P4-15`
+   drags one card into a neighbour's snap tolerance on the layers scene at 1440×900 and 390×844,
+   screenshots the live guides (`P4-15-snap-<viewport>.png`), the Shift-free state
+   (`P4-15-snap-shift-<viewport>.png`) and writes a record with the snapped position, guides, camera,
+   tokens and the committed move operation (`reviews/evidence/<task>-snap-<timestamp>.json`).
 
 ### Scenes
 
@@ -65,6 +70,12 @@ Emscripten module through an import map.
   Use `?view=<worldX>,<worldY>,<zoom>` for a deterministic camera; zoom buckets 25/50/100/200/400 %
   re-rasterise the atlas so text stays sharp when zooming in. The `text-titles` and
   `text-titles-zoom-200` visual scenes use it at 100 % and 200 %.
+- Snapping (P4-15, L07): dragging an object snaps it live to the left/centre/right and
+  top/middle/bottom lines of visible neighbours and zones within the token 6 px screen tolerance; a
+  line match beats the 16 px grid, and the chrome pass draws up to three 1 px `--accent` guides
+  continuous across both elements plus 16 px. `Shift` frees the position (no line, no grid, no
+  guide), and the released position is committed as one move operation. Nothing runs during pan or
+  zoom.
 - Pointer input (P4-14, L03) goes through one layer (`@project-air/engine/input.js`): a press that
   moves less than the 4 px `drag-threshold` is a click and writes nothing; a note card drags on its
   whole body, a block or zone only on its 40 px header band (a body press moves nothing); an empty

@@ -125,6 +125,7 @@
   - P4-06: Closed P4-06: draw order layer > fractional z (byte-wise) > insertion; bring-to-front is one contract reorder via the seam (keyAfter, inverse = old key); reload keeps order.
   - P4-06: Port: kindOf/zIndices, adapter toneOf + objectAt; logic browser build dist/logic (tsconfig.logic.json); test-kit layers scene; playground ?scene=layers click-to-front, localStorage.
   - P4-06: Gates board-check/boundaries/cpp-unit/visual (14 captures, +4 layers refs)/typecheck; native layerOrderAndFront, 9 Node + 3 test-kit tests; docs engine.md, visual-diff.md.
+- `P4-16` Multi-selection (L10)
 - `P4-17` Resize (L14)
 - `P4-18` Auto-pan (L16)
 - `P4-19` Placement of new objects (L20)
@@ -194,6 +195,7 @@
 - [x] `P4-09` Glyph layout, text instances and ellipsis (L02) — status: `done` — owner: —
 - [x] `P4-10` Titles, previews and visible quality (L02) — status: `done` — owner: —
 - [x] `P4-14` Dragging versus editing (L03) — status: `done` — owner: —
+- [x] `P4-15` Snapping (L07) — status: `done` — owner: —
 - [x] `P4-25` Contract 0.2.0: zone parent reference and reorder (z) operation (L08/L13) — status: `done` — owner: —
 - [x] `P4-26` Zones as containers II: platform migration and containment (L08) — status: `done` — owner: —
 - [x] `P0-26` Toolbar and zone with notepad and image window in the preview — status: `done` — owner: —
@@ -206,7 +208,7 @@
 
 ## In progress
 
-- [ ] `P4-15` Snapping (L07) — status: `in_progress` — owner: lead
+- none
 
 ## Blocked / failed
 
@@ -238,7 +240,7 @@
 <!-- polier:claims -->
 ## Claims
 
-- `P4-15` in progress by dsh since 2026-10-28T05:53:41+00:00 — worktree: /private/tmp/air-P4-15 · slot 1
+- `P4-15` in progress by dsh since 2026-10-28T06:20:02+00:00 — worktree: /private/tmp/air-P4-15 · slot 1
 
 <!-- /polier:claims -->
 
