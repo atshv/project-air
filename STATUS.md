@@ -122,10 +122,7 @@
 
 ## Ready now
 
-- `P0-38` Layer order: edges below zones
-  - P0-37: Closed P0-37: snap guides (6 px, one per axis, Shift free), zone drop highlight 1 s, Shift rubber band with frames and count bar (clamped inside the canvas), delete.
-  - P0-37: Snapshot undo (depth 20, labels from the change) with the 3 s hint; context menu (open/duplicate preview-only, forward/backward, delete; arrows, Enter, Esc); quiet zone-header delete.
-  - P0-37: Gates board-check/design-check/changelog-entry green; 7 screenshots + log. Not in the demo: group drag of a multi-selection, keyboard resize.
+- none
 
 ## Done
 
@@ -218,6 +215,7 @@
 ## In progress
 
 - [ ] `P5-06` Durability and reconnect: restart, catch-up and snapshot compaction — status: `in_progress` — owner: lead
+- [ ] `P0-38` Layer order: edges below zones — status: `in_progress` — owner: —
 
 ## Blocked / failed
 
@@ -231,7 +229,13 @@
 - [ ] `P0-17` RELEASING.md and release 0.0.1 — status: `pending` — owner: —
 - [ ] `P5-07` crdt-convergence proof: 10,000 rounds, offline clients and own-only undo — status: `pending` — owner: —
 - [ ] `P5-08` load proof: 25 clients per board at p95 <= 150 ms and the stage report — status: `pending` — owner: —
-- [ ] `P0-38` Layer order: edges below zones — status: `pending` — owner: —
+
+<!-- polier:claims -->
+## Claims
+
+- `P0-38` in progress by dsh since 2026-10-28T19:35:45+00:00 — worktree: /Users/rasulatashev/Desktop/KI Projekte/Project air-P0-38 · slot 2
+
+<!-- /polier:claims -->
 
 ## Decisions
 
