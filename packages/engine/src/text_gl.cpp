@@ -253,6 +253,7 @@ class TextPass {
     }
     if (!detail::parseRgbaToken(tokens::faint, chromeBandColor_) ||
         !detail::parseRgbaToken(tokens::border, chromeRuleColor_) ||
+        !detail::parseRgbaToken(tokens::accent_soft, chromeSelectionFillColor_) ||
         !parseHexToken(tokens::accent, chromeGuideColor_)) {
       detail::setLastError("generated faint/border/accent tokens are not colours");
       return false;
@@ -517,10 +518,14 @@ class TextPass {
     const detail::FrameView view = detail::frameView();
     const std::size_t guideCount =
         view.guides == nullptr ? 0 : std::min(view.guideCount, air::engine::kMaxSnapGuides);
-    // No runs, no bindings and no snap guides: nothing is built, bound or
-    // uploaded, so a text-free frame keeps the measured cost of the object pass
-    // alone (the perf scene never drags, so it has no guides).
-    if (guideCount == 0 && (!atlas_.ready() || (runs_.runs().empty() && bindings_.empty()))) {
+    // L10 (P4-16): the selection frames and the live band are chrome too, so
+    // they draw even on a page without an atlas.
+    const bool selectionChrome = view.selectionCount > 0 || view.band != nullptr;
+    // No runs, no bindings, no snap guides and no selection chrome: nothing is
+    // built, bound or uploaded, so a text-free frame keeps the measured cost of
+    // the object pass alone (the perf scene never drags or selects).
+    if (!selectionChrome && guideCount == 0 &&
+        (!atlas_.ready() || (runs_.runs().empty() && bindings_.empty()))) {
       return true;
     }
     if (runs_.runs().empty()) {
@@ -531,7 +536,8 @@ class TextPass {
     if (!syncBindings(view) || !buildBoundGlyphs(view)) {
       return false;
     }
-    if (glyphs_.empty() && boundGlyphs_.empty() && chromeGpu_.empty() && guideCount == 0) {
+    if (glyphs_.empty() && boundGlyphs_.empty() && chromeGpu_.empty() && guideCount == 0 &&
+        !selectionChrome) {
       return true;
     }
     glEnable(GL_BLEND);
@@ -649,7 +655,10 @@ class TextPass {
   void drawChrome(const detail::FrameView& view) {
     const std::size_t guideCount =
         view.guides == nullptr ? 0 : std::min(view.guideCount, air::engine::kMaxSnapGuides);
-    if (chromeGpu_.empty() && guideCount == 0) {
+    // L10 (P4-16): selected objects are framed with 1 px accent, the live band is
+    // filled with accent-soft and bordered with accent. Both are chrome quads.
+    const bool selectionChrome = view.selectionCount > 0 || view.band != nullptr;
+    if (chromeGpu_.empty() && guideCount == 0 && !selectionChrome) {
       return;
     }
     glUseProgram(chrome_program_);
@@ -705,6 +714,89 @@ class TextPass {
         glBufferSubData(GL_ARRAY_BUFFER, 0,
                         static_cast<GLsizeiptr>(count * sizeof(ChromeGpuInstance)), guides);
         glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, static_cast<GLsizei>(count));
+      }
+    }
+    if (selectionChrome && view.camera != nullptr) {
+      // One batch reused for the band and the frames: at most 512 quads
+      // (128 framed objects) per upload, so a large selection never allocates or
+      // overflows the instance buffer.
+      constexpr std::size_t kBatchQuads = 512;
+      ChromeGpuInstance batch[kBatchQuads];
+      std::size_t batchCount = 0;
+      const auto flush = [&]() {
+        if (batchCount == 0) {
+          return;
+        }
+        glBufferSubData(GL_ARRAY_BUFFER, 0,
+                        static_cast<GLsizeiptr>(batchCount * sizeof(ChromeGpuInstance)), batch);
+        glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, static_cast<GLsizei>(batchCount));
+        batchCount = 0;
+      };
+      const auto appendQuad = [&](double x, double y, double width, double height,
+                                  const float* colour) {
+        if (batchCount >= kBatchQuads) {
+          flush();
+        }
+        ChromeGpuInstance instance;
+        instance.x = static_cast<float>(x);
+        instance.y = static_cast<float>(y);
+        instance.width = static_cast<float>(width);
+        instance.height = static_cast<float>(height);
+        instance.red = colour[0];
+        instance.green = colour[1];
+        instance.blue = colour[2];
+        instance.alpha = colour[3];
+        batch[batchCount] = instance;
+        batchCount += 1;
+      };
+      const double zoom = view.camera->zoom();
+      const double panX = view.camera->panX();
+      const double panY = view.camera->panY();
+      const double border = tokens::border_width;
+      if (view.band != nullptr) {
+        const Bounds& band = *view.band;
+        const double x = (band.x - panX) * zoom;
+        const double y = (band.y - panY) * zoom;
+        const double width = band.width * zoom;
+        const double height = band.height * zoom;
+        if (width > 0.0 && height > 0.0) {
+          appendQuad(x, y, width, height, chromeSelectionFillColor_);
+          appendQuad(x, y, width, border, chromeGuideColor_);
+          appendQuad(x, y + height - border, width, border, chromeGuideColor_);
+          appendQuad(x, y, border, height, chromeGuideColor_);
+          appendQuad(x + width - border, y, border, height, chromeGuideColor_);
+          flush();
+        }
+      }
+      if (view.selectionCount > 0 && view.document != nullptr) {
+        for (std::size_t index = 0; index < view.selectionCount; ++index) {
+          const std::uint32_t slot = view.selectionSlots[index];
+          if (slot >= view.document->slotCount()) {
+            continue;
+          }
+          const Rectangle& rectangle = view.document->rectangles()[slot];
+          if (!rectangle.live) {
+            continue;
+          }
+          const double x = (rectangle.x - panX) * zoom;
+          const double y = (rectangle.y - panY) * zoom;
+          const double width = rectangle.width * zoom;
+          const double height = rectangle.height * zoom;
+          if (!(width > 0.0) || !(height > 0.0)) {
+            continue;
+          }
+          // Only visible selected objects are framed ("at most the visible
+          // selected objects are framed").
+          if (x + width < 0.0 || y + height < 0.0 || x > view.cssWidth ||
+              y > view.cssHeight) {
+            continue;
+          }
+          appendQuad(x, y, width, border, chromeGuideColor_);
+          appendQuad(x, y + height - border, width, border, chromeGuideColor_);
+          appendQuad(x, y, border, height, chromeGuideColor_);
+          appendQuad(x + width - border, y, border, height, chromeGuideColor_);
+        }
+        flush();
       }
     }
   }
@@ -833,6 +925,7 @@ class TextPass {
   float chromeBandColor_[4] = {};
   float chromeRuleColor_[4] = {};
   float chromeGuideColor_[4] = {};
+  float chromeSelectionFillColor_[4] = {};
   bool created_{false};
 };
 

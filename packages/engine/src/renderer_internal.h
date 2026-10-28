@@ -28,6 +28,12 @@ struct FrameView {
   const SpatialIndex* spatial{nullptr};
   const SnapGuide* guides{nullptr};
   std::size_t guideCount{0};
+  // L10 (P4-16) selection chrome: the selected live slots (framed with 1 px
+  // accent) and the live rubber band (accent-soft fill, accent border) in world
+  // px. Presentation state only; never command-buffer instances.
+  const std::uint32_t* selectionSlots{nullptr};
+  std::size_t selectionCount{0};
+  const Bounds* band{nullptr};
 };
 
 // Implemented in render_gl.cpp.

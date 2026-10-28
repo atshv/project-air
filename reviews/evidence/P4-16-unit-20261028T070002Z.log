@@ -1,0 +1,101 @@
+$ pnpm test --affected
+[exit 0]
+
+
+   • turbo 2.11.10
+   • Packages in scope: //, @project-air/engine
+   • Running test in 2 packages
+   • Remote caching disabled, using shared worktree cache
+
+@project-air/engine:build: cache hit, replaying logs bdbded7fd1c8000f
+@project-air/engine:build: $ tsc --project tsconfig.build.json && tsc --project tsconfig.logic.json
+@project-air/engine:test: cache hit, replaying logs 15053cc0984070a7
+@project-air/engine:test: $ node --test test/*.test.mjs
+@project-air/engine:test: ✔ the in-memory fake stores isolated copies and rejects duplicates (0.999292ms)
+@project-air/engine:test: ✔ the fake writes geometry, z and removals and rejects unknown ids (0.462541ms)
+@project-air/engine:test: ✔ the fake snapshot is canonical and changes only on writes (0.716792ms)
+@project-air/engine:test: ✔ the bridge adapter maps contract ids to slots and projects to the engine (0.42125ms)
+@project-air/engine:test: ✔ an operation and its inverse round-trip through the bridge adapter (0.633958ms)
+@project-air/engine:test: ✔ the logic layer imports the bridge for types only and uses no DOM or network (2.657ms)
+@project-air/engine:test: ✔ undo and redo on an empty history are no-ops (1.3375ms)
+@project-air/engine:test: ✔ undo applies the inverse and redo re-applies the operation (2.593708ms)
+@project-air/engine:test: ✔ a new operation clears the redo branch (0.434625ms)
+@project-air/engine:test: ✔ the history keeps the newest 20 entries and drops the oldest (0.804916ms)
+@project-air/engine:test: ✔ undo reverses a group's child operations as one step (0.508792ms)
+@project-air/engine:test: ✔ describe names the next undoable operation from its lookup (1.331917ms)
+@project-air/engine:test: ✔ push records without applying and leaves the copy untouched (0.319375ms)
+@project-air/engine:test: ✔ a failing undo leaves the stacks and the copy unchanged (0.61275ms)
+@project-air/engine:test: ✔ the input layer enforces the token values of L03 (0.747584ms)
+@project-air/engine:test: ✔ 3.9 px is a click, 4.1 px crosses the threshold (0.085916ms)
+@project-air/engine:test: ✔ a release below the threshold is a click that writes nothing (0.606458ms)
+@project-air/engine:test: ✔ a drag starts once at the threshold and follows the pointer 1:1 (0.21625ms)
+@project-air/engine:test: ✔ a note card drags on its whole body, blocks and zones only on the header (0.171458ms)
+@project-air/engine:test: ✔ field, button, editable and scrollable targets are suppressed (0.1285ms)
+@project-air/engine:test: ✔ cursors map to grab, grabbing, text and default (0.186666ms)
+@project-air/engine:test: ✔ the header hover surface applies to block/zone headers only (0.1085ms)
+@project-air/engine:test: ✔ a second pointer cancels the drag and pinches instead (0.250333ms)
+@project-air/engine:test: ✔ a cancelled drag is reverted without an operation (0.142458ms)
+@project-air/engine:test: ✔ the right button and the wheel do not drag the board (0.111ms)
+@project-air/engine:test: ✔ panning is view-only and writes no operation (0.079959ms)
+@project-air/engine:test: ✔ one completed drag is one move operation with its inverse through the seam (0.728625ms)
+@project-air/engine:test: ✔ a click or a cancel on the seam writes no operation and no history (0.166583ms)
+@project-air/engine:test: ✔ the 200 % state keeps the same token rule set (0.050166ms)
+@project-air/engine:test: ✔ a drag previews and commits the snapped position from the host (0.118667ms)
+@project-air/engine:test: ✔ Shift asks the host for a free position and commits the pointer position (0.085166ms)
+@project-air/engine:test: ✔ panning and zooming never request a snap (0.116042ms)
+@project-air/engine:test: ✔ keyAfter forms a strictly greater key in the engine's lexicographic order (0.732625ms)
+@project-air/engine:test: ✔ keys stay ordered far beyond float precision (0.0805ms)
+@project-air/engine:test: ✔ bring to front is one reorder above the layer's highest key and its inverse restores it (3.556333ms)
+@project-air/engine:test: ✔ the layer is the object kind: a card's front key ignores zone keys (0.123833ms)
+@project-air/engine:test: ✔ an equal key loses the insertion-order tie, so it still gets a new key (0.199375ms)
+@project-air/engine:test: ✔ an object already strictly on top, or alone in its layer, yields no operation (0.088208ms)
+@project-air/engine:test: ✔ a zone comes to the front of the zone layer only (0.158875ms)
+@project-air/engine:test: ✔ a reload from the stored keys reproduces the front order (0.127083ms)
+@project-air/engine:test: ✔ a reorder for an unknown item is rejected without a write (0.197583ms)
+@project-air/engine:test: ✔ a plain click replaces the selection, Shift-click toggles add and remove (1.442375ms)
+@project-air/engine:test: ✔ a plain empty click clears the selection, Esc clears it too (0.196125ms)
+@project-air/engine:test: ✔ a Shift-drag on empty canvas draws a band and selects by intersection (0.231791ms)
+@project-air/engine:test: ✔ a plain drag on empty canvas still pans and draws no band (0.092625ms)
+@project-air/engine:test: ✔ the world-space band rule is bounds intersection, not containment (0.08625ms)
+@project-air/engine:test: ✔ a joint drag previews and commits once, and the selection survives (0.258125ms)
+@project-air/engine:test: ✔ dragging an unselected object makes it the sole selection (0.116542ms)
+@project-air/engine:test: ✔ a cancelled joint drag restores every member and writes nothing (0.123333ms)
+@project-air/engine:test: ✔ the joint drag snap moves every member by the snapped delta (0.129708ms)
+@project-air/engine:test: ✔ one selection delete is exactly one group operation with an inverse (0.676541ms)
+@project-air/engine:test: ✔ a joint drag is exactly one group operation with an inverse (0.26775ms)
+@project-air/engine:test: ✔ an empty selection delete and a duplicate member are rejected (0.244917ms)
+@project-air/engine:test: ✔ a single drag yields exactly one moveCard operation and its inverse restores the card (1.844708ms)
+@project-air/engine:test: ✔ a move onto the current position is a no-op without an operation (0.105042ms)
+@project-air/engine:test: ✔ a keyboard nudge series is batched into one move operation (0.192458ms)
+@project-air/engine:test: ✔ a group drag is exactly one group operation, not one per object (0.605833ms)
+@project-air/engine:test: ✔ an empty or unchanged group drag yields no operation (2.941708ms)
+@project-air/engine:test: ✔ a group drag rejects the same object twice (0.286417ms)
+@project-air/engine:test: ✔ a resize builds resizeCard and restores the previous card size (0.26475ms)
+@project-air/engine:test: ✔ resize rejects sizes below the contract minimum before writing (0.113209ms)
+@project-air/engine:test: ✔ a create builds one createCard operation with a deleteCard inverse (0.339292ms)
+@project-air/engine:test: ✔ create rejects a card or zone below its minimum size and an empty zone title (0.172667ms)
+@project-air/engine:test: ✔ create rejects a non-finite draft position for every object kind (0.202333ms)
+@project-air/engine:test: ✔ create builds a zone and a block with exactly the contract minimum size (0.290625ms)
+@project-air/engine:test: ✔ delete stores the whole card and its createCard inverse restores it (0.151084ms)
+@project-air/engine:test: ✔ deleting an object that is already gone is rejected (0.085959ms)
+@project-air/engine:test: ✔ unknown and malformed object ids are rejected without a write (0.10075ms)
+@project-air/engine:test: ✔ an invalid session context is rejected before any operation (0.056208ms)
+@project-air/engine:test: ✔ an operation survives a contract-native JSON round trip (0.302625ms)
+@project-air/engine:test: ✔ the zoom buckets are the documented 25/50/100/200/400 percent set (1.700125ms)
+@project-air/engine:test: ✔ the raster scale is the bucket times the DPR, capped at 4x (0.256709ms)
+@project-air/engine:test: ✔ a session rasterises a bounded number of atlas scales (1.162583ms)
+@project-air/engine:test: ✔ a zoom inside a bucket keeps the same raster scale (0.087917ms)
+@project-air/engine:test: ℹ tests 74
+@project-air/engine:test: ℹ suites 0
+@project-air/engine:test: ℹ pass 74
+@project-air/engine:test: ℹ fail 0
+@project-air/engine:test: ℹ cancelled 0
+@project-air/engine:test: ℹ skipped 0
+@project-air/engine:test: ℹ todo 0
+@project-air/engine:test: ℹ duration_ms 330.55375
+
+ Tasks:    2 successful, 2 total
+Cached:    2 cached, 2 total
+  Time:    72ms >>> FULL TURBO
+
+$ turbo run test --affected

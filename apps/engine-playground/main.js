@@ -96,6 +96,7 @@ import {
   createPointerInput,
   cursorForSuppressed,
   isSuppressedTarget,
+  worldRectsIntersect,
 } from "@project-air/engine/input.js";
 
 const canvas = document.querySelector("#canvas");
@@ -211,6 +212,8 @@ let headerSurface = null;
 let inputDemo = null;
 let hoverHeaderTarget = null;
 let dragTokens = null;
+// L10 (P4-16): repositions the DOM selection count bar after a camera change.
+let selectionBarUpdate = null;
 let pendingFrameHandle = 0;
 const onDemand = {
   active: false,
@@ -869,6 +872,7 @@ async function loadLayersDocument(engine, loaded) {
     context,
     history,
     seam: { buildOperation, applyOperation },
+    entries: loaded.objects.map((object) => ({ kind: object.kind, id: uuidOf.get(object.id) })),
     sceneIdOf,
     onTap: (target) => {
       front(sceneIdOf.get(target.id) ?? null);
@@ -883,7 +887,7 @@ async function loadLayersDocument(engine, loaded) {
 // `buildOperation`, applies it through the port and pushes the pair onto the
 // P4-05 history, and `revert` restores a cancelled drag. The numbers stay token
 // values; the input layer owns the threshold and grip rules.
-function createDragSession({ engine, port, context, history, seam, sceneIdOf, onTap }) {
+function createDragSession({ engine, port, context, history, seam, entries, sceneIdOf, onTap }) {
   const targetAt = (screenX, screenY) => {
     const slot = engine.hitTest(screenX, screenY);
     const hit = port.objectAt(slot);
@@ -940,21 +944,166 @@ function createDragSession({ engine, port, context, history, seam, sceneIdOf, on
     lastPair = pair;
     onDemand.request();
   };
+  // L10 (P4-16): target of one entry with the current working-copy geometry.
+  const targetOf = (entry) => {
+    const entity = port.read(entry.kind, entry.id);
+    const slot = port.slotOf(entry.kind, entry.id);
+    if (entity === undefined || slot === undefined) {
+      return null;
+    }
+    return {
+      kind: entry.kind,
+      id: entry.id,
+      slot,
+      world: { x: entity.x, y: entity.y, width: entity.width, height: entity.height },
+      draggable: true,
+    };
+  };
+  // L10: current geometry of the selected ids (the joint drag and the count bar).
+  const selectionTargets = (ids) => {
+    const wanted = ids === undefined ? null : new Set(ids);
+    const targets = [];
+    for (const entry of entries) {
+      if (wanted !== null && !wanted.has(entry.id)) {
+        continue;
+      }
+      const target = targetOf(entry);
+      if (target !== null) {
+        targets.push(target);
+      }
+    }
+    return targets;
+  };
+  // L10 rubber band: the world-space intersect rule (bounds intersection, not
+  // containment) over the live entries of the scene.
+  const targetsInRect = (rect) => {
+    const targets = [];
+    for (const entry of entries) {
+      const target = targetOf(entry);
+      if (target === null) {
+        continue;
+      }
+      if (worldRectsIntersect(target.world, rect)) {
+        targets.push(target);
+      }
+    }
+    return targets;
+  };
+  const recordPair = (pair) => {
+    lastPair = pair;
+  };
+  const lastOperation = () => {
+    if (lastPair === null) {
+      return null;
+    }
+    const operation = lastPair.operation;
+    return {
+      operation: operation.type,
+      inverse: lastPair.inverse.type,
+      children:
+        operation.type === "group"
+          ? operation.payload.children.map((child) => child.type)
+          : undefined,
+    };
+  };
+  const previewGroup = (members) => {
+    for (const member of members) {
+      engine.updateGeometry(member.target.slot, {
+        x: member.position.x,
+        y: member.position.y,
+        width: member.target.world.width,
+        height: member.target.world.height,
+      });
+    }
+    onDemand.request();
+  };
+  const revertGroup = (members) => {
+    for (const member of members) {
+      const entity = port.read(member.target.kind, member.target.id);
+      if (entity === undefined) {
+        continue;
+      }
+      engine.updateGeometry(member.target.slot, {
+        x: entity.x,
+        y: entity.y,
+        width: entity.width,
+        height: entity.height,
+      });
+    }
+    onDemand.request();
+  };
+  // L10: one joint drag = exactly one drag-group gesture / group operation.
+  const commitGroup = (members) => {
+    const pair = seam.buildOperation(port, context, {
+      kind: "drag-group",
+      members: members.map((member) => ({
+        objectKind: member.target.kind,
+        objectId: member.target.id,
+        position: member.position,
+      })),
+    });
+    if (pair === null) {
+      return;
+    }
+    seam.applyOperation(port, pair.operation);
+    history.push(pair.operation, pair.inverse);
+    recordPair(pair);
+    onDemand.request();
+  };
+  // L10: delete the selection as one operation with inverse. Zones are not
+  // deletable here (zone membership/deletion is L08/P4-27), so they are skipped.
+  const deleteTargets = (targets) => {
+    const members = [];
+    const seen = new Set();
+    for (const target of targets) {
+      if (target.kind === "zone") {
+        continue;
+      }
+      const key = `${target.kind}:${target.id}`;
+      if (seen.has(key)) {
+        continue;
+      }
+      seen.add(key);
+      members.push({ objectKind: target.kind, objectId: target.id });
+    }
+    if (members.length === 0) {
+      return 0;
+    }
+    const pair = seam.buildOperation(port, context, { kind: "delete-selection", members });
+    if (pair === null) {
+      return 0;
+    }
+    seam.applyOperation(port, pair.operation);
+    history.push(pair.operation, pair.inverse);
+    recordPair(pair);
+    onDemand.request();
+    return members.length;
+  };
   const tap = (target) => {
     if (target !== null && onTap !== null) {
       onTap(target);
     }
   };
   // Evidence hook for the browser check and manual verification: the last
-  // committed drag (the operation/inverse types it produced, never board state).
+  // committed operation (types only, never board state).
   globalThis.__engineDrag = {
-    last: () =>
-      lastPair === null
-        ? null
-        : { operation: lastPair.operation.type, inverse: lastPair.inverse.type },
+    last: lastOperation,
     targetAt,
   };
-  return { targetAt, preview, revert, commit, tap };
+  return {
+    targetAt,
+    preview,
+    revert,
+    commit,
+    tap,
+    selectionTargets,
+    targetsInRect,
+    previewGroup,
+    revertGroup,
+    commitGroup,
+    deleteTargets,
+    lastOperation,
+  };
 }
 
 // Builds the contract entity of a scene object that was loaded as packed
@@ -1036,6 +1185,7 @@ async function loadRectangleDragSession(engine, loaded) {
     context,
     history,
     seam: { buildOperation, applyOperation },
+    entries: loaded.objects.map((object) => ({ kind: object.kind, id: uuidOf.get(object.id) })),
     sceneIdOf,
     onTap: null,
   });
@@ -1153,6 +1303,7 @@ function updateChrome() {
   if (headerSurface !== null && hoverHeaderTarget !== null) {
     positionHeaderSurface();
   }
+  selectionBarUpdate?.();
   inputDemo?.update();
 }
 
@@ -1171,10 +1322,112 @@ function installPointerInput(engine, session, titlesController) {
     "motion-hover",
     "snap-tolerance",
     "canvas-grid",
+    "space-8",
   ]);
   // L07 (P4-15): the last snap of the current drag, for the capture record and
   // manual verification (presentation state, never board state).
   let lastSnap = null;
+  // L10 (P4-16): the presentation selection, the live band and the DOM count bar.
+  // None of this is document state.
+  let selectedTargets = [];
+  let lastBand = null;
+  let selectionBar = null;
+  let selectionCountNode = null;
+  const overlay = document.querySelector("#overlay");
+  if (session !== null && overlay instanceof HTMLElement) {
+    selectionBar = document.createElement("div");
+    selectionBar.className = "selection-bar";
+    selectionBar.hidden = true;
+    selectionCountNode = document.createElement("span");
+    selectionCountNode.className = "selection-bar__count";
+    const deleteButton = document.createElement("button");
+    deleteButton.type = "button";
+    deleteButton.className = "selection-bar__delete";
+    deleteButton.setAttribute("aria-label", "Delete selection");
+    deleteButton.setAttribute("data-label", "Delete selection");
+    deleteButton.innerHTML = DELETE_ICON;
+    deleteButton.addEventListener("pointerdown", (event) => {
+      event.stopPropagation();
+    });
+    deleteButton.addEventListener("click", (event) => {
+      event.stopPropagation();
+      deleteSelection();
+    });
+    selectionBar.append(selectionCountNode, deleteButton);
+    overlay.append(selectionBar);
+  }
+
+  const selectionBounds = () => {
+    if (selectedTargets.length === 0) {
+      return null;
+    }
+    let minX = Infinity;
+    let minY = Infinity;
+    let maxX = -Infinity;
+    let maxY = -Infinity;
+    for (const target of selectedTargets) {
+      minX = Math.min(minX, target.world.x);
+      minY = Math.min(minY, target.world.y);
+      maxX = Math.max(maxX, target.world.x + target.world.width);
+      maxY = Math.max(maxY, target.world.y + target.world.height);
+    }
+    return { x: minX, y: minY, width: maxX - minX, height: maxY - minY };
+  };
+  const updateSelectionBar = () => {
+    if (selectionBar === null || selectionCountNode === null) {
+      return;
+    }
+    const bounds = selectionBounds();
+    if (bounds === null) {
+      selectionBar.hidden = true;
+      return;
+    }
+    selectionBar.hidden = false;
+    selectionCountNode.textContent = `${selectedTargets.length} selected`;
+    const box = worldToOverlay(bounds);
+    // Above the bounding box; when the box touches the top of the canvas (a
+    // zoomed-out mobile view) the bar flips inside the box. The bar is clamped to
+    // the visible canvas so the delete control is always clickable (the overlay
+    // clips at the canvas edge).
+    const barHeight = selectionBar.offsetHeight;
+    const barWidth = selectionBar.offsetWidth;
+    const above = box.y - barHeight - dragTokens["space-8"];
+    const inside = above < canvas.clientTop;
+    const margin = dragTokens["space-8"];
+    const maximumLeft = canvas.clientLeft + Math.max(0, canvas.clientWidth - barWidth);
+    const maximumTop = canvas.clientTop + Math.max(0, canvas.clientHeight - barHeight);
+    const left = Math.min(Math.max(box.x, canvas.clientLeft), maximumLeft);
+    const top = inside ? box.y + margin : box.y;
+    selectionBar.classList.toggle("is-inside", inside);
+    selectionBar.style.left = `${left}px`;
+    selectionBar.style.top = `${Math.min(Math.max(top, canvas.clientTop), maximumTop)}px`;
+  };
+  const applySelection = (targets) => {
+    selectedTargets = [...targets];
+    // Native chrome: the selection frames draw in the existing chrome pass.
+    engine.setSelection(selectedTargets.map((target) => target.slot));
+    updateSelectionBar();
+    // Presentation change only: request the one frame that shows the chrome.
+    onDemand.request();
+  };
+  const refreshSelection = () => {
+    if (session === null) {
+      return;
+    }
+    applySelection(session.selectionTargets(selectedTargets.map((target) => target.id)));
+  };
+  const deleteSelection = () => {
+    if (session === null || selectedTargets.length === 0) {
+      return;
+    }
+    const deleted = session.deleteTargets(selectedTargets);
+    if (deleted > 0) {
+      input.clearSelection();
+      applySelection([]);
+    }
+  };
+  // The bar follows the camera with the rest of the pointer-driven DOM chrome.
+  selectionBarUpdate = updateSelectionBar;
 
   const targetAt = (screenX, screenY) => {
     if (session !== null) {
@@ -1217,6 +1470,27 @@ function installPointerInput(engine, session, titlesController) {
     clearSnap: () => {
       engine.clearSnapGuides();
       lastSnap = null;
+    },
+    selectionTargets: () =>
+      session !== null ? session.selectionTargets(selectedTargets.map((target) => target.id)) : [],
+    targetsInRect: (rect) => (session !== null ? session.targetsInRect(rect) : []),
+    previewGroupDrag: (members) => {
+      session?.previewGroup(members);
+    },
+    commitGroupDrag: (members) => {
+      session?.commitGroup(members);
+      refreshSelection();
+    },
+    revertGroupDrag: (members) => {
+      session?.revertGroup(members);
+    },
+    onSelectionChange: (targets) => {
+      applySelection(targets);
+    },
+    onBandChange: (band) => {
+      lastBand = band;
+      engine.setBand(band);
+      onDemand.request();
     },
     onTap: (target) => {
       session?.tap(target);
@@ -1310,6 +1584,12 @@ function installPointerInput(engine, session, titlesController) {
   window.addEventListener("blur", () => {
     input.cancelAll();
   });
+  // L10: Esc clears the selection (and a live band).
+  window.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && input.keyDown("Escape")) {
+      event.preventDefault();
+    }
+  });
   // Evidence hook: the browser/manual check reads the layer state next to the
   // pixels (threshold, phase, hover target and cursor), never document state.
   globalThis.__engineInput = {
@@ -1323,6 +1603,16 @@ function installPointerInput(engine, session, titlesController) {
   // the free/Shift state) next to the pixels.
   globalThis.__engineSnap = {
     last: () => lastSnap,
+  };
+  // Evidence hook: selection presentation state and the last committed operation
+  // (types only) for the selection capture.
+  globalThis.__engineSelection = {
+    size: () => selectedTargets.length,
+    ids: () => selectedTargets.map((target) => target.id),
+    bounds: selectionBounds,
+    barVisible: () => selectionBar !== null && !selectionBar.hidden,
+    band: () => lastBand,
+    lastOperation: () => (session === null ? null : session.lastOperation()),
   };
   return input;
 }

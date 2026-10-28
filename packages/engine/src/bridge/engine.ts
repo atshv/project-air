@@ -220,6 +220,18 @@ export interface Engine {
   /** Clears the snap guides (a drag ended, was cancelled or is no longer live). */
   clearSnapGuides(): void;
   /**
+   * L10 (P4-16): replaces the presentation selection. The indices are live
+   * document slots; the chrome pass frames every visible selected object with a
+   * 1 px token accent and never touches the document or the command buffer. An
+   * empty array clears the selection; a document load clears it in the core too.
+   */
+  setSelection(indices: readonly number[]): void;
+  /**
+   * L10: sets the live rubber band in world px (`null` clears it). The chrome pass
+   * fills it with the token accent-soft and borders it with a 1 px accent.
+   */
+  setBand(bounds: EngineGeometry | null): void;
+  /**
    * Atlas zoom bucket of the current camera (P4-10): the atlas re-rasterises only
    * when `setCamera`/`resize` cross a bucket, so text stays sharp when zooming in
    * with a bounded number of rebuilds.
@@ -798,6 +810,61 @@ class WebGlEngine implements Engine {
   clearSnapGuides(): void {
     this.#assertUsable("clearSnapGuides");
     this.#requireOk("engine_snap_clear", [], []);
+  }
+
+  setSelection(indices: readonly number[]): void {
+    this.#assertUsable("setSelection");
+    for (const index of indices) {
+      if (!Number.isInteger(index) || index < 0) {
+        throw new EngineError("setSelection needs non-negative integer slot indices");
+      }
+    }
+    const module = this.#module;
+    const count = indices.length;
+    const pointer =
+      count === 0 ? 0 : module._malloc(count * Uint32Array.BYTES_PER_ELEMENT);
+    if (count > 0 && pointer === 0) {
+      throw new EngineError("engine_set_selection: could not allocate the slot buffer");
+    }
+    try {
+      if (pointer !== 0) {
+        module.HEAPU32.set(Uint32Array.from(indices), pointer / Uint32Array.BYTES_PER_ELEMENT);
+      }
+      this.#requireOk("engine_set_selection", ["number", "number"], [pointer, count]);
+    } finally {
+      if (pointer !== 0) {
+        module._free(pointer);
+      }
+    }
+  }
+
+  setBand(bounds: EngineGeometry | null): void {
+    this.#assertUsable("setBand");
+    if (bounds === null) {
+      this.#requireOk("engine_set_band", ["number", "number", "number", "number", "number"], [
+        0,
+        0,
+        0,
+        0,
+        0,
+      ]);
+      return;
+    }
+    if (
+      !Number.isFinite(bounds.x) ||
+      !Number.isFinite(bounds.y) ||
+      !Number.isFinite(bounds.width) ||
+      !Number.isFinite(bounds.height)
+    ) {
+      throw new EngineError("setBand needs finite world geometry");
+    }
+    this.#requireOk("engine_set_band", ["number", "number", "number", "number", "number"], [
+      bounds.x,
+      bounds.y,
+      bounds.width,
+      bounds.height,
+      1,
+    ]);
   }
 
   atlasRasterScale(): number {

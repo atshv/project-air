@@ -105,6 +105,22 @@ export interface DeleteGesture {
   readonly objectId: string;
 }
 
+/** One member of a multi-selection delete; only objects the document owns are deletable. */
+export interface DeleteSelectionMember {
+  readonly objectKind: "card" | "block";
+  readonly objectId: string;
+}
+
+/**
+ * L10 (P4-16) deletion of a whole selection: converted into exactly one `group`
+ * operation whose children are the single deletes, with the reversed creates as
+ * its inverse (AD-1: one gesture = one operation, never one write per object).
+ */
+export interface DeleteSelectionGesture {
+  readonly kind: "delete-selection";
+  readonly members: readonly DeleteSelectionMember[];
+}
+
 /** One arrow-key series; the accumulated delta is converted into one operation. */
 export interface KeyboardNudgeGesture {
   readonly kind: "keyboard-nudge";
@@ -131,5 +147,6 @@ export type GestureResult =
   | ResizeGesture
   | CreateGesture
   | DeleteGesture
+  | DeleteSelectionGesture
   | KeyboardNudgeGesture
   | BringToFrontGesture;

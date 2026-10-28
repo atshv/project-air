@@ -217,6 +217,68 @@ body {
   border-bottom: var(--border-width) solid var(--border);
 }
 
+/* L10 (P4-16) selection count bar: DOM chrome above the selection bounding box
+   (ADR-0009), accent-soft fill with a 1 px accent border and a delete control.
+   Hidden while the selection is empty, so no reference image changes. */
+.selection-bar {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-4) var(--space-8);
+  background-color: var(--accent-soft);
+  border: var(--border-width) solid var(--accent);
+  border-radius: var(--radius-tooltip);
+  color: var(--fg);
+  font-family: var(--font-sans);
+  font-size: var(--text-12);
+  white-space: nowrap;
+  pointer-events: auto;
+  transform: translateY(calc(-100% - var(--space-8)));
+}
+
+.selection-bar.is-inside {
+  transform: none;
+}
+
+.selection-bar[hidden] {
+  display: none;
+}
+
+.selection-bar__count {
+  font-weight: var(--weight-semibold);
+}
+
+.selection-bar__delete {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--button-card);
+  height: var(--button-card);
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background-color: transparent;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.selection-bar__delete:hover {
+  background-color: var(--faint);
+  color: var(--fg);
+}
+
+.selection-bar__delete:focus-visible {
+  outline: var(--outline-width) solid var(--accent);
+  outline-offset: var(--outline-offset);
+}
+
+.selection-bar__delete svg {
+  display: block;
+  width: var(--icon-card);
+  height: var(--icon-card);
+}
+
 .canvas {
   display: block;
   width: 100%;

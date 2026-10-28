@@ -55,6 +55,35 @@ export interface InputTargetBounds {
   readonly height: number;
 }
 
+/** World rectangle (rubber band and world-space intersection rule, L10). */
+export interface InputWorldRect {
+  readonly x: number;
+  readonly y: number;
+  readonly width: number;
+  readonly height: number;
+}
+
+/**
+ * One member of a joint drag (L10): the target captured when the drag started and
+ * the world position it should preview/commit.
+ */
+export interface InputDragMember {
+  readonly target: InputTarget;
+  readonly position: InputWorldPoint;
+}
+
+/** L10 (P4-16): world-space intersect rule of the rubber band (bounds intersection,
+ * not containment). Touching edges count as intersecting, like the engine's
+ * inclusive bounds rule. */
+export function worldRectsIntersect(left: InputWorldRect, right: InputWorldRect): boolean {
+  return (
+    left.x <= right.x + right.width &&
+    right.x <= left.x + left.width &&
+    left.y <= right.y + right.height &&
+    right.y <= left.y + left.height
+  );
+}
+
 /** One board object under the pointer. */
 export interface InputTarget {
   readonly kind: InputTargetKind;
@@ -118,6 +147,20 @@ export interface InputHost {
   snapDrag?(target: InputTarget, position: InputWorldPoint, free: boolean): InputWorldPoint;
   /** Clears the guides after a drag ends or is cancelled. */
   clearSnap?(): void;
+  /** L10: the current geometry of the selected objects (joint drag and count bar). */
+  selectionTargets?(): readonly InputTarget[];
+  /** L10: the live objects whose bounds intersect the world rect (rubber band). */
+  targetsInRect?(rect: InputWorldRect): readonly InputTarget[];
+  /** L10: preview a joint drag (no document write). */
+  previewGroupDrag?(members: readonly InputDragMember[]): void;
+  /** L10: commit a joint drag as exactly one drag-group gesture. */
+  commitGroupDrag?(members: readonly InputDragMember[]): void;
+  /** L10: restore every member after a cancelled joint drag. */
+  revertGroupDrag?(members: readonly InputDragMember[]): void;
+  /** L10: the selection changed (native chrome and the DOM count bar). */
+  onSelectionChange?(targets: readonly InputTarget[]): void;
+  /** L10: the live rubber band in world px, or null when it disappears. */
+  onBandChange?(band: InputWorldRect | null): void;
   /** A press below the threshold was released: a click, and no position write. */
   onTap(target: InputTarget | null, screen: InputScreenPoint): void;
   /** Hover presentation changed (grip, header band and cursor). */
@@ -243,7 +286,7 @@ export function wheelZoomFactor(deltaY: number, deltaMode: number): number {
   return Math.exp(-normaliseWheelDelta(deltaY, deltaMode) * WHEEL_ZOOM_SENSITIVITY);
 }
 
-type Phase = "idle" | "pressed" | "dragging" | "panning" | "pinch" | "blocked";
+type Phase = "idle" | "pressed" | "dragging" | "panning" | "pinch" | "blocked" | "band";
 
 interface PinchState {
   readonly distance: number;
@@ -276,6 +319,15 @@ export class PointerInput {
   #pinch: PinchState | null = null;
   #hover: InputHover | null = null;
   #cursor: InputCursor = "default";
+  // L10 (P4-16) selection and joint-drag state. Presentation state only: never
+  // document state, never an operation payload field.
+  #selection: InputTarget[] = [];
+  #pendingToggle = false;
+  #bandCandidate = false;
+  #band: { readonly start: InputScreenPoint; rect: InputWorldRect } | null = null;
+  #group: InputTarget[] | null = null;
+  #groupAnchor: InputTarget | null = null;
+  #groupMembers: InputDragMember[] | null = null;
 
   constructor(options: PointerInputOptions) {
     if (!Number.isFinite(options.thresholdPx) || options.thresholdPx < 0) {
@@ -298,6 +350,42 @@ export class PointerInput {
 
   get hover(): InputHover | null {
     return this.#hover;
+  }
+
+  /** L10: the current selection, in selection order. */
+  get selection(): readonly InputTarget[] {
+    return this.#selection;
+  }
+
+  /** L10: true while `id` is part of the selection. */
+  isSelected(id: string): boolean {
+    return this.#selection.some((target) => target.id === id);
+  }
+
+  /**
+   * L10: key handling of the selection (the playground forwards `keydown`).
+   * `Escape` clears a non-empty selection or a live band and returns true.
+   */
+  keyDown(key: string): boolean {
+    if (key !== "Escape") {
+      return false;
+    }
+    if (this.#selection.length === 0 && this.#band === null) {
+      return false;
+    }
+    this.clearSelection();
+    this.#clearBand();
+    return true;
+  }
+
+  /** L10: drops the selection and notifies the host (Esc, empty click, reload). */
+  clearSelection(): void {
+    this.#bandCandidate = false;
+    if (this.#selection.length === 0) {
+      return;
+    }
+    this.#selection = [];
+    this.#host.onSelectionChange?.([]);
   }
 
   get cursor(): InputCursor {
@@ -333,10 +421,11 @@ export class PointerInput {
       return;
     }
     // A second pointer is a pinch, never a second drag: a running object drag is
-    // reverted first (a cancelled gesture writes nothing).
+    // reverted first (a cancelled gesture writes nothing) and a live band ends.
     if (this.#phase === "dragging") {
       this.#cancelDrag();
     }
+    this.#clearBand();
     this.#target = null;
     this.#beginPinch();
   }
@@ -360,14 +449,32 @@ export class PointerInput {
     if (!this.#pointers.has(sample.pointerId)) {
       return;
     }
+    if (this.#phase === "band") {
+      // L10: the rubber band selects every live object whose bounds intersect it
+      // in world space, then disappears. The band is presentation-only.
+      const band = this.#band;
+      this.#clearBand();
+      this.#finish();
+      if (band !== null && this.#host.targetsInRect !== undefined) {
+        this.#setSelection(this.#host.targetsInRect(band.rect));
+      }
+      return;
+    }
     if (this.#phase === "dragging" && this.#target !== null && this.#grabOffset !== null) {
+      // L10: a joint drag commits exactly one drag-group gesture; the selection
+      // survives the release. A single drag keeps the P4-14 path.
+      if (this.#groupMembers !== null && this.#host.commitGroupDrag !== undefined) {
+        const members = this.#groupMembers;
+        this.#finish();
+        this.#host.commitGroupDrag(members);
+        this.#host.onSelectionChange?.(this.#host.selectionTargets?.() ?? this.#selection);
+        return;
+      }
       // Commit exactly the position the preview showed (the snapped one, or the
       // free pointer position while Shift was held at the last move).
       const position =
         this.#snappedPosition ?? this.#positionFor(sample.screen, this.#grabOffset);
       const target = this.#target;
-      this.#target = null;
-      this.#grabOffset = null;
       this.#finish();
       this.#host.commitDrag(target, position);
       return;
@@ -375,8 +482,20 @@ export class PointerInput {
     if (this.#phase === "pressed") {
       // Below the threshold: a click. It writes no position and no history.
       const target = this.#target;
-      this.#target = null;
+      const shift = sample.shiftKey === true || this.#pendingToggle;
+      this.#pendingToggle = false;
       this.#finish();
+      if (target !== null && target.draggable) {
+        if (shift) {
+          this.#toggleSelection(target);
+        } else {
+          // A plain click replaces the selection with the clicked object.
+          this.#setSelection([target]);
+        }
+      } else if (target === null && sample.shiftKey !== true) {
+        // A plain click on the empty canvas clears the selection.
+        this.clearSelection();
+      }
       this.#host.onTap(target, sample.screen);
       return;
     }
@@ -391,6 +510,7 @@ export class PointerInput {
     if (this.#phase === "dragging") {
       this.#cancelDrag();
     }
+    this.#clearBand();
     this.#finish();
   }
 
@@ -399,6 +519,7 @@ export class PointerInput {
     if (this.#phase === "dragging") {
       this.#cancelDrag();
     }
+    this.#clearBand();
     this.#finish();
     this.#clearHover();
   }
@@ -468,8 +589,13 @@ export class PointerInput {
     this.#host.capturePointer(sample.pointerId);
     const target = this.#host.hitTest(sample.screen.x, sample.screen.y);
     this.#target = target;
+    this.#pendingToggle = sample.shiftKey === true;
+    // L10: a Shift-drag on empty canvas is a rubber band; without Shift the same
+    // drag pans (P4-14). The decision is made when the threshold is crossed.
+    this.#bandCandidate = sample.shiftKey === true;
     if (target === null || !target.draggable) {
-      // Empty canvas (or a presentation-only scene): the press is a pan candidate.
+      // Empty canvas (or a presentation-only scene): the press is a pan/band
+      // candidate.
       this.#phase = "pressed";
       return;
     }
@@ -478,6 +604,10 @@ export class PointerInput {
       // Block/zone body below the header: dragging there moves nothing.
       this.#phase = "blocked";
       return;
+    }
+    if (sample.shiftKey !== true && !this.isSelected(target.id)) {
+      // L10: dragging an unselected object first makes it the sole selection.
+      this.#setSelection([target]);
     }
     this.#phase = "pressed";
   }
@@ -490,10 +620,15 @@ export class PointerInput {
         return;
       }
       if (this.#target !== null && this.#target.draggable) {
-        this.#phase = "dragging";
-        this.#grabOffset = this.#grabOffsetFor(this.#downScreen, this.#target);
-        this.#setCursor("grabbing");
-        this.#previewSnapped(this.#target, screen, free);
+        this.#beginObjectDrag(screen, free);
+        return;
+      }
+      if (this.#bandCandidate && this.#host.targetsInRect !== undefined) {
+        // L10: Shift-drag on the empty canvas draws the rubber band and never
+        // pans; without Shift the P4-14 pan path below stays unchanged.
+        this.#phase = "band";
+        this.#band = { start: this.#downScreen, rect: { x: 0, y: 0, width: 0, height: 0 } };
+        this.#updateBand(screen);
         return;
       }
       this.#phase = "panning";
@@ -503,15 +638,103 @@ export class PointerInput {
       this.#previewSnapped(this.#target, screen, free);
       return;
     }
+    if (this.#phase === "band") {
+      this.#updateBand(screen);
+      return;
+    }
     if (this.#phase === "panning" && this.#lastScreen !== null) {
       this.#host.panByScreen(screen.x - this.#lastScreen.x, screen.y - this.#lastScreen.y);
       this.#lastScreen = screen;
     }
   }
 
+  // L10: starts the joint drag when several objects are selected, otherwise the
+  // P4-14 single-object drag. The selection is not changed by a drag.
+  #beginObjectDrag(screen: InputScreenPoint, free: boolean): void {
+    const target = this.#target;
+    if (target === null || this.#downScreen === null) {
+      return;
+    }
+    this.#phase = "dragging";
+    this.#grabOffset = this.#grabOffsetFor(this.#downScreen, target);
+    this.#pendingToggle = false;
+    this.#setCursor("grabbing");
+    if (!this.isSelected(target.id)) {
+      this.#setSelection([target]);
+    }
+    const selected = this.#host.selectionTargets?.() ?? this.#selection;
+    const members: InputTarget[] = [];
+    const seen = new Set<string>();
+    for (const candidate of [...selected, target]) {
+      const key = `${candidate.kind}:${candidate.id}`;
+      if (seen.has(key)) {
+        continue;
+      }
+      seen.add(key);
+      members.push(candidate);
+    }
+    if (members.length > 1 && this.#host.previewGroupDrag !== undefined) {
+      this.#group = members;
+      this.#groupAnchor = target;
+    } else {
+      this.#group = null;
+      this.#groupAnchor = null;
+    }
+    this.#previewSnapped(target, screen, free);
+  }
+
+  // L10: world-space band rectangle from the press point to the current point.
+  #updateBand(screen: InputScreenPoint): void {
+    if (this.#band === null) {
+      return;
+    }
+    const start = this.#host.screenToWorld(this.#band.start.x, this.#band.start.y);
+    const current = this.#host.screenToWorld(screen.x, screen.y);
+    const rect: InputWorldRect = {
+      x: Math.min(start.x, current.x),
+      y: Math.min(start.y, current.y),
+      width: Math.abs(current.x - start.x),
+      height: Math.abs(current.y - start.y),
+    };
+    this.#band = { start: this.#band.start, rect };
+    this.#host.onBandChange?.(rect);
+  }
+
+  #clearBand(): void {
+    if (this.#band === null) {
+      return;
+    }
+    this.#band = null;
+    this.#host.onBandChange?.(null);
+  }
+
+  #setSelection(targets: readonly InputTarget[]): void {
+    const next: InputTarget[] = [];
+    const seen = new Set<string>();
+    for (const target of targets) {
+      const key = `${target.kind}:${target.id}`;
+      if (seen.has(key)) {
+        continue;
+      }
+      seen.add(key);
+      next.push(target);
+    }
+    this.#selection = next;
+    this.#host.onSelectionChange?.(this.#selection);
+  }
+
+  #toggleSelection(target: InputTarget): void {
+    const key = `${target.kind}:${target.id}`;
+    const current = this.#selection.filter(
+      (candidate) => `${candidate.kind}:${candidate.id}` !== key,
+    );
+    this.#setSelection(current.length === this.#selection.length ? [...current, target] : current);
+  }
+
   // L07 (P4-15): snap the raw pointer position through the host, remember it (the
   // release commits exactly this position) and preview the snapped rectangle.
-  // Panning and zooming never call this, so no snap work runs outside a drag.
+  // L10 (P4-16): in a joint drag the snapped delta moves every member by the same
+  // world offset. Panning and zooming never call this.
   #previewSnapped(target: InputTarget, screen: InputScreenPoint, free: boolean): void {
     if (this.#grabOffset === null) {
       return;
@@ -519,6 +742,17 @@ export class PointerInput {
     const raw = this.#positionFor(screen, this.#grabOffset);
     const snapped = this.#host.snapDrag?.(target, raw, free) ?? raw;
     this.#snappedPosition = snapped;
+    if (this.#group !== null && this.#groupAnchor !== null && this.#host.previewGroupDrag) {
+      const deltaX = snapped.x - this.#groupAnchor.world.x;
+      const deltaY = snapped.y - this.#groupAnchor.world.y;
+      this.#groupMembers = this.#group.map((member) => ({
+        target: member,
+        position: { x: member.world.x + deltaX, y: member.world.y + deltaY },
+      }));
+      this.#host.previewGroupDrag(this.#groupMembers);
+      return;
+    }
+    this.#groupMembers = null;
     this.#host.previewDrag(target, snapped);
   }
 
@@ -555,11 +789,19 @@ export class PointerInput {
 
   #cancelDrag(): void {
     const target = this.#target;
+    const members = this.#groupMembers;
     this.#target = null;
     this.#grabOffset = null;
     this.#snappedPosition = null;
+    this.#group = null;
+    this.#groupAnchor = null;
+    this.#groupMembers = null;
     this.#host.clearSnap?.();
-    if (target !== null) {
+    if (members !== null && this.#host.revertGroupDrag !== undefined) {
+      // L10: a cancelled joint drag restores every member, writes nothing and
+      // keeps the selection.
+      this.#host.revertGroupDrag(members);
+    } else if (target !== null) {
       this.#host.revertDrag(target);
     }
   }
@@ -577,6 +819,11 @@ export class PointerInput {
     this.#target = null;
     this.#grabOffset = null;
     this.#snappedPosition = null;
+    this.#pendingToggle = false;
+    this.#bandCandidate = false;
+    this.#group = null;
+    this.#groupAnchor = null;
+    this.#groupMembers = null;
     this.#host.clearSnap?.();
     this.#setCursor("default");
   }

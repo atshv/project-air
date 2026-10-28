@@ -16,6 +16,7 @@
 #include "engine/camera.h"
 #include "engine/doc.h"
 #include "engine/render.h"
+#include "engine/selection_gl.h"
 #include "engine/snap.h"
 #include "engine/snap_gl.h"
 #include "engine/spatial.h"
@@ -291,6 +292,10 @@ class Renderer {
       return fail(status.reason);
     }
     spatial_.rebuild(document_);
+    // L10 (P4-16): selection is presentation state and never survives a document
+    // reload (the old slot handles are invalid).
+    selection_.clear();
+    band_visible_ = false;
     return 1;
   }
 
@@ -541,12 +546,65 @@ class Renderer {
     return 1;
   }
 
+  // L10 (P4-16): stores the selected live slots and the live rubber band for the
+  // chrome pass. Selection is presentation state: it never enters the document,
+  // an operation payload or the command buffer.
+  int setSelection(const int* indices, int count) {
+    if (!created_) {
+      return fail("engine_create must be called before engine_set_selection");
+    }
+    if (count < 0) {
+      return fail("the selection count must not be negative");
+    }
+    if (count > 0 && indices == nullptr) {
+      return fail("engine_set_selection needs an index buffer");
+    }
+    selection_.clear();
+    for (int index = 0; index < count; ++index) {
+      const int slot = indices[index];
+      if (slot < 0) {
+        return fail("selection slot indices must not be negative");
+      }
+      const auto candidate = static_cast<std::uint32_t>(slot);
+      if (candidate >= document_.slotCount() || !document_.isLive(candidate)) {
+        continue;  // a removed object simply has no frame
+      }
+      selection_.push_back(candidate);
+    }
+    return 1;
+  }
+
+  int setBand(double x, double y, double width, double height, int visible) {
+    if (!created_) {
+      return fail("engine_create must be called before engine_set_band");
+    }
+    if (visible == 0) {
+      band_visible_ = false;
+      return 1;
+    }
+    if (!std::isfinite(x) || !std::isfinite(y) || !std::isfinite(width) ||
+        !std::isfinite(height) || width < 0.0 || height < 0.0) {
+      return fail("the band needs finite, non-negative world geometry");
+    }
+    band_ = Bounds{x, y, width, height};
+    band_visible_ = true;
+    return 1;
+  }
+
   const char* lastError() const { return g_last_error.c_str(); }
 
   detail::FrameView frameView() const {
-    return detail::FrameView{created_,           &camera_,          css_width_,
-                             css_height_,        &document_,       &spatial_,
-                             snap_result_.guides, snap_result_.guideCount};
+    return detail::FrameView{created_,
+                             &camera_,
+                             css_width_,
+                             css_height_,
+                             &document_,
+                             &spatial_,
+                             snap_result_.guides,
+                             snap_result_.guideCount,
+                             selection_.data(),
+                             selection_.size(),
+                             band_visible_ ? &band_ : nullptr};
   }
 
  private:
@@ -723,6 +781,9 @@ class Renderer {
   float grid_color_[4] = {};
   SnapScratch snap_scratch_;
   SnapResult snap_result_{};
+  std::vector<std::uint32_t> selection_;
+  Bounds band_{};
+  bool band_visible_{false};
   int css_width_{0};
   int css_height_{0};
   int uniform_width_{-1};
@@ -803,6 +864,15 @@ AIR_ENGINE_RENDER_GL_API int engine_snap_guide(int guide_index, double* out_guid
 }
 
 AIR_ENGINE_RENDER_GL_API int engine_snap_clear() { return air::engine::g_renderer.clearSnap(); }
+
+AIR_ENGINE_RENDER_GL_API int engine_set_selection(const int* indices, int count) {
+  return air::engine::g_renderer.setSelection(indices, count);
+}
+
+AIR_ENGINE_RENDER_GL_API int engine_set_band(double x, double y, double width, double height,
+                                             int visible) {
+  return air::engine::g_renderer.setBand(x, y, width, height, visible);
+}
 
 AIR_ENGINE_RENDER_GL_API const char* engine_last_error() {
   return air::engine::g_renderer.lastError();
@@ -903,6 +973,22 @@ AIR_ENGINE_RENDER_GL_API int engine_snap_guide(int guide_index, double* out_guid
 }
 
 AIR_ENGINE_RENDER_GL_API int engine_snap_clear() { return 0; }
+
+AIR_ENGINE_RENDER_GL_API int engine_set_selection(const int* indices, int count) {
+  (void)indices;
+  (void)count;
+  return 0;
+}
+
+AIR_ENGINE_RENDER_GL_API int engine_set_band(double x, double y, double width, double height,
+                                             int visible) {
+  (void)x;
+  (void)y;
+  (void)width;
+  (void)height;
+  (void)visible;
+  return 0;
+}
 
 AIR_ENGINE_RENDER_GL_API const char* engine_last_error() { return kRendererUnavailable; }
 

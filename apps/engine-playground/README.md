@@ -38,6 +38,11 @@ Emscripten module through an import map.
    screenshots the live guides (`P4-15-snap-<viewport>.png`), the Shift-free state
    (`P4-15-snap-shift-<viewport>.png`) and writes a record with the snapped position, guides, camera,
    tokens and the committed move operation (`reviews/evidence/<task>-snap-<timestamp>.json`).
+10. L10 selection evidence (P4-16): `node apps/engine-playground/tools/capture-selection.mjs --task P4-16`
+    Shift-clicks three cards, drags them as one group, deletes the selection from the count bar and
+    drags a rubber band on the layers board at 1440×900 and 390×844; it writes the selection/band
+    screenshots and a record with the selection, band, bar and operation children
+    (`reviews/evidence/<task>-selection-<timestamp>.json`).
 
 ### Scenes
 
@@ -70,6 +75,14 @@ Emscripten module through an import map.
   Use `?view=<worldX>,<worldY>,<zoom>` for a deterministic camera; zoom buckets 25/50/100/200/400 %
   re-rasterise the atlas so text stays sharp when zooming in. The `text-titles` and
   `text-titles-zoom-200` visual scenes use it at 100 % and 200 %.
+- Selection (P4-16, L10): `Shift`-click adds or removes an object, a plain click replaces the
+  selection, `Esc` (or a plain empty click) clears it, and `Shift`-dragging on the empty canvas
+  rubber-bands (a plain empty drag still pans). Selected objects are framed with a 1 px `--accent`
+  line, the live band is an `--accent-soft` fill with a 1 px accent border, and a DOM count bar above
+  the selection bounding box shows "n selected" with a delete control. Dragging one selected object
+  moves the whole selection as one group operation; the delete control removes the selection as one
+  operation with an inverse. The selection is presentation state only: never persisted, cleared on a
+  document reload.
 - Snapping (P4-15, L07): dragging an object snaps it live to the left/centre/right and
   top/middle/bottom lines of visible neighbours and zones within the token 6 px screen tolerance; a
   line match beats the 16 px grid, and the chrome pass draws up to three 1 px `--accent` guides

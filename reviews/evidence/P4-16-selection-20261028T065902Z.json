@@ -1,0 +1,918 @@
+{
+  "task": "P4-16",
+  "gate": "selection-capture",
+  "startedAt": "2026-10-28T06:56:34.950Z",
+  "chrome": "/Users/rasulatashev/Library/Caches/ms-playwright/chromium-1248/chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing",
+  "flags": [
+    "--headless=new",
+    "--use-angle=metal",
+    "--enable-gpu",
+    "--hide-scrollbars",
+    "--disable-frame-rate-limit",
+    "--disable-gpu-vsync",
+    "--no-first-run",
+    "--no-default-browser-check",
+    "--disable-background-timer-throttling",
+    "--disable-renderer-backgrounding",
+    "--disable-backgrounding-occluded-windows",
+    "--window-size=1440,900",
+    "--no-sandbox"
+  ],
+  "viewports": [
+    {
+      "viewport": {
+        "name": "desktop",
+        "width": 1440,
+        "height": 900
+      },
+      "camera": {
+        "panX": 123,
+        "panY": 368.5,
+        "zoom": 1
+      },
+      "selection": {
+        "size": 3,
+        "ids": [
+          "0192f0c1-7000-7000-8000-0000000020c7",
+          "0192f0c1-7000-7000-8000-0000000020ce",
+          "0192f0c1-7000-7000-8000-0000000020c6"
+        ],
+        "bounds": {
+          "x": 432,
+          "y": 400,
+          "width": 912,
+          "height": 96
+        },
+        "barVisible": true,
+        "band": null,
+        "lastOperation": null
+      },
+      "bar": {
+        "x": 504.40625,
+        "y": 136.234375,
+        "width": 111.703125,
+        "height": 38,
+        "hidden": false
+      },
+      "jointDrag": {
+        "before": {
+          "size": 3,
+          "ids": [
+            "0192f0c1-7000-7000-8000-0000000020c7",
+            "0192f0c1-7000-7000-8000-0000000020ce",
+            "0192f0c1-7000-7000-8000-0000000020c6"
+          ],
+          "bounds": {
+            "x": 432,
+            "y": 400,
+            "width": 912,
+            "height": 96
+          },
+          "barVisible": true,
+          "band": null,
+          "lastOperation": null
+        },
+        "after": {
+          "size": 3,
+          "ids": [
+            "0192f0c1-7000-7000-8000-0000000020c6",
+            "0192f0c1-7000-7000-8000-0000000020c7",
+            "0192f0c1-7000-7000-8000-0000000020ce"
+          ],
+          "bounds": {
+            "x": 496,
+            "y": 432,
+            "width": 912,
+            "height": 96
+          },
+          "barVisible": true,
+          "band": null,
+          "lastOperation": {
+            "operation": "group",
+            "inverse": "group",
+            "children": [
+              "moveCard",
+              "moveCard",
+              "moveCard"
+            ]
+          }
+        }
+      },
+      "delete": {
+        "size": 0,
+        "ids": [],
+        "bounds": null,
+        "barVisible": false,
+        "band": null,
+        "lastOperation": {
+          "operation": "group",
+          "inverse": "group",
+          "children": [
+            "deleteCard",
+            "deleteCard",
+            "deleteCard"
+          ]
+        }
+      },
+      "band": {
+        "live": {
+          "x": 135,
+          "y": 380.703125,
+          "width": 320,
+          "height": 240
+        },
+        "after": {
+          "size": 2,
+          "ids": [
+            "0192f0c1-7000-7000-8000-000000002000",
+            "0192f0c1-7000-7000-8000-0000000020c8"
+          ],
+          "bounds": {
+            "x": 352,
+            "y": 240,
+            "width": 592,
+            "height": 848
+          },
+          "barVisible": true,
+          "band": null,
+          "lastOperation": {
+            "operation": "group",
+            "inverse": "group",
+            "children": [
+              "deleteCard",
+              "deleteCard",
+              "deleteCard"
+            ]
+          }
+        }
+      },
+      "plainDrag": {
+        "cameraBefore": {
+          "panX": 123,
+          "panY": 368.5,
+          "zoom": 1
+        },
+        "cameraAfter": {
+          "panX": 73,
+          "panY": 338.5,
+          "zoom": 1
+        },
+        "selection": {
+          "size": 2,
+          "ids": [
+            "0192f0c1-7000-7000-8000-000000002000",
+            "0192f0c1-7000-7000-8000-0000000020c8"
+          ],
+          "bounds": {
+            "x": 352,
+            "y": 240,
+            "width": 592,
+            "height": 848
+          },
+          "barVisible": true,
+          "band": null,
+          "lastOperation": {
+            "operation": "group",
+            "inverse": "group",
+            "children": [
+              "deleteCard",
+              "deleteCard",
+              "deleteCard"
+            ]
+          }
+        }
+      },
+      "visual": {
+        "band": {
+          "x": -1,
+          "y": 4.703125,
+          "width": 260,
+          "height": 230
+        },
+        "selection": {
+          "size": 3,
+          "ids": [
+            "0192f0c1-7000-7000-8000-000000000600",
+            "0192f0c1-7000-7000-8000-000000000602",
+            "0192f0c1-7000-7000-8000-000000000604"
+          ],
+          "bounds": {
+            "x": 64,
+            "y": 64,
+            "width": 448,
+            "height": 320
+          },
+          "barVisible": true,
+          "band": null,
+          "lastOperation": null
+        },
+        "camera": {
+          "panX": -13,
+          "panY": -7.5,
+          "zoom": 1
+        },
+        "screenshots": [
+          {
+            "file": "reviews/evidence/P4-16-band-desktop.png",
+            "bytes": 50015
+          },
+          {
+            "file": "reviews/evidence/P4-16-selection-desktop.png",
+            "bytes": 51743
+          }
+        ]
+      },
+      "screenshots": [
+        {
+          "file": "reviews/evidence/P4-16-selection-deleted-desktop.png",
+          "bytes": 43277
+        },
+        {
+          "file": "reviews/evidence/P4-16-band-desktop.png",
+          "bytes": 50015
+        },
+        {
+          "file": "reviews/evidence/P4-16-selection-desktop.png",
+          "bytes": 51743
+        }
+      ]
+    },
+    {
+      "viewport": {
+        "name": "mobile",
+        "width": 390,
+        "height": 844
+      },
+      "camera": {
+        "panX": 64,
+        "panY": 336,
+        "zoom": 0.25
+      },
+      "selection": {
+        "size": 3,
+        "ids": [
+          "0192f0c1-7000-7000-8000-0000000020c7",
+          "0192f0c1-7000-7000-8000-0000000020ce",
+          "0192f0c1-7000-7000-8000-00000000225f"
+        ],
+        "bounds": {
+          "x": 672,
+          "y": 400,
+          "width": 672,
+          "height": 320
+        },
+        "barVisible": true,
+        "band": null,
+        "lastOperation": null
+      },
+      "bar": {
+        "x": 200.953125,
+        "y": 144.0625,
+        "width": 111.703125,
+        "height": 38,
+        "hidden": false
+      },
+      "jointDrag": {
+        "before": {
+          "size": 3,
+          "ids": [
+            "0192f0c1-7000-7000-8000-0000000020c7",
+            "0192f0c1-7000-7000-8000-0000000020ce",
+            "0192f0c1-7000-7000-8000-00000000225f"
+          ],
+          "bounds": {
+            "x": 672,
+            "y": 400,
+            "width": 672,
+            "height": 320
+          },
+          "barVisible": true,
+          "band": null,
+          "lastOperation": null
+        },
+        "after": {
+          "size": 3,
+          "ids": [
+            "0192f0c1-7000-7000-8000-0000000020c7",
+            "0192f0c1-7000-7000-8000-0000000020ce",
+            "0192f0c1-7000-7000-8000-00000000225f"
+          ],
+          "bounds": {
+            "x": 896,
+            "y": 512,
+            "width": 672,
+            "height": 320
+          },
+          "barVisible": true,
+          "band": null,
+          "lastOperation": {
+            "operation": "group",
+            "inverse": "group",
+            "children": [
+              "moveCard",
+              "moveCard",
+              "moveCard"
+            ]
+          }
+        }
+      },
+      "delete": {
+        "size": 0,
+        "ids": [],
+        "bounds": null,
+        "barVisible": false,
+        "band": null,
+        "lastOperation": {
+          "operation": "group",
+          "inverse": "group",
+          "children": [
+            "deleteCard",
+            "deleteCard",
+            "deleteCard"
+          ]
+        }
+      },
+      "band": {
+        "live": {
+          "x": 112,
+          "y": 383.25,
+          "width": 1280,
+          "height": 960
+        },
+        "after": {
+          "size": 21,
+          "ids": [
+            "0192f0c1-7000-7000-8000-000000002000",
+            "0192f0c1-7000-7000-8000-000000002001",
+            "0192f0c1-7000-7000-8000-00000000200a",
+            "0192f0c1-7000-7000-8000-00000000200b",
+            "0192f0c1-7000-7000-8000-00000000204f",
+            "0192f0c1-7000-7000-8000-000000002050",
+            "0192f0c1-7000-7000-8000-000000002051",
+            "0192f0c1-7000-7000-8000-0000000020c6",
+            "0192f0c1-7000-7000-8000-0000000020c8",
+            "0192f0c1-7000-7000-8000-0000000020c9",
+            "0192f0c1-7000-7000-8000-0000000020ca",
+            "0192f0c1-7000-7000-8000-0000000020cb",
+            "0192f0c1-7000-7000-8000-0000000020cc",
+            "0192f0c1-7000-7000-8000-0000000020cd",
+            "0192f0c1-7000-7000-8000-0000000020d0",
+            "0192f0c1-7000-7000-8000-0000000020d1",
+            "0192f0c1-7000-7000-8000-0000000020d2",
+            "0192f0c1-7000-7000-8000-0000000020d4",
+            "0192f0c1-7000-7000-8000-000000002117",
+            "0192f0c1-7000-7000-8000-000000002260",
+            "0192f0c1-7000-7000-8000-000000002268"
+          ],
+          "bounds": {
+            "x": 112,
+            "y": 224,
+            "width": 1824,
+            "height": 1792
+          },
+          "barVisible": true,
+          "band": null,
+          "lastOperation": {
+            "operation": "group",
+            "inverse": "group",
+            "children": [
+              "deleteCard",
+              "deleteCard",
+              "deleteCard"
+            ]
+          }
+        }
+      },
+      "plainDrag": {
+        "cameraBefore": {
+          "panX": 64,
+          "panY": 336,
+          "zoom": 0.25
+        },
+        "cameraAfter": {
+          "panX": -136,
+          "panY": 216,
+          "zoom": 0.25
+        },
+        "selection": {
+          "size": 21,
+          "ids": [
+            "0192f0c1-7000-7000-8000-000000002000",
+            "0192f0c1-7000-7000-8000-000000002001",
+            "0192f0c1-7000-7000-8000-00000000200a",
+            "0192f0c1-7000-7000-8000-00000000200b",
+            "0192f0c1-7000-7000-8000-00000000204f",
+            "0192f0c1-7000-7000-8000-000000002050",
+            "0192f0c1-7000-7000-8000-000000002051",
+            "0192f0c1-7000-7000-8000-0000000020c6",
+            "0192f0c1-7000-7000-8000-0000000020c8",
+            "0192f0c1-7000-7000-8000-0000000020c9",
+            "0192f0c1-7000-7000-8000-0000000020ca",
+            "0192f0c1-7000-7000-8000-0000000020cb",
+            "0192f0c1-7000-7000-8000-0000000020cc",
+            "0192f0c1-7000-7000-8000-0000000020cd",
+            "0192f0c1-7000-7000-8000-0000000020d0",
+            "0192f0c1-7000-7000-8000-0000000020d1",
+            "0192f0c1-7000-7000-8000-0000000020d2",
+            "0192f0c1-7000-7000-8000-0000000020d4",
+            "0192f0c1-7000-7000-8000-000000002117",
+            "0192f0c1-7000-7000-8000-000000002260",
+            "0192f0c1-7000-7000-8000-000000002268"
+          ],
+          "bounds": {
+            "x": 112,
+            "y": 224,
+            "width": 1824,
+            "height": 1792
+          },
+          "barVisible": true,
+          "band": null,
+          "lastOperation": {
+            "operation": "group",
+            "inverse": "group",
+            "children": [
+              "deleteCard",
+              "deleteCard",
+              "deleteCard"
+            ]
+          }
+        }
+      },
+      "visual": {
+        "band": {
+          "x": 532,
+          "y": 147.625,
+          "width": 520,
+          "height": 460
+        },
+        "selection": {
+          "size": 4,
+          "ids": [
+            "0192f0c1-7000-7000-8000-000000000601",
+            "0192f0c1-7000-7000-8000-000000000603",
+            "0192f0c1-7000-7000-8000-000000000606",
+            "0192f0c1-7000-7000-8000-000000000607"
+          ],
+          "bounds": {
+            "x": 352,
+            "y": 64,
+            "width": 576,
+            "height": 448
+          },
+          "barVisible": true,
+          "band": null,
+          "lastOperation": null
+        },
+        "camera": {
+          "panX": 220,
+          "panY": 124,
+          "zoom": 0.5
+        },
+        "screenshots": [
+          {
+            "file": "reviews/evidence/P4-16-band-mobile.png",
+            "bytes": 29200
+          },
+          {
+            "file": "reviews/evidence/P4-16-selection-mobile.png",
+            "bytes": 30980
+          }
+        ]
+      },
+      "screenshots": [
+        {
+          "file": "reviews/evidence/P4-16-selection-deleted-mobile.png",
+          "bytes": 25299
+        },
+        {
+          "file": "reviews/evidence/P4-16-band-mobile.png",
+          "bytes": 29200
+        },
+        {
+          "file": "reviews/evidence/P4-16-selection-mobile.png",
+          "bytes": 30980
+        }
+      ]
+    }
+  ],
+  "checks": [
+    {
+      "name": "desktop: Shift-click selects three objects and shows the count bar",
+      "passed": true,
+      "actual": {
+        "selection": {
+          "size": 3,
+          "ids": [
+            "0192f0c1-7000-7000-8000-0000000020c7",
+            "0192f0c1-7000-7000-8000-0000000020ce",
+            "0192f0c1-7000-7000-8000-0000000020c6"
+          ],
+          "bounds": {
+            "x": 432,
+            "y": 400,
+            "width": 912,
+            "height": 96
+          },
+          "barVisible": true,
+          "band": null,
+          "lastOperation": null
+        },
+        "bar": {
+          "x": 504.40625,
+          "y": 136.234375,
+          "width": 111.703125,
+          "height": 38,
+          "hidden": false
+        }
+      },
+      "expected": "3 selected and a visible bar above the bounding box"
+    },
+    {
+      "name": "desktop: the joint drag is one group operation and keeps the selection",
+      "passed": true,
+      "actual": {
+        "operation": {
+          "operation": "group",
+          "inverse": "group",
+          "children": [
+            "moveCard",
+            "moveCard",
+            "moveCard"
+          ]
+        },
+        "size": 3
+      },
+      "expected": "one group of three moveCard children and three selected objects after release"
+    },
+    {
+      "name": "desktop: the bar delete writes one group of deletes and hides the bar",
+      "passed": true,
+      "actual": {
+        "operation": {
+          "operation": "group",
+          "inverse": "group",
+          "children": [
+            "deleteCard",
+            "deleteCard",
+            "deleteCard"
+          ]
+        },
+        "selection": {
+          "size": 0,
+          "ids": [],
+          "bounds": null,
+          "barVisible": false,
+          "band": null,
+          "lastOperation": {
+            "operation": "group",
+            "inverse": "group",
+            "children": [
+              "deleteCard",
+              "deleteCard",
+              "deleteCard"
+            ]
+          }
+        }
+      },
+      "expected": "one group of three deleteCard children, empty selection, hidden bar"
+    },
+    {
+      "name": "desktop: the Shift band is live, selects by intersection and disappears",
+      "passed": true,
+      "actual": {
+        "liveBand": {
+          "x": 135,
+          "y": 380.703125,
+          "width": 320,
+          "height": 240
+        },
+        "afterBand": {
+          "size": 2,
+          "ids": [
+            "0192f0c1-7000-7000-8000-000000002000",
+            "0192f0c1-7000-7000-8000-0000000020c8"
+          ],
+          "bounds": {
+            "x": 352,
+            "y": 240,
+            "width": 592,
+            "height": 848
+          },
+          "barVisible": true,
+          "band": null,
+          "lastOperation": {
+            "operation": "group",
+            "inverse": "group",
+            "children": [
+              "deleteCard",
+              "deleteCard",
+              "deleteCard"
+            ]
+          }
+        }
+      },
+      "expected": "a live band rectangle, a non-empty intersection selection and no band after release"
+    },
+    {
+      "name": "desktop: a plain empty drag pans and writes no operation",
+      "passed": true,
+      "actual": {
+        "cameraBeforePan": {
+          "panX": 123,
+          "panY": 368.5,
+          "zoom": 1
+        },
+        "cameraAfterPan": {
+          "panX": 73,
+          "panY": 338.5,
+          "zoom": 1
+        },
+        "selectionAfterPan": {
+          "size": 2,
+          "ids": [
+            "0192f0c1-7000-7000-8000-000000002000",
+            "0192f0c1-7000-7000-8000-0000000020c8"
+          ],
+          "bounds": {
+            "x": 352,
+            "y": 240,
+            "width": 592,
+            "height": 848
+          },
+          "barVisible": true,
+          "band": null,
+          "lastOperation": {
+            "operation": "group",
+            "inverse": "group",
+            "children": [
+              "deleteCard",
+              "deleteCard",
+              "deleteCard"
+            ]
+          }
+        }
+      },
+      "expected": "a moved camera, an unchanged selection and no new operation"
+    },
+    {
+      "name": "desktop: the 1 px frames and the band render in the chrome pass",
+      "passed": true,
+      "actual": {
+        "band": {
+          "x": -1,
+          "y": 4.703125,
+          "width": 260,
+          "height": 230
+        },
+        "selection": {
+          "size": 3,
+          "ids": [
+            "0192f0c1-7000-7000-8000-000000000600",
+            "0192f0c1-7000-7000-8000-000000000602",
+            "0192f0c1-7000-7000-8000-000000000604"
+          ],
+          "bounds": {
+            "x": 64,
+            "y": 64,
+            "width": 448,
+            "height": 320
+          },
+          "barVisible": true,
+          "band": null,
+          "lastOperation": null
+        }
+      },
+      "expected": "a live band and a non-empty framed selection on the dark board"
+    },
+    {
+      "name": "mobile: Shift-click selects three objects and shows the count bar",
+      "passed": true,
+      "actual": {
+        "selection": {
+          "size": 3,
+          "ids": [
+            "0192f0c1-7000-7000-8000-0000000020c7",
+            "0192f0c1-7000-7000-8000-0000000020ce",
+            "0192f0c1-7000-7000-8000-00000000225f"
+          ],
+          "bounds": {
+            "x": 672,
+            "y": 400,
+            "width": 672,
+            "height": 320
+          },
+          "barVisible": true,
+          "band": null,
+          "lastOperation": null
+        },
+        "bar": {
+          "x": 200.953125,
+          "y": 144.0625,
+          "width": 111.703125,
+          "height": 38,
+          "hidden": false
+        }
+      },
+      "expected": "3 selected and a visible bar above the bounding box"
+    },
+    {
+      "name": "mobile: the joint drag is one group operation and keeps the selection",
+      "passed": true,
+      "actual": {
+        "operation": {
+          "operation": "group",
+          "inverse": "group",
+          "children": [
+            "moveCard",
+            "moveCard",
+            "moveCard"
+          ]
+        },
+        "size": 3
+      },
+      "expected": "one group of three moveCard children and three selected objects after release"
+    },
+    {
+      "name": "mobile: the bar delete writes one group of deletes and hides the bar",
+      "passed": true,
+      "actual": {
+        "operation": {
+          "operation": "group",
+          "inverse": "group",
+          "children": [
+            "deleteCard",
+            "deleteCard",
+            "deleteCard"
+          ]
+        },
+        "selection": {
+          "size": 0,
+          "ids": [],
+          "bounds": null,
+          "barVisible": false,
+          "band": null,
+          "lastOperation": {
+            "operation": "group",
+            "inverse": "group",
+            "children": [
+              "deleteCard",
+              "deleteCard",
+              "deleteCard"
+            ]
+          }
+        }
+      },
+      "expected": "one group of three deleteCard children, empty selection, hidden bar"
+    },
+    {
+      "name": "mobile: the Shift band is live, selects by intersection and disappears",
+      "passed": true,
+      "actual": {
+        "liveBand": {
+          "x": 112,
+          "y": 383.25,
+          "width": 1280,
+          "height": 960
+        },
+        "afterBand": {
+          "size": 21,
+          "ids": [
+            "0192f0c1-7000-7000-8000-000000002000",
+            "0192f0c1-7000-7000-8000-000000002001",
+            "0192f0c1-7000-7000-8000-00000000200a",
+            "0192f0c1-7000-7000-8000-00000000200b",
+            "0192f0c1-7000-7000-8000-00000000204f",
+            "0192f0c1-7000-7000-8000-000000002050",
+            "0192f0c1-7000-7000-8000-000000002051",
+            "0192f0c1-7000-7000-8000-0000000020c6",
+            "0192f0c1-7000-7000-8000-0000000020c8",
+            "0192f0c1-7000-7000-8000-0000000020c9",
+            "0192f0c1-7000-7000-8000-0000000020ca",
+            "0192f0c1-7000-7000-8000-0000000020cb",
+            "0192f0c1-7000-7000-8000-0000000020cc",
+            "0192f0c1-7000-7000-8000-0000000020cd",
+            "0192f0c1-7000-7000-8000-0000000020d0",
+            "0192f0c1-7000-7000-8000-0000000020d1",
+            "0192f0c1-7000-7000-8000-0000000020d2",
+            "0192f0c1-7000-7000-8000-0000000020d4",
+            "0192f0c1-7000-7000-8000-000000002117",
+            "0192f0c1-7000-7000-8000-000000002260",
+            "0192f0c1-7000-7000-8000-000000002268"
+          ],
+          "bounds": {
+            "x": 112,
+            "y": 224,
+            "width": 1824,
+            "height": 1792
+          },
+          "barVisible": true,
+          "band": null,
+          "lastOperation": {
+            "operation": "group",
+            "inverse": "group",
+            "children": [
+              "deleteCard",
+              "deleteCard",
+              "deleteCard"
+            ]
+          }
+        }
+      },
+      "expected": "a live band rectangle, a non-empty intersection selection and no band after release"
+    },
+    {
+      "name": "mobile: a plain empty drag pans and writes no operation",
+      "passed": true,
+      "actual": {
+        "cameraBeforePan": {
+          "panX": 64,
+          "panY": 336,
+          "zoom": 0.25
+        },
+        "cameraAfterPan": {
+          "panX": -136,
+          "panY": 216,
+          "zoom": 0.25
+        },
+        "selectionAfterPan": {
+          "size": 21,
+          "ids": [
+            "0192f0c1-7000-7000-8000-000000002000",
+            "0192f0c1-7000-7000-8000-000000002001",
+            "0192f0c1-7000-7000-8000-00000000200a",
+            "0192f0c1-7000-7000-8000-00000000200b",
+            "0192f0c1-7000-7000-8000-00000000204f",
+            "0192f0c1-7000-7000-8000-000000002050",
+            "0192f0c1-7000-7000-8000-000000002051",
+            "0192f0c1-7000-7000-8000-0000000020c6",
+            "0192f0c1-7000-7000-8000-0000000020c8",
+            "0192f0c1-7000-7000-8000-0000000020c9",
+            "0192f0c1-7000-7000-8000-0000000020ca",
+            "0192f0c1-7000-7000-8000-0000000020cb",
+            "0192f0c1-7000-7000-8000-0000000020cc",
+            "0192f0c1-7000-7000-8000-0000000020cd",
+            "0192f0c1-7000-7000-8000-0000000020d0",
+            "0192f0c1-7000-7000-8000-0000000020d1",
+            "0192f0c1-7000-7000-8000-0000000020d2",
+            "0192f0c1-7000-7000-8000-0000000020d4",
+            "0192f0c1-7000-7000-8000-000000002117",
+            "0192f0c1-7000-7000-8000-000000002260",
+            "0192f0c1-7000-7000-8000-000000002268"
+          ],
+          "bounds": {
+            "x": 112,
+            "y": 224,
+            "width": 1824,
+            "height": 1792
+          },
+          "barVisible": true,
+          "band": null,
+          "lastOperation": {
+            "operation": "group",
+            "inverse": "group",
+            "children": [
+              "deleteCard",
+              "deleteCard",
+              "deleteCard"
+            ]
+          }
+        }
+      },
+      "expected": "a moved camera, an unchanged selection and no new operation"
+    },
+    {
+      "name": "mobile: the 1 px frames and the band render in the chrome pass",
+      "passed": true,
+      "actual": {
+        "band": {
+          "x": 532,
+          "y": 147.625,
+          "width": 520,
+          "height": 460
+        },
+        "selection": {
+          "size": 4,
+          "ids": [
+            "0192f0c1-7000-7000-8000-000000000601",
+            "0192f0c1-7000-7000-8000-000000000603",
+            "0192f0c1-7000-7000-8000-000000000606",
+            "0192f0c1-7000-7000-8000-000000000607"
+          ],
+          "bounds": {
+            "x": 352,
+            "y": 64,
+            "width": 576,
+            "height": 448
+          },
+          "barVisible": true,
+          "band": null,
+          "lastOperation": null
+        }
+      },
+      "expected": "a live band and a non-empty framed selection on the dark board"
+    }
+  ],
+  "result": "pass",
+  "exitCode": 0,
+  "finishedAt": "2026-10-28T06:59:02.043Z"
+}

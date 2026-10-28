@@ -31,6 +31,7 @@ import type {
   CreateCardDraft,
   CreateObjectDraft,
   CreateZoneDraft,
+  DeleteSelectionGesture,
   DragGroupGesture,
   DragSingleGesture,
   GestureResult,
@@ -487,6 +488,38 @@ function buildDeleteOperation(
   }
 }
 
+// L10 (P4-16): one selection delete = one group operation over the single
+// deletes, with the reversed creates as the exactly one inverse. An empty
+// selection yields no operation.
+function buildDeleteSelection(
+  port: DocumentPort,
+  context: OperationContext,
+  gesture: DeleteSelectionGesture,
+): OperationPair | null {
+  const seen = new Set<string>();
+  const children: Operation[] = [];
+  for (const member of gesture.members) {
+    const key = `${member.objectKind}:${member.objectId}`;
+    if (seen.has(key)) {
+      throw new OperationError(
+        `the selection lists ${member.objectKind} ${member.objectId} twice`,
+      );
+    }
+    seen.add(key);
+    const pair = buildDeleteOperation(port, context, member.objectKind, member.objectId);
+    children.push(pair.operation);
+  }
+  if (children.length === 0) {
+    return null;
+  }
+  const inverseChildren: OperationInverse[] = children
+    .map((child) => child.inverse)
+    .reverse();
+  const inverse = makeInverse(context, "group", { children: inverseChildren });
+  const operation = makeOperation(context, "group", { children }, inverse);
+  return { operation, inverse: operation.inverse };
+}
+
 function buildDragGroup(
   port: DocumentPort,
   context: OperationContext,
@@ -620,6 +653,8 @@ export function buildOperation(
       return buildCreateOperation(context, gesture.draft);
     case "delete":
       return buildDeleteOperation(port, context, gesture.objectKind, gesture.objectId);
+    case "delete-selection":
+      return buildDeleteSelection(port, context, gesture);
     case "keyboard-nudge": {
       const operation = buildNudgeOperation(port, context, gesture);
       return operation === null ? null : { operation, inverse: operation.inverse };

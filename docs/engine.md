@@ -17,9 +17,9 @@ the network (AD-2), and reads the contract and tokens from generated headers.
 | `render` | `render.h`, `render.cpp` | Deterministic command buffer: culling, stable order, 24-byte instances, empty-on-failure `Status`; command-buffer hit testing | document + camera + viewport + index → instances, hit result | camera, doc, spatial, status, `tokens.h` |
 | `render_gl` | `render_gl.h`, `render_gl.cpp` | WebGL2 instanced renderer (per-instance attributes, one `drawArraysInstanced`, inline GLSL 300 es) plus the exported C API; native stubs | command buffer / mutation and hit-test calls → pixels / C ABI results | render, camera, doc, spatial, `tokens.h`, GLES3, Emscripten |
 | `text` | `text.h`, `text.cpp` | L02 runtime glyph atlas: token text styles, atlas plan with the texture-limit fallback, validated glyph table with a placeholder per role, glyph runs and the 32-byte glyph command buffer | token typography / glyph count, cell, DPR, texture limit / RGBA pixels + packed metrics / runs + camera → plan, CSS-px glyph metrics, glyph quads | camera, geometry, status, `tokens.h` |
-| `text_gl` | `text_gl.h`, `text_gl.cpp` | Text C ABI (pure style/plan calls in both builds), the WebGL2 glyph pass (atlas texture upload, one instanced glyph draw after the object pass), the bound title/preview runs and the header/snap-guide chrome pass (P4-10/P4-15) | C ABI calls / glyph buffer / bound text / snap guides → texture, pixels | text, text_binding, snap, `tokens.h`, GLES3 |
+| `text_gl` | `text_gl.h`, `text_gl.cpp` | Text C ABI (pure style/plan calls in both builds), the WebGL2 glyph pass (atlas texture upload, one instanced glyph draw after the object pass), the bound title/preview runs and the header/snap-guide/selection chrome pass (P4-10/P4-15/P4-16) | C ABI calls / glyph buffer / bound text / snap guides / selection → texture, pixels | text, text_binding, snap, `tokens.h`, GLES3 |
 | `text_binding` | `text_binding.h`, `text_binding.cpp` | L02 (P4-10) presentation binding: caller-supplied titles and previews bound to visible objects (ellipsis titles, wrapped/clipped previews), the 40 px header/inset chrome geometry, block growth, header chrome quads | document + camera + viewport + index + caller text → runs, chrome quads, required preview height | doc, spatial, text, geometry, status, `tokens.h` |
-| `input` (bridge) | `src/bridge/input.ts` | L03 (P4-14) DOM-free pointer input layer: click/drag threshold, card/header grip policy, field/scroll suppression, pointer capture/cancel, right-button and multi-touch rejection, cursor and header-hover state, injected seam commit | pointer samples + hit test + camera callbacks → drag preview/commit/revert, hover, cursor, pan/zoom | none at runtime (types only) |
+| `input` (bridge) | `src/bridge/input.ts` | L03/L07/L10 (P4-14/P4-15/P4-16) DOM-free pointer input layer: click/drag threshold, card/header grip policy, field/scroll suppression, pointer capture/cancel, right-button and multi-touch rejection, cursor and header-hover state, snap requests, the selection set, the Shift rubber band, joint drags and injected seam commits | pointer samples + hit test + camera/selection callbacks → drag preview/commit/revert, joint-drag members, selection/band state, hover, cursor, pan/zoom | none at runtime (types only) |
 | `snap` | `snap.h`, `snap.cpp`, `snap_gl.h` | L07 (P4-15) snapping core: pure edge/centre candidates of visible neighbours and zones within the token screen tolerance, per-axis line-over-grid decision, Shift free, deterministic guide selection (at most three) and the guide C ABI | document + spatial index + camera + viewport + dragged slot and position → snapped world position + up to three world guide lines | camera, doc, spatial, status, `tokens.h` |
 | C ABI | `engine.h`, `engine.cpp` | `air_engine_version()` and compile-time checks of `kContractVersion`/`tokens.h` | – → version string | `contract.h`, `tokens.h` |
 
@@ -32,8 +32,9 @@ across the C ABI). The C API exports `engine_create`, `engine_resize`, `engine_s
 `engine_text_add_run`, `engine_text_add_box_run`, `engine_text_clear_runs`,
 `engine_visible_glyph_count` (P4-08/P4-09), the binding calls `engine_text_bind_object`,
 `engine_text_clear_bindings`, `engine_text_required_height` (P4-10), the snapping calls
-`engine_snap_position`, `engine_snap_guide`, `engine_snap_clear` (P4-15) and `engine_last_error`; the
-TypeScript bridge exposes the same surface as typed methods.
+`engine_snap_position`, `engine_snap_guide`, `engine_snap_clear` (P4-15), the selection chrome calls
+`engine_set_selection`, `engine_set_band` (P4-16) and `engine_last_error`; the TypeScript bridge
+exposes the same surface as typed methods.
 
 ## Gesture logic layers (TypeScript)
 
@@ -461,6 +462,67 @@ a zoom or an idle frame.
   committed operation (`reviews/evidence/P4-15-snap-*.json`). The guide chrome is drag-only, so the
   committed reference images stay 0-diff and the `perf` scene never runs the snapping core.
 
+## Selection and the rubber band (L10, P4-16)
+
+L10 ("several objects can be selected, moved and deleted together as one action") is presentation
+state in the P4-14 input layer plus chrome drawn by the existing pass: the document, the operation
+payload and the command-buffer instance counts never contain the selection, the band or the frames.
+
+- **Selection set.** `PointerInput` keeps a selection of `InputTarget`s outside the document (ids,
+  slots and current world geometry). A press/release below the 4 px threshold is a click: a plain
+  click replaces the selection with the clicked object (dragging an *unselected* object does the same
+  before the drag starts), `Shift`-click toggles one object in or out, a plain empty click clears the
+  set, and `keyDown("Escape")` (forwarded from the page's `keydown`) clears it too. The set is
+  presentation state: it is never persisted, never serialised into an operation, and the core clears
+  its chrome on every `engine_load_rectangles`. Every change is reported through
+  `onSelectionChange(targets)`, so the playground can apply the native chrome and the count bar.
+- **Rubber band.** A `Shift`-drag on the empty canvas enters the band phase: the layer converts the
+  press and current points to world space, reports the normalised world rectangle through
+  `onBandChange` and draws no selection until release. On release `targetsInRect(rect)` returns every
+  live object whose bounds intersect the rectangle and the set replaces the selection. The rule is
+  the exported `worldRectsIntersect` (bounds intersection, touching edges included, not
+  containment), shared by the playground and the unit suite. Without `Shift` the drag pans exactly as
+  in P4-14; a band never pans, and a second pointer ends the band into the pinch.
+- **Selection chrome.** The renderer stores the selected document slots and the live band world
+  rectangle in presentation state. The P4-10/P4-15 chrome pass draws one 1 px `tokens::accent` frame
+  per *visible* selected object and the live band as a `tokens::accent_soft` fill with a 1 px
+  `tokens::accent` border; both use the existing instanced chrome program and a reusable 512-quad
+  batch, so a large selection neither allocates per frame nor enters the object command buffer. The
+  band is cleared on release/cancel and the frames on selection clear; nothing draws at rest, so the
+  reference images stay 0-diff. C ABI: `engine_set_selection(indices, count)` and
+  `engine_set_band(x, y, width, height, visible)`; the bridge wraps them as `setSelection(indices)` and
+  `setBand(bounds | null)`.
+- **Joint drag.** When the drag starts on a selected object and the selection holds several objects,
+  the layer records the members' current geometry and, on every move, applies the same world delta
+  (the snapped delta of the grabbed object) to all of them through `previewGroupDrag` — no document
+  write. On release it calls `commitGroupDrag` once: the playground builds one `drag-group` gesture
+  through the P4-05 seam, which becomes exactly one `group` operation of `moveCard`/`moveBlock`/
+  `moveZone` children with the reversed child inverses as its inverse. A cancelled joint drag calls
+  `revertGroupDrag` (the port still holds the original geometry) and writes nothing; the selection
+  always survives the release, the cancel and the drag itself.
+- **Count bar and delete.** The playground keeps one DOM count bar (ADR-0009) above the selection
+  bounding box: "n selected" in the playground's demo-text convention plus a delete button with the
+  inline stroke SVG (no character or "×", `aria-label` "Delete selection"). The bar follows the
+  camera transform, flips inside the box when it would leave the canvas, and is clamped to the
+  visible canvas so the delete control is always clickable. Delete builds one `delete-selection`
+  gesture → one `group` operation whose children are the single `deleteCard`/`deleteBlock` operations
+  and whose inverse is the reversed `createCard`/`createBlock` group (zones are skipped; zone
+  deletion is L08/P4-27). The delete button stops pointer propagation, so the input layer never starts
+  a gesture from it.
+- **Playground and evidence.** The sample and `?scene=layers` boards consume the layer; the page
+  exposes `window.__engineSelection` (size, ids, bounds, bar visible, live band, last committed
+  operation types) for evidence. `apps/engine-playground/tools/capture-selection.mjs` drives
+  Shift-clicks, a joint drag, the bar delete, a Shift band and a plain pan at 1440×900 and 390×844,
+  writes the frames/band screenshots and a record with the selection, band, bar and operation children
+  (`reviews/evidence/P4-16-selection-*.json`).
+- **Tests.** `test/multi-selection.test.mjs` covers add/remove/replace via Shift-click and plain
+  click, empty-click and Esc clearing, the world-space band intersection rule, plain-drag panning, one
+  `drag-group` operation per joint drag (with the shared delta and snapping), the selection surviving
+  the drag and the cancel, the unselected-drag selection replacement, one `delete-selection` group
+  operation with its inverse (round trip on the in-memory port) and duplicate/empty rejection. The
+  native suites are unchanged (`cpp-unit`); the selection chrome is selection/drag-only, so the
+  committed reference images and the perf scene stay untouched.
+
 ## Object identity and mutations
 
 `Document` keeps one storage slot per object and assigns a monotonic `ObjectId` on insert
@@ -627,13 +689,17 @@ policy, field/scroll suppression, the header hover band, cursors and one move op
 documented in the pointer-input section above. **L07 — Snapping** is delivered for the
 engine-owned part by P4-15: the 6 px screen tolerance, edge/centre line matching with grid fallback,
 Shift free, the three-guide accent chrome and the snapped release as one operation, documented in the
-snapping section above. **L02 — Visible quality** is
+snapping section above. **L10 — Multi-select** is delivered for the engine-owned part by P4-16:
+Shift-click toggling, the plain-click replace, the Shift rubber band with the world-intersection
+rule, the 1 px accent frames and accent-soft band in the chrome pass, the count bar with its
+single-operation delete and the one-group joint drag, documented in the selection section above.
+**L02 — Visible quality** is
 delivered by P4-08, P4-09 and P4-10 for
 the engine-owned part: the runtime atlas, the layout flows and, since P4-10, the title/preview
 binding, the 40 px header geometry with the zone content inset, the grown block, the quiet delete
 affordance in the DOM overlay and the sharp zoom buckets, with native binding tests, the
 `text-titles` reference images and the `P4-10` capture records. The remaining engine-owned entries —
-L08, L10–L18, L20 — belong to those stages; their interaction behaviours are not
+L08, L11–L18, L20 — belong to those stages; their interaction behaviours are not
 implemented.
 
 ## What the spike does not prove yet
@@ -644,9 +710,10 @@ implemented.
   completion, long tasks while panning/zooming, or the L01 final proof (500 cards + 50 zones, no long
   task > 50 ms).
 - **Canvas behaviours:** the playground has demo-level pan/zoom over a fixed scene plus the L19 fit
-  action and dot grid; the L03 click/drag/edit separation and its pan/zoom are implemented (P4-14,
-  above), while selection, editing, snapping, zone membership, the undo UI, keyboard input, title
-  editing (L09 owns it), images, edges and the accessibility mirror are not. The input layer is
+  action and dot grid; the L03 click/drag/edit separation with its pan/zoom (P4-14), the L07
+  snapping (P4-15) and the L10 multi-selection, rubber band, joint drag and selection delete (P4-16)
+  are implemented above, while editing, zone membership, the undo UI, keyboard input, title editing
+  (L09 owns it), images, edges and the accessibility mirror are not. The input layer is
   DOM-driven: a real e2e for fields inside a block arrives with the editor overlay (P4-23). Text is presentation input: titles and previews are bound to visible
   objects by the caller (P4-10), but the engine document still stores no note content, and a
   title/preview that overlaps a higher-layer object is not clipped per pixel (the titles scene and

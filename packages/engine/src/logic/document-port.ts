@@ -64,6 +64,11 @@ export interface DocumentPort {
 export interface EngineDocumentPort extends DocumentPort {
   /** The object drawn at an engine handle, or `undefined` for a miss or a stale handle. */
   objectAt(handle: number): { readonly kind: BoardObjectKind; readonly id: string } | undefined;
+  /**
+   * The live engine handle of one object id, or `undefined` for an unknown id.
+   * Used by the selection chrome and the joint drag (P4-16).
+   */
+  slotOf(kind: BoardObjectKind, id: string): number | undefined;
 }
 
 /** In-memory port plus a canonical byte snapshot for the round-trip tests. */
@@ -283,6 +288,9 @@ export function createEngineDocumentPort(
     },
     zIndices(kind: BoardObjectKind): readonly string[] {
       return [...bucket(kind).values()].map((stored) => stored.object.z);
+    },
+    slotOf(kind: BoardObjectKind, id: string): number | undefined {
+      return bucket(kind).get(id)?.slot;
     },
     objectAt(handle: number): { readonly kind: BoardObjectKind; readonly id: string } | undefined {
       if (!Number.isInteger(handle) || handle < 0) {
