@@ -6207,7 +6207,7 @@
       "satisfies": [
         "D10"
       ],
-      "status": "in_progress",
+      "status": "done",
       "depends_on": [
         "P0-38"
       ],
@@ -6244,11 +6244,77 @@
         "changelog-entry"
       ],
       "branch": "task/P4-32",
-      "worktree": "../Project air-P4-32",
-      "evidence": [],
+      "worktree": null,
+      "evidence": [
+        "reviews/evidence/P4-32-board-check-20261028T194223Z.json",
+        "reviews/evidence/P4-32-changelog-entry-20261028T194255Z.json",
+        "reviews/evidence/P4-32-cpp-unit-20261028T194228Z.json",
+        "reviews/evidence/P4-32-wasm-build-20261028T194234Z.json",
+        "reviews/evidence/P4-32-wasm-size-20261028T194254Z.json"
+      ],
       "scope_write_forbidden": [
         "reference/",
         "packages/contracts/"
+      ],
+      "handoff": [
+        "Closed P4-32: engine.cpp static_assert and the two engine version checks expect contract 0.3.0 (owner-approved test change); support.mjs message and a comment follow.",
+        "cpp-unit green again on main (10/10), wasm-build and wasm-size pass (gzip 63,290 B). Remaining P5-01 contract follow-ups: packages/sdk, services/platform, services/auth."
+      ]
+    },
+    {
+      "id": "P0-39",
+      "title": "Live demo: quiet resize frame, done items dimmed, design rules page",
+      "goal": "The selection frame resizes from its edges and corners without the eight square handles, checked checklist items are dimmed instead of struck through, and the design-system page lists every rule of the design law.",
+      "why": "Owner request 2026-10-28: improve the resize design without the eight dots, show done checklist items dark instead of struck through, and list all design rules on the preview page.",
+      "satisfies": [
+        "D3"
+      ],
+      "status": "pending",
+      "depends_on": [
+        "P0-38"
+      ],
+      "complexity": 5,
+      "stage": "foundation",
+      "parallel_group": null,
+      "owner": null,
+      "round": 0,
+      "scope_write": [
+        "apps/web/preview/",
+        "docs/design-rules.md",
+        "docs/canvas-acceptance.md",
+        ".changes/"
+      ],
+      "scope_read": [
+        "ARCHITECTURE.md",
+        "AGENTS.md",
+        "STATUS.md",
+        "docs/module-map.md",
+        "docs/quality.md",
+        "docs/design-rules.md",
+        "docs/canvas-acceptance.md",
+        "docs/engine.md",
+        "docs/i18n/style-de.md",
+        "docs/i18n/glossary.md",
+        "apps/web/preview/",
+        "packages/ui-kit/tokens.css"
+      ],
+      "acceptance": [
+        "A1",
+        "A2",
+        "A3",
+        "A4"
+      ],
+      "gates": [
+        "board-check",
+        "design-check",
+        "changelog-entry"
+      ],
+      "branch": "task/P0-39",
+      "worktree": null,
+      "evidence": [],
+      "scope_write_forbidden": [
+        "reference/",
+        "docs/owner/"
       ],
       "handoff": []
     }

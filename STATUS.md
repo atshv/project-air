@@ -12,7 +12,7 @@
 - Owner decision: `continue`
 - Exit gates: `board-check`, `install`, `boundaries`, `dev-setup`, `compose-config`, `tokens-codegen`, `design-check`, `language-check`, `changelog-entry`, `ci-local`, `polier-version`
 - Exit criteria: Every packages[] folder exists with a README and an ARCHITECTURE.md; package map and versions are filled in.; A fresh clone installs reproducibly with the committed lockfile; root lint, typecheck, test and build pass.; Two worktrees run install, lint, typecheck and tests side by side without port or database collision; tools/dev/setup and teardown create and remove the slot database and bucket and refuse slot 0.; design-check, language-check, changelog-entry and boundaries reject a violating change locally; every code change carries a .changes entry.; The CI workflow is authored and proven locally (actionlint + act) and local sessions use Polier at the board's generator_version; the real GitHub run, branch protection, hosting and releases are deferred to the remote stage after hardening (ADR-0003).; A runnable design preview page exists with desktop and mobile screenshots and a live two-note connection demo (P0-19, P0-20).
-- Tasks: P0-03, P0-04, P0-06, P0-07, P0-08, P0-09, P0-10, P0-11, P0-12, P0-13, P0-14, P0-18, P0-19, P0-20, P0-21, P0-22, P0-23, P0-24, P0-25, P0-26, P0-27, P0-28, P0-29, P0-30, P0-31, P0-32, P0-33, P0-34, P0-35, P0-36, P0-37, P0-38
+- Tasks: P0-03, P0-04, P0-06, P0-07, P0-08, P0-09, P0-10, P0-11, P0-12, P0-13, P0-14, P0-18, P0-19, P0-20, P0-21, P0-22, P0-23, P0-24, P0-25, P0-26, P0-27, P0-28, P0-29, P0-30, P0-31, P0-32, P0-33, P0-34, P0-35, P0-36, P0-37, P0-38, P0-39
 
 ### Stage 2 — `contract` Contract
 
@@ -122,7 +122,10 @@
 
 ## Ready now
 
-- none
+- `P0-39` Live demo: quiet resize frame, done items dimmed, design rules page
+  - P0-38: Closed P0-38: design law §8 now edges 2, zones 3 (ADR-0013); tokens.json swapped, tokens.css/tokens.h/layers.ts regenerated; ui-kit token test follows (owner-approved).
+  - P0-38: Engine draw order unchanged (zones lowest rectangle layer); doc.h comment and docs/engine.md updated; demo edge back on --layer-edges, section 06 reordered, masthead P0-38.
+  - P0-38: cpp-unit not a gate: red on main since P5-01 (engine.cpp + 2 tests expect contract 0.2.0, generated 0.3.0); scratch build passes all other checks.
 
 ## Done
 
@@ -212,11 +215,11 @@
 - [x] `P0-36` Live demo: select and resize objects, photo without bar, edges behind — status: `done` — owner: —
 - [x] `P0-37` Live demo: engine canvas chrome — status: `done` — owner: —
 - [x] `P0-38` Layer order: edges below zones — status: `done` — owner: —
+- [x] `P4-32` Engine follows contract 0.3.0 — status: `done` — owner: —
 
 ## In progress
 
 - [ ] `P5-06` Durability and reconnect: restart, catch-up and snapshot compaction — status: `in_progress` — owner: lead
-- [ ] `P4-32` Engine follows contract 0.3.0 — status: `in_progress` — owner: —
 
 ## Blocked / failed
 
@@ -230,6 +233,7 @@
 - [ ] `P0-17` RELEASING.md and release 0.0.1 — status: `pending` — owner: —
 - [ ] `P5-07` crdt-convergence proof: 10,000 rounds, offline clients and own-only undo — status: `pending` — owner: —
 - [ ] `P5-08` load proof: 25 clients per board at p95 <= 150 ms and the stage report — status: `pending` — owner: —
+- [ ] `P0-39` Live demo: quiet resize frame, done items dimmed, design rules page — status: `pending` — owner: —
 
 <!-- polier:claims -->
 ## Claims

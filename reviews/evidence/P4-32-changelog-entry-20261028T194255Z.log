@@ -1,0 +1,5 @@
+$ node tools/release/check-changes.mjs --task P4-32 --base main
+[exit 0]
+
+check-changes: task P4-32, base main, 14 changed path(s), 5 code path(s)
+changelog-entry: OK (.changes/P4-32-contract-0-3-0.md)
