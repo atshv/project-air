@@ -4,8 +4,10 @@
 
 This report records the engine-core stage's measured proof: the L01 final performance measurement,
 the reference-image gate at both committed viewports for **both backends** (WebGL2 and WebGPU), and
-the deterministic stage showcase. It was refreshed on the merged two-backend head after P4-11…P4-13.
-It does not claim the stage complete: P4-17…P4-24 remain open (see "Open points").
+the deterministic stage showcase. It was refreshed on the merged two-backend head after P4-11…P4-13
+and now closes the stage: all 30 engine-core tasks (including P4-17…P4-24) are done and merged.
+Remaining limits are outside the engine stage (M1 reference hardware in hardening, catalogue e2e
+statuses in later stages); see "Open points".
 
 ## Final measurement table (basis vs final)
 
@@ -59,9 +61,11 @@ guides).
 - **WebGPU is the second backend, not the measured one.** P4-11…P4-13 are merged and the two-backend
   reference set exists (28 WebGL2 + 28 WebGPU baselines); `perf-final`/`perf` stay WebGL2 (owner
   decision `Q19`), so no WebGPU performance claim is made.
-- Open engine tasks: **P4-17** resize, **P4-18** auto-pan, **P4-19** placement, **P4-20**
-  keyboard/menu, **P4-21** undo UI, **P4-22** remember view, **P4-24** trackpad. The stage exit
-  criterion ("all engine entries of the canvas work orders done") is therefore not met.
+- **Stage-5 engine scope is done:** P4-01…P4-30 are merged (L14 resize, L16 auto-pan, L20 placement,
+  L12 keyboard/menu, L11 undo/redo, L17 remember view and L15 trackpad/wheel desktop landed on
+  2026-10-28). The stage exit criterion "all engine entries of the canvas work orders done" is met for
+  the engine-owned entries; the catalogue document still lists them `open` because their e2e checks
+  belong to the web-app/realtime stages and the lead's status pass has not run.
 - Reference hardware: the MacBook Air M1 8 GB target is still unmeasured; the Mac mini M2 8 GB proxy
   is accepted by the owner but must be re-measured on the M1 before that hardware is called done.
 - Node deviation: the harness ran on Node v26.12.1 (repository pins 24.22.1); recorded, must not be
@@ -69,10 +73,10 @@ guides).
 
 ## Stage handoff
 
-The engine core is ready to hand over as a measured two-backend engine (WebGL2 measured default,
-WebGPU second backend with fallback) with a deterministic proof harness, 28 WebGL2 and 28 WebGPU
-reviewed reference images and the L01 final proof refreshed on the merged head. The remaining work
-before the stage can be claimed complete is the interaction set P4-17 (resize), P4-18 (auto-pan),
-P4-19 (placement), P4-20 (keyboard/context menu), P4-21 (undo/redo), P4-22 (remember view) and
-P4-24 (trackpad/wheel), plus the M1 reference-hardware measurement in hardening. Every final number
-in this report is reproduced by the committed gate commands; the basis remains the P4-03 file.
+The engine core is handed over as a measured two-backend engine (WebGL2 measured default, WebGPU
+second backend with fallback) with a deterministic proof harness, 28 WebGL2 and 28 WebGPU reviewed
+reference images and the L01 final proof refreshed on the merged head. Stage 5 is complete; the next
+stage is realtime (owner decision pending, Q4 CRDT), then web-app, value and hardening, where the M1
+reference-hardware measurement, images, the a11y mirror and the L15 touch part follow. Every final
+number in this report is reproduced by the committed gate commands; the basis remains the P4-03
+file.

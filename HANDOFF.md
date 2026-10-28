@@ -10,50 +10,33 @@ Read `AGENTS.md`, `ARCHITECTURE.md`, `STATUS.md`, `docs/module-map.md` and the t
 - **Stage 2 Contract:** complete, owner decision `continue`; contract `0.1.0` (16 schema files, fixtures/sync/api corpora, TS+C++ codegen/parity), `docs/contracts.md`, ADR-0005, `board.contracts[]`, Contract overview in the preview.
 - **Stage 3 Engine spike:** complete, owner decision `continue`; C++20 core (doc/camera/spatial/render command buffer), WebGL2 instanced renderer, TS bridge `@project-air/engine`, `apps/engine-playground`, ADR-0006 + `docs/engine.md`; CMake 4.4.4 + Emscripten 6.0.13; WASM 49,925 B raw / 21,806 B gzip. Measured on the Mac mini M2 8 GB proxy: p95 2.00 ms (556 fps unlocked frame production), display-locked control p95 16.80 ms. **D8 caveat:** the MacBook Air M1 8 GB reference is unproven — re-measure before treating the hardware target as met.
 - **Stage 4 Backend core:** complete, owner decision `continue`; tasks `P3-01` … `P3-06` done. `services/platform` + `services/auth`, self-hosted Ory Kratos v26.2.0 (ADR-0007; `identity` profile, Mailpit courier, test-session mode for tests, admin API bound to localhost), PostgreSQL migrations `0001`–`0004` with RLS and contract-valid account-id mapping, 20 `/v1` contract routes + `GET /v1/session`, typed SDK `@project-air/sdk`, `api-tests` 32, `rls-tests` 7, platform unit 74, acceptance script `PASS backend-core acceptance`; ADR-0008 (API/session model).
-- **Stage 5 Engine core:** owner decision `continue`; 30 tasks (28 planned + `P4-29`/`P4-30` live-demo
-  zone parity). **Done and merged (2026-10-28 chain):** `P4-01` … `P4-30` **except** `P4-24`. Each task has its review
-  (`reviews/P4-*.md`), one commit and its gate records; every merge was pushed. Highlights:
-  `P4-14` L03 pointer input layer (4 px threshold, card/header grips, field/scroll suppression, one
-  operation per drag); `P4-15` L07 snapping (pure native edge/centre matching, 6 px screen tolerance,
-  ≤ 3 accent guides, `Shift` free); `P4-16` L10 multi-selection (band, frames, one group operation,
-  count bar); `P4-23` L18 field overlay (anchoring, inline `Enter`/`Tab`/`Shift+Tab`/`Backspace`,
-  24 px colour field, intents only); `P4-27` L08 membership (`zoneId` through the move payloads, group
-  zone move, both `deleteZone` policies, member-extent + 16 px guard, 1 s accent-line highlight);
-  `P4-29`/`P4-30` zone parity with the live demo (auto-arrangement, release preview, grouping,
-  emptied-zone removal, names; 8 reviewed lifecycle/parity visual baselines); `P4-11` the WebGPU
-  object pipeline behind the same 24-byte command buffer (one instanced WGSL draw, real adapter
-  `apple`/`metal-3`, async readiness, native stubs, WASM 61 KB gzip; WebGL2 28/28 0-diff); `P4-12`
-  backend selection/capability/fallback (injectable probe, one decision point, stable reason table,
-  13 fake-branch tests, real two-run browser smoke webgpu/fallback); `P4-13` WebGPU switch and the
-  two-backend visual set (56-capture exclusive gate, 28 new reviewed `-webgpu` baselines, adapter
-  identified, WebGL2 28/28 unchanged, cross-backend content parity 28/28 within the reviewed
-  tolerance, 0 interior differing pixels); `P4-17` L14 resize (eight 8 px accent handles in both
-  chrome passes, anchored 16 px snapping with `Shift` free, per-type + zone-member minima, one
-  operation per gesture; review `reviews/P4-17.md`); `P4-18` L16 auto-pan (pure 48 px band policy,
-  bounded ramp, drag-only rAF loop, preview follows, one operation on release; review
-  `reviews/P4-18.md`); `P4-19` L20 placement (pure centre/grid rule, 32 px cascade with the ten-attempt
-  cap and a documented post-cap free-grid-slot fallback — owner decision pending for the L20 catalogue
-  deviation, five-add capture 12/12; review `reviews/P4-19.md`); `P4-20` L12 keyboard/context menu
-  (one intent layer, field suppression, `Esc` priority, 300 ms nudge series, 200/32 px keyboard menu;
-  review `reviews/P4-20.md` — lead fixed a design-check raw-colour false positive that P4-19 also
-  shipped, and recorded multi-select duplicate + inert Bring/Send as follow-ups); `P4-21` L11
-  undo/redo (20-step history shortcuts, field rule, 3 s bottom-centre hint; lead fixed the group
-  hint label before merge; review `reviews/P4-21.md`); `P4-22` L17 remember view (guarded versioned
-  per-board/device record, restore before the fit, fit fallback, disabled in deterministic harness
-  contexts after a regression found in round 2; review `reviews/P4-22.md`); `P4-28`
-  the L01 final proof: `perf-final` (10,000 objects p95 0.200 ms, 0 intervals > 16.7 ms; 500 cards + 50 zones proof
-  max 0.600 ms with 100 culling checkpoints / 0 mismatches, all enforced metrics within basis + 10 %)
-  and `visual-final` (56/56 across WebGL2 + WebGPU — 28 per backend — 0-diff at 1440×900 and
-  390×844), plus the showcase and `docs/engine/stage-report.md`. Both stage-exit records were
-  refreshed on the merged two-backend head (`…164907Z` perf, `…164920Z` visual) with the report
-  updated to the refreshed numbers.
-  **Still open in stage 5:** `P4-17` resize, `P4-18` auto-pan, `P4-19` placement, `P4-20`
-  `P4-24` trackpad/wheel (the WebGPU two-backend set and the refreshed stage-exit records are done). Because the two stage-exit
-  records now exist, the generated `STATUS.md` renders stage 5 as "complete" mechanically; the exit
-  criterion "all engine entries of the canvas work orders done" is NOT met and the owner decision to
-  close the stage stays open. `docs/engine/stage-report.md` lists the same open points.
-  Next stage-5 order: `P4-17` … `P4-24`, then the stage closure (the M1 reference-hardware
-  measurement stays in hardening).
+- **Stage 5 Engine core:** **complete (2026-10-28)**, owner decision `continue`; all 30 tasks are done
+  and merged, each with its review (`reviews/P4-*.md`), gate records and a pushed commit. The exit
+  gates are recorded: `cpp-unit` (10/10 native suites), `perf-final` and `visual-final` refreshed on
+  the merged two-backend head (`P4-28-perf-final-20261028T164907Z`, `P4-28-visual-final-20261028T164920Z`).
+  Final proof: 10,000 objects p50 0.100 / p95 0.200 / p99 0.300 / mean 0.063 ms with **0 frame
+  intervals > 16.7 ms**; the 500 cards + 50 zones proof max **0.600 ms < 50 ms** with 100 culling
+  checkpoints and 0 mismatches, every enforced metric within the P4-03 basis + 10 %; the exclusive
+  visual gate captures **56 frames** (14 scenes × 2 viewports × WebGL2/WebGPU), **28/28 per backend
+  0-diff**, WebGPU adapter `apple`/`metal-3` identified, cross-backend content parity 28/28 within the
+  reviewed tolerance (≤ 3 % differing canvas pixels, **0 interior differences**); the deterministic
+  showcase and `docs/engine/stage-report.md` are committed.
+  **Delivered in stage 5 (highlights):** P4-01…P4-10 engine document/mutations/hit testing, scenes,
+  perf and visual gates, gesture/undo seam, layers, fit/grid/idle, text atlas, glyph layout, L02
+  titles/previews/header chrome; P4-11…P4-13 WebGPU pipeline, selection/fallback, switch and the
+  two-backend reference set; P4-14 L03 input layer; P4-15 L07 snapping; P4-16 L10 multi-selection;
+  P4-17 L14 resize; P4-18 L16 auto-pan; P4-19 L20 placement (documented post-cap fallback — owner
+  decision pending for the L20 catalogue deviation); P4-20 L12 keyboard/context menu (multi-select
+  duplicate and Bring/Send follow-ups); P4-21 L11 undo/redo; P4-22 L17 remember view; P4-23 L18
+  overlay/inline editing; P4-24 L15 trackpad/wheel desktop; P4-25…P4-27 contract 0.2.0 + DB + engine
+  zone containment; P4-29/P4-30 live-demo zone parity.
+  **Stage-5 limits that remain (not blockers for the exit):** the MacBook Air M1 8 GB reference is
+  still unmeasured (M2 proxy accepted by the owner, re-measured in hardening); the
+  `docs/canvas-acceptance.md` entries are still marked `open` — the lead's status pass needs the e2e
+  parts that belong to the web-app/realtime stages; touch/L15-manual, images and the a11y mirror stay
+  in hardening (`Q20`); the WebGPU backend is not the measured performance backend (`Q19`).
+  Next stage: **stage 6 `realtime`** (owner decision `pending`; Q4 CRDT to be decided) — then
+  web-app, value, hardening, and the remote phase.
 - **Other sessions/repo state:** a second DSH/Claude session works in the same checkouts; it produced
   `P4-06`/`P4-08`/`P4-09`/`P4-10`/`P4-26`, reviewed and refreshed the P4-10 evidence (`97798bf`,
   `597185b`, `b50cd26`). The 2026-10-28 chain (`P4-10` merge, `P4-14` → `P4-15` → `P4-16` → `P4-23` →
@@ -61,13 +44,13 @@ Read `AGENTS.md`, `ARCHITECTURE.md`, `STATUS.md`, `docs/module-map.md` and the t
   session, merged locally and pushed. Coordinate via claims/`in_progress` in `board.json`. Commit race
   documented below (`eff284b` carries the P4-07 content, `b4938dc` its bookkeeping). `origin/main` is
   at the latest main commit (check `git log` / `git status -sb`).
-- **Done overall:** 73 of 78 tasks. Open: the rest of stage 5 (the chain above plus `P4-11`…`P4-13`
+- **Done overall:** 74 of 78 tasks. The only open board tasks are the remote-phase `P0-02`, `P0-15`, `P0-16`, `P0-17`. Open: the rest of stage 5 (the chain above plus `P4-11`…`P4-13`
   WebGPU, `P4-17`/`P4-18` resize/auto-pan, `P4-19`…`P4-24` placement/keyboard/undo/view/trackpad)
   plus the remote-phase tasks `P0-02`, `P0-15`, `P0-16`, `P0-17` (after hardening) and the planning
   of the later stages (realtime, web-app, value, hardening).
 - **Preview:** `apps/web/preview/` has the permanent Contract 0.1.0 overview as section 02 and the live demo: top-centre ten-tool toolbar and a zone with notepad + image window (P0-26), **bilingual EN/DE with a themed top-right switch** via `apps/web/preview/locales/{en,de}.json` (all visible text/aria/alt; 260 identical keys; `<html lang>`, localStorage persistence, safe fallback) (P0-27), **zone items that can be dragged out onto the canvas and docked back** with a 28 px progressive detach animation, 8 px dock hysteresis, grid-snap, no edge connection, reduced-motion (P0-28); **when both items are out the empty zone fades/scales away and becomes hidden/inert, and dragging the two free items together (≥25 % overlap or ≤48 px centres) groups them into a newly animated zone** that re-orients/re-fits on resize, plus refined spring motion and a smaller zoom pill (36×104, 32 px buttons) (P0-29); **zone layout follows the drop (side by side or stacked), docked items can be reordered/swapped inside the zone, drags track the pointer 1:1 with commit-on-release (no magnetism) and the +/−/fit controls are smaller (32×96 pill, 28 px painted, 32 px hit, 12 px glyphs)** (P0-30). **Cache rule:** every preview change bumps `?v=` on `tokens.css`/`preview.css`/`preview.js` in `index.html`; locale fetches inherit the script version. A cached `index.html` may still need one hard reload (an old HTML document cannot reference the new CSS). Demo-cadence baseline screenshots: `P0-27-*` (desktop/mobile EN+DE, owner 1426×583 DPR2) `P0-28-*` (docked/mid-detach/detached/redocked) `P0-29-*` (zone fading/overlap/grouped/zoom/mobile/resize/toolbar) and `P0-30-*` (horizontal/vertical/swapped/drop-hint/controls/masthead/zoom-150).
 - **Checks:** `check.py` exit 0 (40 warnings, all historical evidence-record commits; run it in the main checkout only with `node_modules/` absent — a pnpm install materialises `node_modules/.pnpm`, whose package READMEs break `check_links`), `boundaries.py` exit 0, design-check tool tests 16/16, engine node tests 59/59, engine CTest 4/4, `codegen`/`wasm-*` clean; DB suites need a Polier slot (they cannot run in the main checkout). Repo-wide `pnpm test` is still red for pre-existing env reasons — `services/platform` tests need the slot database, the release-tool tests flake under turbo concurrency (28/28 alone) and `language-check` flags the P4-10 German demo strings in `apps/engine-playground/main.js`; the `unit` gate therefore uses the documented `pnpm test --affected`.
-- **Reviews:** `reviews/P1-04.md` … `reviews/P4-30.md` plus `P4-11`…`P4-13`/`P4-17`…`P4-22` committed; verdicts and findings are in the files.
+- **Reviews:** `reviews/P1-04.md` … `reviews/P4-30.md`, including the stage-5 extensions `P4-11`…`P4-24`, committed; verdicts and findings are in the files.
 
 ## Backend-core follow-ups (recorded, not blockers)
 
@@ -143,12 +126,11 @@ Read `AGENTS.md`, `ARCHITECTURE.md`, `STATUS.md`, `docs/module-map.md` and the t
 
 ## Next steps
 
-1. **Finish stage 5 in this order:** WebGPU `P4-11` → `P4-12` → `P4-13` (the two-backend
-   `visual-final` proof needs them), then `P4-17` resize → `P4-18` auto-pan → `P4-19` placement →
-   `P4-20` keyboard/context menu → `P4-21` undo UI → `P4-22` remember view → `P4-24` trackpad/wheel,
-   then the stage closure (briefs for the open tasks: check `tasks/`; the 2026-10-28 chain briefs are
-   `P4-14/15/16/23/27/28/29/30`). After the WebGPU backend lands, re-run `P4-28`'s visual proof for
-   the two-backend set.
+1. **Stage 5 is complete** — start **stage 6 `realtime`** after the owner decision: decide Q4 (CRDT
+   library behind an own interface vs own algorithm), then `P5-*` tasks (sync service, CRDT document,
+   presence, offline queue) with the L05/L11 realtime proofs. After that web-app (first real
+   `packages/sdk` client; fix its packaging first), value (imports/AI, Q8), hardening (M1 measurement,
+   images, a11y mirror, touch) and the remote phase (`P0-02`, `P0-15`…`P0-17`).
 2. Then realtime (Q4), web-app (first real client of `packages/sdk`, fix its packaging first), value (imports/AI, Q8), hardening (M1 reference measurement, images, a11y mirror, touch), and only at the very end the remote phase (`P0-02`, `P0-15`, `P0-16`, `P0-17`, GitHub/CI/branch protection/release, ADR-0003).
 3. Before any contract change: bump the version in `board.contracts[]`, every schema `$id` and the root `contractVersion` in the same task, add valid+invalid fixtures, regenerate codegen, keep TS/C++ parity green, update `docs/contracts.md`, run the `contracts` gate. The first one is the zones parent reference in `P4-23` (0.1.0 -> 0.2.0).
 4. Keep the demo cadence: every preview or design-system change updates the Contract overview, the live demo and its screenshots in the same task; the engine playground showcase comes with `P4-02` and `P4-25`.

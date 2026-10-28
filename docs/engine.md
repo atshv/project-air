@@ -772,6 +772,20 @@ restored before the first fitted frame and the zoom is clamped to 0.1 … 8; a p
 fit never writes. Writes follow user camera actions only (pan/zoom), are debounced by 300 ms and are
 flushed on page hide (`pagehide`/hidden visibility). The deterministic harness/capture contexts pass `?store=off`, which turns persistence off so reference scenes always use the L19 fit.
 
+## Wheel and trackpad defaults (L15, P4-24)
+
+The input layer owns the single normalisation of wheel/pointer view intents (`normalizeWheelIntent`
+and `PointerInput.wheelGesture` in `src/bridge/input.ts`); the playground wheel handler only builds
+the event descriptor and prevents the browser default when the canvas consumed it — there is no
+second camera path. A plain two-finger `WheelEvent` (no meta/ctrl, not suppressed, no drag) pans the
+camera 1:1 with the delta (inverted so the content follows the fingers), `deltaMode` line/page deltas
+are scaled by the existing wheel helper, `Cmd/Ctrl`+wheel zooms around the pointer's world point
+(`metaKey` on macOS, `ctrlKey` elsewhere; both accepted) and the result is clamped to 0.1 … 8, and a
+two-pointer pinch keeps zooming around the midpoint through the same host callbacks. A suppressed
+target (field/scrollable, the P4-14 policy) keeps its own wheel handling — no preventDefault and no
+camera move — and while an object/selection drag (or resize) is active the wheel and pinch do not
+move the view.
+
 ## Undo/redo and the history hint (L11, P4-21)
 
 The P4-05 session history (`src/logic/history.ts`, depth 20 `{do, undo}` pairs) is wired to the P4-20

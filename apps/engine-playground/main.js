@@ -2984,12 +2984,25 @@ function installPointerInput(engine, session, titlesController) {
     "wheel",
     (event) => {
       const suppression = describeSuppression(event.target);
-      if (suppression.suppressed) {
-        // The scrollable chrome element keeps its own wheel handling.
-        return;
+      // P4-24 (L15): one normalised wheel intent; a suppressed field/scrollable
+      // keeps its own wheel handling (no preventDefault, no camera move), and an
+      // active object drag/resize consumes the wheel without moving the view.
+      const intent = input.wheelGesture({
+        deltaX: event.deltaX,
+        deltaY: event.deltaY,
+        deltaMode: event.deltaMode,
+        metaKey: event.metaKey,
+        ctrlKey: event.ctrlKey,
+        screen: screenPointOf(event),
+        suppressed: suppression.suppressed,
+        dragging: false,
+        zoom: camera.zoom,
+        minimumZoom: zoomRange.minimumZoom,
+        maximumZoom: zoomRange.maximumZoom,
+      });
+      if (intent.kind !== "none" || !suppression.suppressed) {
+        event.preventDefault();
       }
-      event.preventDefault();
-      input.wheel(event.deltaY, event.deltaMode, screenPointOf(event), false);
     },
     { passive: false },
   );

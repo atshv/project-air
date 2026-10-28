@@ -300,6 +300,65 @@ const WHEEL_PAGE_TO_PX = 100;
 const WHEEL_ZOOM_SENSITIVITY = 0.0015;
 
 /** True when a screen movement reaches the token threshold (a drag, not a click). */
+/**
+ * P4-24 (L15): the one normalisation of wheel/pointer view intents. A plain
+ * two-finger WheelEvent (no meta/ctrl, not suppressed, no drag) pans the camera
+ * 1:1 with the delta; Cmd/Ctrl+wheel zooms around the pointer's world point; a
+ * suppressed target (field/scrollable) or an active object drag moves nothing.
+ */
+export interface WheelIntentOptions {
+  readonly deltaX: number;
+  readonly deltaY: number;
+  readonly deltaMode: number;
+  readonly metaKey?: boolean;
+  readonly ctrlKey?: boolean;
+  readonly screen: InputScreenPoint;
+  readonly suppressed: boolean;
+  readonly dragging: boolean;
+  readonly zoom: number;
+  readonly minimumZoom: number;
+  readonly maximumZoom: number;
+}
+
+export type WheelIntent =
+  | { readonly kind: "none" }
+  | { readonly kind: "pan"; readonly dx: number; readonly dy: number }
+  | { readonly kind: "zoom"; readonly factor: number; readonly screen: InputScreenPoint };
+
+/** Normalises one wheel event into a view intent (pan or zoom). */
+export function normalizeWheelIntent(options: WheelIntentOptions): WheelIntent {
+  if (options.suppressed || options.dragging) {
+    return { kind: "none" };
+  }
+  const deltaX = finiteDelta(options.deltaX);
+  const deltaY = finiteDelta(options.deltaY);
+  // Cmd/Ctrl+wheel zooms; metaKey on macOS, ctrlKey elsewhere (both accepted).
+  if (options.metaKey === true || options.ctrlKey === true) {
+    const raw = wheelZoomFactor(deltaY, options.deltaMode);
+    if (!Number.isFinite(raw) || raw <= 0 || !Number.isFinite(options.zoom) || options.zoom <= 0) {
+      return { kind: "none" };
+    }
+    const zoomed = Math.min(options.maximumZoom, Math.max(options.minimumZoom, options.zoom * raw));
+    const factor = zoomed / options.zoom;
+    if (!Number.isFinite(factor) || Math.abs(factor - 1) < 1e-12) {
+      return { kind: "none" };
+    }
+    return { kind: "zoom", factor, screen: options.screen };
+  }
+  // A plain two-finger scroll pans the view 1:1: moving the content with the
+  // fingers means the camera moves by the negative wheel delta.
+  const dx = -deltaX;
+  const dy = -deltaY;
+  if (dx === 0 && dy === 0) {
+    return { kind: "none" };
+  }
+  return { kind: "pan", dx, dy };
+}
+
+function finiteDelta(value: number): number {
+  return Number.isFinite(value) ? value : 0;
+}
+
 export function crossesDragThreshold(
   deltaX: number,
   deltaY: number,
@@ -928,6 +987,24 @@ export class PointerInput {
     }
     this.#host.zoomByFactor(factor, screen.x, screen.y);
     return true;
+  }
+
+  /**
+   * P4-24 (L15): applies the normalised wheel intent through the existing
+   * view-only host callbacks (one camera path). Returns the intent so the caller
+   * only prevents the browser default when the canvas consumed it.
+   */
+  wheelGesture(options: WheelIntentOptions): WheelIntent {
+    const intent = normalizeWheelIntent({
+      ...options,
+      dragging: options.dragging || this.#phase === "dragging" || this.#phase === "resizing",
+    });
+    if (intent.kind === "pan") {
+      this.#host.panByScreen(intent.dx, intent.dy);
+    } else if (intent.kind === "zoom") {
+      this.#host.zoomByFactor(intent.factor, intent.screen.x, intent.screen.y);
+    }
+    return intent;
   }
 
   #beginPrimary(sample: PointerSample): void {

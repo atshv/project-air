@@ -1,0 +1,262 @@
+{
+  "task": "P4-24",
+  "gate": "wheel-capture",
+  "startedAt": "2026-10-28T17:50:58.071Z",
+  "chrome": "/Users/rasulatashev/Library/Caches/ms-playwright/chromium-1248/chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing",
+  "flags": [
+    "--headless=new",
+    "--use-angle=metal",
+    "--enable-gpu",
+    "--hide-scrollbars",
+    "--no-first-run",
+    "--no-default-browser-check",
+    "--window-size=1440,900",
+    "--no-sandbox"
+  ],
+  "dispatch": "in-page WheelEvent / PointerEvent (CDP wheel hangs in this headless Chrome, P4-23)",
+  "checks": [
+    {
+      "name": "desktop: a plain two-finger wheel pans 1:1, zoom unchanged",
+      "passed": true,
+      "actual": {
+        "panBefore": {
+          "panX": 0,
+          "panY": -0.18285714285713084,
+          "zoom": 1.025390625
+        },
+        "panAfter": {
+          "panX": 39.00952380952381,
+          "panY": 29.074285714285725,
+          "zoom": 1.025390625
+        },
+        "panEvent": {
+          "defaultPrevented": true,
+          "deltaX": 40,
+          "deltaY": 30
+        }
+      }
+    },
+    {
+      "name": "desktop: Cmd/Ctrl+wheel zooms around the pointer (anchor stable)",
+      "passed": true,
+      "actual": {
+        "zoomBefore": {
+          "panX": 39.00952380952381,
+          "panY": 29.074285714285725,
+          "zoom": 1.025390625
+        },
+        "zoomAfter": {
+          "panX": 147.21490976371234,
+          "panY": 107.26612903004022,
+          "zoom": 1.4697225442269113
+        },
+        "anchorBefore": {
+          "x": 397.40952380952376,
+          "y": 288.2742857142857
+        },
+        "anchorAfter": {
+          "x": 397.2621050275699,
+          "y": 288.1038327476515
+        },
+        "tolerance": 0.5
+      }
+    },
+    {
+      "name": "desktop: the wheel zoom is clamped to 0.1 … 8",
+      "passed": true,
+      "actual": {
+        "high": 8,
+        "low": 0.1
+      }
+    },
+    {
+      "name": "desktop: a two-pointer pinch zooms around the midpoint",
+      "passed": true,
+      "actual": {
+        "pinchBefore": {
+          "panX": -3273.078095238095,
+          "panY": -2364.320773809524,
+          "zoom": 0.1
+        },
+        "pinch": {
+          "camera": {
+            "panX": -773.0780952380946,
+            "panY": -1183.0707738095236,
+            "zoom": 0.16666666666666669
+          },
+          "mid": {
+            "x": 720,
+            "y": 391.109375
+          }
+        },
+        "midpoint": {
+          "x": 525,
+          "y": 295.3125
+        }
+      }
+    },
+    {
+      "name": "desktop: a wheel over a field leaves the canvas still",
+      "passed": true,
+      "actual": {
+        "fieldBefore": {
+          "panX": -773.0780952380946,
+          "panY": -1183.0707738095236,
+          "zoom": 0.16666666666666669
+        },
+        "fieldAfter": {
+          "panX": -773.0780952380946,
+          "panY": -1183.0707738095236,
+          "zoom": 0.16666666666666669
+        },
+        "fieldEvent": {
+          "prevented": false
+        }
+      }
+    },
+    {
+      "name": "desktop: a wheel during an object drag does not move the view",
+      "passed": true,
+      "actual": {
+        "dragBefore": {
+          "panX": -61.814041745730535,
+          "panY": -69.9506641366224,
+          "zoom": 0.9149305555555556
+        },
+        "dragAfter": {
+          "panX": -61.814041745730535,
+          "panY": -69.9506641366224,
+          "zoom": 0.9149305555555556
+        },
+        "dragWheel": {
+          "defaultPrevented": true,
+          "deltaX": 80,
+          "deltaY": 160
+        }
+      }
+    },
+    {
+      "name": "mobile: a plain two-finger wheel pans 1:1, zoom unchanged",
+      "passed": true,
+      "actual": {
+        "panBefore": {
+          "panX": -0.780487804878021,
+          "panY": 0,
+          "zoom": 0.2847222222222222
+        },
+        "panAfter": {
+          "panX": 139.70731707317077,
+          "panY": 105.3658536585366,
+          "zoom": 0.2847222222222222
+        },
+        "panEvent": {
+          "defaultPrevented": true,
+          "deltaX": 40,
+          "deltaY": 30
+        }
+      }
+    },
+    {
+      "name": "mobile: Cmd/Ctrl+wheel zooms around the pointer (anchor stable)",
+      "passed": true,
+      "actual": {
+        "zoomBefore": {
+          "panX": 139.70731707317077,
+          "panY": 105.3658536585366,
+          "zoom": 0.2847222222222222
+        },
+        "zoomAfter": {
+          "panX": 248.01292982118773,
+          "panY": 183.74142268758564,
+          "zoom": 0.40810073609009684
+        },
+        "anchorBefore": {
+          "x": 498.6536585365854,
+          "y": 364.9609756097562
+        },
+        "anchorAfter": {
+          "x": 498.4412945900207,
+          "y": 364.8547936364738
+        },
+        "tolerance": 0.5
+      }
+    },
+    {
+      "name": "mobile: the wheel zoom is clamped to 0.1 … 8",
+      "passed": true,
+      "actual": {
+        "high": 8,
+        "low": 0.1
+      }
+    },
+    {
+      "name": "mobile: a two-pointer pinch zooms around the midpoint",
+      "passed": true,
+      "actual": {
+        "pinchBefore": {
+          "panX": -522.0487804878048,
+          "panY": -373.515243902439,
+          "zoom": 0.1
+        },
+        "pinch": {
+          "camera": {
+            "panX": 461.9512195121954,
+            "panY": -45.015243902438954,
+            "zoom": 0.16666666666666669
+          },
+          "mid": {
+            "x": 195,
+            "y": 201.3125
+          }
+        },
+        "midpoint": {
+          "x": 146,
+          "y": 82.125
+        }
+      }
+    },
+    {
+      "name": "mobile: a wheel over a field leaves the canvas still",
+      "passed": true,
+      "actual": {
+        "fieldBefore": {
+          "panX": 461.9512195121954,
+          "panY": -45.015243902438954,
+          "zoom": 0.16666666666666669
+        },
+        "fieldAfter": {
+          "panX": 461.9512195121954,
+          "panY": -45.015243902438954,
+          "zoom": 0.16666666666666669
+        },
+        "fieldEvent": {
+          "prevented": false
+        }
+      }
+    },
+    {
+      "name": "mobile: a wheel during an object drag does not move the view",
+      "passed": true,
+      "actual": {
+        "dragBefore": {
+          "panX": -328.96000000000004,
+          "panY": -368.64,
+          "zoom": 0.1736111111111111
+        },
+        "dragAfter": {
+          "panX": -328.96000000000004,
+          "panY": -368.64,
+          "zoom": 0.1736111111111111
+        },
+        "dragWheel": {
+          "defaultPrevented": true,
+          "deltaX": 80,
+          "deltaY": 160
+        }
+      }
+    }
+  ],
+  "result": "pass",
+  "exitCode": 0,
+  "finishedAt": "2026-10-28T17:51:06.348Z"
+}
