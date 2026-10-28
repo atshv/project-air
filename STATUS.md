@@ -122,7 +122,6 @@
 
 ## Ready now
 
-- `P5-04` SDK board-sync client and the one autosave path (L05 realtime half)
 - `P5-06` Durability and reconnect: restart, catch-up and snapshot compaction
 
 ## Done
@@ -210,6 +209,7 @@
 
 ## In progress
 
+- [ ] `P5-04` SDK board-sync client and the one autosave path (L05 realtime half) — status: `in_progress` — owner: lead
 - [ ] `P0-35` Design system page: contract 0.3.0, missing tokens and engine chrome — status: `in_progress` — owner: —
 
 ## Blocked / failed
@@ -222,7 +222,6 @@
 - [ ] `P0-15` Release command and tag-based CI release — status: `pending` — owner: —
 - [ ] `P0-16` Dependency updates and Polier update check — status: `pending` — owner: —
 - [ ] `P0-17` RELEASING.md and release 0.0.1 — status: `pending` — owner: —
-- [ ] `P5-04` SDK board-sync client and the one autosave path (L05 realtime half) — status: `pending` — owner: —
 - [ ] `P5-05` Presence: cursors, selection, name and colour — status: `pending` — owner: —
 - [ ] `P5-06` Durability and reconnect: restart, catch-up and snapshot compaction — status: `pending` — owner: —
 - [ ] `P5-07` crdt-convergence proof: 10,000 rounds, offline clients and own-only undo — status: `pending` — owner: —
@@ -232,7 +231,7 @@
 ## Claims
 
 - `P0-35` in progress by dsh since 2026-10-28T19:10:07+00:00 — worktree: /Users/rasulatashev/Desktop/KI Projekte/Project air-P0-35 · slot 2
-- `P5-03` in progress by dsh since 2026-10-28T19:13:34+00:00 — worktree: /private/tmp/air-P5-03 · slot 1
+- `P5-04` in progress by dsh since 2026-10-28T19:14:23+00:00 — worktree: /private/tmp/air-P5-04 · slot 1
 
 <!-- /polier:claims -->
 

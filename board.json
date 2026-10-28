@@ -5592,7 +5592,7 @@
       "satisfies": [
         "D11"
       ],
-      "status": "pending",
+      "status": "in_progress",
       "depends_on": [
         "P5-01",
         "P5-02",
@@ -5633,9 +5633,9 @@
         "unit",
         "typecheck"
       ],
-      "owner": null,
+      "owner": "lead",
       "branch": "task/P5-04",
-      "worktree": null,
+      "worktree": "/private/tmp/air-P5-04",
       "round": 0,
       "evidence": [],
       "scope_write_forbidden": [
