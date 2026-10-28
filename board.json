@@ -6521,8 +6521,8 @@
       "id": "P0-43",
       "title": "Live demo: pen tool and ink colours over the whole board",
       "stage": "foundation",
-      "status": "pending",
-      "owner": null,
+      "status": "in_progress",
+      "owner": "lead",
       "depends_on": [
         "P0-42"
       ],
@@ -6558,7 +6558,7 @@
       ],
       "evidence": [],
       "handoff": [],
-      "worktree": null,
+      "worktree": "/private/tmp/air-P0-43",
       "exclusive": [],
       "satisfies": [
         "D3"

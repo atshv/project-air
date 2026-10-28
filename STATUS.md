@@ -122,10 +122,7 @@
 
 ## Ready now
 
-- `P0-43` Live demo: pen tool and ink colours over the whole board
-  - P0-42: Closed P0-42: complete light preview theme (:root[data-theme=light], all colour tokens + shadows, contrast-checked fg 16/muted 7.3/accent 6.4, controls >=3:1), screenshots EN/DE desktop/mobile.
-  - P0-42: Sun/moon line-icon toggle under the DE/EN switch: aria-pressed, translated labels, keyboard, preview-theme persisted and applied before first paint; stored > system prefers-color-scheme > dark.
-  - P0-42: P0-41 contents/frames/done rows preserved in both themes; README documents palette, default rule and the preview-scoped follow-up (ui-kit token promotion is an owner decision).
+- none
 
 ## Done
 
@@ -226,6 +223,7 @@
 ## In progress
 
 - [ ] `P5-08` load proof: 25 clients per board at p95 <= 150 ms and the stage report — status: `in_progress` — owner: lead
+- [ ] `P0-43` Live demo: pen tool and ink colours over the whole board — status: `in_progress` — owner: lead
 
 ## Blocked / failed
 
@@ -237,11 +235,11 @@
 - [ ] `P0-15` Release command and tag-based CI release — status: `pending` — owner: —
 - [ ] `P0-16` Dependency updates and Polier update check — status: `pending` — owner: —
 - [ ] `P0-17` RELEASING.md and release 0.0.1 — status: `pending` — owner: —
-- [ ] `P0-43` Live demo: pen tool and ink colours over the whole board — status: `pending` — owner: —
 
 <!-- polier:claims -->
 ## Claims
 
+- `P0-43` in progress by dsh since 2026-10-28T22:01:28+00:00 — worktree: /private/tmp/air-P0-43 · slot 3
 - `P5-08` in progress by dsh since 2026-10-28T21:59:44+00:00 — worktree: /private/tmp/air-P5-08 · slot 1
 
 <!-- /polier:claims -->
