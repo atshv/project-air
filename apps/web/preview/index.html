@@ -4,9 +4,9 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title data-i18n="page.projectAirDesignPreviewStatic">Project air design preview — static design preview</title>
-    <link rel="stylesheet" href="../../../packages/ui-kit/tokens.css?v=P0-38" />
-    <link rel="stylesheet" href="preview.css?v=P0-38" />
-    <script src="preview.js?v=P0-38" defer></script>
+    <link rel="stylesheet" href="../../../packages/ui-kit/tokens.css?v=P0-39" />
+    <link rel="stylesheet" href="preview.css?v=P0-39" />
+    <script src="preview.js?v=P0-39" defer></script>
   </head>
   <body>
     <main class="page">
@@ -23,14 +23,14 @@
         <p class="masthead__version" data-preview-meta>
           <span data-preview-version data-i18n="masthead.version">Version 0.0.1</span>
           <span data-preview-status data-i18n="masthead.unreleased">unreleased</span>
-          <span data-preview-last-change data-i18n="masthead.lastChange">Last change: P0-38 — Layer order: edges below zones</span>
-          <span data-preview-last-change-time data-i18n="masthead.lastChangeTime">2026-10-28 20:36 (Europe/Zurich)</span>
+          <span data-preview-last-change data-i18n="masthead.lastChange">Last change: P0-39 — Live demo: quiet resize frame, done items dimmed, design rules page</span>
+          <span data-preview-last-change-time data-i18n="masthead.lastChangeTime">2026-10-28 20:47 (Europe/Zurich)</span>
         </p>
         <div class="masthead__meta">
           <span data-i18n-html="masthead.tokensPackagesUiKitTokens">Tokens: <code>packages/ui-kit/tokens.css</code></span>
           <span data-i18n-html="masthead.iconsPackagesUiKitIcons">Icons: <code>packages/ui-kit/icons/</code></span>
           <span data-i18n-html="masthead.demoPreviewJs">Demo: <code>preview.js</code></span>
-          <span data-i18n="masthead.tasks">Tasks: P0-19, P0-20, P0-21, P0-22, P0-23, P0-24, P0-25, P0-26, P0-27, P0-28, P0-29, P0-30, P0-31, P0-32, P0-33, P0-34, P0-35, P0-36, P0-37, P0-38, P1-07</span>
+          <span data-i18n="masthead.tasks">Tasks: P0-19, P0-20, P0-21, P0-22, P0-23, P0-24, P0-25, P0-26, P0-27, P0-28, P0-29, P0-30, P0-31, P0-32, P0-33, P0-34, P0-35, P0-36, P0-37, P0-38, P0-39, P1-07</span>
           <div
             class="preview-locale"
             role="group"
@@ -95,7 +95,7 @@
             Escape restores the old one, an empty name returns to the default; a zone
             formed by grouping starts as “New zone”. Drag a zone by its frame or header
             to move it together with its items. Click any object to select it and drag
-            one of its eight handles to resize it; a photo dropped into a zone takes the
+            an edge or a corner of its frame to resize it; a photo dropped into a zone takes the
             size of the other item. Dragged objects snap to their neighbours (Shift
             moves freely); Shift-drag on the empty canvas selects several objects;
             right-click opens the menu, Delete removes, Cmd/Ctrl+Z undoes. When both
@@ -108,7 +108,7 @@
             commits · above/below = stacked · left/right = side by side · drag inside =
             reorder · both out: zone fades · click name = rename · drag frame = move
             zone · checklist: click to tick · table: click a cell, arrows move · click =
-            select · handles = resize · line behind all objects · snap guides ·
+            select · frame edge = resize · line behind all objects · snap guides ·
             Shift-drag = band · right-click = menu · Cmd/Ctrl+Z = undo · curve ·
             --tone-d · 1.5 px
           </p>
@@ -1397,13 +1397,13 @@
                 <button class="chrome-delete chrome-delete--visible" type="button" aria-label="Delete selection" data-i18n-attr="aria-label:chrome.deleteSelection"><svg class="chrome-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
               </div>
               <div class="chrome-card chrome-card--selected chrome-card--one"><span data-i18n="chrome.cardTitle">Moodboard</span>
-                <span class="chrome-handle chrome-handle--nw"></span><span class="chrome-handle chrome-handle--n"></span><span class="chrome-handle chrome-handle--ne"></span><span class="chrome-handle chrome-handle--e"></span><span class="chrome-handle chrome-handle--se"></span><span class="chrome-handle chrome-handle--s"></span><span class="chrome-handle chrome-handle--sw"></span><span class="chrome-handle chrome-handle--w"></span>
+                <span class="chrome-edge"></span><span class="chrome-corner"></span>
               </div>
               <div class="chrome-card chrome-card--selected chrome-card--two"><span data-i18n="chrome.cardTitle2">Packing list</span></div>
             </div>
             <figcaption class="chrome-specimen__caption">
-              <h3 data-i18n="chrome.selectionTitle">Selection, handles and count bar</h3>
-              <p data-i18n="chrome.selectionNote">A 1 px accent frame per selected object, eight 8 px handles on a single selection, and one count bar with a delete button above the group (L10, L14).</p>
+              <h3 data-i18n="chrome.selectionTitle">Selection, resize frame and count bar</h3>
+              <p data-i18n="chrome.selectionNote">A 1 px accent frame per selected object; on a single selection the frame’s edges and corners resize it — the hovered edge lights up as a 2 px line, a corner as a 16 px bracket — and one count bar with a delete button sits above the group (L10, L14).</p>
               <code class="token-caption">--accent · --surface · --button-card</code>
             </figcaption>
           </figure>
@@ -1565,6 +1565,172 @@
               </article>
             </div>
           </section>
+        </div>
+      </section>
+
+      <section class="section" aria-labelledby="rules">
+        <div class="section__head">
+          <span class="eyebrow" data-i18n="rules.eyebrow">12 — Design rules</span>
+          <h2 id="rules" data-i18n="rules.title">The design law, rule by rule</h2>
+          <p class="section__intro" data-i18n="rules.intro">Every rule of docs/design-rules.md, §0 to §14, in short. MUST means must, NEVER means never; each card names where this page shows the rule at work.</p>
+        </div>
+        <div class="rules-grid" role="list" aria-label="Design rules by section" data-i18n-attr="aria-label:rules.ariaList">
+          <article class="rule-card" role="listitem">
+            <h3 class="rule-card__title" data-i18n="rules.s0.title">§0 Guiding idea</h3>
+            <ul class="rule-card__list">
+              <li data-i18n-html="rules.s0.r1"><strong>Content first, tool quiet.</strong> The person's notes are the brightest thing on the screen; bars, frames and buttons recede.</li>
+              <li data-i18n-html="rules.s0.r2"><strong>Calm instead of colourful.</strong> Dark green-grey, one accent (<code>--accent</code>, sage), otherwise greys.</li>
+              <li data-i18n-html="rules.s0.r3"><strong>Nothing jumps.</strong> No element changes its position, size or text unless the person triggered it.</li>
+              <li data-i18n-html="rules.s0.r4">When in doubt: fewer elements, less colour, less motion. Whoever wants to deviate asks first and does not build.</li>
+            </ul>
+            <p class="rule-card__where" data-i18n="rules.s0.where">Shown in: the whole page</p>
+          </article>
+          <article class="rule-card" role="listitem">
+            <h3 class="rule-card__title" data-i18n="rules.s1.title">§1 Working rules</h3>
+            <ul class="rule-card__list">
+              <li data-i18n-html="rules.s1.r1"><strong>MUST</strong> read AGENTS.md, ARCHITECTURE.md, the design law, the own catalogue entry and its listed files before the first line of code.</li>
+              <li data-i18n-html="rules.s1.r2"><strong>MUST</strong> implement exactly one catalogue entry per task — nothing improved on the side.</li>
+              <li data-i18n-html="rules.s1.r3"><strong>MUST</strong> tick every acceptance checkbox individually (✓ / ✗ + one sentence).</li>
+              <li data-i18n-html="rules.s1.r4"><strong>MUST</strong> store before/after screenshots at 1440×900 and 390×844 under <code>reviews/evidence/</code>.</li>
+              <li data-i18n-html="rules.s1.r5"><strong>MUST</strong> work in the task's worktree, take ports and names only from <code>.polier-slot</code>, run every gate through <code>gate.py</code> and commit its records.</li>
+              <li data-i18n-html="rules.s1.r6"><strong>MUST</strong> keep lint, typecheck and unit checks green and run the named e2e specs.</li>
+              <li data-i18n-html="rules.s1.r7"><strong>NEVER</strong> a new dependency, <strong>NEVER</strong> change or delete existing tests, <strong>NEVER</strong> touch files outside the entry's list — ask instead.</li>
+              <li data-i18n-html="rules.s1.r8"><strong>NEVER</strong> guess: unclear goes to <code>open_questions</code>. <strong>NEVER</strong> deliver TODOs, placeholders or commented-out code.</li>
+            </ul>
+            <p class="rule-card__where" data-i18n="rules.s1.where">Shown in: the task board</p>
+          </article>
+          <article class="rule-card" role="listitem">
+            <h3 class="rule-card__title" data-i18n="rules.s2.title">§2 Colours</h3>
+            <ul class="rule-card__list">
+              <li data-i18n-html="rules.s2.r1"><strong>MUST</strong> use only tokens from <code>packages/ui-kit/tokens.json</code> — CSS custom properties on the web, the generated header in the engine.</li>
+              <li data-i18n-html="rules.s2.r2"><strong>NEVER</strong> new hex, <code>rgb</code> or <code>rgba</code> values in components; a missing tone is a question, new tokens need approval.</li>
+              <li data-i18n-html="rules.s2.r3">Each purpose has one token: <code>--bg</code>, <code>--canvas</code>, <code>--surface</code>, <code>--card</code>, <code>--fg</code>, <code>--muted</code>, <code>--border</code>, <code>--border-strong</code>, <code>--faint</code>, <code>--accent</code>…, <code>--danger</code>.</li>
+              <li data-i18n-html="rules.s2.r4"><code>--tone-a</code> … <code>--tone-e</code> only for zones, palettes, edges and person colours.</li>
+              <li data-i18n-html="rules.s2.r5">Accent sparingly: at most one filled accent button per screen; otherwise accent only for selection, focus and snap lines.</li>
+            </ul>
+            <p class="rule-card__where" data-i18n="rules.s2.where">Shown in: 03 — Colour</p>
+          </article>
+          <article class="rule-card" role="listitem">
+            <h3 class="rule-card__title" data-i18n="rules.s3.title">§3 Spacing, sizes, radii</h3>
+            <ul class="rule-card__list">
+              <li data-i18n-html="rules.s3.r1">4 px grid: spacing only 4, 8, 12, 16, 24, 32, 48 px — <strong>NEVER</strong> 5, 7, 10, 13 …</li>
+              <li data-i18n-html="rules.s3.r2">Canvas grid 16 px for snapping, sizes and positions.</li>
+              <li data-i18n-html="rules.s3.r3">Click targets at least 32 × 32 px with a mouse, 44 × 44 px on coarse pointers.</li>
+              <li data-i18n-html="rules.s3.r4">Note card <code>--radius-md</code> (14), block and zone <code>--radius-lg</code> (20), icon button and field <code>--radius-sm</code> (10), text button outside the canvas <code>--radius-pill</code>.</li>
+              <li data-i18n-html="rules.s3.r5"><strong>NEVER</strong> pill buttons inside cards or blocks — there an icon button or a <code>--muted</code> text link.</li>
+              <li data-i18n-html="rules.s3.r6"><strong>NEVER</strong> shadows other than <code>--card-shadow</code> and <code>--shadow</code>.</li>
+            </ul>
+            <p class="rule-card__where" data-i18n="rules.s3.where">Shown in: 05 — Space</p>
+          </article>
+          <article class="rule-card" role="listitem">
+            <h3 class="rule-card__title" data-i18n="rules.s4.title">§4 Type</h3>
+            <ul class="rule-card__list">
+              <li data-i18n-html="rules.s4.r1">Board, panel and empty-state titles in <code>--font-serif</code> 28 / 24 / 22 px; card and block titles 15 px semibold; body 13 px at 1.4.</li>
+              <li data-i18n-html="rules.s4.r2">Type label 11 px uppercase +0.1em in <code>--accent</code>; status and hints 12 px <code>--muted</code>; tooltip 12 px medium.</li>
+              <li data-i18n-html="rules.s4.r3"><strong>NEVER</strong> text below 11 px. <strong>NEVER</strong> more than two weights in one card.</li>
+              <li data-i18n-html="rules.s4.r4">Long titles: one line with an ellipsis, the full title in the tooltip — <strong>NEVER</strong> clipped text without an ellipsis.</li>
+            </ul>
+            <p class="rule-card__where" data-i18n="rules.s4.where">Shown in: 04 — Typography</p>
+          </article>
+          <article class="rule-card" role="listitem">
+            <h3 class="rule-card__title" data-i18n="rules.s5.title">§5 Icons</h3>
+            <ul class="rule-card__list">
+              <li data-i18n-html="rules.s5.r1"><strong>MUST</strong> come from <code>packages/ui-kit/icons/</code>: own SVGs, 24 grid, stroke 1.6, <code>currentColor</code>, round caps — the same files for web and engine.</li>
+              <li data-i18n-html="rules.s5.r2">20 px icon in a 36 px bar button, 16 px icon in a 28 px card button.</li>
+              <li data-i18n-html="rules.s5.r3"><strong>NEVER</strong> emoji, Unicode characters as icons (×, ✓, →) or icon libraries.</li>
+              <li data-i18n-html="rules.s5.r4">Icon buttons <strong>MUST</strong> have <code>aria-label</code> from the translation files and <code>data-label</code> for the tooltip — <strong>NEVER</strong> the native <code>title</code>.</li>
+            </ul>
+            <p class="rule-card__where" data-i18n="rules.s5.where">Shown in: 07 — Icons</p>
+          </article>
+          <article class="rule-card" role="listitem">
+            <h3 class="rule-card__title" data-i18n="rules.s6.title">§6 States</h3>
+            <ul class="rule-card__list">
+              <li data-i18n-html="rules.s6.r1">Every interactive element — engine objects included — has rest, hover, pressed, focus, selected, dragged, disabled, saving, saved and error.</li>
+              <li data-i18n-html="rules.s6.r2">Focus: 2 px <code>--accent</code> outline, 2 px offset — <strong>NEVER</strong> removed. Pressed: hover plus <code>scale(0.97)</code>.</li>
+              <li data-i18n-html="rules.s6.r3">Selected card or block: 1.5 px <code>--accent</code> border with a 3 px <code>--accent-soft</code> ring. Being dragged: <code>--shadow</code>, opacity 1 — <strong>NEVER</strong> semi-transparent.</li>
+              <li data-i18n-html="rules.s6.r4">Disabled: opacity 0.4, no hover. Saving / saved: 12 px <code>--muted</code> in a fixed-height status slot, “saved” fades after 2 s; errors stay in <code>--danger</code> and keep the input.</li>
+              <li data-i18n-html="rules.s6.r5">Done checklist entry: text <code>--muted</code>, tick in <code>--accent</code> — <strong>NEVER</strong> struck through.</li>
+              <li data-i18n-html="rules.s6.r6">Controls inside cards and blocks are invisible at rest and appear on hover, focus within or selection; they stay reachable by keyboard and show on touch when selected.</li>
+            </ul>
+            <p class="rule-card__where" data-i18n="rules.s6.where">Shown in: 08 — States</p>
+          </article>
+          <article class="rule-card" role="listitem">
+            <h3 class="rule-card__title" data-i18n="rules.s7.title">§7 Motion</h3>
+            <ul class="rule-card__list">
+              <li data-i18n-html="rules.s7.r1">Hover and colour 120 ms ease; show and hide 150 ms; panel 180 ms ease-out, only <code>transform</code> and <code>opacity</code>.</li>
+              <li data-i18n-html="rules.s7.r2">Tooltips after 300 ms of dwell, immediately on keyboard focus.</li>
+              <li data-i18n-html="rules.s7.r3"><strong>NEVER</strong> bounce, springs, wobble, confetti or animated numbers.</li>
+              <li data-i18n-html="rules.s7.r4"><strong>NEVER</strong> animate layout properties (<code>width</code>, <code>height</code>, <code>top</code>, <code>left</code>, <code>margin</code>).</li>
+              <li data-i18n-html="rules.s7.r5">Under <code>prefers-reduced-motion: reduce</code> every transition is 0 ms.</li>
+            </ul>
+            <p class="rule-card__where" data-i18n="rules.s7.where">Shown in: 06 — Motion</p>
+          </article>
+          <article class="rule-card" role="listitem">
+            <h3 class="rule-card__title" data-i18n="rules.s8.title">§8 Layers</h3>
+            <ul class="rule-card__list">
+              <li data-i18n-html="rules.s8.r1">From the bottom up — 1 canvas background, 2 edges, 3 zones, 4 blocks, 5 note cards, 6 dragged or selected, 7 snap guides and selection frame, 7a remote cursors, 8 canvas chrome, 9 side panel, 10 context menu and tooltip, 11 dialogs and toasts.</li>
+              <li data-i18n-html="rules.s8.r2">The same order is the engine's render order and the DOM's z-order.</li>
+              <li data-i18n-html="rules.s8.r3">Edges lie below every object, zones included: a line never crosses a zone's surface or title (ADR-0013).</li>
+              <li data-i18n-html="rules.s8.r4"><strong>NEVER</strong> a <code>z-index</code> above 10 without an entry in <code>packages/ui-kit/layers.ts</code>.</li>
+            </ul>
+            <p class="rule-card__where" data-i18n="rules.s8.where">Shown in: 06 — Layers</p>
+          </article>
+          <article class="rule-card" role="listitem">
+            <h3 class="rule-card__title" data-i18n="rules.s9.title">§9 Canvas chrome</h3>
+            <ul class="rule-card__list">
+              <li data-i18n-html="rules.s9.r1">Toolbar top centre, zoom control bottom left, save and error hint bottom centre — all floating, 12 px from the edge.</li>
+              <li data-i18n-html="rules.s9.r2">Side panel on the right, overlapping the canvas, 400 px wide, 12 px from the edge.</li>
+              <li data-i18n-html="rules.s9.r3"><strong>NEVER</strong> more floating elements; <strong>NEVER</strong> rows of buttons above the canvas.</li>
+              <li data-i18n-html="rules.s9.r4">“Show all” keeps at least 64 px free at the top; the zoom control is always fully visible.</li>
+            </ul>
+            <p class="rule-card__where" data-i18n="rules.s9.where">Shown in: 10 — Canvas chrome</p>
+          </article>
+          <article class="rule-card" role="listitem">
+            <h3 class="rule-card__title" data-i18n="rules.s10.title">§10 Texts</h3>
+            <ul class="rule-card__list">
+              <li data-i18n-html="rules.s10.r1"><strong>MUST</strong> come from translation files with English keys, German first, in the informal address.</li>
+              <li data-i18n-html="rules.s10.r2">Short: a button ≤ 2 words, a tooltip ≤ 3 words, an error ≤ 1 sentence plus what the person can do.</li>
+              <li data-i18n-html="rules.s10.r3"><strong>NEVER</strong> exclamation marks, “Ups” or technical terms (node, block ID, payload).</li>
+              <li data-i18n-html="rules.s10.r4">Terms as in the German glossary, <strong>NEVER</strong> two words for the same thing; German always uses “ss”.</li>
+            </ul>
+            <p class="rule-card__where" data-i18n="rules.s10.where">Shown in: the DE/EN switch</p>
+          </article>
+          <article class="rule-card" role="listitem">
+            <h3 class="rule-card__title" data-i18n="rules.s11.title">§11 Acceptance of every UI entry</h3>
+            <ul class="rule-card__list">
+              <li data-i18n-html="rules.s11.r1">No colour value outside the tokens — the <code>design-check</code> gate rejects raw hex, <code>rgb</code>, <code>rgba</code> and <code>hsl</code> values.</li>
+              <li data-i18n-html="rules.s11.r2">All spacing from the 4 px series; every §6 state present and reachable by keyboard.</li>
+              <li data-i18n-html="rules.s11.r3">No text clipped without an ellipsis and none below 11 px; nothing jumps on hover, save, open or close.</li>
+              <li data-i18n-html="rules.s11.r4">At 390 px width nothing overflows and everything is operable; before/after screenshots are in <code>reviews/evidence/</code>.</li>
+            </ul>
+            <p class="rule-card__where" data-i18n="rules.s11.where">Shown in: the gates</p>
+          </article>
+          <article class="rule-card" role="listitem">
+            <h3 class="rule-card__title" data-i18n="rules.s12.title">§12 Realtime cursors and selection</h3>
+            <ul class="rule-card__list">
+              <li data-i18n-html="rules.s12.r1">Other people's cursors: a 16 px cursor with a 12 px name label on a surface in the person's colour (<code>--tone-a</code> … <code>--tone-e</code>).</li>
+              <li data-i18n-html="rules.s12.r2">After 5 s without movement a remote cursor fades to opacity 0.4.</li>
+              <li data-i18n-html="rules.s12.r3">Another person's selection is a 1.5 px frame in their colour without a ring; the own selection follows §6.</li>
+            </ul>
+            <p class="rule-card__where" data-i18n="rules.s12.where">Shown in: 06 — Layers (7a)</p>
+          </article>
+          <article class="rule-card" role="listitem">
+            <h3 class="rule-card__title" data-i18n="rules.s13.title">§13 Engine</h3>
+            <ul class="rule-card__list">
+              <li data-i18n-html="rules.s13.r1">No design numbers in C++ outside the generated <code>tokens.h</code>: radii, borders, shadows and the 4 px drag, 6 px snap, 16 px grid and 40 px header thresholds are tokens.</li>
+              <li data-i18n-html="rules.s13.r2">The engine reads every design value from <code>tokens.json</code> through the header and never keeps its own copy.</li>
+            </ul>
+            <p class="rule-card__where" data-i18n="rules.s13.where">Shown in: 02 — Contract</p>
+          </article>
+          <article class="rule-card" role="listitem">
+            <h3 class="rule-card__title" data-i18n="rules.s14.title">§14 Layout for translation</h3>
+            <ul class="rule-card__list">
+              <li data-i18n-html="rules.s14.r1">The layout tolerates +40 % text length.</li>
+              <li data-i18n-html="rules.s14.r2">Only logical CSS directions (<code>margin-inline-start</code>, <code>inset-inline-start</code>, …).</li>
+              <li data-i18n-html="rules.s14.r3">The engine shows no text of its own; object content is the only text it draws.</li>
+            </ul>
+            <p class="rule-card__where" data-i18n="rules.s14.where">Shown in: the DE/EN switch</p>
+          </article>
         </div>
       </section>
 

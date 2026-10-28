@@ -420,11 +420,14 @@ and map to `contract` and `backend-core`.
 *Reference work order: C15.*
 
 - **Goal:** Sizes are changed precisely and stay on the grid.
-- **Target values:** resize handles 8 px in `--accent` when selected; size snaps to 16 px (`Shift`
+- **Target values:** no square handles: the 1 px `--accent` frame of a selected object is the handle
+  (owner decision 2026-10-28, P0-39) — each edge has a hit band of 8 screen px centred on the line,
+  each corner a 16 × 16 px hit square; the hovered or dragged edge lights up as a 2 px `--accent`
+  line, a corner as a 16 px `--accent` bracket; size snaps to 16 px (`Shift`
   free); minimum sizes: note 176×80, checklist 224×128, table 288×160, zone 256×192, columns 368×192,
   timeline 320×160, palette 224×128 (blueprint; reference C15).
-- **States:** selected, handle hover, resizing, snapped, `Shift` free.
-- **Do not:** no size below a minimum; no second write per gesture; no handle smaller than 8 px; no
+- **States:** selected, edge/corner hover, resizing, snapped, `Shift` free.
+- **Do not:** no size below a minimum; no second write per gesture; no hit band narrower than 8 px; no visible square handles; no
   size values outside the 16 px grid while not free.
 - **Acceptance:** width and height are multiples of 16 (e2e); the minimum size holds; one gesture sends
   exactly one request; the size survives a reload (e2e).

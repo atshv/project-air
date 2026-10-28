@@ -2159,9 +2159,9 @@ kbd {
   outline-offset: var(--outline-offset);
 }
 
+/* A done entry is dimmed, never struck through (design law §6, P0-39). */
 .demo-checklist__box:checked + .demo-checklist__text {
   color: var(--muted);
-  text-decoration: line-through;
 }
 
 /* Spreadsheet card: formula bar, column letters, row numbers, hairline grid. */
@@ -2616,23 +2616,25 @@ kbd {
   inset-inline-start: var(--space-16);
 }
 
-/* Eight 8 px handles on the frame of a single selection (L14). */
-.chrome-handle {
+/* The quiet resize frame of a single selection (L14, P0-39): one hovered edge
+   lit as a 2 px line and one hovered corner as a 16 px bracket. */
+.chrome-edge {
   position: absolute;
-  inline-size: var(--space-8);
-  block-size: var(--space-8);
+  inset-block: 0;
+  inset-inline-end: calc(var(--border-width) * -1);
+  inline-size: var(--outline-width);
   background-color: var(--accent);
-  transform: translate(-50%, -50%);
 }
 
-.chrome-handle--nw { inset-block-start: 0; inset-inline-start: 0; }
-.chrome-handle--n { inset-block-start: 0; inset-inline-start: 50%; }
-.chrome-handle--ne { inset-block-start: 0; inset-inline-start: 100%; }
-.chrome-handle--e { inset-block-start: 50%; inset-inline-start: 100%; }
-.chrome-handle--se { inset-block-start: 100%; inset-inline-start: 100%; }
-.chrome-handle--s { inset-block-start: 100%; inset-inline-start: 50%; }
-.chrome-handle--sw { inset-block-start: 100%; inset-inline-start: 0; }
-.chrome-handle--w { inset-block-start: 50%; inset-inline-start: 0; }
+.chrome-corner {
+  position: absolute;
+  inset-block-end: calc(var(--border-width) * -1);
+  inset-inline-start: calc(var(--border-width) * -1);
+  inline-size: var(--space-16);
+  block-size: var(--space-16);
+  border-block-end: var(--outline-width) solid var(--accent);
+  border-inline-start: var(--outline-width) solid var(--accent);
+}
 
 .chrome-count {
   position: absolute;
@@ -2737,10 +2739,10 @@ kbd {
 
 /* ---------- selection chrome and resize (P0-36) ---------- */
 
-/* The engine's selection chrome (L10/L14): a 1 px accent frame and eight 8 px
-   handles that stay the same size on screen at every zoom (--chrome-inverse is
-   1 / zoom). It sits on the snap-guide layer, which holds the selection frame
-   (design law §8). */
+/* The engine's selection chrome (L10/L14): a 1 px accent frame whose edges and
+   corners are the resize handles (P0-39: no square handles). Hit areas and lines
+   keep their screen size at every zoom (--chrome-inverse is 1 / zoom). It sits
+   on the snap-guide layer, which holds the selection frame (design law §8). */
 .demo-selection {
   --chrome-inverse: 1;
   position: absolute;
@@ -2756,31 +2758,102 @@ kbd {
   display: block;
 }
 
+/* Invisible hit areas: an 8 px band centred on each edge between the corners
+   and a 16 px square centred on each corner. Only the hovered or dragged edge
+   (a 2 px line) or corner (a 16 px bracket) lights up; at rest only the frame
+   shows. */
 .demo-selection__handle {
+  --handle-band: calc(var(--space-8) * var(--chrome-inverse));
+  --handle-corner: calc(var(--space-16) * var(--chrome-inverse));
+  --handle-line: calc(var(--outline-width) * var(--chrome-inverse));
+  --handle-arm: calc(var(--space-16) * var(--chrome-inverse));
   position: absolute;
-  inline-size: calc(var(--space-8) * var(--chrome-inverse));
-  block-size: calc(var(--space-8) * var(--chrome-inverse));
-  background-color: var(--accent);
   pointer-events: auto;
   touch-action: none;
-  transform: translate(-50%, -50%);
 }
 
-/* An invisible 16 px hit area around the 8 px handle. */
-.demo-selection__handle::before {
+.demo-selection__handle::after {
   content: "";
   position: absolute;
-  inset: calc(-1 * var(--space-4) * var(--chrome-inverse));
+  opacity: 0;
+  transition: opacity var(--motion-hover) ease;
 }
 
-.demo-selection__handle[data-handle="nw"] { inset-block-start: 0; inset-inline-start: 0; cursor: nwse-resize; }
-.demo-selection__handle[data-handle="n"] { inset-block-start: 0; inset-inline-start: 50%; cursor: ns-resize; }
-.demo-selection__handle[data-handle="ne"] { inset-block-start: 0; inset-inline-start: 100%; cursor: nesw-resize; }
-.demo-selection__handle[data-handle="e"] { inset-block-start: 50%; inset-inline-start: 100%; cursor: ew-resize; }
-.demo-selection__handle[data-handle="se"] { inset-block-start: 100%; inset-inline-start: 100%; cursor: nwse-resize; }
-.demo-selection__handle[data-handle="s"] { inset-block-start: 100%; inset-inline-start: 50%; cursor: ns-resize; }
-.demo-selection__handle[data-handle="sw"] { inset-block-start: 100%; inset-inline-start: 0; cursor: nesw-resize; }
-.demo-selection__handle[data-handle="w"] { inset-block-start: 50%; inset-inline-start: 0; cursor: ew-resize; }
+.demo-selection__handle:hover::after,
+.demo-selection__handle.is-active::after {
+  opacity: 1;
+}
+
+.demo-selection__handle[data-handle="n"],
+.demo-selection__handle[data-handle="s"] {
+  inset-inline: calc(var(--handle-corner) / 2);
+  block-size: var(--handle-band);
+  cursor: ns-resize;
+}
+
+.demo-selection__handle[data-handle="n"] { inset-block-start: calc(var(--handle-band) / -2); }
+.demo-selection__handle[data-handle="s"] { inset-block-end: calc(var(--handle-band) / -2); }
+
+.demo-selection__handle[data-handle="e"],
+.demo-selection__handle[data-handle="w"] {
+  inset-block: calc(var(--handle-corner) / 2);
+  inline-size: var(--handle-band);
+  cursor: ew-resize;
+}
+
+.demo-selection__handle[data-handle="e"] { inset-inline-end: calc(var(--handle-band) / -2); }
+.demo-selection__handle[data-handle="w"] { inset-inline-start: calc(var(--handle-band) / -2); }
+
+/* The lit edge spans the whole side, corners included. */
+.demo-selection__handle[data-handle="n"]::after,
+.demo-selection__handle[data-handle="s"]::after {
+  inset-inline: calc(var(--handle-corner) / -2);
+  inset-block-start: calc(50% - var(--handle-line) / 2);
+  block-size: var(--handle-line);
+  background-color: var(--accent);
+}
+
+.demo-selection__handle[data-handle="e"]::after,
+.demo-selection__handle[data-handle="w"]::after {
+  inset-block: calc(var(--handle-corner) / -2);
+  inset-inline-start: calc(50% - var(--handle-line) / 2);
+  inline-size: var(--handle-line);
+  background-color: var(--accent);
+}
+
+.demo-selection__handle[data-handle="nw"],
+.demo-selection__handle[data-handle="ne"],
+.demo-selection__handle[data-handle="se"],
+.demo-selection__handle[data-handle="sw"] {
+  inline-size: var(--handle-corner);
+  block-size: var(--handle-corner);
+}
+
+.demo-selection__handle[data-handle="nw"] { inset-block-start: calc(var(--handle-corner) / -2); inset-inline-start: calc(var(--handle-corner) / -2); cursor: nwse-resize; }
+.demo-selection__handle[data-handle="ne"] { inset-block-start: calc(var(--handle-corner) / -2); inset-inline-end: calc(var(--handle-corner) / -2); cursor: nesw-resize; }
+.demo-selection__handle[data-handle="se"] { inset-block-end: calc(var(--handle-corner) / -2); inset-inline-end: calc(var(--handle-corner) / -2); cursor: nwse-resize; }
+.demo-selection__handle[data-handle="sw"] { inset-block-end: calc(var(--handle-corner) / -2); inset-inline-start: calc(var(--handle-corner) / -2); cursor: nesw-resize; }
+
+/* The corner bracket: two 16 px arms along the frame, starting at the corner. */
+.demo-selection__handle[data-handle="nw"]::after,
+.demo-selection__handle[data-handle="ne"]::after,
+.demo-selection__handle[data-handle="se"]::after,
+.demo-selection__handle[data-handle="sw"]::after {
+  inline-size: var(--handle-arm);
+  block-size: var(--handle-arm);
+  border: 0 solid var(--accent);
+}
+
+.demo-selection__handle[data-handle="nw"]::after { inset-block-start: calc(50% - var(--border-width) * var(--chrome-inverse)); inset-inline-start: calc(50% - var(--border-width) * var(--chrome-inverse)); border-block-start-width: var(--handle-line); border-inline-start-width: var(--handle-line); }
+.demo-selection__handle[data-handle="ne"]::after { inset-block-start: calc(50% - var(--border-width) * var(--chrome-inverse)); inset-inline-end: calc(50% - var(--border-width) * var(--chrome-inverse)); border-block-start-width: var(--handle-line); border-inline-end-width: var(--handle-line); }
+.demo-selection__handle[data-handle="se"]::after { inset-block-end: calc(50% - var(--border-width) * var(--chrome-inverse)); inset-inline-end: calc(50% - var(--border-width) * var(--chrome-inverse)); border-block-end-width: var(--handle-line); border-inline-end-width: var(--handle-line); }
+.demo-selection__handle[data-handle="sw"]::after { inset-block-end: calc(50% - var(--border-width) * var(--chrome-inverse)); inset-inline-start: calc(50% - var(--border-width) * var(--chrome-inverse)); border-block-end-width: var(--handle-line); border-inline-start-width: var(--handle-line); }
+
+@media (prefers-reduced-motion: reduce) {
+  .demo-selection__handle::after {
+    transition: none;
+  }
+}
 
 /* A resized note card clips its text to its box (its shadow is its own box
    shadow, so the clip keeps it); the notepad and the blocks never get lower
@@ -3003,4 +3076,56 @@ kbd {
   .demo-zone__delete {
     transition: none;
   }
+}
+
+/* ---------- design rules (P0-39) ---------- */
+
+/* Every rule of docs/design-rules.md, one card per section; MUST and NEVER are
+   the strong words inside the lines. */
+.rules-grid {
+  display: grid;
+  gap: var(--space-16);
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr));
+  align-items: start;
+}
+
+.rule-card {
+  display: grid;
+  gap: var(--space-12);
+  padding: var(--space-16);
+  border: var(--border-width) solid var(--border);
+  border-radius: var(--radius-md);
+  background-color: var(--surface);
+}
+
+.rule-card__title {
+  font-family: var(--font-sans);
+  font-size: var(--text-15);
+  font-weight: var(--weight-semibold);
+  color: var(--fg);
+}
+
+.rule-card__list {
+  display: grid;
+  gap: var(--space-8);
+  margin: 0;
+  padding-inline-start: var(--space-16);
+  color: var(--fg);
+  font-size: var(--text-13);
+  line-height: var(--line-height);
+}
+
+.rule-card__list strong {
+  color: var(--accent);
+  font-weight: var(--weight-semibold);
+}
+
+.rule-card__list code {
+  font-size: var(--text-12);
+  overflow-wrap: anywhere;
+}
+
+.rule-card__where {
+  color: var(--muted);
+  font-size: var(--text-12);
 }

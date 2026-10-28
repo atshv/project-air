@@ -1,0 +1,24 @@
+# P0-39 preview evidence (2026-10-28)
+# serve: cd "/Users/rasulatashev/Desktop/KI Projekte/Project air-P0-39"; PORT=$(python3 -c "import json; print(json.load(open('.polier-slot'))['ports']['web'])"); python3 -m http.server "$PORT" --bind 127.0.0.1
+# drive: out-of-repo CDP helper (Chrome for Testing 1248, headless, fresh profile, real Input.dispatchMouseEvent) at 1440x900 and 390x844
+# url: http://127.0.0.1:4200/apps/web/preview/index.html
+rest (pointer inside card): nw:16x16/nwse-resize/lit=0/bg=none n:158x8/ns-resize/lit=0/bg=none ne:16x16/nesw-resize/lit=0/bg=none e:8x105/ew-resize/lit=0/bg=none se:16x16/nwse-resize/lit=0/bg=none s:158x8/ns-resize/lit=0/bg=none sw:16x16/nesw-resize/lit=0/bg=none w:8x105/ew-resize/lit=0/bg=none
+screenshot P0-39-frame-rest.png
+hover east edge: element=e lit=1 cursor=ew-resize
+screenshot P0-39-frame-edge.png
+screenshot P0-39-frame-edge-zoom.png
+during east drag: active lit=1
+east edge drag +64: width 176 -> 240, left 185 -> 185; status="Grösse geändert."
+hover SE corner: element=se lit=1 cursor=nwse-resize
+screenshot P0-39-frame-corner.png
+screenshot P0-39-frame-corner-zoom.png
+SE corner drag +32/+48: 240x123 -> 272x171, top-left kept 185,157
+checklist done text: done:rgba(255, 255, 255, 0.66):none | done:rgba(255, 255, 255, 0.66):none | done:rgba(255, 255, 255, 0.66):none | open:rgba(255, 255, 255, 0.92):none | open:rgba(255, 255, 255, 0.92):none muted=rgba(255, 255, 255, 0.66); status="„Picknick einpacken“ erledigt — 3 von 5."
+screenshot P0-39-checklist.png
+rules EN: The design law, rule by rule; cards=15 lines=66 titles=§0,§1,§2,§3,§4,§5,§6,§7,§8,§9,§10,§11,§12,§13,§14
+screenshot P0-39-rules.png
+rules DE: Das Designgesetz, Regel für Regel / Erledigter Checklisten-Eintrag: Text --muted, Haken in --accent — NIE durchgestrichen.
+screenshot P0-39-rules-de.png
+overflow 1440: 0
+overflow 390: 0 rule-card width=358
+screenshot P0-39-rules-mobile.png

@@ -1,4 +1,4 @@
-# Design preview (P0-19, P0-20, P0-21, P0-22, P0-23, P0-24, P0-25, P0-26, P0-27, P0-28, P0-29, P0-30, P0-31, P0-32, P0-33, P0-34, P0-35, P0-36, P0-37, P0-38, P1-07)
+# Design preview (P0-19, P0-20, P0-21, P0-22, P0-23, P0-24, P0-25, P0-26, P0-27, P0-28, P0-29, P0-30, P0-31, P0-32, P0-33, P0-34, P0-35, P0-36, P0-37, P0-38, P0-39, P1-07)
 
 A design preview of the Project air design system. It is **not the product**: there is no engine,
 no data, no server and no build step. It exists so the owner can see the look and feel between
@@ -15,9 +15,9 @@ its two values come from:
   `0.0.1 – unreleased`; the status word comes from the same heading. `CHANGELOG.md` is the display
   source and currently agrees with the root `package.json` version `0.0.1`.
 - **Last change** — the newest preview change entry, currently
-  `.changes/P0-38-edges-below-zones.md`; the line shows the task id and that task's title from
-  `board.json` / the task brief: `P0-38 — Layer order: edges below zones`. The line follows the
-  `P0-*` preview tasks (P0-19 … P0-38, P1-07); the engine tasks
+  `.changes/P0-39-quiet-resize-rules.md`; the line shows the task id and that task's title from
+  `board.json` / the task brief: `P0-39 — Live demo: quiet resize frame, done items dimmed, design rules page`. The line follows the
+  `P0-*` preview tasks (P0-19 … P0-39, P1-07); the engine tasks
   (`P4-*`) and the other stages run in parallel and do not move it, so "highest numeric id" alone is
   not the rule. If several files exist for the same preview task, the most recent one is used;
   `.changes/README.md` and `.changes/TEMPLATE.md` do not count as entries.
@@ -271,6 +271,24 @@ L02 asks for zones.
   live only in this page's memory, like everything else in the demo.
 - **Without script** — the title is the first row of the static card grid.
 
+## Quiet resize frame, dimmed done items, design rules (P0-39)
+
+Owner requests of 2026-10-28:
+
+- **Resize frame without handles** — the eight 8 px squares are gone. The 1 px `--accent` frame is
+  the handle: an invisible 8 px band centred on each edge (between the corners) and a 16 × 16 px
+  square on each corner, with the matching resize cursor. Only the hovered or dragged edge lights up
+  as a 2 px accent line (`--outline-width`), a corner as a 16 px accent bracket
+  (`--space-16`), fading in at `--motion-hover` (0 ms under reduced motion). Hit areas and lines
+  keep their screen size at every zoom. Resize behaviour is unchanged. Section 10 shows the frame
+  with one lit edge and one corner bracket. L14 in `docs/canvas-acceptance.md` says the same; the
+  engine's P4-17 handles still follow the old target and need their own engine task.
+- **Done checklist items** — a ticked entry turns `--muted` and is no longer struck through; design
+  law §6 has the "Done (checklist entry)" row.
+- **12 — Design rules** — a new section lists every rule of `docs/design-rules.md`, §0 to §14
+  (15 cards, 66 lines), with MUST/NEVER marked and a pointer to the section of this page that shows
+  the rule. The texts live in `en.json`/`de.json` (`rules.*`).
+
 ## Layer order: edges below zones (P0-38)
 
 The owner decision of P0-36 is now the design law (ADR-0013): connection lines lie below every
@@ -383,7 +401,7 @@ Two more canvas objects on the blocks layer (design law §8: below the note card
 block rises to the dragged-or-selected layer):
 
 - **Checklist** ("Trip checklist" / "Checkliste Ausflug") — five example items with real checkboxes
-  and labels (each row a 32 px click target), two done at start. A tick strikes the item through,
+  and labels (each row a 32 px click target), two done at start. A tick dims the item's text to `--muted` without striking it through (P0-39),
   the header counter shows done/total ("3/5", `aria-label` "3 of 5 done") and the status line
   announces "“Pack the picnic” done — 3 of 5.". Space toggles a focused checkbox.
 - **Spreadsheet card** ("Trip budget" / "Budget Ausflug") — a semantic table in a grid role with
@@ -448,9 +466,9 @@ P0-26 markup with the old stylesheet and a broken-looking demo. The preview ther
 assets with a version query:
 
 ```html
-<link rel="stylesheet" href="../../../packages/ui-kit/tokens.css?v=P0-38" />
-<link rel="stylesheet" href="preview.css?v=P0-38" />
-<script src="preview.js?v=P0-38" defer></script>
+<link rel="stylesheet" href="../../../packages/ui-kit/tokens.css?v=P0-39" />
+<link rel="stylesheet" href="preview.css?v=P0-39" />
+<script src="preview.js?v=P0-39" defer></script>
 ```
 
 - **Bump rule:** every task that changes a file in `apps/web/preview/` — or the shared
@@ -459,7 +477,7 @@ assets with a version query:
   never cached and gets the current files, which also covers a changed design system that would
   otherwise be served from the cached token stylesheet.
 - The locale files reuse the script's version automatically: `preview.js` reads the `v` query of its
-  own script URL and appends it to the locale request (`locales/de.json?v=P0-38`), so one bump
+  own script URL and appends it to the locale request (`locales/de.json?v=P0-39`), so one bump
   covers the translations as well.
 - The icon SVGs are referenced from `preview.css` and keep stable, unversioned URLs; they only
   change with a design-system task, and every such task bumps the preview version anyway.
@@ -516,7 +534,7 @@ Serve the **repository root**, not this folder, so the relative token and icon p
 the slot's `web` port from `.polier-slot` (never hard-code it), then:
 
 ```sh
-cd "/Users/rasulatashev/Desktop/KI Projekte/Project air-P0-38"
+cd "/Users/rasulatashev/Desktop/KI Projekte/Project air-P0-39"
 PORT=$(python3 -c "import json; print(json.load(open('.polier-slot'))['ports']['web'])")
 python3 -m http.server "$PORT" --bind 127.0.0.1
 ```
@@ -602,11 +620,14 @@ line and tasks in English and German),
 `P0-36-zoom-selection.png` (1440×900),
 `P0-37-snap.png`, `P0-37-undo-hint.png`, `P0-37-highlight.png`, `P0-37-band.png`,
 `P0-37-count-bar.png`, `P0-37-menu.png`, `P0-37-zone-delete.png` (1440×900),
-`P0-38-layers.png`, `P0-38-edge-below-zone.png` (1440×900) and the
+`P0-38-layers.png`, `P0-38-edge-below-zone.png` (1440×900),
+`P0-39-frame-rest.png`, `P0-39-frame-edge.png`, `P0-39-frame-edge-zoom.png`, `P0-39-frame-corner.png`,
+`P0-39-frame-corner-zoom.png`, `P0-39-checklist.png`,
+`P0-39-rules.png`, `P0-39-rules-de.png` (1440×900) and `P0-39-rules-mobile.png` (390×844) and the
 `P0-19-preview.log` / `P0-20-preview.log` / `P0-21-preview.log` / `P0-22-preview.log` /
 `P0-23-preview.log` / `P0-24-preview.log` / `P0-25-preview.log` / `P0-26-preview.log` /
 `P0-27-preview.log` / `P0-28-preview.log` / `P0-29-preview.log` / `P0-30-preview.log` /
-`P0-31-preview.log` / `P0-32-preview.log` / `P0-33-preview.log` / `P0-34-preview.log` / `P0-35-preview.log` / `P0-36-preview.log` / `P0-37-preview.log` / `P0-38-preview.log` /
+`P0-31-preview.log` / `P0-32-preview.log` / `P0-33-preview.log` / `P0-34-preview.log` / `P0-35-preview.log` / `P0-36-preview.log` / `P0-37-preview.log` / `P0-38-preview.log` / `P0-39-preview.log` /
 `P1-07-preview.log` files with the
 exact serve, curl and screenshot commands. The page has no horizontal overflow at 1440×900, 390×844
 or the owner's 1426 × 583 viewport.

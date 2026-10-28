@@ -1,0 +1,96 @@
+$ python3 /Users/rasulatashev/Desktop/Polier-main/tools/check.py .
+[exit 0]
+
+WARN: budgets.status overridden to 1900 words (reason: Eleven stages with exit criteria, the remote stage and eighteen owner questions are listed in STATUS.md during foundation; shrinks as questions are answered and tasks finish.)
+WARN: STATUS.md: 2800 words (target max. 1900); it is read in every session
+WARN: P4-10: done and other tasks depend on it, but no handoff (max. 3 lines)
+WARN: P4-11: done and other tasks depend on it, but no handoff (max. 3 lines)
+WARN: P4-12: done and other tasks depend on it, but no handoff (max. 3 lines)
+WARN: P4-13: done and other tasks depend on it, but no handoff (max. 3 lines)
+WARN: P4-14: done and other tasks depend on it, but no handoff (max. 3 lines)
+WARN: P4-15: done and other tasks depend on it, but no handoff (max. 3 lines)
+WARN: P4-16: done and other tasks depend on it, but no handoff (max. 3 lines)
+WARN: P4-19: done and other tasks depend on it, but no handoff (max. 3 lines)
+WARN: P4-20: done and other tasks depend on it, but no handoff (max. 3 lines)
+WARN: P4-21: done and other tasks depend on it, but no handoff (max. 3 lines)
+WARN: P4-22: done and other tasks depend on it, but no handoff (max. 3 lines)
+WARN: P4-23: done and other tasks depend on it, but no handoff (max. 3 lines)
+WARN: P4-24: done and other tasks depend on it, but no handoff (max. 3 lines)
+WARN: P4-27: done and other tasks depend on it, but no handoff (max. 3 lines)
+WARN: P4-29: done and other tasks depend on it, but no handoff (max. 3 lines)
+WARN: P4-30: done and other tasks depend on it, but no handoff (max. 3 lines)
+WARN: P5-01: done and other tasks depend on it, but no handoff (max. 3 lines)
+WARN: P5-02: done and other tasks depend on it, but no handoff (max. 3 lines)
+WARN: P5-03: done and other tasks depend on it, but no handoff (max. 3 lines)
+WARN: P5-04: done and other tasks depend on it, but no handoff (max. 3 lines)
+WARN: P0-02: context pack is about 33154 tokens (warning at 15000); trim scope_read, split the task or shorten the base files
+WARN: P5-06: context pack is about 150132 tokens (warning at 15000); trim scope_read, split the task or shorten the base files
+WARN: P5-07: context pack is about 70154 tokens (warning at 15000); trim scope_read, split the task or shorten the base files
+WARN: P5-08: context pack is about 41258 tokens (warning at 15000); trim scope_read, split the task or shorten the base files
+WARN: P0-39: context pack is about 162478 tokens (warning at 15000); trim scope_read, split the task or shorten the base files
+WARN: P4-01: record reviews/evidence/P4-01-board-check-20261025T204541Z.json was made on commit b9f5e85a3b, which is not in HEAD's history
+WARN: P4-01: record reviews/evidence/P4-01-boundaries-20261025T204546Z.json was made on commit b9f5e85a3b, which is not in HEAD's history
+WARN: P4-01: record reviews/evidence/P4-01-cpp-unit-20261025T204549Z.json was made on commit b9f5e85a3b, which is not in HEAD's history
+WARN: P4-01: record reviews/evidence/P4-01-typecheck-20261025T204550Z.json was made on commit b9f5e85a3b, which is not in HEAD's history
+WARN: P4-01: record reviews/evidence/P4-01-wasm-build-20261025T204553Z.json was made on commit b9f5e85a3b, which is not in HEAD's history
+WARN: P4-01: record reviews/evidence/P4-01-wasm-size-20261025T204557Z.json was made on commit b9f5e85a3b, which is not in HEAD's history
+WARN: P4-02: record reviews/evidence/P4-02-board-check-20261026T055538Z.json was made on commit 824fb6e2f0, which is not in HEAD's history
+WARN: P4-02: record reviews/evidence/P4-02-boundaries-20261026T055544Z.json was made on commit 824fb6e2f0, which is not in HEAD's history
+WARN: P4-02: record reviews/evidence/P4-02-design-check-20261026T055545Z.json was made on commit 824fb6e2f0, which is not in HEAD's history
+WARN: P4-02: record reviews/evidence/P4-02-unit-20261026T055547Z.json was made on commit 824fb6e2f0, which is not in HEAD's history
+WARN: P4-08: record reviews/evidence/P4-08-board-check-20261027T210018Z.json was made on commit f456f499f5, which is not in HEAD's history
+WARN: P4-08: record reviews/evidence/P4-08-boundaries-20261027T210021Z.json was made on commit f456f499f5, which is not in HEAD's history
+WARN: P4-08: record reviews/evidence/P4-08-cpp-unit-20261027T210021Z.json was made on commit f456f499f5, which is not in HEAD's history
+WARN: P4-08: record reviews/evidence/P4-08-wasm-build-20261027T210024Z.json was made on commit f456f499f5, which is not in HEAD's history
+WARN: P4-08: record reviews/evidence/P4-08-wasm-size-20261027T210028Z.json was made on commit f456f499f5, which is not in HEAD's history
+WARN: P4-08: record reviews/evidence/P4-08-typecheck-20261027T210029Z.json was made on commit f456f499f5, which is not in HEAD's history
+WARN: P4-14: record reviews/evidence/P4-14-unit-20261028T055248Z.json was made on commit 487b5aab41, which is not in HEAD's history
+WARN: P4-15: record reviews/evidence/P4-15-perf-20261028T062036Z.json was made on commit 924fc46f4a, which is not in HEAD's history
+WARN: P4-15: record reviews/evidence/P4-15-visual-20261028T062051Z.json was made on commit 924fc46f4a, which is not in HEAD's history
+WARN: P4-19: record reviews/evidence/P4-19-board-check-20261028T172200Z.json was made on commit 14ce0e1663, which is not in HEAD's history
+WARN: P4-19: record reviews/evidence/P4-19-boundaries-20261028T172204Z.json was made on commit 14ce0e1663, which is not in HEAD's history
+WARN: P4-19: record reviews/evidence/P4-19-cpp-unit-20261028T172204Z.json was made on commit 14ce0e1663, which is not in HEAD's history
+WARN: P4-19: record reviews/evidence/P4-19-unit-20261028T172210Z.json was made on commit 14ce0e1663, which is not in HEAD's history
+WARN: P4-20: record reviews/evidence/P4-20-unit-20261028T173023Z.json was made on commit f49272eb06, which is not in HEAD's history
+WARN: P4-20: record reviews/evidence/P4-20-design-check-20261028T173022Z.json was made on commit f49272eb06, which is not in HEAD's history
+WARN: P4-21: record reviews/evidence/P4-21-unit-20261028T173647Z.json was made on commit 0e7ae53519, which is not in HEAD's history
+WARN: P4-22: record reviews/evidence/P4-22-board-check-20261028T174720Z.json was made on commit 7f04c57caa, which is not in HEAD's history
+WARN: P4-22: record reviews/evidence/P4-22-boundaries-20261028T174719Z.json was made on commit 7f04c57caa, which is not in HEAD's history
+WARN: P4-22: record reviews/evidence/P4-22-unit-20261028T174719Z.json was made on commit 7f04c57caa, which is not in HEAD's history
+WARN: P4-25: record reviews/evidence/P4-25-board-check-20261027T200126Z.json was made on commit acb66376ed, which is not in HEAD's history
+WARN: P4-25: record reviews/evidence/P4-25-contracts-20261027T200129Z.json was made on commit acb66376ed, which is not in HEAD's history
+WARN: P4-26: record reviews/evidence/P4-26-board-check-20261027T205513Z.json was made on commit eae65f62bd, which is not in HEAD's history
+WARN: P0-26: record reviews/evidence/P0-26-board-check-20261026T202046Z.json was made on commit 47441e51d7, which is not in HEAD's history
+WARN: P0-26: record reviews/evidence/P0-26-design-check-20261026T200347Z.json was made on commit f21a00f299, which is not in HEAD's history
+WARN: P0-26: record reviews/evidence/P0-26-changelog-entry-20261026T200347Z.json was made on commit f21a00f299, which is not in HEAD's history
+WARN: P0-29: record reviews/evidence/P0-29-board-check-20261027T073815Z.json was made on commit 2da169115a, which is not in HEAD's history
+WARN: P0-29: record reviews/evidence/P0-29-design-check-20261027T073817Z.json was made on commit 2da169115a, which is not in HEAD's history
+WARN: P0-29: record reviews/evidence/P0-29-changelog-entry-20261027T073817Z.json was made on commit 2da169115a, which is not in HEAD's history
+WARN: P0-30: record reviews/evidence/P0-30-board-check-20261027T103140Z.json was made on commit 0fcaf09b90, which is not in HEAD's history
+WARN: P0-30: record reviews/evidence/P0-30-design-check-20261027T103142Z.json was made on commit 0fcaf09b90, which is not in HEAD's history
+WARN: P0-30: record reviews/evidence/P0-30-changelog-entry-20261027T103142Z.json was made on commit 0fcaf09b90, which is not in HEAD's history
+WARN: P5-01: record reviews/evidence/P5-01-board-check-20261028T185710Z.json was made on commit f6caf818d9, which is not in HEAD's history
+WARN: P5-01: record reviews/evidence/P5-01-boundaries-20261028T185713Z.json was made on commit f6caf818d9, which is not in HEAD's history
+WARN: P5-01: record reviews/evidence/P5-01-contracts-20261028T185709Z.json was made on commit f6caf818d9, which is not in HEAD's history
+WARN: P5-01: record reviews/evidence/P5-01-codegen-20261028T185709Z.json was made on commit f6caf818d9, which is not in HEAD's history
+WARN: P5-01: record reviews/evidence/P5-01-unit-20261028T185714Z.json was made on commit f6caf818d9, which is not in HEAD's history
+WARN: P5-02: record reviews/evidence/P5-02-typecheck-20261028T190228Z.json was made on commit 7cc2a12fb1, which is not in HEAD's history
+WARN: P5-03: record reviews/evidence/P5-03-board-check-20261028T191323Z.json was made on commit 628a49ae6a, which is not in HEAD's history
+WARN: P5-03: record reviews/evidence/P5-03-boundaries-20261028T191323Z.json was made on commit 628a49ae6a, which is not in HEAD's history
+WARN: P5-03: record reviews/evidence/P5-03-unit-20261028T191322Z.json was made on commit 628a49ae6a, which is not in HEAD's history
+WARN: P5-03: record reviews/evidence/P5-03-db-migrate-20261028T191327Z.json was made on commit 628a49ae6a, which is not in HEAD's history
+WARN: P5-04: record reviews/evidence/P5-04-board-check-20261028T191830Z.json was made on commit 08c4b5ec47, which is not in HEAD's history
+WARN: P5-04: record reviews/evidence/P5-04-boundaries-20261028T191829Z.json was made on commit 08c4b5ec47, which is not in HEAD's history
+WARN: P5-04: record reviews/evidence/P5-04-unit-20261028T191828Z.json was made on commit 08c4b5ec47, which is not in HEAD's history
+WARN: P5-04: record reviews/evidence/P5-04-typecheck-20261028T191828Z.json was made on commit 08c4b5ec47, which is not in HEAD's history
+WARN: P0-38: record reviews/evidence/P0-38-board-check-20261028T193926Z.json was made on commit 2a19869f4f, which is not in HEAD's history
+WARN: P0-38: record reviews/evidence/P0-38-changelog-entry-20261028T193931Z.json was made on commit 2a19869f4f, which is not in HEAD's history
+WARN: P0-38: record reviews/evidence/P0-38-design-check-20261028T193931Z.json was made on commit 2a19869f4f, which is not in HEAD's history
+WARN: P0-38: record reviews/evidence/P0-38-tokens-codegen-20261028T193930Z.json was made on commit 2a19869f4f, which is not in HEAD's history
+WARN: P0-38: record reviews/evidence/P0-38-unit-20261028T193930Z.json was made on commit 2a19869f4f, which is not in HEAD's history
+WARN: P4-32: record reviews/evidence/P4-32-board-check-20261028T194223Z.json was made on commit a57da462cd, which is not in HEAD's history
+WARN: P4-32: record reviews/evidence/P4-32-changelog-entry-20261028T194255Z.json was made on commit a57da462cd, which is not in HEAD's history
+WARN: P4-32: record reviews/evidence/P4-32-cpp-unit-20261028T194228Z.json was made on commit a57da462cd, which is not in HEAD's history
+WARN: P4-32: record reviews/evidence/P4-32-wasm-build-20261028T194234Z.json was made on commit a57da462cd, which is not in HEAD's history
+WARN: P4-32: record reviews/evidence/P4-32-wasm-size-20261028T194254Z.json was made on commit a57da462cd, which is not in HEAD's history
+OK: /Users/rasulatashev/Desktop/KI Projekte/Project air-P0-39 passes the mandatory checks. (92 warning(s))

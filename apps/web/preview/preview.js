@@ -1965,10 +1965,11 @@
     // ---------- selection chrome and resize (P0-36) ----------
     //
     // A click selects one object (note card, notepad, photo, checklist, table
-    // card); the engine's selection chrome — a 1 px accent frame and eight 8 px
-    // handles — follows its rendered box every frame while something is
-    // selected, so it stays on the object through drags, settles and zoom. A
-    // handle drag resizes against the opposite edge or corner, 1:1, clamped to
+    // card); the engine's selection chrome — a 1 px accent frame whose edges and
+    // corners are invisible handles (P0-39), lit only under the pointer —
+    // follows its rendered box every frame while something is selected, so it
+    // stays on the object through drags, settles and zoom. An edge or corner
+    // drag resizes against the opposite edge or corner, 1:1, clamped to
     // the canvas and to each object's minimum; blocks and the notepad never get
     // lower than their content. A click on the empty canvas or Esc clears it.
 
@@ -2148,12 +2149,14 @@
       resizeDrag = {
         pointerId: event.pointerId,
         handle: handle.getAttribute("data-handle") || "se",
+        handleElement: handle,
         target: selectedTarget,
         start: selectedTarget.rect(),
         startClientX: event.clientX,
         startClientY: event.clientY,
       };
       selectedTarget.element.classList.add("is-resizing");
+      handle.classList.add("is-active");
       try {
         handle.setPointerCapture(event.pointerId);
       } catch (error) {
@@ -2196,6 +2199,7 @@
       if (drag === null || drag.pointerId !== event.pointerId) return;
       resizeDrag = null;
       drag.target.element.classList.remove("is-resizing");
+      drag.handleElement.classList.remove("is-active");
       if (status !== null) status.textContent = translate("demo.status.resized");
     }
 
