@@ -214,11 +214,11 @@
 - [x] `P0-38` Layer order: edges below zones — status: `done` — owner: —
 - [x] `P4-32` Engine follows contract 0.3.0 — status: `done` — owner: —
 - [x] `P0-39` Live demo: quiet resize frame, done items dimmed, design rules page — status: `done` — owner: —
+- [x] `P0-40` Live demo: two teammates on the board — status: `done` — owner: —
 
 ## In progress
 
 - [ ] `P5-06` Durability and reconnect: restart, catch-up and snapshot compaction — status: `in_progress` — owner: lead
-- [ ] `P0-40` Live demo: two teammates on the board — status: `in_progress` — owner: —
 
 ## Blocked / failed
 

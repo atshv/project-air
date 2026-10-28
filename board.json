@@ -6334,7 +6334,7 @@
       "satisfies": [
         "D3"
       ],
-      "status": "in_progress",
+      "status": "done",
       "depends_on": [
         "P0-39"
       ],
@@ -6373,13 +6373,21 @@
         "changelog-entry"
       ],
       "branch": "task/P0-40",
-      "worktree": "../Project air-P0-40",
-      "evidence": [],
+      "worktree": null,
+      "evidence": [
+        "reviews/evidence/P0-40-board-check-20261028T195642Z.json",
+        "reviews/evidence/P0-40-changelog-entry-20261028T195648Z.json",
+        "reviews/evidence/P0-40-design-check-20261028T195648Z.json"
+      ],
       "scope_write_forbidden": [
         "reference/",
         "docs/owner/"
       ],
-      "handoff": []
+      "handoff": [
+        "Closed P0-40: simulated teammates Lena (--tone-b) and Jonas (--tone-c): 16 px cursors with 12 px name labels on layer 7a, 1.5 px selection frames, idle fade to 0.4 after 5 s.",
+        "Routes are fractions of object boxes (follow drag/zoom); presence line above the canvas; loop pauses off screen; reduced motion jumps. No content/history touched.",
+        "Gates board-check/design-check/changelog-entry green; 5 screenshots + log. Cursor is a CSS shape: ui-kit has no cursor icon (icon test fixes ten)."
+      ]
     }
   ],
   "decisions": [
