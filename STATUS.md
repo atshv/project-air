@@ -122,7 +122,8 @@
 
 ## Ready now
 
-- none
+- `P5-04` SDK board-sync client and the one autosave path (L05 realtime half)
+- `P5-06` Durability and reconnect: restart, catch-up and snapshot compaction
 
 ## Done
 
@@ -204,11 +205,11 @@
 - [x] `P4-31` English sample text in the engine playground (language-check) — status: `done` — owner: —
 - [x] `P5-01` Sync contract 0.3.0: settle the pre-realtime open points — status: `done` — owner: —
 - [x] `P5-02` CRDT document core behind an own interface (Yjs) — status: `done` — owner: —
+- [x] `P5-03` Sync service: WebSocket protocol, auth and durable update log — status: `done` — owner: —
 - [x] `P0-34` Live demo: move a zone with its members — status: `done` — owner: —
 
 ## In progress
 
-- [ ] `P5-03` Sync service: WebSocket protocol, auth and durable update log — status: `in_progress` — owner: lead
 - [ ] `P0-35` Design system page: contract 0.3.0, missing tokens and engine chrome — status: `in_progress` — owner: —
 
 ## Blocked / failed
@@ -231,7 +232,7 @@
 ## Claims
 
 - `P0-35` in progress by dsh since 2026-10-28T19:10:07+00:00 — worktree: /Users/rasulatashev/Desktop/KI Projekte/Project air-P0-35 · slot 2
-- `P5-03` in progress by dsh since 2026-10-28T19:08:22+00:00 — worktree: /private/tmp/air-P5-03 · slot 1
+- `P5-03` in progress by dsh since 2026-10-28T19:13:34+00:00 — worktree: /private/tmp/air-P5-03 · slot 1
 
 <!-- /polier:claims -->
 

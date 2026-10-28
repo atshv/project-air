@@ -1,0 +1,5 @@
+$ DATABASE_URL='postgresql://projectair:projectair_local_only@127.0.0.1:5433/project-air_slot_1' node services/platform/dist/db/migrate.js
+[exit 0]
+
+{"time":"2026-10-28T19:13:27.863Z","level":"info","message":"migrations complete","applied":0,"skipped":6}
+{"time":"2026-10-28T19:13:27.868Z","level":"info","message":"migrate: done","applied":0,"skipped":6}

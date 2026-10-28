@@ -5528,7 +5528,7 @@
       "satisfies": [
         "D11"
       ],
-      "status": "in_progress",
+      "status": "done",
       "depends_on": [
         "P5-01",
         "P5-02",
@@ -5570,11 +5570,16 @@
         "unit",
         "db-migrate"
       ],
-      "owner": "lead",
+      "owner": null,
       "branch": "task/P5-03",
-      "worktree": "/private/tmp/air-P5-03",
-      "round": 0,
-      "evidence": [],
+      "worktree": null,
+      "round": 3,
+      "evidence": [
+        "reviews/evidence/P5-03-board-check-20261028T191323Z.json",
+        "reviews/evidence/P5-03-boundaries-20261028T191323Z.json",
+        "reviews/evidence/P5-03-unit-20261028T191322Z.json",
+        "reviews/evidence/P5-03-db-migrate-20261028T191327Z.json"
+      ],
       "scope_write_forbidden": [
         "reference/"
       ]

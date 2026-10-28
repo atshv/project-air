@@ -1,0 +1,40 @@
+$ pnpm test --affected
+[exit 0]
+
+
+   • turbo 2.11.10
+   • Packages in scope: //, @project-air/sync
+   • Running test in 2 packages
+   • Remote caching disabled, using shared worktree cache
+
+@project-air/sync:build: cache miss, executing b8e0b95e8746dac2
+@project-air/sync:build: $ tsc --project tsconfig.json
+@project-air/sync:test: cache miss, executing 650eb400c779b0c2
+@project-air/sync:test: $ node --test test/*.test.mjs
+@project-air/sync:test: ✔ live socket integration: join, ack-after-commit, broadcast and reconnect catch-up (60.704167ms)
+@project-air/sync:test: ✔ hello is required first and the first message rejection is explicit (1.407375ms)
+@project-air/sync:test: ✔ version and session validation reject before joinBoard (0.175375ms)
+@project-air/sync:test: ✔ the platform authorizer gates joinBoard and welcome/snapshot carry the durable seq (0.321834ms)
+@project-air/sync:test: ✔ operationBatch is persisted before the ack and the ack carries the new seq (0.588667ms)
+@project-air/sync:test: ✔ a failed append produces a reject and never an ack (0.560709ms)
+@project-air/sync:test: ✔ resyncRequest reads from the durable seq and leaveBoard broadcasts presence (0.238917ms)
+@project-air/sync:test: ✔ the handshake accept value matches the RFC 6455 vector (1.4915ms)
+@project-air/sync:test: ✔ masked client frames decode and unmasked/reserved frames are rejected (0.354167ms)
+@project-air/sync:test: ✔ fragmentation reassembles and enforces the bounded size (0.256042ms)
+@project-air/sync:test: ✔ ping is answered with pong and close ends the connection (0.307417ms)
+@project-air/sync:test: ✔ an oversized declared frame closes with 1009 before allocating it (0.107917ms)
+@project-air/sync:test: ℹ tests 12
+@project-air/sync:test: ℹ suites 0
+@project-air/sync:test: ℹ pass 12
+@project-air/sync:test: ℹ fail 0
+@project-air/sync:test: ℹ cancelled 0
+@project-air/sync:test: ℹ skipped 0
+@project-air/sync:test: ℹ todo 0
+@project-air/sync:test: ℹ duration_ms 243.039333
+
+ Tasks:    2 successful, 2 total
+Cached:    0 cached, 2 total
+  Time:    951ms 
+
+$ turbo run test --affected
+ WARNING  no output files found for task @project-air/sync#test. Please check your `outputs` key in `turbo.json`

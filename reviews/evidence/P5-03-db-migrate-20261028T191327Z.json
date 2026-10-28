@@ -1,0 +1,17 @@
+{
+  "task": "P5-03",
+  "gate": "db-migrate",
+  "command": "DATABASE_URL='postgresql://projectair:projectair_local_only@127.0.0.1:5433/project-air_slot_1' node services/platform/dist/db/migrate.js",
+  "exit_code": 0,
+  "result": "pass",
+  "slot": null,
+  "exclusive": [],
+  "lock_wait_s": 0.0,
+  "lock_warning": null,
+  "started": "2026-10-28T19:13:27+00:00",
+  "finished": "2026-10-28T19:13:27+00:00",
+  "commit": "628a49ae6aa677db6d6e5afe45d9e56188d1b620",
+  "dirty": true,
+  "log": "P5-03-db-migrate-20261028T191327Z.log",
+  "log_sha256": "04ee38bf0218ae836d6539ed7f3e2cd2b4a11c077c28861467f79780ef730db3"
+}
