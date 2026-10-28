@@ -211,5 +211,22 @@
     "errors": {
       "session": "Your session expired. Please sign in again."
     }
+  },
+  "board": {
+    "loading": "Loading board …",
+    "untitled": "Untitled board",
+    "canvasLabel": "Board canvas",
+    "sync": {
+      "idle": "Not connected yet",
+      "connecting": "Connecting …",
+      "joined": "Connected",
+      "offline": "Reconnecting …",
+      "closed": "Disconnected",
+      "error": "Connection failed"
+    },
+    "errors": {
+      "title": "Board could not be opened",
+      "engine": "The canvas engine could not start on this device."
+    }
   }
 }

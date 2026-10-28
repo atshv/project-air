@@ -14,6 +14,22 @@
     "./input.js": {
       "types": "./dist/bridge/input.d.ts",
       "import": "./dist/bridge/input.js"
+    },
+    "./logic/operations.js": {
+      "types": "./dist/logic/operations.d.ts",
+      "import": "./dist/logic/operations.js"
+    },
+    "./logic/document-port.js": {
+      "types": "./dist/logic/document-port.d.ts",
+      "import": "./dist/logic/document-port.js"
+    },
+    "./logic/history.js": {
+      "types": "./dist/logic/history.d.ts",
+      "import": "./dist/logic/history.js"
+    },
+    "./bridge/view-persistence.js": {
+      "types": "./dist/bridge/view-persistence.d.ts",
+      "import": "./dist/bridge/view-persistence.js"
     }
   },
   "scripts": {

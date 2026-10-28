@@ -4,10 +4,10 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 
 // Ports come from the slot (never hardcoded); env overrides are for e2e runs.
-function slotPorts(): { web: number; e2e: number; platform: number; auth: number } {
+function slotPorts(): { web: number; e2e: number; platform: number; auth: number; sync: number } {
   const slotPath = fileURLToPath(new URL("../../.polier-slot", import.meta.url));
-  const slot = JSON.parse(readFileSync(slotPath, "utf8")) as { ports: { web: number; "web-e2e": number; platform: number; auth: number } };
-  return { web: slot.ports.web, e2e: slot.ports["web-e2e"], platform: slot.ports.platform, auth: slot.ports.auth };
+  const slot = JSON.parse(readFileSync(slotPath, "utf8")) as { ports: { web: number; "web-e2e": number; platform: number; auth: number; sync: number } };
+  return { web: slot.ports.web, e2e: slot.ports["web-e2e"], platform: slot.ports.platform, auth: slot.ports.auth, sync: slot.ports.sync };
 }
 
 export default defineConfig(() => {
@@ -22,6 +22,7 @@ export default defineConfig(() => {
       fs: { allow: [fileURLToPath(new URL("../..", import.meta.url))] },
       proxy: {
         "/v1/auth": { target: process.env["AUTH_URL"] ?? `http://127.0.0.1:${ports.auth}`, changeOrigin: false },
+        "/v1/sync": { target: process.env["SYNC_URL"] ?? `ws://127.0.0.1:${ports.sync}`, ws: true, changeOrigin: false },
         "/v1": { target: process.env["PLATFORM_URL"] ?? `http://127.0.0.1:${ports.platform}`, changeOrigin: false },
       },
     },

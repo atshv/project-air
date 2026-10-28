@@ -6823,7 +6823,7 @@
       "satisfies": [
         "D12"
       ],
-      "status": "in_progress",
+      "status": "done",
       "depends_on": [
         "P6-03"
       ],
@@ -6833,7 +6833,9 @@
       "scope_write": [
         "apps/web/",
         "packages/engine/",
-        ".changes/"
+        ".changes/",
+        "packages/sdk/",
+        "pnpm-lock.yaml"
       ],
       "scope_read": [
         "ARCHITECTURE.md",
@@ -6860,11 +6862,18 @@
         "design-check",
         "language-check"
       ],
-      "owner": "lead",
+      "owner": null,
       "branch": "task/P6-04",
-      "worktree": "/private/tmp/air-P6-04",
-      "round": 0,
-      "evidence": [],
+      "worktree": null,
+      "round": 2,
+      "evidence": [
+        "reviews/evidence/P6-04-board-check-20261028T233249Z.json",
+        "reviews/evidence/P6-04-boundaries-20261028T233254Z.json",
+        "reviews/evidence/P6-04-unit-20261028T233254Z.json",
+        "reviews/evidence/P6-04-typecheck-20261028T233258Z.json",
+        "reviews/evidence/P6-04-design-check-20261028T233300Z.json",
+        "reviews/evidence/P6-04-language-check-20261028T233301Z.json"
+      ],
       "scope_write_forbidden": [
         "reference/"
       ]
@@ -7036,7 +7045,7 @@
     {
       "id": "P6-08",
       "title": "Realtime UI: live changes, presence and save status (L05)",
-      "goal": "The board page shows live remote changes and presence cursors/selections (colour/name from the server), the L05 save status (Saving … → Saved 2 s → Not saved – retry, clickable), an offline notice that never loses input, reconnect/resync, and uses the authenticated session clientId.",
+      "goal": "The board page shows live remote changes and presence cursors/selections (colour/name from the server), the L05 save status (Saving … → Saved 2 s → Not saved – retry, clickable), an offline notice that never loses input, reconnect/resync; it wires the authenticated sync connection (the browser session cookie/token handshake with services/sync, with the auth/platform session validation) and uses the authenticated session clientId.",
       "why": "L05 is the remaining realtime web order; the stage exit e2e edits with two users and reloads.",
       "satisfies": [
         "D12"
@@ -7050,7 +7059,9 @@
       "parallel_group": null,
       "scope_write": [
         "apps/web/",
-        ".changes/"
+        ".changes/",
+        "services/sync/",
+        "services/auth/"
       ],
       "scope_read": [
         "ARCHITECTURE.md",
@@ -7062,7 +7073,8 @@
         "packages/sdk/",
         "services/sync/",
         "docs/realtime.md",
-        "apps/web/messages/"
+        "apps/web/messages/",
+        "services/auth/"
       ],
       "acceptance": [
         "A1",

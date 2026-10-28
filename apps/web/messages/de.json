@@ -211,5 +211,22 @@
     "errors": {
       "session": "Deine Sitzung ist abgelaufen. Bitte melde dich erneut an."
     }
+  },
+  "board": {
+    "loading": "Board wird geladen …",
+    "untitled": "Board ohne Titel",
+    "canvasLabel": "Board-Fläche",
+    "sync": {
+      "idle": "Noch nicht verbunden",
+      "connecting": "Verbindung wird aufgebaut …",
+      "joined": "Verbunden",
+      "offline": "Erneut verbinden …",
+      "closed": "Getrennt",
+      "error": "Verbindung fehlgeschlagen"
+    },
+    "errors": {
+      "title": "Board konnte nicht geöffnet werden",
+      "engine": "Die Canvas-Engine konnte auf diesem Gerät nicht starten."
+    }
   }
 }

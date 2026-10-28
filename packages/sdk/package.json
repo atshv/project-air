@@ -14,5 +14,8 @@
     "typecheck": "tsc --noEmit --project tsconfig.json",
     "lint": "eslint --max-warnings=0 .",
     "test": "node --test test/*.test.mjs"
+  },
+  "dependencies": {
+    "@project-air/crdt": "workspace:*"
   }
 }

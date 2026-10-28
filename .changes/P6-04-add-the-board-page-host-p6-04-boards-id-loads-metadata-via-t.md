@@ -1,0 +1,4 @@
+area: web
+kind: minor
+
+Add the board page host (P6-04): /boards/:id loads metadata via the SDK and mounts the engine on a DPR/resize-managed canvas with WebGL2 default and fail-closed WebGPU fallback, one SDK BoardSyncClient owning the board document projected through the engine document port with remote operations applied to the engine, L00 top-centre toolbar (grouped 36/20 px icon buttons, one accent primary, aria-pressed/data-label from messages, active tool, keyboard reachable) and +/-/fit zoom, L17 view persistence per board/device key with throttled save, restore, fit default and engine history, empty/loading/error states from messages and back navigation, Vite /v1/sync WebSocket proxy from the slot ports, additive engine package subpath exports for the web build, and pure node --test helpers for toolbar model, view clamp/restore and backend fallback.

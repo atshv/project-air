@@ -53,3 +53,30 @@ skeleton/empty/error-with-retry/in-flight states. A board opens at `/boards/:id`
 forbidden board redirects back to `/boards`. The SDK is the only data path (no fetch/service
 import in the app); all text comes from `apps/web/messages`. First-page listing is enough for this
 stage (`nextCursor` stays in the SDK type contract).
+
+## Board page host (P6-04)
+
+`/boards/:id` loads the board metadata via the SDK (`boards.get`), mounts the engine on a canvas
+sized by ResizeObserver/DPR (WebGL2 default; WebGPU only when requested and an adapter exists,
+otherwise a fail-closed WebGL2 fallback), restores the L17 camera per board/device through the
+engine view-persistence key and falls back to the engine fit when no record exists, and destroys
+the engine/observer/sync client on unmount. One SDK `BoardSyncClient` owns the board document:
+snapshot content is projected into the engine document port and remote operations apply through
+it; the toolbar (L00) is a top-centre icon bar with grouped 36 px buttons, one accent selection,
+`aria-pressed`/`aria-label`/`data-label` from messages, and +/−/fit zoom controls. The engine
+package exports the logic modules used by the app (`./logic/operations.js`,
+`./logic/document-port.js`, `./logic/history.js`, `./bridge/view-persistence.js`). The Vite dev
+proxy forwards `/v1/sync` as a WebSocket (`ws: true`) to the slot sync port, and `/v1`/`/v1/auth`
+to platform/auth, so cookies and the sync socket are same-origin in development.
+
+### P6-04 limits (explicit)
+
+- **Sync authentication is not wired yet:** the browser session cookie / hello
+  handshake for the sync service is **P6-08's** responsibility. Until then the
+  board page connects with a placeholder token and live sync may be rejected.
+- **Browser proof is P6-09 e2e:** engine mount/rendering, WebGL2/WebGPU
+  selection, /v1/sync WebSocket, remote-operation application, gesture -> one
+  operation and view restore across reload are not exercised by this task's
+  tests (they are typechecked/built only).
+- Toolbar -> engine tool binding and pointer gesture mapping stay P6-05; P6-04
+  only selects the active tool state.

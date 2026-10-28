@@ -4,7 +4,8 @@
 // ack/serverSeq tracking, backoff reconnect + resyncRequest, and idempotent close.
 
 import type { BoardContent } from "../../../contracts/generated/types.ts";
-import type { BoardDoc } from "../../../crdt/dist/packages/crdt/src/index.d.ts";
+import { createYjsBoardDoc } from "@project-air/crdt";
+import type { BoardDoc } from "@project-air/crdt";
 import { createRequestId } from "../uuid.ts";
 import type { CreateSocket, SyncSocket } from "./connection.ts";
 import { realTimers, type Timers } from "./timers.ts";
@@ -43,8 +44,8 @@ export interface BoardSyncClientOptions {
    * board-sync client via createRequestId(); stable across reconnects.
    */
   readonly clientId?: string;
-  /** Injected BoardDoc factory (packages/crdt in production; fakes in tests). */
-  readonly createDocument: (content: BoardContent) => BoardDoc;
+  /** Optional BoardDoc factory; defaults to the real Yjs document from packages/crdt (fakes for tests). */
+  readonly createDocument?: ((content: BoardContent) => BoardDoc) | undefined;
   readonly initialContent: BoardContent;
   readonly contractVersion?: string;
   readonly timers?: Timers;
@@ -92,7 +93,8 @@ export function createBoardSyncClient(options: BoardSyncClientOptions): BoardSyn
   const contractVersion = options.contractVersion ?? SYNC_CONTRACT_VERSION;
   const clientId = resolveClientId(options.clientId);
   const backoff = options.backoff ?? { initialMs: 100, maxMs: 2000 };
-  let doc = options.createDocument(options.initialContent);
+  const makeDocument = options.createDocument ?? ((content: BoardContent): BoardDoc => createYjsBoardDoc({ content }));
+  let doc = makeDocument(options.initialContent);
   let socket: SyncSocket | null = null;
   let status: BoardSyncStatus = "idle";
   let serverSeq = 0;
@@ -200,7 +202,7 @@ export function createBoardSyncClient(options: BoardSyncClientOptions): BoardSyn
     const payload = (message.payload ?? {}) as Record<string, unknown>;
     const content = payload["boardContent"] as BoardContent | undefined;
     if (content !== undefined && content !== null) {
-      doc = options.createDocument(content);
+      doc = makeDocument(content);
       // Re-apply optimistic operations that are still awaiting their ack: a
       // catch-up snapshot may not include them yet, and they must not vanish
       // from the local document.

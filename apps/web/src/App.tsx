@@ -6,7 +6,8 @@ import en from "../messages/en.json";
 import { api } from "./auth/client.ts";
 import type { SessionUser } from "../../../packages/sdk/src/auth.ts";
 import { LoginPage, RecoveryPage, RegisterPage } from "./pages/AuthPages.tsx";
-import { BoardPageGuard, BoardsPage } from "./pages/BoardsPage.tsx";
+import { BoardsPage } from "./pages/BoardsPage.tsx";
+import { BoardPage } from "./pages/BoardPage.tsx";
 import { Button } from "./components/Button.tsx";
 import { catalogParity, createTranslate, DEFAULT_LANGUAGE, LANGUAGES, persistLanguage, readStoredLanguage, type Language, type MessageCatalog } from "./i18n/i18n.ts";
 import { ROUTES } from "./routes.ts";
@@ -127,7 +128,7 @@ export function App() {
           <Route path="/register" element={<RegisterPage t={t} onSignedIn={signIn} />} />
           <Route path="/recovery" element={<RecoveryPage t={t} />} />
           <Route path="/boards" element={requireAuth(<BoardsPage t={t} language={language} accountId={session.user?.accountId ?? ""} />)} />
-          <Route path="/boards/:id" element={requireAuth(<BoardPageGuard t={t} />)} />
+          <Route path="/boards/:id" element={requireAuth(<BoardPage t={t} language={language} clientId={session.user?.accountId ?? ""} />)} />
           <Route path="/settings" element={requireAuth(<SettingsPage t={t} language={language} setLanguage={setLanguage} user={session.user} onSignOut={signOut} />)} />
           <Route path="*" element={<EmptyRoute titleKey="routes.boards.title" bodyKey="routes.boards.body" t={t} />} />
         </Routes>

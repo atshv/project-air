@@ -214,7 +214,11 @@ importers:
 
   packages/engine: {}
 
-  packages/sdk: {}
+  packages/sdk:
+    dependencies:
+      '@project-air/crdt':
+        specifier: workspace:*
+        version: link:../crdt
 
   packages/test-kit: {}
 
