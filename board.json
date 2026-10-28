@@ -3984,7 +3984,7 @@
       "satisfies": [
         "D10"
       ],
-      "status": "pending",
+      "status": "in_progress",
       "depends_on": [
         "P4-14"
       ],
@@ -4020,9 +4020,9 @@
         "boundaries",
         "cpp-unit"
       ],
-      "owner": null,
+      "owner": "lead",
       "branch": "task/P4-18",
-      "worktree": null,
+      "worktree": "/private/tmp/air-P4-18",
       "round": 0,
       "evidence": [],
       "scope_write_forbidden": [
