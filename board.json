@@ -6516,6 +6516,53 @@
         "reference/",
         "docs/owner/"
       ]
+    },
+    {
+      "id": "P0-43",
+      "title": "Live demo: pen tool and ink colours over the whole board",
+      "stage": "foundation",
+      "status": "pending",
+      "owner": null,
+      "depends_on": [
+        "P0-42"
+      ],
+      "goal": "The demo toolbar's pen button enables freehand drawing above every board object (world coordinates, pan/zoom, never moves or selects), and the palette button opens a token colour popover (tone-a..e plus fg) that colours the next stroke, recolours on theme switch, integrates with undo/redo, and is translated and keyboard operable in EN/DE.",
+      "why": "The owner wants to annotate and hand-write over zones, notes and photos; the colour icon exists but does nothing and a pen icon is missing.",
+      "complexity": 5,
+      "branch": null,
+      "round": 0,
+      "parallel_group": null,
+      "scope_read": [
+        "apps/web/preview/",
+        "packages/ui-kit/tokens.css",
+        "docs/design-rules.md"
+      ],
+      "scope_write": [
+        "apps/web/preview/",
+        ".changes/"
+      ],
+      "scope_write_forbidden": [
+        "reference/",
+        "docs/owner/"
+      ],
+      "gates": [
+        "board-check",
+        "design-check",
+        "changelog-entry"
+      ],
+      "acceptance": [
+        "A1",
+        "A2",
+        "A3",
+        "A4"
+      ],
+      "evidence": [],
+      "handoff": [],
+      "worktree": null,
+      "exclusive": [],
+      "satisfies": [
+        "D3"
+      ]
     }
   ],
   "decisions": [
