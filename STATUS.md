@@ -1,6 +1,6 @@
 # Status
 
-**Project:** project-air · **Profile:** L · **Stage:** 5 of 11 (11 defined)
+**Project:** project-air · **Profile:** L · **Stage:** 6 of 11 (11 defined)
 
 > Generated from `board.json`. Do not edit by hand.
 
@@ -237,13 +237,6 @@
 - [ ] `P0-15` Release command and tag-based CI release — status: `pending` — owner: —
 - [ ] `P0-16` Dependency updates and Polier update check — status: `pending` — owner: —
 - [ ] `P0-17` RELEASING.md and release 0.0.1 — status: `pending` — owner: —
-
-<!-- polier:claims -->
-## Claims
-
-- `P5-08` in progress by dsh since 2026-10-28T22:57:05+00:00 — worktree: /private/tmp/air-P5-08 · slot 1
-
-<!-- /polier:claims -->
 
 ## Decisions
 

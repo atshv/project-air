@@ -35,21 +35,30 @@ Read `AGENTS.md`, `ARCHITECTURE.md`, `STATUS.md`, `docs/module-map.md` and the t
   `docs/canvas-acceptance.md` entries are still marked `open` — the lead's status pass needs the e2e
   parts that belong to the web-app/realtime stages; touch/L15-manual, images and the a11y mirror stay
   in hardening (`Q20`); the WebGPU backend is not the measured performance backend (`Q19`).
-  Next stage: **stage 6 `realtime`** (owner decision `pending`; Q4 CRDT to be decided) — then
-  web-app, value, hardening, and the remote phase.
-- **Stage 6 Realtime:** in progress (owner approved 2026-10-28; Q4 answered: **Yjs (MIT) behind
-  an own `BoardDoc` interface**, ADR-0011; ADR-0012 places the client document + sync boundary in
-  `packages/sdk`). Planned tasks `P5-01` … `P5-08` (contract 0.3.0, CRDT core, sync service,
-  SDK board-sync + the one L05 autosave path, presence, durability/restart, `crdt-convergence`,
-  `load`); D11 added to `docs/quality.md`; stage set to `continue`. **Done:** `P5-01` (contract
-  **0.3.0**: version negotiation once per connection, fresh-board `serverSeq` 1 / from-0 catch-up,
-  `snapshotRef` `<boardId>:<serverSeq>`, `hello`-first + reconnect order, fixtures, regenerated
-  TS/C++, `docs/contracts.md`; review `reviews/P5-01.md` pass with notes — the blueprint's
-  per-message version is replaced by the documented once-per-connection alternative). **Next:**
-  `P5-02` CRDT core (Yjs adapter + 10k-round convergence), then `P5-03` sync service, …
-  Exit gates `crdt-convergence` + `load` are produced in P5-07/P5-08. Yjs is the only new
-  dependency (approved via Q4); the sync service implements its own minimal RFC-6455 server (no
-  additional dependency), consistent with the platform's own `node:http` router.
+  Next stage: **stage 7 `web-app`** (owner decision `pending`; first real `packages/sdk` client) —
+  then value, hardening, and the remote phase.
+- **Stage 6 Realtime:** complete (owner approved 2026-10-28; Q4 = **Yjs (MIT) behind an own
+  `BoardDoc` interface**, ADR-0011; ADR-0012 places the client document + sync boundary in
+  `packages/sdk`). All eight tasks `P5-01`…`P5-08` merged with lead reviews: contract **0.3.0**
+  (once-per-connection version negotiation, fresh-board `serverSeq` 1 / from-0 catch-up,
+  `snapshotRef` `<boardId>:<serverSeq>`, hello-first/reconnect order), `packages/crdt` BoardDoc
+  (Yjs 13.6.27, 10k-round conformance, second fake adapter), `services/sync` (own RFC 6455 server,
+  0.3.0 protocol, **operations log** in PostgreSQL with commit-before-ack, baseline/replay/catch-up,
+  snapshot compaction, presence), SDK board-sync client + the one L05 autosave path (debounce, flush
+  triggers, sequence numbers, offline queue, UUIDv7 clientIds), and the restart/durability harness.
+  Both exit gates are green: `crdt-convergence` (30,000 rounds / 3 seeds with state+snapshot per
+  round, two offline **headless-Chrome pages** converge, own-ops undo) and `load` (25 clients/board,
+  5,000+ ops over 30 s, 0 errors, p95 15–24 ms across three runs, exact client↔fresh-join
+  convergence). The load/convergence work surfaced and fixed four real bugs: join replay rebuilt
+  from JSON instead of `docState`, lexicographic `updatesAfter` paging, the 1 MiB outbound frame
+  bound, and the full-state Yjs log (now an operations log; pre-release format change documented).
+  Stage report/exit status/open points: `docs/realtime.md`; reviews `reviews/P5-01.md` …
+  `reviews/P5-08.md`. Exit criteria proven: restart loses no acknowledged change (P5-06), two
+  offline browsers converge (P5-07), 25 clients p95 <= 150 ms (P5-08). **Open points:**
+  auto-compaction scheduler not wired; platform board-content bootstrap; sync tables without RLS;
+  presence removal sentinel/identity contract follow-up; SDK clientId from the session; L05 UI
+  wiring in the web app; `docState` inside the JSONB snapshot; single service instance; pure
+  convergence harness ~8 min.
 - **Other sessions/repo state:** a second DSH/Claude session works in the same checkouts; it produced
   `P4-06`/`P4-08`/`P4-09`/`P4-10`/`P4-26`, reviewed and refreshed the P4-10 evidence (`97798bf`,
   `597185b`, `b50cd26`). The 2026-10-28 chain (`P4-10` merge, `P4-14` → `P4-15` → `P4-16` → `P4-23` →
@@ -57,10 +66,9 @@ Read `AGENTS.md`, `ARCHITECTURE.md`, `STATUS.md`, `docs/module-map.md` and the t
   session, merged locally and pushed. Coordinate via claims/`in_progress` in `board.json`. Commit race
   documented below (`eff284b` carries the P4-07 content, `b4938dc` its bookkeeping). `origin/main` is
   at the latest main commit (check `git log` / `git status -sb`).
-- **Done overall:** 95 of 99 tasks. Open: the rest of stage 5 (the chain above plus `P4-11`…`P4-13`
-  WebGPU, `P4-17`/`P4-18` resize/auto-pan, `P4-19`…`P4-24` placement/keyboard/undo/view/trackpad)
-  plus the remote-phase tasks `P0-02`, `P0-15`, `P0-16`, `P0-17` (after hardening) and the planning
-  of the later stages (realtime, web-app, value, hardening).
+- **Done overall:** 95 of 99 tasks. Stages 1–6 are complete; open are the remote-phase tasks
+  `P0-02`, `P0-15`, `P0-16`, `P0-17` (after hardening) and the planning of stages 7–11
+  (web-app, value, hardening, remote, v1).
 - **Preview:** `apps/web/preview/` has the permanent Contract 0.1.0 overview as section 02 and the live demo: top-centre ten-tool toolbar and a zone with notepad + image window (P0-26), **bilingual EN/DE with a themed top-right switch** via `apps/web/preview/locales/{en,de}.json` (all visible text/aria/alt; 260 identical keys; `<html lang>`, localStorage persistence, safe fallback) (P0-27), **zone items that can be dragged out onto the canvas and docked back** with a 28 px progressive detach animation, 8 px dock hysteresis, grid-snap, no edge connection, reduced-motion (P0-28); **when both items are out the empty zone fades/scales away and becomes hidden/inert, and dragging the two free items together (≥25 % overlap or ≤48 px centres) groups them into a newly animated zone** that re-orients/re-fits on resize, plus refined spring motion and a smaller zoom pill (36×104, 32 px buttons) (P0-29); **zone layout follows the drop (side by side or stacked), docked items can be reordered/swapped inside the zone, drags track the pointer 1:1 with commit-on-release (no magnetism) and the +/−/fit controls are smaller (32×96 pill, 28 px painted, 32 px hit, 12 px glyphs)** (P0-30). **Cache rule:** every preview change bumps `?v=` on `tokens.css`/`preview.css`/`preview.js` in `index.html`; locale fetches inherit the script version. A cached `index.html` may still need one hard reload (an old HTML document cannot reference the new CSS). Demo-cadence baseline screenshots: `P0-27-*` (desktop/mobile EN+DE, owner 1426×583 DPR2) `P0-28-*` (docked/mid-detach/detached/redocked) `P0-29-*` (zone fading/overlap/grouped/zoom/mobile/resize/toolbar) and `P0-30-*` (horizontal/vertical/swapped/drop-hint/controls/masthead/zoom-150).
 - **Checks:** `check.py` exit 0 (40 warnings, all historical evidence-record commits; run it in the main checkout only with `node_modules/` absent — a pnpm install materialises `node_modules/.pnpm`, whose package READMEs break `check_links`), `boundaries.py` exit 0, design-check tool tests 16/16, engine node tests 59/59, engine CTest 4/4, `codegen`/`wasm-*` clean; DB suites need a Polier slot (they cannot run in the main checkout). Repo-wide `pnpm test` is still red for pre-existing env reasons — `services/platform` tests need the slot database, the release-tool tests flake under turbo concurrency (28/28 alone) and `language-check` flags the P4-10 German demo strings in `apps/engine-playground/main.js`; the `unit` gate therefore uses the documented `pnpm test --affected`.
 - **Reviews:** `reviews/P1-04.md` … `reviews/P5-08.md`, including the stage-5 extensions `P4-11`…`P4-24`, committed; verdicts and findings are in the files.

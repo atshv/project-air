@@ -4,7 +4,7 @@
   "profile": "L",
   "base_branch": "main",
   "generator_version": "1.0.0",
-  "stage": 5,
+  "stage": 6,
   "worktrees": "required",
   "resources": {
     "slots": 10,
