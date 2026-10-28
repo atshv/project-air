@@ -122,10 +122,7 @@
 
 ## Ready now
 
-- `P0-41` Live demo: rounded frames, darker done items, contents instead of text
-  - P0-40: Closed P0-40: simulated teammates Lena (--tone-b) and Jonas (--tone-c): 16 px cursors with 12 px name labels on layer 7a, 1.5 px selection frames, idle fade to 0.4 after 5 s.
-  - P0-40: Routes are fractions of object boxes (follow drag/zoom); presence line above the canvas; loop pauses off screen; reduced motion jumps. No content/history touched.
-  - P0-40: Gates board-check/design-check/changelog-entry green; 5 screenshots + log. Cursor is a CSS shape: ui-kit has no cursor icon (icon test fixes ten).
+- none
 
 ## Done
 
@@ -222,6 +219,7 @@
 ## In progress
 
 - [ ] `P5-06` Durability and reconnect: restart, catch-up and snapshot compaction — status: `in_progress` — owner: lead
+- [ ] `P0-41` Live demo: rounded frames, darker done items, contents instead of text — status: `in_progress` — owner: —
 
 ## Blocked / failed
 
@@ -235,7 +233,13 @@
 - [ ] `P0-17` RELEASING.md and release 0.0.1 — status: `pending` — owner: —
 - [ ] `P5-07` crdt-convergence proof: 10,000 rounds, offline clients and own-only undo — status: `pending` — owner: —
 - [ ] `P5-08` load proof: 25 clients per board at p95 <= 150 ms and the stage report — status: `pending` — owner: —
-- [ ] `P0-41` Live demo: rounded frames, darker done items, contents instead of text — status: `pending` — owner: —
+
+<!-- polier:claims -->
+## Claims
+
+- `P0-41` in progress by dsh since 2026-10-28T19:59:50+00:00 — worktree: /Users/rasulatashev/Desktop/KI Projekte/Project air-P0-41 · slot 2
+
+<!-- /polier:claims -->
 
 ## Decisions
 
