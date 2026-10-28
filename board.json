@@ -5995,6 +5995,112 @@
         "New section 06 motion/interaction/layers (all 77 tokens now on the page) and section 10 canvas chrome (7 stage-5 specimens); sections renumbered 01-11; nothing removed.",
         "Gates board-check/design-check/changelog-entry green; 5 screenshots + log; follow-up idea: a delete icon in packages/ui-kit/icons."
       ]
+    },
+    {
+      "id": "P0-36",
+      "title": "Live demo: select and resize objects, photo without bar, edges behind",
+      "goal": "In the live demo every note card, zone item and block can be selected and resized with the engine selection chrome (1 px accent frame, eight 8 px handles); the photo has no title bar, resizes freely and takes the zone member size when it docks; connection lines run behind all objects including zones (owner decision).",
+      "why": "Owner request 2026-10-28: everything can be resized, the photo has no bar and adopts the zone size, lines run behind all cards, and the engine canvas chrome is taken over into the live demo.",
+      "satisfies": [
+        "D3"
+      ],
+      "status": "pending",
+      "depends_on": [
+        "P0-35"
+      ],
+      "complexity": 5,
+      "stage": "foundation",
+      "parallel_group": null,
+      "owner": null,
+      "round": 0,
+      "scope_write": [
+        "apps/web/preview/",
+        ".changes/"
+      ],
+      "scope_read": [
+        "ARCHITECTURE.md",
+        "AGENTS.md",
+        "STATUS.md",
+        "docs/module-map.md",
+        "docs/quality.md",
+        "docs/design-rules.md",
+        "docs/i18n/style-de.md",
+        "docs/i18n/glossary.md",
+        "apps/web/preview/",
+        "packages/ui-kit/tokens.css",
+        "packages/ui-kit/layers.ts",
+        "docs/canvas-acceptance.md"
+      ],
+      "acceptance": [
+        "A1",
+        "A2",
+        "A3",
+        "A4"
+      ],
+      "gates": [
+        "board-check",
+        "design-check",
+        "changelog-entry"
+      ],
+      "branch": "task/P0-36",
+      "worktree": null,
+      "evidence": [],
+      "scope_write_forbidden": [
+        "reference/"
+      ]
+    },
+    {
+      "id": "P0-37",
+      "title": "Live demo: engine canvas chrome",
+      "goal": "The live demo uses the stage-5 engine chrome shown on the design-system page: rubber band on Shift-drag, snap guides while dragging, the zone drop highlight, the undo hint, the context menu, the quiet delete in zone headers and the count bar.",
+      "why": "Owner request 2026-10-28: everything can be resized, the photo has no bar and adopts the zone size, lines run behind all cards, and the engine canvas chrome is taken over into the live demo.",
+      "satisfies": [
+        "D3"
+      ],
+      "status": "pending",
+      "depends_on": [
+        "P0-36"
+      ],
+      "complexity": 5,
+      "stage": "foundation",
+      "parallel_group": null,
+      "owner": null,
+      "round": 0,
+      "scope_write": [
+        "apps/web/preview/",
+        ".changes/"
+      ],
+      "scope_read": [
+        "ARCHITECTURE.md",
+        "AGENTS.md",
+        "STATUS.md",
+        "docs/module-map.md",
+        "docs/quality.md",
+        "docs/design-rules.md",
+        "docs/i18n/style-de.md",
+        "docs/i18n/glossary.md",
+        "apps/web/preview/",
+        "packages/ui-kit/tokens.css",
+        "packages/ui-kit/layers.ts",
+        "docs/canvas-acceptance.md"
+      ],
+      "acceptance": [
+        "A1",
+        "A2",
+        "A3",
+        "A4"
+      ],
+      "gates": [
+        "board-check",
+        "design-check",
+        "changelog-entry"
+      ],
+      "branch": "task/P0-37",
+      "worktree": null,
+      "evidence": [],
+      "scope_write_forbidden": [
+        "reference/"
+      ]
     }
   ],
   "decisions": [
