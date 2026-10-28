@@ -116,7 +116,8 @@
   "common": {
     "close": "Schliessen",
     "menu": "Menü öffnen",
-    "learnMore": "Mehr erfahren"
+    "learnMore": "Mehr erfahren",
+    "cancel": "Abbrechen"
   },
   "menu": {
     "label": "Menü",
@@ -156,5 +157,59 @@
     "languageHint": "Wähle die Sprache der Oberfläche. Deine Wahl wird auf diesem Gerät gemerkt.",
     "account": "Konto",
     "signedInAs": "Angemeldet als"
+  },
+  "boards": {
+    "title": "Boards",
+    "loading": "Boards werden geladen …",
+    "retry": "Erneut versuchen",
+    "count": "{count} Boards",
+    "workspace": "Arbeitsbereich",
+    "newBoard": "Neues Board",
+    "empty": "Noch keine Boards.",
+    "boardTitle": "Board-Titel",
+    "workspaceName": "Name des Arbeitsbereichs",
+    "saving": "Speichern …",
+    "save": "Speichern",
+    "backToList": "Zurück zu den Boards",
+    "validation": {
+      "titleEmpty": "Gib einen Board-Titel ein.",
+      "titleTooLong": "Verwende höchstens 120 Zeichen.",
+      "workspaceNameEmpty": "Gib einen Namen für den Arbeitsbereich ein.",
+      "workspaceNameTooLong": "Verwende höchstens 120 Zeichen."
+    },
+    "visibility": {
+      "private": "Privat",
+      "workspace": "Arbeitsbereich",
+      "link": "Link"
+    },
+    "create": {
+      "title": "Neues Board",
+      "body": "Gib dem Board einen Titel. Du kannst es später verschieben."
+    },
+    "rename": {
+      "title": "Board umbenennen",
+      "body": "Wähle einen neuen Titel.",
+      "action": "Umbenennen"
+    },
+    "delete": {
+      "title": "Board löschen",
+      "body": "„{title}“ löschen? Das kann nicht rückgängig gemacht werden.",
+      "confirm": "Board löschen",
+      "action": "Löschen"
+    },
+    "firstRun": {
+      "title": "Mit einem Arbeitsbereich beginnen",
+      "body": "Dein Konto hat noch keinen Arbeitsbereich. Erstelle einen für dein erstes Board.",
+      "empty": "Erstelle deinen ersten Arbeitsbereich und dein erstes Board.",
+      "action": "Arbeitsbereich erstellen",
+      "submit": "Arbeitsbereich und Board erstellen"
+    },
+    "boardPage": {
+      "title": "Board",
+      "body": "Die Board-Fläche gehört zu einem späteren Schritt des Projekts."
+    },
+    "errors": {
+      "session": "Deine Sitzung ist abgelaufen. Bitte melde dich erneut an."
+    }
   }
 }

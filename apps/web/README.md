@@ -41,3 +41,15 @@ The Vite dev proxy forwards `/v1/auth` to the slot auth port (4320) and every ot
 both `/v1` prefixes must be served from the same origin (or the auth cookie must be set for
 the app's domain with `SameSite`/`Secure` accordingly). Login/registration/recovery pages
 mirror the server validation; the server stays authoritative.
+
+## Boards start page (P6-03)
+
+`/boards` resolves the session, lists workspaces through the SDK, keeps the selected workspace
+in `project-air.workspaceId` (localStorage) and lists its boards with title, visibility and
+`updatedAt` formatted by `Intl.DateTimeFormat` for the active language. It creates/renames/deletes
+boards through the SDK (dialogs with title validation: trimmed, 1…120 characters), offers the
+first-run flow (create a workspace, then its first board) when the account has none, and shows
+skeleton/empty/error-with-retry/in-flight states. A board opens at `/boards/:id`; a missing or
+forbidden board redirects back to `/boards`. The SDK is the only data path (no fetch/service
+import in the app); all text comes from `apps/web/messages`. First-page listing is enough for this
+stage (`nextCursor` stays in the SDK type contract).

@@ -1,0 +1,50 @@
+$ pnpm test --affected
+[exit 0]
+
+
+   • turbo 2.11.10
+   • Packages in scope: //, @project-air/web
+   • Running test in 2 packages
+   • Remote caching disabled, using shared worktree cache
+
+@project-air/web:build: cache miss, executing c250114f39aac3b4
+@project-air/web:build: $ vite build
+@project-air/web:build: vite v8.3.5 building client environment for production...
+@project-air/web:build: transforming...
+@project-air/web:build: ✓ 122 modules transformed.
+@project-air/web:build: rendering chunks...
+@project-air/web:build: computing gzip size...
+@project-air/web:build: dist/index.html                   0.44 kB │ gzip:  0.27 kB
+@project-air/web:build: dist/assets/index-D5e_LVKC.css    7.09 kB │ gzip:  2.03 kB
+@project-air/web:build: dist/assets/index-CD-7MerR.js   297.36 kB │ gzip: 92.21 kB
+@project-air/web:build: 
+@project-air/web:build: ✓ built in 116ms
+@project-air/web:test: cache miss, executing acb8a8876afcd0c2
+@project-air/web:test: $ node --test test/*.test.mjs
+@project-air/web:test: ✔ board titles are trimmed, non-empty and at most 120 characters (0.442958ms)
+@project-air/web:test: ✔ boards sort by updatedAt descending without mutating the input (0.384667ms)
+@project-air/web:test: ✔ dates format with Intl for the active language and invalid dates are empty (13.825625ms)
+@project-air/web:test: ✔ workspace selection uses the stored id when present, otherwise the first workspace (0.130417ms)
+@project-air/web:test: ✔ en and de catalogs have identical key sets (3.821417ms)
+@project-air/web:test: ✔ translate resolves nested keys and interpolates values (0.359542ms)
+@project-air/web:test: ✔ German is the default and a stored choice persists (0.149166ms)
+@project-air/web:test: ✔ every required route exists with message-backed title and body keys (0.48425ms)
+@project-air/web:test: ✔ route helpers stay pure and encode board ids (0.108708ms)
+@project-air/web:test: ✔ login validation mirrors the server rules (0.778041ms)
+@project-air/web:test: ✔ registration requires email, display name and at least 8 password characters (0.105833ms)
+@project-air/web:test: ✔ recovery validates the email and maps typed errors to message keys (0.112209ms)
+@project-air/web:test: ℹ tests 12
+@project-air/web:test: ℹ suites 0
+@project-air/web:test: ℹ pass 12
+@project-air/web:test: ℹ fail 0
+@project-air/web:test: ℹ cancelled 0
+@project-air/web:test: ℹ skipped 0
+@project-air/web:test: ℹ todo 0
+@project-air/web:test: ℹ duration_ms 200.321792
+
+ Tasks:    2 successful, 2 total
+Cached:    0 cached, 2 total
+  Time:    848ms 
+
+$ turbo run test --affected
+ WARNING  no output files found for task @project-air/web#test. Please check your `outputs` key in `turbo.json`

@@ -1,7 +1,7 @@
 import type { ComponentPropsWithRef, ReactNode } from "react";
 
 export interface ButtonProps extends ComponentPropsWithRef<"button"> {
-  readonly variant?: "primary" | "secondary" | "ghost";
+  readonly variant?: "primary" | "secondary" | "ghost" | "danger";
   readonly size?: "bar" | "card";
   readonly children: ReactNode;
 }

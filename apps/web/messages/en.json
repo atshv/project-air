@@ -116,7 +116,8 @@
   "common": {
     "close": "Close",
     "menu": "Open menu",
-    "learnMore": "Learn more"
+    "learnMore": "Learn more",
+    "cancel": "Cancel"
   },
   "menu": {
     "label": "Menu",
@@ -156,5 +157,59 @@
     "languageHint": "Choose the language for the interface. Your choice is remembered on this device.",
     "account": "Account",
     "signedInAs": "Signed in as"
+  },
+  "boards": {
+    "title": "Boards",
+    "loading": "Loading boards …",
+    "retry": "Try again",
+    "count": "{count} boards",
+    "workspace": "Workspace",
+    "newBoard": "New board",
+    "empty": "No boards yet.",
+    "boardTitle": "Board title",
+    "workspaceName": "Workspace name",
+    "saving": "Saving …",
+    "save": "Save",
+    "backToList": "Back to boards",
+    "validation": {
+      "titleEmpty": "Enter a board title.",
+      "titleTooLong": "Use at most 120 characters.",
+      "workspaceNameEmpty": "Enter a workspace name.",
+      "workspaceNameTooLong": "Use at most 120 characters."
+    },
+    "visibility": {
+      "private": "Private",
+      "workspace": "Workspace",
+      "link": "Link"
+    },
+    "create": {
+      "title": "New board",
+      "body": "Give the board a title. You can move it later."
+    },
+    "rename": {
+      "title": "Rename board",
+      "body": "Choose a new title.",
+      "action": "Rename"
+    },
+    "delete": {
+      "title": "Delete board",
+      "body": "Delete “{title}”? This cannot be undone.",
+      "confirm": "Delete board",
+      "action": "Delete"
+    },
+    "firstRun": {
+      "title": "Start with a workspace",
+      "body": "Your account has no workspace yet. Create one to hold your first board.",
+      "empty": "Create your first workspace and board to get started.",
+      "action": "Create workspace",
+      "submit": "Create workspace and board"
+    },
+    "boardPage": {
+      "title": "Board",
+      "body": "The board canvas is part of a later step in the project."
+    },
+    "errors": {
+      "session": "Your session expired. Please sign in again."
+    }
   }
 }
