@@ -212,7 +212,7 @@
 
 ## In progress
 
-- none
+- [ ] `P4-28` L01 final proof, two-backend reference images and stage showcase — status: `in_progress` — owner: lead
 
 ## Blocked / failed
 
@@ -234,12 +234,11 @@
 - [ ] `P4-21` Undo/redo (L11) — status: `pending` — owner: —
 - [ ] `P4-22` Remember view (L17) — status: `pending` — owner: —
 - [ ] `P4-24` Trackpad and wheel defaults (L15, desktop part) — status: `pending` — owner: —
-- [ ] `P4-28` L01 final proof, two-backend reference images and stage showcase — status: `pending` — owner: —
 
 <!-- polier:claims -->
 ## Claims
 
-- `P4-30` in progress by dsh since 2026-10-28T07:46:37+00:00 — worktree: /private/tmp/air-P4-30 · slot 1
+- `P4-28` in progress by dsh since 2026-10-28T07:47:26+00:00 — worktree: /private/tmp/air-P4-28 · slot 1
 
 <!-- /polier:claims -->
 
