@@ -1,0 +1,7 @@
+# P0-41 follow-up check (2026-10-29): rounded multi-selection frames
+# source: git archive of main d5e2a39 (apps/web/preview, packages/ui-kit) served with python3 -m http.server 4200 --bind 127.0.0.1 from the scratchpad
+# drive: out-of-repo CDP helper (Chrome for Testing 1248, headless, fresh profile), 1440x900, real Shift-drag (modifiers 8) from the empty canvas left of note A down over the table
+press target: DIV.demo__world
+events: down shift=true target=demo__world
+multi frames: 176x123 radius 14px, 336x289 radius 20px; objects: 14px, 20px; status=2 selected
+screenshot P0-41-multi-round.png
