@@ -1,0 +1,5 @@
+$ node tools/release/check-changes.mjs --base main --task P0-44
+[exit 0]
+
+check-changes: task P0-44, base main, 17 changed path(s), 5 code path(s)
+changelog-entry: OK (.changes/P0-44-ink-documentation.md)

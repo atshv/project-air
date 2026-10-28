@@ -739,6 +739,20 @@ button {
   overflow-wrap: anywhere;
 }
 
+/* P0-44: the pen has no ui-kit SVG file yet, so the tile and the state
+   specimens use one inline icon drawn on the same 24 grid. */
+.icon-pen {
+  display: inline-block;
+  flex: none;
+  inline-size: var(--icon-bar);
+  block-size: var(--icon-bar);
+}
+
+.icon-pen.icon--card {
+  inline-size: var(--icon-card);
+  block-size: var(--icon-card);
+}
+
 /* ---------- icon buttons and states ---------- */
 
 .tool-btn {
@@ -822,6 +836,210 @@ button {
 .state-note {
   color: var(--muted);
   font-size: var(--text-12);
+}
+
+/* ---------- ink and colour documentation (P0-44) ---------- */
+
+.ink-grid {
+  display: grid;
+  align-items: start;
+  gap: var(--space-16);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
+}
+
+.ink-board {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 192px), 1fr));
+  align-items: end;
+  gap: var(--space-16);
+  min-block-size: calc(var(--space-48) * 6);
+  padding: var(--space-24);
+  overflow: hidden;
+  border: var(--border-width) solid var(--border);
+  border-radius: var(--radius-md);
+  background-color: var(--canvas);
+  background-image: radial-gradient(
+    circle,
+    var(--border) var(--border-width),
+    var(--canvas) var(--border-width)
+  );
+  background-size: var(--canvas-grid) var(--canvas-grid);
+}
+
+.ink-board__note {
+  align-self: start;
+}
+
+.ink-board__photo {
+  align-self: end;
+  block-size: calc(var(--space-48) * 3);
+  margin: 0;
+  overflow: hidden;
+  border: var(--border-width) solid var(--border);
+  border-radius: var(--radius-md);
+  background-color: var(--surface);
+}
+
+.ink-board__photo img {
+  display: block;
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: cover;
+}
+
+/* One SVG above the card and the photo; the strokes read the tone variables
+   so light and dark recolour the specimen without a second palette. */
+.ink-board__ink {
+  position: absolute;
+  inset: 0;
+  inline-size: 100%;
+  block-size: 100%;
+  pointer-events: none;
+}
+
+.ink-board__stroke {
+  fill: none;
+  stroke-width: var(--outline-width);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+
+.ink-board__stroke[data-ink-tone="tone-a"] { stroke: var(--tone-a); }
+.ink-board__stroke[data-ink-tone="tone-b"] { stroke: var(--tone-b); }
+.ink-board__stroke[data-ink-tone="tone-c"] { stroke: var(--tone-c); }
+.ink-board__stroke[data-ink-tone="tone-d"] { stroke: var(--tone-d); }
+.ink-board__stroke[data-ink-tone="tone-e"] { stroke: var(--tone-e); }
+.ink-board__stroke[data-ink-tone="fg"] { stroke: var(--fg); }
+
+.ink-swatches {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-8);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ink-swatch {
+  display: grid;
+}
+
+.ink-swatch__button {
+  display: grid;
+  gap: var(--space-8);
+  justify-items: start;
+  inline-size: 100%;
+  padding: 0;
+  border: 0;
+  background-color: transparent;
+  color: var(--fg);
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+}
+
+.ink-swatch__chip {
+  display: block;
+  inline-size: 100%;
+  block-size: var(--space-32);
+  border: var(--border-width) solid var(--border-strong);
+  border-radius: var(--radius-sm);
+}
+
+.ink-swatch--tone-a .ink-swatch__chip { background-color: var(--tone-a); }
+.ink-swatch--tone-b .ink-swatch__chip { background-color: var(--tone-b); }
+.ink-swatch--tone-c .ink-swatch__chip { background-color: var(--tone-c); }
+.ink-swatch--tone-d .ink-swatch__chip { background-color: var(--tone-d); }
+.ink-swatch--tone-e .ink-swatch__chip { background-color: var(--tone-e); }
+.ink-swatch--fg .ink-swatch__chip { background-color: var(--fg); }
+
+.ink-swatch__button[aria-pressed="true"] .ink-swatch__chip {
+  outline: var(--outline-width) solid var(--accent);
+  outline-offset: var(--outline-offset);
+}
+
+.ink-swatch__button:focus-visible {
+  outline: var(--outline-width) solid var(--accent);
+  outline-offset: var(--outline-offset);
+  border-radius: var(--radius-sm);
+}
+
+.ink-swatch__name {
+  font-size: var(--text-12);
+  line-height: 1;
+}
+
+.ink-swatch__token {
+  color: var(--muted);
+  font-size: var(--text-11);
+}
+
+.ink-states {
+  display: grid;
+  gap: var(--space-16);
+}
+
+.ink-state {
+  display: grid;
+  gap: var(--space-8);
+  margin: 0;
+}
+
+.ink-state__bar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  inline-size: max-content;
+  padding: var(--space-4);
+  border: var(--border-width) solid var(--border);
+  border-radius: var(--radius-pill);
+  background-color: var(--surface);
+}
+
+.ink-state__palette {
+  position: relative;
+}
+
+.ink-state__dot {
+  position: absolute;
+  inset-block-end: var(--space-4);
+  inset-inline-end: var(--space-4);
+  inline-size: var(--space-8);
+  block-size: var(--space-8);
+  border: var(--border-width) solid var(--surface);
+  border-radius: var(--radius-pill);
+  background-color: var(--tone-a);
+  pointer-events: none;
+}
+
+.ink-popover {
+  display: grid;
+  grid-template-columns: repeat(3, var(--button-bar));
+  gap: var(--space-4);
+  justify-self: start;
+  inline-size: max-content;
+  padding: var(--space-8);
+  border: var(--border-width) solid var(--border);
+  border-radius: var(--radius-md);
+  background-color: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.ink-state figcaption {
+  color: var(--muted);
+  font-size: var(--text-11);
+}
+
+.ink-facts {
+  display: grid;
+  gap: var(--space-8);
+  margin: 0;
+  padding-inline-start: var(--space-16);
+  color: var(--fg);
+  font-size: var(--text-13);
+  line-height: var(--line-height);
 }
 
 /* ---------- note card ---------- */

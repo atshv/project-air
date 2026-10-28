@@ -1,0 +1,74 @@
+# P0-44 browser verification — pen and ink documentation in the preview
+
+- Browser: Chrome/156.0.8078.4 (Chrome for Testing, Playwright cache, --no-sandbox, --headless=new)
+- Viewports: 1440 × 900 and 390 × 844, deviceScaleFactor 1
+- Served from the worktree root: python3 -m http.server 4100 --bind 127.0.0.1
+- Page: http://127.0.0.1:4100/apps/web/preview/
+- Driver: raw Chrome DevTools Protocol (Runtime, Page, Emulation, Input)
+
+### Light theme, English, 1440 × 900
+- theme=light; lang=en; section "Ink and colours" (08a — Ink and colours), 1205.4 px tall at y=7234.4
+- swatch names: ["Sage","Ochre","Lilac","Blue","Rust","Neutral"]
+- swatch chip colours: ["oklch(0.455 0.065 165)","oklch(0.455 0.09 80)","oklch(0.45 0.09 295)","oklch(0.45 0.08 255)","oklch(0.455 0.1 40)","oklch(0.21 0.008 150)"]
+- ink stroke colours: [{"tone":"tone-a","colour":"oklch(0.455 0.065 165)","width":"2px"},{"tone":"tone-b","colour":"oklch(0.455 0.09 80)","width":"2px"},{"tone":"tone-c","colour":"oklch(0.45 0.09 295)","width":"2px"},{"tone":"tone-d","colour":"oklch(0.45 0.08 255)","width":"2px"},{"tone":"tone-e","colour":"oklch(0.455 0.1 40)","width":"2px"},{"tone":"fg","colour":"oklch(0.21 0.008 150)","width":"2px"}]
+- popover chip colours: ["oklch(0.455 0.065 165)","oklch(0.455 0.09 80)","oklch(0.45 0.09 295)","oklch(0.45 0.08 255)","oklch(0.455 0.1 40)","oklch(0.21 0.008 150)"]
+- layers row: {"index":6,"above":"Just dragged or selected — top of its own layer","below":"Snap guides, selection frame","order":"6a","token":"preview only"}
+- icon tiles: {"pens":["20x20","16x16","20x20","20x20","20x20"],"paletteTiles":2,"paletteMask":["url(\"../../../packages/ui-kit/icons/palette.svg\")"]}
+- masthead last change: Last change: P0-44 — Live demo: document the pen and ink colours in the preview
+- horizontal page overflow: 0 px; elements outside the viewport: none
+- clipped text in the section: none
+
+- screenshot P0-44-ink-section-light-en.png (1440 × 900, light, EN, section top)
+- screenshot P0-44-ink-section-light-en-full.png (1440 × 1206, light, EN, the complete section)
+
+### Dark theme, German, 1440 × 900
+- theme=dark; lang=de; section "Tinte und Farben" (08a — Tinte und Farben), 1205.4 px tall at y=7337.9
+- swatch names: ["Salbei","Ocker","Flieder","Blau","Rost","Neutral"]
+- swatch chip colours: ["rgb(143, 191, 175)","rgb(217, 189, 143)","rgb(184, 166, 224)","rgb(143, 176, 220)","rgb(220, 164, 143)","rgba(255, 255, 255, 0.92)"]
+- ink stroke colours: [{"tone":"tone-a","colour":"rgb(143, 191, 175)","width":"2px"},{"tone":"tone-b","colour":"rgb(217, 189, 143)","width":"2px"},{"tone":"tone-c","colour":"rgb(184, 166, 224)","width":"2px"},{"tone":"tone-d","colour":"rgb(143, 176, 220)","width":"2px"},{"tone":"tone-e","colour":"rgb(220, 164, 143)","width":"2px"},{"tone":"fg","colour":"rgba(255, 255, 255, 0.92)","width":"2px"}]
+- popover chip colours: ["rgb(143, 191, 175)","rgb(217, 189, 143)","rgb(184, 166, 224)","rgb(143, 176, 220)","rgb(220, 164, 143)","rgba(255, 255, 255, 0.92)"]
+- layers row: {"index":6,"above":"Gerade gezogen oder ausgewählt — oben in der eigenen Ebene","below":"Einrastlinien, Auswahlrahmen","order":"6a","token":"nur Vorschau"}
+- icon tiles: {"pens":["20x20","16x16","20x20","20x20","20x20"],"paletteTiles":2,"paletteMask":["url(\"../../../packages/ui-kit/icons/palette.svg\")"]}
+- masthead last change: Letzte Änderung: P0-44 — Live-Demo: Stift und Tintenfarben in der Vorschau dokumentieren
+- horizontal page overflow: 0 px; elements outside the viewport: none
+- clipped text in the section: none
+
+- screenshot P0-44-ink-section-dark-de.png (1440 × 900, dark, DE, section top)
+- screenshot P0-44-ink-section-dark-de-full.png (1440 × 1206, dark, DE, the complete section)
+
+### Light theme, German, 390 × 844
+- theme=light; lang=de; section "Tinte und Farben" (08a — Tinte und Farben), 1793.4 px tall at y=13550.2
+- swatch names: ["Salbei","Ocker","Flieder","Blau","Rost","Neutral"]
+- swatch chip colours: ["oklch(0.455 0.065 165)","oklch(0.455 0.09 80)","oklch(0.45 0.09 295)","oklch(0.45 0.08 255)","oklch(0.455 0.1 40)","oklch(0.21 0.008 150)"]
+- ink stroke colours: [{"tone":"tone-a","colour":"oklch(0.455 0.065 165)","width":"2px"},{"tone":"tone-b","colour":"oklch(0.455 0.09 80)","width":"2px"},{"tone":"tone-c","colour":"oklch(0.45 0.09 295)","width":"2px"},{"tone":"tone-d","colour":"oklch(0.45 0.08 255)","width":"2px"},{"tone":"tone-e","colour":"oklch(0.455 0.1 40)","width":"2px"},{"tone":"fg","colour":"oklch(0.21 0.008 150)","width":"2px"}]
+- popover chip colours: ["oklch(0.455 0.065 165)","oklch(0.455 0.09 80)","oklch(0.45 0.09 295)","oklch(0.45 0.08 255)","oklch(0.455 0.1 40)","oklch(0.21 0.008 150)"]
+- layers row: {"index":6,"above":"Gerade gezogen oder ausgewählt — oben in der eigenen Ebene","below":"Einrastlinien, Auswahlrahmen","order":"6a","token":"nur Vorschau"}
+- icon tiles: {"pens":["20x20","16x16","20x20","20x20","20x20"],"paletteTiles":2,"paletteMask":["url(\"../../../packages/ui-kit/icons/palette.svg\")"]}
+- masthead last change: Letzte Änderung: P0-44 — Live-Demo: Stift und Tintenfarben in der Vorschau dokumentieren
+- horizontal page overflow: 0 px; elements outside the viewport: none
+- clipped text in the section: none
+
+- screenshot P0-44-ink-section-mobile.png (390 × 844 viewport, light, DE, section top)
+- screenshot P0-44-ink-section-mobile-full.png (390 × 1794, light, DE, the complete section)
+
+### Light theme, English, 390 × 844 (overflow check)
+- theme=light; lang=en; section "Ink and colours" (08a — Ink and colours), 1702.4 px tall at y=13171
+- swatch names: ["Sage","Ochre","Lilac","Blue","Rust","Neutral"]
+- swatch chip colours: ["oklch(0.455 0.065 165)","oklch(0.455 0.09 80)","oklch(0.45 0.09 295)","oklch(0.45 0.08 255)","oklch(0.455 0.1 40)","oklch(0.21 0.008 150)"]
+- ink stroke colours: [{"tone":"tone-a","colour":"oklch(0.455 0.065 165)","width":"2px"},{"tone":"tone-b","colour":"oklch(0.455 0.09 80)","width":"2px"},{"tone":"tone-c","colour":"oklch(0.45 0.09 295)","width":"2px"},{"tone":"tone-d","colour":"oklch(0.45 0.08 255)","width":"2px"},{"tone":"tone-e","colour":"oklch(0.455 0.1 40)","width":"2px"},{"tone":"fg","colour":"oklch(0.21 0.008 150)","width":"2px"}]
+- popover chip colours: ["oklch(0.455 0.065 165)","oklch(0.455 0.09 80)","oklch(0.45 0.09 295)","oklch(0.45 0.08 255)","oklch(0.455 0.1 40)","oklch(0.21 0.008 150)"]
+- layers row: {"index":6,"above":"Just dragged or selected — top of its own layer","below":"Snap guides, selection frame","order":"6a","token":"preview only"}
+- icon tiles: {"pens":["20x20","16x16","20x20","20x20","20x20"],"paletteTiles":2,"paletteMask":["url(\"../../../packages/ui-kit/icons/palette.svg\")"]}
+- masthead last change: Last change: P0-44 — Live demo: document the pen and ink colours in the preview
+- horizontal page overflow: 0 px; elements outside the viewport: none
+- clipped text in the section: none
+
+### Live demo regression (light, English, 1440 × 900)
+- before: pen aria-pressed=false, ink paths=0
+- pen clicked: aria-pressed=true, drawing mode=true, cursor=crosshair
+- palette opened: aria-expanded=true, hidden=false, swatches=6
+- tone-d chosen: pressed=["tone-d"], dot=oklch(0.45 0.08 255), popover hidden=true
+- one stroke committed: paths=1, tones=["tone-d"], colour=["oklch(0.45 0.08 255)"], status="Stroke drawn in Blue."
+- Cmd/Ctrl+Z: paths=0, hint="Undo: Draw"
+- console errors/page exceptions: none
+

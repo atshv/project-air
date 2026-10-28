@@ -1,4 +1,4 @@
-# Design preview (P0-19, P0-20, P0-21, P0-22, P0-23, P0-24, P0-25, P0-26, P0-27, P0-28, P0-29, P0-30, P0-31, P0-32, P0-33, P0-34, P0-35, P0-36, P0-37, P0-38, P0-39, P0-40, P0-41, P0-42, P0-43, P1-07)
+# Design preview (P0-19, P0-20, P0-21, P0-22, P0-23, P0-24, P0-25, P0-26, P0-27, P0-28, P0-29, P0-30, P0-31, P0-32, P0-33, P0-34, P0-35, P0-36, P0-37, P0-38, P0-39, P0-40, P0-41, P0-42, P0-43, P0-44, P1-07)
 
 A design preview of the Project air design system. It is **not the product**: there is no engine,
 no data, no server and no build step. It exists so the owner can see the look and feel between
@@ -15,9 +15,9 @@ its two values come from:
   `0.0.1 – unreleased`; the status word comes from the same heading. `CHANGELOG.md` is the display
   source and currently agrees with the root `package.json` version `0.0.1`.
 - **Last change** — the newest preview change entry, currently
-  `.changes/P0-43-pen-and-ink-colours.md`; the line shows the task id and that task's title from
-  `board.json` / the task brief: `P0-43 — Live demo: pen tool and ink colours over the whole board`. The line follows the
-  `P0-*` preview tasks (P0-19 … P0-43, P1-07); the engine tasks
+  `.changes/P0-44-ink-documentation.md`; the line shows the task id and that task's title from
+  `board.json` / the task brief: `P0-44 — Live demo: document the pen and ink colours in the preview`. The line follows the
+  `P0-*` preview tasks (P0-19 … P0-44, P1-07); the engine tasks
   (`P4-*`) and the other stages run in parallel and do not move it, so "highest numeric id" alone is
   not the rule. If several files exist for the same preview task, the most recent one is used;
   `.changes/README.md` and `.changes/TEMPLATE.md` do not count as entries.
@@ -64,8 +64,9 @@ task.
   `--card`.
 - The typography scale (serif and sans, 28/24/22/15/13/12/11 px, weights, line height, type label).
 - Spacing 4–48 px, the radii, both token shadows, the border and outline widths, and the sizes.
-- The ten toolbar icons from `packages/ui-kit/icons/` at 20 px in a 36 px button and 16 px in a
-  28 px card button.
+- The toolbar icon tiles: the ten SVG files from `packages/ui-kit/icons/` at 20 px in a 36 px
+  button and 16 px in a 28 px card button, plus the inline pen tile in the same 24-grid /
+  1.6-stroke style because the icon set has no pen file yet (P0-44).
 - Component states: rest, hover, focus, pressed, selected and disabled, plus an active tool.
 - One example each of a note card, block, zone, connection, side-panel header and toolbar
   arrangement.
@@ -220,6 +221,39 @@ is cleared on reload.
   focus-visible, `aria-pressed`) and both appear in the DE/EN strings; the palette popover uses only
   token colours, the 4 px spacing series, `--radius-md`/`--radius-sm` and the `--shadow`. Under
   `prefers-reduced-motion: reduce` the swatch transition is off.
+
+## Ink and colour documentation (P0-44)
+
+The pen and the six ink colours from the live demo are also documented as a component, so a
+reviewer reads the colours, states and layer position instead of discovering them only by drawing.
+
+- **Ink section (08a)** — a static block between *Component states* (08) and *Components* (09) in
+  `index.html`, with the page's existing two-column detail cards and the mobile layout. It is
+  documentation, not a second demo: no new interaction and no script.
+- **Specimen** — a card and the owner-supplied photo on a dot-grid canvas with one SVG above them and
+  six freehand paths, one in each ink colour: `--tone-a` … `--tone-e` plus `--fg`. Every path is
+  stroked with its token variable, so the light and dark themes recolour the whole specimen; there
+  is no second ink palette in the preview files. The six paths use the demo ink's 2 px round stroke
+  (`--outline-width`).
+- **Swatches** — the six-swatch row in the live order (Sage, Ochre, Lilac, Blue, Rust, Neutral) with
+  the translated names from the same `demo.ink.*` keys as the live popover, the token name below each
+  chip and an accent ring on the current colour.
+- **States** — rest, active-tool (pen pressed) and popover-open (palette pressed and expanded with
+  the six swatches shown) reuse the real toolbar button and popover styles, including hover, pressed
+  and focus-visible.
+- **Facts** — the text says the strokes are world-anchored, one undo step each, recolour with the
+  theme and are preview state (no data, no server, cleared on reload); the engine annotation layer
+  is named as a follow-up.
+- **Layer row** — the Layers list gains a `6a` row *Ink annotations* marked **preview only**, between
+  the dragged/selected content (6) and the selection frame and chrome (7, 8). The engine's §8 order
+  and numbering stay unchanged; the row only documents the preview.
+- **Icon tile** — the Toolbar icons section gains an inline pen tile at 20 px and 16 px (the same
+  inline SVG as the live control) and its intro explains the deviation: no pen file in
+  `packages/ui-kit/icons/` yet, while the palette tile keeps loading `palette.svg`.
+
+Evidence: `P0-44-ink-section-light-en.png`, `P0-44-ink-section-dark-de.png`,
+`P0-44-ink-section-mobile.png` and `P0-44-browsertest.log` in
+[`reviews/evidence/`](../../../reviews/evidence/).
 
 ## Zone interaction: live release preview and one calm motion (P0-28 → P0-31)
 
@@ -646,9 +680,9 @@ P0-26 markup with the old stylesheet and a broken-looking demo. The preview ther
 assets with a version query:
 
 ```html
-<link rel="stylesheet" href="../../../packages/ui-kit/tokens.css?v=P0-43" />
-<link rel="stylesheet" href="preview.css?v=P0-43" />
-<script src="preview.js?v=P0-43" defer></script>
+<link rel="stylesheet" href="../../../packages/ui-kit/tokens.css?v=P0-44" />
+<link rel="stylesheet" href="preview.css?v=P0-44" />
+<script src="preview.js?v=P0-44" defer></script>
 ```
 
 - **Bump rule:** every task that changes a file in `apps/web/preview/` — or the shared
@@ -657,7 +691,7 @@ assets with a version query:
   never cached and gets the current files, which also covers a changed design system that would
   otherwise be served from the cached token stylesheet.
 - The locale files reuse the script's version automatically: `preview.js` reads the `v` query of its
-  own script URL and appends it to the locale request (`locales/de.json?v=P0-43`), so one bump
+  own script URL and appends it to the locale request (`locales/de.json?v=P0-44`), so one bump
   covers the translations as well.
 - The icon SVGs are referenced from `preview.css` and keep stable, unversioned URLs; they only
   change with a design-system task, and every such task bumps the preview version anyway.
@@ -820,7 +854,9 @@ line and tasks in English and German),
 preference with no stored value), plus
 `P0-43-ink-light-en-desktop.png`, `P0-43-ink-dark-de-desktop.png`,
 `P0-43-palette-open-desktop.png` (1440×900) and `P0-43-ink-light-mobile.png` (390×844) and the
-`P0-43-browsertest.log` verification log; the older
+`P0-43-browsertest.log` verification log,
+`P0-44-ink-section-light-en.png`, `P0-44-ink-section-dark-de.png` (1440×900) and
+`P0-44-ink-section-mobile.png` (390×844) and the `P0-44-browsertest.log` log; the older
 `P0-19-preview.log` / `P0-20-preview.log` / `P0-21-preview.log` / `P0-22-preview.log` /
 `P0-23-preview.log` / `P0-24-preview.log` / `P0-25-preview.log` / `P0-26-preview.log` /
 `P0-27-preview.log` / `P0-28-preview.log` / `P0-29-preview.log` / `P0-30-preview.log` /

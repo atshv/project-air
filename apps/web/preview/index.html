@@ -27,9 +27,9 @@
         document.documentElement.setAttribute("data-theme", theme);
       })();
     </script>
-    <link rel="stylesheet" href="../../../packages/ui-kit/tokens.css?v=P0-43" />
-    <link rel="stylesheet" href="preview.css?v=P0-43" />
-    <script src="preview.js?v=P0-43" defer></script>
+    <link rel="stylesheet" href="../../../packages/ui-kit/tokens.css?v=P0-44" />
+    <link rel="stylesheet" href="preview.css?v=P0-44" />
+    <script src="preview.js?v=P0-44" defer></script>
   </head>
   <body>
     <main class="page">
@@ -46,14 +46,14 @@
         <p class="masthead__version" data-preview-meta>
           <span data-preview-version data-i18n="masthead.version">Version 0.0.1</span>
           <span data-preview-status data-i18n="masthead.unreleased">unreleased</span>
-          <span data-preview-last-change data-i18n="masthead.lastChange">Last change: P0-43 — Live demo: pen tool and ink colours over the whole board</span>
-          <span data-preview-last-change-time data-i18n="masthead.lastChangeTime">2026-10-28 23:07 (Europe/Zurich)</span>
+          <span data-preview-last-change data-i18n="masthead.lastChange">Last change: P0-44 — Live demo: document the pen and ink colours in the preview</span>
+          <span data-preview-last-change-time data-i18n="masthead.lastChangeTime">2026-10-29 00:06 (Europe/Zurich)</span>
         </p>
         <div class="masthead__meta">
           <span data-i18n-html="masthead.tokensPackagesUiKitTokens">Tokens: <code>packages/ui-kit/tokens.css</code></span>
           <span data-i18n-html="masthead.iconsPackagesUiKitIcons">Icons: <code>packages/ui-kit/icons/</code></span>
           <span data-i18n-html="masthead.demoPreviewJs">Demo: <code>preview.js</code></span>
-          <span data-i18n="masthead.tasks">Tasks: P0-19, P0-20, P0-21, P0-22, P0-23, P0-24, P0-25, P0-26, P0-27, P0-28, P0-29, P0-30, P0-31, P0-32, P0-33, P0-34, P0-35, P0-36, P0-37, P0-38, P0-39, P0-40, P0-41, P0-42, P0-43, P1-07</span>
+          <span data-i18n="masthead.tasks">Tasks: P0-19, P0-20, P0-21, P0-22, P0-23, P0-24, P0-25, P0-26, P0-27, P0-28, P0-29, P0-30, P0-31, P0-32, P0-33, P0-34, P0-35, P0-36, P0-37, P0-38, P0-39, P0-40, P0-41, P0-42, P0-43, P0-44, P1-07</span>
           <div class="masthead__switches">
             <div
               class="preview-locale"
@@ -1083,6 +1083,11 @@
                 <span class="layer-row__name" data-i18n="layers.dragged">Just dragged or selected — top of its own layer</span>
                 <code class="layer-row__token">--layer-dragged-or-selected</code>
               </li>
+              <li class="layer-row layer-row--preview">
+                <span class="layer-row__order">6a</span>
+                <span class="layer-row__name" data-i18n="layers.ink">Ink annotations</span>
+                <code class="layer-row__token" data-i18n="layers.inkPreview">preview only</code>
+              </li>
               <li class="layer-row">
                 <span class="layer-row__order">7</span>
                 <span class="layer-row__name" data-i18n="layers.guides">Snap guides, selection frame</span>
@@ -1115,6 +1120,7 @@
               </li>
             </ol>
             <p class="token-caption" data-i18n="motion.layersNote">From packages/ui-kit/layers.ts (design law §8); nothing above 10 without an entry there.</p>
+            <p class="token-caption" data-i18n="layers.inkNote">6a is preview-only: the demo draws ink above every object and below the canvas chrome; the engine annotation layer is a follow-up.</p>
           </div>
         </div>
       </section>
@@ -1123,11 +1129,13 @@
         <div class="section__head">
           <span class="eyebrow" data-i18n="icons.eyebrow">07 — Icons</span>
           <h2 id="icons" data-i18n="icons.toolbarIcons">Toolbar icons</h2>
-          <p class="section__intro" data-i18n-html="icons.theTenIconsShipAs">
-            The ten icons ship as SVG files in <code>packages/ui-kit/icons/</code>, drawn on a 24
-            grid with a 1.6 stroke and <code>currentColor</code>. Each tile shows the 20 px icon in
-            a 36 px bar button and the 16 px icon in a 28 px card button; the file is loaded
-            directly by this page.
+          <p class="section__intro" data-i18n-html="icons.intro">
+            The icon set ships as SVG files in <code>packages/ui-kit/icons/</code>, drawn on a 24
+            grid with a 1.6 stroke, round caps and <code>currentColor</code>. Each tile shows the
+            20 px icon in a 36 px bar button and the 16 px icon in a 28 px card button; the file is
+            loaded directly by this page. The pen is a live-demo control kept inline here because
+            <code>packages/ui-kit/icons/</code> has no pen icon yet; the palette tile still loads
+            <code>palette.svg</code>.
           </p>
         </div>
         <ul class="icon-grid">
@@ -1185,6 +1193,23 @@
               </button>
             </div>
             <code class="icon-name">note.svg</code>
+          </li>
+          <li class="icon-tile">
+            <div class="icon-tile__row">
+              <button class="tool-btn" type="button" aria-label="Pen" data-label="Pen" data-i18n-attr="aria-label:demo.pen data-label:demo.pen">
+                <svg class="icon-pen" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
+                  <path d="M4 20l4.2-1.1L19.3 7.8a2.1 2.1 0 0 0-3-3L5.2 15.8 4 20Z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+                  <path d="M14.8 6.3l2.9 2.9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+                </svg>
+              </button>
+              <button class="tool-btn tool-btn--card" type="button" aria-label="Pen" data-label="Pen" data-i18n-attr="aria-label:demo.pen data-label:demo.pen">
+                <svg class="icon-pen icon--card" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
+                  <path d="M4 20l4.2-1.1L19.3 7.8a2.1 2.1 0 0 0-3-3L5.2 15.8 4 20Z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+                  <path d="M14.8 6.3l2.9 2.9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+                </svg>
+              </button>
+            </div>
+            <code class="icon-name" data-i18n="icons.penInline">pen (inline)</code>
           </li>
           <li class="icon-tile">
             <div class="icon-tile__row">
@@ -1327,6 +1352,170 @@
                 action is invisible until hover or focus.
               </p>
             </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" aria-labelledby="ink">
+        <div class="section__head">
+          <span class="eyebrow" data-i18n="ink.eyebrow">08a — Ink and colours</span>
+          <h2 id="ink" data-i18n="ink.title">Ink and colours</h2>
+          <p class="section__intro" data-i18n-html="ink.intro">
+            The pen from the live demo, documented as a component: freehand strokes in the six ink
+            colours above cards and photos, the six-swatch palette and the pen and palette states.
+            The specimens are static and read the same token variables as the demo; the live pen,
+            undo and palette behaviour stays in the <a href="#demo">interactive demo</a>.
+          </p>
+        </div>
+        <div class="ink-grid">
+          <div class="detail-card detail-card--wide">
+            <h3 data-i18n="ink.specimenTitle">Six inks over a card and a photo</h3>
+            <div class="ink-board">
+              <article class="note-card ink-board__note">
+                <div class="note-card__head">
+                  <span class="type-label" data-i18n="components.note">Note</span>
+                </div>
+                <h3 class="note-card__title" data-i18n="ink.specimenCardTitle">Lake trip</h3>
+                <p class="note-card__body" data-i18n="ink.specimenCardBody">Pack the map, the camera and the thermos.</p>
+              </article>
+              <figure class="ink-board__photo">
+                <img
+                  src="assets/demo-zone-image.webp"
+                  alt="Owner-supplied demo photo: a lake shore with pine trees and boulders below snowy mountains."
+                  width="1135"
+                  height="829"
+                  data-i18n-attr="alt:demo.ownerSuppliedDemoPhotoA"
+                />
+              </figure>
+              <svg class="ink-board__ink" viewBox="0 0 640 300" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+                <path class="ink-board__stroke" data-ink-tone="tone-a" d="M 40 214 C 96 200 150 220 206 206 S 300 192 344 204" />
+                <path class="ink-board__stroke" data-ink-tone="tone-b" d="M 404 62 C 470 34 552 48 588 96 C 616 136 588 190 532 200 C 476 210 424 178 430 138" />
+                <path class="ink-board__stroke" data-ink-tone="tone-c" d="M 56 66 C 112 40 166 50 208 78 M 188 60 L 212 80 L 184 98" />
+                <path class="ink-board__stroke" data-ink-tone="tone-d" d="M 330 250 C 366 224 402 268 438 242 S 510 218 548 246" />
+                <path class="ink-board__stroke" data-ink-tone="tone-e" d="M 262 122 L 286 146 L 330 96" />
+                <path class="ink-board__stroke" data-ink-tone="fg" d="M 62 156 l 10 -14 l 10 14 l 10 -14 l 10 14 l 10 -14 l 10 14" />
+              </svg>
+            </div>
+            <p class="token-caption" data-i18n="ink.specimenNote">All six paths lie in one SVG above the card and the photo and are stroked with their token variable, so the page theme recolours the whole specimen.</p>
+          </div>
+
+          <div class="detail-card">
+            <h3 data-i18n="ink.swatchTitle">Ink colours</h3>
+            <ul class="ink-swatches">
+              <li class="ink-swatch ink-swatch--tone-a">
+                <button class="ink-swatch__button" type="button" aria-label="Sage" aria-pressed="true" data-i18n-attr="aria-label:demo.ink.toneA">
+                  <span class="ink-swatch__chip" aria-hidden="true"></span>
+                  <span class="ink-swatch__name" data-i18n="demo.ink.toneA">Sage</span>
+                  <code class="ink-swatch__token">--tone-a</code>
+                </button>
+              </li>
+              <li class="ink-swatch ink-swatch--tone-b">
+                <button class="ink-swatch__button" type="button" aria-label="Ochre" aria-pressed="false" data-i18n-attr="aria-label:demo.ink.toneB">
+                  <span class="ink-swatch__chip" aria-hidden="true"></span>
+                  <span class="ink-swatch__name" data-i18n="demo.ink.toneB">Ochre</span>
+                  <code class="ink-swatch__token">--tone-b</code>
+                </button>
+              </li>
+              <li class="ink-swatch ink-swatch--tone-c">
+                <button class="ink-swatch__button" type="button" aria-label="Lilac" aria-pressed="false" data-i18n-attr="aria-label:demo.ink.toneC">
+                  <span class="ink-swatch__chip" aria-hidden="true"></span>
+                  <span class="ink-swatch__name" data-i18n="demo.ink.toneC">Lilac</span>
+                  <code class="ink-swatch__token">--tone-c</code>
+                </button>
+              </li>
+              <li class="ink-swatch ink-swatch--tone-d">
+                <button class="ink-swatch__button" type="button" aria-label="Blue" aria-pressed="false" data-i18n-attr="aria-label:demo.ink.toneD">
+                  <span class="ink-swatch__chip" aria-hidden="true"></span>
+                  <span class="ink-swatch__name" data-i18n="demo.ink.toneD">Blue</span>
+                  <code class="ink-swatch__token">--tone-d</code>
+                </button>
+              </li>
+              <li class="ink-swatch ink-swatch--tone-e">
+                <button class="ink-swatch__button" type="button" aria-label="Rust" aria-pressed="false" data-i18n-attr="aria-label:demo.ink.toneE">
+                  <span class="ink-swatch__chip" aria-hidden="true"></span>
+                  <span class="ink-swatch__name" data-i18n="demo.ink.toneE">Rust</span>
+                  <code class="ink-swatch__token">--tone-e</code>
+                </button>
+              </li>
+              <li class="ink-swatch ink-swatch--fg">
+                <button class="ink-swatch__button" type="button" aria-label="Neutral" aria-pressed="false" data-i18n-attr="aria-label:demo.ink.neutral">
+                  <span class="ink-swatch__chip" aria-hidden="true"></span>
+                  <span class="ink-swatch__name" data-i18n="demo.ink.neutral">Neutral</span>
+                  <code class="ink-swatch__token">--fg</code>
+                </button>
+              </li>
+            </ul>
+            <p class="token-caption" data-i18n="ink.swatchNote">The same six names and order as the live popover; the current ink is marked with an accent ring.</p>
+          </div>
+
+          <div class="detail-card">
+            <h3 data-i18n="ink.statesTitle">Pen and palette states</h3>
+            <div class="ink-states">
+              <figure class="ink-state">
+                <div class="ink-state__bar">
+                  <button class="tool-btn" type="button" aria-label="Pen" data-label="Pen" data-i18n-attr="aria-label:demo.pen data-label:demo.pen">
+                    <svg class="icon-pen" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
+                      <path d="M4 20l4.2-1.1L19.3 7.8a2.1 2.1 0 0 0-3-3L5.2 15.8 4 20Z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+                      <path d="M14.8 6.3l2.9 2.9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+                    </svg>
+                  </button>
+                  <button class="tool-btn ink-state__palette" type="button" aria-label="Palette" data-label="Palette" data-i18n-attr="aria-label:demo.palette data-label:demo.palette">
+                    <span class="icon icon--palette" aria-hidden="true"></span>
+                    <span class="ink-state__dot" aria-hidden="true"></span>
+                  </button>
+                </div>
+                <figcaption data-i18n="ink.stateRest">rest</figcaption>
+              </figure>
+              <figure class="ink-state">
+                <div class="ink-state__bar">
+                  <button class="tool-btn is-active" type="button" aria-label="Pen" aria-pressed="true" data-label="Pen" data-i18n-attr="aria-label:demo.pen data-label:demo.pen">
+                    <svg class="icon-pen" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
+                      <path d="M4 20l4.2-1.1L19.3 7.8a2.1 2.1 0 0 0-3-3L5.2 15.8 4 20Z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+                      <path d="M14.8 6.3l2.9 2.9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+                    </svg>
+                  </button>
+                  <button class="tool-btn ink-state__palette" type="button" aria-label="Palette" data-label="Palette" data-i18n-attr="aria-label:demo.palette data-label:demo.palette">
+                    <span class="icon icon--palette" aria-hidden="true"></span>
+                    <span class="ink-state__dot" aria-hidden="true"></span>
+                  </button>
+                </div>
+                <figcaption data-i18n="ink.stateActive">active tool</figcaption>
+              </figure>
+              <figure class="ink-state">
+                <div class="ink-state__bar">
+                  <button class="tool-btn is-active" type="button" aria-label="Pen" aria-pressed="true" data-label="Pen" data-i18n-attr="aria-label:demo.pen data-label:demo.pen">
+                    <svg class="icon-pen" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
+                      <path d="M4 20l4.2-1.1L19.3 7.8a2.1 2.1 0 0 0-3-3L5.2 15.8 4 20Z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+                      <path d="M14.8 6.3l2.9 2.9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+                    </svg>
+                  </button>
+                  <button class="tool-btn is-active ink-state__palette" type="button" aria-label="Palette" aria-pressed="true" aria-expanded="true" data-label="Palette" data-i18n-attr="aria-label:demo.palette data-label:demo.palette">
+                    <span class="icon icon--palette" aria-hidden="true"></span>
+                    <span class="ink-state__dot" aria-hidden="true"></span>
+                  </button>
+                </div>
+                <div class="ink-popover" role="group" aria-label="Pen colours" data-i18n-attr="aria-label:demo.ink.colours">
+                  <button class="demo-palette__swatch" type="button" data-ink-tone="tone-a" aria-label="Sage" aria-pressed="true" data-i18n-attr="aria-label:demo.ink.toneA"></button>
+                  <button class="demo-palette__swatch" type="button" data-ink-tone="tone-b" aria-label="Ochre" aria-pressed="false" data-i18n-attr="aria-label:demo.ink.toneB"></button>
+                  <button class="demo-palette__swatch" type="button" data-ink-tone="tone-c" aria-label="Lilac" aria-pressed="false" data-i18n-attr="aria-label:demo.ink.toneC"></button>
+                  <button class="demo-palette__swatch" type="button" data-ink-tone="tone-d" aria-label="Blue" aria-pressed="false" data-i18n-attr="aria-label:demo.ink.toneD"></button>
+                  <button class="demo-palette__swatch" type="button" data-ink-tone="tone-e" aria-label="Rust" aria-pressed="false" data-i18n-attr="aria-label:demo.ink.toneE"></button>
+                  <button class="demo-palette__swatch" type="button" data-ink-tone="fg" aria-label="Neutral" aria-pressed="false" data-i18n-attr="aria-label:demo.ink.neutral"></button>
+                </div>
+                <figcaption data-i18n="ink.statePopover">popover open</figcaption>
+              </figure>
+            </div>
+          </div>
+
+          <div class="detail-card detail-card--wide">
+            <h3 data-i18n="ink.factsTitle">What the preview proves</h3>
+            <ul class="ink-facts">
+              <li data-i18n="ink.factWorld">Strokes are anchored in world coordinates, so zoom, pan, resize and a language switch leave them where they are.</li>
+              <li data-i18n="ink.factUndo">Every committed stroke is exactly one undo step; undo removes the last stroke and redo restores it.</li>
+              <li data-i18n="ink.factTheme">Every stroke stores its token name and is stroked with that variable, so light and dark recolour existing ink.</li>
+              <li data-i18n="ink.factPreview">Preview state only: ink lives in this page’s memory, is never sent to a server and is cleared on reload.</li>
+            </ul>
+            <p class="token-caption" data-i18n="ink.followUp">The engine annotation layer is a follow-up; this section documents the preview only.</p>
           </div>
         </div>
       </section>

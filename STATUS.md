@@ -8,16 +8,15 @@
 
 ### Stage 1 — `foundation` Foundation
 
-- State: tasks open
+- State: complete
 - Owner decision: `continue`
 - Exit gates: `board-check`, `install`, `boundaries`, `dev-setup`, `compose-config`, `tokens-codegen`, `design-check`, `language-check`, `changelog-entry`, `ci-local`, `polier-version`
 - Exit criteria: Every packages[] folder exists with a README and an ARCHITECTURE.md; package map and versions are filled in.; A fresh clone installs reproducibly with the committed lockfile; root lint, typecheck, test and build pass.; Two worktrees run install, lint, typecheck and tests side by side without port or database collision; tools/dev/setup and teardown create and remove the slot database and bucket and refuse slot 0.; design-check, language-check, changelog-entry and boundaries reject a violating change locally; every code change carries a .changes entry.; The CI workflow is authored and proven locally (actionlint + act) and local sessions use Polier at the board's generator_version; the real GitHub run, branch protection, hosting and releases are deferred to the remote stage after hardening (ADR-0003).; A runnable design preview page exists with desktop and mobile screenshots and a live two-note connection demo (P0-19, P0-20).
 - Tasks: P0-03, P0-04, P0-06, P0-07, P0-08, P0-09, P0-10, P0-11, P0-12, P0-13, P0-14, P0-18, P0-19, P0-20, P0-21, P0-22, P0-23, P0-24, P0-25, P0-26, P0-27, P0-28, P0-29, P0-30, P0-31, P0-32, P0-33, P0-34, P0-35, P0-36, P0-37, P0-38, P0-39, P0-40, P0-41, P0-42, P0-43, P0-44
-- Tasks open: P0-44
 
 ### Stage 2 — `contract` Contract
 
-- State: blocked by stage foundation
+- State: complete
 - Owner decision: `continue`
 - Exit gates: `contracts`, `codegen`
 - Exit criteria: contracts 0.1.0 tagged; every schema has a valid and an invalid fixture.; TS and C++ read the same fixtures identically.
@@ -25,7 +24,7 @@
 
 ### Stage 3 — `engine-spike` Engine spike
 
-- State: blocked by stage contract
+- State: complete
 - Owner decision: `continue`
 - Exit gates: `cpp-unit`, `wasm-build`, `perf-baseline`
 - Exit criteria: 60 fps with 50,000 rectangles on the reference hardware; WASM <= 300 KB gzip.; Measured report and ADR for the engine architecture.
@@ -33,7 +32,7 @@
 
 ### Stage 4 — `backend-core` Backend core
 
-- State: blocked by stage contract
+- State: complete
 - Owner decision: `continue`
 - Exit gates: `api-tests`, `rls-tests`
 - Exit criteria: API suite covers allow and deny for every route; RLS tests green.; A script creates account, workspace, board and note via the SDK; a second account sees nothing.
@@ -41,7 +40,7 @@
 
 ### Stage 5 — `engine-core` Engine core
 
-- State: blocked by stage engine-spike
+- State: complete
 - Owner decision: `continue`
 - Exit gates: `cpp-unit`, `visual-final`, `perf-final`
 - Exit criteria: 10,000 objects at 60 fps in the playground.; All engine entries of the canvas work orders done; reference images green.
@@ -49,7 +48,7 @@
 
 ### Stage 6 — `realtime` Realtime
 
-- State: blocked by stage backend-core, engine-core
+- State: complete
 - Owner decision: `continue`
 - Exit gates: `crdt-convergence`, `load`
 - Exit criteria: Load test 25 clients p95 <= 150 ms; restart loses no acknowledged change.; Two offline browsers converge after reconnect.
@@ -225,10 +224,10 @@
 - [x] `P0-41` Live demo: rounded frames, darker done items, contents instead of text — status: `done` — owner: —
 - [x] `P0-42` Live demo: light theme with sun/moon icons under DE/EN — status: `done` — owner: —
 - [x] `P0-43` Live demo: pen tool and ink colours over the whole board — status: `done` — owner: —
+- [x] `P0-44` Live demo: document the pen and ink colours in the preview — status: `done` — owner: —
 
 ## In progress
 
-- [ ] `P0-44` Live demo: document the pen and ink colours in the preview — status: `in_progress` — owner: lead
 - [ ] `P6-01` Web app scaffold: React + Vite SPA, layout, i18n and base components — status: `in_progress` — owner: lead
 
 ## Blocked / failed
@@ -253,8 +252,7 @@
 <!-- polier:claims -->
 ## Claims
 
-- `P0-44` in progress by dsh since 2026-10-28T23:02:01+00:00 — worktree: /private/tmp/air-P0-44 · slot 1
-- `P6-01` in progress by dsh since 2026-10-28T23:11:04+00:00 — worktree: /private/tmp/air-P6-01 · slot 1
+- `P6-01` in progress by dsh since 2026-10-28T23:12:00+00:00 — worktree: /private/tmp/air-P6-01 · slot 3
 
 <!-- /polier:claims -->
 
