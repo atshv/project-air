@@ -122,7 +122,7 @@
 
 ## Ready now
 
-- `P5-08` load proof: 25 clients per board at p95 <= 150 ms and the stage report
+- none
 
 ## Done
 
@@ -222,7 +222,7 @@
 
 ## In progress
 
-- none
+- [ ] `P5-08` load proof: 25 clients per board at p95 <= 150 ms and the stage report — status: `in_progress` — owner: lead
 
 ## Blocked / failed
 
@@ -234,12 +234,11 @@
 - [ ] `P0-15` Release command and tag-based CI release — status: `pending` — owner: —
 - [ ] `P0-16` Dependency updates and Polier update check — status: `pending` — owner: —
 - [ ] `P0-17` RELEASING.md and release 0.0.1 — status: `pending` — owner: —
-- [ ] `P5-08` load proof: 25 clients per board at p95 <= 150 ms and the stage report — status: `pending` — owner: —
 
 <!-- polier:claims -->
 ## Claims
 
-- `P5-07` in progress by dsh since 2026-10-28T21:58:54+00:00 — worktree: /private/tmp/air-P5-07 · slot 1
+- `P5-08` in progress by dsh since 2026-10-28T21:59:44+00:00 — worktree: /private/tmp/air-P5-08 · slot 1
 
 <!-- /polier:claims -->
 
