@@ -38,8 +38,8 @@ Read `AGENTS.md`, `ARCHITECTURE.md`, `STATUS.md`, `docs/module-map.md` and the t
   Next stage: **stage 7 `web-app`** (owner decision `pending`; first real `packages/sdk` client) —
   then value, hardening, and the remote phase.
 - **Stage 7 Web app:** in progress (owner approved 2026-10-29; **ADR-0013** = React 19 + Vite SPA,
-  own editor, Playwright e2e, no paid-tier dependency). Planned `P6-01` … `P6-09` (scaffold, auth
-  UI/session, boards page, board host + L00/L17, L12/undo, panel + own editor L04/L06/L09, realtime
+  own editor, Playwright e2e, no paid-tier dependency). Planned `P6-01` … `P6-10` (scaffold, auth
+  UI/session, boards page, board host + L00/L17, L12/undo, note-body contract 0.4.0, panel + own editor L04/L06/L09, realtime
   UI L05, e2e, canvas evidence + stage report); D12 added to `docs/quality.md`. **Done:** `P6-01`
   (apps/web scaffold: React 19.3.1/Vite 8.3.5 SPA on slot ports 4300/4301, router shell, token-only
   base components, i18n en/de/persisted language; pinned deps with licence/source; review

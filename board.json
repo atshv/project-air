@@ -6925,15 +6925,70 @@
     },
     {
       "id": "P6-06",
-      "title": "Panel and editor: overlay, own editor, note placeholder and title (L04, L06, L09)",
-      "goal": "packages/editor gets the own contenteditable editor (structured JSON, links, text extraction; no rich-text library) and apps/web the 400 px right panel overlay (L04, 12 px gap, 180 ms, Esc), the empty-note focus/placeholder (L06) and the title field (L09); cards/notes are edited through SDK operations.",
-      "why": "The panel/editor is the content-editing surface of the product; ADR-0013 keeps the editor our own code.",
+      "title": "Contract 0.4.0: note body document and content operations",
+      "goal": "The contract gains the note body as a versioned structured JSON editor document (blocks with paragraphs/headings/lists and inline marks incl. links, plus the derived plain text for search), a new note-content operation with its inverse and valid/invalid fixtures; the 0.4.0 bump updates board.contracts, every schema $id, root contractVersion, fixtures, regenerated TS/C++ codegen and docs/contracts.md.",
+      "why": "The note body is explicitly left to the editor stage by contract 0.3.0; the own editor (P6-07) and the L05 save path need a contract-shaped document and a one-operation-with-inverse update before any content code is written.",
       "satisfies": [
         "D12"
       ],
       "status": "pending",
       "depends_on": [
         "P6-04"
+      ],
+      "complexity": 5,
+      "stage": "web-app",
+      "parallel_group": null,
+      "scope_write": [
+        "packages/contracts/",
+        "docs/contracts.md",
+        "board.json",
+        ".changes/"
+      ],
+      "scope_read": [
+        "ARCHITECTURE.md",
+        "AGENTS.md",
+        "STATUS.md",
+        "docs/module-map.md",
+        "docs/quality.md",
+        "docs/contracts.md",
+        "docs/adr/ADR-0005-contract.md",
+        "docs/adr/ADR-0013-web-app-stack.md",
+        "packages/contracts/schemas/",
+        "packages/contracts/fixtures/"
+      ],
+      "acceptance": [
+        "A1",
+        "A2",
+        "A3"
+      ],
+      "gates": [
+        "board-check",
+        "boundaries",
+        "contracts",
+        "codegen",
+        "unit"
+      ],
+      "owner": null,
+      "branch": "task/P6-06",
+      "worktree": null,
+      "round": 0,
+      "evidence": [],
+      "scope_write_forbidden": [
+        "reference/"
+      ]
+    },
+    {
+      "id": "P6-07",
+      "title": "Panel and editor: overlay, own editor, note placeholder and title (L04, L06, L09)",
+      "goal": "packages/editor gets the own contenteditable editor (contract 0.4.0 structured JSON, inline marks/links, plain-text extraction, selection preservation, IME-safe; no rich-text library) and apps/web the 400 px right panel overlay (L04, 12 px gap, 180 ms, Esc, no canvas width change, camera pan when the selected card is hidden), the empty-note focus/placeholder (L06) and the title field (L09); content is saved as one contract operation with inverse through the SDK autosave path.",
+      "why": "The panel/editor is the content-editing surface of the product; ADR-0013 keeps the editor our own code and P6-06 defines its document.",
+      "satisfies": [
+        "D12"
+      ],
+      "status": "pending",
+      "depends_on": [
+        "P6-05",
+        "P6-06"
       ],
       "complexity": 6,
       "stage": "web-app",
@@ -6951,6 +7006,7 @@
         "docs/quality.md",
         "docs/canvas-acceptance.md",
         "docs/design-rules.md",
+        "docs/contracts.md",
         "packages/contracts/",
         "packages/sdk/",
         "packages/ui-kit/"
@@ -6969,7 +7025,7 @@
         "language-check"
       ],
       "owner": null,
-      "branch": "task/P6-06",
+      "branch": "task/P6-07",
       "worktree": null,
       "round": 0,
       "evidence": [],
@@ -6978,7 +7034,7 @@
       ]
     },
     {
-      "id": "P6-07",
+      "id": "P6-08",
       "title": "Realtime UI: live changes, presence and save status (L05)",
       "goal": "The board page shows live remote changes and presence cursors/selections (colour/name from the server), the L05 save status (Saving … → Saved 2 s → Not saved – retry, clickable), an offline notice that never loses input, reconnect/resync, and uses the authenticated session clientId.",
       "why": "L05 is the remaining realtime web order; the stage exit e2e edits with two users and reloads.",
@@ -6987,7 +7043,7 @@
       ],
       "status": "pending",
       "depends_on": [
-        "P6-06"
+        "P6-07"
       ],
       "complexity": 6,
       "stage": "web-app",
@@ -7022,7 +7078,7 @@
         "language-check"
       ],
       "owner": null,
-      "branch": "task/P6-07",
+      "branch": "task/P6-08",
       "worktree": null,
       "round": 0,
       "evidence": [],
@@ -7031,7 +7087,7 @@
       ]
     },
     {
-      "id": "P6-08",
+      "id": "P6-09",
       "title": "e2e suite: main flows and the e2e gate on the slot ports",
       "goal": "Playwright (Apache-2.0) config and the e2e suite run the app on the slot web ports (4100/4101) with the slot services: login → boards → create board → add/edit note and title → reload persists; two users edit live, go offline/reconnect, both converge; toolbar/zoom/context menu/panel/L17 covered; the e2e gate is documented and exclusive.",
       "why": "The stage exit gate e2e and the blueprint P6-06 flow; the suite makes regressions visible.",
@@ -7040,7 +7096,7 @@
       ],
       "status": "pending",
       "depends_on": [
-        "P6-07"
+        "P6-08"
       ],
       "complexity": 6,
       "stage": "web-app",
@@ -7079,7 +7135,7 @@
         "e2e"
       ],
       "owner": null,
-      "branch": "task/P6-08",
+      "branch": "task/P6-09",
       "worktree": null,
       "round": 0,
       "evidence": [],
@@ -7091,7 +7147,7 @@
       ]
     },
     {
-      "id": "P6-09",
+      "id": "P6-10",
       "title": "Canvas evidence, repo-wide checks and the web-app stage report",
       "goal": "Every remaining web canvas order (L00, L02, L04, L05, L06, L09, L12, L17, L18) has evidence (screenshots and the e2e steps), design-check and language-check are green repo-wide (including the demo/playground texts), a11y/touch basics are checked, and docs/web-app.md is the stage report with exit-criteria status and open points; HANDOFF/STATUS updated.",
       "why": "The stage exit criteria 'every canvas work order done with evidence; design-check and language-check green repo-wide' and the handoff to value/hardening.",
@@ -7100,7 +7156,7 @@
       ],
       "status": "pending",
       "depends_on": [
-        "P6-08"
+        "P6-09"
       ],
       "complexity": 5,
       "stage": "web-app",
@@ -7139,7 +7195,7 @@
         "e2e"
       ],
       "owner": null,
-      "branch": "task/P6-09",
+      "branch": "task/P6-10",
       "worktree": null,
       "round": 0,
       "evidence": [],

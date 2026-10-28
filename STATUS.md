@@ -60,8 +60,8 @@
 - Owner decision: `continue`
 - Exit gates: `e2e` (missing record), `design-check`, `language-check`
 - Exit criteria: Main e2e flows green on a preview environment.; Every canvas work order done with evidence; design-check and language-check green repo-wide.
-- Tasks: P6-01, P6-02, P6-03, P6-04, P6-05, P6-06, P6-07, P6-08, P6-09
-- Tasks open: P6-04, P6-05, P6-06, P6-07, P6-08, P6-09
+- Tasks: P6-01, P6-02, P6-03, P6-04, P6-05, P6-06, P6-07, P6-08, P6-09, P6-10
+- Tasks open: P6-04, P6-05, P6-06, P6-07, P6-08, P6-09, P6-10
 
 ### Stage 8 — `value` Import, export and AI
 
@@ -244,10 +244,11 @@
 - [ ] `P0-16` Dependency updates and Polier update check — status: `pending` — owner: —
 - [ ] `P0-17` RELEASING.md and release 0.0.1 — status: `pending` — owner: —
 - [ ] `P6-05` Board interactions: context menu, keyboard and undo/redo UI (L12, L11 hint) — status: `pending` — owner: —
-- [ ] `P6-06` Panel and editor: overlay, own editor, note placeholder and title (L04, L06, L09) — status: `pending` — owner: —
-- [ ] `P6-07` Realtime UI: live changes, presence and save status (L05) — status: `pending` — owner: —
-- [ ] `P6-08` e2e suite: main flows and the e2e gate on the slot ports — status: `pending` — owner: —
-- [ ] `P6-09` Canvas evidence, repo-wide checks and the web-app stage report — status: `pending` — owner: —
+- [ ] `P6-06` Contract 0.4.0: note body document and content operations — status: `pending` — owner: —
+- [ ] `P6-07` Panel and editor: overlay, own editor, note placeholder and title (L04, L06, L09) — status: `pending` — owner: —
+- [ ] `P6-08` Realtime UI: live changes, presence and save status (L05) — status: `pending` — owner: —
+- [ ] `P6-09` e2e suite: main flows and the e2e gate on the slot ports — status: `pending` — owner: —
+- [ ] `P6-10` Canvas evidence, repo-wide checks and the web-app stage report — status: `pending` — owner: —
 
 <!-- polier:claims -->
 ## Claims
