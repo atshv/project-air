@@ -3,7 +3,7 @@
   "valid": true,
   "reason": "one board with two notes, two cards, one zone, one checklist block and one edge; every reference resolves",
   "data": {
-    "contractVersion": "0.3.0",
+    "contractVersion": "0.4.0",
     "board": {
       "id": "0192f0a3-7000-7000-8000-000000000003",
       "workspaceId": "0192f0a2-7000-7000-8000-000000000002",
@@ -20,7 +20,17 @@
         "workspaceId": "0192f0a2-7000-7000-8000-000000000002",
         "title": "Design law",
         "createdAt": "2027-01-10T09:00:00.000Z",
-        "updatedAt": "2027-01-10T09:30:00.000Z"
+        "updatedAt": "2027-01-10T09:30:00.000Z",
+        "body": {
+          "version": "1",
+          "blocks": [
+            {
+              "type": "paragraph",
+              "text": "Weekly review notes."
+            }
+          ]
+        },
+        "plainText": "Weekly review notes."
       },
       {
         "id": "0192f0aa-7000-7000-8000-00000000000a",

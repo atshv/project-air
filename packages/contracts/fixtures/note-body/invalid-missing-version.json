@@ -1,0 +1,13 @@
+{
+  "schema": "schemas/note-body-payload.schema.json",
+  "valid": false,
+  "reason": "missing document version",
+  "data": {
+    "blocks": [
+      {
+        "type": "paragraph",
+        "text": "x"
+      }
+    ]
+  }
+}

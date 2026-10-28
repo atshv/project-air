@@ -177,3 +177,36 @@ the fixtures and the regenerated TS/C++ codegen. The fixtures-gate corpus carrie
 `client-hello` and the invalid missing-version specimen next to the board-content specimens.
 
 Notes only; schema changes need the procedure above.
+
+## 0.4.0 — note body document and content operations
+
+The note body is a versioned, structured JSON editor document (no HTML strings):
+`{ version: "1", blocks: [{ type: "paragraph" | "heading" | "list", text, marks?:
+["bold" | "italic" | "code" | "link"], level?(1..6), ordered?, href? }] }`.
+Links use an explicit scheme allow-list (`https:`, `http:`, `mailto:`); unknown
+block types, unknown fields, a missing document version and `javascript:`/other
+href schemes are rejected. Documented limits: at most 1,000 blocks, at most
+10,000 characters per block text, at most 50,000 characters of derived
+`plainText`. Notes gain optional `body` and `plainText` (absent = empty body);
+`plainText` is the deterministic derivation used by search and must agree with
+the body when present (validated by the contracts unit tests). Older 0.3.0
+content without a body remains valid.
+
+`updateNoteBody` is one operation with its inverse carrying the **previous
+body**: payload `{ noteId, body }`, inverse type `updateNoteBody` with the
+previous body. Fixtures cover a valid body payload (paragraph/list/heading with
+marks and an https link), bad href scheme, unknown block, missing version and
+oversized content, plus a valid operation with inverse and an invalid operation
+with a disallowed href. The bump is 0.4.0: every schema `$id`, the root
+`contractVersion`, `board.contracts[].version` and its `schema_files` list, the
+new `note-body-payload.schema.json`, regenerated TypeScript and C++ codegen, and
+the dependants listed in `contract_followups` (engine, sdk, services/platform,
+services/auth).
+
+**plainText derivation (semantic rule).** JSON Schema validates the body shape
+only; the derived search text is defined by
+`packages/contracts/plaintext.mjs#derivePlainText`: block texts are whitespace-
+normalised (inner runs collapse to one space, trimmed), non-empty blocks are
+joined with a newline, and list blocks are prefixed `- ` (unordered) or `1. `
+(ordered). `plainTextMatches(body, plainText)` is the consistency check used by
+the contracts unit test; the app derives it on save and search consumes it.

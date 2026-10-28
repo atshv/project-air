@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://project-air.dev/contracts/0.3.0/operation.schema.json",
+  "$id": "https://project-air.dev/contracts/0.4.0/operation.schema.json",
   "title": "Board operation",
   "description": "One board change with exactly one inverse (AD-1): one gesture is one operation. A group bundles ordered child operations and reverses their inverses.",
   "$ref": "#/$defs/operation",
@@ -26,7 +26,8 @@
         "createEdge",
         "deleteEdge",
         "reorder",
-        "group"
+        "group",
+        "updateNoteBody"
       ]
     },
     "operation": {
@@ -452,6 +453,25 @@
               }
             }
           }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "updateNoteBody"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "payload": {
+                "$ref": "#/$defs/payload-update-note-body"
+              }
+            }
+          }
         }
       ]
     },
@@ -854,6 +874,25 @@
             "properties": {
               "payload": {
                 "$ref": "#/$defs/group-inverse-payload"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "updateNoteBody"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "payload": {
+                "$ref": "#/$defs/payload-update-note-body"
               }
             }
           }
@@ -1431,6 +1470,20 @@
         }
       },
       "description": "The full edge."
+    },
+    "payload-update-note-body": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Payload of updateNoteBody: target note and its body; the inverse carries the previous body.",
+      "properties": {
+        "noteId": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+        },
+        "body": {
+          "$ref": "note-body-payload.schema.json"
+        }
+      }
     }
   }
 }

@@ -3,7 +3,7 @@
   "valid": true,
   "reason": "a zoned card and block, a board-level card whose zoneId is null and a board-level block without a zoneId; every parent resolves to a zone of the same board and no zone has a parent",
   "data": {
-    "contractVersion": "0.3.0",
+    "contractVersion": "0.4.0",
     "board": {
       "id": "0192f0a3-7000-7000-8000-000000000003",
       "workspaceId": "0192f0a2-7000-7000-8000-000000000002",

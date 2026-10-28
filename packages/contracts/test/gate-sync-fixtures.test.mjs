@@ -1,4 +1,4 @@
-// P5-01: the gate corpus carries the 0.3.0 version-negotiation specimens as
+// P5-01: the gate corpus carries the 0.4.0 version-negotiation specimens as
 // byte-identical copies of the canonical sync fixtures.
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";

@@ -103,6 +103,7 @@ export function validate(value, schema, document) {
       return false;
     }
     if (schema.items !== undefined && !value.every((item) => validate(item, schema.items, document))) return false;
+    if (schema.contains !== undefined && !value.some((item) => validate(item, schema.contains, document))) return false;
   }
   if (value !== null && typeof value === "object" && !Array.isArray(value)) {
     if (schema.minProperties !== undefined && Object.keys(value).length < schema.minProperties) return false;

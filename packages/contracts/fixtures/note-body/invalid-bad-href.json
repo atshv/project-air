@@ -1,0 +1,18 @@
+{
+  "schema": "schemas/note-body-payload.schema.json",
+  "valid": false,
+  "reason": "link href uses a javascript: scheme, not in the allow-list",
+  "data": {
+    "version": "1",
+    "blocks": [
+      {
+        "type": "paragraph",
+        "text": "x",
+        "marks": [
+          "link"
+        ],
+        "href": "javascript:alert(1)"
+      }
+    ]
+  }
+}

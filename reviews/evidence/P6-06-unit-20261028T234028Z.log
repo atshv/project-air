@@ -1,0 +1,620 @@
+$ pnpm test --affected
+[exit 1]
+
+
+   • turbo 2.11.10
+   • Packages in scope: //, @project-air/contracts
+   • Running test in 2 packages
+   • Remote caching disabled, using shared worktree cache
+
+@project-air/contracts:test: cache miss, executing 930429a897dca315
+@project-air/contracts:test: $ node --test test/*.test.mjs
+@project-air/contracts:test: ✖ the error schema is versioned JSON Schema 2020-12 with the fixed code enum (0.955667ms)
+@project-air/contracts:test: ✔ the wire codes stay UPPER_SNAKE and the message keys are lowerCamelCase (0.541333ms)
+@project-air/contracts:test: ✔ the oneOf ties every code to exactly one message key (0.505625ms)
+@project-air/contracts:test: ✔ every error code has a valid fixture and the invalid ones are rejected (4.91ms)
+@project-air/contracts:test: ✔ details carry field paths, never user text (0.209375ms)
+@project-air/contracts:test: ✔ every error code has exactly one message key in de, en and en-XA (2.996667ms)
+@project-air/contracts:test: ✔ the German error messages follow the style rules and the English ones differ (0.523917ms)
+@project-air/contracts:test: ✔ the pseudo locale carries the generated values for the error keys (0.785792ms)
+@project-air/contracts:test: ✔ the index exports the error code table and the API schema path (0.244584ms)
+@project-air/contracts:test: ✖ the four API resource schemas are versioned JSON Schema 2020-12 with closed envelopes (1.310083ms)
+@project-air/contracts:test: ✔ the envelopes cover list, get, create, update and delete (0.7845ms)
+@project-air/contracts:test: ✖ the envelopes reference the P1-01 entity schemas instead of restating them (0.293292ms)
+@project-air/contracts:test: ✔ card create and changes mirror the P1-01 minimum sizes and the nullable zone parent (0.150625ms)
+@project-air/contracts:test: ✔ every resource envelope has a valid fixture that satisfies it (12.247041ms)
+@project-air/contracts:test: ✔ the invalid fixtures violate their envelope and name the rule (4.841666ms)
+@project-air/contracts:test: ✔ every API fixture has the wrapper and maps to an API schema (2.609ms)
+@project-air/contracts:test: ✔ valid API fixtures use UUIDv7 ids and ISO-8601 timestamps (1.653209ms)
+@project-air/contracts:test: ✔ an empty list is valid with items [] and nextCursor null (0.209167ms)
+@project-air/contracts:test: ✔ pagination bounds are encoded in the schema (0.275625ms)
+@project-air/contracts:test: ✔ update requests need a non-empty changes object (0.40775ms)
+@project-air/contracts:test: ✔ delete envelopes name the resource id (0.400708ms)
+@project-air/contracts:test: ✔ the index exports the API resources, schema paths and fixture paths (0.344ms)
+@project-air/contracts:test: ✔ the generated directory holds exactly the two committed files (1.389542ms)
+@project-air/contracts:test: ✔ the committed generated files equal the generator output (1.690667ms)
+@project-air/contracts:test: ✔ codegen is deterministic and free of timestamps and absolute paths (0.75175ms)
+@project-air/contracts:test: ✔ the TypeScript output exposes the entities, enums, union and inverse pair (0.236709ms)
+@project-air/contracts:test: ✔ the generated files carry the 0.3.0 reorder payload in both languages (0.309083ms)
+@project-air/contracts:test: ✖ the generated operation vocabulary matches the contract index (1.689291ms)
+@project-air/contracts:test: ✖ the C++ output exposes the model, enums and the operation envelope (5.211667ms)
+@project-air/contracts:test: ✔ the containment corpus is additive and uses the board-content schema (1.910792ms)
+@project-air/contracts:test: ✖ valid containment fixtures are schema-valid and follow the parent rule (1.135625ms)
+@project-air/contracts:test: ✖ the dangling parent fixture is rejected by the containment rule (0.319958ms)
+@project-air/contracts:test: ✔ a nested zone is rejected by the zone schema (0.377625ms)
+@project-air/contracts:test: ✔ cards and blocks carry an optional nullable parent and zones carry none (0.37575ms)
+@project-air/contracts:test: ✔ index exports the versioned schema and fixture paths (1.98975ms)
+@project-air/contracts:test: ✖ board.contracts metadata names the current version and all 17 schema files (4.052416ms)
+@project-air/contracts:test: ✖ every schema is JSON Schema 2020-12 with a versioned $id and required fields (0.685958ms)
+@project-air/contracts:test: ✔ every schema has at least one valid and one invalid fixture with the wrapper (9.126417ms)
+@project-air/contracts:test: ✔ every fixture schema path resolves to a schema (9.694791ms)
+@project-air/contracts:test: ✖ valid fixtures satisfy their schema (1.296709ms)
+@project-air/contracts:test: ✔ invalid fixtures violate their schema and name the broken rule (3.630792ms)
+@project-air/contracts:test: ✔ valid fixtures carry every required top-level field (3.293666ms)
+@project-air/contracts:test: ✔ valid ids are UUIDv7 and valid timestamps are ISO-8601 with timezone (1.052ms)
+@project-air/contracts:test: ✔ minimum sizes are encoded in the schemas (0.254417ms)
+@project-air/contracts:test: ✔ valid fixtures sit exactly on the minimum sizes (0.265709ms)
+@project-air/contracts:test: ✔ invalid minimum-size fixtures are below their type minimum (0.244959ms)
+@project-air/contracts:test: ✖ fixed enums are part of the schemas (0.343417ms)
+@project-air/contracts:test: ✔ the fractional index is a string (0.41425ms)
+@project-air/contracts:test: ✔ timestamps are ISO-8601 strings with timezone (0.784208ms)
+@project-air/contracts:test: ✔ AD-4: a note exists once and cards only reference it (0.194542ms)
+@project-air/contracts:test: ✔ the parent relation is board to zone to card, without nested zones (0.290042ms)
+@project-air/contracts:test: ✔ edges connect cards only (0.281208ms)
+@project-air/contracts:test: ✔ the root schema references every board-content entity (0.333458ms)
+@project-air/contracts:test: ✔ the package has no runtime dependencies and defines the test command (0.179584ms)
+@project-air/contracts:test: ✔ the gate specimens are byte-identical copies of canonical fixtures (2.073208ms)
+@project-air/contracts:test: ✔ the gate fixture directories hold direct JSON files for Polier (0.456541ms)
+@project-air/contracts:test: ✔ the gate specimens keep the fixture wrapper (0.202625ms)
+@project-air/contracts:test: ✔ the sync gate specimens are byte-identical copies of canonical fixtures (3.604291ms)
+@project-air/contracts:test: ✖ the operation schema is versioned JSON Schema 2020-12 with the operation vocabulary (0.989708ms)
+@project-air/contracts:test: ✖ index exports the operation schema path, id and type vocabulary (0.155417ms)
+@project-air/contracts:test: ✔ every operation type has a valid and at least one invalid fixture (0.669833ms)
+@project-air/contracts:test: ✔ every operation fixture maps to the operation schema with the fixture wrapper (2.032459ms)
+@project-air/contracts:test: ✖ valid operation fixtures satisfy the schema and the inverse model (3.756125ms)
+@project-air/contracts:test: ✖ invalid operation fixtures break the schema or the inverse model and name the rule (2.668959ms)
+@project-air/contracts:test: ✔ every operation carries exactly one inverse with board, type and payload (0.830959ms)
+@project-air/contracts:test: ✔ operation ids are UUIDv7 and timestamps are ISO-8601 (0.798834ms)
+@project-air/contracts:test: ✔ each operation type pairs with its documented inverse type (0.840291ms)
+@project-air/contracts:test: ✔ groups have ordered children and the inverse reverses the child inverses (0.36975ms)
+@project-air/contracts:test: ✔ groups do not nest and need at least one child (0.33475ms)
+@project-air/contracts:test: ✔ updates store only changed fields and the inverse stores the previous values (0.183458ms)
+@project-air/contracts:test: ✔ deletes store the object and creates have the matching delete as inverse (0.351584ms)
+@project-air/contracts:test: ✔ the reorder operation stores the new z and its inverse the previous z (0.233958ms)
+@project-air/contracts:test: ✔ resize operations respect the P1-01 minimum sizes (0.423ms)
+@project-air/contracts:test: ✔ move payloads carry a position and an optional zone parent (0.227292ms)
+@project-air/contracts:test: ✔ the group inverse is checked against the reversed child inverses (0.216583ms)
+@project-air/contracts:test: ✔ an inverse with a mismatching board or target is invalid (0.140584ms)
+@project-air/contracts:test: ✔ every valid operation payload object still satisfies the P1-01 entity schemas (1.40275ms)
+@project-air/contracts:test: ✖ every fixture has a canonical TypeScript result (0.754ms)
+@project-air/contracts:test: ✔ the canonical TypeScript description is deterministic (0.927625ms)
+@project-air/contracts:test: ✔ the parity program compiles with the local C++ compiler (1425.273625ms)
+@project-air/contracts:test: ✔ TypeScript and C++ canonical results match for every fixture (204.279583ms)
+@project-air/contracts:test: ✔ a tampered canonical line is detected as a parity difference (0.300125ms)
+@project-air/contracts:test: ✔ invalid fixtures keep their validity verdict and model fields in the canonical form (1.15475ms)
+@project-air/contracts:test: ✖ the sync schema is versioned JSON Schema 2020-12 with one message union (1.167334ms)
+@project-air/contracts:test: ✔ every message type is documented with its direction and the required metadata (1.07975ms)
+@project-air/contracts:test: ✔ the index exports the sync schema, message table and fixture paths (0.29025ms)
+@project-air/contracts:test: ✖ every message type has a valid and an invalid fixture in the wrapper (0.907334ms)
+@project-air/contracts:test: ✔ every sync fixture names the sync schema and its validity (8.3105ms)
+@project-air/contracts:test: ✔ valid message fixtures use UUIDv7 ids and ISO-8601 timestamps (0.916583ms)
+@project-air/contracts:test: ✖ operation batches carry P1-02 operations through the operation schema reference (0.206459ms)
+@project-air/contracts:test: ✔ presence messages carry presence only, never operation data (0.250041ms)
+@project-air/contracts:test: ✔ message ids and sequence rules live in the envelope (0.687292ms)
+@project-air/contracts:test: ✔ no unknown message type matches the envelope (0.514875ms)
+@project-air/contracts:test: ✖ the reconnect sequence starts from a known serverSeq and ends with the snapshot (0.161375ms)
+@project-air/contracts:test: ✖ the session sequence keeps join order, sequences, duplicate batches and ack coverage (0.12775ms)
+@project-air/contracts:test: ✔ every acknowledged batch is durable before the client sees the ack (0.11675ms)
+@project-air/contracts:test: ✖ the board content in a snapshot is the root board-content document (2.124291ms)
+@project-air/contracts:test: ✖ P5-01: version negotiation, fresh-board serverSeq and reconnect ordering fixtures (0.60375ms)
+@project-air/contracts:test: ℹ tests 98
+@project-air/contracts:test: ℹ suites 0
+@project-air/contracts:test: ℹ pass 75
+@project-air/contracts:test: ℹ fail 23
+@project-air/contracts:test: ℹ cancelled 0
+@project-air/contracts:test: ℹ skipped 0
+@project-air/contracts:test: ℹ todo 0
+@project-air/contracts:test: ℹ duration_ms 2179.872417
+@project-air/contracts:test: 
+@project-air/contracts:test: ✖ failing tests:
+@project-air/contracts:test: 
+@project-air/contracts:test: test at test/api-errors.test.mjs:79:1
+@project-air/contracts:test: ✖ the error schema is versioned JSON Schema 2020-12 with the fixed code enum (0.955667ms)
+@project-air/contracts:test:   AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+@project-air/contracts:test:   + actual - expected
+@project-air/contracts:test:   
+@project-air/contracts:test:   + 'https://project-air.dev/contracts/0.4.0/api/errors.schema.json'
+@project-air/contracts:test:   - 'https://project-air.dev/contracts/0.3.0/api/errors.schema.json'
+@project-air/contracts:test:   
+@project-air/contracts:test:       at TestContext.<anonymous> (file:///private/tmp/air-P6-06/packages/contracts/test/api-errors.test.mjs:81:10)
+@project-air/contracts:test:       at Test.runInAsyncScope (node:async_hooks:226:14)
+@project-air/contracts:test:       at Test.run (node:internal/test_runner/test:1402:25)
+@project-air/contracts:test:       at Test.start (node:internal/test_runner/test:1262:17)
+@project-air/contracts:test:       at startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17) {
+@project-air/contracts:test:     generatedMessage: true,
+@project-air/contracts:test:     code: 'ERR_ASSERTION',
+@project-air/contracts:test:     actual: 'https://project-air.dev/contracts/0.4.0/api/errors.schema.json',
+@project-air/contracts:test:     expected: 'https://project-air.dev/contracts/0.3.0/api/errors.schema.json',
+@project-air/contracts:test:     operator: 'strictEqual',
+@project-air/contracts:test:     diff: 'simple'
+@project-air/contracts:test:   }
+@project-air/contracts:test: 
+@project-air/contracts:test: test at test/api-resources.test.mjs:66:1
+@project-air/contracts:test: ✖ the four API resource schemas are versioned JSON Schema 2020-12 with closed envelopes (1.310083ms)
+@project-air/contracts:test:   AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+@project-air/contracts:test:   + actual - expected
+@project-air/contracts:test:   
+@project-air/contracts:test:   + 'https://project-air.dev/contracts/0.4.0/api/workspace.schema.json'
+@project-air/contracts:test:   - 'https://project-air.dev/contracts/0.3.0/api/workspace.schema.json'
+@project-air/contracts:test:   
+@project-air/contracts:test:       at TestContext.<anonymous> (file:///private/tmp/air-P6-06/packages/contracts/test/api-resources.test.mjs:72:12)
+@project-air/contracts:test:       at Test.runInAsyncScope (node:async_hooks:226:14)
+@project-air/contracts:test:       at Test.run (node:internal/test_runner/test:1402:25)
+@project-air/contracts:test:       at Test.start (node:internal/test_runner/test:1262:17)
+@project-air/contracts:test:       at startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17) {
+@project-air/contracts:test:     generatedMessage: true,
+@project-air/contracts:test:     code: 'ERR_ASSERTION',
+@project-air/contracts:test:     actual: 'https://project-air.dev/contracts/0.4.0/api/workspace.schema.json',
+@project-air/contracts:test:     expected: 'https://project-air.dev/contracts/0.3.0/api/workspace.schema.json',
+@project-air/contracts:test:     operator: 'strictEqual',
+@project-air/contracts:test:     diff: 'simple'
+@project-air/contracts:test:   }
+@project-air/contracts:test: 
+@project-air/contracts:test: test at test/api-resources.test.mjs:128:1
+@project-air/contracts:test: ✖ the envelopes reference the P1-01 entity schemas instead of restating them (0.293292ms)
+@project-air/contracts:test:   AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+@project-air/contracts:test:   + actual - expected
+@project-air/contracts:test:   
+@project-air/contracts:test:   + 'https://project-air.dev/contracts/0.4.0/workspace.schema.json'
+@project-air/contracts:test:   - 'https://project-air.dev/contracts/0.3.0/workspace.schema.json'
+@project-air/contracts:test:   
+@project-air/contracts:test:       at TestContext.<anonymous> (file:///private/tmp/air-P6-06/packages/contracts/test/api-resources.test.mjs:133:12)
+@project-air/contracts:test:       at Test.runInAsyncScope (node:async_hooks:226:14)
+@project-air/contracts:test:       at Test.run (node:internal/test_runner/test:1402:25)
+@project-air/contracts:test:       at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+@project-air/contracts:test:       at Test.postRun (node:internal/test_runner/test:1542:19)
+@project-air/contracts:test:       at Test.run (node:internal/test_runner/test:1467:12)
+@project-air/contracts:test:       at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+@project-air/contracts:test:     generatedMessage: true,
+@project-air/contracts:test:     code: 'ERR_ASSERTION',
+@project-air/contracts:test:     actual: 'https://project-air.dev/contracts/0.4.0/workspace.schema.json',
+@project-air/contracts:test:     expected: 'https://project-air.dev/contracts/0.3.0/workspace.schema.json',
+@project-air/contracts:test:     operator: 'strictEqual',
+@project-air/contracts:test:     diff: 'simple'
+@project-air/contracts:test:   }
+@project-air/contracts:test: 
+@project-air/contracts:test: test at test/codegen.test.mjs:85:1
+@project-air/contracts:test: ✖ the generated operation vocabulary matches the contract index (1.689291ms)
+@project-air/contracts:test:   AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+@project-air/contracts:test:   + actual - expected
+@project-air/contracts:test:   ... Skipped lines
+@project-air/contracts:test:   
+@project-air/contracts:test:     [
+@project-air/contracts:test:       'createBlock',
+@project-air/contracts:test:       'createCard',
+@project-air/contracts:test:       'createEdge',
+@project-air/contracts:test:       'createNote',
+@project-air/contracts:test:   ...
+@project-air/contracts:test:       'updateNote',
+@project-air/contracts:test:   +   'updateNoteBody'
+@project-air/contracts:test:     ]
+@project-air/contracts:test:   
+@project-air/contracts:test:       at TestContext.<anonymous> (file:///private/tmp/air-P6-06/packages/contracts/test/codegen.test.mjs:90:10)
+@project-air/contracts:test:       at Test.runInAsyncScope (node:async_hooks:226:14)
+@project-air/contracts:test:       at Test.run (node:internal/test_runner/test:1402:25)
+@project-air/contracts:test:       at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+@project-air/contracts:test:       at Test.postRun (node:internal/test_runner/test:1542:19)
+@project-air/contracts:test:       at Test.run (node:internal/test_runner/test:1467:12)
+@project-air/contracts:test:       at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+@project-air/contracts:test:     generatedMessage: true,
+@project-air/contracts:test:     code: 'ERR_ASSERTION',
+@project-air/contracts:test:     actual: [
+@project-air/contracts:test:       'createBlock',    'createCard',
+@project-air/contracts:test:       'createEdge',     'createNote',
+@project-air/contracts:test:       'createZone',     'deleteBlock',
+@project-air/contracts:test:       'deleteCard',     'deleteEdge',
+@project-air/contracts:test:       'deleteNote',     'deleteZone',
+@project-air/contracts:test:       'group',          'moveBlock',
+@project-air/contracts:test:       'moveCard',       'moveZone',
+@project-air/contracts:test:       'reorder',        'resizeBlock',
+@project-air/contracts:test:       'resizeCard',     'resizeZone',
+@project-air/contracts:test:       'updateBlock',    'updateNote',
+@project-air/contracts:test:       'updateNoteBody'
+@project-air/contracts:test:     ],
+@project-air/contracts:test:     expected: [
+@project-air/contracts:test:       'createBlock', 'createCard',
+@project-air/contracts:test:       'createEdge',  'createNote',
+@project-air/contracts:test:       'createZone',  'deleteBlock',
+@project-air/contracts:test:       'deleteCard',  'deleteEdge',
+@project-air/contracts:test:       'deleteNote',  'deleteZone',
+@project-air/contracts:test:       'group',       'moveBlock',
+@project-air/contracts:test:       'moveCard',    'moveZone',
+@project-air/contracts:test:       'reorder',     'resizeBlock',
+@project-air/contracts:test:       'resizeCard',  'resizeZone',
+@project-air/contracts:test:       'updateBlock', 'updateNote'
+@project-air/contracts:test:     ],
+@project-air/contracts:test:     operator: 'deepStrictEqual',
+@project-air/contracts:test:     diff: 'simple'
+@project-air/contracts:test:   }
+@project-air/contracts:test: 
+@project-air/contracts:test: test at test/codegen.test.mjs:93:1
+@project-air/contracts:test: ✖ the C++ output exposes the model, enums and the operation envelope (5.211667ms)
+@project-air/contracts:test:   AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+@project-air/contracts:test:   
+@project-air/contracts:test:     assert.ok(header.includes('inline constexpr const char* kContractVersion = "0.3.0";'))
+@project-air/contracts:test:   
+@project-air/contracts:test:       at TestContext.<anonymous> (file:///private/tmp/air-P6-06/packages/contracts/test/codegen.test.mjs:98:10)
+@project-air/contracts:test:       at Test.runInAsyncScope (node:async_hooks:226:14)
+@project-air/contracts:test:       at Test.run (node:internal/test_runner/test:1402:25)
+@project-air/contracts:test:       at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+@project-air/contracts:test:       at Test.postRun (node:internal/test_runner/test:1542:19)
+@project-air/contracts:test:       at Test.run (node:internal/test_runner/test:1467:12)
+@project-air/contracts:test:       at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+@project-air/contracts:test:     generatedMessage: true,
+@project-air/contracts:test:     code: 'ERR_ASSERTION',
+@project-air/contracts:test:     actual: false,
+@project-air/contracts:test:     expected: true,
+@project-air/contracts:test:     operator: '==',
+@project-air/contracts:test:     diff: 'simple'
+@project-air/contracts:test:   }
+@project-air/contracts:test: 
+@project-air/contracts:test: test at test/containment.test.mjs:53:1
+@project-air/contracts:test: ✖ valid containment fixtures are schema-valid and follow the parent rule (1.135625ms)
+@project-air/contracts:test:   AssertionError [ERR_ASSERTION]: the valid containment fixture satisfies the root schema
+@project-air/contracts:test:       at TestContext.<anonymous> (file:///private/tmp/air-P6-06/packages/contracts/test/containment.test.mjs:55:10)
+@project-air/contracts:test:       at Test.runInAsyncScope (node:async_hooks:226:14)
+@project-air/contracts:test:       at Test.run (node:internal/test_runner/test:1402:25)
+@project-air/contracts:test:       at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+@project-air/contracts:test:       at Test.postRun (node:internal/test_runner/test:1542:19)
+@project-air/contracts:test:       at Test.run (node:internal/test_runner/test:1467:12)
+@project-air/contracts:test:       at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+@project-air/contracts:test:     generatedMessage: false,
+@project-air/contracts:test:     code: 'ERR_ASSERTION',
+@project-air/contracts:test:     actual: false,
+@project-air/contracts:test:     expected: true,
+@project-air/contracts:test:     operator: '==',
+@project-air/contracts:test:     diff: 'simple'
+@project-air/contracts:test:   }
+@project-air/contracts:test: 
+@project-air/contracts:test: test at test/containment.test.mjs:65:1
+@project-air/contracts:test: ✖ the dangling parent fixture is rejected by the containment rule (0.319958ms)
+@project-air/contracts:test:   AssertionError [ERR_ASSERTION]: the dangling parent is schema-valid: JSON Schema cannot compare the reference, so the model rule is the rejection
+@project-air/contracts:test:       at TestContext.<anonymous> (file:///private/tmp/air-P6-06/packages/contracts/test/containment.test.mjs:69:10)
+@project-air/contracts:test:       at Test.runInAsyncScope (node:async_hooks:226:14)
+@project-air/contracts:test:       at Test.run (node:internal/test_runner/test:1402:25)
+@project-air/contracts:test:       at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+@project-air/contracts:test:       at Test.postRun (node:internal/test_runner/test:1542:19)
+@project-air/contracts:test:       at Test.run (node:internal/test_runner/test:1467:12)
+@project-air/contracts:test:       at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+@project-air/contracts:test:     generatedMessage: false,
+@project-air/contracts:test:     code: 'ERR_ASSERTION',
+@project-air/contracts:test:     actual: false,
+@project-air/contracts:test:     expected: true,
+@project-air/contracts:test:     operator: '==',
+@project-air/contracts:test:     diff: 'simple'
+@project-air/contracts:test:   }
+@project-air/contracts:test: 
+@project-air/contracts:test: test at test/contracts.test.mjs:83:1
+@project-air/contracts:test: ✖ board.contracts metadata names the current version and all 17 schema files (4.052416ms)
+@project-air/contracts:test:   AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+@project-air/contracts:test:   
+@project-air/contracts:test:   '0.4.0' !== '0.3.0'
+@project-air/contracts:test:   
+@project-air/contracts:test:       at TestContext.<anonymous> (file:///private/tmp/air-P6-06/packages/contracts/test/contracts.test.mjs:88:10)
+@project-air/contracts:test:       at Test.runInAsyncScope (node:async_hooks:226:14)
+@project-air/contracts:test:       at Test.run (node:internal/test_runner/test:1402:25)
+@project-air/contracts:test:       at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+@project-air/contracts:test:       at Test.postRun (node:internal/test_runner/test:1542:19)
+@project-air/contracts:test:       at Test.run (node:internal/test_runner/test:1467:12)
+@project-air/contracts:test:       at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+@project-air/contracts:test:     generatedMessage: true,
+@project-air/contracts:test:     code: 'ERR_ASSERTION',
+@project-air/contracts:test:     actual: '0.4.0',
+@project-air/contracts:test:     expected: '0.3.0',
+@project-air/contracts:test:     operator: 'strictEqual',
+@project-air/contracts:test:     diff: 'simple'
+@project-air/contracts:test:   }
+@project-air/contracts:test: 
+@project-air/contracts:test: test at test/contracts.test.mjs:97:1
+@project-air/contracts:test: ✖ every schema is JSON Schema 2020-12 with a versioned $id and required fields (0.685958ms)
+@project-air/contracts:test:   AssertionError [ERR_ASSERTION]: account has the versioned $id
+@project-air/contracts:test:   + actual - expected
+@project-air/contracts:test:   
+@project-air/contracts:test:   + 'https://project-air.dev/contracts/0.4.0/account.schema.json'
+@project-air/contracts:test:   - 'https://project-air.dev/contracts/0.3.0/account.schema.json'
+@project-air/contracts:test:   
+@project-air/contracts:test:       at TestContext.<anonymous> (file:///private/tmp/air-P6-06/packages/contracts/test/contracts.test.mjs:101:12)
+@project-air/contracts:test:       at Test.runInAsyncScope (node:async_hooks:226:14)
+@project-air/contracts:test:       at Test.run (node:internal/test_runner/test:1402:25)
+@project-air/contracts:test:       at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+@project-air/contracts:test:       at Test.postRun (node:internal/test_runner/test:1542:19)
+@project-air/contracts:test:       at Test.run (node:internal/test_runner/test:1467:12)
+@project-air/contracts:test:       at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+@project-air/contracts:test:     generatedMessage: false,
+@project-air/contracts:test:     code: 'ERR_ASSERTION',
+@project-air/contracts:test:     actual: 'https://project-air.dev/contracts/0.4.0/account.schema.json',
+@project-air/contracts:test:     expected: 'https://project-air.dev/contracts/0.3.0/account.schema.json',
+@project-air/contracts:test:     operator: 'strictEqual',
+@project-air/contracts:test:     diff: 'simple'
+@project-air/contracts:test:   }
+@project-air/contracts:test: 
+@project-air/contracts:test: test at test/contracts.test.mjs:149:1
+@project-air/contracts:test: ✖ valid fixtures satisfy their schema (1.296709ms)
+@project-air/contracts:test:   AssertionError [ERR_ASSERTION]: board-content/valid.json is valid
+@project-air/contracts:test:       at TestContext.<anonymous> (file:///private/tmp/air-P6-06/packages/contracts/test/contracts.test.mjs:154:14)
+@project-air/contracts:test:       at Test.runInAsyncScope (node:async_hooks:226:14)
+@project-air/contracts:test:       at Test.run (node:internal/test_runner/test:1402:25)
+@project-air/contracts:test:       at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+@project-air/contracts:test:       at Test.postRun (node:internal/test_runner/test:1542:19)
+@project-air/contracts:test:       at Test.run (node:internal/test_runner/test:1467:12)
+@project-air/contracts:test:       at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+@project-air/contracts:test:     generatedMessage: false,
+@project-air/contracts:test:     code: 'ERR_ASSERTION',
+@project-air/contracts:test:     actual: false,
+@project-air/contracts:test:     expected: true,
+@project-air/contracts:test:     operator: '==',
+@project-air/contracts:test:     diff: 'simple'
+@project-air/contracts:test:   }
+@project-air/contracts:test: 
+@project-air/contracts:test: test at test/contracts.test.mjs:238:1
+@project-air/contracts:test: ✖ fixed enums are part of the schemas (0.343417ms)
+@project-air/contracts:test:   AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+@project-air/contracts:test:   
+@project-air/contracts:test:   '0.4.0' !== '0.3.0'
+@project-air/contracts:test:   
+@project-air/contracts:test:       at TestContext.<anonymous> (file:///private/tmp/air-P6-06/packages/contracts/test/contracts.test.mjs:249:10)
+@project-air/contracts:test:       at Test.runInAsyncScope (node:async_hooks:226:14)
+@project-air/contracts:test:       at Test.run (node:internal/test_runner/test:1402:25)
+@project-air/contracts:test:       at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+@project-air/contracts:test:       at Test.postRun (node:internal/test_runner/test:1542:19)
+@project-air/contracts:test:       at Test.run (node:internal/test_runner/test:1467:12)
+@project-air/contracts:test:       at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+@project-air/contracts:test:     generatedMessage: true,
+@project-air/contracts:test:     code: 'ERR_ASSERTION',
+@project-air/contracts:test:     actual: '0.4.0',
+@project-air/contracts:test:     expected: '0.3.0',
+@project-air/contracts:test:     operator: 'strictEqual',
+@project-air/contracts:test:     diff: 'simple'
+@project-air/contracts:test:   }
+@project-air/contracts:test: 
+@project-air/contracts:test: test at test/operations.test.mjs:219:1
+@project-air/contracts:test: ✖ the operation schema is versioned JSON Schema 2020-12 with the operation vocabulary (0.989708ms)
+@project-air/contracts:test:   AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+@project-air/contracts:test:   + actual - expected
+@project-air/contracts:test:   
+@project-air/contracts:test:   + 'https://project-air.dev/contracts/0.4.0/operation.schema.json'
+@project-air/contracts:test:   - 'https://project-air.dev/contracts/0.3.0/operation.schema.json'
+@project-air/contracts:test:   
+@project-air/contracts:test:       at TestContext.<anonymous> (file:///private/tmp/air-P6-06/packages/contracts/test/operations.test.mjs:221:10)
+@project-air/contracts:test:       at Test.runInAsyncScope (node:async_hooks:226:14)
+@project-air/contracts:test:       at Test.run (node:internal/test_runner/test:1402:25)
+@project-air/contracts:test:       at Test.start (node:internal/test_runner/test:1262:17)
+@project-air/contracts:test:       at startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17) {
+@project-air/contracts:test:     generatedMessage: true,
+@project-air/contracts:test:     code: 'ERR_ASSERTION',
+@project-air/contracts:test:     actual: 'https://project-air.dev/contracts/0.4.0/operation.schema.json',
+@project-air/contracts:test:     expected: 'https://project-air.dev/contracts/0.3.0/operation.schema.json',
+@project-air/contracts:test:     operator: 'strictEqual',
+@project-air/contracts:test:     diff: 'simple'
+@project-air/contracts:test:   }
+@project-air/contracts:test: 
+@project-air/contracts:test: test at test/operations.test.mjs:242:1
+@project-air/contracts:test: ✖ index exports the operation schema path, id and type vocabulary (0.155417ms)
+@project-air/contracts:test:   AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+@project-air/contracts:test:   + actual - expected
+@project-air/contracts:test:   
+@project-air/contracts:test:   + 'https://project-air.dev/contracts/0.3.0/operation.schema.json'
+@project-air/contracts:test:   - 'https://project-air.dev/contracts/0.4.0/operation.schema.json'
+@project-air/contracts:test:   
+@project-air/contracts:test:       at TestContext.<anonymous> (file:///private/tmp/air-P6-06/packages/contracts/test/operations.test.mjs:246:10)
+@project-air/contracts:test:       at Test.runInAsyncScope (node:async_hooks:226:14)
+@project-air/contracts:test:       at Test.run (node:internal/test_runner/test:1402:25)
+@project-air/contracts:test:       at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+@project-air/contracts:test:       at Test.postRun (node:internal/test_runner/test:1542:19)
+@project-air/contracts:test:       at Test.run (node:internal/test_runner/test:1467:12)
+@project-air/contracts:test:       at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+@project-air/contracts:test:     generatedMessage: true,
+@project-air/contracts:test:     code: 'ERR_ASSERTION',
+@project-air/contracts:test:     actual: 'https://project-air.dev/contracts/0.3.0/operation.schema.json',
+@project-air/contracts:test:     expected: 'https://project-air.dev/contracts/0.4.0/operation.schema.json',
+@project-air/contracts:test:     operator: 'strictEqual',
+@project-air/contracts:test:     diff: 'simple'
+@project-air/contracts:test:   }
+@project-air/contracts:test: 
+@project-air/contracts:test: test at test/operations.test.mjs:274:1
+@project-air/contracts:test: ✖ valid operation fixtures satisfy the schema and the inverse model (3.756125ms)
+@project-air/contracts:test:   Error: unresolvable $ref note-body-payload.schema.json
+@project-air/contracts:test:       at validate (file:///private/tmp/air-P6-06/packages/contracts/test/support.mjs:86:37)
+@project-air/contracts:test:       at validate (file:///private/tmp/air-P6-06/packages/contracts/test/support.mjs:117:41)
+@project-air/contracts:test:       at validate (file:///private/tmp/air-P6-06/packages/contracts/test/support.mjs:83:14)
+@project-air/contracts:test:       at validate (file:///private/tmp/air-P6-06/packages/contracts/test/support.mjs:117:41)
+@project-air/contracts:test:       at validate (file:///private/tmp/air-P6-06/packages/contracts/test/support.mjs:125:16)
+@project-air/contracts:test:       at validate (file:///private/tmp/air-P6-06/packages/contracts/test/support.mjs:83:14)
+@project-air/contracts:test:       at validate (file:///private/tmp/air-P6-06/packages/contracts/test/support.mjs:117:41)
+@project-air/contracts:test:       at validate (file:///private/tmp/air-P6-06/packages/contracts/test/support.mjs:83:14)
+@project-air/contracts:test:       at schemaValid (file:///private/tmp/air-P6-06/packages/contracts/test/operations.test.mjs:83:31)
+@project-air/contracts:test:       at TestContext.<anonymous> (file:///private/tmp/air-P6-06/packages/contracts/test/operations.test.mjs:277:15)
+@project-air/contracts:test: 
+@project-air/contracts:test: test at test/operations.test.mjs:282:1
+@project-air/contracts:test: ✖ invalid operation fixtures break the schema or the inverse model and name the rule (2.668959ms)
+@project-air/contracts:test:   Error: unresolvable $ref note-body-payload.schema.json
+@project-air/contracts:test:       at validate (file:///private/tmp/air-P6-06/packages/contracts/test/support.mjs:86:37)
+@project-air/contracts:test:       at validate (file:///private/tmp/air-P6-06/packages/contracts/test/support.mjs:117:41)
+@project-air/contracts:test:       at validate (file:///private/tmp/air-P6-06/packages/contracts/test/support.mjs:83:14)
+@project-air/contracts:test:       at validate (file:///private/tmp/air-P6-06/packages/contracts/test/support.mjs:117:41)
+@project-air/contracts:test:       at validate (file:///private/tmp/air-P6-06/packages/contracts/test/support.mjs:125:16)
+@project-air/contracts:test:       at validate (file:///private/tmp/air-P6-06/packages/contracts/test/support.mjs:83:14)
+@project-air/contracts:test:       at validate (file:///private/tmp/air-P6-06/packages/contracts/test/support.mjs:117:41)
+@project-air/contracts:test:       at validate (file:///private/tmp/air-P6-06/packages/contracts/test/support.mjs:83:14)
+@project-air/contracts:test:       at schemaValid (file:///private/tmp/air-P6-06/packages/contracts/test/operations.test.mjs:83:31)
+@project-air/contracts:test:       at TestContext.<anonymous> (file:///private/tmp/air-P6-06/packages/contracts/test/operations.test.mjs:285:23)
+@project-air/contracts:test: 
+@project-air/contracts:test: test at test/parity.test.mjs:98:1
+@project-air/contracts:test: ✖ every fixture has a canonical TypeScript result (0.754ms)
+@project-air/contracts:test:   AssertionError [ERR_ASSERTION]: the contract has 86 fixtures
+@project-air/contracts:test:   
+@project-air/contracts:test:   93 !== 86
+@project-air/contracts:test:   
+@project-air/contracts:test:       at TestContext.<anonymous> (file:///private/tmp/air-P6-06/packages/contracts/test/parity.test.mjs:99:10)
+@project-air/contracts:test:       at Test.runInAsyncScope (node:async_hooks:226:14)
+@project-air/contracts:test:       at Test.run (node:internal/test_runner/test:1402:25)
+@project-air/contracts:test:       at Test.start (node:internal/test_runner/test:1262:17)
+@project-air/contracts:test:       at startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17) {
+@project-air/contracts:test:     generatedMessage: false,
+@project-air/contracts:test:     code: 'ERR_ASSERTION',
+@project-air/contracts:test:     actual: 93,
+@project-air/contracts:test:     expected: 86,
+@project-air/contracts:test:     operator: 'strictEqual',
+@project-air/contracts:test:     diff: 'simple'
+@project-air/contracts:test:   }
+@project-air/contracts:test: 
+@project-air/contracts:test: test at test/sync-protocol.test.mjs:202:1
+@project-air/contracts:test: ✖ the sync schema is versioned JSON Schema 2020-12 with one message union (1.167334ms)
+@project-air/contracts:test:   AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+@project-air/contracts:test:   + actual - expected
+@project-air/contracts:test:   
+@project-air/contracts:test:   + 'https://project-air.dev/contracts/0.4.0/sync.schema.json'
+@project-air/contracts:test:   - 'https://project-air.dev/contracts/0.3.0/sync.schema.json'
+@project-air/contracts:test:   
+@project-air/contracts:test:       at TestContext.<anonymous> (file:///private/tmp/air-P6-06/packages/contracts/test/sync-protocol.test.mjs:204:10)
+@project-air/contracts:test:       at Test.runInAsyncScope (node:async_hooks:226:14)
+@project-air/contracts:test:       at Test.run (node:internal/test_runner/test:1402:25)
+@project-air/contracts:test:       at Test.start (node:internal/test_runner/test:1262:17)
+@project-air/contracts:test:       at startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17) {
+@project-air/contracts:test:     generatedMessage: true,
+@project-air/contracts:test:     code: 'ERR_ASSERTION',
+@project-air/contracts:test:     actual: 'https://project-air.dev/contracts/0.4.0/sync.schema.json',
+@project-air/contracts:test:     expected: 'https://project-air.dev/contracts/0.3.0/sync.schema.json',
+@project-air/contracts:test:     operator: 'strictEqual',
+@project-air/contracts:test:     diff: 'simple'
+@project-air/contracts:test:   }
+@project-air/contracts:test: 
+@project-air/contracts:test: test at test/sync-protocol.test.mjs:290:1
+@project-air/contracts:test: ✖ every message type has a valid and an invalid fixture in the wrapper (0.907334ms)
+@project-air/contracts:test:   AssertionError [ERR_ASSERTION]: client-hello.json satisfies the sync schema
+@project-air/contracts:test:       at TestContext.<anonymous> (file:///private/tmp/air-P6-06/packages/contracts/test/sync-protocol.test.mjs:308:12)
+@project-air/contracts:test:       at Test.runInAsyncScope (node:async_hooks:226:14)
+@project-air/contracts:test:       at Test.run (node:internal/test_runner/test:1402:25)
+@project-air/contracts:test:       at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+@project-air/contracts:test:       at Test.postRun (node:internal/test_runner/test:1542:19)
+@project-air/contracts:test:       at Test.run (node:internal/test_runner/test:1467:12)
+@project-air/contracts:test:       at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+@project-air/contracts:test:     generatedMessage: false,
+@project-air/contracts:test:     code: 'ERR_ASSERTION',
+@project-air/contracts:test:     actual: false,
+@project-air/contracts:test:     expected: true,
+@project-air/contracts:test:     operator: '==',
+@project-air/contracts:test:     diff: 'simple'
+@project-air/contracts:test:   }
+@project-air/contracts:test: 
+@project-air/contracts:test: test at test/sync-protocol.test.mjs:341:1
+@project-air/contracts:test: ✖ operation batches carry P1-02 operations through the operation schema reference (0.206459ms)
+@project-air/contracts:test:   AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+@project-air/contracts:test:   + actual - expected
+@project-air/contracts:test:   
+@project-air/contracts:test:   + 'https://project-air.dev/contracts/0.4.0/operation.schema.json'
+@project-air/contracts:test:   - 'https://project-air.dev/contracts/0.3.0/operation.schema.json'
+@project-air/contracts:test:   
+@project-air/contracts:test:       at TestContext.<anonymous> (file:///private/tmp/air-P6-06/packages/contracts/test/sync-protocol.test.mjs:344:10)
+@project-air/contracts:test:       at Test.runInAsyncScope (node:async_hooks:226:14)
+@project-air/contracts:test:       at Test.run (node:internal/test_runner/test:1402:25)
+@project-air/contracts:test:       at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+@project-air/contracts:test:       at Test.postRun (node:internal/test_runner/test:1542:19)
+@project-air/contracts:test:       at Test.run (node:internal/test_runner/test:1467:12)
+@project-air/contracts:test:       at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+@project-air/contracts:test:     generatedMessage: true,
+@project-air/contracts:test:     code: 'ERR_ASSERTION',
+@project-air/contracts:test:     actual: 'https://project-air.dev/contracts/0.4.0/operation.schema.json',
+@project-air/contracts:test:     expected: 'https://project-air.dev/contracts/0.3.0/operation.schema.json',
+@project-air/contracts:test:     operator: 'strictEqual',
+@project-air/contracts:test:     diff: 'simple'
+@project-air/contracts:test:   }
+@project-air/contracts:test: 
+@project-air/contracts:test: test at test/sync-protocol.test.mjs:420:1
+@project-air/contracts:test: ✖ the reconnect sequence starts from a known serverSeq and ends with the snapshot (0.161375ms)
+@project-air/contracts:test:   AssertionError [ERR_ASSERTION]: the reconnect fixture satisfies the sequence schema
+@project-air/contracts:test:       at TestContext.<anonymous> (file:///private/tmp/air-P6-06/packages/contracts/test/sync-protocol.test.mjs:422:10)
+@project-air/contracts:test:       at Test.runInAsyncScope (node:async_hooks:226:14)
+@project-air/contracts:test:       at Test.run (node:internal/test_runner/test:1402:25)
+@project-air/contracts:test:       at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+@project-air/contracts:test:       at Test.postRun (node:internal/test_runner/test:1542:19)
+@project-air/contracts:test:       at Test.run (node:internal/test_runner/test:1467:12)
+@project-air/contracts:test:       at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+@project-air/contracts:test:     generatedMessage: false,
+@project-air/contracts:test:     code: 'ERR_ASSERTION',
+@project-air/contracts:test:     actual: false,
+@project-air/contracts:test:     expected: true,
+@project-air/contracts:test:     operator: '==',
+@project-air/contracts:test:     diff: 'simple'
+@project-air/contracts:test:   }
+@project-air/contracts:test: 
+@project-air/contracts:test: test at test/sync-protocol.test.mjs:443:1
+@project-air/contracts:test: ✖ the session sequence keeps join order, sequences, duplicate batches and ack coverage (0.12775ms)
+@project-air/contracts:test:   AssertionError [ERR_ASSERTION]: the session fixture satisfies the sequence schema
+@project-air/contracts:test:       at TestContext.<anonymous> (file:///private/tmp/air-P6-06/packages/contracts/test/sync-protocol.test.mjs:445:10)
+@project-air/contracts:test:       at Test.runInAsyncScope (node:async_hooks:226:14)
+@project-air/contracts:test:       at Test.run (node:internal/test_runner/test:1402:25)
+@project-air/contracts:test:       at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+@project-air/contracts:test:       at Test.postRun (node:internal/test_runner/test:1542:19)
+@project-air/contracts:test:       at Test.run (node:internal/test_runner/test:1467:12)
+@project-air/contracts:test:       at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+@project-air/contracts:test:     generatedMessage: false,
+@project-air/contracts:test:     code: 'ERR_ASSERTION',
+@project-air/contracts:test:     actual: false,
+@project-air/contracts:test:     expected: true,
+@project-air/contracts:test:     operator: '==',
+@project-air/contracts:test:     diff: 'simple'
+@project-air/contracts:test:   }
+@project-air/contracts:test: 
+@project-air/contracts:test: test at test/sync-protocol.test.mjs:479:1
+@project-air/contracts:test: ✖ the board content in a snapshot is the root board-content document (2.124291ms)
+@project-air/contracts:test:   AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+@project-air/contracts:test:   
+@project-air/contracts:test:     assert.ok(schemaValid(data))
+@project-air/contracts:test:   
+@project-air/contracts:test:       at TestContext.<anonymous> (file:///private/tmp/air-P6-06/packages/contracts/test/sync-protocol.test.mjs:485:10)
+@project-air/contracts:test:       at Test.runInAsyncScope (node:async_hooks:226:14)
+@project-air/contracts:test:       at Test.run (node:internal/test_runner/test:1402:25)
+@project-air/contracts:test:       at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+@project-air/contracts:test:       at Test.postRun (node:internal/test_runner/test:1542:19)
+@project-air/contracts:test:       at Test.run (node:internal/test_runner/test:1467:12)
+@project-air/contracts:test:       at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+@project-air/contracts:test:     generatedMessage: true,
+@project-air/contracts:test:     code: 'ERR_ASSERTION',
+@project-air/contracts:test:     actual: false,
+@project-air/contracts:test:     expected: true,
+@project-air/contracts:test:     operator: '==',
+@project-air/contracts:test:     diff: 'simple'
+@project-air/contracts:test:   }
+@project-air/contracts:test: 
+@project-air/contracts:test: test at test/sync-protocol.test.mjs:488:1
+@project-air/contracts:test: ✖ P5-01: version negotiation, fresh-board serverSeq and reconnect ordering fixtures (0.60375ms)
+@project-air/contracts:test:   AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+@project-air/contracts:test:   
+@project-air/contracts:test:     assert.ok(sequenceValid("reconnect-sequence", empty.data))
+@project-air/contracts:test:   
+@project-air/contracts:test:       at TestContext.<anonymous> (file:///private/tmp/air-P6-06/packages/contracts/test/sync-protocol.test.mjs:501:10)
+@project-air/contracts:test:       at Test.runInAsyncScope (node:async_hooks:226:14)
+@project-air/contracts:test:       at Test.run (node:internal/test_runner/test:1402:25)
+@project-air/contracts:test:       at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+@project-air/contracts:test:       at Test.postRun (node:internal/test_runner/test:1542:19)
+@project-air/contracts:test:       at Test.run (node:internal/test_runner/test:1467:12)
+@project-air/contracts:test:       at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+@project-air/contracts:test:     generatedMessage: true,
+@project-air/contracts:test:     code: 'ERR_ASSERTION',
+@project-air/contracts:test:     actual: false,
+@project-air/contracts:test:     expected: true,
+@project-air/contracts:test:     operator: '==',
+@project-air/contracts:test:     diff: 'simple'
+@project-air/contracts:test:   }
+@project-air/contracts:test: [ELIFECYCLE] Test failed. See above for more details.
+
+ Tasks:    0 successful, 1 total
+Cached:    0 cached, 1 total
+  Time:    2.379s 
+Failed:    @project-air/contracts#test
+
+$ turbo run test --affected
+@project-air/contracts#test:  ERROR  command (/private/tmp/air-P6-06/packages/contracts) /opt/homebrew/bin/pnpm run test exited (1)
+ ERROR  run failed: command  exited (1)
+[ELIFECYCLE] Test failed. See above for more details.

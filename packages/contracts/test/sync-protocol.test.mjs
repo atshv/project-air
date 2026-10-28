@@ -1,4 +1,4 @@
-// Unit tests for the WebSocket sync protocol of contract 0.3.0.
+// Unit tests for the WebSocket sync protocol of contract 0.4.0.
 //
 // The suite checks the sync schema (12 message types in one versioned document,
 // client-to-server and server-to-client, the reconnect and session sequences),
@@ -203,8 +203,8 @@ test("the sync schema is versioned JSON Schema 2020-12 with one message union", 
   assert.equal(SYNC_SCHEMA.$schema, JSON_SCHEMA_2020_12);
   assert.equal(SYNC_SCHEMA.$id, SYNC_SCHEMA_ID);
   assert.equal(SYNC_SCHEMA_ID, `${CONTRACT_BASE_URI}sync.schema.json`);
-  assert.equal(CONTRACT_VERSION, "0.3.0");
-  assert.ok(SYNC_SCHEMA.$id.includes("/0.3.0/"));
+  assert.equal(CONTRACT_VERSION, "0.4.0");
+  assert.ok(SYNC_SCHEMA.$id.includes("/0.4.0/"));
   assert.equal(typeof SYNC_SCHEMA.title, "string");
   assert.ok(SYNC_SCHEMA.title.length > 0);
   assert.equal(typeof SYNC_SCHEMA.description, "string");
@@ -488,7 +488,7 @@ test("the board content in a snapshot is the root board-content document", () =>
 test("P5-01: version negotiation, fresh-board serverSeq and reconnect ordering fixtures", () => {
   // hello carries the once-per-connection contractVersion; a client/server pair
   // that skips or mismatches it is rejected by the schema and by the session rule.
-  // The schema keeps the field optional (0.3.0 is a minor addition); the session
+  // The schema keeps the field optional (0.4.0 is a minor addition); the session
   // rule is the enforcement point for the once-per-connection negotiation.
   const missingVersion = fixtureOf("invalid", "client-hello-missing-contract-version.json").data;
   assert.ok(schemaValid(missingVersion), "the schema allows the optional field");

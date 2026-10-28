@@ -1,0 +1,58 @@
+{
+  "schema": "schemas/operation.schema.json",
+  "valid": true,
+  "reason": "one updateNoteBody operation whose inverse carries the previous body",
+  "data": {
+    "id": "0192f0aa-7000-7000-8000-000000000001",
+    "boardId": "0192f0a3-7000-7000-8000-000000000003",
+    "actorId": "0192f0a1-7000-7000-8000-000000000001",
+    "createdAt": "2027-01-10T09:00:00.000Z",
+    "type": "updateNoteBody",
+    "payload": {
+      "noteId": "0192f0a4-7000-7000-8000-000000000004",
+      "body": {
+        "version": "1",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Hello world.",
+            "marks": [
+              "bold",
+              "italic"
+            ]
+          },
+          {
+            "type": "list",
+            "text": "Source",
+            "ordered": false,
+            "marks": [
+              "link"
+            ],
+            "href": "https://example.test/source"
+          },
+          {
+            "type": "heading",
+            "text": "Notes",
+            "level": 2
+          }
+        ]
+      }
+    },
+    "inverse": {
+      "boardId": "0192f0a3-7000-7000-8000-000000000003",
+      "type": "updateNoteBody",
+      "payload": {
+        "noteId": "0192f0a4-7000-7000-8000-000000000004",
+        "body": {
+          "version": "1",
+          "blocks": [
+            {
+              "type": "paragraph",
+              "text": "Previous body"
+            }
+          ]
+        }
+      }
+    }
+  }
+}

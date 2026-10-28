@@ -3,7 +3,7 @@
   "valid": false,
   "reason": "an ack must cover every operation of the acknowledged batch",
   "data": {
-    "contractVersion": "0.3.0",
+    "contractVersion": "0.4.0",
     "clientId": "0192f0b0-7000-7000-8000-0000000000c1",
     "serverSeq": 44,
     "messages": [

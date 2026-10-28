@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://project-air.dev/contracts/0.3.0/api/board.schema.json",
+  "$id": "https://project-air.dev/contracts/0.4.0/api/board.schema.json",
   "title": "Board REST envelopes",
-  "description": "Request and response envelopes of the board resource of contract 0.3.0. Every envelope carries a requestId; the entity is the P1-01 board schema, so a resource response can be validated without restating the model. Bodies are closed (additionalProperties false).",
+  "description": "Request and response envelopes of the board resource of contract 0.4.0. Every envelope carries a requestId; the entity is the P1-01 board schema, so a resource response can be validated without restating the model. Bodies are closed (additionalProperties false).",
   "$ref": "#/$defs/envelopes",
   "$defs": {
     "uuid": {

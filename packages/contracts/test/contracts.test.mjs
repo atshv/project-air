@@ -1,4 +1,4 @@
-// Unit tests for the board-content contract 0.3.0.
+// Unit tests for the board-content contract 0.4.0.
 //
 // The suite parses every schema and fixture, validates the fixtures against the
 // schemas with a small structural validator for the keywords this contract uses,
@@ -44,6 +44,7 @@ const EXPECTED_SCHEMA_NAMES = [
   "card",
   "edge",
   "note",
+  "note-body-payload",
   "operation",
   "reorder-payload",
   "workspace",
@@ -66,8 +67,8 @@ const EXPECTED_MINIMUMS = {
 // --- the contract -------------------------------------------------------------
 
 test("index exports the versioned schema and fixture paths", () => {
-  assert.equal(CONTRACT_VERSION, "0.3.0");
-  assert.equal(CONTRACT_BASE_URI, "https://project-air.dev/contracts/0.3.0/");
+  assert.equal(CONTRACT_VERSION, "0.4.0");
+  assert.equal(CONTRACT_BASE_URI, "https://project-air.dev/contracts/0.4.0/");
   assert.deepEqual([...SCHEMA_NAMES].sort(), EXPECTED_SCHEMA_NAMES);
   assert.deepEqual(Object.keys(FIXTURE_DIRS).sort(), EXPECTED_SCHEMA_NAMES);
   for (const name of EXPECTED_SCHEMA_NAMES) {
@@ -80,7 +81,7 @@ test("index exports the versioned schema and fixture paths", () => {
   assert.throws(() => fixturePath("unknown", "valid.json"), /unknown contract schema/);
 });
 
-test("board.contracts metadata names the current version and all 17 schema files", () => {
+test("board.contracts metadata names the current version and all 18 schema files", () => {
   const board = readJson("../../board.json");
   const contract = board.contracts.find((entry) => entry.path === "packages/contracts");
   assert.ok(contract !== undefined, "board.contracts has the package entry");
@@ -99,7 +100,7 @@ test("every schema is JSON Schema 2020-12 with a versioned $id and required fiel
     const schema = schemaOf(name);
     assert.equal(schema.$schema, JSON_SCHEMA_2020_12, `${name} uses JSON Schema 2020-12`);
     assert.equal(schema.$id, schemaId(name), `${name} has the versioned $id`);
-    assert.ok(schema.$id.includes("/0.3.0/"), `${name} carries version 0.3.0`);
+    assert.ok(schema.$id.includes("/0.4.0/"), `${name} carries version 0.4.0`);
     assert.equal(typeof schema.title, "string");
     assert.ok(schema.title.length > 0, `${name} has a title`);
     assert.equal(typeof schema.description, "string");
@@ -246,7 +247,7 @@ test("fixed enums are part of the schemas", () => {
     "table",
   ]);
   assert.deepEqual(schemaOf("board-content").required[0], "contractVersion");
-  assert.equal(schemaOf("board-content").properties.contractVersion.const, "0.3.0");
+  assert.equal(schemaOf("board-content").properties.contractVersion.const, "0.4.0");
 });
 
 test("the fractional index is a string", () => {

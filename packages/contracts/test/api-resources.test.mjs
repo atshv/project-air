@@ -1,4 +1,4 @@
-// Unit tests for the REST API resource envelopes of contract 0.3.0.
+// Unit tests for the REST API resource envelopes of contract 0.4.0.
 //
 // The suite checks the four resource schemas (workspace, board, note, card) with
 // their closed list-request/list-response/response/create-request/update-request/
@@ -65,13 +65,13 @@ const schemaValid = (schema, data) => validate(data, schema, schema);
 
 test("the four API resource schemas are versioned JSON Schema 2020-12 with closed envelopes", () => {
   assert.deepEqual([...API_RESOURCES], ["workspace", "board", "note", "card"]);
-  assert.equal(CONTRACT_VERSION, "0.3.0");
+  assert.equal(CONTRACT_VERSION, "0.4.0");
   for (const resource of API_RESOURCES) {
     const schema = SCHEMAS.get(resource);
     assert.equal(schema.$schema, JSON_SCHEMA_2020_12, `${resource} uses JSON Schema 2020-12`);
     assert.equal(schema.$id, apiSchemaId(resource));
     assert.equal(schema.$id, `${CONTRACT_BASE_URI}api/${resource}.schema.json`);
-    assert.ok(schema.$id.includes("/0.3.0/"), `${resource} carries version 0.3.0`);
+    assert.ok(schema.$id.includes("/0.4.0/"), `${resource} carries version 0.4.0`);
     assert.equal(typeof schema.title, "string");
     assert.ok(schema.title.length > 0, `${resource} has a title`);
     assert.equal(typeof schema.description, "string");

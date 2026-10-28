@@ -1,0 +1,44 @@
+{
+  "schema": "schemas/operation.schema.json",
+  "valid": false,
+  "reason": "operation payload body uses a disallowed link scheme",
+  "data": {
+    "id": "0192f0aa-7000-7000-8000-000000000001",
+    "boardId": "0192f0a3-7000-7000-8000-000000000003",
+    "actorId": "0192f0a1-7000-7000-8000-000000000001",
+    "createdAt": "2027-01-10T09:00:00.000Z",
+    "type": "updateNoteBody",
+    "payload": {
+      "noteId": "0192f0a4-7000-7000-8000-000000000004",
+      "body": {
+        "version": "1",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "x",
+            "marks": [
+              "link"
+            ],
+            "href": "javascript:alert(1)"
+          }
+        ]
+      }
+    },
+    "inverse": {
+      "boardId": "0192f0a3-7000-7000-8000-000000000003",
+      "type": "updateNoteBody",
+      "payload": {
+        "noteId": "0192f0a4-7000-7000-8000-000000000004",
+        "body": {
+          "version": "1",
+          "blocks": [
+            {
+              "type": "paragraph",
+              "text": "Previous body"
+            }
+          ]
+        }
+      }
+    }
+  }
+}

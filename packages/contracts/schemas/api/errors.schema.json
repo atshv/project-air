@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://project-air.dev/contracts/0.3.0/api/errors.schema.json",
+  "$id": "https://project-air.dev/contracts/0.4.0/api/errors.schema.json",
   "title": "API error",
-  "description": "One REST error envelope of contract 0.3.0. The wire code is language-neutral; the required messageKey names the translation key errors.<camelCase(code)> in apps/web/messages and the client renders it (AD-8). The oneOf below ties every code to exactly one key.",
+  "description": "One REST error envelope of contract 0.4.0. The wire code is language-neutral; the required messageKey names the translation key errors.<camelCase(code)> in apps/web/messages and the client renders it (AD-8). The oneOf below ties every code to exactly one key.",
   "type": "object",
   "additionalProperties": false,
   "required": [

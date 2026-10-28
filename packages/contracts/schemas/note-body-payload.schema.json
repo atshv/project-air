@@ -1,0 +1,94 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://project-air.dev/contracts/0.4.0/note-body-payload.schema.json",
+  "title": "Note body document",
+  "description": "Versioned structured editor document: blocks paragraph/heading/list with inline marks bold/italic/code/link; link hrefs scheme-restricted; limits 1000 blocks, 10000 chars per block, 50000 plainText.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "version",
+    "blocks"
+  ],
+  "properties": {
+    "version": {
+      "const": "1"
+    },
+    "blocks": {
+      "type": "array",
+      "maxItems": 1000,
+      "items": {
+        "$ref": "#/$defs/block"
+      }
+    }
+  },
+  "$defs": {
+    "block": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "text"
+      ],
+      "properties": {
+        "type": {
+          "enum": [
+            "paragraph",
+            "heading",
+            "list"
+          ]
+        },
+        "text": {
+          "type": "string",
+          "maxLength": 10000
+        },
+        "marks": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "bold",
+              "italic",
+              "code",
+              "link"
+            ]
+          }
+        },
+        "level": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 6
+        },
+        "ordered": {
+          "type": "boolean"
+        },
+        "href": {
+          "type": "string",
+          "maxLength": 2048,
+          "pattern": "^(https?|mailto):[^\\s]+$"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "marks": {
+                "type": "array",
+                "contains": {
+                  "const": "link"
+                }
+              }
+            },
+            "required": [
+              "marks"
+            ]
+          },
+          "then": {
+            "required": [
+              "href"
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

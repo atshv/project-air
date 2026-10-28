@@ -15,7 +15,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 export const PACKAGE_DIR = dirname(fileURLToPath(import.meta.url));
-export const CONTRACT_VERSION = "0.3.0";
+export const CONTRACT_VERSION = "0.4.0";
 export const GENERATED_FILES = ["types.ts", "contract.h"];
 export const GENERATED_DIR = join(PACKAGE_DIR, "generated");
 

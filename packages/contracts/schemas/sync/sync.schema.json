@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://project-air.dev/contracts/0.3.0/sync.schema.json",
+  "$id": "https://project-air.dev/contracts/0.4.0/sync.schema.json",
   "title": "Sync protocol message",
-  "description": "One message of the WebSocket sync protocol of contract 0.3.0: either a client-to-server or a server-to-client message. Every message carries a UUIDv7 message id, the clientId of the connection, an ISO-8601 sentAt timestamp and a typed payload. Client messages carry a per-connection seq; durable server messages carry a board-wide serverSeq (AD-2). The protocol is a message language over the operations of operation.schema.json; it defines no server behaviour.",
+  "description": "One message of the WebSocket sync protocol of contract 0.4.0: either a client-to-server or a server-to-client message. Every message carries a UUIDv7 message id, the clientId of the connection, an ISO-8601 sentAt timestamp and a typed payload. Client messages carry a per-connection seq; durable server messages carry a board-wide serverSeq (AD-2). The protocol is a message language over the operations of operation.schema.json; it defines no server behaviour.",
   "$ref": "#/$defs/sync-message",
   "$defs": {
     "uuid": {
@@ -45,7 +45,7 @@
       "description": "Reference to a board snapshot as <boardId>:<serverSeq>; the snapshot itself is sent or stored behind this reference."
     },
     "contractVersion": {
-      "const": "0.3.0",
+      "const": "0.4.0",
       "description": "The contract version this message was written against."
     },
     "errorCode": {
@@ -118,7 +118,7 @@
         "operations": {
           "type": "array",
           "minItems": 1,
-          "description": "Ordered operations; every entry is a contract 0.3.0 operation with exactly one inverse.",
+          "description": "Ordered operations; every entry is a contract 0.4.0 operation with exactly one inverse.",
           "items": {
             "$ref": "operation.schema.json"
           }
@@ -517,7 +517,7 @@
     },
     "snapshot": {
       "title": "snapshot (server to client)",
-      "description": "Server-to-client: the catch-up payload after welcome, carrying the board snapshot document behind the snapshot reference. The boardContent is the root board-content document of contract 0.3.0.",
+      "description": "Server-to-client: the catch-up payload after welcome, carrying the board snapshot document behind the snapshot reference. The boardContent is the root board-content document of contract 0.4.0.",
       "type": "object",
       "additionalProperties": false,
       "required": ["id", "clientId", "boardId", "type", "sentAt", "serverSeq", "payload"],

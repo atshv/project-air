@@ -1,11 +1,17 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://project-air.dev/contracts/0.3.0/note.schema.json",
+  "$id": "https://project-air.dev/contracts/0.4.0/note.schema.json",
   "title": "Note",
   "description": "A note exists once in its workspace (AD-4); cards only reference it. The note body is the editor document and is added in the editor stage.",
   "type": "object",
   "additionalProperties": false,
-  "required": ["id", "workspaceId", "title", "createdAt", "updatedAt"],
+  "required": [
+    "id",
+    "workspaceId",
+    "title",
+    "createdAt",
+    "updatedAt"
+  ],
   "properties": {
     "id": {
       "type": "string",
@@ -28,6 +34,14 @@
     "updatedAt": {
       "type": "string",
       "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\\.[0-9]+)?(?:Z|[+-][0-9]{2}:[0-9]{2})$"
+    },
+    "body": {
+      "$ref": "note-body-payload.schema.json"
+    },
+    "plainText": {
+      "type": "string",
+      "maxLength": 50000,
+      "description": "Derived plain text of the body for search; must match the body derivation when body is present."
     }
   }
 }

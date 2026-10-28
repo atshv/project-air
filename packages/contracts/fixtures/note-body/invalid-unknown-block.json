@@ -1,0 +1,14 @@
+{
+  "schema": "schemas/note-body-payload.schema.json",
+  "valid": false,
+  "reason": "unknown block type is rejected",
+  "data": {
+    "version": "1",
+    "blocks": [
+      {
+        "type": "image",
+        "text": "x"
+      }
+    ]
+  }
+}

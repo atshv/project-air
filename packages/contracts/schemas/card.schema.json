@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://project-air.dev/contracts/0.3.0/card.schema.json",
+  "$id": "https://project-air.dev/contracts/0.4.0/card.schema.json",
   "title": "Note card",
   "description": "The placement of one note on one board (AD-4). A card references its note and never embeds note content.",
   "type": "object",

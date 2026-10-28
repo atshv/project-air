@@ -1,0 +1,32 @@
+{
+  "schema": "schemas/note-body-payload.schema.json",
+  "valid": true,
+  "reason": "paragraph, list and heading blocks with inline marks and an https link inside the documented limits",
+  "data": {
+    "version": "1",
+    "blocks": [
+      {
+        "type": "paragraph",
+        "text": "Hello world.",
+        "marks": [
+          "bold",
+          "italic"
+        ]
+      },
+      {
+        "type": "list",
+        "text": "Source",
+        "ordered": false,
+        "marks": [
+          "link"
+        ],
+        "href": "https://example.test/source"
+      },
+      {
+        "type": "heading",
+        "text": "Notes",
+        "level": 2
+      }
+    ]
+  }
+}
