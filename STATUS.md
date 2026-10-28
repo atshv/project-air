@@ -125,16 +125,13 @@
 
 ## Ready now
 
-- `P0-46` Preview page: back-to-top arrow
-  - P0-45: Closed P0-45: page contents under the masthead link 01-13 (labels reuse each eyebrow key); section 13 lists nine project areas with purpose, owner, folders, 53 parts with status.
-  - P0-45: Roles table maps eight roles; texts in areas.*/toc.* (EN/DE); works dark and light, no overflow at 390 px. Status is a 2026-10-29 snapshot of board.json.
-  - P0-45: Moved to stage web-app: an open foundation task failed the stage rule for in-progress web-app tasks. Gates board-check/design-check/changelog-entry green.
+- none
 
 ## Orchestration
 
 - Limits: 3 attempts/task, 3 in progress
-- Next wave: `P0-46` (tasks/P0-46.md)
-- Running: `P6-07` attempt 0/3
+- Next wave: none — nothing is ready
+- Running: `P6-07` attempt 0/3; `P0-46` attempt 0/3<!-- polier:claims --> — claimed by dsh<!-- /polier:claims -->
 - Blocked: P0-02, P0-15, P0-16, P0-17 (stage waits); P6-08, P6-09, P6-10 (open dependency)
 - Approvals pending: none
 
@@ -247,6 +244,7 @@
 ## In progress
 
 - [ ] `P6-07` Panel and editor: overlay, own editor, note placeholder and title (L04, L06, L09) — status: `in_progress` — owner: lead
+- [ ] `P0-46` Preview page: back-to-top arrow — status: `in_progress` — owner: —
 
 ## Blocked / failed
 
@@ -261,7 +259,13 @@
 - [ ] `P6-08` Realtime UI: live changes, presence and save status (L05) — status: `pending` — owner: —
 - [ ] `P6-09` e2e suite: main flows and the e2e gate on the slot ports — status: `pending` — owner: —
 - [ ] `P6-10` Canvas evidence, repo-wide checks and the web-app stage report — status: `pending` — owner: —
-- [ ] `P0-46` Preview page: back-to-top arrow — status: `pending` — owner: —
+
+<!-- polier:claims -->
+## Claims
+
+- `P0-46` in progress by dsh since 2026-10-28T23:58:51+00:00 — worktree: /Users/rasulatashev/Desktop/KI Projekte/Project air-P0-46 · slot 4
+
+<!-- /polier:claims -->
 
 ## Decisions
 
