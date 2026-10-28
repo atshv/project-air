@@ -122,10 +122,7 @@
 
 ## Ready now
 
-- `P0-34` Live demo: move a zone with its members
-  - P0-33: Closed P0-33: checklist block (5 items, 2 done, counter + status, real checkboxes) and spreadsheet card (A-D, rows 1-6, formula bar, computed totals, click/arrow selection).
-  - P0-33: Both draggable on the blocks layer (no drag from checkbox/label, no click after drag), desktop homes data-home, compact homes data-home-compact, compact world grid x 104.
-  - P0-33: Gates board-check/design-check/changelog-entry green; 4 screenshots + log; follow-up: language-check flags German demo strings in apps/engine-playground/main.js.
+- none
 
 ## Done
 
@@ -207,6 +204,7 @@
 - [x] `P4-31` English sample text in the engine playground (language-check) — status: `done` — owner: —
 - [x] `P5-01` Sync contract 0.3.0: settle the pre-realtime open points — status: `done` — owner: —
 - [x] `P5-02` CRDT document core behind an own interface (Yjs) — status: `done` — owner: —
+- [x] `P0-34` Live demo: move a zone with its members — status: `done` — owner: —
 
 ## In progress
 
@@ -227,7 +225,6 @@
 - [ ] `P5-06` Durability and reconnect: restart, catch-up and snapshot compaction — status: `pending` — owner: —
 - [ ] `P5-07` crdt-convergence proof: 10,000 rounds, offline clients and own-only undo — status: `pending` — owner: —
 - [ ] `P5-08` load proof: 25 clients per board at p95 <= 150 ms and the stage report — status: `pending` — owner: —
-- [ ] `P0-34` Live demo: move a zone with its members — status: `pending` — owner: —
 
 <!-- polier:claims -->
 ## Claims

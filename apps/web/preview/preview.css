@@ -1145,6 +1145,30 @@ button {
     visibility 0s linear 0s;
 }
 
+/* P0-34: the frame (padding and header) is the zone's grip; while the zone
+   moves, frame, name and members follow the pointer without transition and the
+   frame lifts. Ghost and collapsed frames stay inert. */
+.demo-zone__card.is-positioned {
+  pointer-events: auto;
+  cursor: grab;
+  touch-action: none;
+}
+
+.demo-zone__card.is-positioned.is-ghost {
+  pointer-events: none;
+}
+
+.demo-zone__card.is-positioned.is-moving {
+  box-shadow: var(--shadow);
+  cursor: grabbing;
+}
+
+.demo-zone.is-moving .demo-zone__card.is-positioned,
+.demo-zone.is-moving .demo-zone__item.is-floating,
+.demo-zone.is-moving .demo-zone__title.is-placed {
+  transition: none;
+}
+
 /* The drag would dock here: the frame border lifts a little. */
 .demo-zone__card.is-positioned.is-target {
   border-color: var(--border-strong);

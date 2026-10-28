@@ -5874,7 +5874,7 @@
       "satisfies": [
         "D3"
       ],
-      "status": "pending",
+      "status": "done",
       "depends_on": [
         "P0-33"
       ],
@@ -5913,10 +5913,19 @@
         "changelog-entry"
       ],
       "branch": "task/P0-34",
-      "worktree": "../Project air-P0-34",
-      "evidence": [],
+      "worktree": null,
+      "evidence": [
+        "reviews/evidence/P0-34-board-check-20261028T190654Z.json",
+        "reviews/evidence/P0-34-changelog-entry-20261028T190658Z.json",
+        "reviews/evidence/P0-34-design-check-20261028T190658Z.json"
+      ],
       "scope_write_forbidden": [
         "reference/"
+      ],
+      "handoff": [
+        "Closed P0-34: a zone drags by its frame/header; frame, name and docked members move 1:1 (transitions off, lifted frame), clamped by positionLayout; release announces, cancel glides back.",
+        "Member drag, release preview and rename unchanged; moves and member drags exclusive; sync deferred; ghost/collapsed inert; frame stays on --layer-zones (passes under blocks).",
+        "Gates board-check/design-check/changelog-entry green; 3 screenshots + log. Note: the brief and board entry were first committed inside P5-02 (1038ba3, shared checkout)."
       ]
     }
   ],

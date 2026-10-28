@@ -71,6 +71,7 @@
     "demo.zone.nameNew": "New zone",
     "demo.zone.nameLabel": "Zone name, click to rename",
     "demo.sheet.sumFunction": "SUM",
+    "demo.status.zoneMoved": "Zone moved.",
     "demo.status.checklistCount": "{done} of {total} done",
     "demo.status.checklistDone": "\u201c{item}\u201d done \u2014 {done} of {total}.",
     "demo.status.checklistOpen": "\u201c{item}\u201d open again \u2014 {done} of {total}.",
@@ -1655,7 +1656,7 @@
     // re-fitted (and re-oriented when the requested orientation no longer fits).
     function syncZoneGeometry(ratioX, ratioY) {
       if (!zoneReady) return;
-      if (zoneDrag !== null) {
+      if (zoneDrag !== null || zoneMove !== null) {
         zonePendingSync = true;
         return;
       }
@@ -1738,7 +1739,7 @@
     }
 
     function onZoneItemPointerDown(item, event) {
-      if (zoneDrag !== null || !zoneReady) return;
+      if (zoneDrag !== null || zoneMove !== null || !zoneReady) return;
       if (event.pointerType === "mouse" && event.button !== 0) return;
       var target = event.target;
       if (target instanceof Element && target.closest("button, a, input, textarea, select")) {
@@ -1814,6 +1815,94 @@
         else commitRelease(drag);
       }
       if (zonePendingSync) syncZoneGeometry(1, 1);
+    }
+
+    // ---------- zone move (P0-34) ----------
+    //
+    // The frame's padding and header are the zone's grip: after the 4 px
+    // threshold the frame, its name and every docked member follow the pointer
+    // 1:1 (transitions off), clamped by the same layout functions as every other
+    // zone change, so the members keep their slots. Release commits the origin;
+    // a cancel glides everything back. Free items, note cards and the edge never
+    // move, and a member drag and a zone move never run at the same time.
+
+    var zoneMove = null;
+
+    function moveZoneTo(x, y) {
+      var target = positionLayout(fittedLayout(zoneDocked, zoneOrientation), x, y);
+      renderFrame(target, zone.classList.contains("is-moving"));
+      for (var index = 0; index < target.keys.length; index += 1) {
+        var member = zoneItemByKey(target.keys[index]);
+        if (member !== null) moveZoneItem(member, slotPosition(target, member.key));
+      }
+      return target;
+    }
+
+    function onZoneMoveDown(event) {
+      if (zoneMove !== null || zoneDrag !== null || !zoneReady) return;
+      if (zoneDocked.length === 0 || !frameShown()) return;
+      if (event.pointerType === "mouse" && event.button !== 0) return;
+      event.preventDefault();
+      zoneMove = {
+        pointerId: event.pointerId,
+        startClientX: event.clientX,
+        startClientY: event.clientY,
+        startX: zoneOrigin.x,
+        startY: zoneOrigin.y,
+        target: null,
+        active: false,
+      };
+    }
+
+    function onZoneMoveMove(event) {
+      var move = zoneMove;
+      if (move === null || move.pointerId !== event.pointerId) return;
+      var deltaX = event.clientX - move.startClientX;
+      var deltaY = event.clientY - move.startClientY;
+      if (!move.active) {
+        if (Math.hypot(deltaX, deltaY) < threshold) return;
+        move.active = true;
+        zone.classList.add("is-moving");
+        zoneCard.classList.add("is-moving");
+        try {
+          zoneCard.setPointerCapture(event.pointerId);
+        } catch (error) {
+          // Pointer capture is best effort; the move keeps working without it.
+        }
+      }
+      var ratio = worldRatio(world.getBoundingClientRect());
+      move.target = moveZoneTo(move.startX + deltaX / ratio, move.startY + deltaY / ratio);
+    }
+
+    function onZoneMoveEnd(event, cancelled) {
+      var move = zoneMove;
+      if (move === null || move.pointerId !== event.pointerId) return;
+      zoneMove = null;
+      if (move.active) {
+        zone.classList.remove("is-moving");
+        zoneCard.classList.remove("is-moving");
+        if (cancelled || move.target === null) {
+          moveZoneTo(move.startX, move.startY);
+        } else {
+          zoneOrigin = { x: move.target.x, y: move.target.y };
+          announceZoneStatus("demo.status.zoneMoved");
+        }
+      }
+      if (zonePendingSync) syncZoneGeometry(1, 1);
+    }
+
+    if (zoneCard !== null) {
+      zoneCard.addEventListener("pointerdown", onZoneMoveDown);
+      zoneCard.addEventListener("pointermove", onZoneMoveMove);
+      zoneCard.addEventListener("pointerup", function (event) {
+        onZoneMoveEnd(event, false);
+      });
+      zoneCard.addEventListener("pointercancel", function (event) {
+        onZoneMoveEnd(event, true);
+      });
+      zoneCard.addEventListener("lostpointercapture", function (event) {
+        onZoneMoveEnd(event, true);
+      });
     }
 
     zoneItems.forEach(function (item) {

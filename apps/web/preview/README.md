@@ -1,4 +1,4 @@
-# Design preview (P0-19, P0-20, P0-21, P0-22, P0-23, P0-24, P0-25, P0-26, P0-27, P0-28, P0-29, P0-30, P0-31, P0-32, P0-33, P1-07)
+# Design preview (P0-19, P0-20, P0-21, P0-22, P0-23, P0-24, P0-25, P0-26, P0-27, P0-28, P0-29, P0-30, P0-31, P0-32, P0-33, P0-34, P1-07)
 
 A design preview of the Project air design system. It is **not the product**: there is no engine,
 no data, no server and no build step. It exists so the owner can see the look and feel between
@@ -15,9 +15,9 @@ its two values come from:
   `0.0.1 – unreleased`; the status word comes from the same heading. `CHANGELOG.md` is the display
   source and currently agrees with the root `package.json` version `0.0.1`.
 - **Last change** — the newest preview change entry, currently
-  `.changes/P0-33-checklist-table.md`; the line shows the task id and that task's title from
-  `board.json` / the task brief: `P0-33 — Live demo: checklist block and spreadsheet table card`.
-  The line follows the `P0-*` preview tasks (P0-19 … P0-33, P1-07); the engine tasks
+  `.changes/P0-34-zone-move.md`; the line shows the task id and that task's title from
+  `board.json` / the task brief: `P0-34 — Live demo: move a zone with its members`.
+  The line follows the `P0-*` preview tasks (P0-19 … P0-34, P1-07); the engine tasks
   (`P4-*`) and the other stages run in parallel and do not move it, so "highest numeric id" alone is
   not the rule. If several files exist for the same preview task, the most recent one is used;
   `.changes/README.md` and `.changes/TEMPLATE.md` do not count as entries.
@@ -271,6 +271,24 @@ L02 asks for zones.
   live only in this page's memory, like everything else in the demo.
 - **Without script** — the title is the first row of the static card grid.
 
+## Moving a zone (P0-34)
+
+A zone moves as a whole, the way ADR-0010 describes containers (the engine follows in P4-27/P4-29):
+
+- **Grip** — the frame's padding and its header outside the name (`cursor: grab`). A member still
+  drags only itself, a click on the name still renames, and a press without movement does nothing.
+- **Move** — after the 4 px threshold the frame, its name and every docked member follow the pointer
+  1:1 with transitions off and a lifted frame (`--shadow`); the frame is clamped by the same layout
+  functions as every zone change (inside the visible surface, below the toolbar on desktop), so the
+  members keep their slots. Free items, note cards, blocks and the edge never move.
+- **Release / cancel** — the release commits the new origin and announces "Zone moved." /
+  „Zone verschoben.“; a `pointercancel` or a lost capture glides frame and members back. A member
+  pulled out afterwards docks back into the slot at the new place.
+- **Exclusive** — a zone move and a member drag never run at the same time; resize and locale reflow
+  during a move are deferred; ghost and collapsed frames are inert.
+- **Layers** — the frame stays on `--layer-zones`, so a zone moved over the checklist or the table
+  card passes under that block (design law §8: zones below blocks).
+
 ## Checklist block and spreadsheet card (P0-33)
 
 Two more canvas objects on the blocks layer (design law §8: below the note cards; the last touched
@@ -342,9 +360,9 @@ P0-26 markup with the old stylesheet and a broken-looking demo. The preview ther
 assets with a version query:
 
 ```html
-<link rel="stylesheet" href="../../../packages/ui-kit/tokens.css?v=P0-33" />
-<link rel="stylesheet" href="preview.css?v=P0-33" />
-<script src="preview.js?v=P0-33" defer></script>
+<link rel="stylesheet" href="../../../packages/ui-kit/tokens.css?v=P0-34" />
+<link rel="stylesheet" href="preview.css?v=P0-34" />
+<script src="preview.js?v=P0-34" defer></script>
 ```
 
 - **Bump rule:** every task that changes a file in `apps/web/preview/` — or the shared
@@ -353,7 +371,7 @@ assets with a version query:
   never cached and gets the current files, which also covers a changed design system that would
   otherwise be served from the cached token stylesheet.
 - The locale files reuse the script's version automatically: `preview.js` reads the `v` query of its
-  own script URL and appends it to the locale request (`locales/de.json?v=P0-33`), so one bump
+  own script URL and appends it to the locale request (`locales/de.json?v=P0-34`), so one bump
   covers the translations as well.
 - The icon SVGs are referenced from `preview.css` and keep stable, unversioned URLs; they only
   change with a design-system task, and every such task bumps the preview version anyway.
@@ -410,7 +428,7 @@ Serve the **repository root**, not this folder, so the relative token and icon p
 the slot's `web` port from `.polier-slot` (never hard-code it), then:
 
 ```sh
-cd "/Users/rasulatashev/Desktop/KI Projekte/Project air-P0-33"
+cd "/Users/rasulatashev/Desktop/KI Projekte/Project air-P0-34"
 PORT=$(python3 -c "import json; print(json.load(open('.polier-slot'))['ports']['web'])")
 python3 -m http.server "$PORT" --bind 127.0.0.1
 ```
@@ -487,11 +505,13 @@ line and tasks in English and German),
 `P0-32-mobile.png` (390×844, the named zone on mobile),
 `P0-33-desktop.png` / `P0-33-desktop-de.png` (1440×900, checklist and table card in EN and DE),
 `P0-33-interaction.png` (1440×900, an item ticked, a cell selected, the card dragged),
-`P0-33-mobile.png` (390×844, the stacked compact layout) and the
+`P0-33-mobile.png` (390×844, the stacked compact layout),
+`P0-34-moving.png` / `P0-34-moved.png` (1440×900, a zone mid-move and after the release),
+`P0-34-mobile.png` (390×844, a zone moved upwards) and the
 `P0-19-preview.log` / `P0-20-preview.log` / `P0-21-preview.log` / `P0-22-preview.log` /
 `P0-23-preview.log` / `P0-24-preview.log` / `P0-25-preview.log` / `P0-26-preview.log` /
 `P0-27-preview.log` / `P0-28-preview.log` / `P0-29-preview.log` / `P0-30-preview.log` /
-`P0-31-preview.log` / `P0-32-preview.log` / `P0-33-preview.log` /
+`P0-31-preview.log` / `P0-32-preview.log` / `P0-33-preview.log` / `P0-34-preview.log` /
 `P1-07-preview.log` files with the
 exact serve, curl and screenshot commands. The page has no horizontal overflow at 1440×900, 390×844
 or the owner's 1426 × 583 viewport.
