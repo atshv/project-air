@@ -2600,6 +2600,7 @@ function installPointerInput(engine, session, titlesController) {
     return null;
   };
 
+  let lastAutoPanDrag = null;
   const host = {
     hitTest: targetAt,
     screenToWorld: (screenX, screenY) => ({
@@ -2611,6 +2612,7 @@ function installPointerInput(engine, session, titlesController) {
       camera.panY -= deltaY / camera.zoom;
       applyCamera(engine);
     },
+    viewportSize: () => ({ width: canvas.clientWidth, height: canvas.clientHeight }),
     zoomByFactor: (factor, screenX, screenY) => {
       zoomAround(engine, screenX, screenY, camera.zoom * factor);
     },
@@ -2624,6 +2626,7 @@ function installPointerInput(engine, session, titlesController) {
       session?.commit(target, position);
     },
     onDragMove: (target, position) => {
+      lastAutoPanDrag = { targetId: target.id, position: { x: position.x, y: position.y } };
       if (zoneParityRequested) {
         session?.previewZoneDrag?.(target, position);
       }
@@ -2710,6 +2713,12 @@ function installPointerInput(engine, session, titlesController) {
     hoverTransitionMs: dragTokens["motion-hover"],
     host,
   });
+  if (typeof globalThis !== "undefined") {
+    globalThis.__engineAutoPan = {
+      lastDrag: () => lastAutoPanDrag,
+      viewport: () => ({ width: canvas.clientWidth, height: canvas.clientHeight }),
+    };
+  }
 
   const NOT_SUPPRESSED = { suppressed: false, editable: false, cursor: "default" };
   const sampleOf = (event) => {

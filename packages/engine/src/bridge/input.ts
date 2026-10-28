@@ -171,6 +171,8 @@ export interface InputHost {
   onSelectionChange?(targets: readonly InputTarget[]): void;
   /** L10: the live rubber band in world px, or null when it disappears. */
   onBandChange?(band: InputWorldRect | null): void;
+  /** P4-18: the canvas viewport in CSS px, for the auto-pan edge band. */
+  viewportSize?(): { readonly width: number; readonly height: number };
   /**
    * P4-17 (L14): project a world point to canvas-relative screen px (the inverse
    * of `screenToWorld`), used for the handle hit area.
@@ -195,6 +197,12 @@ export interface InputHost {
 }
 
 /** Constructor options; the numbers come from the generated tokens. */
+/** Frame scheduler for the L16 auto-pan loop (injectable for deterministic tests). */
+export interface AnimationFrameScheduler {
+  request(callback: (timestamp: number) => void): number;
+  cancel(handle: number): void;
+}
+
 export interface PointerInputOptions {
   /** `tokens::drag_threshold` in screen px (4 px). */
   readonly thresholdPx: number;
@@ -202,7 +210,86 @@ export interface PointerInputOptions {
   readonly headerHeightPx: number;
   /** `tokens::motion_hover` in ms (120 ms), the hover surface transition. */
   readonly hoverTransitionMs: number;
+  /** P4-18: animation-frame scheduler for auto-pan; defaults to the browser rAF. */
+  readonly scheduler?: AnimationFrameScheduler;
   readonly host: InputHost;
+}
+
+function defaultScheduler(): AnimationFrameScheduler {
+  if (typeof globalThis.requestAnimationFrame === "function") {
+    return {
+      request: (callback) => globalThis.requestAnimationFrame(callback),
+      cancel: (handle) => globalThis.cancelAnimationFrame(handle),
+    };
+  }
+  return {
+    request: (callback) => Number(setTimeout(() => callback(Date.now()), 16)),
+    cancel: (handle) => clearTimeout(handle),
+  };
+}
+
+/** P4-18 (L16): the auto-pan policy. A pure time-based camera delta for one frame. */
+export interface AutoPanViewport {
+  readonly width: number;
+  readonly height: number;
+}
+
+export interface AutoPanInput {
+  readonly pointer: InputScreenPoint;
+  readonly viewport: AutoPanViewport;
+  /** False when nothing is dragged: the policy always returns 0. */
+  readonly active: boolean;
+  readonly deltaSeconds: number;
+  readonly bandPx?: number;
+  readonly maxSpeedPxPerS?: number;
+  readonly maxDeltaPx?: number;
+}
+
+export interface AutoPanDelta {
+  readonly x: number;
+  readonly y: number;
+}
+
+/** `tokens::space_48`: the 48 px edge band (no new token, L16 interaction value). */
+export const AUTO_PAN_BAND_PX = 48;
+/** Bounded maximum camera speed (documented interaction constant, no new token). */
+export const AUTO_PAN_MAX_SPEED_PX_PER_S = 900;
+/** Bounded per-frame delta so a slow frame cannot jump the camera. */
+export const AUTO_PAN_MAX_DELTA_PX = 32;
+
+function axisPan(pointer: number, size: number, bandPx: number, maxSpeed: number, deltaSeconds: number): number {
+  if (!Number.isFinite(size) || size <= 0) {
+    return 0;
+  }
+  const band = Math.max(1, Math.min(bandPx, size / 2));
+  let ramp = 0;
+  let direction = 0;
+  if (pointer > size - band) {
+    direction = 1;
+    ramp = Math.min(1, Math.max(0, (pointer - (size - band)) / band));
+  } else if (pointer < band) {
+    direction = -1;
+    ramp = Math.min(1, Math.max(0, (band - pointer) / band));
+  }
+  if (direction === 0 || ramp <= 0) {
+    return 0;
+  }
+  // Linear ramp from 0 at the inner band edge to the bounded maximum at the
+  // viewport edge (and it stays clamped beyond the edge).
+  return direction * maxSpeed * ramp * deltaSeconds;
+}
+
+/** The camera pan delta of one animation frame; 0 when no drag is active. */
+export function autoPanDelta(input: AutoPanInput): AutoPanDelta {
+  if (input.active !== true || !Number.isFinite(input.deltaSeconds) || input.deltaSeconds <= 0) {
+    return { x: 0, y: 0 };
+  }
+  const bandPx = input.bandPx ?? AUTO_PAN_BAND_PX;
+  const maxSpeed = input.maxSpeedPxPerS ?? AUTO_PAN_MAX_SPEED_PX_PER_S;
+  const maxDelta = input.maxDeltaPx ?? AUTO_PAN_MAX_DELTA_PX;
+  const x = Math.max(-maxDelta, Math.min(maxDelta, axisPan(input.pointer.x, input.viewport.width, bandPx, maxSpeed, input.deltaSeconds)));
+  const y = Math.max(-maxDelta, Math.min(maxDelta, axisPan(input.pointer.y, input.viewport.height, bandPx, maxSpeed, input.deltaSeconds)));
+  return { x, y };
 }
 
 /** Wheel delta modes of a DOM `WheelEvent` (kept numeric so the layer stays DOM-free). */
@@ -544,6 +631,10 @@ export class PointerInput {
     readonly handle: ResizeHandle;
     last: InputWorldRect;
   } | null = null;
+  // P4-18 (L16) auto-pan: one frame loop, only while an object/group drag runs.
+  #autoPanHandle: number | null = null;
+  #autoPanLastTime: number | null = null;
+  #lastFree = false;
 
   constructor(options: PointerInputOptions) {
     if (!Number.isFinite(options.thresholdPx) || options.thresholdPx < 0) {
@@ -658,6 +749,8 @@ export class PointerInput {
       return;
     }
     this.#pointers.set(sample.pointerId, sample.screen);
+    this.#lastScreen = sample.screen;
+    this.#lastFree = sample.shiftKey === true;
     if (this.#phase === "pinch") {
       this.#movePinch();
       return;
@@ -983,6 +1076,7 @@ export class PointerInput {
       this.#groupAnchor = null;
     }
     this.#previewSnapped(target, screen, free);
+    this.#startAutoPan();
   }
 
   // L10: world-space band rectangle from the press point to the current point.
@@ -1037,6 +1131,68 @@ export class PointerInput {
   // release commits exactly this position) and preview the snapped rectangle.
   // L10 (P4-16): in a joint drag the snapped delta moves every member by the same
   // world offset. Panning and zooming never call this.
+  /** P4-18: starts the single auto-pan loop; the release/cancel paths stop it. */
+  #startAutoPan(): void {
+    if (this.#autoPanHandle !== null) {
+      return;
+    }
+    // Without an injected scheduler only a browser animation frame exists; in a
+    // DOM-free test runner the loop is a no-op (tests inject a fake clock).
+    const scheduler =
+      this.#options.scheduler ??
+      (typeof globalThis.requestAnimationFrame === "function" ? defaultScheduler() : null);
+    if (scheduler === null) {
+      return;
+    }
+    this.#autoPanLastTime = null;
+    this.#autoPanHandle = scheduler.request((timestamp) => this.#autoPanTick(timestamp, scheduler));
+  }
+
+  #stopAutoPan(): void {
+    if (this.#autoPanHandle === null) {
+      return;
+    }
+    const scheduler = this.#options.scheduler ?? defaultScheduler();
+    scheduler.cancel(this.#autoPanHandle);
+    this.#autoPanHandle = null;
+    this.#autoPanLastTime = null;
+  }
+
+  #autoPanTick(timestamp: number, scheduler: AnimationFrameScheduler): void {
+    this.#autoPanHandle = null;
+    if (this.#phase !== "dragging" || this.#target === null || this.#grabOffset === null) {
+      this.#autoPanLastTime = null;
+      return;
+    }
+    const previous = this.#autoPanLastTime;
+    this.#autoPanLastTime = timestamp;
+    if (previous === null) {
+      this.#autoPanHandle = scheduler.request((next) => this.#autoPanTick(next, scheduler));
+      return;
+    }
+    const viewport = this.#host.viewportSize?.() ?? { width: 0, height: 0 };
+    const deltaSeconds = Math.max(0, Math.min(0.1, (timestamp - previous) / 1000));
+    if (viewport.width <= 0 || viewport.height <= 0 || deltaSeconds <= 0) {
+      this.#autoPanHandle = scheduler.request((next) => this.#autoPanTick(next, scheduler));
+      return;
+    }
+    const pointer = this.#lastScreen ?? this.#downScreen;
+    if (pointer === null) {
+      this.#autoPanHandle = scheduler.request((next) => this.#autoPanTick(next, scheduler));
+      return;
+    }
+    const pan = autoPanDelta({ pointer, viewport, active: true, deltaSeconds });
+    if (pan.x === 0 && pan.y === 0) {
+      this.#autoPanHandle = scheduler.request((next) => this.#autoPanTick(next, scheduler));
+      return;
+    }
+    // View-only pan (AD-2), then rebuild the preview against the updated camera so
+    // the grabbed world point stays under the pointer (the object follows the edge).
+    this.#host.panByScreen(pan.x, pan.y);
+    this.#previewSnapped(this.#target, pointer, this.#lastFree);
+    this.#autoPanHandle = scheduler.request((next) => this.#autoPanTick(next, scheduler));
+  }
+
   #previewSnapped(target: InputTarget, screen: InputScreenPoint, free: boolean): void {
     if (this.#grabOffset === null) {
       return;
@@ -1128,6 +1284,7 @@ export class PointerInput {
     this.#groupAnchor = null;
     this.#groupMembers = null;
     this.#resize = null;
+    this.#stopAutoPan();
     this.#host.clearSnap?.();
     this.#setCursor("default");
   }

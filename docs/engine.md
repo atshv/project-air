@@ -760,6 +760,27 @@ previous `engine_create` sequence.
   `navigator.gpu` removed at the page boundary (→ WebGL2 with `webgpu-unavailable`); the record is
   under `reviews/evidence/P4-12-backend-selection-*.json`.
 
+## Auto-pan while dragging (L16, P4-18)
+
+While an object or a joint selection is dragged into the **48 screen px edge band**
+(`tokens::space_48`) the view pans along, so the drag can continue beyond the visible area without
+releasing. The policy is a pure, time-based function (`autoPanDelta` in
+`src/bridge/input.ts`): outside the band, with no active drag, or with a non-positive frame delta it
+returns 0; inside the band each axis ramps linearly from 0 at the band's inner edge to a bounded
+maximum (`AUTO_PAN_MAX_SPEED_PX_PER_S`, documented interaction constant) at the viewport edge, with
+the direction taken from the pointer (corners combine both axes). The per-frame delta is clamped
+(`AUTO_PAN_MAX_DELTA_PX`) so a slow frame cannot jump the camera and the same time delta gives the
+same pan.
+
+Input integration: crossing the drag threshold starts **one** request-animation-frame loop (only
+for single/group drags; not for panning, wheel/pinch zoom or a resize). Each frame calls the policy,
+pans through the existing view-only `panByScreen` callback (AD-2: no document write), and rebuilds
+the drag preview against the updated camera so the grabbed world point stays under the pointer and
+the object follows beyond the edge. Release, `pointercancel`, lost capture or blur stop the loop and
+cancel its frame (no leaked animation frame); the release still commits exactly one `moveCard` /
+`moveGroup` operation with its inverse through the P4-05 seam, at the pointer-derived position. The
+edge band, ramp and loop lifecycle are covered by pure and fake-clock/fake-camera tests.
+
 ## Resize gesture (L14, P4-17)
 
 A selected object shows eight **8 screen px** `tokens::accent` handles (four corners + four edge

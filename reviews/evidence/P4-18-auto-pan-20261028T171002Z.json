@@ -1,0 +1,1324 @@
+{
+  "task": "P4-18",
+  "gate": "auto-pan-capture",
+  "startedAt": "2026-10-28T17:09:50.216Z",
+  "chrome": "/Users/rasulatashev/Library/Caches/ms-playwright/chromium-1248/chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing",
+  "flags": [
+    "--headless=new",
+    "--use-angle=metal",
+    "--enable-gpu",
+    "--hide-scrollbars",
+    "--no-first-run",
+    "--no-default-browser-check",
+    "--window-size=1440,900",
+    "--no-sandbox"
+  ],
+  "bandPx": 48,
+  "viewports": [
+    {
+      "viewport": {
+        "name": "desktop",
+        "width": 1440,
+        "height": 900,
+        "mobile": false,
+        "zoom": "1"
+      },
+      "checks": [
+        {
+          "name": "desktop: the card is selected for the drag",
+          "passed": true,
+          "actual": [
+            "0192f0c1-7000-7000-8000-000000000607"
+          ]
+        },
+        {
+          "name": "desktop: no auto-pan without a drag",
+          "passed": true,
+          "actual": [
+            {
+              "panX": 291,
+              "panY": -167.5,
+              "zoom": 1
+            },
+            {
+              "panX": 291,
+              "panY": -167.5,
+              "zoom": 1
+            },
+            {
+              "panX": 291,
+              "panY": -167.5,
+              "zoom": 1
+            },
+            {
+              "panX": 291,
+              "panY": -167.5,
+              "zoom": 1
+            },
+            {
+              "panX": 291,
+              "panY": -167.5,
+              "zoom": 1
+            }
+          ]
+        },
+        {
+          "name": "desktop: no auto-pan outside the 48 px band",
+          "passed": true,
+          "actual": [
+            {
+              "panX": -390.9799999999999,
+              "panY": -167.5,
+              "zoom": 1
+            },
+            {
+              "panX": -390.9799999999999,
+              "panY": -167.5,
+              "zoom": 1
+            },
+            {
+              "panX": -390.9799999999999,
+              "panY": -167.5,
+              "zoom": 1
+            },
+            {
+              "panX": -390.9799999999999,
+              "panY": -167.5,
+              "zoom": 1
+            },
+            {
+              "panX": -390.9799999999999,
+              "panY": -167.5,
+              "zoom": 1
+            },
+            {
+              "panX": -390.9799999999999,
+              "panY": -167.5,
+              "zoom": 1
+            },
+            {
+              "panX": -390.9799999999999,
+              "panY": -167.5,
+              "zoom": 1
+            }
+          ]
+        },
+        {
+          "name": "desktop: dragging into the edge band pans the camera",
+          "passed": true,
+          "actual": {
+            "before": {
+              "panX": 291,
+              "panY": -167.5,
+              "zoom": 1
+            },
+            "after": {
+              "panX": -390.9799999999999,
+              "panY": -167.5,
+              "zoom": 1
+            },
+            "pans": [
+              -10.020000000000152,
+              -40.020000000000095,
+              -70.0200000000001,
+              -100.0200000000001,
+              -129.96000000000015,
+              -159.96000000000015,
+              -199.98000000000008,
+              -229.98000000000008,
+              -259.9800000000001,
+              -289.9800000000001,
+              -319.9800000000001,
+              -349.9800000000001,
+              -389.94000000000005,
+              -419.94000000000005,
+              -450,
+              -480,
+              -510,
+              -540
+            ]
+          }
+        },
+        {
+          "name": "desktop: the drag preview follows beyond the visible area",
+          "passed": 1,
+          "actual": {
+            "lastDragDuring": {
+              "targetId": "0192f0c1-7000-7000-8000-000000000607",
+              "position": {
+                "x": 672,
+                "y": 64
+              }
+            },
+            "dragXs": [
+              1200,
+              1168,
+              1136,
+              1104,
+              1088,
+              1056,
+              1008,
+              976,
+              960,
+              928,
+              896,
+              864,
+              816,
+              800,
+              768,
+              736,
+              704,
+              672
+            ]
+          }
+        },
+        {
+          "name": "desktop: release commits exactly one move operation with inverse",
+          "passed": true,
+          "actual": {
+            "before": null,
+            "duringEnd": null,
+            "after": {
+              "operation": "moveCard",
+              "inverse": "moveCard"
+            }
+          }
+        },
+        {
+          "name": "desktop: the auto-pan loop stops on release",
+          "passed": true,
+          "actual": [
+            {
+              "panX": -390.9799999999999,
+              "panY": -167.5,
+              "zoom": 1
+            },
+            {
+              "panX": -390.9799999999999,
+              "panY": -167.5,
+              "zoom": 1
+            },
+            {
+              "panX": -390.9799999999999,
+              "panY": -167.5,
+              "zoom": 1
+            },
+            {
+              "panX": -390.9799999999999,
+              "panY": -167.5,
+              "zoom": 1
+            },
+            {
+              "panX": -390.9799999999999,
+              "panY": -167.5,
+              "zoom": 1
+            }
+          ]
+        }
+      ],
+      "samples": [
+        {
+          "atMs": 0,
+          "camera": {
+            "panX": 280.97999999999985,
+            "panY": -167.5
+          },
+          "drag": {
+            "x": 1200,
+            "y": 64
+          }
+        },
+        {
+          "atMs": 53,
+          "camera": {
+            "panX": 250.9799999999999,
+            "panY": -167.5
+          },
+          "drag": {
+            "x": 1168,
+            "y": 64
+          }
+        },
+        {
+          "atMs": 107,
+          "camera": {
+            "panX": 220.9799999999999,
+            "panY": -167.5
+          },
+          "drag": {
+            "x": 1136,
+            "y": 64
+          }
+        },
+        {
+          "atMs": 158,
+          "camera": {
+            "panX": 190.9799999999999,
+            "panY": -167.5
+          },
+          "drag": {
+            "x": 1104,
+            "y": 64
+          }
+        },
+        {
+          "atMs": 209,
+          "camera": {
+            "panX": 161.03999999999985,
+            "panY": -167.5
+          },
+          "drag": {
+            "x": 1088,
+            "y": 64
+          }
+        },
+        {
+          "atMs": 262,
+          "camera": {
+            "panX": 131.03999999999985,
+            "panY": -167.5
+          },
+          "drag": {
+            "x": 1056,
+            "y": 64
+          }
+        },
+        {
+          "atMs": 315,
+          "camera": {
+            "panX": 91.01999999999994,
+            "panY": -167.5
+          },
+          "drag": {
+            "x": 1008,
+            "y": 64
+          }
+        },
+        {
+          "atMs": 369,
+          "camera": {
+            "panX": 61.01999999999993,
+            "panY": -167.5
+          },
+          "drag": {
+            "x": 976,
+            "y": 64
+          }
+        },
+        {
+          "atMs": 421,
+          "camera": {
+            "panX": 31.019999999999932,
+            "panY": -167.5
+          },
+          "drag": {
+            "x": 960,
+            "y": 64
+          }
+        },
+        {
+          "atMs": 475,
+          "camera": {
+            "panX": 1.019999999999932,
+            "panY": -167.5
+          },
+          "drag": {
+            "x": 928,
+            "y": 64
+          }
+        },
+        {
+          "atMs": 526,
+          "camera": {
+            "panX": -28.980000000000068,
+            "panY": -167.5
+          },
+          "drag": {
+            "x": 896,
+            "y": 64
+          }
+        },
+        {
+          "atMs": 579,
+          "camera": {
+            "panX": -58.98000000000007,
+            "panY": -167.5
+          },
+          "drag": {
+            "x": 864,
+            "y": 64
+          }
+        },
+        {
+          "atMs": 632,
+          "camera": {
+            "panX": -98.94000000000003,
+            "panY": -167.5
+          },
+          "drag": {
+            "x": 816,
+            "y": 64
+          }
+        },
+        {
+          "atMs": 686,
+          "camera": {
+            "panX": -128.94000000000003,
+            "panY": -167.5
+          },
+          "drag": {
+            "x": 800,
+            "y": 64
+          }
+        },
+        {
+          "atMs": 738,
+          "camera": {
+            "panX": -158.99999999999997,
+            "panY": -167.5
+          },
+          "drag": {
+            "x": 768,
+            "y": 64
+          }
+        },
+        {
+          "atMs": 792,
+          "camera": {
+            "panX": -188.99999999999997,
+            "panY": -167.5
+          },
+          "drag": {
+            "x": 736,
+            "y": 64
+          }
+        },
+        {
+          "atMs": 845,
+          "camera": {
+            "panX": -218.99999999999997,
+            "panY": -167.5
+          },
+          "drag": {
+            "x": 704,
+            "y": 64
+          }
+        },
+        {
+          "atMs": 898,
+          "camera": {
+            "panX": -248.99999999999997,
+            "panY": -167.5
+          },
+          "drag": {
+            "x": 672,
+            "y": 64
+          }
+        }
+      ],
+      "outsideBandCamera": [
+        {
+          "panX": -390.9799999999999,
+          "panY": -167.5,
+          "zoom": 1
+        },
+        {
+          "panX": -390.9799999999999,
+          "panY": -167.5,
+          "zoom": 1
+        },
+        {
+          "panX": -390.9799999999999,
+          "panY": -167.5,
+          "zoom": 1
+        },
+        {
+          "panX": -390.9799999999999,
+          "panY": -167.5,
+          "zoom": 1
+        },
+        {
+          "panX": -390.9799999999999,
+          "panY": -167.5,
+          "zoom": 1
+        },
+        {
+          "panX": -390.9799999999999,
+          "panY": -167.5,
+          "zoom": 1
+        },
+        {
+          "panX": -390.9799999999999,
+          "panY": -167.5,
+          "zoom": 1
+        }
+      ],
+      "before": {
+        "panX": 291,
+        "panY": -167.5,
+        "zoom": 1
+      },
+      "after": {
+        "camera": {
+          "panX": -390.9799999999999,
+          "panY": -167.5,
+          "zoom": 1
+        },
+        "operation": {
+          "operation": "moveCard",
+          "inverse": "moveCard"
+        }
+      },
+      "screenshots": [
+        "reviews/evidence/P4-18-autopan-drag-desktop.png",
+        "reviews/evidence/P4-18-autopan-release-desktop.png"
+      ]
+    },
+    {
+      "viewport": {
+        "name": "mobile",
+        "width": 390,
+        "height": 844,
+        "mobile": true,
+        "zoom": "0.6"
+      },
+      "checks": [
+        {
+          "name": "mobile: the card is selected for the drag",
+          "passed": true,
+          "actual": [
+            "0192f0c1-7000-7000-8000-000000000607"
+          ]
+        },
+        {
+          "name": "mobile: no auto-pan without a drag",
+          "passed": true,
+          "actual": [
+            {
+              "panX": 572.6666666666666,
+              "panY": -8.666666666666686,
+              "zoom": 0.6
+            },
+            {
+              "panX": 572.6666666666666,
+              "panY": -8.666666666666686,
+              "zoom": 0.6
+            },
+            {
+              "panX": 572.6666666666666,
+              "panY": -8.666666666666686,
+              "zoom": 0.6
+            },
+            {
+              "panX": 572.6666666666666,
+              "panY": -8.666666666666686,
+              "zoom": 0.6
+            },
+            {
+              "panX": 572.6666666666666,
+              "panY": -8.666666666666686,
+              "zoom": 0.6
+            }
+          ]
+        },
+        {
+          "name": "mobile: no auto-pan outside the 48 px band",
+          "passed": true,
+          "actual": [
+            {
+              "panX": -613.9333333333333,
+              "panY": -42.00000000000002,
+              "zoom": 0.6
+            },
+            {
+              "panX": -613.9333333333333,
+              "panY": -42.00000000000002,
+              "zoom": 0.6
+            },
+            {
+              "panX": -613.9333333333333,
+              "panY": -42.00000000000002,
+              "zoom": 0.6
+            },
+            {
+              "panX": -613.9333333333333,
+              "panY": -42.00000000000002,
+              "zoom": 0.6
+            },
+            {
+              "panX": -613.9333333333333,
+              "panY": -42.00000000000002,
+              "zoom": 0.6
+            },
+            {
+              "panX": -613.9333333333333,
+              "panY": -42.00000000000002,
+              "zoom": 0.6
+            },
+            {
+              "panX": -613.9333333333333,
+              "panY": -42.00000000000002,
+              "zoom": 0.6
+            }
+          ]
+        },
+        {
+          "name": "mobile: dragging into the edge band pans the camera",
+          "passed": true,
+          "actual": {
+            "before": {
+              "panX": 572.6666666666666,
+              "panY": -8.666666666666686,
+              "zoom": 0.6
+            },
+            "after": {
+              "panX": -547.2666666666667,
+              "panY": -8.666666666666686,
+              "zoom": 0.6
+            },
+            "pans": [
+              -16.699999999999818,
+              -66.69999999999982,
+              -116.69999999999982,
+              -166.69999999999982,
+              -216.69999999999982,
+              -283.2999999999997,
+              -333.4000000000001,
+              -383.4000000000001,
+              -433.2999999999997,
+              -483.4000000000001,
+              -533.4000000000001,
+              -600,
+              -650,
+              -700,
+              -750,
+              -799.9000000000001,
+              -850,
+              -916.5999999999999
+            ]
+          }
+        },
+        {
+          "name": "mobile: the drag preview follows beyond the visible area",
+          "passed": 1,
+          "actual": {
+            "lastDragDuring": {
+              "targetId": "0192f0c1-7000-7000-8000-000000000607",
+              "position": {
+                "x": 0,
+                "y": 64
+              }
+            },
+            "dragXs": [
+              896,
+              848,
+              800,
+              752,
+              704,
+              640,
+              592,
+              544,
+              480,
+              432,
+              384,
+              320,
+              272,
+              224,
+              176,
+              112,
+              64,
+              0
+            ]
+          }
+        },
+        {
+          "name": "mobile: release commits exactly one move operation with inverse",
+          "passed": true,
+          "actual": {
+            "before": null,
+            "duringEnd": null,
+            "after": {
+              "operation": "moveCard",
+              "inverse": "moveCard"
+            }
+          }
+        },
+        {
+          "name": "mobile: the auto-pan loop stops on release",
+          "passed": true,
+          "actual": [
+            {
+              "panX": -613.9333333333333,
+              "panY": -42.00000000000002,
+              "zoom": 0.6
+            },
+            {
+              "panX": -613.9333333333333,
+              "panY": -42.00000000000002,
+              "zoom": 0.6
+            },
+            {
+              "panX": -613.9333333333333,
+              "panY": -42.00000000000002,
+              "zoom": 0.6
+            },
+            {
+              "panX": -613.9333333333333,
+              "panY": -42.00000000000002,
+              "zoom": 0.6
+            },
+            {
+              "panX": -613.9333333333333,
+              "panY": -42.00000000000002,
+              "zoom": 0.6
+            }
+          ]
+        }
+      ],
+      "samples": [
+        {
+          "atMs": 0,
+          "camera": {
+            "panX": 555.9666666666668,
+            "panY": -8.666666666666686
+          },
+          "drag": {
+            "x": 896,
+            "y": 64
+          }
+        },
+        {
+          "atMs": 53,
+          "camera": {
+            "panX": 505.9666666666668,
+            "panY": -8.666666666666686
+          },
+          "drag": {
+            "x": 848,
+            "y": 64
+          }
+        },
+        {
+          "atMs": 107,
+          "camera": {
+            "panX": 455.9666666666668,
+            "panY": -8.666666666666686
+          },
+          "drag": {
+            "x": 800,
+            "y": 64
+          }
+        },
+        {
+          "atMs": 160,
+          "camera": {
+            "panX": 405.9666666666668,
+            "panY": -8.666666666666686
+          },
+          "drag": {
+            "x": 752,
+            "y": 64
+          }
+        },
+        {
+          "atMs": 213,
+          "camera": {
+            "panX": 355.9666666666668,
+            "panY": -8.666666666666686
+          },
+          "drag": {
+            "x": 704,
+            "y": 64
+          }
+        },
+        {
+          "atMs": 266,
+          "camera": {
+            "panX": 289.3666666666669,
+            "panY": -8.666666666666686
+          },
+          "drag": {
+            "x": 640,
+            "y": 64
+          }
+        },
+        {
+          "atMs": 319,
+          "camera": {
+            "panX": 239.26666666666654,
+            "panY": -8.666666666666686
+          },
+          "drag": {
+            "x": 592,
+            "y": 64
+          }
+        },
+        {
+          "atMs": 373,
+          "camera": {
+            "panX": 189.26666666666654,
+            "panY": -8.666666666666686
+          },
+          "drag": {
+            "x": 544,
+            "y": 64
+          }
+        },
+        {
+          "atMs": 426,
+          "camera": {
+            "panX": 139.3666666666669,
+            "panY": -8.666666666666686
+          },
+          "drag": {
+            "x": 480,
+            "y": 64
+          }
+        },
+        {
+          "atMs": 477,
+          "camera": {
+            "panX": 89.26666666666654,
+            "panY": -8.666666666666686
+          },
+          "drag": {
+            "x": 432,
+            "y": 64
+          }
+        },
+        {
+          "atMs": 529,
+          "camera": {
+            "panX": 39.26666666666654,
+            "panY": -8.666666666666686
+          },
+          "drag": {
+            "x": 384,
+            "y": 64
+          }
+        },
+        {
+          "atMs": 582,
+          "camera": {
+            "panX": -27.333333333333375,
+            "panY": -8.666666666666686
+          },
+          "drag": {
+            "x": 320,
+            "y": 64
+          }
+        },
+        {
+          "atMs": 636,
+          "camera": {
+            "panX": -77.33333333333337,
+            "panY": -8.666666666666686
+          },
+          "drag": {
+            "x": 272,
+            "y": 64
+          }
+        },
+        {
+          "atMs": 689,
+          "camera": {
+            "panX": -127.33333333333337,
+            "panY": -8.666666666666686
+          },
+          "drag": {
+            "x": 224,
+            "y": 64
+          }
+        },
+        {
+          "atMs": 741,
+          "camera": {
+            "panX": -177.33333333333337,
+            "panY": -8.666666666666686
+          },
+          "drag": {
+            "x": 176,
+            "y": 64
+          }
+        },
+        {
+          "atMs": 793,
+          "camera": {
+            "panX": -227.23333333333346,
+            "panY": -8.666666666666686
+          },
+          "drag": {
+            "x": 112,
+            "y": 64
+          }
+        },
+        {
+          "atMs": 845,
+          "camera": {
+            "panX": -277.33333333333337,
+            "panY": -8.666666666666686
+          },
+          "drag": {
+            "x": 64,
+            "y": 64
+          }
+        },
+        {
+          "atMs": 898,
+          "camera": {
+            "panX": -343.9333333333333,
+            "panY": -8.666666666666686
+          },
+          "drag": {
+            "x": 0,
+            "y": 64
+          }
+        }
+      ],
+      "outsideBandCamera": [
+        {
+          "panX": -613.9333333333333,
+          "panY": -42.00000000000002,
+          "zoom": 0.6
+        },
+        {
+          "panX": -613.9333333333333,
+          "panY": -42.00000000000002,
+          "zoom": 0.6
+        },
+        {
+          "panX": -613.9333333333333,
+          "panY": -42.00000000000002,
+          "zoom": 0.6
+        },
+        {
+          "panX": -613.9333333333333,
+          "panY": -42.00000000000002,
+          "zoom": 0.6
+        },
+        {
+          "panX": -613.9333333333333,
+          "panY": -42.00000000000002,
+          "zoom": 0.6
+        },
+        {
+          "panX": -613.9333333333333,
+          "panY": -42.00000000000002,
+          "zoom": 0.6
+        },
+        {
+          "panX": -613.9333333333333,
+          "panY": -42.00000000000002,
+          "zoom": 0.6
+        }
+      ],
+      "before": {
+        "panX": 572.6666666666666,
+        "panY": -8.666666666666686,
+        "zoom": 0.6
+      },
+      "after": {
+        "camera": {
+          "panX": -547.2666666666667,
+          "panY": -8.666666666666686,
+          "zoom": 0.6
+        },
+        "operation": {
+          "operation": "moveCard",
+          "inverse": "moveCard"
+        }
+      },
+      "screenshots": [
+        "reviews/evidence/P4-18-autopan-drag-mobile.png",
+        "reviews/evidence/P4-18-autopan-release-mobile.png"
+      ]
+    }
+  ],
+  "checks": [
+    {
+      "name": "desktop: the card is selected for the drag",
+      "passed": true,
+      "actual": [
+        "0192f0c1-7000-7000-8000-000000000607"
+      ]
+    },
+    {
+      "name": "desktop: no auto-pan without a drag",
+      "passed": true,
+      "actual": [
+        {
+          "panX": 291,
+          "panY": -167.5,
+          "zoom": 1
+        },
+        {
+          "panX": 291,
+          "panY": -167.5,
+          "zoom": 1
+        },
+        {
+          "panX": 291,
+          "panY": -167.5,
+          "zoom": 1
+        },
+        {
+          "panX": 291,
+          "panY": -167.5,
+          "zoom": 1
+        },
+        {
+          "panX": 291,
+          "panY": -167.5,
+          "zoom": 1
+        }
+      ]
+    },
+    {
+      "name": "desktop: no auto-pan outside the 48 px band",
+      "passed": true,
+      "actual": [
+        {
+          "panX": -390.9799999999999,
+          "panY": -167.5,
+          "zoom": 1
+        },
+        {
+          "panX": -390.9799999999999,
+          "panY": -167.5,
+          "zoom": 1
+        },
+        {
+          "panX": -390.9799999999999,
+          "panY": -167.5,
+          "zoom": 1
+        },
+        {
+          "panX": -390.9799999999999,
+          "panY": -167.5,
+          "zoom": 1
+        },
+        {
+          "panX": -390.9799999999999,
+          "panY": -167.5,
+          "zoom": 1
+        },
+        {
+          "panX": -390.9799999999999,
+          "panY": -167.5,
+          "zoom": 1
+        },
+        {
+          "panX": -390.9799999999999,
+          "panY": -167.5,
+          "zoom": 1
+        }
+      ]
+    },
+    {
+      "name": "desktop: dragging into the edge band pans the camera",
+      "passed": true,
+      "actual": {
+        "before": {
+          "panX": 291,
+          "panY": -167.5,
+          "zoom": 1
+        },
+        "after": {
+          "panX": -390.9799999999999,
+          "panY": -167.5,
+          "zoom": 1
+        },
+        "pans": [
+          -10.020000000000152,
+          -40.020000000000095,
+          -70.0200000000001,
+          -100.0200000000001,
+          -129.96000000000015,
+          -159.96000000000015,
+          -199.98000000000008,
+          -229.98000000000008,
+          -259.9800000000001,
+          -289.9800000000001,
+          -319.9800000000001,
+          -349.9800000000001,
+          -389.94000000000005,
+          -419.94000000000005,
+          -450,
+          -480,
+          -510,
+          -540
+        ]
+      }
+    },
+    {
+      "name": "desktop: the drag preview follows beyond the visible area",
+      "passed": 1,
+      "actual": {
+        "lastDragDuring": {
+          "targetId": "0192f0c1-7000-7000-8000-000000000607",
+          "position": {
+            "x": 672,
+            "y": 64
+          }
+        },
+        "dragXs": [
+          1200,
+          1168,
+          1136,
+          1104,
+          1088,
+          1056,
+          1008,
+          976,
+          960,
+          928,
+          896,
+          864,
+          816,
+          800,
+          768,
+          736,
+          704,
+          672
+        ]
+      }
+    },
+    {
+      "name": "desktop: release commits exactly one move operation with inverse",
+      "passed": true,
+      "actual": {
+        "before": null,
+        "duringEnd": null,
+        "after": {
+          "operation": "moveCard",
+          "inverse": "moveCard"
+        }
+      }
+    },
+    {
+      "name": "desktop: the auto-pan loop stops on release",
+      "passed": true,
+      "actual": [
+        {
+          "panX": -390.9799999999999,
+          "panY": -167.5,
+          "zoom": 1
+        },
+        {
+          "panX": -390.9799999999999,
+          "panY": -167.5,
+          "zoom": 1
+        },
+        {
+          "panX": -390.9799999999999,
+          "panY": -167.5,
+          "zoom": 1
+        },
+        {
+          "panX": -390.9799999999999,
+          "panY": -167.5,
+          "zoom": 1
+        },
+        {
+          "panX": -390.9799999999999,
+          "panY": -167.5,
+          "zoom": 1
+        }
+      ]
+    },
+    {
+      "name": "mobile: the card is selected for the drag",
+      "passed": true,
+      "actual": [
+        "0192f0c1-7000-7000-8000-000000000607"
+      ]
+    },
+    {
+      "name": "mobile: no auto-pan without a drag",
+      "passed": true,
+      "actual": [
+        {
+          "panX": 572.6666666666666,
+          "panY": -8.666666666666686,
+          "zoom": 0.6
+        },
+        {
+          "panX": 572.6666666666666,
+          "panY": -8.666666666666686,
+          "zoom": 0.6
+        },
+        {
+          "panX": 572.6666666666666,
+          "panY": -8.666666666666686,
+          "zoom": 0.6
+        },
+        {
+          "panX": 572.6666666666666,
+          "panY": -8.666666666666686,
+          "zoom": 0.6
+        },
+        {
+          "panX": 572.6666666666666,
+          "panY": -8.666666666666686,
+          "zoom": 0.6
+        }
+      ]
+    },
+    {
+      "name": "mobile: no auto-pan outside the 48 px band",
+      "passed": true,
+      "actual": [
+        {
+          "panX": -613.9333333333333,
+          "panY": -42.00000000000002,
+          "zoom": 0.6
+        },
+        {
+          "panX": -613.9333333333333,
+          "panY": -42.00000000000002,
+          "zoom": 0.6
+        },
+        {
+          "panX": -613.9333333333333,
+          "panY": -42.00000000000002,
+          "zoom": 0.6
+        },
+        {
+          "panX": -613.9333333333333,
+          "panY": -42.00000000000002,
+          "zoom": 0.6
+        },
+        {
+          "panX": -613.9333333333333,
+          "panY": -42.00000000000002,
+          "zoom": 0.6
+        },
+        {
+          "panX": -613.9333333333333,
+          "panY": -42.00000000000002,
+          "zoom": 0.6
+        },
+        {
+          "panX": -613.9333333333333,
+          "panY": -42.00000000000002,
+          "zoom": 0.6
+        }
+      ]
+    },
+    {
+      "name": "mobile: dragging into the edge band pans the camera",
+      "passed": true,
+      "actual": {
+        "before": {
+          "panX": 572.6666666666666,
+          "panY": -8.666666666666686,
+          "zoom": 0.6
+        },
+        "after": {
+          "panX": -547.2666666666667,
+          "panY": -8.666666666666686,
+          "zoom": 0.6
+        },
+        "pans": [
+          -16.699999999999818,
+          -66.69999999999982,
+          -116.69999999999982,
+          -166.69999999999982,
+          -216.69999999999982,
+          -283.2999999999997,
+          -333.4000000000001,
+          -383.4000000000001,
+          -433.2999999999997,
+          -483.4000000000001,
+          -533.4000000000001,
+          -600,
+          -650,
+          -700,
+          -750,
+          -799.9000000000001,
+          -850,
+          -916.5999999999999
+        ]
+      }
+    },
+    {
+      "name": "mobile: the drag preview follows beyond the visible area",
+      "passed": 1,
+      "actual": {
+        "lastDragDuring": {
+          "targetId": "0192f0c1-7000-7000-8000-000000000607",
+          "position": {
+            "x": 0,
+            "y": 64
+          }
+        },
+        "dragXs": [
+          896,
+          848,
+          800,
+          752,
+          704,
+          640,
+          592,
+          544,
+          480,
+          432,
+          384,
+          320,
+          272,
+          224,
+          176,
+          112,
+          64,
+          0
+        ]
+      }
+    },
+    {
+      "name": "mobile: release commits exactly one move operation with inverse",
+      "passed": true,
+      "actual": {
+        "before": null,
+        "duringEnd": null,
+        "after": {
+          "operation": "moveCard",
+          "inverse": "moveCard"
+        }
+      }
+    },
+    {
+      "name": "mobile: the auto-pan loop stops on release",
+      "passed": true,
+      "actual": [
+        {
+          "panX": -613.9333333333333,
+          "panY": -42.00000000000002,
+          "zoom": 0.6
+        },
+        {
+          "panX": -613.9333333333333,
+          "panY": -42.00000000000002,
+          "zoom": 0.6
+        },
+        {
+          "panX": -613.9333333333333,
+          "panY": -42.00000000000002,
+          "zoom": 0.6
+        },
+        {
+          "panX": -613.9333333333333,
+          "panY": -42.00000000000002,
+          "zoom": 0.6
+        },
+        {
+          "panX": -613.9333333333333,
+          "panY": -42.00000000000002,
+          "zoom": 0.6
+        }
+      ]
+    }
+  ],
+  "result": "pass",
+  "exitCode": 0,
+  "finishedAt": "2026-10-28T17:10:02.228Z"
+}

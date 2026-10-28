@@ -3984,7 +3984,7 @@
       "satisfies": [
         "D10"
       ],
-      "status": "in_progress",
+      "status": "done",
       "depends_on": [
         "P4-14"
       ],
@@ -4020,11 +4020,15 @@
         "boundaries",
         "cpp-unit"
       ],
-      "owner": "lead",
+      "owner": null,
       "branch": "task/P4-18",
-      "worktree": "/private/tmp/air-P4-18",
+      "worktree": null,
       "round": 0,
-      "evidence": [],
+      "evidence": [
+        "reviews/evidence/P4-18-board-check-20261028T171012Z.json",
+        "reviews/evidence/P4-18-boundaries-20261028T171016Z.json",
+        "reviews/evidence/P4-18-cpp-unit-20261028T171017Z.json"
+      ],
       "scope_write_forbidden": [
         "reference/"
       ]
