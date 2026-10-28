@@ -6825,6 +6825,7 @@
       "parallel_group": null,
       "scope_write": [
         "apps/web/",
+        "packages/engine/",
         ".changes/"
       ],
       "scope_read": [
@@ -6878,6 +6879,7 @@
       "parallel_group": null,
       "scope_write": [
         "apps/web/",
+        "packages/engine/",
         ".changes/"
       ],
       "scope_read": [
@@ -6889,7 +6891,8 @@
         "docs/canvas-acceptance.md",
         "packages/engine/",
         "packages/sdk/",
-        "apps/web/messages/"
+        "apps/web/messages/",
+        "apps/engine-playground/"
       ],
       "acceptance": [
         "A1",
