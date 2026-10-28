@@ -6388,6 +6388,62 @@
         "Routes are fractions of object boxes (follow drag/zoom); presence line above the canvas; loop pauses off screen; reduced motion jumps. No content/history touched.",
         "Gates board-check/design-check/changelog-entry green; 5 screenshots + log. Cursor is a CSS shape: ui-kit has no cursor icon (icon test fixes ten)."
       ]
+    },
+    {
+      "id": "P0-41",
+      "title": "Live demo: rounded frames, darker done items, contents instead of text",
+      "goal": "Selection, multi-selection and teammate frames follow the rounded corners of their objects, done checklist entries are clearly darker than open ones, and the demo's three long text blocks become one line plus a compact contents list of the individual points.",
+      "why": "Owner feedback 2026-10-28: round the frame edges, make deselected/done texts darker so their state is obvious, remove unnecessary text and make a table of contents for the individual points.",
+      "satisfies": [
+        "D3"
+      ],
+      "status": "pending",
+      "depends_on": [
+        "P0-40"
+      ],
+      "complexity": 4,
+      "stage": "foundation",
+      "parallel_group": null,
+      "owner": null,
+      "round": 0,
+      "scope_write": [
+        "apps/web/preview/",
+        "docs/design-rules.md",
+        "docs/canvas-acceptance.md",
+        ".changes/"
+      ],
+      "scope_read": [
+        "ARCHITECTURE.md",
+        "AGENTS.md",
+        "STATUS.md",
+        "docs/module-map.md",
+        "docs/quality.md",
+        "docs/design-rules.md",
+        "docs/canvas-acceptance.md",
+        "docs/i18n/style-de.md",
+        "docs/i18n/glossary.md",
+        "apps/web/preview/",
+        "packages/ui-kit/tokens.css"
+      ],
+      "acceptance": [
+        "A1",
+        "A2",
+        "A3",
+        "A4"
+      ],
+      "gates": [
+        "board-check",
+        "design-check",
+        "changelog-entry"
+      ],
+      "branch": "task/P0-41",
+      "worktree": null,
+      "evidence": [],
+      "scope_write_forbidden": [
+        "reference/",
+        "docs/owner/"
+      ],
+      "handoff": []
     }
   ],
   "decisions": [
