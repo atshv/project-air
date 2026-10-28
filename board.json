@@ -6444,6 +6444,52 @@
         "docs/owner/"
       ],
       "handoff": []
+    },
+    {
+      "id": "P0-42",
+      "title": "Live demo: light theme with sun/moon icons under DE/EN",
+      "stage": "foundation",
+      "status": "pending",
+      "owner": null,
+      "depends_on": [
+        "P0-41"
+      ],
+      "goal": "The static preview page gets a light theme (data-theme=light overrides for page and board, contrast-checked) and a sun/moon theme toggle under the DE/EN switch, with translated labels, aria-pressed, keyboard operation and a persisted choice read before first paint.",
+      "why": "The owner wants to judge the design in the bright variant; the theme switch belongs next to the existing language switch.",
+      "complexity": 4,
+      "scope_write": [
+        "apps/web/preview/",
+        ".changes/"
+      ],
+      "gates": [
+        "board-check",
+        "design-check",
+        "changelog-entry"
+      ],
+      "acceptance": [
+        "A1",
+        "A2",
+        "A3"
+      ],
+      "evidence": [],
+      "handoff": [],
+      "worktree": null,
+      "exclusive": [],
+      "satisfies": [
+        "D3"
+      ],
+      "branch": null,
+      "parallel_group": null,
+      "round": 0,
+      "scope_read": [
+        "apps/web/preview/",
+        "packages/ui-kit/tokens.css",
+        "docs/design-rules.md"
+      ],
+      "scope_write_forbidden": [
+        "reference/",
+        "docs/owner/"
+      ]
     }
   ],
   "decisions": [
