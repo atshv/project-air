@@ -6576,6 +6576,52 @@
       "satisfies": [
         "D3"
       ]
+    },
+    {
+      "id": "P0-44",
+      "title": "Live demo: document the pen and ink colours in the preview",
+      "stage": "foundation",
+      "status": "pending",
+      "owner": null,
+      "depends_on": [
+        "P0-43"
+      ],
+      "goal": "Document P0-43 in the preview page itself: pen tile in the toolbar icon gallery (inline, explained), an Ink and colours section with six-tone strokes over a card/photo mock in light and dark, the translated swatch row, pen/palette states, and an Ink annotations row in the Layers list (above content, below chrome, preview only).",
+      "why": "The preview is the design system documentation; the pen and ink colours must be visible there, not only in the live demo.",
+      "complexity": 4,
+      "branch": null,
+      "round": 0,
+      "parallel_group": null,
+      "scope_read": [
+        "apps/web/preview/",
+        "packages/ui-kit/tokens.css",
+        "packages/ui-kit/icons/"
+      ],
+      "scope_write": [
+        "apps/web/preview/",
+        ".changes/"
+      ],
+      "scope_write_forbidden": [
+        "reference/",
+        "docs/owner/"
+      ],
+      "gates": [
+        "board-check",
+        "design-check",
+        "changelog-entry"
+      ],
+      "acceptance": [
+        "A1",
+        "A2",
+        "A3"
+      ],
+      "evidence": [],
+      "handoff": [],
+      "worktree": null,
+      "exclusive": [],
+      "satisfies": [
+        "D3"
+      ]
     }
   ],
   "decisions": [

@@ -8,15 +8,16 @@
 
 ### Stage 1 — `foundation` Foundation
 
-- State: complete
+- State: tasks open
 - Owner decision: `continue`
 - Exit gates: `board-check`, `install`, `boundaries`, `dev-setup`, `compose-config`, `tokens-codegen`, `design-check`, `language-check`, `changelog-entry`, `ci-local`, `polier-version`
 - Exit criteria: Every packages[] folder exists with a README and an ARCHITECTURE.md; package map and versions are filled in.; A fresh clone installs reproducibly with the committed lockfile; root lint, typecheck, test and build pass.; Two worktrees run install, lint, typecheck and tests side by side without port or database collision; tools/dev/setup and teardown create and remove the slot database and bucket and refuse slot 0.; design-check, language-check, changelog-entry and boundaries reject a violating change locally; every code change carries a .changes entry.; The CI workflow is authored and proven locally (actionlint + act) and local sessions use Polier at the board's generator_version; the real GitHub run, branch protection, hosting and releases are deferred to the remote stage after hardening (ADR-0003).; A runnable design preview page exists with desktop and mobile screenshots and a live two-note connection demo (P0-19, P0-20).
-- Tasks: P0-03, P0-04, P0-06, P0-07, P0-08, P0-09, P0-10, P0-11, P0-12, P0-13, P0-14, P0-18, P0-19, P0-20, P0-21, P0-22, P0-23, P0-24, P0-25, P0-26, P0-27, P0-28, P0-29, P0-30, P0-31, P0-32, P0-33, P0-34, P0-35, P0-36, P0-37, P0-38, P0-39, P0-40, P0-41, P0-42, P0-43
+- Tasks: P0-03, P0-04, P0-06, P0-07, P0-08, P0-09, P0-10, P0-11, P0-12, P0-13, P0-14, P0-18, P0-19, P0-20, P0-21, P0-22, P0-23, P0-24, P0-25, P0-26, P0-27, P0-28, P0-29, P0-30, P0-31, P0-32, P0-33, P0-34, P0-35, P0-36, P0-37, P0-38, P0-39, P0-40, P0-41, P0-42, P0-43, P0-44
+- Tasks open: P0-44
 
 ### Stage 2 — `contract` Contract
 
-- State: complete
+- State: blocked by stage foundation
 - Owner decision: `continue`
 - Exit gates: `contracts`, `codegen`
 - Exit criteria: contracts 0.1.0 tagged; every schema has a valid and an invalid fixture.; TS and C++ read the same fixtures identically.
@@ -24,7 +25,7 @@
 
 ### Stage 3 — `engine-spike` Engine spike
 
-- State: complete
+- State: blocked by stage contract
 - Owner decision: `continue`
 - Exit gates: `cpp-unit`, `wasm-build`, `perf-baseline`
 - Exit criteria: 60 fps with 50,000 rectangles on the reference hardware; WASM <= 300 KB gzip.; Measured report and ADR for the engine architecture.
@@ -32,7 +33,7 @@
 
 ### Stage 4 — `backend-core` Backend core
 
-- State: complete
+- State: blocked by stage contract
 - Owner decision: `continue`
 - Exit gates: `api-tests`, `rls-tests`
 - Exit criteria: API suite covers allow and deny for every route; RLS tests green.; A script creates account, workspace, board and note via the SDK; a second account sees nothing.
@@ -40,7 +41,7 @@
 
 ### Stage 5 — `engine-core` Engine core
 
-- State: complete
+- State: blocked by stage engine-spike
 - Owner decision: `continue`
 - Exit gates: `cpp-unit`, `visual-final`, `perf-final`
 - Exit criteria: 10,000 objects at 60 fps in the playground.; All engine entries of the canvas work orders done; reference images green.
@@ -48,7 +49,7 @@
 
 ### Stage 6 — `realtime` Realtime
 
-- State: complete
+- State: blocked by stage backend-core, engine-core
 - Owner decision: `continue`
 - Exit gates: `crdt-convergence`, `load`
 - Exit criteria: Load test 25 clients p95 <= 150 ms; restart loses no acknowledged change.; Two offline browsers converge after reconnect.
@@ -123,7 +124,10 @@
 
 ## Ready now
 
-- none
+- `P0-44` Live demo: document the pen and ink colours in the preview
+  - P0-43: Closed P0-43: pen draws one smooth stroke per press above zones/notes/photos/tables, in world coords (pan/zoom), never selecting/moving; crosshair, Escape/tool exit.
+  - P0-43: Palette popover with six token colours (tone-a..e, fg), aria-pressed swatches, trigger dot, keyboard/Escape/outside; strokes store the tone so dark/light recolour them; one translated undo step each.
+  - P0-43: P0-41/P0-42 preserved; README documents preview-only ink; board-check (pinned Polier v1.0.0, 1.1.0 upgrade documented), design-check and changelog-entry pass; screenshots and browser log committed.
 
 ## Done
 
@@ -237,6 +241,7 @@
 - [ ] `P0-15` Release command and tag-based CI release — status: `pending` — owner: —
 - [ ] `P0-16` Dependency updates and Polier update check — status: `pending` — owner: —
 - [ ] `P0-17` RELEASING.md and release 0.0.1 — status: `pending` — owner: —
+- [ ] `P0-44` Live demo: document the pen and ink colours in the preview — status: `pending` — owner: —
 
 ## Decisions
 
