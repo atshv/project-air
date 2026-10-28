@@ -1,0 +1,452 @@
+{
+  "task": "P4-27",
+  "gate": "zones-capture",
+  "startedAt": "2026-10-28T07:24:20.273Z",
+  "chrome": "/Users/rasulatashev/Library/Caches/ms-playwright/chromium-1248/chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing",
+  "flags": [
+    "--headless=new",
+    "--use-angle=metal",
+    "--enable-gpu",
+    "--hide-scrollbars",
+    "--disable-frame-rate-limit",
+    "--disable-gpu-vsync",
+    "--no-first-run",
+    "--no-default-browser-check",
+    "--disable-background-timer-throttling",
+    "--disable-renderer-backgrounding",
+    "--disable-backgrounding-occluded-windows",
+    "--window-size=1440,900",
+    "--no-sandbox"
+  ],
+  "viewports": [
+    {
+      "viewport": {
+        "name": "desktop",
+        "width": 1440,
+        "height": 900
+      },
+      "zone": {
+        "id": "0192f0c1-7000-7000-8000-000000000600",
+        "world": {
+          "x": 64,
+          "y": 64,
+          "width": 448,
+          "height": 320
+        },
+        "members": {
+          "cards": [
+            "0192f0c1-7000-7000-8000-000000000604",
+            "0192f0c1-7000-7000-8000-000000000605"
+          ],
+          "blocks": [
+            "0192f0c1-7000-7000-8000-000000000602"
+          ]
+        }
+      },
+      "looseObject": "0192f0c1-7000-7000-8000-000000000607",
+      "drop": {
+        "zoneId": "0192f0c1-7000-7000-8000-000000000600",
+        "operation": "moveCard",
+        "inverse": "moveCard",
+        "highlighted": true
+      },
+      "highlight": {
+        "live": {
+          "slot": 0,
+          "active": true
+        },
+        "expired": {
+          "slot": 0,
+          "active": false
+        }
+      },
+      "dragOut": {
+        "zoneId": null,
+        "operation": "moveCard",
+        "inverse": "moveCard",
+        "highlighted": false
+      },
+      "groupMove": {
+        "operation": {
+          "operation": "group",
+          "inverse": "group",
+          "children": [
+            "moveZone",
+            "moveCard",
+            "moveCard",
+            "moveBlock"
+          ]
+        },
+        "delta": {
+          "x": 64,
+          "y": 39.999999999999986
+        }
+      },
+      "deleteKeep": {
+        "zonePolicy": "keep",
+        "operation": "group",
+        "inverse": "group",
+        "children": [
+          "deleteZone"
+        ],
+        "policies": [
+          "keep"
+        ]
+      },
+      "deletePolicy": {
+        "lastDelete": {
+          "zonePolicy": "delete",
+          "operation": "group",
+          "inverse": "group",
+          "children": [
+            "deleteZone"
+          ],
+          "policies": [
+            "delete"
+          ]
+        },
+        "memberGone": true
+      },
+      "screenshots": [
+        {
+          "file": "reviews/evidence/P4-27-zones-drop-desktop.png",
+          "bytes": 63320
+        },
+        {
+          "file": "reviews/evidence/P4-27-zones-move-desktop.png",
+          "bytes": 63479
+        }
+      ]
+    },
+    {
+      "viewport": {
+        "name": "mobile",
+        "width": 390,
+        "height": 844
+      },
+      "zone": {
+        "id": "0192f0c1-7000-7000-8000-000000000600",
+        "world": {
+          "x": 64,
+          "y": 64,
+          "width": 448,
+          "height": 320
+        },
+        "members": {
+          "cards": [
+            "0192f0c1-7000-7000-8000-000000000604",
+            "0192f0c1-7000-7000-8000-000000000605"
+          ],
+          "blocks": [
+            "0192f0c1-7000-7000-8000-000000000602"
+          ]
+        }
+      },
+      "looseObject": "0192f0c1-7000-7000-8000-000000000607",
+      "drop": {
+        "zoneId": "0192f0c1-7000-7000-8000-000000000600",
+        "operation": "moveCard",
+        "inverse": "moveCard",
+        "highlighted": true
+      },
+      "highlight": {
+        "live": {
+          "slot": 0,
+          "active": true
+        },
+        "expired": {
+          "slot": 0,
+          "active": false
+        }
+      },
+      "dragOut": {
+        "zoneId": null,
+        "operation": "moveCard",
+        "inverse": "moveCard",
+        "highlighted": false
+      },
+      "groupMove": {
+        "operation": {
+          "operation": "group",
+          "inverse": "group",
+          "children": [
+            "moveZone",
+            "moveCard",
+            "moveCard",
+            "moveBlock"
+          ]
+        },
+        "delta": {
+          "x": 240,
+          "y": 160
+        }
+      },
+      "deleteKeep": {
+        "zonePolicy": "keep",
+        "operation": "group",
+        "inverse": "group",
+        "children": [
+          "deleteZone"
+        ],
+        "policies": [
+          "keep"
+        ]
+      },
+      "deletePolicy": {
+        "lastDelete": {
+          "zonePolicy": "delete",
+          "operation": "group",
+          "inverse": "group",
+          "children": [
+            "deleteZone"
+          ],
+          "policies": [
+            "delete"
+          ]
+        },
+        "memberGone": true
+      },
+      "screenshots": [
+        {
+          "file": "reviews/evidence/P4-27-zones-drop-mobile.png",
+          "bytes": 29749
+        },
+        {
+          "file": "reviews/evidence/P4-27-zones-move-mobile.png",
+          "bytes": 29540
+        }
+      ]
+    }
+  ],
+  "checks": [
+    {
+      "name": "desktop: a drop writes membership and highlights the zone for 1 s",
+      "passed": true,
+      "actual": {
+        "lastDrop": {
+          "zoneId": "0192f0c1-7000-7000-8000-000000000600",
+          "operation": "moveCard",
+          "inverse": "moveCard",
+          "highlighted": true
+        },
+        "memberZoneId": "0192f0c1-7000-7000-8000-000000000600",
+        "highlight": {
+          "slot": 0,
+          "active": true
+        }
+      },
+      "expected": "one move operation carrying the zone id and a live accent-line highlight"
+    },
+    {
+      "name": "desktop: the zone highlight expires after one second",
+      "passed": true,
+      "actual": {
+        "slot": 0,
+        "active": false
+      },
+      "expected": "no active highlight after 1.15 s"
+    },
+    {
+      "name": "desktop: dragging the centre out releases the member in one move",
+      "passed": true,
+      "actual": {
+        "lastDrop": {
+          "zoneId": null,
+          "operation": "moveCard",
+          "inverse": "moveCard",
+          "highlighted": false
+        },
+        "memberZoneId": null
+      },
+      "expected": "zoneId null in the same move operation"
+    },
+    {
+      "name": "desktop: a zone drag moves zone and members as one group operation",
+      "passed": true,
+      "actual": {
+        "operation": {
+          "operation": "group",
+          "inverse": "group",
+          "children": [
+            "moveZone",
+            "moveCard",
+            "moveCard",
+            "moveBlock"
+          ]
+        },
+        "zoneDelta": {
+          "x": 64,
+          "y": 39.999999999999986
+        },
+        "membersMoved": true
+      },
+      "expected": "one group operation of moveZone + all member moves by the same delta"
+    },
+    {
+      "name": "desktop: deleteZone keep-content keeps the member on the board",
+      "passed": true,
+      "actual": {
+        "lastDelete": {
+          "zonePolicy": "keep",
+          "operation": "group",
+          "inverse": "group",
+          "children": [
+            "deleteZone"
+          ],
+          "policies": [
+            "keep"
+          ]
+        },
+        "member": {
+          "kind": "card",
+          "id": "0192f0c1-7000-7000-8000-000000000606",
+          "slot": 6,
+          "zoneId": null,
+          "world": {
+            "x": 416,
+            "y": 272,
+            "width": 224,
+            "height": 128
+          }
+        },
+        "zoneGone": true
+      },
+      "expected": "one deleteZone operation with policy keep and a board-level member afterwards"
+    },
+    {
+      "name": "desktop: deleteZone delete-content deletes the content with the zone",
+      "passed": true,
+      "actual": {
+        "lastDelete": {
+          "zonePolicy": "delete",
+          "operation": "group",
+          "inverse": "group",
+          "children": [
+            "deleteZone"
+          ],
+          "policies": [
+            "delete"
+          ]
+        },
+        "memberGone": true
+      },
+      "expected": "one deleteZone operation with policy delete and no member left"
+    },
+    {
+      "name": "mobile: a drop writes membership and highlights the zone for 1 s",
+      "passed": true,
+      "actual": {
+        "lastDrop": {
+          "zoneId": "0192f0c1-7000-7000-8000-000000000600",
+          "operation": "moveCard",
+          "inverse": "moveCard",
+          "highlighted": true
+        },
+        "memberZoneId": "0192f0c1-7000-7000-8000-000000000600",
+        "highlight": {
+          "slot": 0,
+          "active": true
+        }
+      },
+      "expected": "one move operation carrying the zone id and a live accent-line highlight"
+    },
+    {
+      "name": "mobile: the zone highlight expires after one second",
+      "passed": true,
+      "actual": {
+        "slot": 0,
+        "active": false
+      },
+      "expected": "no active highlight after 1.15 s"
+    },
+    {
+      "name": "mobile: dragging the centre out releases the member in one move",
+      "passed": true,
+      "actual": {
+        "lastDrop": {
+          "zoneId": null,
+          "operation": "moveCard",
+          "inverse": "moveCard",
+          "highlighted": false
+        },
+        "memberZoneId": null
+      },
+      "expected": "zoneId null in the same move operation"
+    },
+    {
+      "name": "mobile: a zone drag moves zone and members as one group operation",
+      "passed": true,
+      "actual": {
+        "operation": {
+          "operation": "group",
+          "inverse": "group",
+          "children": [
+            "moveZone",
+            "moveCard",
+            "moveCard",
+            "moveBlock"
+          ]
+        },
+        "zoneDelta": {
+          "x": 240,
+          "y": 160
+        },
+        "membersMoved": true
+      },
+      "expected": "one group operation of moveZone + all member moves by the same delta"
+    },
+    {
+      "name": "mobile: deleteZone keep-content keeps the member on the board",
+      "passed": true,
+      "actual": {
+        "lastDelete": {
+          "zonePolicy": "keep",
+          "operation": "group",
+          "inverse": "group",
+          "children": [
+            "deleteZone"
+          ],
+          "policies": [
+            "keep"
+          ]
+        },
+        "member": {
+          "kind": "card",
+          "id": "0192f0c1-7000-7000-8000-000000000606",
+          "slot": 6,
+          "zoneId": null,
+          "world": {
+            "x": 416,
+            "y": 272,
+            "width": 224,
+            "height": 128
+          }
+        },
+        "zoneGone": true
+      },
+      "expected": "one deleteZone operation with policy keep and a board-level member afterwards"
+    },
+    {
+      "name": "mobile: deleteZone delete-content deletes the content with the zone",
+      "passed": true,
+      "actual": {
+        "lastDelete": {
+          "zonePolicy": "delete",
+          "operation": "group",
+          "inverse": "group",
+          "children": [
+            "deleteZone"
+          ],
+          "policies": [
+            "delete"
+          ]
+        },
+        "memberGone": true
+      },
+      "expected": "one deleteZone operation with policy delete and no member left"
+    }
+  ],
+  "result": "pass",
+  "exitCode": 0,
+  "finishedAt": "2026-10-28T07:24:35.720Z"
+}

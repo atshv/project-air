@@ -34,6 +34,10 @@ struct FrameView {
   const std::uint32_t* selectionSlots{nullptr};
   std::size_t selectionCount{0};
   const Bounds* band{nullptr};
+  // L08 (P4-27) zone drop highlight: the world bounds of the zone to outline in
+  // tokens::accent_line for one second after a successful drop. Presentation
+  // state only; never an instance of the command buffer.
+  const Bounds* highlight{nullptr};
 };
 
 // Implemented in render_gl.cpp.

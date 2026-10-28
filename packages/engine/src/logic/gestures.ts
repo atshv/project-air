@@ -7,7 +7,7 @@
 // objects are read from the `DocumentPort` when the operation and its inverse
 // are built, so the inverse always restores what the working copy really had.
 
-import type { BlockType } from "../../../contracts/generated/types.ts";
+import type { BlockType, DeleteZonePolicy } from "../../../contracts/generated/types.ts";
 import type { BoardObjectKind } from "./document-port.ts";
 
 /** World-space point in the contract's pixels. */
@@ -28,6 +28,11 @@ export interface DragSingleGesture {
   readonly objectKind: BoardObjectKind;
   readonly objectId: string;
   readonly position: WorldPoint;
+  /**
+   * Target zone membership of this move (L08): a zone id to become a member,
+   * `null` to return to the board, or absent to leave membership unchanged.
+   */
+  readonly zoneId?: string | null;
 }
 
 /** One object inside a multiple-selection drag. */
@@ -35,6 +40,8 @@ export interface DragGroupMember {
   readonly objectKind: BoardObjectKind;
   readonly objectId: string;
   readonly position: WorldPoint;
+  /** Target zone membership of this member, as in `DragSingleGesture`. */
+  readonly zoneId?: string | null;
 }
 
 /** Drag of a multiple selection; converted into one `group` operation. */
@@ -105,9 +112,9 @@ export interface DeleteGesture {
   readonly objectId: string;
 }
 
-/** One member of a multi-selection delete; only objects the document owns are deletable. */
+/** One member of a multi-selection delete; zones delete with a content policy (L08). */
 export interface DeleteSelectionMember {
-  readonly objectKind: "card" | "block";
+  readonly objectKind: BoardObjectKind;
   readonly objectId: string;
 }
 
@@ -119,6 +126,15 @@ export interface DeleteSelectionMember {
 export interface DeleteSelectionGesture {
   readonly kind: "delete-selection";
   readonly members: readonly DeleteSelectionMember[];
+  /** L08: content policy for a selected zone; defaults to "keep". */
+  readonly zonePolicy?: DeleteZonePolicy;
+}
+
+/** L08: deletion of one zone with its content policy, one operation with inverse. */
+export interface DeleteZoneGesture {
+  readonly kind: "delete-zone";
+  readonly zoneId: string;
+  readonly policy: DeleteZonePolicy;
 }
 
 /** One arrow-key series; the accumulated delta is converted into one operation. */
@@ -148,5 +164,6 @@ export type GestureResult =
   | CreateGesture
   | DeleteGesture
   | DeleteSelectionGesture
+  | DeleteZoneGesture
   | KeyboardNudgeGesture
   | BringToFrontGesture;

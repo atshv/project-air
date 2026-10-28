@@ -6,6 +6,7 @@
 #include <emscripten/html5.h>
 
 #include <algorithm>
+#include <chrono>
 #include <cmath>
 #include <cstddef>
 #include <cstdint>
@@ -17,6 +18,7 @@
 #include "engine/doc.h"
 #include "engine/render.h"
 #include "engine/selection_gl.h"
+#include "engine/zone_highlight.h"
 #include "engine/snap.h"
 #include "engine/snap_gl.h"
 #include "engine/spatial.h"
@@ -296,6 +298,7 @@ class Renderer {
     // reload (the old slot handles are invalid).
     selection_.clear();
     band_visible_ = false;
+    highlight_.clear();
     return 1;
   }
 
@@ -591,6 +594,34 @@ class Renderer {
     return 1;
   }
 
+  // L08 (P4-27): a successful drop highlights the zone for 1 s in the chrome
+  // pass. Presentation state only: nothing is stored in the document.
+  int setZoneHighlight(int slot) {
+    if (!created_) {
+      return fail("engine_create must be called before engine_set_zone_highlight");
+    }
+    if (slot < 0) {
+      highlight_.clear();
+      return 1;
+    }
+    const auto candidate = static_cast<std::uint32_t>(slot);
+    if (candidate >= document_.slotCount() || !document_.isLive(candidate)) {
+      return fail("engine_set_zone_highlight needs a live slot index");
+    }
+    highlight_.show(slot, nowSeconds());
+    return 1;
+  }
+
+  int clearZoneHighlight() {
+    highlight_.clear();
+    return 1;
+  }
+
+  static double nowSeconds() {
+    return std::chrono::duration<double>(std::chrono::steady_clock::now().time_since_epoch())
+        .count();
+  }
+
   const char* lastError() const { return g_last_error.c_str(); }
 
   detail::FrameView frameView() const {
@@ -604,10 +635,26 @@ class Renderer {
                              snap_result_.guideCount,
                              selection_.data(),
                              selection_.size(),
-                             band_visible_ ? &band_ : nullptr};
+                             band_visible_ ? &band_ : nullptr,
+                             highlightBounds()};
   }
 
  private:
+  // The world bounds of the highlighted live zone while the one-second window is
+  // open, or nullptr (expired, cleared, stale slot).
+  const Bounds* highlightBounds() const {
+    const int slot = highlight_.slot();
+    if (slot < 0 || !highlight_.visible(nowSeconds())) {
+      return nullptr;
+    }
+    const auto index = static_cast<std::size_t>(slot);
+    if (index >= document_.slotCount() || !document_.isLive(index)) {
+      return nullptr;
+    }
+    highlight_bounds_ = document_.rectangles()[index].bounds();
+    return &highlight_bounds_;
+  }
+
   // An incremental patch must never trust a stale grid: before the document is
   // mutated, an index that does not match the current document and version is
   // rebuilt. This is defence in depth against a path that left the document
@@ -784,6 +831,8 @@ class Renderer {
   std::vector<std::uint32_t> selection_;
   Bounds band_{};
   bool band_visible_{false};
+  ZoneHighlightState highlight_{};
+  mutable Bounds highlight_bounds_{};
   int css_width_{0};
   int css_height_{0};
   int uniform_width_{-1};
@@ -872,6 +921,14 @@ AIR_ENGINE_RENDER_GL_API int engine_set_selection(const int* indices, int count)
 AIR_ENGINE_RENDER_GL_API int engine_set_band(double x, double y, double width, double height,
                                              int visible) {
   return air::engine::g_renderer.setBand(x, y, width, height, visible);
+}
+
+AIR_ENGINE_RENDER_GL_API int engine_set_zone_highlight(int slot) {
+  return air::engine::g_renderer.setZoneHighlight(slot);
+}
+
+AIR_ENGINE_RENDER_GL_API int engine_clear_zone_highlight() {
+  return air::engine::g_renderer.clearZoneHighlight();
 }
 
 AIR_ENGINE_RENDER_GL_API const char* engine_last_error() {
@@ -989,6 +1046,13 @@ AIR_ENGINE_RENDER_GL_API int engine_set_band(double x, double y, double width, d
   (void)visible;
   return 0;
 }
+
+AIR_ENGINE_RENDER_GL_API int engine_set_zone_highlight(int slot) {
+  (void)slot;
+  return 0;
+}
+
+AIR_ENGINE_RENDER_GL_API int engine_clear_zone_highlight() { return 0; }
 
 AIR_ENGINE_RENDER_GL_API const char* engine_last_error() { return kRendererUnavailable; }
 

@@ -254,6 +254,7 @@ class TextPass {
     if (!detail::parseRgbaToken(tokens::faint, chromeBandColor_) ||
         !detail::parseRgbaToken(tokens::border, chromeRuleColor_) ||
         !detail::parseRgbaToken(tokens::accent_soft, chromeSelectionFillColor_) ||
+        !detail::parseRgbaToken(tokens::accent_line, chromeHighlightColor_) ||
         !parseHexToken(tokens::accent, chromeGuideColor_)) {
       detail::setLastError("generated faint/border/accent tokens are not colours");
       return false;
@@ -521,10 +522,12 @@ class TextPass {
     // L10 (P4-16): the selection frames and the live band are chrome too, so
     // they draw even on a page without an atlas.
     const bool selectionChrome = view.selectionCount > 0 || view.band != nullptr;
-    // No runs, no bindings, no snap guides and no selection chrome: nothing is
-    // built, bound or uploaded, so a text-free frame keeps the measured cost of
-    // the object pass alone (the perf scene never drags or selects).
-    if (!selectionChrome && guideCount == 0 &&
+    // L08 (P4-27): the one-second drop highlight is chrome too.
+    const bool highlightChrome = view.highlight != nullptr;
+    // No runs, no bindings, no snap guides, no selection and no drop highlight:
+    // nothing is built, bound or uploaded, so a text-free frame keeps the measured
+    // cost of the object pass alone (the perf scene never drops or selects).
+    if (!selectionChrome && !highlightChrome && guideCount == 0 &&
         (!atlas_.ready() || (runs_.runs().empty() && bindings_.empty()))) {
       return true;
     }
@@ -537,7 +540,7 @@ class TextPass {
       return false;
     }
     if (glyphs_.empty() && boundGlyphs_.empty() && chromeGpu_.empty() && guideCount == 0 &&
-        !selectionChrome) {
+        !selectionChrome && !highlightChrome) {
       return true;
     }
     glEnable(GL_BLEND);
@@ -658,7 +661,8 @@ class TextPass {
     // L10 (P4-16): selected objects are framed with 1 px accent, the live band is
     // filled with accent-soft and bordered with accent. Both are chrome quads.
     const bool selectionChrome = view.selectionCount > 0 || view.band != nullptr;
-    if (chromeGpu_.empty() && guideCount == 0 && !selectionChrome) {
+    const bool highlightChrome = view.highlight != nullptr;
+    if (chromeGpu_.empty() && guideCount == 0 && !selectionChrome && !highlightChrome) {
       return;
     }
     glUseProgram(chrome_program_);
@@ -799,6 +803,37 @@ class TextPass {
         flush();
       }
     }
+    if (highlightChrome && view.camera != nullptr) {
+      // L08: the dropped-into zone is outlined for one second in accent_line.
+      // One chrome quad per edge, never a command-buffer instance.
+      const Bounds& highlight = *view.highlight;
+      const double zoom = view.camera->zoom();
+      const double border = tokens::border_width;
+      const double x = (highlight.x - view.camera->panX()) * zoom;
+      const double y = (highlight.y - view.camera->panY()) * zoom;
+      const double width = highlight.width * zoom;
+      const double height = highlight.height * zoom;
+      if (width > 0.0 && height > 0.0 && x + width >= 0.0 && y + height >= 0.0 &&
+          x <= view.cssWidth && y <= view.cssHeight) {
+        ChromeGpuInstance frames[4];
+        const auto make = [&](double fx, double fy, double fw, double fh, ChromeGpuInstance& out) {
+          out.x = static_cast<float>(fx);
+          out.y = static_cast<float>(fy);
+          out.width = static_cast<float>(fw);
+          out.height = static_cast<float>(fh);
+          out.red = chromeHighlightColor_[0];
+          out.green = chromeHighlightColor_[1];
+          out.blue = chromeHighlightColor_[2];
+          out.alpha = chromeHighlightColor_[3];
+        };
+        make(x, y, width, border, frames[0]);
+        make(x, y + height - border, width, border, frames[1]);
+        make(x, y, border, height, frames[2]);
+        make(x + width - border, y, border, height, frames[3]);
+        glBufferSubData(GL_ARRAY_BUFFER, 0, static_cast<GLsizeiptr>(sizeof(frames)), frames);
+        glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, 4);
+      }
+    }
   }
 
   void drawGlyphBuffers(const detail::FrameView& view) {
@@ -926,6 +961,8 @@ class TextPass {
   float chromeRuleColor_[4] = {};
   float chromeGuideColor_[4] = {};
   float chromeSelectionFillColor_[4] = {};
+  // L08 (P4-27): tokens::accent_line of the one-second zone drop highlight.
+  float chromeHighlightColor_[4] = {};
   bool created_{false};
 };
 

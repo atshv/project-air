@@ -232,6 +232,14 @@ export interface Engine {
    */
   setBand(bounds: EngineGeometry | null): void;
   /**
+   * L08 (P4-27): highlights one live zone for one second in the token
+   * accent-line after a successful drop. Presentation state only; a negative
+   * slot clears it and a document load clears it in the core.
+   */
+  setZoneHighlight(index: number): void;
+  /** L08: clears the zone drop highlight immediately. */
+  clearZoneHighlight(): void;
+  /**
    * Atlas zoom bucket of the current camera (P4-10): the atlas re-rasterises only
    * when `setCamera`/`resize` cross a bucket, so text stays sharp when zooming in
    * with a bounded number of rebuilds.
@@ -865,6 +873,19 @@ class WebGlEngine implements Engine {
       bounds.height,
       1,
     ]);
+  }
+
+  setZoneHighlight(index: number): void {
+    this.#assertUsable("setZoneHighlight");
+    if (!Number.isInteger(index)) {
+      throw new EngineError("setZoneHighlight needs an integer slot index");
+    }
+    this.#requireOk("engine_set_zone_highlight", ["number"], [index]);
+  }
+
+  clearZoneHighlight(): void {
+    this.#assertUsable("clearZoneHighlight");
+    this.#requireOk("engine_clear_zone_highlight", [], []);
   }
 
   atlasRasterScale(): number {

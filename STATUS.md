@@ -143,6 +143,7 @@
   - P4-07: Closed P4-07: pure Camera::fitBounds (min(...,1.0), 0.1 floor, 64 px L02 padding from tokens), dot grid shader (tokens faint/canvas, 16 px, visible at >=0.5), on-demand rendering (0 idle frames).
   - P4-07: visual 10/10 0-diff incl. reviewed sample-zoom-in update + two one-card-fit baselines; perf p95 0.1 ms, 0 intervals > 16.7 ms; L01 final mean 0.049 vs basis 0.052.
   - P4-07: Harnesses gained --task evidence prefixes; docs updated. Two review rounds, four minors fixed (record commit base, visual --task, comment wording, baseline-history precision).
+- `P4-29` Zone parity with the live demo I: arrangement and release preview (L08)
 
 ## Done
 
@@ -199,6 +200,7 @@
 - [x] `P4-23` DOM overlay for field editing and inline comfort (L18) — status: `done` — owner: —
 - [x] `P4-25` Contract 0.2.0: zone parent reference and reorder (z) operation (L08/L13) — status: `done` — owner: —
 - [x] `P4-26` Zones as containers II: platform migration and containment (L08) — status: `done` — owner: —
+- [x] `P4-27` Zones as containers II: engine membership and zone move (L08) — status: `done` — owner: —
 - [x] `P0-26` Toolbar and zone with notepad and image window in the preview — status: `done` — owner: —
 - [x] `P0-27` Bilingual preview with DE/EN switch and cache-busted assets — status: `done` — owner: —
 - [x] `P0-28` Zone detach interaction: drag notepad and photo out and back — status: `done` — owner: —
@@ -209,7 +211,7 @@
 
 ## In progress
 
-- [ ] `P4-27` Zones as containers II: engine membership and zone move (L08) — status: `in_progress` — owner: lead
+- none
 
 ## Blocked / failed
 
@@ -238,7 +240,7 @@
 <!-- polier:claims -->
 ## Claims
 
-- `P4-27` in progress by dsh since 2026-10-28T07:16:38+00:00 — worktree: /private/tmp/air-P4-27 · slot 1
+- `P4-27` in progress by dsh since 2026-10-28T07:25:53+00:00 — worktree: /private/tmp/air-P4-27 · slot 1
 
 <!-- /polier:claims -->
 

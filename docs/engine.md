@@ -573,6 +573,40 @@ a save path and never writes the document — L05's single autosave stays out of
   policy writing nothing, the 24 px token colour field and the field pointer routing (stop at the
   field, wheel default allowed). The overlay adds no C++ and no visual baseline.
 
+## Zone membership and zone move (L08, P4-27)
+
+Zones are containers (ADR-0010, contract 0.2.0). Membership is working-copy state on cards and blocks
+(`zoneId`), written only through the existing `moveCard`/`moveBlock` payloads — never a separate write
+or per-frame state — and the pure helpers live in `src/logic/zones.ts`.
+
+- **Drop policy.** On release the dragged object's world centre (`rectCentre`) is tested against the
+  live zones in draw order (`zoneAtPoint`, edges inside, topmost wins); `dropZoneId` returns the zone
+  id or `null`. The move operation carries exactly that membership (`payload.zoneId`), so dropping in
+  and dragging out are one operation with one inverse; a zone is never given a parent
+  (`buildMoveOperation` rejects it), and the playground only commits on release.
+- **Zone move.** Dragging a zone commits exactly one `drag-group` gesture; the group operation moves
+  `moveZone` plus one `moveCard`/`moveBlock` per member by the same delta, and its one inverse restores
+  every position (no per-member operation).
+- **Highlight.** A successful drop calls `engine_set_zone_highlight(slot)`; the chrome pass outlines
+  the zone for one second in `tokens::accent_line` (`ZoneHighlightState`, one chrome quad per edge,
+  never a command-buffer instance or document state). The state expires on a steady clock and clears
+  on a document load.
+- **Delete policy.** `delete-zone` / a selection delete containing a zone builds one `deleteZone`
+  operation with the contract's content policy: `keep` returns the members to the board
+  (`zoneId: null`) in the same operation, `delete` removes them with the zone; the inverse is one
+  `group` that recreates the zone and reparents (`moveCard`/`moveBlock`) or recreates (`createCard`/
+  `createBlock`) every member. The confirmation dialog belongs to the web app.
+- **Geometry guard.** `minimumZoneSize(members)` = member extent + `tokens::space_16` (16 px), applied
+  by the seam in `resizeZone` (design minimum 256×192 still applies); the resize gesture itself is
+  P4-17.
+- **Playground and tests.** On the sample and layers scenes a drop shows the accent-line highlight for
+  1 s, a member dragged out returns to the board, a zone drag moves its content, and `Delete` /
+  `Shift+Delete` delete the selected zone with keep/delete content in memory. `window.__engineZones`
+  exposes membership, last drop/delete and the highlight for the deterministic capture
+  (`tools/capture-zones.mjs`, records under `reviews/evidence/P4-27-zones-*`); the native
+  `engine_zone_tests` covers the one-second highlight state and `test/zone-membership.test.mjs` covers
+  drop/out/reject, one group move with inverse, both delete policies and the minimum size.
+
 ## Object identity and mutations
 
 `Document` keeps one storage slot per object and assigns a monotonic `ObjectId` on insert
@@ -743,7 +777,11 @@ snapping section above. **L10 — Multi-select** is delivered for the engine-own
 Shift-click toggling, the plain-click replace, the Shift rubber band with the world-intersection
 rule, the 1 px accent frames and accent-soft band in the chrome pass, the count bar with its
 single-operation delete and the one-group joint drag, documented in the selection section above.
-**L18 — Inline comfort** is delivered for the engine-owned part by P4-23: the DOM field overlay
+**L08 — Zones as containers** is delivered for the engine-owned part by P4-27: contract-0.2.0
+membership on cards and blocks written by the move operations, the world-centre drop policy with no
+nested zones, the one-second accent-line highlight, the one-group zone drag and both `deleteZone`
+content policies with inverses, documented in the zone section above. **L18 — Inline comfort** is
+delivered for the engine-owned part by P4-23: the DOM field overlay
 anchored through the camera, focus open/close/restore, the Enter/Tab/Shift+Tab/Backspace policy over
 the field list, the 24 px token colour field and the playground `?edit=inline` demo with a
 deterministic capture, documented in the field-overlay section above. **L02 — Visible quality** is

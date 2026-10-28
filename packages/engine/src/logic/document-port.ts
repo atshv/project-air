@@ -39,14 +39,21 @@ export interface DocumentPort {
   read<K extends BoardObjectKind>(kind: K, id: string): BoardObjectFor<K> | undefined;
   /** Adds one object; a duplicate id is rejected. */
   add<K extends BoardObjectKind>(kind: K, object: BoardObjectFor<K>): void;
-  /** Moves one object to a world position; unknown ids are rejected. */
-  move(kind: BoardObjectKind, id: string, x: number, y: number): void;
+  /**
+   * Moves one object to a world position; unknown ids are rejected. The optional
+   * zone membership is written in the same call: a zone id makes a card/block a
+   * member, `null` returns it to the board and `undefined` leaves it unchanged
+   * (L08; zones never carry a parent).
+   */
+  move(kind: BoardObjectKind, id: string, x: number, y: number, zoneId?: string | null): void;
   /** Resizes one object; unknown ids are rejected. */
   resize(kind: BoardObjectKind, id: string, width: number, height: number): void;
   /** Removes one object; unknown ids are rejected. */
   remove(kind: BoardObjectKind, id: string): void;
   /** Sets the fractional z index of one object; unknown ids are rejected. */
   updateZ(kind: BoardObjectKind, id: string, z: string): void;
+  /** The live members of one zone (L08), for the content policy and the size guard. */
+  members(zoneId: string): { readonly cards: readonly Card[]; readonly blocks: readonly Block[] };
   /**
    * The kind of the object with this contract id, or `undefined`. A `reorder`
    * payload names only the item id (card, block or zone), so applying it needs
@@ -132,10 +139,25 @@ export function createInMemoryDocument(): InMemoryDocument {
       }
       target.set(object.id, cloneObject(kind, object));
     },
-    move(kind: BoardObjectKind, id: string, x: number, y: number): void {
+    move(kind: BoardObjectKind, id: string, x: number, y: number, zoneId?: string | null): void {
       const object = required(kind, id);
       object.x = x;
       object.y = y;
+      if (zoneId !== undefined) {
+        if (kind === "zone") {
+          if (zoneId !== null) {
+            throw new OperationError("a zone cannot have a parent zone");
+          }
+        } else {
+          (object as Card | Block).zoneId = zoneId;
+        }
+      }
+    },
+    members(zoneId: string) {
+      return {
+        cards: [...cards.values()].filter((card) => card.zoneId === zoneId),
+        blocks: [...blocks.values()].filter((block) => block.zoneId === zoneId),
+      };
     },
     resize(kind: BoardObjectKind, id: string, width: number, height: number): void {
       const object = required(kind, id);
@@ -251,7 +273,7 @@ export function createEngineDocumentPort(
       backend.updateZ(slot, object.z);
       target.set(object.id, { slot, object: cloneObject(kind, object) });
     },
-    move(kind: BoardObjectKind, id: string, x: number, y: number): void {
+    move(kind: BoardObjectKind, id: string, x: number, y: number, zoneId?: string | null): void {
       const stored = required(kind, id);
       backend.updateGeometry(stored.slot, {
         x,
@@ -261,6 +283,25 @@ export function createEngineDocumentPort(
       });
       stored.object.x = x;
       stored.object.y = y;
+      if (zoneId !== undefined) {
+        if (kind === "zone") {
+          if (zoneId !== null) {
+            throw new OperationError("a zone cannot have a parent zone");
+          }
+        } else {
+          (stored.object as Card | Block).zoneId = zoneId;
+        }
+      }
+    },
+    members(zoneId: string) {
+      return {
+        cards: [...cards.values()]
+          .map((stored) => stored.object)
+          .filter((card) => card.zoneId === zoneId),
+        blocks: [...blocks.values()]
+          .map((stored) => stored.object)
+          .filter((block) => block.zoneId === zoneId),
+      };
     },
     resize(kind: BoardObjectKind, id: string, width: number, height: number): void {
       const stored = required(kind, id);

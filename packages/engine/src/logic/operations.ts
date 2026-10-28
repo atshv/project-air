@@ -32,6 +32,7 @@ import type {
   CreateObjectDraft,
   CreateZoneDraft,
   DeleteSelectionGesture,
+  DeleteZoneGesture,
   DragGroupGesture,
   DragSingleGesture,
   GestureResult,
@@ -40,6 +41,119 @@ import type {
   WorldPoint,
   WorldSize,
 } from "./gestures.ts";
+
+
+// L08 (P4-27) zone containment helpers (pure; same file to keep the logic
+// layer's file set unchanged).
+// L08 (P4-27) zone containment rules, pure and DOM-free.
+//
+// ADR-0010 makes zones containers: a card or block whose centre lands inside a
+// live zone becomes its member, dragging the centre out returns it to the board,
+// zones never nest, and a zone never shrinks below its content extent plus the
+// 16 px inset (the resize gesture itself is P4-17). The rules are pure helpers so
+// the drop policy, the geometry guard and their tests share exactly one rule.
+
+/** World rectangle in the contract's pixels. */
+export interface ZoneRect {
+  readonly x: number;
+  readonly y: number;
+  readonly width: number;
+  readonly height: number;
+}
+
+/** One live zone candidate of a drop. */
+export interface ZoneCandidate {
+  readonly id: string;
+  readonly world: ZoneRect;
+}
+
+/** A world-space point. */
+export interface ZonePoint {
+  readonly x: number;
+  readonly y: number;
+}
+
+/** The minimum zone inset from its content: `tokens::space_16` (design rule §8). */
+export const ZONE_CONTENT_INSET = 16;
+
+/** The world-space centre of a rectangle. */
+export function rectCentre(rect: ZoneRect): ZonePoint {
+  return { x: rect.x + rect.width / 2, y: rect.y + rect.height / 2 };
+}
+
+/** True while the point lies inside the rectangle (edges included). */
+export function pointInsideRect(point: ZonePoint, rect: ZoneRect): boolean {
+  return (
+    point.x >= rect.x &&
+    point.x <= rect.x + rect.width &&
+    point.y >= rect.y &&
+    point.y <= rect.y + rect.height
+  );
+}
+
+/**
+ * The topmost live zone containing the point, or null. The caller passes the
+ * zones in draw order (bottom to top), so a later entry wins an overlap.
+ */
+export function zoneAtPoint(
+  point: ZonePoint,
+  zones: readonly ZoneCandidate[],
+): ZoneCandidate | null {
+  let found: ZoneCandidate | null = null;
+  for (const zone of zones) {
+    if (pointInsideRect(point, zone.world)) {
+      found = zone;
+    }
+  }
+  return found;
+}
+
+/**
+ * Membership of a drop (L08): the zone under the dragged object's world centre,
+ * or null when the centre is outside every live zone. Zones never nest, so a
+ * dragged zone always yields null (a zone parent is rejected by the seam).
+ * The decision is the whole write of the move operation: a zone id to become a
+ * member, `null` to return to the board.
+ */
+export function dropZoneId(
+  objectKind: "card" | "block" | "zone",
+  finalRect: ZoneRect,
+  zones: readonly ZoneCandidate[],
+): string | null {
+  if (objectKind === "zone") {
+    return null;
+  }
+  const zone = zoneAtPoint(rectCentre(finalRect), zones);
+  return zone === null ? null : zone.id;
+}
+
+/**
+ * Minimum size of a zone that contains the given members: the member extent on
+ * each axis plus the 16 px content inset. No members -> the inset alone on each
+ * axis.
+ */
+export function minimumZoneSize(members: readonly ZoneRect[]): {
+  readonly width: number;
+  readonly height: number;
+} {
+  if (members.length === 0) {
+    return { width: ZONE_CONTENT_INSET, height: ZONE_CONTENT_INSET };
+  }
+  let left = Number.POSITIVE_INFINITY;
+  let top = Number.POSITIVE_INFINITY;
+  let right = Number.NEGATIVE_INFINITY;
+  let bottom = Number.NEGATIVE_INFINITY;
+  for (const member of members) {
+    left = Math.min(left, member.x);
+    top = Math.min(top, member.y);
+    right = Math.max(right, member.x + member.width);
+    bottom = Math.max(bottom, member.y + member.height);
+  }
+  return {
+    width: right - left + ZONE_CONTENT_INSET,
+    height: bottom - top + ZONE_CONTENT_INSET,
+  };
+}
 
 type OperationType = Operation["type"];
 type OperationOf<T extends OperationType> = Extract<Operation, { readonly type: T }>;
@@ -223,7 +337,15 @@ function requiredObject<K extends BoardObjectKind>(
   return object;
 }
 
-function moveCardPayload(card: Card, x: number, y: number): MoveCardPayload {
+function moveCardPayload(
+  card: Card,
+  x: number,
+  y: number,
+  zoneId?: string | null,
+): MoveCardPayload {
+  if (zoneId !== undefined) {
+    return { cardId: card.id, x, y, zoneId };
+  }
   return {
     cardId: card.id,
     x,
@@ -232,7 +354,15 @@ function moveCardPayload(card: Card, x: number, y: number): MoveCardPayload {
   };
 }
 
-function moveBlockPayload(block: Block, x: number, y: number): MoveBlockPayload {
+function moveBlockPayload(
+  block: Block,
+  x: number,
+  y: number,
+  zoneId?: string | null,
+): MoveBlockPayload {
+  if (zoneId !== undefined) {
+    return { blockId: block.id, x, y, zoneId };
+  }
   return {
     blockId: block.id,
     x,
@@ -254,19 +384,29 @@ function buildMoveOperation(
   objectKind: BoardObjectKind,
   objectId: string,
   position: WorldPoint,
+  zoneId?: string | null,
 ): Operation | null {
   assertPoint(position, "gesture position");
+  if (objectKind === "zone" && zoneId !== undefined) {
+    throw new OperationError("a zone cannot be a member of another zone (no nested zones in v1)");
+  }
   switch (objectKind) {
     case "card": {
       const card = requiredObject(port, "card", objectId);
-      if (card.x === position.x && card.y === position.y) {
+      if (card.x === position.x && card.y === position.y && zoneId === undefined) {
         return null;
       }
       return makeOperation(
         context,
         "moveCard",
-        moveCardPayload(card, position.x, position.y),
-        makeInverse(context, "moveCard", moveCardPayload(card, card.x, card.y)),
+        moveCardPayload(card, position.x, position.y, zoneId),
+        makeInverse(
+          context,
+          "moveCard",
+          zoneId === undefined
+            ? moveCardPayload(card, card.x, card.y)
+            : moveCardPayload(card, card.x, card.y, card.zoneId ?? null),
+        ),
       );
     }
     case "zone": {
@@ -283,14 +423,20 @@ function buildMoveOperation(
     }
     case "block": {
       const block = requiredObject(port, "block", objectId);
-      if (block.x === position.x && block.y === position.y) {
+      if (block.x === position.x && block.y === position.y && zoneId === undefined) {
         return null;
       }
       return makeOperation(
         context,
         "moveBlock",
-        moveBlockPayload(block, position.x, position.y),
-        makeInverse(context, "moveBlock", moveBlockPayload(block, block.x, block.y)),
+        moveBlockPayload(block, position.x, position.y, zoneId),
+        makeInverse(
+          context,
+          "moveBlock",
+          zoneId === undefined
+            ? moveBlockPayload(block, block.x, block.y)
+            : moveBlockPayload(block, block.x, block.y, block.zoneId ?? null),
+        ),
       );
     }
   }
@@ -321,7 +467,25 @@ function buildResizeOperation(
     }
     case "zone": {
       const zone = requiredObject(port, "zone", gesture.objectId);
-      assertGeometry(gesture.size, `zone ${zone.id}`, ZONE_MINIMUM);
+      const members = port.members(zone.id);
+      const extent = minimumZoneSize([
+        ...members.cards.map(
+          (card): ZoneRect => ({ x: card.x, y: card.y, width: card.width, height: card.height }),
+        ),
+        ...members.blocks.map(
+          (block): ZoneRect => ({ x: block.x, y: block.y, width: block.width, height: block.height }),
+        ),
+      ]);
+      // L08: a zone never shrinks below its content extent + the 16 px inset; the
+      // design minimum of 256x192 still applies.
+      assertGeometry(
+        gesture.size,
+        `zone ${zone.id}`,
+        {
+          width: Math.max(ZONE_MINIMUM.width, extent.width),
+          height: Math.max(ZONE_MINIMUM.height, extent.height),
+        },
+      );
       if (zone.width === gesture.size.width && zone.height === gesture.size.height) {
         return null;
       }
@@ -488,9 +652,59 @@ function buildDeleteOperation(
   }
 }
 
+// L08 (P4-27): one zone delete with its content policy, exactly one operation
+// and inverse (ADR-0010, contract 0.2.0 `deleteZone`). "keep" returns the
+// members to the board in the same operation; "delete" removes them with the
+// zone. The inverse restores/rep represent every member exactly.
+function buildDeleteZoneOperation(
+  port: DocumentPort,
+  context: OperationContext,
+  zoneId: string,
+  policy: DeleteZoneGesture["policy"],
+): OperationPair {
+  const zone = { ...requiredObject(port, "zone", zoneId) };
+  const members = port.members(zoneId);
+  const cards = members.cards.map((card) => ({ ...card }));
+  const blocks = members.blocks.map((block) => ({ ...block }));
+  const operation = makeOperation(
+    context,
+    "deleteZone",
+    { zone, cards, blocks, policy },
+    makeInverse(context, "group", { children: [] }),
+  );
+  const inverseChildren: OperationInverse[] = [makeInverse(context, "createZone", { zone })];
+  for (const card of cards) {
+    inverseChildren.push(
+      policy === "keep"
+        ? makeInverse(context, "moveCard", {
+            cardId: card.id,
+            x: card.x,
+            y: card.y,
+            zoneId: zone.id,
+          })
+        : makeInverse(context, "createCard", { card }),
+    );
+  }
+  for (const block of blocks) {
+    inverseChildren.push(
+      policy === "keep"
+        ? makeInverse(context, "moveBlock", {
+            blockId: block.id,
+            x: block.x,
+            y: block.y,
+            zoneId: zone.id,
+          })
+        : makeInverse(context, "createBlock", { block }),
+    );
+  }
+  const inverse = makeInverse(context, "group", { children: inverseChildren });
+  const paired = makeOperation(context, "deleteZone", operation.payload, inverse);
+  return { operation: paired, inverse: paired.inverse };
+}
+
 // L10 (P4-16): one selection delete = one group operation over the single
 // deletes, with the reversed creates as the exactly one inverse. An empty
-// selection yields no operation.
+// selection yields no operation. L08 adds zones with the keep-content default.
 function buildDeleteSelection(
   port: DocumentPort,
   context: OperationContext,
@@ -506,7 +720,10 @@ function buildDeleteSelection(
       );
     }
     seen.add(key);
-    const pair = buildDeleteOperation(port, context, member.objectKind, member.objectId);
+    const pair =
+      member.objectKind === "zone"
+        ? buildDeleteZoneOperation(port, context, member.objectId, gesture.zonePolicy ?? "keep")
+        : buildDeleteOperation(port, context, member.objectKind, member.objectId);
     children.push(pair.operation);
   }
   if (children.length === 0) {
@@ -542,6 +759,7 @@ function buildDragGroup(
       member.objectKind,
       member.objectId,
       member.position,
+      member.zoneId,
     );
     if (child !== null) {
       children.push(child);
@@ -583,6 +801,7 @@ function buildDragSingle(
     gesture.objectKind,
     gesture.objectId,
     gesture.position,
+    gesture.zoneId,
   );
   return operation === null ? null : { operation, inverse: operation.inverse };
 }
@@ -655,6 +874,8 @@ export function buildOperation(
       return buildDeleteOperation(port, context, gesture.objectKind, gesture.objectId);
     case "delete-selection":
       return buildDeleteSelection(port, context, gesture);
+    case "delete-zone":
+      return buildDeleteZoneOperation(port, context, gesture.zoneId, gesture.policy);
     case "keyboard-nudge": {
       const operation = buildNudgeOperation(port, context, gesture);
       return operation === null ? null : { operation, inverse: operation.inverse };
@@ -687,9 +908,15 @@ function applyChange(port: DocumentPort, change: Operation | OperationInverse): 
       return;
     }
     case "moveCard": {
-      // Geometry only: the seam never changes zone membership (P4-23/24); the
-      // payload carries the unchanged parent so the contract stays complete.
-      port.move("card", change.payload.cardId, change.payload.x, change.payload.y);
+      // Geometry plus the optional zone membership (L08): the payload carries
+      // the target parent (a zone id or null) or omits it to leave it unchanged.
+      port.move(
+        "card",
+        change.payload.cardId,
+        change.payload.x,
+        change.payload.y,
+        change.payload.zoneId,
+      );
       return;
     }
     case "moveZone": {
@@ -700,23 +927,36 @@ function applyChange(port: DocumentPort, change: Operation | OperationInverse): 
       return;
     }
     case "moveBlock": {
-      port.move("block", change.payload.blockId, change.payload.x, change.payload.y);
+      port.move(
+        "block",
+        change.payload.blockId,
+        change.payload.x,
+        change.payload.y,
+        change.payload.zoneId,
+      );
       return;
     }
     case "deleteZone": {
-      // The exactly one inverse of createZone is a deleteZone. Its policy
-      // "delete" lists the objects removed with the zone (none for a freshly
-      // created zone); "keep" reparents children and belongs to L08.
+      // L08 (P4-27): "keep" returns the members to the board in the same
+      // operation, "delete" removes them with the zone (contract 0.2.0).
       if (change.payload.policy === "keep") {
+        for (const card of change.payload.cards) {
+          port.move("card", card.id, card.x, card.y, null);
+        }
+        for (const block of change.payload.blocks) {
+          port.move("block", block.id, block.x, block.y, null);
+        }
+      } else if (change.payload.policy === "delete") {
+        for (const card of change.payload.cards) {
+          port.remove("card", card.id);
+        }
+        for (const block of change.payload.blocks) {
+          port.remove("block", block.id);
+        }
+      } else {
         throw new OperationError(
-          "deleteZone with policy keep needs zone membership handling (P4-23/24, L08)",
+          `unknown deleteZone policy ${JSON.stringify(change.payload.policy)}`,
         );
-      }
-      for (const card of change.payload.cards) {
-        port.remove("card", card.id);
-      }
-      for (const block of change.payload.blocks) {
-        port.remove("block", block.id);
       }
       port.remove("zone", change.payload.zone.id);
       return;

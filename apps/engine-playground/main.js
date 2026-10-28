@@ -957,19 +957,113 @@ function createDragSession({ engine, port, context, history, seam, entries, scen
     onDemand.request();
   };
   let lastPair = null;
+  let lastDrop = null;
+  let lastDelete = null;
+  let highlightSlot = null;
+  let highlightUntil = 0;
+  // L08 (P4-27): live zones in world px (bottom to top), and the drop policy:
+  // a card/block whose centre lands inside the topmost zone becomes its member
+  // (the move payload carries the parent; no separate write).
+  const zoneTargets = () => {
+    const zones = [];
+    for (const entry of entries) {
+      if (entry.kind !== "zone") {
+        continue;
+      }
+      const target = targetOf(entry);
+      if (target !== null) {
+        zones.push(target);
+      }
+    }
+    return zones;
+  };
+  const dropZoneId = (target, position) => {
+    if (target.kind === "zone") {
+      return undefined; // zones never nest (v1)
+    }
+    const cx = position.x + target.world.width / 2;
+    const cy = position.y + target.world.height / 2;
+    let found = null;
+    for (const zone of zoneTargets()) {
+      const { x, y, width, height } = zone.world;
+      if (cx >= x && cx <= x + width && cy >= y && cy <= y + height) {
+        found = zone;
+      }
+    }
+    return found === null ? null : found.id;
+  };
+  const requestHighlightFrames = () => {
+    const tick = () => {
+      onDemand.request();
+      if (performance.now() < highlightUntil) {
+        requestAnimationFrame(tick);
+      }
+    };
+    requestAnimationFrame(tick);
+  };
   const commit = (target, position) => {
-    const pair = seam.buildOperation(port, context, {
+    if (target.kind === "zone") {
+      // L08: dragging a zone moves it and all its members as exactly one group
+      // operation (never one operation per member).
+      const deltaX = position.x - target.world.x;
+      const deltaY = position.y - target.world.y;
+      const members = port.members(target.id);
+      const groupMembers = [
+        { objectKind: "zone", objectId: target.id, position },
+        ...members.cards.map((card) => ({
+          objectKind: "card",
+          objectId: card.id,
+          position: { x: card.x + deltaX, y: card.y + deltaY },
+        })),
+        ...members.blocks.map((block) => ({
+          objectKind: "block",
+          objectId: block.id,
+          position: { x: block.x + deltaX, y: block.y + deltaY },
+        })),
+      ];
+      lastDrop = null;
+      const pair = seam.buildOperation(port, context, { kind: "drag-group", members: groupMembers });
+      if (pair === null) {
+        return;
+      }
+      seam.applyOperation(port, pair.operation);
+      history.push(pair.operation, pair.inverse);
+      lastPair = pair;
+      onDemand.request();
+      return;
+    }
+    const zoneId = dropZoneId(target, position);
+    const gesture = {
       kind: "drag-single",
       objectKind: target.kind,
       objectId: target.id,
       position,
-    });
+    };
+    if (zoneId !== undefined) {
+      gesture.zoneId = zoneId;
+    }
+    const pair = seam.buildOperation(port, context, gesture);
     if (pair === null) {
       return;
     }
     seam.applyOperation(port, pair.operation);
     history.push(pair.operation, pair.inverse);
     lastPair = pair;
+    lastDrop = {
+      zoneId,
+      operation: pair.operation.type,
+      inverse: pair.inverse.type,
+      highlighted: typeof zoneId === "string",
+    };
+    if (typeof zoneId === "string") {
+      const zone = zoneTargets().find((candidate) => candidate.id === zoneId);
+      if (zone !== undefined) {
+        engine.setZoneHighlight(zone.slot);
+        highlightSlot = zone.slot;
+        highlightUntil = performance.now() + 1000;
+        requestHighlightFrames();
+      }
+    }
     onDemand.request();
   };
   // L10 (P4-16): target of one entry with the current working-copy geometry.
@@ -1078,15 +1172,12 @@ function createDragSession({ engine, port, context, history, seam, entries, scen
     recordPair(pair);
     onDemand.request();
   };
-  // L10: delete the selection as one operation with inverse. Zones are not
-  // deletable here (zone membership/deletion is L08/P4-27), so they are skipped.
-  const deleteTargets = (targets) => {
+  // L10/L08: delete the selection as one operation with inverse; a selected zone
+  // deletes with its content policy ("keep" by default, L08/P4-27).
+  const deleteTargets = (targets, zonePolicy = "keep") => {
     const members = [];
     const seen = new Set();
     for (const target of targets) {
-      if (target.kind === "zone") {
-        continue;
-      }
       const key = `${target.kind}:${target.id}`;
       if (seen.has(key)) {
         continue;
@@ -1097,10 +1188,24 @@ function createDragSession({ engine, port, context, history, seam, entries, scen
     if (members.length === 0) {
       return 0;
     }
-    const pair = seam.buildOperation(port, context, { kind: "delete-selection", members });
+    const pair = seam.buildOperation(port, context, {
+      kind: "delete-selection",
+      members,
+      zonePolicy,
+    });
     if (pair === null) {
       return 0;
     }
+    lastDelete = {
+      zonePolicy,
+      operation: pair.operation.type,
+      inverse: pair.inverse.type,
+      children: pair.operation.type === "group" ? pair.operation.payload.children.map((child) => child.type) : [],
+      policies:
+        pair.operation.type === "group"
+          ? pair.operation.payload.children.map((child) => (child.type === "deleteZone" ? child.payload.policy : null))
+          : [],
+    };
     seam.applyOperation(port, pair.operation);
     history.push(pair.operation, pair.inverse);
     recordPair(pair);
@@ -1114,6 +1219,54 @@ function createDragSession({ engine, port, context, history, seam, entries, scen
   };
   // Evidence hook for the browser check and manual verification: the last
   // committed operation (types only, never board state).
+  const zoneState = () => ({
+    zones: zoneTargets().map((zone) => ({
+      id: zone.id,
+      slot: zone.slot,
+      world: zone.world,
+      members: {
+        cards: port.members(zone.id).cards.map((card) => card.id),
+        blocks: port.members(zone.id).blocks.map((block) => block.id),
+      },
+    })),
+    lastDrop,
+    lastDelete,
+    highlight: {
+      slot: highlightSlot,
+      active: highlightSlot !== null && performance.now() < highlightUntil,
+    },
+  });
+  globalThis.__engineZones = {
+    state: zoneState,
+    objects: () =>
+      entries
+        .filter((entry) => port.read(entry.kind, entry.id) !== undefined)
+        .map((entry) => {
+          const entity = port.read(entry.kind, entry.id);
+          const slot = port.slotOf(entry.kind, entry.id);
+        return {
+          kind: entry.kind,
+          id: entry.id,
+          slot,
+          zoneId: entity === undefined ? null : entity.zoneId ?? null,
+          world:
+            entity === undefined
+              ? null
+              : { x: entity.x, y: entity.y, width: entity.width, height: entity.height },
+        };
+      }),
+    zones: () => zoneState().zones,
+    lastDrop: () => lastDrop,
+    lastDelete: () => lastDelete,
+    highlight: () => zoneState().highlight,
+    deleteZone: (id, policy) => {
+      const zone = zoneTargets().find((candidate) => candidate.id === id);
+      if (zone === undefined) {
+        return 0;
+      }
+      return deleteTargets([zone], policy);
+    },
+  };
   globalThis.__engineDrag = {
     last: lastOperation,
     targetAt,
@@ -1857,6 +2010,18 @@ function installPointerInput(engine, session, titlesController) {
   window.addEventListener("keydown", (event) => {
     if (event.key === "Escape" && input.keyDown("Escape")) {
       event.preventDefault();
+      return;
+    }
+    // L08 (P4-27): Delete deletes the selection as one operation; a zone keeps
+    // its content by default and Shift+Delete deletes the content with it.
+    if (
+      (event.key === "Delete" || event.key === "Backspace") &&
+      input.selection.length > 0 &&
+      session !== null
+    ) {
+      event.preventDefault();
+      session.deleteTargets([...input.selection], event.shiftKey ? "delete" : "keep");
+      input.clearSelection();
     }
   });
   // Evidence hook: the browser/manual check reads the layer state next to the
