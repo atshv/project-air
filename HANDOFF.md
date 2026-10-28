@@ -29,18 +29,19 @@ Read `AGENTS.md`, `ARCHITECTURE.md`, `STATUS.md`, `docs/module-map.md` and the t
   identified, WebGL2 28/28 unchanged, cross-backend content parity 28/28 within the reviewed
   tolerance, 0 interior differing pixels); `P4-28`
   the L01 final proof: `perf-final` (10,000 objects p95 0.200 ms, 0 intervals > 16.7 ms; 500 cards + 50 zones proof
-  max 1.000 ms with 100 culling checkpoints / 0 mismatches, all enforced metrics within basis + 10 %)
-  and `visual-final` (28/28 committed reference images 0-diff at 1440×900 and 390×844), plus the
-  showcase and `docs/engine/stage-report.md`.
-  **Still open in stage 5:** `P4-13` (the two-backend reference set — the two-backend images are NOT
-  proven; `visual-final` is a WebGL2-only proof and says so in
-  its capture record and in the stage report), `P4-17` resize, `P4-18` auto-pan, `P4-19` placement, `P4-20` keyboard/context
-  menu, `P4-21` undo UI, `P4-22` remember view, `P4-24` trackpad/wheel. Because the two stage-exit
+  max 0.600 ms with 100 culling checkpoints / 0 mismatches, all enforced metrics within basis + 10 %)
+  and `visual-final` (56/56 across WebGL2 + WebGPU — 28 per backend — 0-diff at 1440×900 and
+  390×844), plus the showcase and `docs/engine/stage-report.md`. Both stage-exit records were
+  refreshed on the merged two-backend head (`…164907Z` perf, `…164920Z` visual) with the report
+  updated to the refreshed numbers.
+  **Still open in stage 5:** `P4-17` resize, `P4-18` auto-pan, `P4-19` placement, `P4-20`
+  keyboard/context menu, `P4-21` undo UI, `P4-22` remember view, `P4-24` trackpad/wheel (the WebGPU
+  two-backend set and the refreshed stage-exit records are done). Because the two stage-exit
   records now exist, the generated `STATUS.md` renders stage 5 as "complete" mechanically; the exit
   criterion "all engine entries of the canvas work orders done" is NOT met and the owner decision to
   close the stage stays open. `docs/engine/stage-report.md` lists the same open points.
-  Next stage-5 order: `P4-17` … `P4-24`, then the stage closure; the two-backend `visual-final`
-  record is refreshed on the merged head right after P4-13.
+  Next stage-5 order: `P4-17` … `P4-24`, then the stage closure (the M1 reference-hardware
+  measurement stays in hardening).
 - **Other sessions/repo state:** a second DSH/Claude session works in the same checkouts; it produced
   `P4-06`/`P4-08`/`P4-09`/`P4-10`/`P4-26`, reviewed and refreshed the P4-10 evidence (`97798bf`,
   `597185b`, `b50cd26`). The 2026-10-28 chain (`P4-10` merge, `P4-14` → `P4-15` → `P4-16` → `P4-23` →

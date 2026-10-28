@@ -232,13 +232,6 @@
 - [ ] `P4-22` Remember view (L17) — status: `pending` — owner: —
 - [ ] `P4-24` Trackpad and wheel defaults (L15, desktop part) — status: `pending` — owner: —
 
-<!-- polier:claims -->
-## Claims
-
-- `P4-13` in progress by dsh since 2026-10-28T16:46:50+00:00 — worktree: /private/tmp/air-P4-13 · slot 1
-
-<!-- /polier:claims -->
-
 ## Decisions
 
 - 2026-10-25 `ADR-0001` Monorepo with packages, services, apps, tools and infra (`docs/adr/ADR-0001-monorepo.md`)
