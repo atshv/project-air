@@ -5071,7 +5071,8 @@
         "apps/engine-playground/",
         "docs/adr/",
         "docs/engine.md",
-        ".changes/"
+        ".changes/",
+        "docs/gates/visual-diff.md"
       ],
       "scope_read": [
         "ARCHITECTURE.md",
@@ -5134,7 +5135,8 @@
         "apps/engine-playground/",
         "docs/adr/",
         "docs/engine.md",
-        ".changes/"
+        ".changes/",
+        "docs/gates/visual-diff.md"
       ],
       "scope_read": [
         "ARCHITECTURE.md",
