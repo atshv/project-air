@@ -6490,7 +6490,7 @@
         "reviews/evidence/P0-42-changelog-entry-20261028T213741Z.json"
       ],
       "handoff": [
-        "Closed P0-42: complete light preview theme (:root[data-theme=light], all colour tokens + shadows, contrast-checked fg 16/muted 7.3/accent 6.4, control borders >=3:1), screenshots EN/DE at 1440x900 and 390x844.",
+        "Closed P0-42: complete light preview theme (:root[data-theme=light], all colour tokens + shadows, contrast-checked fg 16/muted 7.3/accent 6.4, controls >=3:1), screenshots EN/DE desktop/mobile.",
         "Sun/moon line-icon toggle under the DE/EN switch: aria-pressed, translated labels, keyboard, preview-theme persisted and applied before first paint; stored > system prefers-color-scheme > dark.",
         "P0-41 contents/frames/done rows preserved in both themes; README documents palette, default rule and the preview-scoped follow-up (ui-kit token promotion is an owner decision)."
       ],
