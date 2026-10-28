@@ -122,7 +122,7 @@
 
 ## Ready now
 
-- `P5-02` CRDT document core behind an own interface (Yjs)
+- none
 
 ## Done
 
@@ -206,7 +206,7 @@
 
 ## In progress
 
-- none
+- [ ] `P5-02` CRDT document core behind an own interface (Yjs) — status: `in_progress` — owner: lead
 
 ## Blocked / failed
 
@@ -218,7 +218,6 @@
 - [ ] `P0-15` Release command and tag-based CI release — status: `pending` — owner: —
 - [ ] `P0-16` Dependency updates and Polier update check — status: `pending` — owner: —
 - [ ] `P0-17` RELEASING.md and release 0.0.1 — status: `pending` — owner: —
-- [ ] `P5-02` CRDT document core behind an own interface (Yjs) — status: `pending` — owner: —
 - [ ] `P5-03` Sync service: WebSocket protocol, auth and durable update log — status: `pending` — owner: —
 - [ ] `P5-04` SDK board-sync client and the one autosave path (L05 realtime half) — status: `pending` — owner: —
 - [ ] `P5-05` Presence: cursors, selection, name and colour — status: `pending` — owner: —
@@ -229,7 +228,7 @@
 <!-- polier:claims -->
 ## Claims
 
-- `P5-01` in progress by dsh since 2026-10-28T18:57:19+00:00 — worktree: /private/tmp/air-P5-01 · slot 1
+- `P5-02` in progress by dsh since 2026-10-28T18:58:40+00:00 — worktree: /private/tmp/air-P5-02 · slot 1
 
 <!-- /polier:claims -->
 
