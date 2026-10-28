@@ -5467,7 +5467,7 @@
       "satisfies": [
         "D11"
       ],
-      "status": "in_progress",
+      "status": "done",
       "depends_on": [
         "P5-01"
       ],
@@ -5506,11 +5506,16 @@
         "unit",
         "typecheck"
       ],
-      "owner": "lead",
+      "owner": null,
       "branch": "task/P5-02",
-      "worktree": "/private/tmp/air-P5-02",
+      "worktree": null,
       "round": 0,
-      "evidence": [],
+      "evidence": [
+        "reviews/evidence/P5-02-board-check-20261028T190215Z.json",
+        "reviews/evidence/P5-02-boundaries-20261028T190215Z.json",
+        "reviews/evidence/P5-02-unit-20261028T190214Z.json",
+        "reviews/evidence/P5-02-typecheck-20261028T190228Z.json"
+      ],
       "scope_write_forbidden": [
         "reference/"
       ]
@@ -5850,6 +5855,59 @@
       "branch": "task/P5-08",
       "worktree": null,
       "round": 0,
+      "evidence": [],
+      "scope_write_forbidden": [
+        "reference/"
+      ]
+    },
+    {
+      "id": "P0-34",
+      "title": "Live demo: move a zone with its members",
+      "goal": "In the live demo a zone can be dragged by its frame or header: the frame and every docked member move together 1:1, clamped to the visible surface, the release commits the new place and announces it, a cancel restores it, and renaming by a click on the name still works.",
+      "why": "The owner wants to move the zone card itself, not only the items inside it (ADR-0010: dragging a zone moves its content).",
+      "satisfies": [
+        "D3"
+      ],
+      "status": "pending",
+      "depends_on": [
+        "P0-33"
+      ],
+      "complexity": 4,
+      "stage": "foundation",
+      "parallel_group": null,
+      "owner": null,
+      "round": 0,
+      "scope_write": [
+        "apps/web/preview/",
+        ".changes/"
+      ],
+      "scope_read": [
+        "ARCHITECTURE.md",
+        "AGENTS.md",
+        "STATUS.md",
+        "docs/module-map.md",
+        "docs/quality.md",
+        "docs/design-rules.md",
+        "docs/i18n/style-de.md",
+        "docs/i18n/glossary.md",
+        "apps/web/preview/",
+        "packages/ui-kit/tokens.css",
+        "packages/ui-kit/layers.ts",
+        "docs/canvas-acceptance.md"
+      ],
+      "acceptance": [
+        "A1",
+        "A2",
+        "A3",
+        "A4"
+      ],
+      "gates": [
+        "board-check",
+        "design-check",
+        "changelog-entry"
+      ],
+      "branch": "task/P0-34",
+      "worktree": null,
       "evidence": [],
       "scope_write_forbidden": [
         "reference/"

@@ -1,0 +1,24 @@
+{
+  "name": "@project-air/crdt",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "CRDT document core for one board behind the own BoardDoc interface; Yjs (MIT) is an implementation detail of this package.",
+  "main": "./dist/packages/crdt/src/index.js",
+  "types": "./dist/packages/crdt/src/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/packages/crdt/src/index.d.ts",
+      "import": "./dist/packages/crdt/src/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc --project tsconfig.build.json",
+    "typecheck": "tsc --noEmit --project tsconfig.json",
+    "lint": "eslint --max-warnings=0 .",
+    "test": "node --test test/*.test.mjs"
+  },
+  "dependencies": {
+    "yjs": "13.6.27"
+  }
+}

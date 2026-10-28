@@ -12,7 +12,7 @@
 - Owner decision: `continue`
 - Exit gates: `board-check`, `install`, `boundaries`, `dev-setup`, `compose-config`, `tokens-codegen`, `design-check`, `language-check`, `changelog-entry`, `ci-local`, `polier-version`
 - Exit criteria: Every packages[] folder exists with a README and an ARCHITECTURE.md; package map and versions are filled in.; A fresh clone installs reproducibly with the committed lockfile; root lint, typecheck, test and build pass.; Two worktrees run install, lint, typecheck and tests side by side without port or database collision; tools/dev/setup and teardown create and remove the slot database and bucket and refuse slot 0.; design-check, language-check, changelog-entry and boundaries reject a violating change locally; every code change carries a .changes entry.; The CI workflow is authored and proven locally (actionlint + act) and local sessions use Polier at the board's generator_version; the real GitHub run, branch protection, hosting and releases are deferred to the remote stage after hardening (ADR-0003).; A runnable design preview page exists with desktop and mobile screenshots and a live two-note connection demo (P0-19, P0-20).
-- Tasks: P0-03, P0-04, P0-06, P0-07, P0-08, P0-09, P0-10, P0-11, P0-12, P0-13, P0-14, P0-18, P0-19, P0-20, P0-21, P0-22, P0-23, P0-24, P0-25, P0-26, P0-27, P0-28, P0-29, P0-30, P0-31, P0-32, P0-33
+- Tasks: P0-03, P0-04, P0-06, P0-07, P0-08, P0-09, P0-10, P0-11, P0-12, P0-13, P0-14, P0-18, P0-19, P0-20, P0-21, P0-22, P0-23, P0-24, P0-25, P0-26, P0-27, P0-28, P0-29, P0-30, P0-31, P0-32, P0-33, P0-34
 
 ### Stage 2 — `contract` Contract
 
@@ -122,7 +122,14 @@
 
 ## Ready now
 
-- none
+- `P5-03` Sync service: WebSocket protocol, auth and durable update log
+  - P3-04: Closed P3-04: 20 /v1 contract routes (workspaces/boards/notes/cards) with contract envelopes, UUIDv7 requestIds, cursor pagination; permission matrix with 404 non-leak; app_user + SET LOCAL.
+  - P3-04: Defence in depth (AD-5): explicit membership checks on GETs + startup guard refusing SUPERUSER/BYPASSRLS pools; 28 api-tests (allow+deny per route), 72 unit; errors echo requestId; bad cursors 400.
+  - P3-04: Review pass; F1 fixed (GET checks + role guard). Open F2: Kratos v4 identity ids vs contract-v7 account ids -> P3-06 mapping task; member routes not in this stage.
+- `P0-34` Live demo: move a zone with its members
+  - P0-33: Closed P0-33: checklist block (5 items, 2 done, counter + status, real checkboxes) and spreadsheet card (A-D, rows 1-6, formula bar, computed totals, click/arrow selection).
+  - P0-33: Both draggable on the blocks layer (no drag from checkbox/label, no click after drag), desktop homes data-home, compact homes data-home-compact, compact world grid x 104.
+  - P0-33: Gates board-check/design-check/changelog-entry green; 4 screenshots + log; follow-up: language-check flags German demo strings in apps/engine-playground/main.js.
 
 ## Done
 
@@ -203,10 +210,11 @@
 - [x] `P0-33` Live demo: checklist block and spreadsheet table card — status: `done` — owner: —
 - [x] `P4-31` English sample text in the engine playground (language-check) — status: `done` — owner: —
 - [x] `P5-01` Sync contract 0.3.0: settle the pre-realtime open points — status: `done` — owner: —
+- [x] `P5-02` CRDT document core behind an own interface (Yjs) — status: `done` — owner: —
 
 ## In progress
 
-- [ ] `P5-02` CRDT document core behind an own interface (Yjs) — status: `in_progress` — owner: lead
+- none
 
 ## Blocked / failed
 
@@ -224,11 +232,12 @@
 - [ ] `P5-06` Durability and reconnect: restart, catch-up and snapshot compaction — status: `pending` — owner: —
 - [ ] `P5-07` crdt-convergence proof: 10,000 rounds, offline clients and own-only undo — status: `pending` — owner: —
 - [ ] `P5-08` load proof: 25 clients per board at p95 <= 150 ms and the stage report — status: `pending` — owner: —
+- [ ] `P0-34` Live demo: move a zone with its members — status: `pending` — owner: —
 
 <!-- polier:claims -->
 ## Claims
 
-- `P5-02` in progress by dsh since 2026-10-28T18:58:40+00:00 — worktree: /private/tmp/air-P5-02 · slot 1
+- `P5-02` in progress by dsh since 2026-10-28T19:02:24+00:00 — worktree: /private/tmp/air-P5-02 · slot 1
 
 <!-- /polier:claims -->
 

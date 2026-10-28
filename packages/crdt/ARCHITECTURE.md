@@ -1,36 +1,17 @@
-# Architecture: packages/crdt
+# packages/crdt architecture
 
-**Kind:** `package` · **Created in stage:** `later`
-
-## Purpose
-
-Holds board content so several people can change it at the same time and offline and still end at the same state. It exposes `BoardDoc` with `apply(op)`, `encodeUpdate()`, `applyUpdate()` and `snapshot()` behind its own interface, so the CRDT library stays replaceable. The library choice is still an open owner question (Q4 on the board).
-
-## Inputs
-
-- Operations typed by `packages/contracts`.
-- Encoded updates from other replicas and stored snapshots.
-
-## Outputs
-
-- `BoardDoc` with `apply(op)`, `encodeUpdate()`, `applyUpdate()` and `snapshot()`.
-- Encoded updates and snapshots that converge to the same final state.
-
-## Invariants
-
-- `AD-1` — Every change to board content is one operation from `packages/contracts` with its inverse; one gesture = one operation.
-- `AD-3` — Cross-package interfaces are JSON Schema contracts with fixtures and SemVer; a change updates every dependant in the same task.
-
-## Allowed imports
-
-Exactly these workspace packages, copied from `board.json` -> `packages[]` -> `may_import`: `packages/contracts`.
-
-## Commands
-
-Install, build, lint, typecheck and test: **set by P0-04**, the workspace task. This package defines no command before the workspace exists; the task that adds code expands this section.
-
-
-## References
-
-- Root architecture and the `AD-1` … `AD-10` table: [ARCHITECTURE.md](../../ARCHITECTURE.md)
-- Package map: [docs/module-map.md](../../docs/module-map.md)
+- **Own interface first.** `src/index.ts` declares `BoardDoc` and the adapter factory; the public API
+  never exposes Yjs. `src/yjs-doc.ts` is the Yjs (MIT 13.6.27) adapter; `FakeBoardDoc` in
+  `src/index.ts` is the second adapter for the conformance suite.
+- **Contract is the wire format.** Entities are the contract's BoardContent collections
+  (zones/blocks/note cards/notes/edges); operations and inverses are the generated contract types
+  (`packages/contracts/generated/types.ts`); zone parents and the fractional `z` are plain fields of
+  the mapped entity. AD-4 (a note exists once) is preserved: cards reference note ids, notes are not
+  duplicated.
+- **One write path.** `apply(op)` applies exactly one contract operation (or inverse) — the same
+  payloads the engine produces; the Yjs document is the CRDT state, encoded updates are the
+  transport, and `snapshot()` is the canonical contract board-content snapshot. Deletes remove the
+  entity and the contract inverse restores it (no second save path).
+- **Convergence.** Seeded randomized rounds on two replicas, offline batches, snapshot round-trip
+  and op+inverse state equality are pinned by `test/conformance.test.mjs` for both adapters.
+- **Allowed imports:** `packages/contracts` only (board.json `packages[crdt].may_import`).

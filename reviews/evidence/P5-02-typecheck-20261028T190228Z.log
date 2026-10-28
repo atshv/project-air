@@ -1,0 +1,33 @@
+$ pnpm typecheck
+[exit 0]
+
+
+   • turbo 2.11.10
+   • Packages in scope: @project-air/auth, @project-air/contracts, @project-air/crdt, @project-air/design-check, @project-air/engine, @project-air/language-check, @project-air/platform, @project-air/release, @project-air/sdk, @project-air/test-kit, @project-air/ui-kit
+   • Running typecheck in 11 packages
+   • Remote caching disabled, using shared worktree cache
+
+@project-air/contracts:typecheck: cache miss, executing 0f6d1f63ec7831bf
+@project-air/engine:typecheck: cache hit, replaying logs c80d80c47193f29e
+@project-air/platform:typecheck: cache hit, replaying logs 749962aa46510c9b
+@project-air/test-kit:typecheck: cache hit, replaying logs 8deeeb7ed05d58f7
+@project-air/auth:typecheck: cache hit, replaying logs bd86fc90d0a28ec1
+@project-air/engine:typecheck: $ tsc --noEmit --project tsconfig.json
+@project-air/design-check:typecheck: cache hit, replaying logs 58c2d65115d176b5
+@project-air/platform:typecheck: $ tsc --noEmit --project tsconfig.json
+@project-air/sdk:typecheck: cache hit, replaying logs e02d5dd1ab1f0c6b
+@project-air/test-kit:typecheck: $ tsc --noEmit --project tsconfig.json
+@project-air/crdt:typecheck: cache hit, replaying logs d610fd574a923510
+@project-air/auth:typecheck: $ tsc --noEmit --project tsconfig.json
+@project-air/sdk:typecheck: $ tsc --noEmit --project tsconfig.json
+@project-air/design-check:typecheck: $ node --check check.mjs && node --check index.mjs && node --check test/design-check.test.mjs
+@project-air/crdt:typecheck: $ tsc --noEmit --project tsconfig.json
+@project-air/ui-kit:typecheck: cache hit, replaying logs 73dfd9c936be8a9d
+@project-air/ui-kit:typecheck: $ tsc --noEmit --project tsconfig.json
+@project-air/contracts:typecheck: $ tsc --noEmit --project tsconfig.json
+
+ Tasks:    9 successful, 9 total
+Cached:    8 cached, 9 total
+  Time:    348ms 
+
+$ turbo run typecheck && tsc -b tsconfig.json

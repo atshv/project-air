@@ -1,0 +1,39 @@
+$ pnpm test --affected
+[exit 0]
+
+
+   • turbo 2.11.10
+   • Packages in scope: //, @project-air/crdt
+   • Running test in 2 packages
+   • Remote caching disabled, using shared worktree cache
+
+@project-air/crdt:build: cache hit, replaying logs 6536ce5cdbebb1e0
+@project-air/crdt:build: $ tsc --project tsconfig.build.json
+@project-air/crdt:test: cache hit, replaying logs c4ef603cd43aaae3
+@project-air/crdt:test: $ node --test test/*.test.mjs
+@project-air/crdt:test: yjs: rounds=10000 elapsedMs=108.6 heapDeltaMb=19.57 stateBytes=2177
+@project-air/crdt:test: fake: rounds=10000 elapsedMs=95.7 heapDeltaMb=16.02 stateBytes=2177
+@project-air/crdt:test: (node:17654) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.
+@project-air/crdt:test: (Use `node --trace-warnings ...` to show where the warning was created)
+@project-air/crdt:test: ✔ yjs: 10,000 randomized rounds in different orders converge (138.749875ms)
+@project-air/crdt:test: ✔ yjs: an offline batch merges after reconnect (5.385416ms)
+@project-air/crdt:test: ✔ yjs: the snapshot round-trips into an identical document (1.223375ms)
+@project-air/crdt:test: ✔ yjs: every operation type plus its inverse restores the state (1.362167ms)
+@project-air/crdt:test: ✔ fake: 10,000 randomized rounds in different orders converge (143.028916ms)
+@project-air/crdt:test: ✔ fake: an offline batch merges after reconnect (3.714916ms)
+@project-air/crdt:test: ✔ fake: the snapshot round-trips into an identical document (0.464833ms)
+@project-air/crdt:test: ✔ fake: every operation type plus its inverse restores the state (0.6455ms)
+@project-air/crdt:test: ℹ tests 8
+@project-air/crdt:test: ℹ suites 0
+@project-air/crdt:test: ℹ pass 8
+@project-air/crdt:test: ℹ fail 0
+@project-air/crdt:test: ℹ cancelled 0
+@project-air/crdt:test: ℹ skipped 0
+@project-air/crdt:test: ℹ todo 0
+@project-air/crdt:test: ℹ duration_ms 472.645708
+
+ Tasks:    2 successful, 2 total
+Cached:    2 cached, 2 total
+  Time:    71ms >>> FULL TURBO
+
+$ turbo run test --affected

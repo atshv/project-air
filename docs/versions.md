@@ -16,6 +16,7 @@ baseline; P3-01 added the backend rows (`pg`, `@types/pg`, `@types/node`) and th
 | pnpm (package manager) | `12.14.0` | https://www.npmjs.com/package/pnpm/v/12.14.0 — MIT | 2026-10-25 | owner (2026-10-25) |
 | Node.js LTS (Krypton) | `24.22.1` | https://nodejs.org/dist/index.json — v24.22.1, 2026-10-20, MIT | 2026-10-25 | owner (2026-10-25) |
 | Turborepo (`turbo`) | `2.11.10` | https://www.npmjs.com/package/turbo/v/2.11.10 — MIT | 2026-10-25 | owner (2026-10-25) |
+| Yjs (`yjs`, CRDT for `packages/crdt`) | `13.6.27` | https://www.npmjs.com/package/yjs/v/13.6.27 — MIT, https://github.com/yjs/yjs (tag 13.6.27); Q4-approved dependency | 2026-10-28 | owner (Q4, 2026-10-28) |
 | TypeScript (`typescript`) | `5.9.3` | https://www.npmjs.com/package/typescript/v/5.9.3 — Apache-2.0 | 2026-10-25 | owner (2026-10-25) |
 | ESLint (`eslint`) | `10.13.0` | https://www.npmjs.com/package/eslint/v/10.13.0 — MIT | 2026-10-25 | owner (2026-10-25) |
 | typescript-eslint | `8.72.0` | https://www.npmjs.com/package/typescript-eslint/v/8.72.0 — MIT | 2026-10-25 | owner (2026-10-25) |

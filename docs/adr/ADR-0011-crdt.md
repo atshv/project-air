@@ -32,6 +32,13 @@ the library stays replaceable. The version is pinned in `docs/versions.md`.
 - The sync service persists encoded updates and snapshots; the contract stays the wire format.
 - Bundle size only matters where the web app imports the package (web-app stage), not in the engine.
 
+- **P5-02 implementation note (2026-10-28):** `packages/crdt` now ships `BoardDoc` with the Yjs
+  13.6.27 adapter and a fake adapter passing the same conformance suite (10,000 seeded rounds on two
+  replicas in different orders converge to identical encoded state and snapshot; offline batches,
+  snapshot round-trip and op+inverse state equality covered). The board row is immutable metadata in
+  one board document; the contract entities and their fields are the CRDT maps. No Yjs type or API
+  escapes the package boundary.
+
 ## Alternatives
 
 - **Automerge (MIT)** — CRDT JSON in Rust/WASM; a second WASM toolchain next to the engine's
