@@ -125,7 +125,7 @@
 
 ## Ready now
 
-- `P6-03` Boards start page: workspaces, board list and creation over the SDK
+- none
 
 ## Done
 
@@ -230,7 +230,7 @@
 
 ## In progress
 
-- none
+- [ ] `P6-03` Boards start page: workspaces, board list and creation over the SDK — status: `in_progress` — owner: lead
 
 ## Blocked / failed
 
@@ -242,7 +242,6 @@
 - [ ] `P0-15` Release command and tag-based CI release — status: `pending` — owner: —
 - [ ] `P0-16` Dependency updates and Polier update check — status: `pending` — owner: —
 - [ ] `P0-17` RELEASING.md and release 0.0.1 — status: `pending` — owner: —
-- [ ] `P6-03` Boards start page: workspaces, board list and creation over the SDK — status: `pending` — owner: —
 - [ ] `P6-04` Board page host: engine, toolbar, zoom and view persistence (L00, L17) — status: `pending` — owner: —
 - [ ] `P6-05` Board interactions: context menu, keyboard and undo/redo UI (L12, L11 hint) — status: `pending` — owner: —
 - [ ] `P6-06` Panel and editor: overlay, own editor, note placeholder and title (L04, L06, L09) — status: `pending` — owner: —
@@ -253,7 +252,7 @@
 <!-- polier:claims -->
 ## Claims
 
-- `P6-02` in progress by dsh since 2026-10-28T23:25:03+00:00 — worktree: /private/tmp/air-P6-02 · slot 3
+- `P6-03` in progress by dsh since 2026-10-28T23:25:48+00:00 — worktree: /private/tmp/air-P6-03 · slot 3
 
 <!-- /polier:claims -->
 

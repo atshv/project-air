@@ -6764,7 +6764,7 @@
       "satisfies": [
         "D12"
       ],
-      "status": "pending",
+      "status": "in_progress",
       "depends_on": [
         "P6-02"
       ],
@@ -6799,9 +6799,9 @@
         "design-check",
         "language-check"
       ],
-      "owner": null,
+      "owner": "lead",
       "branch": "task/P6-03",
-      "worktree": null,
+      "worktree": "/private/tmp/air-P6-03",
       "round": 0,
       "evidence": [],
       "scope_write_forbidden": [
