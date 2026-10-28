@@ -122,10 +122,7 @@
 
 ## Ready now
 
-- `P0-40` Live demo: two teammates on the board
-  - P0-39: Closed P0-39: no square handles; frame edges (8 px band) and corners (16 px) resize, hovered edge lit 2 px, corner 16 px bracket; L14 updated; section 10 specimen redrawn.
-  - P0-39: Done checklist entries are --muted without strikethrough (design law §6 row). New section 12 lists all design rules §0-§14 (15 cards, 66 lines, EN/DE).
-  - P0-39: Gates board-check/design-check/changelog-entry green; 10 screenshots + log. Engine P4-17 still draws eight handles: needs an engine task to follow L14.
+- none
 
 ## Done
 
@@ -221,6 +218,7 @@
 ## In progress
 
 - [ ] `P5-06` Durability and reconnect: restart, catch-up and snapshot compaction — status: `in_progress` — owner: lead
+- [ ] `P0-40` Live demo: two teammates on the board — status: `in_progress` — owner: —
 
 ## Blocked / failed
 
@@ -234,7 +232,13 @@
 - [ ] `P0-17` RELEASING.md and release 0.0.1 — status: `pending` — owner: —
 - [ ] `P5-07` crdt-convergence proof: 10,000 rounds, offline clients and own-only undo — status: `pending` — owner: —
 - [ ] `P5-08` load proof: 25 clients per board at p95 <= 150 ms and the stage report — status: `pending` — owner: —
-- [ ] `P0-40` Live demo: two teammates on the board — status: `pending` — owner: —
+
+<!-- polier:claims -->
+## Claims
+
+- `P0-40` in progress by dsh since 2026-10-28T19:53:30+00:00 — worktree: /Users/rasulatashev/Desktop/KI Projekte/Project air-P0-40 · slot 2
+
+<!-- /polier:claims -->
 
 ## Decisions
 
