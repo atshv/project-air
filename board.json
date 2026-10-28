@@ -5401,7 +5401,7 @@
       "satisfies": [
         "D11"
       ],
-      "status": "pending",
+      "status": "in_progress",
       "depends_on": [
         "P1-04"
       ],
@@ -5437,9 +5437,9 @@
         "codegen",
         "unit"
       ],
-      "owner": null,
+      "owner": "lead",
       "branch": "task/P5-01",
-      "worktree": null,
+      "worktree": "/private/tmp/air-P5-01",
       "round": 0,
       "evidence": [],
       "scope_write_forbidden": [

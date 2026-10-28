@@ -122,10 +122,7 @@
 
 ## Ready now
 
-- `P5-01` Sync contract 0.3.0: settle the pre-realtime open points
-  - P1-04: Closed P1-04: sync protocol as JSON Schema 0.1.0 with 12 message types (6 client→server, 6 server→client), 14 valid/20 invalid fixtures plus reconnect and session sequences; 66 tests green.
-  - P1-04: reject carries the seven P1-05 wire codes; fixtures-gate/ holds the two Polier gate specimens (byte-identical copies, test-enforced); the 77-fixture parity corpus and all existing tests are untouched.
-  - P1-04: Review pass with 4 minor advisories (hello-first, wrong-order assertion, snapshotRef board/seq, serverSeq 0 bootstrap) to settle before realtime; P1-05 adds the errors.<camelCase> keys.
+- none
 
 ## Done
 
@@ -208,7 +205,7 @@
 
 ## In progress
 
-- none
+- [ ] `P5-01` Sync contract 0.3.0: settle the pre-realtime open points — status: `in_progress` — owner: lead
 
 ## Blocked / failed
 
@@ -220,7 +217,6 @@
 - [ ] `P0-15` Release command and tag-based CI release — status: `pending` — owner: —
 - [ ] `P0-16` Dependency updates and Polier update check — status: `pending` — owner: —
 - [ ] `P0-17` RELEASING.md and release 0.0.1 — status: `pending` — owner: —
-- [ ] `P5-01` Sync contract 0.3.0: settle the pre-realtime open points — status: `pending` — owner: —
 - [ ] `P5-02` CRDT document core behind an own interface (Yjs) — status: `pending` — owner: —
 - [ ] `P5-03` Sync service: WebSocket protocol, auth and durable update log — status: `pending` — owner: —
 - [ ] `P5-04` SDK sync client and the one autosave path (L05 realtime half) — status: `pending` — owner: —
@@ -228,6 +224,13 @@
 - [ ] `P5-06` Durability and reconnect: restart, catch-up and snapshot compaction — status: `pending` — owner: —
 - [ ] `P5-07` crdt-convergence proof: 10,000 rounds, offline clients and own-only undo — status: `pending` — owner: —
 - [ ] `P5-08` load proof: 25 clients per board at p95 <= 150 ms and the stage report — status: `pending` — owner: —
+
+<!-- polier:claims -->
+## Claims
+
+- `P5-01` in progress by dsh since 2026-10-28T18:54:11+00:00 — worktree: /private/tmp/air-P5-01 · slot 1
+
+<!-- /polier:claims -->
 
 ## Decisions
 
