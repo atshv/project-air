@@ -121,7 +121,6 @@
 
 ## Ready now
 
-- `P4-12` WebGPU backend selection, capability and fallback
 - `P4-17` Resize (L14)
 - `P4-18` Auto-pan (L16)
 - `P4-19` Placement of new objects (L20)
@@ -211,7 +210,7 @@
 
 ## In progress
 
-- none
+- [ ] `P4-12` WebGPU backend selection, capability and fallback — status: `in_progress` — owner: lead
 
 ## Blocked / failed
 
@@ -223,7 +222,6 @@
 - [ ] `P0-15` Release command and tag-based CI release — status: `pending` — owner: —
 - [ ] `P0-16` Dependency updates and Polier update check — status: `pending` — owner: —
 - [ ] `P0-17` RELEASING.md and release 0.0.1 — status: `pending` — owner: —
-- [ ] `P4-12` WebGPU backend selection, capability and fallback — status: `pending` — owner: —
 - [ ] `P4-13` WebGPU switch and two-backend image comparison — status: `pending` — owner: —
 - [ ] `P4-17` Resize (L14) — status: `pending` — owner: —
 - [ ] `P4-18` Auto-pan (L16) — status: `pending` — owner: —
@@ -236,7 +234,7 @@
 <!-- polier:claims -->
 ## Claims
 
-- `P4-11` in progress by dsh since 2026-10-28T16:20:57+00:00 — worktree: /private/tmp/air-P4-11 · slot 1
+- `P4-12` in progress by dsh since 2026-10-28T16:22:35+00:00 — worktree: /private/tmp/air-P4-12 · slot 1
 
 <!-- /polier:claims -->
 
