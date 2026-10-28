@@ -6269,7 +6269,7 @@
       "satisfies": [
         "D3"
       ],
-      "status": "in_progress",
+      "status": "done",
       "depends_on": [
         "P0-38"
       ],
@@ -6310,13 +6310,21 @@
         "changelog-entry"
       ],
       "branch": "task/P0-39",
-      "worktree": "../Project air-P0-39",
-      "evidence": [],
+      "worktree": null,
+      "evidence": [
+        "reviews/evidence/P0-39-board-check-20261028T195142Z.json",
+        "reviews/evidence/P0-39-changelog-entry-20261028T195147Z.json",
+        "reviews/evidence/P0-39-design-check-20261028T195147Z.json"
+      ],
       "scope_write_forbidden": [
         "reference/",
         "docs/owner/"
       ],
-      "handoff": []
+      "handoff": [
+        "Closed P0-39: no square handles; frame edges (8 px band) and corners (16 px) resize, hovered edge lit 2 px, corner 16 px bracket; L14 updated; section 10 specimen redrawn.",
+        "Done checklist entries are --muted without strikethrough (design law §6 row). New section 12 lists all design rules §0-§14 (15 cards, 66 lines, EN/DE).",
+        "Gates board-check/design-check/changelog-entry green; 10 screenshots + log. Engine P4-17 still draws eight handles: needs an engine task to follow L14."
+      ]
     }
   ],
   "decisions": [
