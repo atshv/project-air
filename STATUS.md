@@ -121,7 +121,6 @@
 
 ## Ready now
 
-- `P4-17` Resize (L14)
 - `P4-18` Auto-pan (L16)
 - `P4-19` Placement of new objects (L20)
   - P4-05: Closed P4-05: engine TS logic layer (gestures, operations, port, history); one gesture = one contract operation with inverse, group drag = one group operation; 31 tests validate.
@@ -212,7 +211,7 @@
 
 ## In progress
 
-- none
+- [ ] `P4-17` Resize (L14) — status: `in_progress` — owner: lead
 
 ## Blocked / failed
 
@@ -224,13 +223,19 @@
 - [ ] `P0-15` Release command and tag-based CI release — status: `pending` — owner: —
 - [ ] `P0-16` Dependency updates and Polier update check — status: `pending` — owner: —
 - [ ] `P0-17` RELEASING.md and release 0.0.1 — status: `pending` — owner: —
-- [ ] `P4-17` Resize (L14) — status: `pending` — owner: —
 - [ ] `P4-18` Auto-pan (L16) — status: `pending` — owner: —
 - [ ] `P4-19` Placement of new objects (L20) — status: `pending` — owner: —
 - [ ] `P4-20` Keyboard and context menu (L12) — status: `pending` — owner: —
 - [ ] `P4-21` Undo/redo (L11) — status: `pending` — owner: —
 - [ ] `P4-22` Remember view (L17) — status: `pending` — owner: —
 - [ ] `P4-24` Trackpad and wheel defaults (L15, desktop part) — status: `pending` — owner: —
+
+<!-- polier:claims -->
+## Claims
+
+- `P4-17` in progress by dsh since 2026-10-28T16:50:41+00:00 — worktree: /private/tmp/air-P4-17 · slot 1
+
+<!-- /polier:claims -->
 
 ## Decisions
 
