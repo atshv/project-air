@@ -387,7 +387,7 @@
     {
       "name": "project-air-contract",
       "path": "packages/contracts",
-      "version": "0.3.0",
+      "version": "0.4.0",
       "schema_files": [
         "packages/contracts/schemas/account.schema.json",
         "packages/contracts/schemas/workspace.schema.json",
@@ -405,7 +405,8 @@
         "packages/contracts/schemas/api/board.schema.json",
         "packages/contracts/schemas/api/note.schema.json",
         "packages/contracts/schemas/api/card.schema.json",
-        "packages/contracts/schemas/api/errors.schema.json"
+        "packages/contracts/schemas/api/errors.schema.json",
+        "packages/contracts/schemas/note-body-payload.schema.json"
       ],
       "fixtures_dir": "packages/contracts/fixtures-gate",
       "dependants": [
@@ -6947,7 +6948,7 @@
       "satisfies": [
         "D12"
       ],
-      "status": "in_progress",
+      "status": "done",
       "depends_on": [
         "P6-04"
       ],
@@ -6984,13 +6985,25 @@
         "codegen",
         "unit"
       ],
-      "owner": "lead",
+      "owner": null,
       "branch": "task/P6-06",
-      "worktree": "/private/tmp/air-P6-06",
-      "round": 0,
-      "evidence": [],
+      "worktree": null,
+      "round": 2,
+      "evidence": [
+        "reviews/evidence/P6-06-board-check-20261028T234459Z.json",
+        "reviews/evidence/P6-06-boundaries-20261028T234421Z.json",
+        "reviews/evidence/P6-06-contracts-20261028T234421Z.json",
+        "reviews/evidence/P6-06-codegen-20261028T234421Z.json",
+        "reviews/evidence/P6-06-unit-20261028T234425Z.json"
+      ],
       "scope_write_forbidden": [
         "reference/"
+      ],
+      "contract_followups": [
+        "packages/engine",
+        "packages/sdk",
+        "services/platform",
+        "services/auth"
       ]
     },
     {
@@ -7225,6 +7238,59 @@
       "exclusive": [
         "e2e"
       ]
+    },
+    {
+      "id": "P0-45",
+      "title": "Preview page: project areas, their tasks and purpose",
+      "goal": "The design-system page gets a section '13 — Project areas' that lists every area of Project air (engine, web app, design system, data model, server, database and storage, realtime, tools and quality, operations and release) with its purpose, owner role, folders, connections and its parts with status, in short simple sentences in EN and DE.",
+      "why": "Owner request 2026-10-29: a clear, well-structured list of the areas, their tasks and what they are for on the preview page, to distribute work later (who does server/auth/db, web app, engine).",
+      "satisfies": [
+        "D3"
+      ],
+      "status": "pending",
+      "depends_on": [
+        "P0-44"
+      ],
+      "complexity": 3,
+      "stage": "foundation",
+      "parallel_group": null,
+      "owner": null,
+      "round": 0,
+      "scope_write": [
+        "apps/web/preview/",
+        ".changes/"
+      ],
+      "scope_read": [
+        "ARCHITECTURE.md",
+        "AGENTS.md",
+        "STATUS.md",
+        "docs/module-map.md",
+        "docs/versions.md",
+        "docs/design-rules.md",
+        "docs/i18n/style-de.md",
+        "docs/i18n/glossary.md",
+        "apps/web/preview/",
+        "packages/ui-kit/tokens.css",
+        "board.json"
+      ],
+      "acceptance": [
+        "A1",
+        "A2",
+        "A3"
+      ],
+      "gates": [
+        "board-check",
+        "design-check",
+        "changelog-entry"
+      ],
+      "branch": "task/P0-45",
+      "worktree": null,
+      "evidence": [],
+      "scope_write_forbidden": [
+        "reference/",
+        "docs/owner/"
+      ],
+      "handoff": []
     }
   ],
   "decisions": [

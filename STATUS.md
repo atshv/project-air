@@ -8,15 +8,16 @@
 
 ### Stage 1 — `foundation` Foundation
 
-- State: complete
+- State: tasks open
 - Owner decision: `continue`
 - Exit gates: `board-check`, `install`, `boundaries`, `dev-setup`, `compose-config`, `tokens-codegen`, `design-check`, `language-check`, `changelog-entry`, `ci-local`, `polier-version`
 - Exit criteria: Every packages[] folder exists with a README and an ARCHITECTURE.md; package map and versions are filled in.; A fresh clone installs reproducibly with the committed lockfile; root lint, typecheck, test and build pass.; Two worktrees run install, lint, typecheck and tests side by side without port or database collision; tools/dev/setup and teardown create and remove the slot database and bucket and refuse slot 0.; design-check, language-check, changelog-entry and boundaries reject a violating change locally; every code change carries a .changes entry.; The CI workflow is authored and proven locally (actionlint + act) and local sessions use Polier at the board's generator_version; the real GitHub run, branch protection, hosting and releases are deferred to the remote stage after hardening (ADR-0003).; A runnable design preview page exists with desktop and mobile screenshots and a live two-note connection demo (P0-19, P0-20).
-- Tasks: P0-03, P0-04, P0-06, P0-07, P0-08, P0-09, P0-10, P0-11, P0-12, P0-13, P0-14, P0-18, P0-19, P0-20, P0-21, P0-22, P0-23, P0-24, P0-25, P0-26, P0-27, P0-28, P0-29, P0-30, P0-31, P0-32, P0-33, P0-34, P0-35, P0-36, P0-37, P0-38, P0-39, P0-40, P0-41, P0-42, P0-43, P0-44
+- Tasks: P0-03, P0-04, P0-06, P0-07, P0-08, P0-09, P0-10, P0-11, P0-12, P0-13, P0-14, P0-18, P0-19, P0-20, P0-21, P0-22, P0-23, P0-24, P0-25, P0-26, P0-27, P0-28, P0-29, P0-30, P0-31, P0-32, P0-33, P0-34, P0-35, P0-36, P0-37, P0-38, P0-39, P0-40, P0-41, P0-42, P0-43, P0-44, P0-45
+- Tasks open: P0-45
 
 ### Stage 2 — `contract` Contract
 
-- State: complete
+- State: blocked by stage foundation
 - Owner decision: `continue`
 - Exit gates: `contracts`, `codegen`
 - Exit criteria: contracts 0.1.0 tagged; every schema has a valid and an invalid fixture.; TS and C++ read the same fixtures identically.
@@ -24,7 +25,7 @@
 
 ### Stage 3 — `engine-spike` Engine spike
 
-- State: complete
+- State: blocked by stage contract
 - Owner decision: `continue`
 - Exit gates: `cpp-unit`, `wasm-build`, `perf-baseline`
 - Exit criteria: 60 fps with 50,000 rectangles on the reference hardware; WASM <= 300 KB gzip.; Measured report and ADR for the engine architecture.
@@ -32,7 +33,7 @@
 
 ### Stage 4 — `backend-core` Backend core
 
-- State: complete
+- State: blocked by stage contract
 - Owner decision: `continue`
 - Exit gates: `api-tests`, `rls-tests`
 - Exit criteria: API suite covers allow and deny for every route; RLS tests green.; A script creates account, workspace, board and note via the SDK; a second account sees nothing.
@@ -40,7 +41,7 @@
 
 ### Stage 5 — `engine-core` Engine core
 
-- State: complete
+- State: blocked by stage engine-spike
 - Owner decision: `continue`
 - Exit gates: `cpp-unit`, `visual-final`, `perf-final`
 - Exit criteria: 10,000 objects at 60 fps in the playground.; All engine entries of the canvas work orders done; reference images green.
@@ -48,7 +49,7 @@
 
 ### Stage 6 — `realtime` Realtime
 
-- State: complete
+- State: blocked by stage backend-core, engine-core
 - Owner decision: `continue`
 - Exit gates: `crdt-convergence`, `load`
 - Exit criteria: Load test 25 clients p95 <= 150 ms; restart loses no acknowledged change.; Two offline browsers converge after reconnect.
@@ -61,7 +62,7 @@
 - Exit gates: `e2e` (missing record), `design-check`, `language-check`
 - Exit criteria: Main e2e flows green on a preview environment.; Every canvas work order done with evidence; design-check and language-check green repo-wide.
 - Tasks: P6-01, P6-02, P6-03, P6-04, P6-05, P6-06, P6-07, P6-08, P6-09, P6-10
-- Tasks open: P6-06, P6-07, P6-08, P6-09, P6-10
+- Tasks open: P6-07, P6-08, P6-09, P6-10
 
 ### Stage 8 — `value` Import, export and AI
 
@@ -125,7 +126,10 @@
 
 ## Ready now
 
-- none
+- `P0-45` Preview page: project areas, their tasks and purpose
+  - P0-44: Closed P0-44: preview documents the pen and ink colours — pen tile in the toolbar icon gallery (inline 24-grid/1.6 SVG, deviation explained), palette still palette.svg, no fixed ten-icon claim.
+  - P0-44: New 08a Ink and colours section: six token strokes over card/photo in both themes, six translated swatches, pen/palette rest/active/popover states; Layers 6a Ink annotations row, preview only.
+  - P0-44: README, EN/DE locales, light/dark/mobile screenshots and browser log committed; board-check, design-check and changelog-entry pass; P0-41/42/43 behaviour unchanged (preview.js untouched).
 
 ## Done
 
@@ -230,10 +234,11 @@
 - [x] `P6-03` Boards start page: workspaces, board list and creation over the SDK — status: `done` — owner: —
 - [x] `P6-04` Board page host: engine, toolbar, zoom and view persistence (L00, L17) — status: `done` — owner: —
 - [x] `P6-05` Board interactions: context menu, keyboard and undo/redo UI (L12, L11 hint) — status: `done` — owner: —
+- [x] `P6-06` Contract 0.4.0: note body document and content operations — status: `done` — owner: —
 
 ## In progress
 
-- [ ] `P6-06` Contract 0.4.0: note body document and content operations — status: `in_progress` — owner: lead
+- none
 
 ## Blocked / failed
 
@@ -249,11 +254,12 @@
 - [ ] `P6-08` Realtime UI: live changes, presence and save status (L05) — status: `pending` — owner: —
 - [ ] `P6-09` e2e suite: main flows and the e2e gate on the slot ports — status: `pending` — owner: —
 - [ ] `P6-10` Canvas evidence, repo-wide checks and the web-app stage report — status: `pending` — owner: —
+- [ ] `P0-45` Preview page: project areas, their tasks and purpose — status: `pending` — owner: —
 
 <!-- polier:claims -->
 ## Claims
 
-- `P6-06` in progress by dsh since 2026-10-28T23:38:11+00:00 — worktree: /private/tmp/air-P6-06 · slot 3
+- `P6-06` in progress by dsh since 2026-10-28T23:42:27+00:00 — worktree: /private/tmp/air-P6-06 · slot 3
 
 <!-- /polier:claims -->
 
