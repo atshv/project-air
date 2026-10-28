@@ -121,10 +121,7 @@
 
 ## Ready now
 
-- `P4-31` English sample text in the engine playground (language-check)
-  - P4-09: Closed P4-09: layoutText flows line/ellipsis/wrap in CSS px, cached per atlas generation; engine_text_add_box_run; bridge flow/box; glyph set adds dashes, quotes, bullet, U+2026.
-  - P4-09: Fixed: visual/perf/idle harnesses now copy dist/bridge/text-atlas.js (broken since P4-08); perf and idle not re-run. text-layout visual reference at zoom 1 (blur at zoom 2 is P4-10).
-  - P4-09: Gates board-check/boundaries/cpp-unit/wasm-build/wasm-size/visual (16 captures)/typecheck green; 4 new native layout sections; playground ?text=layout.
+- none
 
 ## Done
 
@@ -206,7 +203,7 @@
 
 ## In progress
 
-- none
+- [ ] `P4-31` English sample text in the engine playground (language-check) — status: `in_progress` — owner: —
 
 ## Blocked / failed
 
@@ -218,7 +215,13 @@
 - [ ] `P0-15` Release command and tag-based CI release — status: `pending` — owner: —
 - [ ] `P0-16` Dependency updates and Polier update check — status: `pending` — owner: —
 - [ ] `P0-17` RELEASING.md and release 0.0.1 — status: `pending` — owner: —
-- [ ] `P4-31` English sample text in the engine playground (language-check) — status: `pending` — owner: —
+
+<!-- polier:claims -->
+## Claims
+
+- `P4-31` in progress by dsh since 2026-10-28T18:46:30+00:00 — worktree: /Users/rasulatashev/Desktop/KI Projekte/Project air-P4-31 · slot 1
+
+<!-- /polier:claims -->
 
 ## Decisions
 
