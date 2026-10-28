@@ -122,10 +122,7 @@
 
 ## Ready now
 
-- `P0-39` Live demo: quiet resize frame, done items dimmed, design rules page
-  - P0-38: Closed P0-38: design law §8 now edges 2, zones 3 (ADR-0013); tokens.json swapped, tokens.css/tokens.h/layers.ts regenerated; ui-kit token test follows (owner-approved).
-  - P0-38: Engine draw order unchanged (zones lowest rectangle layer); doc.h comment and docs/engine.md updated; demo edge back on --layer-edges, section 06 reordered, masthead P0-38.
-  - P0-38: cpp-unit not a gate: red on main since P5-01 (engine.cpp + 2 tests expect contract 0.2.0, generated 0.3.0); scratch build passes all other checks.
+- none
 
 ## Done
 
@@ -220,6 +217,7 @@
 ## In progress
 
 - [ ] `P5-06` Durability and reconnect: restart, catch-up and snapshot compaction — status: `in_progress` — owner: lead
+- [ ] `P0-39` Live demo: quiet resize frame, done items dimmed, design rules page — status: `in_progress` — owner: —
 
 ## Blocked / failed
 
@@ -233,12 +231,11 @@
 - [ ] `P0-17` RELEASING.md and release 0.0.1 — status: `pending` — owner: —
 - [ ] `P5-07` crdt-convergence proof: 10,000 rounds, offline clients and own-only undo — status: `pending` — owner: —
 - [ ] `P5-08` load proof: 25 clients per board at p95 <= 150 ms and the stage report — status: `pending` — owner: —
-- [ ] `P0-39` Live demo: quiet resize frame, done items dimmed, design rules page — status: `pending` — owner: —
 
 <!-- polier:claims -->
 ## Claims
 
-- `P4-32` in progress by dsh since 2026-10-28T19:42:05+00:00 — worktree: /Users/rasulatashev/Desktop/KI Projekte/Project air-P4-32 · slot 2
+- `P0-39` in progress by dsh since 2026-10-28T19:43:53+00:00 — worktree: /Users/rasulatashev/Desktop/KI Projekte/Project air-P0-39 · slot 2
 
 <!-- /polier:claims -->
 
