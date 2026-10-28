@@ -6128,6 +6128,67 @@
         "Snapshot undo (depth 20, labels from the change) with the 3 s hint; context menu (open/duplicate preview-only, forward/backward, delete; arrows, Enter, Esc); quiet zone-header delete.",
         "Gates board-check/design-check/changelog-entry green; 7 screenshots + log. Not in the demo: group drag of a multi-selection, keyboard resize."
       ]
+    },
+    {
+      "id": "P0-38",
+      "title": "Layer order: edges below zones",
+      "goal": "Design law §8, the layer tokens (CSS, C++ header, layers.ts), the engine docs and the design-system page all put connection lines (edges) below zones: canvas background 1, edges 2, zones 3.",
+      "why": "Owner decision 2026-10-28 (P0-36, confirmed 'Ja, festhalten'): connection lines run behind every object, zones included; the live demo already deviates, the law must follow.",
+      "satisfies": [
+        "D3"
+      ],
+      "status": "pending",
+      "depends_on": [
+        "P0-37"
+      ],
+      "complexity": 4,
+      "stage": "foundation",
+      "parallel_group": null,
+      "owner": null,
+      "round": 0,
+      "scope_write": [
+        "docs/design-rules.md",
+        "docs/adr/",
+        "docs/engine.md",
+        "packages/ui-kit/",
+        "packages/engine/include/engine/doc.h",
+        "apps/web/preview/",
+        ".changes/"
+      ],
+      "scope_read": [
+        "ARCHITECTURE.md",
+        "AGENTS.md",
+        "STATUS.md",
+        "docs/module-map.md",
+        "docs/quality.md",
+        "docs/design-rules.md",
+        "docs/engine.md",
+        "packages/ui-kit/",
+        "packages/engine/",
+        "apps/web/preview/"
+      ],
+      "acceptance": [
+        "A1",
+        "A2",
+        "A3",
+        "A4"
+      ],
+      "gates": [
+        "board-check",
+        "tokens-codegen",
+        "unit",
+        "cpp-unit",
+        "design-check",
+        "changelog-entry"
+      ],
+      "branch": "task/P0-38",
+      "worktree": null,
+      "evidence": [],
+      "scope_write_forbidden": [
+        "reference/",
+        "docs/owner/"
+      ],
+      "handoff": []
     }
   ],
   "decisions": [
@@ -6201,6 +6262,12 @@
       "id": "ADR-0012",
       "title": "The SDK owns the client-side board document",
       "file": "docs/adr/ADR-0012-sdk-client-document.md"
+    },
+    {
+      "date": "2026-10-28",
+      "id": "ADR-0013",
+      "title": "Edges below zones",
+      "file": "docs/adr/ADR-0013-edges-below-zones.md"
     }
   ],
   "open_questions": [

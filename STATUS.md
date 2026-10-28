@@ -12,7 +12,7 @@
 - Owner decision: `continue`
 - Exit gates: `board-check`, `install`, `boundaries`, `dev-setup`, `compose-config`, `tokens-codegen`, `design-check`, `language-check`, `changelog-entry`, `ci-local`, `polier-version`
 - Exit criteria: Every packages[] folder exists with a README and an ARCHITECTURE.md; package map and versions are filled in.; A fresh clone installs reproducibly with the committed lockfile; root lint, typecheck, test and build pass.; Two worktrees run install, lint, typecheck and tests side by side without port or database collision; tools/dev/setup and teardown create and remove the slot database and bucket and refuse slot 0.; design-check, language-check, changelog-entry and boundaries reject a violating change locally; every code change carries a .changes entry.; The CI workflow is authored and proven locally (actionlint + act) and local sessions use Polier at the board's generator_version; the real GitHub run, branch protection, hosting and releases are deferred to the remote stage after hardening (ADR-0003).; A runnable design preview page exists with desktop and mobile screenshots and a live two-note connection demo (P0-19, P0-20).
-- Tasks: P0-03, P0-04, P0-06, P0-07, P0-08, P0-09, P0-10, P0-11, P0-12, P0-13, P0-14, P0-18, P0-19, P0-20, P0-21, P0-22, P0-23, P0-24, P0-25, P0-26, P0-27, P0-28, P0-29, P0-30, P0-31, P0-32, P0-33, P0-34, P0-35, P0-36, P0-37
+- Tasks: P0-03, P0-04, P0-06, P0-07, P0-08, P0-09, P0-10, P0-11, P0-12, P0-13, P0-14, P0-18, P0-19, P0-20, P0-21, P0-22, P0-23, P0-24, P0-25, P0-26, P0-27, P0-28, P0-29, P0-30, P0-31, P0-32, P0-33, P0-34, P0-35, P0-36, P0-37, P0-38
 
 ### Stage 2 — `contract` Contract
 
@@ -122,7 +122,10 @@
 
 ## Ready now
 
-- none
+- `P0-38` Layer order: edges below zones
+  - P0-37: Closed P0-37: snap guides (6 px, one per axis, Shift free), zone drop highlight 1 s, Shift rubber band with frames and count bar (clamped inside the canvas), delete.
+  - P0-37: Snapshot undo (depth 20, labels from the change) with the 3 s hint; context menu (open/duplicate preview-only, forward/backward, delete; arrows, Enter, Esc); quiet zone-header delete.
+  - P0-37: Gates board-check/design-check/changelog-entry green; 7 screenshots + log. Not in the demo: group drag of a multi-selection, keyboard resize.
 
 ## Done
 
@@ -228,13 +231,7 @@
 - [ ] `P0-17` RELEASING.md and release 0.0.1 — status: `pending` — owner: —
 - [ ] `P5-07` crdt-convergence proof: 10,000 rounds, offline clients and own-only undo — status: `pending` — owner: —
 - [ ] `P5-08` load proof: 25 clients per board at p95 <= 150 ms and the stage report — status: `pending` — owner: —
-
-<!-- polier:claims -->
-## Claims
-
-- `P5-06` in progress by dsh since 2026-10-28T19:22:36+00:00 — worktree: /private/tmp/air-P5-06 · slot 1
-
-<!-- /polier:claims -->
+- [ ] `P0-38` Layer order: edges below zones — status: `pending` — owner: —
 
 ## Decisions
 
@@ -250,6 +247,7 @@
 - 2026-10-27 `ADR-0010` Zones as containers (`docs/adr/ADR-0010-zone-containers.md`)
 - 2026-10-28 `ADR-0011` CRDT: Yjs behind an own interface (`docs/adr/ADR-0011-crdt.md`)
 - 2026-10-28 `ADR-0012` The SDK owns the client-side board document (`docs/adr/ADR-0012-sdk-client-document.md`)
+- 2026-10-28 `ADR-0013` Edges below zones (`docs/adr/ADR-0013-edges-below-zones.md`)
 
 ## Open questions
 
