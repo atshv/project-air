@@ -229,6 +229,7 @@
 ## In progress
 
 - [ ] `P0-44` Live demo: document the pen and ink colours in the preview — status: `in_progress` — owner: lead
+- [ ] `P6-01` Web app scaffold: React + Vite SPA, layout, i18n and base components — status: `in_progress` — owner: lead
 
 ## Blocked / failed
 
@@ -240,7 +241,6 @@
 - [ ] `P0-15` Release command and tag-based CI release — status: `pending` — owner: —
 - [ ] `P0-16` Dependency updates and Polier update check — status: `pending` — owner: —
 - [ ] `P0-17` RELEASING.md and release 0.0.1 — status: `pending` — owner: —
-- [ ] `P6-01` Web app scaffold: React + Vite SPA, layout, i18n and base components — status: `pending` — owner: —
 - [ ] `P6-02` Auth UI and session: Kratos login, registration and recovery — status: `pending` — owner: —
 - [ ] `P6-03` Boards start page: workspaces, board list and creation over the SDK — status: `pending` — owner: —
 - [ ] `P6-04` Board page host: engine, toolbar, zoom and view persistence (L00, L17) — status: `pending` — owner: —
@@ -254,6 +254,7 @@
 ## Claims
 
 - `P0-44` in progress by dsh since 2026-10-28T23:02:01+00:00 — worktree: /private/tmp/air-P0-44 · slot 1
+- `P6-01` in progress by dsh since 2026-10-28T23:11:04+00:00 — worktree: /private/tmp/air-P6-01 · slot 1
 
 <!-- /polier:claims -->
 
