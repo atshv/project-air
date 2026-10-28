@@ -5928,6 +5928,59 @@
         "Member drag, release preview and rename unchanged; moves and member drags exclusive; sync deferred; ghost/collapsed inert; frame stays on --layer-zones (passes under blocks).",
         "Gates board-check/design-check/changelog-entry green; 3 screenshots + log. Note: the brief and board entry were first committed inside P5-02 (1038ba3, shared checkout)."
       ]
+    },
+    {
+      "id": "P0-35",
+      "title": "Design system page: contract 0.3.0, missing tokens and engine chrome",
+      "goal": "The design-system preview page matches the repository again: the contract overview shows 0.3.0 (17 schema files, 20 operation types with reorder, 86 parity fixtures, version history), the token sections add the missing motion, layer, interaction and radius tokens, and a new canvas-chrome section shows the stage-5 engine chrome (headers with the quiet delete, selection frame and handles, rubber band, snap guides, zone highlight, count bar, undo hint, context menu).",
+      "why": "The owner asked to review the design-system page after the latest updates: what is missing, new or gone.",
+      "satisfies": [
+        "D3"
+      ],
+      "status": "pending",
+      "depends_on": [
+        "P0-34"
+      ],
+      "complexity": 5,
+      "stage": "foundation",
+      "parallel_group": null,
+      "owner": null,
+      "round": 0,
+      "scope_write": [
+        "apps/web/preview/",
+        ".changes/"
+      ],
+      "scope_read": [
+        "ARCHITECTURE.md",
+        "AGENTS.md",
+        "STATUS.md",
+        "docs/module-map.md",
+        "docs/quality.md",
+        "docs/design-rules.md",
+        "docs/i18n/style-de.md",
+        "docs/i18n/glossary.md",
+        "apps/web/preview/",
+        "packages/ui-kit/tokens.css",
+        "packages/ui-kit/layers.ts",
+        "docs/canvas-acceptance.md"
+      ],
+      "acceptance": [
+        "A1",
+        "A2",
+        "A3",
+        "A4"
+      ],
+      "gates": [
+        "board-check",
+        "design-check",
+        "changelog-entry"
+      ],
+      "branch": "task/P0-35",
+      "worktree": null,
+      "evidence": [],
+      "scope_write_forbidden": [
+        "reference/"
+      ]
     }
   ],
   "decisions": [
