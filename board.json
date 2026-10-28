@@ -4345,7 +4345,7 @@
       "satisfies": [
         "D10"
       ],
-      "status": "pending",
+      "status": "in_progress",
       "depends_on": [
         "P4-07"
       ],
@@ -4383,9 +4383,9 @@
         "cpp-unit",
         "unit"
       ],
-      "owner": null,
+      "owner": "lead",
       "branch": "task/P4-24",
-      "worktree": null,
+      "worktree": "/private/tmp/air-P4-24",
       "round": 0,
       "evidence": [],
       "scope_write_forbidden": [
