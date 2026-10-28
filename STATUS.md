@@ -121,10 +121,7 @@
 
 ## Ready now
 
-- `P0-33` Live demo: checklist block and spreadsheet table card
-  - P0-32: Closed P0-32: zones show their name in a 40 px header (content 40 + 16 px below), title outside the FLIP frame so it never stretches; follows the frame's settle.
-  - P0-32: Inline rename: click selects all, Enter/blur commits, Escape restores, empty -> default, 40-char cap; new zones from grouping start as New zone; defaults follow DE/EN.
-  - P0-32: Masthead + ?v=P0-32; gates board-check/design-check/changelog-entry; 7 screenshots + log; names live in page memory only.
+- none
 
 ## Done
 
@@ -205,7 +202,7 @@
 
 ## In progress
 
-- none
+- [ ] `P0-33` Live demo: checklist block and spreadsheet table card — status: `in_progress` — owner: —
 
 ## Blocked / failed
 
@@ -217,7 +214,13 @@
 - [ ] `P0-15` Release command and tag-based CI release — status: `pending` — owner: —
 - [ ] `P0-16` Dependency updates and Polier update check — status: `pending` — owner: —
 - [ ] `P0-17` RELEASING.md and release 0.0.1 — status: `pending` — owner: —
-- [ ] `P0-33` Live demo: checklist block and spreadsheet table card — status: `pending` — owner: —
+
+<!-- polier:claims -->
+## Claims
+
+- `P0-33` in progress by dsh since 2026-10-28T18:35:21+00:00 — worktree: /Users/rasulatashev/Desktop/KI Projekte/Project air-P0-33 · slot 1
+
+<!-- /polier:claims -->
 
 ## Decisions
 
