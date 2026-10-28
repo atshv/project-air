@@ -63,6 +63,7 @@ export interface SyncMessage {
   readonly clientId: string;
   readonly boardId?: string;
   readonly seq?: number;
+  readonly sentAt?: string;
   readonly serverSeq?: number;
   readonly payload?: Record<string, unknown>;
 }
@@ -79,6 +80,12 @@ export interface CreateSyncSessionOptions {
   readonly documents: BoardDocumentFactory;
   readonly now?: () => string;
   readonly broadcast?: (boardId: string, message: Record<string, unknown>, exceptClientId: string) => void;
+  /** P5-05: ephemeral presence hub (no persistence). */
+  readonly presence?: {
+    publish(input: { boardId: string; clientId: string; userId: string; messageId: string; seq: number; sentAt: string; payload: unknown }): boolean;
+    join(input: { boardId: string; clientId: string; userId: string; send: (message: Record<string, unknown>) => void }): void;
+    remove(boardId: string, clientId: string): void;
+  };
 }
 
 interface SessionState {
@@ -168,10 +175,22 @@ export class SyncSession {
       case "leaveBoard":
         this.#leaveBoard(message, send);
         return sent;
-      case "presence":
-        // Stub channel for P5-05: echo presence to the other board clients.
-        this.#options.broadcast?.(String(message.boardId), message as unknown as Record<string, unknown>, message.clientId);
+      case "presence": {
+        if (this.#state.joinedBoard === null || this.#state.identity === null) {
+          this.#reject(send, message, REJECT_CODES.notJoined, "presence requires joinBoard first");
+          return sent;
+        }
+        if (this.#options.presence === undefined) {
+          this.#reject(send, message, REJECT_CODES.invalidMessage, "presence is not enabled");
+          return sent;
+        }
+        const accepted = this.#options.presence.publish({
+          boardId: this.#state.joinedBoard, clientId: message.clientId, userId: this.#state.identity.userId,
+          messageId: message.id, seq: Number(message.seq ?? 0), sentAt: String(message.sentAt ?? ""), payload: message.payload,
+        });
+        if (!accepted) this.#reject(send, message, REJECT_CODES.invalidMessage, "invalid presence payload");
         return sent;
+      }
       default:
         this.#reject(send, message, REJECT_CODES.invalidMessage, `unsupported message type ${JSON.stringify(message.type)}`);
         return sent;
@@ -220,6 +239,10 @@ export class SyncSession {
       id: message.id, type: "welcome", clientId: message.clientId, boardId,
       sentAt: sentAt(), serverSeq: seq,
       payload: { contractVersion: SYNC_CONTRACT_VERSION, snapshotRef: `${boardId}:${seq}` },
+    });
+    this.#options.presence?.join({
+      boardId, clientId: message.clientId, userId: this.#state.identity.userId,
+      send: (presenceMessage) => send(presenceMessage),
     });
     if (this.#state.doc !== null && !this.#state.snapshotSent) {
       this.#state.snapshotSent = true;

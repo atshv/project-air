@@ -306,3 +306,29 @@ test("an injected authenticated clientId is used unchanged and must be a UUIDv7"
   assert.equal(sockets[0].sent[0].clientId, fixed);
   assert.throws(() => clientSetup({ clientId: "sdk-client" }), RangeError);
 });
+
+// P5-05: presence client — throttled outbound cursor/selection, remote
+// participant subscription and clearing on leave/close.
+test("presence updates are throttled/coalesced and remote participants subscribe and clear", () => {
+  const { client, sockets, timers } = clientSetup();
+  client.start();
+  const socket = sockets[0];
+  socket.receive({ id: "w", type: "welcome", serverSeq: 1, payload: { contractVersion: "0.3.0", snapshotRef: "board-1:1" } });
+  socket.receive({ id: "s", type: "snapshot", serverSeq: 1, payload: { snapshotRef: "board-1:1", boardContent: content } });
+  const seen = [];
+  const unsubscribe = client.onPresence((participants) => seen.push(participants.map((participant) => participant.clientId)));
+  socket.receive({ id: "p1", type: "presence", clientId: "0192f0f1-7000-7000-8000-0000000000a1", payload: { nameRef: "user:other", colorRef: "tone-b", cursor: { x: 10, y: 20 }, selection: [] } });
+  assert.equal(client.participants().length, 1, "a remote participant is tracked");
+  assert.equal(seen.length, 1);
+  client.updatePresence({ cursor: { x: 1, y: 2 }, selection: [] });
+  client.updatePresence({ cursor: { x: 3, y: 4 }, selection: [] });
+  assert.equal(socket.sent.filter((message) => message.type === "presence").length, 0, "presence is throttled");
+  timers.advance(50);
+  const presence = socket.sent.filter((message) => message.type === "presence");
+  assert.equal(presence.length, 1, "two rapid updates coalesce into one presence message");
+  assert.deepEqual(presence[0].payload.cursor, { x: 3, y: 4 }, "the newest cursor wins");
+  socket.receive({ id: "p2", type: "presence", clientId: "0192f0f1-7000-7000-8000-0000000000a1", payload: { nameRef: "user:other", colorRef: "tone-b", cursor: { x: 0, y: 0 }, selection: [] } });
+  assert.equal(client.participants().length, 0, "the removal sentinel clears the participant");
+  unsubscribe();
+  client.close();
+});

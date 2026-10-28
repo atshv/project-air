@@ -1,0 +1,4 @@
+area: sync
+kind: minor
+
+Add presence (P5-05) on the existing contract 0.3.0 presence message: services/sync presence hub validates payloads, derives identity from the validated session user (server-side name/colour, client values ignored), throttles/coalesces 50 ms per connection, broadcasts only to other joined clients of the same board, sends the current participant list to newcomers as individual presence messages, removes/notifies on leaveBoard/disconnect/close/shutdown, never persists presence, and never delays operationBatch (priority flood test). packages/sdk board-sync client adds throttled updatePresence with injected clock, participants()/onPresence() subscription with server-derived name/colour, and clearing on leave/close/reconnect/board switch; deterministic SDK and live-socket service tests; docs/realtime presence flow and ephemerality.

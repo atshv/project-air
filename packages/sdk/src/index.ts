@@ -26,6 +26,7 @@ export {
   createAutosave,
   createBoardSyncClient,
   installFlushTriggers,
+  PRESENCE_THROTTLE_MS,
   realTimers,
   SYNC_CONTRACT_VERSION,
 } from "./realtime/index.ts";
@@ -40,6 +41,8 @@ export type {
   BoardSyncStatus,
   CreateSocket,
   FlushEventTarget,
+  PresenceCursor,
+  RemoteParticipant,
   SyncSocket,
   Timers,
 } from "./realtime/index.ts";

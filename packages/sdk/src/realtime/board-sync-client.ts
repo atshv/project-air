@@ -10,6 +10,7 @@ import type { CreateSocket, SyncSocket } from "./connection.ts";
 import { realTimers, type Timers } from "./timers.ts";
 
 export const SYNC_CONTRACT_VERSION = "0.3.0";
+export const PRESENCE_THROTTLE_MS = 50;
 
 export type BoardSyncStatus = "idle" | "connecting" | "joined" | "offline" | "closed";
 
@@ -18,6 +19,19 @@ export type BoardSyncEvent =
   | { readonly type: "snapshot"; readonly serverSeq: number }
   | { readonly type: "remote"; readonly batchId: string; readonly serverSeq: number }
   | { readonly type: "error"; readonly error: unknown };
+
+export interface PresenceCursor {
+  readonly x: number;
+  readonly y: number;
+}
+
+export interface RemoteParticipant {
+  readonly clientId: string;
+  readonly nameRef: string;
+  readonly colorRef: string;
+  readonly cursor: PresenceCursor;
+  readonly selection: readonly string[];
+}
 
 export interface BoardSyncClientOptions {
   readonly createSocket: CreateSocket;
@@ -35,6 +49,7 @@ export interface BoardSyncClientOptions {
   readonly timers?: Timers;
   readonly backoff?: { readonly initialMs: number; readonly maxMs: number };
   readonly onChange?: (event: BoardSyncEvent) => void;
+  readonly presenceThrottleMs?: number;
 }
 
 export interface BoardSyncClient {
@@ -48,6 +63,10 @@ export interface BoardSyncClient {
   offlineCount(): number;
   pendingCount(): number;
   lastError(): unknown;
+  /** P5-05: throttled outbound cursor/selection (name/colour are server-derived). */
+  updatePresence(presence: { cursor: PresenceCursor; selection: readonly string[] }): void;
+  participants(): readonly RemoteParticipant[];
+  onPresence(listener: (participants: readonly RemoteParticipant[]) => void): () => void;
 }
 
 const ISO_NOW = (): string => new Date().toISOString();
@@ -80,8 +99,29 @@ export function createBoardSyncClient(options: BoardSyncClientOptions): BoardSyn
   let resumeFrom = 0;
   let lastError: unknown = null;
   let flushWaiters: (() => void)[] = [];
+  const participants = new Map<string, RemoteParticipant>();
+  const presenceListeners = new Set<(participants: readonly RemoteParticipant[]) => void>();
+  let presenceTimer: number | null = null;
+  let pendingPresence: { cursor: PresenceCursor; selection: readonly string[] } | null = null;
+  const presenceThrottle = options.presenceThrottleMs ?? PRESENCE_THROTTLE_MS;
 
   const emit = (event: BoardSyncEvent): void => options.onChange?.(event);
+  const emitParticipants = (): void => {
+    const list = [...participants.values()];
+    for (const listener of presenceListeners) listener(list);
+  };
+  const clearParticipants = (): void => { if (participants.size > 0) { participants.clear(); emitParticipants(); } };
+  const flushPresence = (): void => {
+    presenceTimer = null;
+    const pending = pendingPresence;
+    pendingPresence = null;
+    if (pending === null || status !== "joined" || socket === null) return;
+    clientSeq += 1;
+    sendJson({
+      id: createRequestId(), type: "presence", clientId, boardId: options.boardId, sentAt: ISO_NOW(), seq: clientSeq,
+      payload: { nameRef: "user:self", colorRef: "tone-a", cursor: pending.cursor, selection: pending.selection },
+    });
+  };
   const setStatus = (next: BoardSyncStatus): void => {
     status = next;
     emit({ type: "status", status, serverSeq });
@@ -138,6 +178,7 @@ export function createBoardSyncClient(options: BoardSyncClientOptions): BoardSyn
   };
 
   const onSnapshot = (message: Record<string, unknown>): void => {
+    clearParticipants();
     const payload = (message.payload ?? {}) as Record<string, unknown>;
     const content = payload["boardContent"] as BoardContent | undefined;
     if (content !== undefined && content !== null) {
@@ -194,6 +235,25 @@ export function createBoardSyncClient(options: BoardSyncClientOptions): BoardSyn
       case "snapshot": onSnapshot(message); return;
       case "ack": onAck(message); return;
       case "operationBatch": onRemoteBatch(message); return;
+      case "presence": {
+        const payload = (message.payload ?? {}) as Record<string, unknown>;
+        const participantId = String(message.clientId ?? "");
+        const cursor = (payload["cursor"] ?? {}) as Record<string, unknown>;
+        const selection = (payload["selection"] as string[]) ?? [];
+        const x = Number(cursor["x"] ?? 0);
+        const y = Number(cursor["y"] ?? 0);
+        if (participantId.length > 0) {
+          // Removal sentinel: empty selection and cursor at the origin (the
+          // contract 0.3.0 has no separate leave message; documented).
+          if (selection.length === 0 && x === 0 && y === 0) {
+            if (participants.delete(participantId)) emitParticipants();
+          } else {
+            participants.set(participantId, { clientId: participantId, nameRef: String(payload["nameRef"] ?? ""), colorRef: String(payload["colorRef"] ?? ""), cursor: { x, y }, selection });
+            emitParticipants();
+          }
+        }
+        return;
+      }
       case "reject":
         lastError = message["payload"] ?? null;
         emit({ type: "error", error: lastError });
@@ -215,6 +275,7 @@ export function createBoardSyncClient(options: BoardSyncClientOptions): BoardSyn
   const onClose = (): void => {
     socket = null;
     pending.clear();
+    clearParticipants();
     if (closedByUser) return;
     resumeFrom = serverSeq;
     setStatus("offline");
@@ -282,6 +343,9 @@ export function createBoardSyncClient(options: BoardSyncClientOptions): BoardSyn
       socket = null;
       pending.clear();
       queue = [];
+      if (presenceTimer !== null) { timers.clearTimeout(presenceTimer); presenceTimer = null; }
+      pendingPresence = null;
+      clearParticipants();
       setStatus("closed");
     },
     status: () => status,
@@ -290,6 +354,15 @@ export function createBoardSyncClient(options: BoardSyncClientOptions): BoardSyn
     offlineCount: () => queue.length,
     pendingCount: () => pending.size,
     lastError: () => lastError,
+    updatePresence(presence): void {
+      pendingPresence = { cursor: { x: presence.cursor.x, y: presence.cursor.y }, selection: [...presence.selection] };
+      if (presenceTimer === null) presenceTimer = timers.setTimeout(() => flushPresence(), presenceThrottle);
+    },
+    participants: () => [...participants.values()],
+    onPresence(listener): () => void {
+      presenceListeners.add(listener);
+      return () => presenceListeners.delete(listener);
+    },
   };
 }
 

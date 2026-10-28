@@ -1,0 +1,78 @@
+$ pnpm test --affected
+[exit 0]
+
+
+   • turbo 2.11.10
+   • Packages in scope: //, @project-air/sdk, @project-air/sync
+   • Running test in 3 packages
+   • Remote caching disabled, using shared worktree cache
+
+@project-air/sdk:build: cache miss, executing 247224579dd37bca
+@project-air/sync:build: cache miss, executing 5d25836b365c5273
+@project-air/sdk:build: $ tsc --project tsconfig.json
+@project-air/sync:build: $ tsc --project tsconfig.json
+@project-air/sdk:test: cache miss, executing e9d048a1fd13936d
+@project-air/sdk:test: $ node --test test/*.test.mjs
+@project-air/sync:test: cache miss, executing 3b968d591f105d31
+@project-air/sync:test: $ node --test test/*.test.mjs
+@project-air/sdk:test: ✔ handshake sends hello first, then joinBoard; welcome/snapshot install the document (4.561125ms)
+@project-air/sdk:test: ✔ operation batches are sent with a per-connection seq; acks advance only forward (0.376875ms)
+@project-air/sdk:test: ✔ offline operations queue in order and flush on join; duplicate remote batches apply once (0.518292ms)
+@project-air/sdk:test: ✔ a dropped socket reconnects with backoff and resyncs from the last serverSeq (0.275542ms)
+@project-air/sdk:test: ✔ close is idempotent and leaves the board once (0.157375ms)
+@project-air/sdk:test: ✔ autosave debounces 400 ms after the last keystroke, saves once and reports saving -> saved (0.239125ms)
+@project-air/sdk:test: ✔ the five flush triggers save immediately and visibility only flushes when hidden (0.204209ms)
+@project-air/sdk:test: ✔ stale autosave responses never overwrite newer values; error -> retry (0.197041ms)
+@project-air/sdk:test: ✔ outgoing messages validate against sync.schema.json and ids are unique UUIDv7 (1.991583ms)
+@project-air/sdk:test: ✔ an injected authenticated clientId is used unchanged and must be a UUIDv7 (0.843917ms)
+@project-air/sdk:test: ✔ presence updates are throttled/coalesced and remote participants subscribe and clear (0.30125ms)
+@project-air/sdk:test: ✔ workspaces.list sends the session and requestId and parses the list envelope (19.486125ms)
+@project-air/sdk:test: ✔ a cookie session is sent as the cookie header (3.026416ms)
+@project-air/sdk:test: ✔ a string session is shorthand for the test session header (1.871417ms)
+@project-air/sdk:test: ✔ workspace create/get/update/delete use the contract envelopes (10.410833ms)
+@project-air/sdk:test: ✔ boards list/create/get/update/delete (6.388583ms)
+@project-air/sdk:test: ✔ notes list/create/get/update/delete (6.836584ms)
+@project-air/sdk:test: ✔ cards list/create/get/update/delete (12.468875ms)
+@project-air/sdk:test: ✔ pagination nextCursor is passed back as the cursor query (5.036417ms)
+@project-air/sdk:test: ✔ no session maps to a typed AUTH_REQUIRED ApiError (1.620042ms)
+@project-air/sdk:test: ✔ a validation error exposes the field paths (1.608208ms)
+@project-air/sdk:test: ✔ a conflict maps to CONFLICT and unknown ids to NOT_FOUND (2.670417ms)
+@project-air/sdk:test: ✔ an unexpected success envelope becomes an INTERNAL ApiError (1.12875ms)
+@project-air/sdk:test: ✔ an invalid baseUrl is rejected by the client (0.201042ms)
+@project-air/sdk:test: ℹ tests 24
+@project-air/sdk:test: ℹ suites 0
+@project-air/sdk:test: ℹ pass 24
+@project-air/sdk:test: ℹ fail 0
+@project-air/sdk:test: ℹ cancelled 0
+@project-air/sdk:test: ℹ skipped 0
+@project-air/sdk:test: ℹ todo 0
+@project-air/sdk:test: ℹ duration_ms 253.674042
+@project-air/sync:test: ✔ live socket integration: join, ack-after-commit, broadcast and reconnect catch-up (68.782208ms)
+@project-air/sync:test: ✔ live presence: throttled, identity-derived, isolated, cleaned up and never blocking operations (554.115417ms)
+@project-air/sync:test: ✔ hello is required first and the first message rejection is explicit (5.958666ms)
+@project-air/sync:test: ✔ version and session validation reject before joinBoard (0.485875ms)
+@project-air/sync:test: ✔ the platform authorizer gates joinBoard and welcome/snapshot carry the durable seq (2.471958ms)
+@project-air/sync:test: ✔ operationBatch is persisted before the ack and the ack carries the new seq (2.36775ms)
+@project-air/sync:test: ✔ a failed append produces a reject and never an ack (0.244125ms)
+@project-air/sync:test: ✔ resyncRequest reads from the durable seq and leaveBoard broadcasts presence (0.256916ms)
+@project-air/sync:test: ✔ the handshake accept value matches the RFC 6455 vector (0.93025ms)
+@project-air/sync:test: ✔ masked client frames decode and unmasked/reserved frames are rejected (0.368417ms)
+@project-air/sync:test: ✔ fragmentation reassembles and enforces the bounded size (0.279459ms)
+@project-air/sync:test: ✔ ping is answered with pong and close ends the connection (0.315292ms)
+@project-air/sync:test: ✔ an oversized declared frame closes with 1009 before allocating it (0.112292ms)
+@project-air/sync:test: ℹ tests 13
+@project-air/sync:test: ℹ suites 0
+@project-air/sync:test: ℹ pass 13
+@project-air/sync:test: ℹ fail 0
+@project-air/sync:test: ℹ cancelled 0
+@project-air/sync:test: ℹ skipped 0
+@project-air/sync:test: ℹ todo 0
+@project-air/sync:test: ℹ duration_ms 746.31375
+
+ Tasks:    4 successful, 4 total
+Cached:    0 cached, 4 total
+  Time:    1.535s 
+
+$ turbo run test --affected
+ WARNING  no output files found for task @project-air/sdk#test. Please check your `outputs` key in `turbo.json`
+ WARNING  no output files found for task @project-air/sync#test. Please check your `outputs` key in `turbo.json`

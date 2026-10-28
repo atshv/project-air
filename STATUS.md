@@ -206,12 +206,12 @@
 - [x] `P5-02` CRDT document core behind an own interface (Yjs) — status: `done` — owner: —
 - [x] `P5-03` Sync service: WebSocket protocol, auth and durable update log — status: `done` — owner: —
 - [x] `P5-04` SDK board-sync client and the one autosave path (L05 realtime half) — status: `done` — owner: —
+- [x] `P5-05` Presence: cursors, selection, name and colour — status: `done` — owner: —
 - [x] `P0-34` Live demo: move a zone with its members — status: `done` — owner: —
 - [x] `P0-35` Design system page: contract 0.3.0, missing tokens and engine chrome — status: `done` — owner: —
 
 ## In progress
 
-- [ ] `P5-05` Presence: cursors, selection, name and colour — status: `in_progress` — owner: lead
 - [ ] `P0-36` Live demo: select and resize objects, photo without bar, edges behind — status: `in_progress` — owner: —
 
 ## Blocked / failed
@@ -233,7 +233,7 @@
 ## Claims
 
 - `P0-36` in progress by dsh since 2026-10-28T19:18:41+00:00 — worktree: /Users/rasulatashev/Desktop/KI Projekte/Project air-P0-36 · slot 2
-- `P5-05` in progress by dsh since 2026-10-28T19:19:39+00:00 — worktree: /private/tmp/air-P5-05 · slot 1
+- `P5-05` in progress by dsh since 2026-10-28T19:21:48+00:00 — worktree: /private/tmp/air-P5-05 · slot 1
 
 <!-- /polier:claims -->
 

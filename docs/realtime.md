@@ -99,3 +99,28 @@ sequences so an older response never overwrites a newer value, `saving` → `sav
 persistence in the SDK (the caller passes the one `save` function).
 `installFlushTriggers` wires the five triggers to a window/document and an
 optional panel-close registration.
+
+## Presence (P5-05)
+
+`presence` stays the existing contract 0.3.0 message — no new message type. The
+client sends cursor/selection updates; the sync service validates the payload,
+derives the identity server-side (participant identity = validated session user;
+`nameRef` is `user:<userId>`, `colorRef` is a server-derived `tone-*` palette
+reference), ignores/overwrites any client-sent name or colour, and throttles and
+coalesces updates per connection (50 ms budget: the first update goes out
+immediately, the newest update within a window is sent when the window closes).
+Presence is broadcast only to the other clients joined to the same board; a
+newcomer receives the current participant list as individual `presence` messages
+(the contract has no list message), and `leaveBoard`, disconnect, close and
+shutdown remove the participant and notify the others with a removal sentinel
+(empty selection, cursor at the origin — the contract has no explicit leave
+variant; documented open point). Presence is never persisted and never blocks
+operation traffic: the priority test floods presence and still receives the
+operation ack.
+
+The SDK `createBoardSyncClient` owns the client side: `updatePresence()` throttles
+outbound cursor/selection with the injected clock (coalescing to the newest
+update), `participants()`/`onPresence()` expose a subscription with the remote
+participants (server-derived name/colour), and the participant list is cleared on
+leave, close, reconnect/snapshot and board switch. The SDK never persists
+presence.

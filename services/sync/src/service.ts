@@ -10,6 +10,7 @@ import type { Duplex as DuplexStream } from "node:stream";
 import { createLogger, type Logger } from "./log.ts";
 import { createSyncSession, type BoardAuthorizer, type CreateSyncSessionOptions, type SessionAuthenticator, type SyncStore, type BoardDocumentFactory } from "./protocol.ts";
 import { createWsConnection, handshakeResponse, isUpgradeRequest, type WsConnection } from "./ws.ts";
+import { PresenceHub } from "./presence.ts";
 
 export interface SyncServiceOptions {
   readonly host: string;
@@ -37,6 +38,15 @@ interface ClientRecord {
 export async function createSyncService(options: SyncServiceOptions): Promise<RunningSyncService> {
   const logger = options.logger ?? createLogger("info", () => undefined);
   const clients = new Set<ClientRecord>();
+  const presence = new PresenceHub({
+    broadcast: (boardId, message, exceptClientId) => {
+      for (const record of clients) {
+        if (record.session.clientId === exceptClientId) continue;
+        if (record.session.joinedBoard !== boardId) continue;
+        record.connection.sendJson(message);
+      }
+    },
+  });
   const server = createServer((request: IncomingMessage, response: ServerResponse) => {
     if (request.method === "GET" && request.url === "/health") {
       response.writeHead(200, { "content-type": "application/json" });
@@ -60,6 +70,7 @@ export async function createSyncService(options: SyncServiceOptions): Promise<Ru
       authorizer: options.authorizer,
       store: options.store,
       documents: options.documents,
+      presence,
       broadcast: (boardId, message, exceptClientId) => {
         for (const record of clients) {
           if (record.session.clientId === exceptClientId) continue;
@@ -80,21 +91,27 @@ export async function createSyncService(options: SyncServiceOptions): Promise<Ru
         connection.close(1011, "internal error");
       });
     });
-    connection.onClose(() => clients.delete(record));
+    connection.onClose(() => {
+      if (session.joinedBoard !== null) presence.remove(session.joinedBoard, session.clientId);
+      clients.delete(record);
+    });
   });
 
   await new Promise<void>((resolve, reject) => {
     server.once("error", reject);
     server.listen(options.port, options.host, () => resolve());
   });
-  logger.info("sync.listening", { host: options.host, port: options.port });
+  const address = server.address();
+  const actualPort = address !== null && typeof address === "object" ? address.port : options.port;
+  logger.info("sync.listening", { host: options.host, port: actualPort });
 
   return {
-    url: `ws://${options.host}:${options.port}`,
-    port: options.port,
+    url: `ws://${options.host}:${actualPort}`,
+    port: actualPort,
     server,
     connectionCount: () => clients.size,
     close: async () => {
+      presence.clear();
       for (const record of clients) record.connection.close(1001, "shutdown");
       clients.clear();
       await new Promise<void>((resolve) => server.close(() => resolve()));
