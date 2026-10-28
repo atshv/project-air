@@ -7014,7 +7014,7 @@
       "satisfies": [
         "D12"
       ],
-      "status": "pending",
+      "status": "in_progress",
       "depends_on": [
         "P6-05",
         "P6-06"
@@ -7024,6 +7024,7 @@
       "parallel_group": null,
       "scope_write": [
         "packages/editor/",
+        "packages/contracts/",
         "apps/web/",
         ".changes/"
       ],
@@ -7038,7 +7039,8 @@
         "docs/contracts.md",
         "packages/contracts/",
         "packages/sdk/",
-        "packages/ui-kit/"
+        "packages/ui-kit/",
+        "packages/contracts/plaintext.mjs"
       ],
       "acceptance": [
         "A1",
@@ -7053,9 +7055,9 @@
         "design-check",
         "language-check"
       ],
-      "owner": null,
+      "owner": "lead",
       "branch": "task/P6-07",
-      "worktree": null,
+      "worktree": "/private/tmp/air-P6-07",
       "round": 0,
       "evidence": [],
       "scope_write_forbidden": [
@@ -7242,7 +7244,7 @@
     {
       "id": "P0-45",
       "title": "Preview page: project areas, their tasks and purpose",
-      "goal": "The design-system page gets a section '13 — Project areas' that lists every area of Project air (engine, web app, design system, data model, server, database and storage, realtime, tools and quality, operations and release) with its purpose, owner role, folders, connections and its parts with status, in short simple sentences in EN and DE.",
+      "goal": "The design-system page gets a section '13 — Project areas' that lists every area of Project air (engine, web app, design system, data model, server, database and storage, realtime, tools and quality, operations and release) with its purpose, owner role, folders, connections and its parts with status, in short simple sentences in EN and DE; a page contents list links every numbered section 01-13.",
       "why": "Owner request 2026-10-29: a clear, well-structured list of the areas, their tasks and what they are for on the preview page, to distribute work later (who does server/auth/db, web app, engine).",
       "satisfies": [
         "D3"
