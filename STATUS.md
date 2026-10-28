@@ -126,10 +126,7 @@
 
 ## Ready now
 
-- `P0-45` Preview page: project areas, their tasks and purpose
-  - P0-44: Closed P0-44: preview documents the pen and ink colours — pen tile in the toolbar icon gallery (inline 24-grid/1.6 SVG, deviation explained), palette still palette.svg, no fixed ten-icon claim.
-  - P0-44: New 08a Ink and colours section: six token strokes over card/photo in both themes, six translated swatches, pen/palette rest/active/popover states; Layers 6a Ink annotations row, preview only.
-  - P0-44: README, EN/DE locales, light/dark/mobile screenshots and browser log committed; board-check, design-check and changelog-entry pass; P0-41/42/43 behaviour unchanged (preview.js untouched).
+- none
 
 ## Done
 
@@ -238,7 +235,7 @@
 
 ## In progress
 
-- none
+- [ ] `P0-45` Preview page: project areas, their tasks and purpose — status: `in_progress` — owner: —
 
 ## Blocked / failed
 
@@ -254,11 +251,11 @@
 - [ ] `P6-08` Realtime UI: live changes, presence and save status (L05) — status: `pending` — owner: —
 - [ ] `P6-09` e2e suite: main flows and the e2e gate on the slot ports — status: `pending` — owner: —
 - [ ] `P6-10` Canvas evidence, repo-wide checks and the web-app stage report — status: `pending` — owner: —
-- [ ] `P0-45` Preview page: project areas, their tasks and purpose — status: `pending` — owner: —
 
 <!-- polier:claims -->
 ## Claims
 
+- `P0-45` in progress by dsh since 2026-10-28T23:45:11+00:00 — worktree: /Users/rasulatashev/Desktop/KI Projekte/Project air-P0-45 · slot 4
 - `P6-06` in progress by dsh since 2026-10-28T23:42:27+00:00 — worktree: /private/tmp/air-P6-06 · slot 3
 
 <!-- /polier:claims -->
