@@ -5711,7 +5711,7 @@
       "satisfies": [
         "D11"
       ],
-      "status": "pending",
+      "status": "in_progress",
       "depends_on": [
         "P5-03"
       ],
@@ -5749,9 +5749,9 @@
         "unit",
         "db-migrate"
       ],
-      "owner": null,
+      "owner": "lead",
       "branch": "task/P5-06",
-      "worktree": null,
+      "worktree": "/private/tmp/air-P5-06",
       "round": 0,
       "evidence": [],
       "scope_write_forbidden": [
