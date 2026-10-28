@@ -122,10 +122,6 @@
 
 ## Ready now
 
-- `P5-03` Sync service: WebSocket protocol, auth and durable update log
-  - P3-04: Closed P3-04: 20 /v1 contract routes (workspaces/boards/notes/cards) with contract envelopes, UUIDv7 requestIds, cursor pagination; permission matrix with 404 non-leak; app_user + SET LOCAL.
-  - P3-04: Defence in depth (AD-5): explicit membership checks on GETs + startup guard refusing SUPERUSER/BYPASSRLS pools; 28 api-tests (allow+deny per route), 72 unit; errors echo requestId; bad cursors 400.
-  - P3-04: Review pass; F1 fixed (GET checks + role guard). Open F2: Kratos v4 identity ids vs contract-v7 account ids -> P3-06 mapping task; member routes not in this stage.
 - `P0-34` Live demo: move a zone with its members
   - P0-33: Closed P0-33: checklist block (5 items, 2 done, counter + status, real checkboxes) and spreadsheet card (A-D, rows 1-6, formula bar, computed totals, click/arrow selection).
   - P0-33: Both draggable on the blocks layer (no drag from checkbox/label, no click after drag), desktop homes data-home, compact homes data-home-compact, compact world grid x 104.
@@ -214,7 +210,7 @@
 
 ## In progress
 
-- none
+- [ ] `P5-03` Sync service: WebSocket protocol, auth and durable update log — status: `in_progress` — owner: lead
 
 ## Blocked / failed
 
@@ -226,7 +222,6 @@
 - [ ] `P0-15` Release command and tag-based CI release — status: `pending` — owner: —
 - [ ] `P0-16` Dependency updates and Polier update check — status: `pending` — owner: —
 - [ ] `P0-17` RELEASING.md and release 0.0.1 — status: `pending` — owner: —
-- [ ] `P5-03` Sync service: WebSocket protocol, auth and durable update log — status: `pending` — owner: —
 - [ ] `P5-04` SDK board-sync client and the one autosave path (L05 realtime half) — status: `pending` — owner: —
 - [ ] `P5-05` Presence: cursors, selection, name and colour — status: `pending` — owner: —
 - [ ] `P5-06` Durability and reconnect: restart, catch-up and snapshot compaction — status: `pending` — owner: —
@@ -237,7 +232,7 @@
 <!-- polier:claims -->
 ## Claims
 
-- `P5-02` in progress by dsh since 2026-10-28T19:02:24+00:00 — worktree: /private/tmp/air-P5-02 · slot 1
+- `P5-03` in progress by dsh since 2026-10-28T19:03:22+00:00 — worktree: /private/tmp/air-P5-03 · slot 1
 
 <!-- /polier:claims -->
 
