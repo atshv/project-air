@@ -103,6 +103,14 @@ import {
   applyInlineKey,
   OverlayHost,
 } from "@project-air/engine/overlay.js";
+import {
+  arrangeZone,
+  previewZoneRelease,
+  zoneOrientation,
+  ZONE_HEADER_HEIGHT,
+  ZONE_PADDING,
+  zoneSettlePolicy,
+} from "@project-air/engine/zone-parity.js";
 
 const canvas = document.querySelector("#canvas");
 const errorNode = document.querySelector("#error");
@@ -188,6 +196,12 @@ const inputDemoRequested =
 // unchanged; it never writes board content.
 const inlineDemoRequested =
   query.get("edit") === "inline" && !benchmarkRequested && !perfRequested;
+// L08 (P4-29) zone parity demo: arrangement + release preview on the layers scene.
+const zoneParityRequested =
+  query.get("zoneParity") === "1" &&
+  !benchmarkRequested &&
+  !perfRequested &&
+  !inlineDemoRequested;
 const requestedCount = clampInteger(parseInteger(benchQuery, COLUMNS * ROWS), 0, 1000000);
 const warmupFrames = clampInteger(parseInteger(query.get("warmup"), 120), 0, 10000);
 const sampleFrames = clampInteger(parseInteger(query.get("samples"), 600), 1, 10000);
@@ -905,6 +919,7 @@ async function loadLayersDocument(engine, loaded) {
     onTap: (target) => {
       front(sceneIdOf.get(target.id) ?? null);
     },
+    zoneParity: zoneParityRequested,
   });
   return { front, frontAt, session };
 }
@@ -915,7 +930,7 @@ async function loadLayersDocument(engine, loaded) {
 // `buildOperation`, applies it through the port and pushes the pair onto the
 // P4-05 history, and `revert` restores a cancelled drag. The numbers stay token
 // values; the input layer owns the threshold and grip rules.
-function createDragSession({ engine, port, context, history, seam, entries, sceneIdOf, onTap }) {
+function createDragSession({ engine, port, context, history, seam, entries, sceneIdOf, onTap, zoneParity = false }) {
   const targetAt = (screenX, screenY) => {
     const slot = engine.hitTest(screenX, screenY);
     const hit = port.objectAt(slot);
@@ -1212,6 +1227,267 @@ function createDragSession({ engine, port, context, history, seam, entries, scen
     onDemand.request();
     return members.length;
   };
+  // L08 (P4-29): zone parity preview + one-operation arrangement release. The
+  // preview is presentation state (never a document write); only the release
+  // builds one `zone-arrange` group operation with its inverse.
+  let zonePreview = null;
+  let zoneParityRender = null;
+  let lastZoneRelease = null;
+  const setZoneParityRenderer = (render) => {
+    zoneParityRender = render;
+  };
+  const clearZonePreview = () => {
+    if (zonePreview === null) {
+      return;
+    }
+    zonePreview = null;
+    zoneParityRender?.(null);
+  };
+  const zoneMembers = (zoneId) => {
+    const members = port.members(zoneId);
+    return [
+      ...members.cards.map((card) => ({
+        objectKind: "card",
+        objectId: card.id,
+        width: card.width,
+        height: card.height,
+      })),
+      ...members.blocks.map((block) => ({
+        objectKind: "block",
+        objectId: block.id,
+        width: block.width,
+        height: block.height,
+      })),
+    ];
+  };
+  const visibleWorld = () => ({
+    width: Math.max(1, (canvas?.clientWidth ?? 1000) / Math.max(0.0001, camera.zoom)),
+    height: Math.max(1, (canvas?.clientHeight ?? 700) / Math.max(0.0001, camera.zoom)),
+  });
+  const previewZoneDrag = (target, position) => {
+    if (!zoneParity || target.kind === "zone") {
+      return null;
+    }
+    const dragged = { x: position.x, y: position.y, width: target.world.width, height: target.world.height };
+    const pointer = { x: position.x + target.world.width / 2, y: position.y + target.world.height / 2, width: target.world.width, height: target.world.height };
+    let zone = null;
+    let coverage = 0;
+    for (const candidate of zoneTargets()) {
+      const frame = candidate.world;
+      const overX = Math.max(0, Math.min(pointer.x, frame.x + frame.width) - Math.max(pointer.x, frame.x));
+      const overY = Math.max(0, Math.min(pointer.y, frame.y + frame.height) - Math.max(pointer.y, frame.y));
+      coverage = (overX * overY) / Math.max(1, frame.width * frame.height);
+      const inside = pointer.x >= frame.x && pointer.x <= frame.x + frame.width && pointer.y >= frame.y && pointer.y <= frame.y + frame.height;
+      if (inside || coverage >= 0.25) {
+        zone = candidate;
+        break;
+      }
+    }
+    if (zone === null && zonePreview === null) {
+      // The drag started inside a zone: use that frame so the first move that
+      // already leaves the frame previews the detach instead of doing nothing.
+      const startX = target.world.x + target.world.width / 2;
+      const startY = target.world.y + target.world.height / 2;
+      for (const candidate of zoneTargets()) {
+        const frame = candidate.world;
+        if (startX >= frame.x && startX <= frame.x + frame.width && startY >= frame.y && startY <= frame.y + frame.height) {
+          zone = candidate;
+          break;
+        }
+      }
+    }
+    if (zone === null) {
+      if (zonePreview === null) {
+        return null;
+      }
+      const state = previewZoneRelease({
+        zoneFrame: zonePreview.zoneFrame,
+        pointer,
+        dragged,
+        dragStart: zonePreview.dragStart,
+        previewing: true,
+        coverage: 0,
+        currentOrientation: zonePreview.orientation,
+        desiredOrientation: zonePreview.orientation,
+        zoom: camera.zoom,
+      });
+      zonePreview = { ...zonePreview, ...state };
+      zoneParityRender?.(zonePreview);
+      return zonePreview;
+    }
+    const others = zoneMembers(zone.id).filter((member) => member.objectId !== target.id);
+    const all = [{ objectKind: target.kind, objectId: target.id, width: target.world.width, height: target.world.height }, ...others];
+    const frameCentreX = zone.world.x + zone.world.width / 2;
+    const frameCentreY = zone.world.y + zone.world.height / 2;
+    const offsets = all.map((member, index) => {
+      const current = index === 0 ? pointer : (() => {
+        const info = others[index - 1];
+        const entity = port.read(info.objectKind, info.objectId);
+        return { x: (entity?.x ?? centreFallback(zone)[0]) + member.width / 2, y: (entity?.y ?? centreFallback(zone)[1]) + member.height / 2 };
+      })();
+      return { ...member, offsetX: current.x - frameCentreX, offsetY: current.y - frameCentreY, order: index };
+    });
+    const currentOrientation = zonePreview?.orientation ?? "vertical";
+    const desired = zoneOrientation(offsets, currentOrientation);
+    const arrangement = arrangeZone(
+      all.map((member) => ({ id: member.objectId, width: member.width, height: member.height })),
+      desired,
+      visibleWorld(),
+    );
+    const dragStart = zonePreview?.dragStart ?? { x: position.x, y: position.y };
+    const state = previewZoneRelease({
+      zoneFrame: zone.world,
+      pointer,
+      dragged,
+      dragStart,
+      previewing: zonePreview !== null,
+      coverage,
+      currentOrientation,
+      desiredOrientation: arrangement.orientation,
+      zoom: camera.zoom,
+    });
+    zonePreview = {
+      ...state,
+      zoneId: zone.id,
+      zoneFrame: zone.world,
+      draggedId: target.id,
+      orientation: arrangement.orientation,
+      dragStart,
+      arrangement,
+      order: all.map((member) => member.objectId),
+    };
+    zoneParityRender?.(zonePreview);
+    return zonePreview;
+  };
+  const centreFallback = (zone) => [zone.world.x + zone.world.width / 2, zone.world.y + zone.world.height / 2];
+  const commitZoneArrangement = () => {
+    if (zonePreview === null || zonePreview.arrangement === undefined || zonePreview.zoneId === undefined) {
+      return false;
+    }
+    const preview = zonePreview;
+    const zone = port.read("zone", preview.zoneId);
+    if (zone === undefined) {
+      clearZonePreview();
+      return true;
+    }
+    const members = preview.order.map((objectId, index) => {
+      const placement = preview.arrangement.placements[index];
+      const kind = preview.order[index] === preview.draggedId ? (entries.find((entry) => entry.id === objectId)?.kind ?? "card") : (entries.find((entry) => entry.id === objectId)?.kind ?? "card");
+      return {
+        objectKind: kind,
+        objectId,
+        position: {
+          x: zone.x + ZONE_PADDING + (placement?.x ?? 0),
+          y: zone.y + ZONE_HEADER_HEIGHT + ZONE_PADDING + (placement?.y ?? 0),
+        },
+      };
+    });
+    const pair = seam.buildOperation(port, context, {
+      kind: "zone-arrange",
+      zoneId: preview.zoneId,
+      size: { width: preview.arrangement.frame.width, height: preview.arrangement.frame.height },
+      members,
+    });
+    if (pair === null) {
+      clearZonePreview();
+      return true;
+    }
+    seam.applyOperation(port, pair.operation);
+    history.push(pair.operation, pair.inverse);
+    recordPair(pair);
+    lastZoneRelease = {
+      operation: pair.operation.type,
+      inverse: pair.inverse.type,
+      children: pair.operation.payload.children.map((child) => child.type),
+      zoneId: preview.zoneId,
+    };
+    onDemand.request();
+    clearZonePreview();
+    return true;
+  };
+  // Deterministic at-rest demo: arrange the members of the first filled zone and
+  // leave a landing-slot preview visible for the visual/diff capture.
+  const arrangeZoneDemo = () => {
+    const zone = zoneTargets().find((candidate) => zoneMembers(candidate.id).length >= 2) ?? zoneTargets()[0];
+    if (zone === undefined) {
+      return null;
+    }
+    const members = zoneMembers(zone.id);
+    const arrangement = arrangeZone(
+      members.map((member) => ({ id: member.objectId, width: member.width, height: member.height })),
+      "vertical",
+      visibleWorld(),
+    );
+    const pair = seam.buildOperation(port, context, {
+      kind: "zone-arrange",
+      zoneId: zone.id,
+      size: { width: arrangement.frame.width, height: arrangement.frame.height },
+      members: arrangement.placements.map((placement, index) => ({
+        objectKind: members[index].objectKind,
+        objectId: members[index].objectId,
+        position: {
+          x: zone.world.x + ZONE_PADDING + placement.x,
+          y: zone.world.y + ZONE_HEADER_HEIGHT + ZONE_PADDING + placement.y,
+        },
+      })),
+    });
+    if (pair !== null) {
+      seam.applyOperation(port, pair.operation);
+      history.push(pair.operation, pair.inverse);
+      recordPair(pair);
+      lastZoneRelease = {
+        operation: pair.operation.type,
+        inverse: pair.inverse.type,
+        children: pair.operation.payload.children.map((child) => child.type),
+        zoneId: zone.id,
+      };
+      onDemand.request();
+    }
+    const moved = targetOf(entries.find((entry) => entry.id === zone.id)) ?? zone;
+    const landing = {
+      x: moved.world.x + ZONE_PADDING + 8,
+      y: moved.world.y + ZONE_HEADER_HEIGHT + ZONE_PADDING + 8,
+      width: 96,
+      height: 48,
+    };
+    zoneParityRender?.({
+      kind: "dock",
+      inside: true,
+      frame: { ...moved.world, width: arrangement.frame.width, height: arrangement.frame.height },
+      landing,
+      shrinking: false,
+      makeRoom: true,
+    });
+    return { zoneId: zone.id, arrangement };
+  };
+  if (zoneParity) {
+    globalThis.__zoneParity = {
+      state: () => ({
+        preview: zonePreview,
+        release: lastZoneRelease,
+        zones: zoneState().zones,
+        objects: entries
+          .filter((entry) => port.read(entry.kind, entry.id) !== undefined)
+          .map((entry) => {
+            const entity = port.read(entry.kind, entry.id);
+            return { kind: entry.kind, id: entry.id, zoneId: entity.zoneId ?? null, world: { x: entity.x, y: entity.y, width: entity.width, height: entity.height } };
+          }),
+      }),
+      // The browser port has no in-memory snapshot; a canonical per-object JSON of
+      // the live working copy is enough to prove a cancel wrote nothing.
+      snapshot: () =>
+        JSON.stringify(
+          entries
+            .filter((entry) => port.read(entry.kind, entry.id) !== undefined)
+            .map((entry) => ({ kind: entry.kind, id: entry.id, entity: port.read(entry.kind, entry.id) }))
+            .sort((left, right) => (left.kind + left.id < right.kind + right.id ? -1 : 1)),
+        ),
+      arrange: arrangeZoneDemo,
+      clearPreview: clearZonePreview,
+      settle: () => zoneSettlePolicy(matchMedia("(prefers-reduced-motion: reduce)").matches),
+    };
+  }
+
   const tap = (target) => {
     if (target !== null && onTap !== null) {
       onTap(target);
@@ -1284,6 +1560,11 @@ function createDragSession({ engine, port, context, history, seam, entries, scen
     commitGroup,
     deleteTargets,
     lastOperation,
+    previewZoneDrag,
+    commitZoneArrangement,
+    clearZonePreview,
+    setZoneParityRenderer,
+    arrangeZoneDemo,
   };
 }
 
@@ -1369,6 +1650,7 @@ async function loadRectangleDragSession(engine, loaded) {
     entries: loaded.objects.map((object) => ({ kind: object.kind, id: uuidOf.get(object.id) })),
     sceneIdOf,
     onTap: null,
+    zoneParity: zoneParityRequested,
   });
 }
 
@@ -1729,6 +2011,49 @@ function installInlineDemo(engine, session) {
   return { update };
 }
 
+// L08 (P4-29): minimal release-preview chrome in the DOM overlay (ADR-0009):
+// the previewed zone frame outline and the dashed landing slot. Presentation
+// state only; a cancel simply hides it.
+function installZoneParityOverlay() {
+  const wrap = canvas.parentElement;
+  if (!(wrap instanceof HTMLElement)) {
+    return null;
+  }
+  const layer = document.createElement("div");
+  layer.className = "zone-parity-layer";
+  layer.hidden = true;
+  const frame = document.createElement("div");
+  frame.className = "zone-parity-frame";
+  const slot = document.createElement("div");
+  slot.className = "zone-parity-slot";
+  layer.append(frame, slot);
+  wrap.append(layer);
+  const place = (element, rect) => {
+    const bounds = canvas.getBoundingClientRect();
+    element.style.left = `${bounds.left + (rect.x - camera.panX) * camera.zoom}px`;
+    element.style.top = `${bounds.top + (rect.y - camera.panY) * camera.zoom}px`;
+    element.style.width = `${rect.width * camera.zoom}px`;
+    element.style.height = `${rect.height * camera.zoom}px`;
+  };
+  return {
+    render(state) {
+      if (state === null || state === undefined) {
+        layer.hidden = true;
+        return;
+      }
+      layer.hidden = false;
+      place(frame, state.frame);
+      if (state.landing === null || state.landing === undefined) {
+        slot.hidden = true;
+      } else {
+        slot.hidden = false;
+        place(slot, state.landing);
+      }
+      onDemand.request();
+    },
+  };
+}
+
 // Installs the one pointer input layer of the page. `session` is the drag
 // session of the loaded scene (null for scenes that are not contract entities);
 // `titlesController` handles the titles gallery's hover/selection.
@@ -1879,7 +2204,15 @@ function installPointerInput(engine, session, titlesController) {
       session?.preview(target, position);
     },
     commitDrag: (target, position) => {
+      if (zoneParityRequested && session?.commitZoneArrangement?.() === true) {
+        return;
+      }
       session?.commit(target, position);
+    },
+    onDragMove: (target, position) => {
+      if (zoneParityRequested) {
+        session?.previewZoneDrag?.(target, position);
+      }
     },
     revertDrag: (target) => {
       session?.revert(target);
@@ -2008,6 +2341,14 @@ function installPointerInput(engine, session, titlesController) {
   });
   // L10: Esc clears the selection (and a live band).
   window.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && (zoneParityRequested || input.phase === "dragging")) {
+      if (input.phase === "dragging") {
+        session?.clearZonePreview?.();
+        input.cancelAll();
+        event.preventDefault();
+        return;
+      }
+    }
     if (event.key === "Escape" && input.keyDown("Escape")) {
       event.preventDefault();
       return;
@@ -2620,6 +2961,11 @@ async function start() {
     sceneSession = layers !== null ? layers.session : null;
     if (sceneSession === null && loaded.name === "sample" && !titlesRequested) {
       sceneSession = await loadRectangleDragSession(engine, loaded);
+    }
+    if (zoneParityRequested && sceneSession !== null) {
+      const overlay = installZoneParityOverlay();
+      sceneSession.setZoneParityRenderer?.((state) => overlay?.render(state));
+      sceneSession.arrangeZoneDemo?.();
     }
     pointerInput = installPointerInput(engine, sceneSession, titlesOverlay);
     if (inputDemoRequested && layers !== null) {

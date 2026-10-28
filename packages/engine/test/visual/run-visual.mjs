@@ -208,6 +208,19 @@ const SCENE_DEFINITIONS = [
     camera: "titles gallery centred at world (512, 288) at zoom 1 (100 %)",
   },
   {
+    // L08 (P4-29): deterministic zone parity at rest — the auto-arranged members
+    // (vertical, sizes + 16 px padding + 12 px gap below the 40 px header) and
+    // the dashed landing slot of the release preview. Page-owned deterministic
+    // demo on the layers scene at 100 %.
+    name: "zone-parity-at-rest",
+    scene: "layers",
+    view: { worldX: 512, worldY: 288, zoom: 1 },
+    extra: { store: "off", zoneParity: "1" },
+    expectedCounts: { zones: 2, blocks: 2, cards: 4, total: 8 },
+    expectedWorld: { width: 1024, height: 576 },
+    camera: "layers world centred at (512, 288) at zoom 1 with the arranged zone and landing slot",
+  },
+  {
     // L02 (P4-10): the same gallery zoomed to 200 % — the zoom bucket re-rasterises
     // the atlas at twice the CSS resolution, so text stays sharp instead of
     // upscaling the 100 % atlas.
@@ -782,6 +795,7 @@ const REQUIRED_ARTEFACTS = [
   "packages/engine/dist/bridge/text-atlas.js",
   "packages/engine/dist/bridge/input.js",
   "packages/engine/dist/bridge/overlay.js",
+  "packages/engine/dist/bridge/zone-parity.js",
   "packages/engine/build-wasm/engine.js",
   "packages/engine/build-wasm/engine.wasm",
   "packages/test-kit/dist/scenes.js",
@@ -806,6 +820,7 @@ function copyArtefacts(tempRoot) {
     "packages/engine/dist/bridge/text-atlas.js",
     "packages/engine/dist/bridge/input.js",
     "packages/engine/dist/bridge/overlay.js",
+    "packages/engine/dist/bridge/zone-parity.js",
     "packages/engine/build-wasm/engine.js",
     "packages/engine/build-wasm/engine.wasm",
     "packages/test-kit/dist/scenes.js",

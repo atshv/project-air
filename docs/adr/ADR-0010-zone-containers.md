@@ -35,6 +35,17 @@ Zones are containers:
   drag-out releases, a zone drag moves its content as exactly one group operation, deletion asks
   "keep content" (default) or "delete content", and resizing clamps at content extent + 16 px.
 
+## Amendment 2026-10-28 (P4-29): auto-arranged members
+
+The owner approved parity with the live demo (`apps/web/preview`, read-only reference): members of a
+zone are auto-arranged stacked or side by side from their sizes with the 40 px header, 16 px padding
+and 12 px gap; orientation follows the size-normalised placement with 1.25 dominance and a half-item
+hold, order comes from the centre with a 12 px band, and a release shows a live preview (dashed
+landing slot, the other member making room, the frame shrinking on pull-out) before committing. The
+release is still exactly one operation with inverse. The arrangement is a presentation-first
+behaviour: the stored zone orientation request is never changed by a viewport fallback, and the
+engine mirrors the demo's thresholds rather than defining a second interaction model.
+
 ## Consequences
 
 - **Positive:** membership survives reloads and sync, matches the visual model, allows "keep content"

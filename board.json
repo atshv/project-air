@@ -5063,7 +5063,7 @@
       "satisfies": [
         "D10"
       ],
-      "status": "in_progress",
+      "status": "done",
       "depends_on": [
         "P4-27",
         "P4-10"
@@ -5107,11 +5107,17 @@
         "visual",
         "typecheck"
       ],
-      "owner": "lead",
+      "owner": null,
       "branch": "task/P4-29",
-      "worktree": "/private/tmp/air-P4-29",
+      "worktree": null,
       "round": 0,
-      "evidence": [],
+      "evidence": [
+        "reviews/evidence/P4-29-board-check-20261028T073338Z.json",
+        "reviews/evidence/P4-29-boundaries-20261028T073341Z.json",
+        "reviews/evidence/P4-29-cpp-unit-20261028T073345Z.json",
+        "reviews/evidence/P4-29-typecheck-20261028T073341Z.json",
+        "reviews/evidence/P4-29-visual-20261028T073346Z.json"
+      ],
       "scope_write_forbidden": [
         "reference/"
       ],

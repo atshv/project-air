@@ -34,6 +34,7 @@ import type {
   DeleteSelectionGesture,
   DeleteZoneGesture,
   DragGroupGesture,
+  ZoneArrangeGesture,
   DragSingleGesture,
   GestureResult,
   KeyboardNudgeGesture,
@@ -776,6 +777,59 @@ function buildDragGroup(
   return { operation, inverse: operation.inverse };
 }
 
+// L08 (P4-29): one release of the arrangement preview. The zone frame resize
+// (when the preview grew or shrank it) and every arranged member position become
+// exactly one `group` operation with the reversed inverses as its inverse.
+function buildZoneArrange(
+  port: DocumentPort,
+  context: OperationContext,
+  gesture: ZoneArrangeGesture,
+): OperationPair | null {
+  const zone = requiredObject(port, "zone", gesture.zoneId);
+  const children: Operation[] = [];
+  if (gesture.size !== undefined && gesture.size !== null) {
+    assertGeometry(gesture.size, `zone ${zone.id}`, { width: 1, height: 1 });
+    if (gesture.size.width !== zone.width || gesture.size.height !== zone.height) {
+      const resize = makeOperation(
+        context,
+        "resizeZone",
+        { zoneId: zone.id, width: gesture.size.width, height: gesture.size.height },
+        makeInverse(context, "resizeZone", {
+          zoneId: zone.id,
+          width: zone.width,
+          height: zone.height,
+        }),
+      );
+      children.push(resize);
+    }
+  }
+  const seen = new Set<string>();
+  for (const member of gesture.members) {
+    const key = `${member.objectKind}:${member.objectId}`;
+    if (seen.has(key)) {
+      throw new OperationError(`the arrangement lists ${member.objectKind} ${member.objectId} twice`);
+    }
+    seen.add(key);
+    const child = buildMoveOperation(
+      port,
+      context,
+      member.objectKind,
+      member.objectId,
+      member.position,
+    );
+    if (child !== null) {
+      children.push(child);
+    }
+  }
+  if (children.length === 0) {
+    return null;
+  }
+  const inverseChildren: OperationInverse[] = children.map((child) => child.inverse).reverse();
+  const inverse = makeInverse(context, "group", { children: inverseChildren });
+  const operation = makeOperation(context, "group", { children }, inverse);
+  return { operation, inverse: operation.inverse };
+}
+
 function buildNudgeOperation(
   port: DocumentPort,
   context: OperationContext,
@@ -876,6 +930,8 @@ export function buildOperation(
       return buildDeleteSelection(port, context, gesture);
     case "delete-zone":
       return buildDeleteZoneOperation(port, context, gesture.zoneId, gesture.policy);
+    case "zone-arrange":
+      return buildZoneArrange(port, context, gesture);
     case "keyboard-nudge": {
       const operation = buildNudgeOperation(port, context, gesture);
       return operation === null ? null : { operation, inverse: operation.inverse };

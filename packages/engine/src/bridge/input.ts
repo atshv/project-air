@@ -153,6 +153,8 @@ export interface InputHost {
   targetsInRect?(rect: InputWorldRect): readonly InputTarget[];
   /** L10: preview a joint drag (no document write). */
   previewGroupDrag?(members: readonly InputDragMember[]): void;
+  /** P4-29: reports every primary drag move (target + snapped world position). */
+  onDragMove?(target: InputTarget, position: InputWorldPoint): void;
   /** L10: commit a joint drag as exactly one drag-group gesture. */
   commitGroupDrag?(members: readonly InputDragMember[]): void;
   /** L10: restore every member after a cancelled joint drag. */
@@ -742,6 +744,7 @@ export class PointerInput {
     const raw = this.#positionFor(screen, this.#grabOffset);
     const snapped = this.#host.snapDrag?.(target, raw, free) ?? raw;
     this.#snappedPosition = snapped;
+    this.#host.onDragMove?.(target, snapped);
     if (this.#group !== null && this.#groupAnchor !== null && this.#host.previewGroupDrag) {
       const deltaX = snapped.x - this.#groupAnchor.world.x;
       const deltaY = snapped.y - this.#groupAnchor.world.y;

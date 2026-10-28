@@ -1,0 +1,928 @@
+{
+  "task": "P4-29",
+  "gate": "zone-parity-capture",
+  "startedAt": "2026-10-28T07:32:38.238Z",
+  "chrome": "/Users/rasulatashev/Library/Caches/ms-playwright/chromium-1248/chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing",
+  "flags": [
+    "--headless=new",
+    "--use-angle=metal",
+    "--enable-gpu",
+    "--hide-scrollbars",
+    "--disable-frame-rate-limit",
+    "--disable-gpu-vsync",
+    "--no-first-run",
+    "--no-default-browser-check",
+    "--disable-background-timer-throttling",
+    "--disable-renderer-backgrounding",
+    "--disable-backgrounding-occluded-windows",
+    "--window-size=1440,900",
+    "--no-sandbox"
+  ],
+  "viewports": [
+    {
+      "viewport": {
+        "name": "desktop",
+        "width": 1440,
+        "height": 900
+      },
+      "arrangement": {
+        "operation": "group",
+        "inverse": "group",
+        "children": [
+          "resizeZone",
+          "moveCard",
+          "moveCard",
+          "moveBlock"
+        ],
+        "zoneId": "0192f0c1-7000-7000-8000-000000000600"
+      },
+      "atRest": {
+        "preview": null,
+        "release": {
+          "operation": "group",
+          "inverse": "group",
+          "children": [
+            "resizeZone",
+            "moveCard",
+            "moveCard",
+            "moveBlock"
+          ],
+          "zoneId": "0192f0c1-7000-7000-8000-000000000600"
+        },
+        "zones": [
+          {
+            "id": "0192f0c1-7000-7000-8000-000000000600",
+            "slot": 0,
+            "world": {
+              "x": 64,
+              "y": 64,
+              "width": 288,
+              "height": 512
+            },
+            "members": {
+              "cards": [
+                "0192f0c1-7000-7000-8000-000000000604",
+                "0192f0c1-7000-7000-8000-000000000605"
+              ],
+              "blocks": [
+                "0192f0c1-7000-7000-8000-000000000602"
+              ]
+            }
+          },
+          {
+            "id": "0192f0c1-7000-7000-8000-000000000601",
+            "slot": 1,
+            "world": {
+              "x": 352,
+              "y": 160,
+              "width": 416,
+              "height": 320
+            },
+            "members": {
+              "cards": [
+                "0192f0c1-7000-7000-8000-000000000606"
+              ],
+              "blocks": [
+                "0192f0c1-7000-7000-8000-000000000603"
+              ]
+            }
+          }
+        ],
+        "objects": [
+          {
+            "kind": "zone",
+            "id": "0192f0c1-7000-7000-8000-000000000600",
+            "zoneId": null,
+            "world": {
+              "x": 64,
+              "y": 64,
+              "width": 288,
+              "height": 512
+            }
+          },
+          {
+            "kind": "zone",
+            "id": "0192f0c1-7000-7000-8000-000000000601",
+            "zoneId": null,
+            "world": {
+              "x": 352,
+              "y": 160,
+              "width": 416,
+              "height": 320
+            }
+          },
+          {
+            "kind": "block",
+            "id": "0192f0c1-7000-7000-8000-000000000602",
+            "zoneId": "0192f0c1-7000-7000-8000-000000000600",
+            "world": {
+              "x": 80,
+              "y": 400,
+              "width": 256,
+              "height": 160
+            }
+          },
+          {
+            "kind": "block",
+            "id": "0192f0c1-7000-7000-8000-000000000603",
+            "zoneId": "0192f0c1-7000-7000-8000-000000000601",
+            "world": {
+              "x": 544,
+              "y": 336,
+              "width": 288,
+              "height": 176
+            }
+          },
+          {
+            "kind": "card",
+            "id": "0192f0c1-7000-7000-8000-000000000604",
+            "zoneId": "0192f0c1-7000-7000-8000-000000000600",
+            "world": {
+              "x": 80,
+              "y": 120,
+              "width": 224,
+              "height": 128
+            }
+          },
+          {
+            "kind": "card",
+            "id": "0192f0c1-7000-7000-8000-000000000605",
+            "zoneId": "0192f0c1-7000-7000-8000-000000000600",
+            "world": {
+              "x": 80,
+              "y": 260,
+              "width": 224,
+              "height": 128
+            }
+          },
+          {
+            "kind": "card",
+            "id": "0192f0c1-7000-7000-8000-000000000606",
+            "zoneId": "0192f0c1-7000-7000-8000-000000000601",
+            "world": {
+              "x": 416,
+              "y": 272,
+              "width": 224,
+              "height": 128
+            }
+          },
+          {
+            "kind": "card",
+            "id": "0192f0c1-7000-7000-8000-000000000607",
+            "zoneId": null,
+            "world": {
+              "x": 704,
+              "y": 64,
+              "width": 224,
+              "height": 128
+            }
+          }
+        ]
+      },
+      "detach": {
+        "kind": "detach",
+        "inside": false,
+        "landing": null,
+        "frame": {
+          "x": 64,
+          "y": 64,
+          "width": 288,
+          "height": 512
+        },
+        "shrinking": true,
+        "makeRoom": false,
+        "zoneId": "0192f0c1-7000-7000-8000-000000000600",
+        "zoneFrame": {
+          "x": 64,
+          "y": 64,
+          "width": 288,
+          "height": 512
+        },
+        "draggedId": "0192f0c1-7000-7000-8000-000000000604",
+        "orientation": "vertical",
+        "dragStart": {
+          "x": 96,
+          "y": 256
+        },
+        "arrangement": {
+          "orientation": "vertical",
+          "fallback": false,
+          "frame": {
+            "width": 288,
+            "height": 512
+          },
+          "placements": [
+            {
+              "id": "0192f0c1-7000-7000-8000-000000000604",
+              "x": 0,
+              "y": 0
+            },
+            {
+              "id": "0192f0c1-7000-7000-8000-000000000605",
+              "x": 0,
+              "y": 140
+            },
+            {
+              "id": "0192f0c1-7000-7000-8000-000000000602",
+              "x": 0,
+              "y": 280
+            }
+          ]
+        },
+        "order": [
+          "0192f0c1-7000-7000-8000-000000000604",
+          "0192f0c1-7000-7000-8000-000000000605",
+          "0192f0c1-7000-7000-8000-000000000602"
+        ]
+      },
+      "cancel": {
+        "preview": null,
+        "sameSnapshot": true
+      },
+      "dock": {
+        "kind": "reorder",
+        "inside": true,
+        "landing": {
+          "x": 96,
+          "y": 256,
+          "width": 224,
+          "height": 128
+        },
+        "frame": {
+          "x": 64,
+          "y": 64,
+          "width": 288,
+          "height": 512
+        },
+        "shrinking": false,
+        "makeRoom": true,
+        "zoneId": "0192f0c1-7000-7000-8000-000000000600",
+        "zoneFrame": {
+          "x": 64,
+          "y": 64,
+          "width": 288,
+          "height": 512
+        },
+        "draggedId": "0192f0c1-7000-7000-8000-000000000604",
+        "orientation": "vertical",
+        "dragStart": {
+          "x": 96,
+          "y": 256
+        },
+        "arrangement": {
+          "orientation": "vertical",
+          "fallback": false,
+          "frame": {
+            "width": 288,
+            "height": 512
+          },
+          "placements": [
+            {
+              "id": "0192f0c1-7000-7000-8000-000000000604",
+              "x": 0,
+              "y": 0
+            },
+            {
+              "id": "0192f0c1-7000-7000-8000-000000000605",
+              "x": 0,
+              "y": 140
+            },
+            {
+              "id": "0192f0c1-7000-7000-8000-000000000602",
+              "x": 0,
+              "y": 280
+            }
+          ]
+        },
+        "order": [
+          "0192f0c1-7000-7000-8000-000000000604",
+          "0192f0c1-7000-7000-8000-000000000605",
+          "0192f0c1-7000-7000-8000-000000000602"
+        ]
+      },
+      "release": {
+        "operation": "group",
+        "inverse": "group",
+        "children": [
+          "resizeZone",
+          "moveCard",
+          "moveCard",
+          "moveBlock"
+        ],
+        "zoneId": "0192f0c1-7000-7000-8000-000000000600"
+      },
+      "screenshots": [
+        {
+          "file": "reviews/evidence/P4-29-zone-parity-rest-desktop.png",
+          "bytes": 59571
+        },
+        {
+          "file": "reviews/evidence/P4-29-zone-parity-preview-desktop.png",
+          "bytes": 60551
+        },
+        {
+          "file": "reviews/evidence/P4-29-zone-parity-moved-desktop.png",
+          "bytes": 59165
+        },
+        {
+          "file": "reviews/evidence/P4-29-live-demo-desktop.png",
+          "bytes": 174126
+        }
+      ]
+    },
+    {
+      "viewport": {
+        "name": "mobile",
+        "width": 390,
+        "height": 844
+      },
+      "arrangement": {
+        "operation": "group",
+        "inverse": "group",
+        "children": [
+          "resizeZone",
+          "moveCard",
+          "moveCard",
+          "moveBlock"
+        ],
+        "zoneId": "0192f0c1-7000-7000-8000-000000000600"
+      },
+      "atRest": {
+        "preview": null,
+        "release": {
+          "operation": "group",
+          "inverse": "group",
+          "children": [
+            "resizeZone",
+            "moveCard",
+            "moveCard",
+            "moveBlock"
+          ],
+          "zoneId": "0192f0c1-7000-7000-8000-000000000600"
+        },
+        "zones": [
+          {
+            "id": "0192f0c1-7000-7000-8000-000000000600",
+            "slot": 0,
+            "world": {
+              "x": 64,
+              "y": 64,
+              "width": 288,
+              "height": 512
+            },
+            "members": {
+              "cards": [
+                "0192f0c1-7000-7000-8000-000000000604",
+                "0192f0c1-7000-7000-8000-000000000605"
+              ],
+              "blocks": [
+                "0192f0c1-7000-7000-8000-000000000602"
+              ]
+            }
+          },
+          {
+            "id": "0192f0c1-7000-7000-8000-000000000601",
+            "slot": 1,
+            "world": {
+              "x": 352,
+              "y": 160,
+              "width": 416,
+              "height": 320
+            },
+            "members": {
+              "cards": [
+                "0192f0c1-7000-7000-8000-000000000606"
+              ],
+              "blocks": [
+                "0192f0c1-7000-7000-8000-000000000603"
+              ]
+            }
+          }
+        ],
+        "objects": [
+          {
+            "kind": "zone",
+            "id": "0192f0c1-7000-7000-8000-000000000600",
+            "zoneId": null,
+            "world": {
+              "x": 64,
+              "y": 64,
+              "width": 288,
+              "height": 512
+            }
+          },
+          {
+            "kind": "zone",
+            "id": "0192f0c1-7000-7000-8000-000000000601",
+            "zoneId": null,
+            "world": {
+              "x": 352,
+              "y": 160,
+              "width": 416,
+              "height": 320
+            }
+          },
+          {
+            "kind": "block",
+            "id": "0192f0c1-7000-7000-8000-000000000602",
+            "zoneId": "0192f0c1-7000-7000-8000-000000000600",
+            "world": {
+              "x": 80,
+              "y": 400,
+              "width": 256,
+              "height": 160
+            }
+          },
+          {
+            "kind": "block",
+            "id": "0192f0c1-7000-7000-8000-000000000603",
+            "zoneId": "0192f0c1-7000-7000-8000-000000000601",
+            "world": {
+              "x": 544,
+              "y": 336,
+              "width": 288,
+              "height": 176
+            }
+          },
+          {
+            "kind": "card",
+            "id": "0192f0c1-7000-7000-8000-000000000604",
+            "zoneId": "0192f0c1-7000-7000-8000-000000000600",
+            "world": {
+              "x": 80,
+              "y": 120,
+              "width": 224,
+              "height": 128
+            }
+          },
+          {
+            "kind": "card",
+            "id": "0192f0c1-7000-7000-8000-000000000605",
+            "zoneId": "0192f0c1-7000-7000-8000-000000000600",
+            "world": {
+              "x": 80,
+              "y": 260,
+              "width": 224,
+              "height": 128
+            }
+          },
+          {
+            "kind": "card",
+            "id": "0192f0c1-7000-7000-8000-000000000606",
+            "zoneId": "0192f0c1-7000-7000-8000-000000000601",
+            "world": {
+              "x": 416,
+              "y": 272,
+              "width": 224,
+              "height": 128
+            }
+          },
+          {
+            "kind": "card",
+            "id": "0192f0c1-7000-7000-8000-000000000607",
+            "zoneId": null,
+            "world": {
+              "x": 704,
+              "y": 64,
+              "width": 224,
+              "height": 128
+            }
+          }
+        ]
+      },
+      "detach": {
+        "kind": "detach",
+        "inside": false,
+        "landing": null,
+        "frame": {
+          "x": 64,
+          "y": 64,
+          "width": 288,
+          "height": 512
+        },
+        "shrinking": true,
+        "makeRoom": false,
+        "zoneId": "0192f0c1-7000-7000-8000-000000000600",
+        "zoneFrame": {
+          "x": 64,
+          "y": 64,
+          "width": 288,
+          "height": 512
+        },
+        "draggedId": "0192f0c1-7000-7000-8000-000000000604",
+        "orientation": "vertical",
+        "dragStart": {
+          "x": 96,
+          "y": 256
+        },
+        "arrangement": {
+          "orientation": "vertical",
+          "fallback": false,
+          "frame": {
+            "width": 288,
+            "height": 512
+          },
+          "placements": [
+            {
+              "id": "0192f0c1-7000-7000-8000-000000000604",
+              "x": 0,
+              "y": 0
+            },
+            {
+              "id": "0192f0c1-7000-7000-8000-000000000605",
+              "x": 0,
+              "y": 140
+            },
+            {
+              "id": "0192f0c1-7000-7000-8000-000000000602",
+              "x": 0,
+              "y": 280
+            }
+          ]
+        },
+        "order": [
+          "0192f0c1-7000-7000-8000-000000000604",
+          "0192f0c1-7000-7000-8000-000000000605",
+          "0192f0c1-7000-7000-8000-000000000602"
+        ]
+      },
+      "cancel": {
+        "preview": null,
+        "sameSnapshot": true
+      },
+      "dock": {
+        "kind": "reorder",
+        "inside": true,
+        "landing": {
+          "x": 96,
+          "y": 256,
+          "width": 224,
+          "height": 128
+        },
+        "frame": {
+          "x": 64,
+          "y": 64,
+          "width": 288,
+          "height": 512
+        },
+        "shrinking": false,
+        "makeRoom": true,
+        "zoneId": "0192f0c1-7000-7000-8000-000000000600",
+        "zoneFrame": {
+          "x": 64,
+          "y": 64,
+          "width": 288,
+          "height": 512
+        },
+        "draggedId": "0192f0c1-7000-7000-8000-000000000604",
+        "orientation": "vertical",
+        "dragStart": {
+          "x": 96,
+          "y": 256
+        },
+        "arrangement": {
+          "orientation": "vertical",
+          "fallback": false,
+          "frame": {
+            "width": 288,
+            "height": 512
+          },
+          "placements": [
+            {
+              "id": "0192f0c1-7000-7000-8000-000000000604",
+              "x": 0,
+              "y": 0
+            },
+            {
+              "id": "0192f0c1-7000-7000-8000-000000000605",
+              "x": 0,
+              "y": 140
+            },
+            {
+              "id": "0192f0c1-7000-7000-8000-000000000602",
+              "x": 0,
+              "y": 280
+            }
+          ]
+        },
+        "order": [
+          "0192f0c1-7000-7000-8000-000000000604",
+          "0192f0c1-7000-7000-8000-000000000605",
+          "0192f0c1-7000-7000-8000-000000000602"
+        ]
+      },
+      "release": {
+        "operation": "group",
+        "inverse": "group",
+        "children": [
+          "resizeZone",
+          "moveCard",
+          "moveCard",
+          "moveBlock"
+        ],
+        "zoneId": "0192f0c1-7000-7000-8000-000000000600"
+      },
+      "screenshots": [
+        {
+          "file": "reviews/evidence/P4-29-zone-parity-rest-mobile.png",
+          "bytes": 27526
+        },
+        {
+          "file": "reviews/evidence/P4-29-zone-parity-preview-mobile.png",
+          "bytes": 29202
+        },
+        {
+          "file": "reviews/evidence/P4-29-zone-parity-moved-mobile.png",
+          "bytes": 29318
+        },
+        {
+          "file": "reviews/evidence/P4-29-live-demo-mobile.png",
+          "bytes": 94096
+        }
+      ]
+    }
+  ],
+  "checks": [
+    {
+      "name": "desktop: the at-rest arrangement is one group operation with a landing slot",
+      "passed": true,
+      "actual": {
+        "release": {
+          "operation": "group",
+          "inverse": "group",
+          "children": [
+            "resizeZone",
+            "moveCard",
+            "moveCard",
+            "moveBlock"
+          ],
+          "zoneId": "0192f0c1-7000-7000-8000-000000000600"
+        },
+        "overlay": {
+          "hidden": false,
+          "frame": {
+            "x": 455.625,
+            "y": 257.40625,
+            "width": 295.3125,
+            "height": 525,
+            "top": 257.40625,
+            "right": 750.9375,
+            "bottom": 782.40625,
+            "left": 455.625
+          },
+          "slot": {
+            "x": 480.234375,
+            "y": 323.03125,
+            "width": 98.4375,
+            "height": 49.21875,
+            "top": 323.03125,
+            "right": 578.671875,
+            "bottom": 372.25,
+            "left": 480.234375
+          }
+        }
+      },
+      "expected": "one group (resizeZone + member moves) and a visible frame + landing slot"
+    },
+    {
+      "name": "desktop: pulling the member out previews a detach and shrinks the frame",
+      "passed": true,
+      "actual": {
+        "kind": "detach",
+        "inside": false,
+        "landing": null,
+        "frame": {
+          "x": 64,
+          "y": 64,
+          "width": 288,
+          "height": 512
+        },
+        "shrinking": true,
+        "makeRoom": false,
+        "zoneId": "0192f0c1-7000-7000-8000-000000000600",
+        "zoneFrame": {
+          "x": 64,
+          "y": 64,
+          "width": 288,
+          "height": 512
+        },
+        "draggedId": "0192f0c1-7000-7000-8000-000000000604",
+        "orientation": "vertical",
+        "dragStart": {
+          "x": 96,
+          "y": 256
+        },
+        "arrangement": {
+          "orientation": "vertical",
+          "fallback": false,
+          "frame": {
+            "width": 288,
+            "height": 512
+          },
+          "placements": [
+            {
+              "id": "0192f0c1-7000-7000-8000-000000000604",
+              "x": 0,
+              "y": 0
+            },
+            {
+              "id": "0192f0c1-7000-7000-8000-000000000605",
+              "x": 0,
+              "y": 140
+            },
+            {
+              "id": "0192f0c1-7000-7000-8000-000000000602",
+              "x": 0,
+              "y": 280
+            }
+          ]
+        },
+        "order": [
+          "0192f0c1-7000-7000-8000-000000000604",
+          "0192f0c1-7000-7000-8000-000000000605",
+          "0192f0c1-7000-7000-8000-000000000602"
+        ]
+      },
+      "expected": "kind detach, shrinking true and no landing slot"
+    },
+    {
+      "name": "desktop: Escape cancels the preview without an operation",
+      "passed": true,
+      "actual": {
+        "preview": null,
+        "sameSnapshot": true
+      },
+      "expected": "no preview state and a byte-identical working copy"
+    },
+    {
+      "name": "desktop: a release commits exactly one arrangement operation",
+      "passed": true,
+      "actual": {
+        "preview": "reorder",
+        "release": {
+          "operation": "group",
+          "inverse": "group",
+          "children": [
+            "resizeZone",
+            "moveCard",
+            "moveCard",
+            "moveBlock"
+          ],
+          "zoneId": "0192f0c1-7000-7000-8000-000000000600"
+        }
+      },
+      "expected": "a dock preview and one group operation with inverse"
+    },
+    {
+      "name": "desktop: the live-demo reference page loads for the side-by-side",
+      "passed": true,
+      "actual": {
+        "file": "reviews/evidence/P4-29-live-demo-desktop.png",
+        "bytes": 174126
+      },
+      "expected": "a non-empty live-demo screenshot"
+    },
+    {
+      "name": "mobile: the at-rest arrangement is one group operation with a landing slot",
+      "passed": true,
+      "actual": {
+        "release": {
+          "operation": "group",
+          "inverse": "group",
+          "children": [
+            "resizeZone",
+            "moveCard",
+            "moveCard",
+            "moveBlock"
+          ],
+          "zoneId": "0192f0c1-7000-7000-8000-000000000600"
+        },
+        "overlay": {
+          "hidden": false,
+          "frame": {
+            "x": 116.4375,
+            "y": 256.59375,
+            "width": 82,
+            "height": 145.765625,
+            "top": 256.59375,
+            "right": 198.4375,
+            "bottom": 402.359375,
+            "left": 116.4375
+          },
+          "slot": {
+            "x": 123.265625,
+            "y": 274.8125,
+            "width": 27.328125,
+            "height": 13.65625,
+            "top": 274.8125,
+            "right": 150.59375,
+            "bottom": 288.46875,
+            "left": 123.265625
+          }
+        }
+      },
+      "expected": "one group (resizeZone + member moves) and a visible frame + landing slot"
+    },
+    {
+      "name": "mobile: pulling the member out previews a detach and shrinks the frame",
+      "passed": true,
+      "actual": {
+        "kind": "detach",
+        "inside": false,
+        "landing": null,
+        "frame": {
+          "x": 64,
+          "y": 64,
+          "width": 288,
+          "height": 512
+        },
+        "shrinking": true,
+        "makeRoom": false,
+        "zoneId": "0192f0c1-7000-7000-8000-000000000600",
+        "zoneFrame": {
+          "x": 64,
+          "y": 64,
+          "width": 288,
+          "height": 512
+        },
+        "draggedId": "0192f0c1-7000-7000-8000-000000000604",
+        "orientation": "vertical",
+        "dragStart": {
+          "x": 96,
+          "y": 256
+        },
+        "arrangement": {
+          "orientation": "vertical",
+          "fallback": false,
+          "frame": {
+            "width": 288,
+            "height": 512
+          },
+          "placements": [
+            {
+              "id": "0192f0c1-7000-7000-8000-000000000604",
+              "x": 0,
+              "y": 0
+            },
+            {
+              "id": "0192f0c1-7000-7000-8000-000000000605",
+              "x": 0,
+              "y": 140
+            },
+            {
+              "id": "0192f0c1-7000-7000-8000-000000000602",
+              "x": 0,
+              "y": 280
+            }
+          ]
+        },
+        "order": [
+          "0192f0c1-7000-7000-8000-000000000604",
+          "0192f0c1-7000-7000-8000-000000000605",
+          "0192f0c1-7000-7000-8000-000000000602"
+        ]
+      },
+      "expected": "kind detach, shrinking true and no landing slot"
+    },
+    {
+      "name": "mobile: Escape cancels the preview without an operation",
+      "passed": true,
+      "actual": {
+        "preview": null,
+        "sameSnapshot": true
+      },
+      "expected": "no preview state and a byte-identical working copy"
+    },
+    {
+      "name": "mobile: a release commits exactly one arrangement operation",
+      "passed": true,
+      "actual": {
+        "preview": "reorder",
+        "release": {
+          "operation": "group",
+          "inverse": "group",
+          "children": [
+            "resizeZone",
+            "moveCard",
+            "moveCard",
+            "moveBlock"
+          ],
+          "zoneId": "0192f0c1-7000-7000-8000-000000000600"
+        }
+      },
+      "expected": "a dock preview and one group operation with inverse"
+    },
+    {
+      "name": "mobile: the live-demo reference page loads for the side-by-side",
+      "passed": true,
+      "actual": {
+        "file": "reviews/evidence/P4-29-live-demo-mobile.png",
+        "bytes": 94096
+      },
+      "expected": "a non-empty live-demo screenshot"
+    }
+  ],
+  "result": "pass",
+  "exitCode": 0,
+  "finishedAt": "2026-10-28T07:32:49.558Z"
+}

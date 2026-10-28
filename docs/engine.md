@@ -607,6 +607,38 @@ or per-frame state — and the pure helpers live in `src/logic/zones.ts`.
   `engine_zone_tests` covers the one-second highlight state and `test/zone-membership.test.mjs` covers
   drop/out/reject, one group move with inverse, both delete policies and the minimum size.
 
+## Zone parity: arrangement and release preview (L08, P4-29)
+
+The engine now behaves like the read-only live demo (`apps/web/preview`, never imported). The pure
+rules live in `src/bridge/zone-parity.ts` and are mirrored in `include/engine/zone_layout.h` for the
+native suite.
+
+- **Arrangement.** Members are laid out from their sizes with `tokens::space_16` padding,
+  `tokens::space_12` gap and the `tokens::header_height` (40 px) band. The orientation comes from the
+  size-normalised centre spread with 1.25 dominance and a half-item hold; the order comes from the
+  centre with a 12 px band. An arrangement that does not fit the visible surface falls back to the
+  other orientation without changing the stored request. The release writes the arranged positions
+  and the frame size as exactly one `group` operation (`zone-arrange`: `resizeZone` when the frame
+  changed plus one move per member) with one inverse.
+- **Release preview.** `previewZoneRelease` computes the presentation state from drag-start
+  positions: entering needs the pointer over the frame or 25 % coverage; staying keeps a 24 px catch
+  margin (screen px converted by the zoom); leaving previews a detach and shrinks the frame around the
+  member that stays; a dock that implies the other orientation previews that orientation; the
+  landing slot and the make-room hop are presentation only. Nothing commits before the release;
+  `Escape`, `pointercancel` and a lost capture cancel with no operation and leave a byte-identical
+  working copy.
+- **Motion.** A release settles over 300 ms `cubic-bezier(0.2, 0, 0, 1)` with no overshoot and the
+  drag keeps the 1.02 lift; reduced motion applies the end states instantly (`zoneSettlePolicy`).
+  Frame changes use a FLIP-style resize so the header never stretches.
+- **Playground and evidence.** `?scene=layers&zoneParity=1` shows the deterministic arrangement, the
+  dashed landing slot and the frame outline in the DOM overlay (ADR-0009); `window.__zoneParity`
+  exposes the preview, the last release and a canonical working-copy snapshot for the capture
+  (`tools/capture-zone-parity.mjs`, side-by-side screenshots against the live demo at 1440×900 and
+  390×844). The new reviewed baseline is `zone-parity-at-rest` (2 images; all older images 0-diff).
+- **Tests.** `test/zone-parity.test.mjs` covers dominance/hold, order band, fit fallback, enter/stay
+  hysteresis, shrink-on-out, one operation per release with exact inverse, cancel and reduced motion;
+  the native `engine_zone_layout_tests` pins orientation, order, fit, enter/stay and shrink.
+
 ## Object identity and mutations
 
 `Document` keeps one storage slot per object and assigns a monotonic `ObjectId` on insert

@@ -130,6 +130,25 @@ export interface DeleteSelectionGesture {
   readonly zonePolicy?: DeleteZonePolicy;
 }
 
+/** One arranged member of an L08 (P4-29) zone release. */
+export interface ZoneArrangeMember {
+  readonly objectKind: "card" | "block";
+  readonly objectId: string;
+  readonly position: WorldPoint;
+}
+
+/**
+ * L08 (P4-29): one release of a zone arrangement preview. The zone frame may
+ * resize and every member gets its arranged world position; the seam builds one
+ * `group` operation with one inverse (never a write per member).
+ */
+export interface ZoneArrangeGesture {
+  readonly kind: "zone-arrange";
+  readonly zoneId: string;
+  readonly size?: WorldSize | null;
+  readonly members: readonly ZoneArrangeMember[];
+}
+
 /** L08: deletion of one zone with its content policy, one operation with inverse. */
 export interface DeleteZoneGesture {
   readonly kind: "delete-zone";
@@ -165,5 +184,6 @@ export type GestureResult =
   | DeleteGesture
   | DeleteSelectionGesture
   | DeleteZoneGesture
+  | ZoneArrangeGesture
   | KeyboardNudgeGesture
   | BringToFrontGesture;

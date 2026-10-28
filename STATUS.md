@@ -143,6 +143,7 @@
   - P4-07: Closed P4-07: pure Camera::fitBounds (min(...,1.0), 0.1 floor, 64 px L02 padding from tokens), dot grid shader (tokens faint/canvas, 16 px, visible at >=0.5), on-demand rendering (0 idle frames).
   - P4-07: visual 10/10 0-diff incl. reviewed sample-zoom-in update + two one-card-fit baselines; perf p95 0.1 ms, 0 intervals > 16.7 ms; L01 final mean 0.049 vs basis 0.052.
   - P4-07: Harnesses gained --task evidence prefixes; docs updated. Two review rounds, four minors fixed (record commit base, visual --task, comment wording, baseline-history precision).
+- `P4-30` Zone parity with the live demo II: lifecycle and names (L08)
 
 ## Done
 
@@ -207,10 +208,11 @@
 - [x] `P0-30` Flexible zone layout, less magnetic drag and smaller controls — status: `done` — owner: —
 - [x] `P0-31` Refined live demo: smooth merge/split and calm motion — status: `done` — owner: —
 - [x] `P0-32` Zone titles: named, editable zone headers in the live demo — status: `done` — owner: —
+- [x] `P4-29` Zone parity with the live demo I: arrangement and release preview (L08) — status: `done` — owner: —
 
 ## In progress
 
-- [ ] `P4-29` Zone parity with the live demo I: arrangement and release preview (L08) — status: `in_progress` — owner: lead
+- none
 
 ## Blocked / failed
 
@@ -238,7 +240,7 @@
 <!-- polier:claims -->
 ## Claims
 
-- `P4-29` in progress by dsh since 2026-10-28T07:26:44+00:00 — worktree: /private/tmp/air-P4-29 · slot 1
+- `P4-29` in progress by dsh since 2026-10-28T07:34:08+00:00 — worktree: /private/tmp/air-P4-29 · slot 1
 
 <!-- /polier:claims -->
 

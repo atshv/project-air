@@ -177,6 +177,15 @@ compares against, so an update needs a reviewer who saw both the old and the new
 
 ### Baseline history
 
+- **2026-10-28 — P4-29 L08 zone parity: two reviewed images added.** The `zone-parity-at-rest`
+  scene (layers scene, `?zoneParity=1`, world (512, 288) at zoom 1, desktop and mobile) captures the
+  deterministic auto-arranged zone (sizes + 16 px padding + 12 px gap below the 40 px header) with
+  the dashed landing slot of the release preview. The two images were written through the documented
+  `--update` review path for this scene only and reviewed with P4-29; every pre-existing reference
+  image stayed 0-diff and the full gate passes afterwards. The scene is page-owned and deterministic:
+  the arrangement runs through one `zone-arrange` group operation through the P4-05 seam.
+
+
 - **2026-10-27 — P4-10 L02 titles gallery: two scenes added as a reviewed addition.** The `visual`
   gate gained the page-owned `text-titles` scene (2 zones, 2 blocks, 4 cards at world 1024x576,
   captured at 100 %) and `text-titles-zoom-200` (the same gallery at 200 %, so the zoom bucket's

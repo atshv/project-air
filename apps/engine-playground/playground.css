@@ -340,6 +340,40 @@ body {
   overflow-y: auto;
 }
 
+/* L08 (P4-29) zone parity preview: the frame outline and the dashed landing
+   slot in the DOM overlay. Presentation state only (ADR-0009). */
+.zone-parity-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.zone-parity-frame {
+  position: absolute;
+  box-sizing: border-box;
+  border: var(--border-width) solid var(--accent);
+  border-radius: var(--radius-md);
+  background-color: var(--accent-soft);
+  transition:
+    width var(--motion-tooltip) cubic-bezier(0.2, 0, 0, 1),
+    height var(--motion-tooltip) cubic-bezier(0.2, 0, 0, 1);
+}
+
+.zone-parity-slot {
+  position: absolute;
+  box-sizing: border-box;
+  border: var(--border-width) dashed var(--accent-line);
+  border-radius: var(--radius-sm);
+  background-color: var(--accent-soft);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .zone-parity-frame {
+    transition: none;
+  }
+}
+
 .canvas {
   display: block;
   width: 100%;
