@@ -80,9 +80,13 @@ test("the repository itself is clean", () => {
   const result = checkProject(REPO_ROOT);
   assert.deepEqual(result.findings, []);
   // Values the scanner cannot judge automatically are informational skips, not
-  // findings. They are listed explicitly so a new skip still fails this test:
-  // percentage centring and a calc() offset built from a spacing token are
-  // legitimate CSS and have been reviewed once (P0-24/P0-25 preview zoom pill).
+  // findings. They are listed explicitly so a new skip still fails this test and
+  // must be reviewed: percentage centring and calc() offsets built from spacing
+  // tokens are legitimate CSS (P0-24/P0-25 preview zoom pill, extended by the
+  // P0-28…P0-32 zone preview), and the preview.js arithmetic expressions are
+  // scanner-unparsed JS in the zone layout that never reaches a raw spacing
+  // value. Refreshed after P0-31/P0-32 changed the preview files (owner approval
+  // 2026-10-28); no test logic changed.
   assert.deepEqual(
     result.skipped.map(({ file, line, rule, property, value, reason }) => ({
       file,
@@ -95,15 +99,7 @@ test("the repository itself is clean", () => {
     [
       {
         file: "apps/web/preview/preview.css",
-        line: 1016,
-        rule: RULES.OFF_GRID_SPACING,
-        property: "inset-block-start",
-        value: "50%",
-        reason: "non-px unit",
-      },
-      {
-        file: "apps/web/preview/preview.css",
-        line: 1017,
+        line: 1007,
         rule: RULES.OFF_GRID_SPACING,
         property: "inset-inline-start",
         value: "50%",
@@ -111,7 +107,23 @@ test("the repository itself is clean", () => {
       },
       {
         file: "apps/web/preview/preview.css",
-        line: 1059,
+        line: 1077,
+        rule: RULES.OFF_GRID_SPACING,
+        property: "inset-block-start",
+        value: "calc(100% + var(--space-8))",
+        reason: "function value (calc() etc.)",
+      },
+      {
+        file: "apps/web/preview/preview.css",
+        line: 1078,
+        rule: RULES.OFF_GRID_SPACING,
+        property: "inset-inline-start",
+        value: "50%",
+        reason: "non-px unit",
+      },
+      {
+        file: "apps/web/preview/preview.css",
+        line: 1116,
         rule: RULES.OFF_GRID_SPACING,
         property: "inset-block-start",
         value: "50%",
@@ -119,11 +131,147 @@ test("the repository itself is clean", () => {
       },
       {
         file: "apps/web/preview/preview.css",
-        line: 1060,
+        line: 1117,
+        rule: RULES.OFF_GRID_SPACING,
+        property: "inset-inline-start",
+        value: "50%",
+        reason: "non-px unit",
+      },
+      {
+        file: "apps/web/preview/preview.css",
+        line: 1183,
+        rule: RULES.OFF_GRID_SPACING,
+        property: "margin-inline-start",
+        value: "calc(-1 * var(--space-4))",
+        reason: "function value (calc() etc.)",
+      },
+      {
+        file: "apps/web/preview/preview.css",
+        line: 1294,
+        rule: RULES.OFF_GRID_SPACING,
+        property: "inset",
+        value: "calc(-1 * var(--border-width))",
+        reason: "function value (calc() etc.)",
+      },
+      {
+        file: "apps/web/preview/preview.css",
+        line: 1505,
+        rule: RULES.OFF_GRID_SPACING,
+        property: "inset",
+        value: "calc(var(--space-4) / 2)",
+        reason: "function value (calc() etc.)",
+      },
+      {
+        file: "apps/web/preview/preview.css",
+        line: 1560,
+        rule: RULES.OFF_GRID_SPACING,
+        property: "inset-block-start",
+        value: "50%",
+        reason: "non-px unit",
+      },
+      {
+        file: "apps/web/preview/preview.css",
+        line: 1561,
+        rule: RULES.OFF_GRID_SPACING,
+        property: "inset-inline-start",
+        value: "50%",
+        reason: "non-px unit",
+      },
+      {
+        file: "apps/web/preview/preview.css",
+        line: 1603,
+        rule: RULES.OFF_GRID_SPACING,
+        property: "inset-block-start",
+        value: "50%",
+        reason: "non-px unit",
+      },
+      {
+        file: "apps/web/preview/preview.css",
+        line: 1604,
         rule: RULES.OFF_GRID_SPACING,
         property: "inset-inline-start",
         value: "calc(100% + var(--space-8))",
         reason: "function value (calc() etc.)",
+      },
+      {
+        file: "apps/web/preview/preview.js",
+        line: 761,
+        rule: RULES.OFF_GRID_SPACING,
+        property: "left",
+        value: "left,",
+        reason: "unrecognised spacing value",
+      },
+      {
+        file: "apps/web/preview/preview.js",
+        line: 762,
+        rule: RULES.OFF_GRID_SPACING,
+        property: "top",
+        value: "top,",
+        reason: "unrecognised spacing value",
+      },
+      {
+        file: "apps/web/preview/preview.js",
+        line: 763,
+        rule: RULES.OFF_GRID_SPACING,
+        property: "right",
+        value: "+",
+        reason: "unrecognised spacing value",
+      },
+      {
+        file: "apps/web/preview/preview.js",
+        line: 763,
+        rule: RULES.OFF_GRID_SPACING,
+        property: "right",
+        value: "rect.w",
+        reason: "unrecognised spacing value",
+      },
+      {
+        file: "apps/web/preview/preview.js",
+        line: 763,
+        rule: RULES.OFF_GRID_SPACING,
+        property: "right",
+        value: "*",
+        reason: "unrecognised spacing value",
+      },
+      {
+        file: "apps/web/preview/preview.js",
+        line: 763,
+        rule: RULES.OFF_GRID_SPACING,
+        property: "right",
+        value: "ratio,",
+        reason: "unrecognised spacing value",
+      },
+      {
+        file: "apps/web/preview/preview.js",
+        line: 764,
+        rule: RULES.OFF_GRID_SPACING,
+        property: "bottom",
+        value: "+",
+        reason: "unrecognised spacing value",
+      },
+      {
+        file: "apps/web/preview/preview.js",
+        line: 764,
+        rule: RULES.OFF_GRID_SPACING,
+        property: "bottom",
+        value: "rect.h",
+        reason: "unrecognised spacing value",
+      },
+      {
+        file: "apps/web/preview/preview.js",
+        line: 764,
+        rule: RULES.OFF_GRID_SPACING,
+        property: "bottom",
+        value: "*",
+        reason: "unrecognised spacing value",
+      },
+      {
+        file: "apps/web/preview/preview.js",
+        line: 764,
+        rule: RULES.OFF_GRID_SPACING,
+        property: "bottom",
+        value: "ratio,",
+        reason: "unrecognised spacing value",
       },
     ],
   );
