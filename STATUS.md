@@ -12,7 +12,7 @@
 - Owner decision: `continue`
 - Exit gates: `board-check`, `install`, `boundaries`, `dev-setup`, `compose-config`, `tokens-codegen`, `design-check`, `language-check`, `changelog-entry`, `ci-local`, `polier-version`
 - Exit criteria: Every packages[] folder exists with a README and an ARCHITECTURE.md; package map and versions are filled in.; A fresh clone installs reproducibly with the committed lockfile; root lint, typecheck, test and build pass.; Two worktrees run install, lint, typecheck and tests side by side without port or database collision; tools/dev/setup and teardown create and remove the slot database and bucket and refuse slot 0.; design-check, language-check, changelog-entry and boundaries reject a violating change locally; every code change carries a .changes entry.; The CI workflow is authored and proven locally (actionlint + act) and local sessions use Polier at the board's generator_version; the real GitHub run, branch protection, hosting and releases are deferred to the remote stage after hardening (ADR-0003).; A runnable design preview page exists with desktop and mobile screenshots and a live two-note connection demo (P0-19, P0-20).
-- Tasks: P0-03, P0-04, P0-06, P0-07, P0-08, P0-09, P0-10, P0-11, P0-12, P0-13, P0-14, P0-18, P0-19, P0-20, P0-21, P0-22, P0-23, P0-24, P0-25, P0-26, P0-27, P0-28, P0-29, P0-30, P0-31, P0-32
+- Tasks: P0-03, P0-04, P0-06, P0-07, P0-08, P0-09, P0-10, P0-11, P0-12, P0-13, P0-14, P0-18, P0-19, P0-20, P0-21, P0-22, P0-23, P0-24, P0-25, P0-26, P0-27, P0-28, P0-29, P0-30, P0-31, P0-32, P0-33
 
 ### Stage 2 — `contract` Contract
 
@@ -121,7 +121,10 @@
 
 ## Ready now
 
-- none
+- `P0-33` Live demo: checklist block and spreadsheet table card
+  - P0-32: Closed P0-32: zones show their name in a 40 px header (content 40 + 16 px below), title outside the FLIP frame so it never stretches; follows the frame's settle.
+  - P0-32: Inline rename: click selects all, Enter/blur commits, Escape restores, empty -> default, 40-char cap; new zones from grouping start as New zone; defaults follow DE/EN.
+  - P0-32: Masthead + ?v=P0-32; gates board-check/design-check/changelog-entry; 7 screenshots + log; names live in page memory only.
 
 ## Done
 
@@ -214,13 +217,7 @@
 - [ ] `P0-15` Release command and tag-based CI release — status: `pending` — owner: —
 - [ ] `P0-16` Dependency updates and Polier update check — status: `pending` — owner: —
 - [ ] `P0-17` RELEASING.md and release 0.0.1 — status: `pending` — owner: —
-
-<!-- polier:claims -->
-## Claims
-
-- `P4-24` in progress by dsh since 2026-10-28T17:51:29+00:00 — worktree: /private/tmp/air-P4-24 · slot 1
-
-<!-- /polier:claims -->
+- [ ] `P0-33` Live demo: checklist block and spreadsheet table card — status: `pending` — owner: —
 
 ## Decisions
 

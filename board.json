@@ -5259,6 +5259,59 @@
       "exclusive": [
         "visual"
       ]
+    },
+    {
+      "id": "P0-33",
+      "title": "Live demo: checklist block and spreadsheet table card",
+      "goal": "The live demo gains a checklist block with five items that can be checked and unchecked (with a done counter) and a card holding a small spreadsheet-style table (column letters, row numbers, a formula bar, a summed total) whose cells can be selected; both are draggable canvas objects on the blocks layer, bilingual and accessible.",
+      "why": "The owner wants to see a checklist with five toggleable examples and a spreadsheet table inside a card in the live demo.",
+      "satisfies": [
+        "D3"
+      ],
+      "status": "pending",
+      "depends_on": [
+        "P0-32"
+      ],
+      "complexity": 5,
+      "stage": "foundation",
+      "parallel_group": null,
+      "owner": null,
+      "round": 0,
+      "scope_write": [
+        "apps/web/preview/",
+        ".changes/"
+      ],
+      "scope_read": [
+        "ARCHITECTURE.md",
+        "AGENTS.md",
+        "STATUS.md",
+        "docs/module-map.md",
+        "docs/quality.md",
+        "docs/design-rules.md",
+        "docs/i18n/style-de.md",
+        "docs/i18n/glossary.md",
+        "apps/web/preview/",
+        "packages/ui-kit/tokens.css",
+        "packages/ui-kit/layers.ts",
+        "docs/canvas-acceptance.md"
+      ],
+      "acceptance": [
+        "A1",
+        "A2",
+        "A3",
+        "A4"
+      ],
+      "gates": [
+        "board-check",
+        "design-check",
+        "changelog-entry"
+      ],
+      "branch": "task/P0-33",
+      "worktree": null,
+      "evidence": [],
+      "scope_write_forbidden": [
+        "reference/"
+      ]
     }
   ],
   "decisions": [
