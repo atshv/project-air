@@ -4561,7 +4561,7 @@
       "satisfies": [
         "D10"
       ],
-      "status": "in_progress",
+      "status": "done",
       "depends_on": [
         "P4-03",
         "P4-13",
@@ -4618,11 +4618,16 @@
         "visual-final",
         "design-check"
       ],
-      "owner": "lead",
+      "owner": null,
       "branch": "task/P4-28",
-      "worktree": "/private/tmp/air-P4-28",
+      "worktree": null,
       "round": 0,
-      "evidence": [],
+      "evidence": [
+        "reviews/evidence/P4-28-board-check-20261028T075320Z.json",
+        "reviews/evidence/P4-28-perf-final-20261028T075100Z.json",
+        "reviews/evidence/P4-28-visual-final-20261028T075109Z.json",
+        "reviews/evidence/P4-28-design-check-20261028T075133Z.json"
+      ],
       "scope_write_forbidden": [
         "reference/"
       ]

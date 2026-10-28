@@ -1,0 +1,4511 @@
+{
+  "task": "P4-28",
+  "gate": "visual",
+  "mode": "gate",
+  "command": "node packages/engine/test/visual/run-visual.mjs --task P4-28",
+  "timestamp": "2026-10-28T07:51:09.470Z",
+  "partial": false,
+  "backend": "webgl2",
+  "backendLabel": "WebGL2",
+  "tolerance": {
+    "maxDifferingPixels": 0,
+    "maxDifferingPixelRatio": 0,
+    "maxChannelDelta": 0,
+    "policy": "default exact match (0 differing pixels); an antialiasing allowance must be documented in docs/gates/visual-diff.md and approved in review"
+  },
+  "viewports": [
+    {
+      "name": "desktop",
+      "width": 1440,
+      "height": 900,
+      "devicePixelRatio": 1
+    },
+    {
+      "name": "mobile",
+      "width": 390,
+      "height": 844,
+      "devicePixelRatio": 1
+    }
+  ],
+  "scenes": [
+    {
+      "name": "sample-at-rest",
+      "scene": "sample",
+      "count": null,
+      "camera": "playground initial camera (plain world-centred fit, clamped to 0.1 \u2026 8)",
+      "fitAction": false,
+      "view": null,
+      "expectedCounts": {
+        "zones": 50,
+        "blocks": 144,
+        "cards": 500,
+        "total": 694
+      },
+      "world": {
+        "width": 9600,
+        "height": 5408
+      }
+    },
+    {
+      "name": "sample-zoom-in",
+      "scene": "sample",
+      "count": null,
+      "camera": "centre of zone-0001 at zoom 0.5",
+      "fitAction": false,
+      "view": {
+        "worldX": 648,
+        "worldY": 664,
+        "zoom": 0.5
+      },
+      "expectedCounts": {
+        "zones": 50,
+        "blocks": 144,
+        "cards": 500,
+        "total": 694
+      },
+      "world": {
+        "width": 9600,
+        "height": 5408
+      }
+    },
+    {
+      "name": "sample-zoom-out",
+      "scene": "sample",
+      "count": null,
+      "camera": "centre of zone-0001 at the engine minimum zoom 0.1",
+      "fitAction": false,
+      "view": {
+        "worldX": 648,
+        "worldY": 664,
+        "zoom": 0.1
+      },
+      "expectedCounts": {
+        "zones": 50,
+        "blocks": 144,
+        "cards": 500,
+        "total": 694
+      },
+      "world": {
+        "width": 9600,
+        "height": 5408
+      }
+    },
+    {
+      "name": "engine-core-at-rest",
+      "scene": "engine-core",
+      "count": null,
+      "camera": "playground initial camera (plain world-centred fit, clamped to 0.1 \u2026 8)",
+      "fitAction": false,
+      "view": null,
+      "expectedCounts": {
+        "zones": 200,
+        "blocks": 600,
+        "cards": 9200,
+        "total": 10000
+      },
+      "world": {
+        "width": 19200,
+        "height": 10816
+      }
+    },
+    {
+      "name": "one-card-fit",
+      "scene": "stress",
+      "count": 1,
+      "camera": "L19 fit action of the one-card world: centred, 100 % zoom, dot grid visible",
+      "fitAction": true,
+      "view": null,
+      "expectedCounts": {
+        "zones": 0,
+        "blocks": 0,
+        "cards": 1,
+        "total": 1
+      },
+      "world": {
+        "width": 64,
+        "height": 22
+      }
+    },
+    {
+      "name": "layers-at-rest",
+      "scene": "layers",
+      "count": null,
+      "camera": "playground initial camera (plain world-centred fit) of the layers world",
+      "fitAction": false,
+      "view": null,
+      "expectedCounts": {
+        "zones": 2,
+        "blocks": 2,
+        "cards": 4,
+        "total": 8
+      },
+      "world": {
+        "width": 1024,
+        "height": 576
+      }
+    },
+    {
+      "name": "layers-front",
+      "scene": "layers",
+      "count": null,
+      "camera": "playground initial camera (plain world-centred fit) of the layers world",
+      "fitAction": false,
+      "view": null,
+      "expectedCounts": {
+        "zones": 2,
+        "blocks": 2,
+        "cards": 4,
+        "total": 8
+      },
+      "world": {
+        "width": 1024,
+        "height": 576
+      }
+    },
+    {
+      "name": "text-layout",
+      "scene": "stress",
+      "count": 0,
+      "camera": "world (272, 112) at zoom 1 (the atlas raster scale; zoom re-rasterisation is P4-10)",
+      "fitAction": false,
+      "view": {
+        "worldX": 272,
+        "worldY": 112,
+        "zoom": 1
+      },
+      "expectedCounts": {
+        "zones": 0,
+        "blocks": 0,
+        "cards": 0,
+        "total": 0
+      },
+      "world": {
+        "width": 16,
+        "height": 16
+      }
+    },
+    {
+      "name": "text-titles",
+      "scene": "titles",
+      "count": null,
+      "camera": "titles gallery centred at world (512, 288) at zoom 1 (100 %)",
+      "fitAction": false,
+      "view": {
+        "worldX": 512,
+        "worldY": 288,
+        "zoom": 1
+      },
+      "expectedCounts": {
+        "zones": 2,
+        "blocks": 2,
+        "cards": 4,
+        "total": 8
+      },
+      "world": {
+        "width": 1024,
+        "height": 576
+      }
+    },
+    {
+      "name": "zone-grouping-ghost",
+      "scene": "layers",
+      "count": null,
+      "camera": "layers world at (512, 288) zoom 1 with the grouping ghost frame",
+      "fitAction": false,
+      "view": {
+        "worldX": 512,
+        "worldY": 288,
+        "zoom": 1
+      },
+      "expectedCounts": {
+        "zones": 2,
+        "blocks": 2,
+        "cards": 4,
+        "total": 8
+      },
+      "world": {
+        "width": 1024,
+        "height": 576
+      }
+    },
+    {
+      "name": "zone-emptied",
+      "scene": "layers",
+      "count": null,
+      "camera": "layers world at (512, 288) zoom 1 with the emptied-zone frame",
+      "fitAction": false,
+      "view": {
+        "worldX": 512,
+        "worldY": 288,
+        "zoom": 1
+      },
+      "expectedCounts": {
+        "zones": 2,
+        "blocks": 2,
+        "cards": 4,
+        "total": 8
+      },
+      "world": {
+        "width": 1024,
+        "height": 576
+      }
+    },
+    {
+      "name": "zone-names",
+      "scene": "layers",
+      "count": null,
+      "camera": "layers world at (512, 288) zoom 1 with the zone title header",
+      "fitAction": false,
+      "view": {
+        "worldX": 512,
+        "worldY": 288,
+        "zoom": 1
+      },
+      "expectedCounts": {
+        "zones": 2,
+        "blocks": 2,
+        "cards": 4,
+        "total": 8
+      },
+      "world": {
+        "width": 1024,
+        "height": 576
+      }
+    },
+    {
+      "name": "zone-parity-at-rest",
+      "scene": "layers",
+      "count": null,
+      "camera": "layers world centred at (512, 288) at zoom 1 with the arranged zone and landing slot",
+      "fitAction": false,
+      "view": {
+        "worldX": 512,
+        "worldY": 288,
+        "zoom": 1
+      },
+      "expectedCounts": {
+        "zones": 2,
+        "blocks": 2,
+        "cards": 4,
+        "total": 8
+      },
+      "world": {
+        "width": 1024,
+        "height": 576
+      }
+    },
+    {
+      "name": "text-titles-zoom-200",
+      "scene": "titles",
+      "count": null,
+      "camera": "titles gallery header at world (512, 240) at zoom 2 (200 %, the sharp bucket)",
+      "fitAction": false,
+      "view": {
+        "worldX": 512,
+        "worldY": 240,
+        "zoom": 2
+      },
+      "expectedCounts": {
+        "zones": 2,
+        "blocks": 2,
+        "cards": 4,
+        "total": 8
+      },
+      "world": {
+        "width": 1024,
+        "height": 576
+      }
+    }
+  ],
+  "baselineDirectory": "reviews/evidence/visual-baselines",
+  "hardware": {
+    "model": "Apple M2",
+    "logicalCores": 8,
+    "memoryGiB": 8,
+    "arch": "arm64",
+    "os": {
+      "type": "Darwin",
+      "release": "27.2.0",
+      "version": "Darwin Kernel Version 27.2.0: Wed Oct 14 23:48:16 PDT 2026; root:xnu-13432.41.4~25/RELEASE_ARM64_T8112"
+    },
+    "node": "v26.12.1"
+  },
+  "build": {
+    "profile": "Release",
+    "wasmRawBytes": 152005,
+    "wasmGzipBytes": 59975,
+    "engineJsBytes": 31651,
+    "bridgeBytes": 26857,
+    "testKitBytes": 24929
+  },
+  "browser": {
+    "product": "Chrome/156.0.8078.4",
+    "revision": "@f842f52ef39fd97b449eb27cff414bf05a98ddce",
+    "executable": "/Users/rasulatashev/Library/Caches/ms-playwright/chromium-1248/chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing",
+    "source": "local Playwright cache default",
+    "flags": [
+      "--headless=new",
+      "--use-angle=metal",
+      "--enable-gpu",
+      "--hide-scrollbars",
+      "--disable-frame-rate-limit",
+      "--disable-gpu-vsync",
+      "--no-first-run",
+      "--no-default-browser-check",
+      "--disable-background-timer-throttling",
+      "--disable-renderer-backgrounding",
+      "--disable-backgrounding-occluded-windows",
+      "--window-size=1440,900",
+      "--no-sandbox"
+    ]
+  },
+  "gpu": {
+    "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M2, Unspecified Version)",
+    "software": false,
+    "identified": true,
+    "policy": "fail-closed: renderer must match ANGLE (...) plus a known GPU hint and must not be software"
+  },
+  "port": 4160,
+  "captures": [
+    {
+      "scene": "sample-at-rest",
+      "sceneId": "sample",
+      "viewport": "desktop",
+      "viewportSize": "1440x900",
+      "backend": "webgl2",
+      "backendLabel": "WebGL2",
+      "url": "http://127.0.0.1:4160/apps/engine-playground/?scene=sample",
+      "fitAction": null,
+      "ready": {
+        "scene": "sample",
+        "objectCount": 694,
+        "visibleCount": 694
+      },
+      "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M2, Unspecified Version)",
+      "capturedWidth": 1440,
+      "capturedHeight": 900,
+      "layout": {
+        "state": {
+          "scene": "sample",
+          "counts": {
+            "zones": 50,
+            "blocks": 144,
+            "cards": 500,
+            "total": 694
+          },
+          "objectCount": 694,
+          "visibleCount": 694,
+          "framesRendered": 3,
+          "backend": "WebGL2",
+          "camera": {
+            "panX": -4.060913705583516,
+            "panY": 0,
+            "zoom": 0.10928254437869822
+          },
+          "textAtlas": null
+        },
+        "inner": {
+          "width": 1440,
+          "height": 900
+        },
+        "devicePixelRatio": 1,
+        "canvas": {
+          "cssWidth": 1050,
+          "cssHeight": 591,
+          "pixelWidth": 1050,
+          "pixelHeight": 591
+        },
+        "hud": {
+          "objects": "694",
+          "cards": "500",
+          "zones": "50",
+          "visible": "694",
+          "backend": "WebGL2"
+        },
+        "caption": "694 objects \u2014 500 cards, 50 zones, 144 blocks. Drag to pan, scroll or pinch to zoom.",
+        "error": "",
+        "errorHidden": true,
+        "overflowX": false
+      },
+      "assertions": {
+        "screenshotSize": {
+          "passed": true,
+          "expected": "1440x900",
+          "actual": "1440x900"
+        },
+        "window": {
+          "passed": true,
+          "expected": "1440x900",
+          "actual": "1440x900"
+        },
+        "devicePixelRatio": {
+          "passed": true,
+          "expected": 1,
+          "actual": 1
+        },
+        "scene": {
+          "passed": true,
+          "expected": "sample",
+          "actual": "sample"
+        },
+        "objectCount": {
+          "passed": true,
+          "expected": 694,
+          "actual": 694
+        },
+        "counts": {
+          "passed": true,
+          "expected": {
+            "cards": 500,
+            "zones": 50,
+            "blocks": 144
+          },
+          "actual": {
+            "zones": 50,
+            "blocks": 144,
+            "cards": 500,
+            "total": 694
+          }
+        },
+        "camera": {
+          "passed": true,
+          "expected": "playground initial camera",
+          "actual": {
+            "panX": -4.060913705583516,
+            "panY": 0,
+            "zoom": 0.10928254437869822
+          }
+        },
+        "fitAction": {
+          "passed": true,
+          "expected": "no fit action in this scene",
+          "actual": null
+        },
+        "pageError": {
+          "passed": true,
+          "expected": "",
+          "actual": ""
+        }
+      },
+      "baseline": {
+        "path": "reviews/evidence/visual-baselines/sample-at-rest-desktop-webgl2.png",
+        "written": false,
+        "sha256": "9c4e015c7ab60985950283f1ff9450fc948cc8a992614b965bc17a429c52e710",
+        "bytes": 67906
+      },
+      "comparison": {
+        "dimensionMismatch": false,
+        "referenceWidth": 1440,
+        "referenceHeight": 900,
+        "capturedWidth": 1440,
+        "capturedHeight": 900,
+        "totalPixels": 1296000,
+        "differingPixels": 0,
+        "differingPixelRatio": 0,
+        "worstChannelDelta": 0,
+        "withinTolerance": true
+      },
+      "diffPng": null,
+      "baselineName": "sample-at-rest-desktop-webgl2.png"
+    },
+    {
+      "scene": "sample-at-rest",
+      "sceneId": "sample",
+      "viewport": "mobile",
+      "viewportSize": "390x844",
+      "backend": "webgl2",
+      "backendLabel": "WebGL2",
+      "url": "http://127.0.0.1:4160/apps/engine-playground/?scene=sample",
+      "fitAction": null,
+      "ready": {
+        "scene": "sample",
+        "objectCount": 694,
+        "visibleCount": 84
+      },
+      "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M2, Unspecified Version)",
+      "capturedWidth": 390,
+      "capturedHeight": 844,
+      "layout": {
+        "state": {
+          "scene": "sample",
+          "counts": {
+            "zones": 50,
+            "blocks": 144,
+            "cards": 500,
+            "total": 694
+          },
+          "objectCount": 694,
+          "visibleCount": 84,
+          "framesRendered": 2,
+          "backend": "WebGL2",
+          "camera": {
+            "panX": 3340,
+            "panY": 1884,
+            "zoom": 0.1
+          },
+          "textAtlas": null
+        },
+        "inner": {
+          "width": 390,
+          "height": 844
+        },
+        "devicePixelRatio": 1,
+        "canvas": {
+          "cssWidth": 292,
+          "cssHeight": 164,
+          "pixelWidth": 292,
+          "pixelHeight": 164
+        },
+        "hud": {
+          "objects": "694",
+          "cards": "500",
+          "zones": "50",
+          "visible": "84",
+          "backend": "WebGL2"
+        },
+        "caption": "694 objects \u2014 500 cards, 50 zones, 144 blocks. Drag to pan, scroll or pinch to zoom.",
+        "error": "",
+        "errorHidden": true,
+        "overflowX": false
+      },
+      "assertions": {
+        "screenshotSize": {
+          "passed": true,
+          "expected": "390x844",
+          "actual": "390x844"
+        },
+        "window": {
+          "passed": true,
+          "expected": "390x844",
+          "actual": "390x844"
+        },
+        "devicePixelRatio": {
+          "passed": true,
+          "expected": 1,
+          "actual": 1
+        },
+        "scene": {
+          "passed": true,
+          "expected": "sample",
+          "actual": "sample"
+        },
+        "objectCount": {
+          "passed": true,
+          "expected": 694,
+          "actual": 694
+        },
+        "counts": {
+          "passed": true,
+          "expected": {
+            "cards": 500,
+            "zones": 50,
+            "blocks": 144
+          },
+          "actual": {
+            "zones": 50,
+            "blocks": 144,
+            "cards": 500,
+            "total": 694
+          }
+        },
+        "camera": {
+          "passed": true,
+          "expected": "playground initial camera",
+          "actual": {
+            "panX": 3340,
+            "panY": 1884,
+            "zoom": 0.1
+          }
+        },
+        "fitAction": {
+          "passed": true,
+          "expected": "no fit action in this scene",
+          "actual": null
+        },
+        "pageError": {
+          "passed": true,
+          "expected": "",
+          "actual": ""
+        }
+      },
+      "baseline": {
+        "path": "reviews/evidence/visual-baselines/sample-at-rest-mobile-webgl2.png",
+        "written": false,
+        "sha256": "764c17fb8f475561e3943d011cc5ba8c322de245514cdf59e8789ce7f48e08d0",
+        "bytes": 28361
+      },
+      "comparison": {
+        "dimensionMismatch": false,
+        "referenceWidth": 390,
+        "referenceHeight": 844,
+        "capturedWidth": 390,
+        "capturedHeight": 844,
+        "totalPixels": 329160,
+        "differingPixels": 0,
+        "differingPixelRatio": 0,
+        "worstChannelDelta": 0,
+        "withinTolerance": true
+      },
+      "diffPng": null,
+      "baselineName": "sample-at-rest-mobile-webgl2.png"
+    },
+    {
+      "scene": "sample-zoom-in",
+      "sceneId": "sample",
+      "viewport": "desktop",
+      "viewportSize": "1440x900",
+      "backend": "webgl2",
+      "backendLabel": "WebGL2",
+      "url": "http://127.0.0.1:4160/apps/engine-playground/?scene=sample&view=648%2C664%2C0.5",
+      "fitAction": null,
+      "ready": {
+        "scene": "sample",
+        "objectCount": 694,
+        "visibleCount": 36
+      },
+      "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M2, Unspecified Version)",
+      "capturedWidth": 1440,
+      "capturedHeight": 900,
+      "layout": {
+        "state": {
+          "scene": "sample",
+          "counts": {
+            "zones": 50,
+            "blocks": 144,
+            "cards": 500,
+            "total": 694
+          },
+          "objectCount": 694,
+          "visibleCount": 36,
+          "framesRendered": 3,
+          "backend": "WebGL2",
+          "camera": {
+            "panX": -402,
+            "panY": 73,
+            "zoom": 0.5
+          },
+          "textAtlas": null
+        },
+        "inner": {
+          "width": 1440,
+          "height": 900
+        },
+        "devicePixelRatio": 1,
+        "canvas": {
+          "cssWidth": 1050,
+          "cssHeight": 591,
+          "pixelWidth": 1050,
+          "pixelHeight": 591
+        },
+        "hud": {
+          "objects": "694",
+          "cards": "500",
+          "zones": "50",
+          "visible": "36",
+          "backend": "WebGL2"
+        },
+        "caption": "694 objects \u2014 500 cards, 50 zones, 144 blocks. Drag to pan, scroll or pinch to zoom.",
+        "error": "",
+        "errorHidden": true,
+        "overflowX": false
+      },
+      "assertions": {
+        "screenshotSize": {
+          "passed": true,
+          "expected": "1440x900",
+          "actual": "1440x900"
+        },
+        "window": {
+          "passed": true,
+          "expected": "1440x900",
+          "actual": "1440x900"
+        },
+        "devicePixelRatio": {
+          "passed": true,
+          "expected": 1,
+          "actual": 1
+        },
+        "scene": {
+          "passed": true,
+          "expected": "sample",
+          "actual": "sample"
+        },
+        "objectCount": {
+          "passed": true,
+          "expected": 694,
+          "actual": 694
+        },
+        "counts": {
+          "passed": true,
+          "expected": {
+            "cards": 500,
+            "zones": 50,
+            "blocks": 144
+          },
+          "actual": {
+            "zones": 50,
+            "blocks": 144,
+            "cards": 500,
+            "total": 694
+          }
+        },
+        "camera": {
+          "passed": true,
+          "expected": {
+            "zoom": 0.5,
+            "panX": -402,
+            "panY": 73
+          },
+          "actual": {
+            "panX": -402,
+            "panY": 73,
+            "zoom": 0.5
+          },
+          "source": "?view=648,664,0.5"
+        },
+        "fitAction": {
+          "passed": true,
+          "expected": "no fit action in this scene",
+          "actual": null
+        },
+        "pageError": {
+          "passed": true,
+          "expected": "",
+          "actual": ""
+        }
+      },
+      "baseline": {
+        "path": "reviews/evidence/visual-baselines/sample-zoom-in-desktop-webgl2.png",
+        "written": false,
+        "sha256": "935cf02e0e324dd02be9c598665c79028f9a8225dc38d1b66298fdc4764ec1e4",
+        "bytes": 83023
+      },
+      "comparison": {
+        "dimensionMismatch": false,
+        "referenceWidth": 1440,
+        "referenceHeight": 900,
+        "capturedWidth": 1440,
+        "capturedHeight": 900,
+        "totalPixels": 1296000,
+        "differingPixels": 0,
+        "differingPixelRatio": 0,
+        "worstChannelDelta": 0,
+        "withinTolerance": true
+      },
+      "diffPng": null,
+      "baselineName": "sample-zoom-in-desktop-webgl2.png"
+    },
+    {
+      "scene": "sample-zoom-in",
+      "sceneId": "sample",
+      "viewport": "mobile",
+      "viewportSize": "390x844",
+      "backend": "webgl2",
+      "backendLabel": "WebGL2",
+      "url": "http://127.0.0.1:4160/apps/engine-playground/?scene=sample&view=648%2C664%2C0.5",
+      "fitAction": null,
+      "ready": {
+        "scene": "sample",
+        "objectCount": 694,
+        "visibleCount": 6
+      },
+      "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M2, Unspecified Version)",
+      "capturedWidth": 390,
+      "capturedHeight": 844,
+      "layout": {
+        "state": {
+          "scene": "sample",
+          "counts": {
+            "zones": 50,
+            "blocks": 144,
+            "cards": 500,
+            "total": 694
+          },
+          "objectCount": 694,
+          "visibleCount": 6,
+          "framesRendered": 3,
+          "backend": "WebGL2",
+          "camera": {
+            "panX": 356,
+            "panY": 500,
+            "zoom": 0.5
+          },
+          "textAtlas": null
+        },
+        "inner": {
+          "width": 390,
+          "height": 844
+        },
+        "devicePixelRatio": 1,
+        "canvas": {
+          "cssWidth": 292,
+          "cssHeight": 164,
+          "pixelWidth": 292,
+          "pixelHeight": 164
+        },
+        "hud": {
+          "objects": "694",
+          "cards": "500",
+          "zones": "50",
+          "visible": "6",
+          "backend": "WebGL2"
+        },
+        "caption": "694 objects \u2014 500 cards, 50 zones, 144 blocks. Drag to pan, scroll or pinch to zoom.",
+        "error": "",
+        "errorHidden": true,
+        "overflowX": false
+      },
+      "assertions": {
+        "screenshotSize": {
+          "passed": true,
+          "expected": "390x844",
+          "actual": "390x844"
+        },
+        "window": {
+          "passed": true,
+          "expected": "390x844",
+          "actual": "390x844"
+        },
+        "devicePixelRatio": {
+          "passed": true,
+          "expected": 1,
+          "actual": 1
+        },
+        "scene": {
+          "passed": true,
+          "expected": "sample",
+          "actual": "sample"
+        },
+        "objectCount": {
+          "passed": true,
+          "expected": 694,
+          "actual": 694
+        },
+        "counts": {
+          "passed": true,
+          "expected": {
+            "cards": 500,
+            "zones": 50,
+            "blocks": 144
+          },
+          "actual": {
+            "zones": 50,
+            "blocks": 144,
+            "cards": 500,
+            "total": 694
+          }
+        },
+        "camera": {
+          "passed": true,
+          "expected": {
+            "zoom": 0.5,
+            "panX": 356,
+            "panY": 500
+          },
+          "actual": {
+            "panX": 356,
+            "panY": 500,
+            "zoom": 0.5
+          },
+          "source": "?view=648,664,0.5"
+        },
+        "fitAction": {
+          "passed": true,
+          "expected": "no fit action in this scene",
+          "actual": null
+        },
+        "pageError": {
+          "passed": true,
+          "expected": "",
+          "actual": ""
+        }
+      },
+      "baseline": {
+        "path": "reviews/evidence/visual-baselines/sample-zoom-in-mobile-webgl2.png",
+        "written": false,
+        "sha256": "55a2db9de0b39f0bdeb2d5080cf9a088caeebd8b3ece5ad569f0701b2e5d74cf",
+        "bytes": 24739
+      },
+      "comparison": {
+        "dimensionMismatch": false,
+        "referenceWidth": 390,
+        "referenceHeight": 844,
+        "capturedWidth": 390,
+        "capturedHeight": 844,
+        "totalPixels": 329160,
+        "differingPixels": 0,
+        "differingPixelRatio": 0,
+        "worstChannelDelta": 0,
+        "withinTolerance": true
+      },
+      "diffPng": null,
+      "baselineName": "sample-zoom-in-mobile-webgl2.png"
+    },
+    {
+      "scene": "sample-zoom-out",
+      "sceneId": "sample",
+      "viewport": "desktop",
+      "viewportSize": "1440x900",
+      "backend": "webgl2",
+      "backendLabel": "WebGL2",
+      "url": "http://127.0.0.1:4160/apps/engine-playground/?scene=sample&view=648%2C664%2C0.1",
+      "fitAction": null,
+      "ready": {
+        "scene": "sample",
+        "objectCount": 694,
+        "visibleCount": 297
+      },
+      "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M2, Unspecified Version)",
+      "capturedWidth": 1440,
+      "capturedHeight": 900,
+      "layout": {
+        "state": {
+          "scene": "sample",
+          "counts": {
+            "zones": 50,
+            "blocks": 144,
+            "cards": 500,
+            "total": 694
+          },
+          "objectCount": 694,
+          "visibleCount": 297,
+          "framesRendered": 2,
+          "backend": "WebGL2",
+          "camera": {
+            "panX": -4602,
+            "panY": -2291,
+            "zoom": 0.1
+          },
+          "textAtlas": null
+        },
+        "inner": {
+          "width": 1440,
+          "height": 900
+        },
+        "devicePixelRatio": 1,
+        "canvas": {
+          "cssWidth": 1050,
+          "cssHeight": 591,
+          "pixelWidth": 1050,
+          "pixelHeight": 591
+        },
+        "hud": {
+          "objects": "694",
+          "cards": "500",
+          "zones": "50",
+          "visible": "297",
+          "backend": "WebGL2"
+        },
+        "caption": "694 objects \u2014 500 cards, 50 zones, 144 blocks. Drag to pan, scroll or pinch to zoom.",
+        "error": "",
+        "errorHidden": true,
+        "overflowX": false
+      },
+      "assertions": {
+        "screenshotSize": {
+          "passed": true,
+          "expected": "1440x900",
+          "actual": "1440x900"
+        },
+        "window": {
+          "passed": true,
+          "expected": "1440x900",
+          "actual": "1440x900"
+        },
+        "devicePixelRatio": {
+          "passed": true,
+          "expected": 1,
+          "actual": 1
+        },
+        "scene": {
+          "passed": true,
+          "expected": "sample",
+          "actual": "sample"
+        },
+        "objectCount": {
+          "passed": true,
+          "expected": 694,
+          "actual": 694
+        },
+        "counts": {
+          "passed": true,
+          "expected": {
+            "cards": 500,
+            "zones": 50,
+            "blocks": 144
+          },
+          "actual": {
+            "zones": 50,
+            "blocks": 144,
+            "cards": 500,
+            "total": 694
+          }
+        },
+        "camera": {
+          "passed": true,
+          "expected": {
+            "zoom": 0.1,
+            "panX": -4602,
+            "panY": -2291
+          },
+          "actual": {
+            "panX": -4602,
+            "panY": -2291,
+            "zoom": 0.1
+          },
+          "source": "?view=648,664,0.1"
+        },
+        "fitAction": {
+          "passed": true,
+          "expected": "no fit action in this scene",
+          "actual": null
+        },
+        "pageError": {
+          "passed": true,
+          "expected": "",
+          "actual": ""
+        }
+      },
+      "baseline": {
+        "path": "reviews/evidence/visual-baselines/sample-zoom-out-desktop-webgl2.png",
+        "written": false,
+        "sha256": "aeb095bd998850fe9d48e00f2106a30e87c8693bb1d5c720d3722ecfe1cb980f",
+        "bytes": 45660
+      },
+      "comparison": {
+        "dimensionMismatch": false,
+        "referenceWidth": 1440,
+        "referenceHeight": 900,
+        "capturedWidth": 1440,
+        "capturedHeight": 900,
+        "totalPixels": 1296000,
+        "differingPixels": 0,
+        "differingPixelRatio": 0,
+        "worstChannelDelta": 0,
+        "withinTolerance": true
+      },
+      "diffPng": null,
+      "baselineName": "sample-zoom-out-desktop-webgl2.png"
+    },
+    {
+      "scene": "sample-zoom-out",
+      "sceneId": "sample",
+      "viewport": "mobile",
+      "viewportSize": "390x844",
+      "backend": "webgl2",
+      "backendLabel": "WebGL2",
+      "url": "http://127.0.0.1:4160/apps/engine-playground/?scene=sample&view=648%2C664%2C0.1",
+      "fitAction": null,
+      "ready": {
+        "scene": "sample",
+        "objectCount": 694,
+        "visibleCount": 43
+      },
+      "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M2, Unspecified Version)",
+      "capturedWidth": 390,
+      "capturedHeight": 844,
+      "layout": {
+        "state": {
+          "scene": "sample",
+          "counts": {
+            "zones": 50,
+            "blocks": 144,
+            "cards": 500,
+            "total": 694
+          },
+          "objectCount": 694,
+          "visibleCount": 43,
+          "framesRendered": 2,
+          "backend": "WebGL2",
+          "camera": {
+            "panX": -812,
+            "panY": -156,
+            "zoom": 0.1
+          },
+          "textAtlas": null
+        },
+        "inner": {
+          "width": 390,
+          "height": 844
+        },
+        "devicePixelRatio": 1,
+        "canvas": {
+          "cssWidth": 292,
+          "cssHeight": 164,
+          "pixelWidth": 292,
+          "pixelHeight": 164
+        },
+        "hud": {
+          "objects": "694",
+          "cards": "500",
+          "zones": "50",
+          "visible": "43",
+          "backend": "WebGL2"
+        },
+        "caption": "694 objects \u2014 500 cards, 50 zones, 144 blocks. Drag to pan, scroll or pinch to zoom.",
+        "error": "",
+        "errorHidden": true,
+        "overflowX": false
+      },
+      "assertions": {
+        "screenshotSize": {
+          "passed": true,
+          "expected": "390x844",
+          "actual": "390x844"
+        },
+        "window": {
+          "passed": true,
+          "expected": "390x844",
+          "actual": "390x844"
+        },
+        "devicePixelRatio": {
+          "passed": true,
+          "expected": 1,
+          "actual": 1
+        },
+        "scene": {
+          "passed": true,
+          "expected": "sample",
+          "actual": "sample"
+        },
+        "objectCount": {
+          "passed": true,
+          "expected": 694,
+          "actual": 694
+        },
+        "counts": {
+          "passed": true,
+          "expected": {
+            "cards": 500,
+            "zones": 50,
+            "blocks": 144
+          },
+          "actual": {
+            "zones": 50,
+            "blocks": 144,
+            "cards": 500,
+            "total": 694
+          }
+        },
+        "camera": {
+          "passed": true,
+          "expected": {
+            "zoom": 0.1,
+            "panX": -812,
+            "panY": -156
+          },
+          "actual": {
+            "panX": -812,
+            "panY": -156,
+            "zoom": 0.1
+          },
+          "source": "?view=648,664,0.1"
+        },
+        "fitAction": {
+          "passed": true,
+          "expected": "no fit action in this scene",
+          "actual": null
+        },
+        "pageError": {
+          "passed": true,
+          "expected": "",
+          "actual": ""
+        }
+      },
+      "baseline": {
+        "path": "reviews/evidence/visual-baselines/sample-zoom-out-mobile-webgl2.png",
+        "written": false,
+        "sha256": "1e3b72ade02c81c7ece8bfc67f193d8f20d5131eea66be703b73ed82aaf7e21c",
+        "bytes": 26312
+      },
+      "comparison": {
+        "dimensionMismatch": false,
+        "referenceWidth": 390,
+        "referenceHeight": 844,
+        "capturedWidth": 390,
+        "capturedHeight": 844,
+        "totalPixels": 329160,
+        "differingPixels": 0,
+        "differingPixelRatio": 0,
+        "worstChannelDelta": 0,
+        "withinTolerance": true
+      },
+      "diffPng": null,
+      "baselineName": "sample-zoom-out-mobile-webgl2.png"
+    },
+    {
+      "scene": "engine-core-at-rest",
+      "sceneId": "engine-core",
+      "viewport": "desktop",
+      "viewportSize": "1440x900",
+      "backend": "webgl2",
+      "backendLabel": "WebGL2",
+      "url": "http://127.0.0.1:4160/apps/engine-playground/?scene=engine-core",
+      "fitAction": null,
+      "ready": {
+        "scene": "engine-core",
+        "objectCount": 10000,
+        "visibleCount": 3279
+      },
+      "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M2, Unspecified Version)",
+      "capturedWidth": 1440,
+      "capturedHeight": 900,
+      "layout": {
+        "state": {
+          "scene": "engine-core",
+          "counts": {
+            "zones": 200,
+            "blocks": 600,
+            "cards": 9200,
+            "total": 10000
+          },
+          "objectCount": 10000,
+          "visibleCount": 3279,
+          "framesRendered": 2,
+          "backend": "WebGL2",
+          "camera": {
+            "panX": 4350,
+            "panY": 2453,
+            "zoom": 0.1
+          },
+          "textAtlas": null
+        },
+        "inner": {
+          "width": 1440,
+          "height": 900
+        },
+        "devicePixelRatio": 1,
+        "canvas": {
+          "cssWidth": 1050,
+          "cssHeight": 591,
+          "pixelWidth": 1050,
+          "pixelHeight": 591
+        },
+        "hud": {
+          "objects": "10000",
+          "cards": "9200",
+          "zones": "200",
+          "visible": "3279",
+          "backend": "WebGL2"
+        },
+        "caption": "10000 objects \u2014 9200 cards, 200 zones, 600 blocks. Drag to pan, scroll or pinch to zoom.",
+        "error": "",
+        "errorHidden": true,
+        "overflowX": false
+      },
+      "assertions": {
+        "screenshotSize": {
+          "passed": true,
+          "expected": "1440x900",
+          "actual": "1440x900"
+        },
+        "window": {
+          "passed": true,
+          "expected": "1440x900",
+          "actual": "1440x900"
+        },
+        "devicePixelRatio": {
+          "passed": true,
+          "expected": 1,
+          "actual": 1
+        },
+        "scene": {
+          "passed": true,
+          "expected": "engine-core",
+          "actual": "engine-core"
+        },
+        "objectCount": {
+          "passed": true,
+          "expected": 10000,
+          "actual": 10000
+        },
+        "counts": {
+          "passed": true,
+          "expected": {
+            "cards": 9200,
+            "zones": 200,
+            "blocks": 600
+          },
+          "actual": {
+            "zones": 200,
+            "blocks": 600,
+            "cards": 9200,
+            "total": 10000
+          }
+        },
+        "camera": {
+          "passed": true,
+          "expected": "playground initial camera",
+          "actual": {
+            "panX": 4350,
+            "panY": 2453,
+            "zoom": 0.1
+          }
+        },
+        "fitAction": {
+          "passed": true,
+          "expected": "no fit action in this scene",
+          "actual": null
+        },
+        "pageError": {
+          "passed": true,
+          "expected": "",
+          "actual": ""
+        }
+      },
+      "baseline": {
+        "path": "reviews/evidence/visual-baselines/engine-core-at-rest-desktop-webgl2.png",
+        "written": false,
+        "sha256": "726c432362c53a69771660724f35bdf166170863ea61559e7198dec582de7ca4",
+        "bytes": 109283
+      },
+      "comparison": {
+        "dimensionMismatch": false,
+        "referenceWidth": 1440,
+        "referenceHeight": 900,
+        "capturedWidth": 1440,
+        "capturedHeight": 900,
+        "totalPixels": 1296000,
+        "differingPixels": 0,
+        "differingPixelRatio": 0,
+        "worstChannelDelta": 0,
+        "withinTolerance": true
+      },
+      "diffPng": null,
+      "baselineName": "engine-core-at-rest-desktop-webgl2.png"
+    },
+    {
+      "scene": "engine-core-at-rest",
+      "sceneId": "engine-core",
+      "viewport": "mobile",
+      "viewportSize": "390x844",
+      "backend": "webgl2",
+      "backendLabel": "WebGL2",
+      "url": "http://127.0.0.1:4160/apps/engine-playground/?scene=engine-core",
+      "fitAction": null,
+      "ready": {
+        "scene": "engine-core",
+        "objectCount": 10000,
+        "visibleCount": 311
+      },
+      "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M2, Unspecified Version)",
+      "capturedWidth": 390,
+      "capturedHeight": 844,
+      "layout": {
+        "state": {
+          "scene": "engine-core",
+          "counts": {
+            "zones": 200,
+            "blocks": 600,
+            "cards": 9200,
+            "total": 10000
+          },
+          "objectCount": 10000,
+          "visibleCount": 311,
+          "framesRendered": 2,
+          "backend": "WebGL2",
+          "camera": {
+            "panX": 8140,
+            "panY": 4588,
+            "zoom": 0.1
+          },
+          "textAtlas": null
+        },
+        "inner": {
+          "width": 390,
+          "height": 844
+        },
+        "devicePixelRatio": 1,
+        "canvas": {
+          "cssWidth": 292,
+          "cssHeight": 164,
+          "pixelWidth": 292,
+          "pixelHeight": 164
+        },
+        "hud": {
+          "objects": "10000",
+          "cards": "9200",
+          "zones": "200",
+          "visible": "311",
+          "backend": "WebGL2"
+        },
+        "caption": "10000 objects \u2014 9200 cards, 200 zones, 600 blocks. Drag to pan, scroll or pinch to zoom.",
+        "error": "",
+        "errorHidden": true,
+        "overflowX": false
+      },
+      "assertions": {
+        "screenshotSize": {
+          "passed": true,
+          "expected": "390x844",
+          "actual": "390x844"
+        },
+        "window": {
+          "passed": true,
+          "expected": "390x844",
+          "actual": "390x844"
+        },
+        "devicePixelRatio": {
+          "passed": true,
+          "expected": 1,
+          "actual": 1
+        },
+        "scene": {
+          "passed": true,
+          "expected": "engine-core",
+          "actual": "engine-core"
+        },
+        "objectCount": {
+          "passed": true,
+          "expected": 10000,
+          "actual": 10000
+        },
+        "counts": {
+          "passed": true,
+          "expected": {
+            "cards": 9200,
+            "zones": 200,
+            "blocks": 600
+          },
+          "actual": {
+            "zones": 200,
+            "blocks": 600,
+            "cards": 9200,
+            "total": 10000
+          }
+        },
+        "camera": {
+          "passed": true,
+          "expected": "playground initial camera",
+          "actual": {
+            "panX": 8140,
+            "panY": 4588,
+            "zoom": 0.1
+          }
+        },
+        "fitAction": {
+          "passed": true,
+          "expected": "no fit action in this scene",
+          "actual": null
+        },
+        "pageError": {
+          "passed": true,
+          "expected": "",
+          "actual": ""
+        }
+      },
+      "baseline": {
+        "path": "reviews/evidence/visual-baselines/engine-core-at-rest-mobile-webgl2.png",
+        "written": false,
+        "sha256": "2f37b709f3a1d8154cd9abf74956cbccf65c0097a0c08e8000dbaedddec2489b",
+        "bytes": 31730
+      },
+      "comparison": {
+        "dimensionMismatch": false,
+        "referenceWidth": 390,
+        "referenceHeight": 844,
+        "capturedWidth": 390,
+        "capturedHeight": 844,
+        "totalPixels": 329160,
+        "differingPixels": 0,
+        "differingPixelRatio": 0,
+        "worstChannelDelta": 0,
+        "withinTolerance": true
+      },
+      "diffPng": null,
+      "baselineName": "engine-core-at-rest-mobile-webgl2.png"
+    },
+    {
+      "scene": "one-card-fit",
+      "sceneId": "stress",
+      "viewport": "desktop",
+      "viewportSize": "1440x900",
+      "backend": "webgl2",
+      "backendLabel": "WebGL2",
+      "url": "http://127.0.0.1:4160/apps/engine-playground/?scene=stress&count=1",
+      "fitAction": {
+        "framesBefore": 2,
+        "framesAfter": 3,
+        "camera": {
+          "panX": -493,
+          "panY": -316.5,
+          "zoom": 1
+        }
+      },
+      "ready": {
+        "scene": "stress",
+        "objectCount": 1,
+        "visibleCount": 1
+      },
+      "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M2, Unspecified Version)",
+      "capturedWidth": 1440,
+      "capturedHeight": 900,
+      "layout": {
+        "state": {
+          "scene": "stress",
+          "counts": {
+            "zones": 0,
+            "blocks": 0,
+            "cards": 1,
+            "total": 1
+          },
+          "objectCount": 1,
+          "visibleCount": 1,
+          "framesRendered": 3,
+          "backend": "WebGL2",
+          "camera": {
+            "panX": -493,
+            "panY": -316.5,
+            "zoom": 1
+          },
+          "textAtlas": null
+        },
+        "inner": {
+          "width": 1440,
+          "height": 900
+        },
+        "devicePixelRatio": 1,
+        "canvas": {
+          "cssWidth": 1050,
+          "cssHeight": 591,
+          "pixelWidth": 1050,
+          "pixelHeight": 591
+        },
+        "hud": {
+          "objects": "1",
+          "cards": "1",
+          "zones": "0",
+          "visible": "1",
+          "backend": "WebGL2"
+        },
+        "caption": "1 objects \u2014 1 cards, 0 zones, 0 blocks. Drag to pan, scroll or pinch to zoom.",
+        "error": "",
+        "errorHidden": true,
+        "overflowX": false
+      },
+      "assertions": {
+        "screenshotSize": {
+          "passed": true,
+          "expected": "1440x900",
+          "actual": "1440x900"
+        },
+        "window": {
+          "passed": true,
+          "expected": "1440x900",
+          "actual": "1440x900"
+        },
+        "devicePixelRatio": {
+          "passed": true,
+          "expected": 1,
+          "actual": 1
+        },
+        "scene": {
+          "passed": true,
+          "expected": "stress",
+          "actual": "stress"
+        },
+        "objectCount": {
+          "passed": true,
+          "expected": 1,
+          "actual": 1
+        },
+        "counts": {
+          "passed": true,
+          "expected": {
+            "cards": 1,
+            "zones": 0,
+            "blocks": 0
+          },
+          "actual": {
+            "zones": 0,
+            "blocks": 0,
+            "cards": 1,
+            "total": 1
+          }
+        },
+        "camera": {
+          "passed": true,
+          "expected": {
+            "zoom": 1,
+            "panX": -493,
+            "panY": -316.5
+          },
+          "actual": {
+            "panX": -493,
+            "panY": -316.5,
+            "zoom": 1
+          },
+          "source": "L19 fit of the 64x22 world below the 64 px top padding, at most 100 %"
+        },
+        "fitAction": {
+          "passed": true,
+          "expected": "the L19 fit action renders at least one frame",
+          "actual": {
+            "framesBefore": 2,
+            "framesAfter": 3,
+            "camera": {
+              "panX": -493,
+              "panY": -316.5,
+              "zoom": 1
+            }
+          }
+        },
+        "pageError": {
+          "passed": true,
+          "expected": "",
+          "actual": ""
+        }
+      },
+      "baseline": {
+        "path": "reviews/evidence/visual-baselines/one-card-fit-desktop-webgl2.png",
+        "written": false,
+        "sha256": "2fe0ef7681cff3d7608d877ac79ae44df0e736a87d2a4bab75492d2dc15c5bb2",
+        "bytes": 53222
+      },
+      "comparison": {
+        "dimensionMismatch": false,
+        "referenceWidth": 1440,
+        "referenceHeight": 900,
+        "capturedWidth": 1440,
+        "capturedHeight": 900,
+        "totalPixels": 1296000,
+        "differingPixels": 0,
+        "differingPixelRatio": 0,
+        "worstChannelDelta": 0,
+        "withinTolerance": true
+      },
+      "diffPng": null,
+      "baselineName": "one-card-fit-desktop-webgl2.png"
+    },
+    {
+      "scene": "one-card-fit",
+      "sceneId": "stress",
+      "viewport": "mobile",
+      "viewportSize": "390x844",
+      "backend": "webgl2",
+      "backendLabel": "WebGL2",
+      "url": "http://127.0.0.1:4160/apps/engine-playground/?scene=stress&count=1",
+      "fitAction": {
+        "framesBefore": 2,
+        "framesAfter": 3,
+        "camera": {
+          "panX": -114,
+          "panY": -103,
+          "zoom": 1
+        }
+      },
+      "ready": {
+        "scene": "stress",
+        "objectCount": 1,
+        "visibleCount": 1
+      },
+      "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M2, Unspecified Version)",
+      "capturedWidth": 390,
+      "capturedHeight": 844,
+      "layout": {
+        "state": {
+          "scene": "stress",
+          "counts": {
+            "zones": 0,
+            "blocks": 0,
+            "cards": 1,
+            "total": 1
+          },
+          "objectCount": 1,
+          "visibleCount": 1,
+          "framesRendered": 3,
+          "backend": "WebGL2",
+          "camera": {
+            "panX": -114,
+            "panY": -103,
+            "zoom": 1
+          },
+          "textAtlas": null
+        },
+        "inner": {
+          "width": 390,
+          "height": 844
+        },
+        "devicePixelRatio": 1,
+        "canvas": {
+          "cssWidth": 292,
+          "cssHeight": 164,
+          "pixelWidth": 292,
+          "pixelHeight": 164
+        },
+        "hud": {
+          "objects": "1",
+          "cards": "1",
+          "zones": "0",
+          "visible": "1",
+          "backend": "WebGL2"
+        },
+        "caption": "1 objects \u2014 1 cards, 0 zones, 0 blocks. Drag to pan, scroll or pinch to zoom.",
+        "error": "",
+        "errorHidden": true,
+        "overflowX": false
+      },
+      "assertions": {
+        "screenshotSize": {
+          "passed": true,
+          "expected": "390x844",
+          "actual": "390x844"
+        },
+        "window": {
+          "passed": true,
+          "expected": "390x844",
+          "actual": "390x844"
+        },
+        "devicePixelRatio": {
+          "passed": true,
+          "expected": 1,
+          "actual": 1
+        },
+        "scene": {
+          "passed": true,
+          "expected": "stress",
+          "actual": "stress"
+        },
+        "objectCount": {
+          "passed": true,
+          "expected": 1,
+          "actual": 1
+        },
+        "counts": {
+          "passed": true,
+          "expected": {
+            "cards": 1,
+            "zones": 0,
+            "blocks": 0
+          },
+          "actual": {
+            "zones": 0,
+            "blocks": 0,
+            "cards": 1,
+            "total": 1
+          }
+        },
+        "camera": {
+          "passed": true,
+          "expected": {
+            "zoom": 1,
+            "panX": -114,
+            "panY": -103
+          },
+          "actual": {
+            "panX": -114,
+            "panY": -103,
+            "zoom": 1
+          },
+          "source": "L19 fit of the 64x22 world below the 64 px top padding, at most 100 %"
+        },
+        "fitAction": {
+          "passed": true,
+          "expected": "the L19 fit action renders at least one frame",
+          "actual": {
+            "framesBefore": 2,
+            "framesAfter": 3,
+            "camera": {
+              "panX": -114,
+              "panY": -103,
+              "zoom": 1
+            }
+          }
+        },
+        "pageError": {
+          "passed": true,
+          "expected": "",
+          "actual": ""
+        }
+      },
+      "baseline": {
+        "path": "reviews/evidence/visual-baselines/one-card-fit-mobile-webgl2.png",
+        "written": false,
+        "sha256": "42cd9bfb213fb11a32c6d6dcbb0f111497e70f351cbd43060da55a94318a0e3f",
+        "bytes": 25256
+      },
+      "comparison": {
+        "dimensionMismatch": false,
+        "referenceWidth": 390,
+        "referenceHeight": 844,
+        "capturedWidth": 390,
+        "capturedHeight": 844,
+        "totalPixels": 329160,
+        "differingPixels": 0,
+        "differingPixelRatio": 0,
+        "worstChannelDelta": 0,
+        "withinTolerance": true
+      },
+      "diffPng": null,
+      "baselineName": "one-card-fit-mobile-webgl2.png"
+    },
+    {
+      "scene": "layers-at-rest",
+      "sceneId": "layers",
+      "viewport": "desktop",
+      "viewportSize": "1440x900",
+      "backend": "webgl2",
+      "backendLabel": "WebGL2",
+      "url": "http://127.0.0.1:4160/apps/engine-playground/?scene=layers&store=off",
+      "fitAction": null,
+      "ready": {
+        "scene": "layers",
+        "objectCount": 8,
+        "visibleCount": 8
+      },
+      "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M2, Unspecified Version)",
+      "capturedWidth": 1440,
+      "capturedHeight": 900,
+      "layout": {
+        "state": {
+          "scene": "layers",
+          "counts": {
+            "zones": 2,
+            "blocks": 2,
+            "cards": 4,
+            "total": 8
+          },
+          "objectCount": 8,
+          "visibleCount": 8,
+          "framesRendered": 2,
+          "backend": "WebGL2",
+          "camera": {
+            "panX": 0,
+            "panY": -0.18285714285713084,
+            "zoom": 1.025390625
+          },
+          "textAtlas": null
+        },
+        "inner": {
+          "width": 1440,
+          "height": 900
+        },
+        "devicePixelRatio": 1,
+        "canvas": {
+          "cssWidth": 1050,
+          "cssHeight": 591,
+          "pixelWidth": 1050,
+          "pixelHeight": 591
+        },
+        "hud": {
+          "objects": "8",
+          "cards": "4",
+          "zones": "2",
+          "visible": "8",
+          "backend": "WebGL2"
+        },
+        "caption": "8 objects \u2014 zones, blocks and note cards whose stored z contradicts the layers. Click an object to bring it to the front of its layer; reload keeps the order.",
+        "error": "",
+        "errorHidden": true,
+        "overflowX": false
+      },
+      "assertions": {
+        "screenshotSize": {
+          "passed": true,
+          "expected": "1440x900",
+          "actual": "1440x900"
+        },
+        "window": {
+          "passed": true,
+          "expected": "1440x900",
+          "actual": "1440x900"
+        },
+        "devicePixelRatio": {
+          "passed": true,
+          "expected": 1,
+          "actual": 1
+        },
+        "scene": {
+          "passed": true,
+          "expected": "layers",
+          "actual": "layers"
+        },
+        "objectCount": {
+          "passed": true,
+          "expected": 8,
+          "actual": 8
+        },
+        "counts": {
+          "passed": true,
+          "expected": {
+            "cards": 4,
+            "zones": 2,
+            "blocks": 2
+          },
+          "actual": {
+            "zones": 2,
+            "blocks": 2,
+            "cards": 4,
+            "total": 8
+          }
+        },
+        "camera": {
+          "passed": true,
+          "expected": "playground initial camera",
+          "actual": {
+            "panX": 0,
+            "panY": -0.18285714285713084,
+            "zoom": 1.025390625
+          }
+        },
+        "fitAction": {
+          "passed": true,
+          "expected": "no fit action in this scene",
+          "actual": null
+        },
+        "pageError": {
+          "passed": true,
+          "expected": "",
+          "actual": ""
+        }
+      },
+      "baseline": {
+        "path": "reviews/evidence/visual-baselines/layers-at-rest-desktop-webgl2.png",
+        "written": false,
+        "sha256": "d67157d7f7c519a7d10556a0f46e38dd763b7b7f3d395aeafe6d54ca8ec7c692",
+        "bytes": 64605
+      },
+      "comparison": {
+        "dimensionMismatch": false,
+        "referenceWidth": 1440,
+        "referenceHeight": 900,
+        "capturedWidth": 1440,
+        "capturedHeight": 900,
+        "totalPixels": 1296000,
+        "differingPixels": 0,
+        "differingPixelRatio": 0,
+        "worstChannelDelta": 0,
+        "withinTolerance": true
+      },
+      "diffPng": null,
+      "baselineName": "layers-at-rest-desktop-webgl2.png"
+    },
+    {
+      "scene": "layers-at-rest",
+      "sceneId": "layers",
+      "viewport": "mobile",
+      "viewportSize": "390x844",
+      "backend": "webgl2",
+      "backendLabel": "WebGL2",
+      "url": "http://127.0.0.1:4160/apps/engine-playground/?scene=layers&store=off",
+      "fitAction": null,
+      "ready": {
+        "scene": "layers",
+        "objectCount": 8,
+        "visibleCount": 8
+      },
+      "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M2, Unspecified Version)",
+      "capturedWidth": 390,
+      "capturedHeight": 844,
+      "layout": {
+        "state": {
+          "scene": "layers",
+          "counts": {
+            "zones": 2,
+            "blocks": 2,
+            "cards": 4,
+            "total": 8
+          },
+          "objectCount": 8,
+          "visibleCount": 8,
+          "framesRendered": 2,
+          "backend": "WebGL2",
+          "camera": {
+            "panX": -0.780487804878021,
+            "panY": 0,
+            "zoom": 0.2847222222222222
+          },
+          "textAtlas": null
+        },
+        "inner": {
+          "width": 390,
+          "height": 844
+        },
+        "devicePixelRatio": 1,
+        "canvas": {
+          "cssWidth": 292,
+          "cssHeight": 164,
+          "pixelWidth": 292,
+          "pixelHeight": 164
+        },
+        "hud": {
+          "objects": "8",
+          "cards": "4",
+          "zones": "2",
+          "visible": "8",
+          "backend": "WebGL2"
+        },
+        "caption": "8 objects \u2014 zones, blocks and note cards whose stored z contradicts the layers. Click an object to bring it to the front of its layer; reload keeps the order.",
+        "error": "",
+        "errorHidden": true,
+        "overflowX": false
+      },
+      "assertions": {
+        "screenshotSize": {
+          "passed": true,
+          "expected": "390x844",
+          "actual": "390x844"
+        },
+        "window": {
+          "passed": true,
+          "expected": "390x844",
+          "actual": "390x844"
+        },
+        "devicePixelRatio": {
+          "passed": true,
+          "expected": 1,
+          "actual": 1
+        },
+        "scene": {
+          "passed": true,
+          "expected": "layers",
+          "actual": "layers"
+        },
+        "objectCount": {
+          "passed": true,
+          "expected": 8,
+          "actual": 8
+        },
+        "counts": {
+          "passed": true,
+          "expected": {
+            "cards": 4,
+            "zones": 2,
+            "blocks": 2
+          },
+          "actual": {
+            "zones": 2,
+            "blocks": 2,
+            "cards": 4,
+            "total": 8
+          }
+        },
+        "camera": {
+          "passed": true,
+          "expected": "playground initial camera",
+          "actual": {
+            "panX": -0.780487804878021,
+            "panY": 0,
+            "zoom": 0.2847222222222222
+          }
+        },
+        "fitAction": {
+          "passed": true,
+          "expected": "no fit action in this scene",
+          "actual": null
+        },
+        "pageError": {
+          "passed": true,
+          "expected": "",
+          "actual": ""
+        }
+      },
+      "baseline": {
+        "path": "reviews/evidence/visual-baselines/layers-at-rest-mobile-webgl2.png",
+        "written": false,
+        "sha256": "0c4dcb2d5fc50800aee36148faae9c299c8e564c5cfa9dc69297e94627cf7190",
+        "bytes": 27023
+      },
+      "comparison": {
+        "dimensionMismatch": false,
+        "referenceWidth": 390,
+        "referenceHeight": 844,
+        "capturedWidth": 390,
+        "capturedHeight": 844,
+        "totalPixels": 329160,
+        "differingPixels": 0,
+        "differingPixelRatio": 0,
+        "worstChannelDelta": 0,
+        "withinTolerance": true
+      },
+      "diffPng": null,
+      "baselineName": "layers-at-rest-mobile-webgl2.png"
+    },
+    {
+      "scene": "layers-front",
+      "sceneId": "layers",
+      "viewport": "desktop",
+      "viewportSize": "1440x900",
+      "backend": "webgl2",
+      "backendLabel": "WebGL2",
+      "url": "http://127.0.0.1:4160/apps/engine-playground/?scene=layers&store=off&front=card-0001",
+      "fitAction": null,
+      "ready": {
+        "scene": "layers",
+        "objectCount": 8,
+        "visibleCount": 8
+      },
+      "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M2, Unspecified Version)",
+      "capturedWidth": 1440,
+      "capturedHeight": 900,
+      "layout": {
+        "state": {
+          "scene": "layers",
+          "counts": {
+            "zones": 2,
+            "blocks": 2,
+            "cards": 4,
+            "total": 8
+          },
+          "objectCount": 8,
+          "visibleCount": 8,
+          "framesRendered": 2,
+          "backend": "WebGL2",
+          "camera": {
+            "panX": 0,
+            "panY": -0.18285714285713084,
+            "zoom": 1.025390625
+          },
+          "textAtlas": null
+        },
+        "inner": {
+          "width": 1440,
+          "height": 900
+        },
+        "devicePixelRatio": 1,
+        "canvas": {
+          "cssWidth": 1050,
+          "cssHeight": 591,
+          "pixelWidth": 1050,
+          "pixelHeight": 591
+        },
+        "hud": {
+          "objects": "8",
+          "cards": "4",
+          "zones": "2",
+          "visible": "8",
+          "backend": "WebGL2"
+        },
+        "caption": "8 objects \u2014 zones, blocks and note cards whose stored z contradicts the layers. Click an object to bring it to the front of its layer; reload keeps the order.",
+        "error": "",
+        "errorHidden": true,
+        "overflowX": false
+      },
+      "assertions": {
+        "screenshotSize": {
+          "passed": true,
+          "expected": "1440x900",
+          "actual": "1440x900"
+        },
+        "window": {
+          "passed": true,
+          "expected": "1440x900",
+          "actual": "1440x900"
+        },
+        "devicePixelRatio": {
+          "passed": true,
+          "expected": 1,
+          "actual": 1
+        },
+        "scene": {
+          "passed": true,
+          "expected": "layers",
+          "actual": "layers"
+        },
+        "objectCount": {
+          "passed": true,
+          "expected": 8,
+          "actual": 8
+        },
+        "counts": {
+          "passed": true,
+          "expected": {
+            "cards": 4,
+            "zones": 2,
+            "blocks": 2
+          },
+          "actual": {
+            "zones": 2,
+            "blocks": 2,
+            "cards": 4,
+            "total": 8
+          }
+        },
+        "camera": {
+          "passed": true,
+          "expected": "playground initial camera",
+          "actual": {
+            "panX": 0,
+            "panY": -0.18285714285713084,
+            "zoom": 1.025390625
+          }
+        },
+        "fitAction": {
+          "passed": true,
+          "expected": "no fit action in this scene",
+          "actual": null
+        },
+        "pageError": {
+          "passed": true,
+          "expected": "",
+          "actual": ""
+        }
+      },
+      "baseline": {
+        "path": "reviews/evidence/visual-baselines/layers-front-desktop-webgl2.png",
+        "written": false,
+        "sha256": "afb58b456ebd50b190d45f6ae5be4de95cc6115a72a0a7b9c458fe08b18cf5b6",
+        "bytes": 64610
+      },
+      "comparison": {
+        "dimensionMismatch": false,
+        "referenceWidth": 1440,
+        "referenceHeight": 900,
+        "capturedWidth": 1440,
+        "capturedHeight": 900,
+        "totalPixels": 1296000,
+        "differingPixels": 0,
+        "differingPixelRatio": 0,
+        "worstChannelDelta": 0,
+        "withinTolerance": true
+      },
+      "diffPng": null,
+      "baselineName": "layers-front-desktop-webgl2.png"
+    },
+    {
+      "scene": "layers-front",
+      "sceneId": "layers",
+      "viewport": "mobile",
+      "viewportSize": "390x844",
+      "backend": "webgl2",
+      "backendLabel": "WebGL2",
+      "url": "http://127.0.0.1:4160/apps/engine-playground/?scene=layers&store=off&front=card-0001",
+      "fitAction": null,
+      "ready": {
+        "scene": "layers",
+        "objectCount": 8,
+        "visibleCount": 8
+      },
+      "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M2, Unspecified Version)",
+      "capturedWidth": 390,
+      "capturedHeight": 844,
+      "layout": {
+        "state": {
+          "scene": "layers",
+          "counts": {
+            "zones": 2,
+            "blocks": 2,
+            "cards": 4,
+            "total": 8
+          },
+          "objectCount": 8,
+          "visibleCount": 8,
+          "framesRendered": 2,
+          "backend": "WebGL2",
+          "camera": {
+            "panX": -0.780487804878021,
+            "panY": 0,
+            "zoom": 0.2847222222222222
+          },
+          "textAtlas": null
+        },
+        "inner": {
+          "width": 390,
+          "height": 844
+        },
+        "devicePixelRatio": 1,
+        "canvas": {
+          "cssWidth": 292,
+          "cssHeight": 164,
+          "pixelWidth": 292,
+          "pixelHeight": 164
+        },
+        "hud": {
+          "objects": "8",
+          "cards": "4",
+          "zones": "2",
+          "visible": "8",
+          "backend": "WebGL2"
+        },
+        "caption": "8 objects \u2014 zones, blocks and note cards whose stored z contradicts the layers. Click an object to bring it to the front of its layer; reload keeps the order.",
+        "error": "",
+        "errorHidden": true,
+        "overflowX": false
+      },
+      "assertions": {
+        "screenshotSize": {
+          "passed": true,
+          "expected": "390x844",
+          "actual": "390x844"
+        },
+        "window": {
+          "passed": true,
+          "expected": "390x844",
+          "actual": "390x844"
+        },
+        "devicePixelRatio": {
+          "passed": true,
+          "expected": 1,
+          "actual": 1
+        },
+        "scene": {
+          "passed": true,
+          "expected": "layers",
+          "actual": "layers"
+        },
+        "objectCount": {
+          "passed": true,
+          "expected": 8,
+          "actual": 8
+        },
+        "counts": {
+          "passed": true,
+          "expected": {
+            "cards": 4,
+            "zones": 2,
+            "blocks": 2
+          },
+          "actual": {
+            "zones": 2,
+            "blocks": 2,
+            "cards": 4,
+            "total": 8
+          }
+        },
+        "camera": {
+          "passed": true,
+          "expected": "playground initial camera",
+          "actual": {
+            "panX": -0.780487804878021,
+            "panY": 0,
+            "zoom": 0.2847222222222222
+          }
+        },
+        "fitAction": {
+          "passed": true,
+          "expected": "no fit action in this scene",
+          "actual": null
+        },
+        "pageError": {
+          "passed": true,
+          "expected": "",
+          "actual": ""
+        }
+      },
+      "baseline": {
+        "path": "reviews/evidence/visual-baselines/layers-front-mobile-webgl2.png",
+        "written": false,
+        "sha256": "baebf1fdc702a0281ee8e409661440ff959b40e14a164835f2f56bf74a851050",
+        "bytes": 27020
+      },
+      "comparison": {
+        "dimensionMismatch": false,
+        "referenceWidth": 390,
+        "referenceHeight": 844,
+        "capturedWidth": 390,
+        "capturedHeight": 844,
+        "totalPixels": 329160,
+        "differingPixels": 0,
+        "differingPixelRatio": 0,
+        "worstChannelDelta": 0,
+        "withinTolerance": true
+      },
+      "diffPng": null,
+      "baselineName": "layers-front-mobile-webgl2.png"
+    },
+    {
+      "scene": "text-layout",
+      "sceneId": "stress",
+      "viewport": "desktop",
+      "viewportSize": "1440x900",
+      "backend": "webgl2",
+      "backendLabel": "WebGL2",
+      "url": "http://127.0.0.1:4160/apps/engine-playground/?scene=stress&count=0&view=272%2C112%2C1&text=layout",
+      "fitAction": null,
+      "ready": {
+        "scene": "stress",
+        "objectCount": 0,
+        "visibleCount": 0
+      },
+      "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M2, Unspecified Version)",
+      "capturedWidth": 1440,
+      "capturedHeight": 900,
+      "layout": {
+        "state": {
+          "scene": "stress",
+          "counts": {
+            "zones": 0,
+            "blocks": 0,
+            "cards": 0,
+            "total": 0
+          },
+          "objectCount": 0,
+          "visibleCount": 0,
+          "framesRendered": 2,
+          "backend": "WebGL2",
+          "camera": {
+            "panX": -253,
+            "panY": -183.5,
+            "zoom": 1
+          },
+          "textAtlas": {
+            "width": 512,
+            "height": 512,
+            "rasterScale": 1,
+            "glyphCount": 404,
+            "maxTextureSize": 16384
+          }
+        },
+        "inner": {
+          "width": 1440,
+          "height": 900
+        },
+        "devicePixelRatio": 1,
+        "canvas": {
+          "cssWidth": 1050,
+          "cssHeight": 591,
+          "pixelWidth": 1050,
+          "pixelHeight": 591
+        },
+        "hud": {
+          "objects": "0",
+          "cards": "0",
+          "zones": "0",
+          "visible": "0",
+          "backend": "WebGL2"
+        },
+        "caption": "0 objects \u2014 0 cards, 0 zones, 0 blocks. Drag to pan, scroll or pinch to zoom.",
+        "error": "",
+        "errorHidden": true,
+        "overflowX": false
+      },
+      "assertions": {
+        "screenshotSize": {
+          "passed": true,
+          "expected": "1440x900",
+          "actual": "1440x900"
+        },
+        "window": {
+          "passed": true,
+          "expected": "1440x900",
+          "actual": "1440x900"
+        },
+        "devicePixelRatio": {
+          "passed": true,
+          "expected": 1,
+          "actual": 1
+        },
+        "scene": {
+          "passed": true,
+          "expected": "stress",
+          "actual": "stress"
+        },
+        "objectCount": {
+          "passed": true,
+          "expected": 0,
+          "actual": 0
+        },
+        "counts": {
+          "passed": true,
+          "expected": {
+            "cards": 0,
+            "zones": 0,
+            "blocks": 0
+          },
+          "actual": {
+            "zones": 0,
+            "blocks": 0,
+            "cards": 0,
+            "total": 0
+          }
+        },
+        "camera": {
+          "passed": true,
+          "expected": {
+            "zoom": 1,
+            "panX": -253,
+            "panY": -183.5
+          },
+          "actual": {
+            "panX": -253,
+            "panY": -183.5,
+            "zoom": 1
+          },
+          "source": "?view=272,112,1"
+        },
+        "fitAction": {
+          "passed": true,
+          "expected": "no fit action in this scene",
+          "actual": null
+        },
+        "pageError": {
+          "passed": true,
+          "expected": "",
+          "actual": ""
+        }
+      },
+      "baseline": {
+        "path": "reviews/evidence/visual-baselines/text-layout-desktop-webgl2.png",
+        "written": false,
+        "sha256": "aebe0e8bf8961f45b03f3562c3c58d494021483de9f2f8da23e7626097911c43",
+        "bytes": 83888
+      },
+      "comparison": {
+        "dimensionMismatch": false,
+        "referenceWidth": 1440,
+        "referenceHeight": 900,
+        "capturedWidth": 1440,
+        "capturedHeight": 900,
+        "totalPixels": 1296000,
+        "differingPixels": 0,
+        "differingPixelRatio": 0,
+        "worstChannelDelta": 0,
+        "withinTolerance": true
+      },
+      "diffPng": null,
+      "baselineName": "text-layout-desktop-webgl2.png"
+    },
+    {
+      "scene": "text-layout",
+      "sceneId": "stress",
+      "viewport": "mobile",
+      "viewportSize": "390x844",
+      "backend": "webgl2",
+      "backendLabel": "WebGL2",
+      "url": "http://127.0.0.1:4160/apps/engine-playground/?scene=stress&count=0&view=272%2C112%2C1&text=layout",
+      "fitAction": null,
+      "ready": {
+        "scene": "stress",
+        "objectCount": 0,
+        "visibleCount": 0
+      },
+      "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M2, Unspecified Version)",
+      "capturedWidth": 390,
+      "capturedHeight": 844,
+      "layout": {
+        "state": {
+          "scene": "stress",
+          "counts": {
+            "zones": 0,
+            "blocks": 0,
+            "cards": 0,
+            "total": 0
+          },
+          "objectCount": 0,
+          "visibleCount": 0,
+          "framesRendered": 2,
+          "backend": "WebGL2",
+          "camera": {
+            "panX": 126,
+            "panY": 30,
+            "zoom": 1
+          },
+          "textAtlas": {
+            "width": 512,
+            "height": 512,
+            "rasterScale": 1,
+            "glyphCount": 404,
+            "maxTextureSize": 16384
+          }
+        },
+        "inner": {
+          "width": 390,
+          "height": 844
+        },
+        "devicePixelRatio": 1,
+        "canvas": {
+          "cssWidth": 292,
+          "cssHeight": 164,
+          "pixelWidth": 292,
+          "pixelHeight": 164
+        },
+        "hud": {
+          "objects": "0",
+          "cards": "0",
+          "zones": "0",
+          "visible": "0",
+          "backend": "WebGL2"
+        },
+        "caption": "0 objects \u2014 0 cards, 0 zones, 0 blocks. Drag to pan, scroll or pinch to zoom.",
+        "error": "",
+        "errorHidden": true,
+        "overflowX": false
+      },
+      "assertions": {
+        "screenshotSize": {
+          "passed": true,
+          "expected": "390x844",
+          "actual": "390x844"
+        },
+        "window": {
+          "passed": true,
+          "expected": "390x844",
+          "actual": "390x844"
+        },
+        "devicePixelRatio": {
+          "passed": true,
+          "expected": 1,
+          "actual": 1
+        },
+        "scene": {
+          "passed": true,
+          "expected": "stress",
+          "actual": "stress"
+        },
+        "objectCount": {
+          "passed": true,
+          "expected": 0,
+          "actual": 0
+        },
+        "counts": {
+          "passed": true,
+          "expected": {
+            "cards": 0,
+            "zones": 0,
+            "blocks": 0
+          },
+          "actual": {
+            "zones": 0,
+            "blocks": 0,
+            "cards": 0,
+            "total": 0
+          }
+        },
+        "camera": {
+          "passed": true,
+          "expected": {
+            "zoom": 1,
+            "panX": 126,
+            "panY": 30
+          },
+          "actual": {
+            "panX": 126,
+            "panY": 30,
+            "zoom": 1
+          },
+          "source": "?view=272,112,1"
+        },
+        "fitAction": {
+          "passed": true,
+          "expected": "no fit action in this scene",
+          "actual": null
+        },
+        "pageError": {
+          "passed": true,
+          "expected": "",
+          "actual": ""
+        }
+      },
+      "baseline": {
+        "path": "reviews/evidence/visual-baselines/text-layout-mobile-webgl2.png",
+        "written": false,
+        "sha256": "3cdf8277ed0fcab22c070d974a25c42bdb28f00c608fa8b1a42b7539c134fa5e",
+        "bytes": 41144
+      },
+      "comparison": {
+        "dimensionMismatch": false,
+        "referenceWidth": 390,
+        "referenceHeight": 844,
+        "capturedWidth": 390,
+        "capturedHeight": 844,
+        "totalPixels": 329160,
+        "differingPixels": 0,
+        "differingPixelRatio": 0,
+        "worstChannelDelta": 0,
+        "withinTolerance": true
+      },
+      "diffPng": null,
+      "baselineName": "text-layout-mobile-webgl2.png"
+    },
+    {
+      "scene": "text-titles",
+      "sceneId": "titles",
+      "viewport": "desktop",
+      "viewportSize": "1440x900",
+      "backend": "webgl2",
+      "backendLabel": "WebGL2",
+      "url": "http://127.0.0.1:4160/apps/engine-playground/?scene=titles&view=512%2C288%2C1&text=titles",
+      "fitAction": null,
+      "ready": {
+        "scene": "titles",
+        "objectCount": 8,
+        "visibleCount": 8
+      },
+      "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M2, Unspecified Version)",
+      "capturedWidth": 1440,
+      "capturedHeight": 900,
+      "layout": {
+        "state": {
+          "scene": "titles",
+          "counts": {
+            "zones": 2,
+            "blocks": 2,
+            "cards": 4,
+            "total": 8
+          },
+          "objectCount": 8,
+          "visibleCount": 8,
+          "framesRendered": 2,
+          "backend": "WebGL2",
+          "camera": {
+            "panX": -13,
+            "panY": -7.5,
+            "zoom": 1
+          },
+          "textAtlas": {
+            "width": 512,
+            "height": 512,
+            "rasterScale": 1,
+            "glyphCount": 404,
+            "maxTextureSize": 16384
+          }
+        },
+        "inner": {
+          "width": 1440,
+          "height": 900
+        },
+        "devicePixelRatio": 1,
+        "canvas": {
+          "cssWidth": 1050,
+          "cssHeight": 591,
+          "pixelWidth": 1050,
+          "pixelHeight": 591
+        },
+        "hud": {
+          "objects": "8",
+          "cards": "4",
+          "zones": "2",
+          "visible": "8",
+          "backend": "WebGL2"
+        },
+        "caption": "8 objects \u2014 zone names, card titles cut with an ellipsis and block previews bound to the visible objects; blocks grow to their preview height and the delete affordance appears on hover, focus or selection.",
+        "error": "",
+        "errorHidden": true,
+        "overflowX": false
+      },
+      "assertions": {
+        "screenshotSize": {
+          "passed": true,
+          "expected": "1440x900",
+          "actual": "1440x900"
+        },
+        "window": {
+          "passed": true,
+          "expected": "1440x900",
+          "actual": "1440x900"
+        },
+        "devicePixelRatio": {
+          "passed": true,
+          "expected": 1,
+          "actual": 1
+        },
+        "scene": {
+          "passed": true,
+          "expected": "titles",
+          "actual": "titles"
+        },
+        "objectCount": {
+          "passed": true,
+          "expected": 8,
+          "actual": 8
+        },
+        "counts": {
+          "passed": true,
+          "expected": {
+            "cards": 4,
+            "zones": 2,
+            "blocks": 2
+          },
+          "actual": {
+            "zones": 2,
+            "blocks": 2,
+            "cards": 4,
+            "total": 8
+          }
+        },
+        "camera": {
+          "passed": true,
+          "expected": {
+            "zoom": 1,
+            "panX": -13,
+            "panY": -7.5
+          },
+          "actual": {
+            "panX": -13,
+            "panY": -7.5,
+            "zoom": 1
+          },
+          "source": "?view=512,288,1"
+        },
+        "fitAction": {
+          "passed": true,
+          "expected": "no fit action in this scene",
+          "actual": null
+        },
+        "pageError": {
+          "passed": true,
+          "expected": "",
+          "actual": ""
+        }
+      },
+      "baseline": {
+        "path": "reviews/evidence/visual-baselines/text-titles-desktop-webgl2.png",
+        "written": false,
+        "sha256": "99d232d82837271e182367658c06ba5687b3fc11ec3767933737057708944233",
+        "bytes": 130008
+      },
+      "comparison": {
+        "dimensionMismatch": false,
+        "referenceWidth": 1440,
+        "referenceHeight": 900,
+        "capturedWidth": 1440,
+        "capturedHeight": 900,
+        "totalPixels": 1296000,
+        "differingPixels": 0,
+        "differingPixelRatio": 0,
+        "worstChannelDelta": 0,
+        "withinTolerance": true
+      },
+      "diffPng": null,
+      "baselineName": "text-titles-desktop-webgl2.png"
+    },
+    {
+      "scene": "text-titles",
+      "sceneId": "titles",
+      "viewport": "mobile",
+      "viewportSize": "390x844",
+      "backend": "webgl2",
+      "backendLabel": "WebGL2",
+      "url": "http://127.0.0.1:4160/apps/engine-playground/?scene=titles&view=512%2C288%2C1&text=titles",
+      "fitAction": null,
+      "ready": {
+        "scene": "titles",
+        "objectCount": 8,
+        "visibleCount": 6
+      },
+      "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M2, Unspecified Version)",
+      "capturedWidth": 390,
+      "capturedHeight": 844,
+      "layout": {
+        "state": {
+          "scene": "titles",
+          "counts": {
+            "zones": 2,
+            "blocks": 2,
+            "cards": 4,
+            "total": 8
+          },
+          "objectCount": 8,
+          "visibleCount": 6,
+          "framesRendered": 2,
+          "backend": "WebGL2",
+          "camera": {
+            "panX": 366,
+            "panY": 206,
+            "zoom": 1
+          },
+          "textAtlas": {
+            "width": 512,
+            "height": 512,
+            "rasterScale": 1,
+            "glyphCount": 404,
+            "maxTextureSize": 16384
+          }
+        },
+        "inner": {
+          "width": 390,
+          "height": 844
+        },
+        "devicePixelRatio": 1,
+        "canvas": {
+          "cssWidth": 292,
+          "cssHeight": 164,
+          "pixelWidth": 292,
+          "pixelHeight": 164
+        },
+        "hud": {
+          "objects": "8",
+          "cards": "4",
+          "zones": "2",
+          "visible": "6",
+          "backend": "WebGL2"
+        },
+        "caption": "8 objects \u2014 zone names, card titles cut with an ellipsis and block previews bound to the visible objects; blocks grow to their preview height and the delete affordance appears on hover, focus or selection.",
+        "error": "",
+        "errorHidden": true,
+        "overflowX": false
+      },
+      "assertions": {
+        "screenshotSize": {
+          "passed": true,
+          "expected": "390x844",
+          "actual": "390x844"
+        },
+        "window": {
+          "passed": true,
+          "expected": "390x844",
+          "actual": "390x844"
+        },
+        "devicePixelRatio": {
+          "passed": true,
+          "expected": 1,
+          "actual": 1
+        },
+        "scene": {
+          "passed": true,
+          "expected": "titles",
+          "actual": "titles"
+        },
+        "objectCount": {
+          "passed": true,
+          "expected": 8,
+          "actual": 8
+        },
+        "counts": {
+          "passed": true,
+          "expected": {
+            "cards": 4,
+            "zones": 2,
+            "blocks": 2
+          },
+          "actual": {
+            "zones": 2,
+            "blocks": 2,
+            "cards": 4,
+            "total": 8
+          }
+        },
+        "camera": {
+          "passed": true,
+          "expected": {
+            "zoom": 1,
+            "panX": 366,
+            "panY": 206
+          },
+          "actual": {
+            "panX": 366,
+            "panY": 206,
+            "zoom": 1
+          },
+          "source": "?view=512,288,1"
+        },
+        "fitAction": {
+          "passed": true,
+          "expected": "no fit action in this scene",
+          "actual": null
+        },
+        "pageError": {
+          "passed": true,
+          "expected": "",
+          "actual": ""
+        }
+      },
+      "baseline": {
+        "path": "reviews/evidence/visual-baselines/text-titles-mobile-webgl2.png",
+        "written": false,
+        "sha256": "0ea284928b13350b61e52f617e9db3ed11d1527a59d909a43ab5ae3949944044",
+        "bytes": 34725
+      },
+      "comparison": {
+        "dimensionMismatch": false,
+        "referenceWidth": 390,
+        "referenceHeight": 844,
+        "capturedWidth": 390,
+        "capturedHeight": 844,
+        "totalPixels": 329160,
+        "differingPixels": 0,
+        "differingPixelRatio": 0,
+        "worstChannelDelta": 0,
+        "withinTolerance": true
+      },
+      "diffPng": null,
+      "baselineName": "text-titles-mobile-webgl2.png"
+    },
+    {
+      "scene": "zone-grouping-ghost",
+      "sceneId": "layers",
+      "viewport": "desktop",
+      "viewportSize": "1440x900",
+      "backend": "webgl2",
+      "backendLabel": "WebGL2",
+      "url": "http://127.0.0.1:4160/apps/engine-playground/?scene=layers&view=512%2C288%2C1&store=off&zoneLifecycle=grouping",
+      "fitAction": null,
+      "ready": {
+        "scene": "layers",
+        "objectCount": 8,
+        "visibleCount": 6
+      },
+      "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M2, Unspecified Version)",
+      "capturedWidth": 1440,
+      "capturedHeight": 900,
+      "layout": {
+        "state": {
+          "scene": "layers",
+          "counts": {
+            "zones": 2,
+            "blocks": 2,
+            "cards": 4,
+            "total": 8
+          },
+          "objectCount": 8,
+          "visibleCount": 6,
+          "framesRendered": 1,
+          "backend": "WebGL2",
+          "camera": {
+            "panX": -13,
+            "panY": -7.5,
+            "zoom": 1
+          },
+          "textAtlas": null
+        },
+        "inner": {
+          "width": 1440,
+          "height": 900
+        },
+        "devicePixelRatio": 1,
+        "canvas": {
+          "cssWidth": 1050,
+          "cssHeight": 591,
+          "pixelWidth": 1050,
+          "pixelHeight": 591
+        },
+        "hud": {
+          "objects": "8",
+          "cards": "4",
+          "zones": "2",
+          "visible": "6",
+          "backend": "WebGL2"
+        },
+        "caption": "8 objects \u2014 zones, blocks and note cards whose stored z contradicts the layers. Click an object to bring it to the front of its layer; reload keeps the order.",
+        "error": "",
+        "errorHidden": true,
+        "overflowX": false
+      },
+      "assertions": {
+        "screenshotSize": {
+          "passed": true,
+          "expected": "1440x900",
+          "actual": "1440x900"
+        },
+        "window": {
+          "passed": true,
+          "expected": "1440x900",
+          "actual": "1440x900"
+        },
+        "devicePixelRatio": {
+          "passed": true,
+          "expected": 1,
+          "actual": 1
+        },
+        "scene": {
+          "passed": true,
+          "expected": "layers",
+          "actual": "layers"
+        },
+        "objectCount": {
+          "passed": true,
+          "expected": 8,
+          "actual": 8
+        },
+        "counts": {
+          "passed": true,
+          "expected": {
+            "cards": 4,
+            "zones": 2,
+            "blocks": 2
+          },
+          "actual": {
+            "zones": 2,
+            "blocks": 2,
+            "cards": 4,
+            "total": 8
+          }
+        },
+        "camera": {
+          "passed": true,
+          "expected": {
+            "zoom": 1,
+            "panX": -13,
+            "panY": -7.5
+          },
+          "actual": {
+            "panX": -13,
+            "panY": -7.5,
+            "zoom": 1
+          },
+          "source": "?view=512,288,1"
+        },
+        "fitAction": {
+          "passed": true,
+          "expected": "no fit action in this scene",
+          "actual": null
+        },
+        "pageError": {
+          "passed": true,
+          "expected": "",
+          "actual": ""
+        }
+      },
+      "baseline": {
+        "path": "reviews/evidence/visual-baselines/zone-grouping-ghost-desktop-webgl2.png",
+        "written": false,
+        "sha256": "fcf162f016a8460b906527713b62fb39bc169929e2a80f83ecf4a14dc397e687",
+        "bytes": 65019
+      },
+      "comparison": {
+        "dimensionMismatch": false,
+        "referenceWidth": 1440,
+        "referenceHeight": 900,
+        "capturedWidth": 1440,
+        "capturedHeight": 900,
+        "totalPixels": 1296000,
+        "differingPixels": 0,
+        "differingPixelRatio": 0,
+        "worstChannelDelta": 0,
+        "withinTolerance": true
+      },
+      "diffPng": null,
+      "baselineName": "zone-grouping-ghost-desktop-webgl2.png"
+    },
+    {
+      "scene": "zone-grouping-ghost",
+      "sceneId": "layers",
+      "viewport": "mobile",
+      "viewportSize": "390x844",
+      "backend": "webgl2",
+      "backendLabel": "WebGL2",
+      "url": "http://127.0.0.1:4160/apps/engine-playground/?scene=layers&view=512%2C288%2C1&store=off&zoneLifecycle=grouping",
+      "fitAction": null,
+      "ready": {
+        "scene": "layers",
+        "objectCount": 8,
+        "visibleCount": 5
+      },
+      "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M2, Unspecified Version)",
+      "capturedWidth": 390,
+      "capturedHeight": 844,
+      "layout": {
+        "state": {
+          "scene": "layers",
+          "counts": {
+            "zones": 2,
+            "blocks": 2,
+            "cards": 4,
+            "total": 8
+          },
+          "objectCount": 8,
+          "visibleCount": 5,
+          "framesRendered": 2,
+          "backend": "WebGL2",
+          "camera": {
+            "panX": 366,
+            "panY": 206,
+            "zoom": 1
+          },
+          "textAtlas": null
+        },
+        "inner": {
+          "width": 390,
+          "height": 844
+        },
+        "devicePixelRatio": 1,
+        "canvas": {
+          "cssWidth": 292,
+          "cssHeight": 164,
+          "pixelWidth": 292,
+          "pixelHeight": 164
+        },
+        "hud": {
+          "objects": "8",
+          "cards": "4",
+          "zones": "2",
+          "visible": "5",
+          "backend": "WebGL2"
+        },
+        "caption": "8 objects \u2014 zones, blocks and note cards whose stored z contradicts the layers. Click an object to bring it to the front of its layer; reload keeps the order.",
+        "error": "",
+        "errorHidden": true,
+        "overflowX": false
+      },
+      "assertions": {
+        "screenshotSize": {
+          "passed": true,
+          "expected": "390x844",
+          "actual": "390x844"
+        },
+        "window": {
+          "passed": true,
+          "expected": "390x844",
+          "actual": "390x844"
+        },
+        "devicePixelRatio": {
+          "passed": true,
+          "expected": 1,
+          "actual": 1
+        },
+        "scene": {
+          "passed": true,
+          "expected": "layers",
+          "actual": "layers"
+        },
+        "objectCount": {
+          "passed": true,
+          "expected": 8,
+          "actual": 8
+        },
+        "counts": {
+          "passed": true,
+          "expected": {
+            "cards": 4,
+            "zones": 2,
+            "blocks": 2
+          },
+          "actual": {
+            "zones": 2,
+            "blocks": 2,
+            "cards": 4,
+            "total": 8
+          }
+        },
+        "camera": {
+          "passed": true,
+          "expected": {
+            "zoom": 1,
+            "panX": 366,
+            "panY": 206
+          },
+          "actual": {
+            "panX": 366,
+            "panY": 206,
+            "zoom": 1
+          },
+          "source": "?view=512,288,1"
+        },
+        "fitAction": {
+          "passed": true,
+          "expected": "no fit action in this scene",
+          "actual": null
+        },
+        "pageError": {
+          "passed": true,
+          "expected": "",
+          "actual": ""
+        }
+      },
+      "baseline": {
+        "path": "reviews/evidence/visual-baselines/zone-grouping-ghost-mobile-webgl2.png",
+        "written": false,
+        "sha256": "3d3cb71ffc8225a39a4dde6811e3b5b020f056587e811b81c9996890a73d09ca",
+        "bytes": 28753
+      },
+      "comparison": {
+        "dimensionMismatch": false,
+        "referenceWidth": 390,
+        "referenceHeight": 844,
+        "capturedWidth": 390,
+        "capturedHeight": 844,
+        "totalPixels": 329160,
+        "differingPixels": 0,
+        "differingPixelRatio": 0,
+        "worstChannelDelta": 0,
+        "withinTolerance": true
+      },
+      "diffPng": null,
+      "baselineName": "zone-grouping-ghost-mobile-webgl2.png"
+    },
+    {
+      "scene": "zone-emptied",
+      "sceneId": "layers",
+      "viewport": "desktop",
+      "viewportSize": "1440x900",
+      "backend": "webgl2",
+      "backendLabel": "WebGL2",
+      "url": "http://127.0.0.1:4160/apps/engine-playground/?scene=layers&view=512%2C288%2C1&store=off&zoneLifecycle=emptied",
+      "fitAction": null,
+      "ready": {
+        "scene": "layers",
+        "objectCount": 8,
+        "visibleCount": 5
+      },
+      "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M2, Unspecified Version)",
+      "capturedWidth": 1440,
+      "capturedHeight": 900,
+      "layout": {
+        "state": {
+          "scene": "layers",
+          "counts": {
+            "zones": 2,
+            "blocks": 2,
+            "cards": 4,
+            "total": 8
+          },
+          "objectCount": 8,
+          "visibleCount": 5,
+          "framesRendered": 1,
+          "backend": "WebGL2",
+          "camera": {
+            "panX": -13,
+            "panY": -7.5,
+            "zoom": 1
+          },
+          "textAtlas": null
+        },
+        "inner": {
+          "width": 1440,
+          "height": 900
+        },
+        "devicePixelRatio": 1,
+        "canvas": {
+          "cssWidth": 1050,
+          "cssHeight": 591,
+          "pixelWidth": 1050,
+          "pixelHeight": 591
+        },
+        "hud": {
+          "objects": "8",
+          "cards": "4",
+          "zones": "2",
+          "visible": "5",
+          "backend": "WebGL2"
+        },
+        "caption": "8 objects \u2014 zones, blocks and note cards whose stored z contradicts the layers. Click an object to bring it to the front of its layer; reload keeps the order.",
+        "error": "",
+        "errorHidden": true,
+        "overflowX": false
+      },
+      "assertions": {
+        "screenshotSize": {
+          "passed": true,
+          "expected": "1440x900",
+          "actual": "1440x900"
+        },
+        "window": {
+          "passed": true,
+          "expected": "1440x900",
+          "actual": "1440x900"
+        },
+        "devicePixelRatio": {
+          "passed": true,
+          "expected": 1,
+          "actual": 1
+        },
+        "scene": {
+          "passed": true,
+          "expected": "layers",
+          "actual": "layers"
+        },
+        "objectCount": {
+          "passed": true,
+          "expected": 8,
+          "actual": 8
+        },
+        "counts": {
+          "passed": true,
+          "expected": {
+            "cards": 4,
+            "zones": 2,
+            "blocks": 2
+          },
+          "actual": {
+            "zones": 2,
+            "blocks": 2,
+            "cards": 4,
+            "total": 8
+          }
+        },
+        "camera": {
+          "passed": true,
+          "expected": {
+            "zoom": 1,
+            "panX": -13,
+            "panY": -7.5
+          },
+          "actual": {
+            "panX": -13,
+            "panY": -7.5,
+            "zoom": 1
+          },
+          "source": "?view=512,288,1"
+        },
+        "fitAction": {
+          "passed": true,
+          "expected": "no fit action in this scene",
+          "actual": null
+        },
+        "pageError": {
+          "passed": true,
+          "expected": "",
+          "actual": ""
+        }
+      },
+      "baseline": {
+        "path": "reviews/evidence/visual-baselines/zone-emptied-desktop-webgl2.png",
+        "written": false,
+        "sha256": "47e1c178c6ea33963f552f49989b06a297fe933460993c4e2f9817ff42cfe8d7",
+        "bytes": 59136
+      },
+      "comparison": {
+        "dimensionMismatch": false,
+        "referenceWidth": 1440,
+        "referenceHeight": 900,
+        "capturedWidth": 1440,
+        "capturedHeight": 900,
+        "totalPixels": 1296000,
+        "differingPixels": 0,
+        "differingPixelRatio": 0,
+        "worstChannelDelta": 0,
+        "withinTolerance": true
+      },
+      "diffPng": null,
+      "baselineName": "zone-emptied-desktop-webgl2.png"
+    },
+    {
+      "scene": "zone-emptied",
+      "sceneId": "layers",
+      "viewport": "mobile",
+      "viewportSize": "390x844",
+      "backend": "webgl2",
+      "backendLabel": "WebGL2",
+      "url": "http://127.0.0.1:4160/apps/engine-playground/?scene=layers&view=512%2C288%2C1&store=off&zoneLifecycle=emptied",
+      "fitAction": null,
+      "ready": {
+        "scene": "layers",
+        "objectCount": 8,
+        "visibleCount": 4
+      },
+      "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M2, Unspecified Version)",
+      "capturedWidth": 390,
+      "capturedHeight": 844,
+      "layout": {
+        "state": {
+          "scene": "layers",
+          "counts": {
+            "zones": 2,
+            "blocks": 2,
+            "cards": 4,
+            "total": 8
+          },
+          "objectCount": 8,
+          "visibleCount": 4,
+          "framesRendered": 2,
+          "backend": "WebGL2",
+          "camera": {
+            "panX": 366,
+            "panY": 206,
+            "zoom": 1
+          },
+          "textAtlas": null
+        },
+        "inner": {
+          "width": 390,
+          "height": 844
+        },
+        "devicePixelRatio": 1,
+        "canvas": {
+          "cssWidth": 292,
+          "cssHeight": 164,
+          "pixelWidth": 292,
+          "pixelHeight": 164
+        },
+        "hud": {
+          "objects": "8",
+          "cards": "4",
+          "zones": "2",
+          "visible": "4",
+          "backend": "WebGL2"
+        },
+        "caption": "8 objects \u2014 zones, blocks and note cards whose stored z contradicts the layers. Click an object to bring it to the front of its layer; reload keeps the order.",
+        "error": "",
+        "errorHidden": true,
+        "overflowX": false
+      },
+      "assertions": {
+        "screenshotSize": {
+          "passed": true,
+          "expected": "390x844",
+          "actual": "390x844"
+        },
+        "window": {
+          "passed": true,
+          "expected": "390x844",
+          "actual": "390x844"
+        },
+        "devicePixelRatio": {
+          "passed": true,
+          "expected": 1,
+          "actual": 1
+        },
+        "scene": {
+          "passed": true,
+          "expected": "layers",
+          "actual": "layers"
+        },
+        "objectCount": {
+          "passed": true,
+          "expected": 8,
+          "actual": 8
+        },
+        "counts": {
+          "passed": true,
+          "expected": {
+            "cards": 4,
+            "zones": 2,
+            "blocks": 2
+          },
+          "actual": {
+            "zones": 2,
+            "blocks": 2,
+            "cards": 4,
+            "total": 8
+          }
+        },
+        "camera": {
+          "passed": true,
+          "expected": {
+            "zoom": 1,
+            "panX": 366,
+            "panY": 206
+          },
+          "actual": {
+            "panX": 366,
+            "panY": 206,
+            "zoom": 1
+          },
+          "source": "?view=512,288,1"
+        },
+        "fitAction": {
+          "passed": true,
+          "expected": "no fit action in this scene",
+          "actual": null
+        },
+        "pageError": {
+          "passed": true,
+          "expected": "",
+          "actual": ""
+        }
+      },
+      "baseline": {
+        "path": "reviews/evidence/visual-baselines/zone-emptied-mobile-webgl2.png",
+        "written": false,
+        "sha256": "b8972a8f946d58bd0144720401daead8368600b46c0e43eef7923e1b9af634f1",
+        "bytes": 26964
+      },
+      "comparison": {
+        "dimensionMismatch": false,
+        "referenceWidth": 390,
+        "referenceHeight": 844,
+        "capturedWidth": 390,
+        "capturedHeight": 844,
+        "totalPixels": 329160,
+        "differingPixels": 0,
+        "differingPixelRatio": 0,
+        "worstChannelDelta": 0,
+        "withinTolerance": true
+      },
+      "diffPng": null,
+      "baselineName": "zone-emptied-mobile-webgl2.png"
+    },
+    {
+      "scene": "zone-names",
+      "sceneId": "layers",
+      "viewport": "desktop",
+      "viewportSize": "1440x900",
+      "backend": "webgl2",
+      "backendLabel": "WebGL2",
+      "url": "http://127.0.0.1:4160/apps/engine-playground/?scene=layers&view=512%2C288%2C1&store=off&zoneLifecycle=names",
+      "fitAction": null,
+      "ready": {
+        "scene": "layers",
+        "objectCount": 8,
+        "visibleCount": 8
+      },
+      "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M2, Unspecified Version)",
+      "capturedWidth": 1440,
+      "capturedHeight": 900,
+      "layout": {
+        "state": {
+          "scene": "layers",
+          "counts": {
+            "zones": 2,
+            "blocks": 2,
+            "cards": 4,
+            "total": 8
+          },
+          "objectCount": 8,
+          "visibleCount": 8,
+          "framesRendered": 1,
+          "backend": "WebGL2",
+          "camera": {
+            "panX": -13,
+            "panY": -7.5,
+            "zoom": 1
+          },
+          "textAtlas": null
+        },
+        "inner": {
+          "width": 1440,
+          "height": 900
+        },
+        "devicePixelRatio": 1,
+        "canvas": {
+          "cssWidth": 1050,
+          "cssHeight": 591,
+          "pixelWidth": 1050,
+          "pixelHeight": 591
+        },
+        "hud": {
+          "objects": "8",
+          "cards": "4",
+          "zones": "2",
+          "visible": "8",
+          "backend": "WebGL2"
+        },
+        "caption": "8 objects \u2014 zones, blocks and note cards whose stored z contradicts the layers. Click an object to bring it to the front of its layer; reload keeps the order.",
+        "error": "",
+        "errorHidden": true,
+        "overflowX": false
+      },
+      "assertions": {
+        "screenshotSize": {
+          "passed": true,
+          "expected": "1440x900",
+          "actual": "1440x900"
+        },
+        "window": {
+          "passed": true,
+          "expected": "1440x900",
+          "actual": "1440x900"
+        },
+        "devicePixelRatio": {
+          "passed": true,
+          "expected": 1,
+          "actual": 1
+        },
+        "scene": {
+          "passed": true,
+          "expected": "layers",
+          "actual": "layers"
+        },
+        "objectCount": {
+          "passed": true,
+          "expected": 8,
+          "actual": 8
+        },
+        "counts": {
+          "passed": true,
+          "expected": {
+            "cards": 4,
+            "zones": 2,
+            "blocks": 2
+          },
+          "actual": {
+            "zones": 2,
+            "blocks": 2,
+            "cards": 4,
+            "total": 8
+          }
+        },
+        "camera": {
+          "passed": true,
+          "expected": {
+            "zoom": 1,
+            "panX": -13,
+            "panY": -7.5
+          },
+          "actual": {
+            "panX": -13,
+            "panY": -7.5,
+            "zoom": 1
+          },
+          "source": "?view=512,288,1"
+        },
+        "fitAction": {
+          "passed": true,
+          "expected": "no fit action in this scene",
+          "actual": null
+        },
+        "pageError": {
+          "passed": true,
+          "expected": "",
+          "actual": ""
+        }
+      },
+      "baseline": {
+        "path": "reviews/evidence/visual-baselines/zone-names-desktop-webgl2.png",
+        "written": false,
+        "sha256": "1fffff945856c9384110ee72b4029168c6e65c1c52c2eff2d5f4882e00084f20",
+        "bytes": 57218
+      },
+      "comparison": {
+        "dimensionMismatch": false,
+        "referenceWidth": 1440,
+        "referenceHeight": 900,
+        "capturedWidth": 1440,
+        "capturedHeight": 900,
+        "totalPixels": 1296000,
+        "differingPixels": 0,
+        "differingPixelRatio": 0,
+        "worstChannelDelta": 0,
+        "withinTolerance": true
+      },
+      "diffPng": null,
+      "baselineName": "zone-names-desktop-webgl2.png"
+    },
+    {
+      "scene": "zone-names",
+      "sceneId": "layers",
+      "viewport": "mobile",
+      "viewportSize": "390x844",
+      "backend": "webgl2",
+      "backendLabel": "WebGL2",
+      "url": "http://127.0.0.1:4160/apps/engine-playground/?scene=layers&view=512%2C288%2C1&store=off&zoneLifecycle=names",
+      "fitAction": null,
+      "ready": {
+        "scene": "layers",
+        "objectCount": 8,
+        "visibleCount": 7
+      },
+      "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M2, Unspecified Version)",
+      "capturedWidth": 390,
+      "capturedHeight": 844,
+      "layout": {
+        "state": {
+          "scene": "layers",
+          "counts": {
+            "zones": 2,
+            "blocks": 2,
+            "cards": 4,
+            "total": 8
+          },
+          "objectCount": 8,
+          "visibleCount": 7,
+          "framesRendered": 2,
+          "backend": "WebGL2",
+          "camera": {
+            "panX": 366,
+            "panY": 206,
+            "zoom": 1
+          },
+          "textAtlas": null
+        },
+        "inner": {
+          "width": 390,
+          "height": 844
+        },
+        "devicePixelRatio": 1,
+        "canvas": {
+          "cssWidth": 292,
+          "cssHeight": 164,
+          "pixelWidth": 292,
+          "pixelHeight": 164
+        },
+        "hud": {
+          "objects": "8",
+          "cards": "4",
+          "zones": "2",
+          "visible": "7",
+          "backend": "WebGL2"
+        },
+        "caption": "8 objects \u2014 zones, blocks and note cards whose stored z contradicts the layers. Click an object to bring it to the front of its layer; reload keeps the order.",
+        "error": "",
+        "errorHidden": true,
+        "overflowX": false
+      },
+      "assertions": {
+        "screenshotSize": {
+          "passed": true,
+          "expected": "390x844",
+          "actual": "390x844"
+        },
+        "window": {
+          "passed": true,
+          "expected": "390x844",
+          "actual": "390x844"
+        },
+        "devicePixelRatio": {
+          "passed": true,
+          "expected": 1,
+          "actual": 1
+        },
+        "scene": {
+          "passed": true,
+          "expected": "layers",
+          "actual": "layers"
+        },
+        "objectCount": {
+          "passed": true,
+          "expected": 8,
+          "actual": 8
+        },
+        "counts": {
+          "passed": true,
+          "expected": {
+            "cards": 4,
+            "zones": 2,
+            "blocks": 2
+          },
+          "actual": {
+            "zones": 2,
+            "blocks": 2,
+            "cards": 4,
+            "total": 8
+          }
+        },
+        "camera": {
+          "passed": true,
+          "expected": {
+            "zoom": 1,
+            "panX": 366,
+            "panY": 206
+          },
+          "actual": {
+            "panX": 366,
+            "panY": 206,
+            "zoom": 1
+          },
+          "source": "?view=512,288,1"
+        },
+        "fitAction": {
+          "passed": true,
+          "expected": "no fit action in this scene",
+          "actual": null
+        },
+        "pageError": {
+          "passed": true,
+          "expected": "",
+          "actual": ""
+        }
+      },
+      "baseline": {
+        "path": "reviews/evidence/visual-baselines/zone-names-mobile-webgl2.png",
+        "written": false,
+        "sha256": "e9ea8a095188a8a6ff6f77217cdc6d3e25e6d075191a89137250b2985acebd12",
+        "bytes": 26729
+      },
+      "comparison": {
+        "dimensionMismatch": false,
+        "referenceWidth": 390,
+        "referenceHeight": 844,
+        "capturedWidth": 390,
+        "capturedHeight": 844,
+        "totalPixels": 329160,
+        "differingPixels": 0,
+        "differingPixelRatio": 0,
+        "worstChannelDelta": 0,
+        "withinTolerance": true
+      },
+      "diffPng": null,
+      "baselineName": "zone-names-mobile-webgl2.png"
+    },
+    {
+      "scene": "zone-parity-at-rest",
+      "sceneId": "layers",
+      "viewport": "desktop",
+      "viewportSize": "1440x900",
+      "backend": "webgl2",
+      "backendLabel": "WebGL2",
+      "url": "http://127.0.0.1:4160/apps/engine-playground/?scene=layers&view=512%2C288%2C1&store=off&zoneParity=1",
+      "fitAction": null,
+      "ready": {
+        "scene": "layers",
+        "objectCount": 8,
+        "visibleCount": 8
+      },
+      "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M2, Unspecified Version)",
+      "capturedWidth": 1440,
+      "capturedHeight": 900,
+      "layout": {
+        "state": {
+          "scene": "layers",
+          "counts": {
+            "zones": 2,
+            "blocks": 2,
+            "cards": 4,
+            "total": 8
+          },
+          "objectCount": 8,
+          "visibleCount": 8,
+          "framesRendered": 2,
+          "backend": "WebGL2",
+          "camera": {
+            "panX": -13,
+            "panY": -7.5,
+            "zoom": 1
+          },
+          "textAtlas": null
+        },
+        "inner": {
+          "width": 1440,
+          "height": 900
+        },
+        "devicePixelRatio": 1,
+        "canvas": {
+          "cssWidth": 1050,
+          "cssHeight": 591,
+          "pixelWidth": 1050,
+          "pixelHeight": 591
+        },
+        "hud": {
+          "objects": "8",
+          "cards": "4",
+          "zones": "2",
+          "visible": "8",
+          "backend": "WebGL2"
+        },
+        "caption": "8 objects \u2014 zones, blocks and note cards whose stored z contradicts the layers. Click an object to bring it to the front of its layer; reload keeps the order.",
+        "error": "",
+        "errorHidden": true,
+        "overflowX": false
+      },
+      "assertions": {
+        "screenshotSize": {
+          "passed": true,
+          "expected": "1440x900",
+          "actual": "1440x900"
+        },
+        "window": {
+          "passed": true,
+          "expected": "1440x900",
+          "actual": "1440x900"
+        },
+        "devicePixelRatio": {
+          "passed": true,
+          "expected": 1,
+          "actual": 1
+        },
+        "scene": {
+          "passed": true,
+          "expected": "layers",
+          "actual": "layers"
+        },
+        "objectCount": {
+          "passed": true,
+          "expected": 8,
+          "actual": 8
+        },
+        "counts": {
+          "passed": true,
+          "expected": {
+            "cards": 4,
+            "zones": 2,
+            "blocks": 2
+          },
+          "actual": {
+            "zones": 2,
+            "blocks": 2,
+            "cards": 4,
+            "total": 8
+          }
+        },
+        "camera": {
+          "passed": true,
+          "expected": {
+            "zoom": 1,
+            "panX": -13,
+            "panY": -7.5
+          },
+          "actual": {
+            "panX": -13,
+            "panY": -7.5,
+            "zoom": 1
+          },
+          "source": "?view=512,288,1"
+        },
+        "fitAction": {
+          "passed": true,
+          "expected": "no fit action in this scene",
+          "actual": null
+        },
+        "pageError": {
+          "passed": true,
+          "expected": "",
+          "actual": ""
+        }
+      },
+      "baseline": {
+        "path": "reviews/evidence/visual-baselines/zone-parity-at-rest-desktop-webgl2.png",
+        "written": false,
+        "sha256": "d0dcb949c68fd520ab47f67a5bb271a658c9e087b38f6b9703da3c1aaf994a90",
+        "bytes": 55712
+      },
+      "comparison": {
+        "dimensionMismatch": false,
+        "referenceWidth": 1440,
+        "referenceHeight": 900,
+        "capturedWidth": 1440,
+        "capturedHeight": 900,
+        "totalPixels": 1296000,
+        "differingPixels": 0,
+        "differingPixelRatio": 0,
+        "worstChannelDelta": 0,
+        "withinTolerance": true
+      },
+      "diffPng": null,
+      "baselineName": "zone-parity-at-rest-desktop-webgl2.png"
+    },
+    {
+      "scene": "zone-parity-at-rest",
+      "sceneId": "layers",
+      "viewport": "mobile",
+      "viewportSize": "390x844",
+      "backend": "webgl2",
+      "backendLabel": "WebGL2",
+      "url": "http://127.0.0.1:4160/apps/engine-playground/?scene=layers&view=512%2C288%2C1&store=off&zoneParity=1",
+      "fitAction": null,
+      "ready": {
+        "scene": "layers",
+        "objectCount": 8,
+        "visibleCount": 6
+      },
+      "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M2, Unspecified Version)",
+      "capturedWidth": 390,
+      "capturedHeight": 844,
+      "layout": {
+        "state": {
+          "scene": "layers",
+          "counts": {
+            "zones": 2,
+            "blocks": 2,
+            "cards": 4,
+            "total": 8
+          },
+          "objectCount": 8,
+          "visibleCount": 6,
+          "framesRendered": 2,
+          "backend": "WebGL2",
+          "camera": {
+            "panX": 366,
+            "panY": 206,
+            "zoom": 1
+          },
+          "textAtlas": null
+        },
+        "inner": {
+          "width": 390,
+          "height": 844
+        },
+        "devicePixelRatio": 1,
+        "canvas": {
+          "cssWidth": 292,
+          "cssHeight": 164,
+          "pixelWidth": 292,
+          "pixelHeight": 164
+        },
+        "hud": {
+          "objects": "8",
+          "cards": "4",
+          "zones": "2",
+          "visible": "6",
+          "backend": "WebGL2"
+        },
+        "caption": "8 objects \u2014 zones, blocks and note cards whose stored z contradicts the layers. Click an object to bring it to the front of its layer; reload keeps the order.",
+        "error": "",
+        "errorHidden": true,
+        "overflowX": false
+      },
+      "assertions": {
+        "screenshotSize": {
+          "passed": true,
+          "expected": "390x844",
+          "actual": "390x844"
+        },
+        "window": {
+          "passed": true,
+          "expected": "390x844",
+          "actual": "390x844"
+        },
+        "devicePixelRatio": {
+          "passed": true,
+          "expected": 1,
+          "actual": 1
+        },
+        "scene": {
+          "passed": true,
+          "expected": "layers",
+          "actual": "layers"
+        },
+        "objectCount": {
+          "passed": true,
+          "expected": 8,
+          "actual": 8
+        },
+        "counts": {
+          "passed": true,
+          "expected": {
+            "cards": 4,
+            "zones": 2,
+            "blocks": 2
+          },
+          "actual": {
+            "zones": 2,
+            "blocks": 2,
+            "cards": 4,
+            "total": 8
+          }
+        },
+        "camera": {
+          "passed": true,
+          "expected": {
+            "zoom": 1,
+            "panX": 366,
+            "panY": 206
+          },
+          "actual": {
+            "panX": 366,
+            "panY": 206,
+            "zoom": 1
+          },
+          "source": "?view=512,288,1"
+        },
+        "fitAction": {
+          "passed": true,
+          "expected": "no fit action in this scene",
+          "actual": null
+        },
+        "pageError": {
+          "passed": true,
+          "expected": "",
+          "actual": ""
+        }
+      },
+      "baseline": {
+        "path": "reviews/evidence/visual-baselines/zone-parity-at-rest-mobile-webgl2.png",
+        "written": false,
+        "sha256": "ad0dcf6a7865c73c0c78cd10ac5e8cb0ad9730374808de047ef50c4f84a4365b",
+        "bytes": 26722
+      },
+      "comparison": {
+        "dimensionMismatch": false,
+        "referenceWidth": 390,
+        "referenceHeight": 844,
+        "capturedWidth": 390,
+        "capturedHeight": 844,
+        "totalPixels": 329160,
+        "differingPixels": 0,
+        "differingPixelRatio": 0,
+        "worstChannelDelta": 0,
+        "withinTolerance": true
+      },
+      "diffPng": null,
+      "baselineName": "zone-parity-at-rest-mobile-webgl2.png"
+    },
+    {
+      "scene": "text-titles-zoom-200",
+      "sceneId": "titles",
+      "viewport": "desktop",
+      "viewportSize": "1440x900",
+      "backend": "webgl2",
+      "backendLabel": "WebGL2",
+      "url": "http://127.0.0.1:4160/apps/engine-playground/?scene=titles&view=512%2C240%2C2&text=titles",
+      "fitAction": null,
+      "ready": {
+        "scene": "titles",
+        "objectCount": 8,
+        "visibleCount": 7
+      },
+      "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M2, Unspecified Version)",
+      "capturedWidth": 1440,
+      "capturedHeight": 900,
+      "layout": {
+        "state": {
+          "scene": "titles",
+          "counts": {
+            "zones": 2,
+            "blocks": 2,
+            "cards": 4,
+            "total": 8
+          },
+          "objectCount": 8,
+          "visibleCount": 7,
+          "framesRendered": 2,
+          "backend": "WebGL2",
+          "camera": {
+            "panX": 249.5,
+            "panY": 92.25,
+            "zoom": 2
+          },
+          "textAtlas": {
+            "width": 1024,
+            "height": 1024,
+            "rasterScale": 2,
+            "glyphCount": 404,
+            "maxTextureSize": 16384
+          }
+        },
+        "inner": {
+          "width": 1440,
+          "height": 900
+        },
+        "devicePixelRatio": 1,
+        "canvas": {
+          "cssWidth": 1050,
+          "cssHeight": 591,
+          "pixelWidth": 1050,
+          "pixelHeight": 591
+        },
+        "hud": {
+          "objects": "8",
+          "cards": "4",
+          "zones": "2",
+          "visible": "7",
+          "backend": "WebGL2"
+        },
+        "caption": "8 objects \u2014 zone names, card titles cut with an ellipsis and block previews bound to the visible objects; blocks grow to their preview height and the delete affordance appears on hover, focus or selection.",
+        "error": "",
+        "errorHidden": true,
+        "overflowX": false
+      },
+      "assertions": {
+        "screenshotSize": {
+          "passed": true,
+          "expected": "1440x900",
+          "actual": "1440x900"
+        },
+        "window": {
+          "passed": true,
+          "expected": "1440x900",
+          "actual": "1440x900"
+        },
+        "devicePixelRatio": {
+          "passed": true,
+          "expected": 1,
+          "actual": 1
+        },
+        "scene": {
+          "passed": true,
+          "expected": "titles",
+          "actual": "titles"
+        },
+        "objectCount": {
+          "passed": true,
+          "expected": 8,
+          "actual": 8
+        },
+        "counts": {
+          "passed": true,
+          "expected": {
+            "cards": 4,
+            "zones": 2,
+            "blocks": 2
+          },
+          "actual": {
+            "zones": 2,
+            "blocks": 2,
+            "cards": 4,
+            "total": 8
+          }
+        },
+        "camera": {
+          "passed": true,
+          "expected": {
+            "zoom": 2,
+            "panX": 249.5,
+            "panY": 92.25
+          },
+          "actual": {
+            "panX": 249.5,
+            "panY": 92.25,
+            "zoom": 2
+          },
+          "source": "?view=512,240,2"
+        },
+        "fitAction": {
+          "passed": true,
+          "expected": "no fit action in this scene",
+          "actual": null
+        },
+        "pageError": {
+          "passed": true,
+          "expected": "",
+          "actual": ""
+        }
+      },
+      "baseline": {
+        "path": "reviews/evidence/visual-baselines/text-titles-zoom-200-desktop-webgl2.png",
+        "written": false,
+        "sha256": "e124b8f8e01ea2d1c99082b030087daa05d71fef780bc7ce6ff517edb607ed35",
+        "bytes": 122303
+      },
+      "comparison": {
+        "dimensionMismatch": false,
+        "referenceWidth": 1440,
+        "referenceHeight": 900,
+        "capturedWidth": 1440,
+        "capturedHeight": 900,
+        "totalPixels": 1296000,
+        "differingPixels": 0,
+        "differingPixelRatio": 0,
+        "worstChannelDelta": 0,
+        "withinTolerance": true
+      },
+      "diffPng": null,
+      "baselineName": "text-titles-zoom-200-desktop-webgl2.png"
+    },
+    {
+      "scene": "text-titles-zoom-200",
+      "sceneId": "titles",
+      "viewport": "mobile",
+      "viewportSize": "390x844",
+      "backend": "webgl2",
+      "backendLabel": "WebGL2",
+      "url": "http://127.0.0.1:4160/apps/engine-playground/?scene=titles&view=512%2C240%2C2&text=titles",
+      "fitAction": null,
+      "ready": {
+        "scene": "titles",
+        "objectCount": 8,
+        "visibleCount": 6
+      },
+      "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M2, Unspecified Version)",
+      "capturedWidth": 390,
+      "capturedHeight": 844,
+      "layout": {
+        "state": {
+          "scene": "titles",
+          "counts": {
+            "zones": 2,
+            "blocks": 2,
+            "cards": 4,
+            "total": 8
+          },
+          "objectCount": 8,
+          "visibleCount": 6,
+          "framesRendered": 2,
+          "backend": "WebGL2",
+          "camera": {
+            "panX": 439,
+            "panY": 199,
+            "zoom": 2
+          },
+          "textAtlas": {
+            "width": 1024,
+            "height": 1024,
+            "rasterScale": 2,
+            "glyphCount": 404,
+            "maxTextureSize": 16384
+          }
+        },
+        "inner": {
+          "width": 390,
+          "height": 844
+        },
+        "devicePixelRatio": 1,
+        "canvas": {
+          "cssWidth": 292,
+          "cssHeight": 164,
+          "pixelWidth": 292,
+          "pixelHeight": 164
+        },
+        "hud": {
+          "objects": "8",
+          "cards": "4",
+          "zones": "2",
+          "visible": "6",
+          "backend": "WebGL2"
+        },
+        "caption": "8 objects \u2014 zone names, card titles cut with an ellipsis and block previews bound to the visible objects; blocks grow to their preview height and the delete affordance appears on hover, focus or selection.",
+        "error": "",
+        "errorHidden": true,
+        "overflowX": false
+      },
+      "assertions": {
+        "screenshotSize": {
+          "passed": true,
+          "expected": "390x844",
+          "actual": "390x844"
+        },
+        "window": {
+          "passed": true,
+          "expected": "390x844",
+          "actual": "390x844"
+        },
+        "devicePixelRatio": {
+          "passed": true,
+          "expected": 1,
+          "actual": 1
+        },
+        "scene": {
+          "passed": true,
+          "expected": "titles",
+          "actual": "titles"
+        },
+        "objectCount": {
+          "passed": true,
+          "expected": 8,
+          "actual": 8
+        },
+        "counts": {
+          "passed": true,
+          "expected": {
+            "cards": 4,
+            "zones": 2,
+            "blocks": 2
+          },
+          "actual": {
+            "zones": 2,
+            "blocks": 2,
+            "cards": 4,
+            "total": 8
+          }
+        },
+        "camera": {
+          "passed": true,
+          "expected": {
+            "zoom": 2,
+            "panX": 439,
+            "panY": 199
+          },
+          "actual": {
+            "panX": 439,
+            "panY": 199,
+            "zoom": 2
+          },
+          "source": "?view=512,240,2"
+        },
+        "fitAction": {
+          "passed": true,
+          "expected": "no fit action in this scene",
+          "actual": null
+        },
+        "pageError": {
+          "passed": true,
+          "expected": "",
+          "actual": ""
+        }
+      },
+      "baseline": {
+        "path": "reviews/evidence/visual-baselines/text-titles-zoom-200-mobile-webgl2.png",
+        "written": false,
+        "sha256": "9b87b27c3a7036622124a912a0849d2994664b9cf98a336e54004f598bfc7836",
+        "bytes": 30696
+      },
+      "comparison": {
+        "dimensionMismatch": false,
+        "referenceWidth": 390,
+        "referenceHeight": 844,
+        "capturedWidth": 390,
+        "capturedHeight": 844,
+        "totalPixels": 329160,
+        "differingPixels": 0,
+        "differingPixelRatio": 0,
+        "worstChannelDelta": 0,
+        "withinTolerance": true
+      },
+      "diffPng": null,
+      "baselineName": "text-titles-zoom-200-mobile-webgl2.png"
+    }
+  ],
+  "failures": [],
+  "updates": [],
+  "missingBaselines": [],
+  "pageErrors": [],
+  "chromeStderr": [
+    "[1028/085109.620810:ERROR:third_party/crashpad/crashpad/util/file/file_io_posix.cc:208] open /Users/rasulatashev/Library/Application Support/Google/Chrome for Testing/Crashpad/settings.dat: Operation not permitted (1)",
+    "[1028/085109.621020:ERROR:third_party/crashpad/crashpad/util/file/file_io_posix.cc:208] open /Users/rasulatashev/Library/Application Support/Google/Chrome for Testing/Crashpad/settings.dat: Operation not permitted (1)",
+    "[41779:3809431:1028/085109.711130:ERROR:third_party/crashpad/crashpad/util/file/file_io_posix.cc:208] open /Users/rasulatashev/Library/Application Support/Google/Chrome for Testing/Crashpad/settings.dat: Operation not permitted (1)",
+    "DevTools listening on ws://127.0.0.1:49328/devtools/browser/575e7a17-5886-49c0-9417-630441440706",
+    "[41786:3809496:1028/085110.173692:ERROR:ui/display/mac/cv_display_link_mac.mm:188] CVDisplayLinkCreateWithCGDisplay failed. CVReturn: -6670",
+    "[41786:3809496:1028/085110.180105:ERROR:ui/display/mac/cv_display_link_mac.mm:188] CVDisplayLinkCreateWithCGDisplay failed. CVReturn: -6670",
+    "[41786:3809496:1028/085110.180269:ERROR:ui/display/mac/cv_display_link_mac.mm:188] CVDisplayLinkCreateWithCGDisplay failed. CVReturn: -6670",
+    "[41786:3809496:1028/085110.180426:ERROR:ui/display/mac/cv_display_link_mac.mm:188] CVDisplayLinkCreateWithCGDisplay failed. CVReturn: -6670",
+    "[41786:3809496:1028/085110.180554:ERROR:ui/display/mac/cv_display_link_mac.mm:188] CVDisplayLinkCreateWithCGDisplay failed. CVReturn: -6670",
+    "[41786:3809496:1028/085111.800747:ERROR:ui/display/mac/cv_display_link_mac.mm:188] CVDisplayLinkCreateWithCGDisplay failed. CVReturn: -6670"
+  ],
+  "finishedAt": "2026-10-28T07:51:21.216Z",
+  "durationMs": 11746,
+  "result": "pass",
+  "resultReason": "pass",
+  "exitCode": 0,
+  "openPoints": [
+    "WebGPU backend P4-11\u2026P4-13 is not merged in this chain: the committed reference set is WebGL2-only and no WebGPU reference set is claimed. The two-backend visual proof is therefore open; this record must not be read as a two-backend pass."
+  ]
+}

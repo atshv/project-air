@@ -662,6 +662,18 @@ the deterministic capture (`tools/capture-zone-lifecycle.mjs`) and the new revie
 `test/zone-lifecycle.test.mjs` pin the thresholds, defaults, title rules, header geometry and the
 one-operation creation/removal/rename with inverse.
 
+## Stage showcase and final proof (P4-28)
+
+`?showcase=1` is the deterministic stage showcase state (not a gate scene, no baseline): the titles
+gallery with engine-bound zone titles and card titles/previews, selection chrome on three objects, the
+snap guides of a fixed drag, and a fixed 200 % camera (the sharp text bucket); the scheduler is
+paused after the showcase frame. `tools/capture-showcase.mjs` captures the desktop (1440x900) and
+mobile (390x844, 150 %) states with camera, counts, rendered frames, selection and guide counts.
+The stage-exit measurements are the `perf-final` and `visual-final` records; the final table and the
+explicit WebGPU/open-task gaps live in `docs/engine/stage-report.md`. The two-backend reference set
+is **not** proven (WebGPU P4-11…P4-13 are not merged); the committed reference images are WebGL2-only
+and no baseline was changed by P4-28.
+
 ## Object identity and mutations
 
 `Document` keeps one storage slot per object and assigns a monotonic `ObjectId` on insert

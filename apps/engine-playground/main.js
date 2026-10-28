@@ -198,6 +198,9 @@ const textLayoutRequested =
   query.get("text") === "layout" && !benchmarkRequested && !perfRequested;
 const titlesRequested =
   query.get("text") === "titles" && !benchmarkRequested && !perfRequested;
+// P4-28: deterministic stage showcase (engine-core capabilities, not a gate scene).
+const showcaseRequested =
+  query.get("showcase") === "1" && !benchmarkRequested && !perfRequested;
 // L03 (P4-14) input demo: one editable field and one scrollable area inside a
 // block body of the layers scene. Off by default, so no reference image changes.
 const inputDemoRequested =
@@ -717,7 +720,7 @@ function installTitles(engine, loaded) {
 }
 
 async function loadScene() {
-  if (titlesRequested) {
+  if (titlesRequested || showcaseRequested) {
     // The titles gallery is the playground's own deterministic demo board; it
     // needs no test-kit bundle, so the scene works in a harness copy as well.
     return buildTitlesGallery();
@@ -763,6 +766,9 @@ async function loadScene() {
 }
 
 function sceneCaption(loaded) {
+  if (showcaseRequested) {
+    return `${loaded.counts.total} objects — stage showcase: zones with titles and their members, card titles and previews bound by the engine, selection chrome on three objects, snap guides and the sharp text bucket at 200 %. Deterministic paused state for the P4-28 evidence; no board content is written by the capture.`;
+  }
   if (titlesRequested) {
     return `${loaded.counts.total} objects — zone names, card titles cut with an ellipsis and block previews bound to the visible objects; blocks grow to their preview height and the delete affordance appears on hover, focus or selection.`;
   }
@@ -2747,6 +2753,42 @@ function installInputDemo(enabled) {
 // L19 fit action on the keyboard: `f` ("show all"). It calls the same fit function
 // as the exposed `fit()` hook, so the browser evidence and the visual scene drive
 // exactly the user path; a modifier or an already-handled key is left alone.
+// P4-28: deterministic stage showcase state. Pure presentation: the titles are
+// already bound by installTitles, the selection chrome and snap guides are the
+// engine's own presentation state, and the camera is fixed by ?view= or the
+// showcase default (200 %). No board content is written and no animation runs;
+// the capture waits for the paused scheduler before taking the screenshot.
+function installShowcase(engine, loaded) {
+  const slotOf = (id) => loaded.objects.findIndex((object) => object.id === id);
+  const selection = ["block-0001", "card-0001", "card-0002"]
+    .map(slotOf)
+    .filter((slot) => slot >= 0);
+  if (selection.length > 0) {
+    engine.setSelection(selection);
+  }
+  const cardSlot = slotOf("card-0001");
+  const blockSlot = slotOf("block-0001");
+  const block = loaded.objects[blockSlot] ?? { x: 48 };
+  const card = loaded.objects[cardSlot] ?? { y: 256 };
+  const snapped = engine.snapDrag(cardSlot, { x: block.x + 1, y: card.y }, false);
+  globalThis.__showcase = {
+    scene: "showcase",
+    counts: { ...loaded.counts },
+    camera: { panX: camera.panX, panY: camera.panY, zoom: camera.zoom },
+    selection,
+    guides: snapped.guides.length,
+    snapped: snapped.position,
+    framesBefore: framesNode.textContent,
+    framesAfter: null,
+    scheduler: "on-demand (paused after the showcase frame)",
+  };
+  onDemand.request();
+  requestAnimationFrame(() => {
+    globalThis.__showcase.framesAfter = framesNode.textContent;
+    globalThis.__showcase.camera = { panX: camera.panX, panY: camera.panY, zoom: camera.zoom };
+  });
+}
+
 function installFitKey() {
   window.addEventListener("keydown", (event) => {
     if (event.defaultPrevented || event.ctrlKey || event.metaKey || event.altKey) {
@@ -3183,8 +3225,21 @@ async function start() {
       onDemand.request();
     }
 
-    if (titlesRequested) {
+    if (titlesRequested || showcaseRequested) {
       titlesOverlay = installTitles(engine, loaded);
+    }
+    if (showcaseRequested) {
+      // Deterministic stage showcase: a fixed 200 % camera (sharp atlas bucket),
+      // selection chrome on three objects and the snap guides of a fixed drag.
+      if (requestedView === null) {
+        const viewport = canvasViewport();
+        camera.zoom = 2;
+        camera.panX = 512 - viewport.width / camera.zoom / 2;
+        camera.panY = 288 - viewport.height / camera.zoom / 2;
+        engine.setCamera(camera);
+        onDemand.request();
+      }
+      installShowcase(engine, loaded);
     }
 
     if (textDemoRequested) {

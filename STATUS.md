@@ -40,9 +40,9 @@
 
 ### Stage 5 — `engine-core` Engine core
 
-- State: exit gates missing: visual-final, perf-final
+- State: complete
 - Owner decision: `continue`
-- Exit gates: `cpp-unit`, `visual-final` (missing record), `perf-final` (missing record)
+- Exit gates: `cpp-unit`, `visual-final`, `perf-final`
 - Exit criteria: 10,000 objects at 60 fps in the playground.; All engine entries of the canvas work orders done; reference images green.
 - Tasks: P4-01, P4-02, P4-03, P4-04, P4-05, P4-06, P4-07, P4-08, P4-09, P4-10, P4-11, P4-12, P4-13, P4-14, P4-15, P4-16, P4-17, P4-18, P4-19, P4-20, P4-21, P4-22, P4-23, P4-24, P4-25, P4-26, P4-27, P4-28, P4-29, P4-30
 
@@ -200,6 +200,7 @@
 - [x] `P4-25` Contract 0.2.0: zone parent reference and reorder (z) operation (L08/L13) — status: `done` — owner: —
 - [x] `P4-26` Zones as containers II: platform migration and containment (L08) — status: `done` — owner: —
 - [x] `P4-27` Zones as containers II: engine membership and zone move (L08) — status: `done` — owner: —
+- [x] `P4-28` L01 final proof, two-backend reference images and stage showcase — status: `done` — owner: —
 - [x] `P0-26` Toolbar and zone with notepad and image window in the preview — status: `done` — owner: —
 - [x] `P0-27` Bilingual preview with DE/EN switch and cache-busted assets — status: `done` — owner: —
 - [x] `P0-28` Zone detach interaction: drag notepad and photo out and back — status: `done` — owner: —
@@ -212,7 +213,7 @@
 
 ## In progress
 
-- [ ] `P4-28` L01 final proof, two-backend reference images and stage showcase — status: `in_progress` — owner: lead
+- none
 
 ## Blocked / failed
 
@@ -238,7 +239,7 @@
 <!-- polier:claims -->
 ## Claims
 
-- `P4-28` in progress by dsh since 2026-10-28T07:47:26+00:00 — worktree: /private/tmp/air-P4-28 · slot 1
+- `P4-28` in progress by dsh since 2026-10-28T07:52:30+00:00 — worktree: /private/tmp/air-P4-28 · slot 1
 
 <!-- /polier:claims -->
 

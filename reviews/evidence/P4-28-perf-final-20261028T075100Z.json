@@ -1,0 +1,20 @@
+{
+  "task": "P4-28",
+  "gate": "perf-final",
+  "command": "node packages/engine/test/perf/run-perf.mjs --scenario engine-core",
+  "exit_code": 0,
+  "result": "pass",
+  "slot": null,
+  "exclusive": [
+    "perf",
+    "visual"
+  ],
+  "lock_wait_s": 0.0,
+  "lock_warning": null,
+  "started": "2026-10-28T07:51:00+00:00",
+  "finished": "2026-10-28T07:51:09+00:00",
+  "commit": "24adb99c972c1cf7348fa105c3445e7cf04e4b3c",
+  "dirty": true,
+  "log": "P4-28-perf-final-20261028T075100Z.log",
+  "log_sha256": "9be793dbe0c9d77801dd742d8a46ca335689cce6bb444f812484ec0d679c16ad"
+}
