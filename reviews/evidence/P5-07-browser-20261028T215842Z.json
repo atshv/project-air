@@ -1,0 +1,441 @@
+{
+  "task": "P5-07",
+  "proof": "browser-offline",
+  "browser": true,
+  "servicePort": 53597,
+  "httpPort": 53598,
+  "finishedAt": "2026-10-28T21:58:33.376Z",
+  "targets": {
+    "a": "E01C4D21094E731A8CE98452D6AB124E",
+    "b": "D82CC50A0DEFDA5179938F9E798D091C"
+  },
+  "stateHashesBefore": {
+    "a": "85e0a19c9152282acb111ed722ec485a2009c8d3c506e86c5e24dec909493ba9",
+    "b": "85e0a19c9152282acb111ed722ec485a2009c8d3c506e86c5e24dec909493ba9"
+  },
+  "missedUpdatesWhileOffline": 2,
+  "wireA": [
+    {
+      "dir": "sdk",
+      "type": "status",
+      "status": "connecting",
+      "serverSeq": 0
+    },
+    {
+      "dir": "out",
+      "type": "hello",
+      "seq": 1,
+      "clientId": "0192f0fa-7000-7000-8000-0000000000c1"
+    },
+    {
+      "dir": "out",
+      "type": "joinBoard",
+      "seq": 2,
+      "clientId": "0192f0fa-7000-7000-8000-0000000000c1",
+      "boardId": "0192f0a3-7000-7000-8000-000000000003"
+    },
+    {
+      "dir": "in",
+      "type": "welcome",
+      "serverSeq": 1,
+      "clientId": "0192f0fa-7000-7000-8000-0000000000c1",
+      "boardId": "0192f0a3-7000-7000-8000-000000000003"
+    },
+    {
+      "dir": "sdk",
+      "type": "status",
+      "status": "joined",
+      "serverSeq": 1
+    },
+    {
+      "dir": "in",
+      "type": "presence",
+      "seq": 1,
+      "clientId": "0192f0fa-7000-7000-8000-0000000000c2",
+      "boardId": "0192f0a3-7000-7000-8000-000000000003"
+    },
+    {
+      "dir": "in",
+      "type": "snapshot",
+      "serverSeq": 1,
+      "clientId": "0192f0fa-7000-7000-8000-0000000000c1",
+      "boardId": "0192f0a3-7000-7000-8000-000000000003"
+    },
+    {
+      "dir": "sdk",
+      "type": "snapshot",
+      "serverSeq": 1
+    },
+    {
+      "dir": "out",
+      "type": "operationBatch",
+      "seq": 3,
+      "clientId": "0192f0fa-7000-7000-8000-0000000000c1",
+      "boardId": "0192f0a3-7000-7000-8000-000000000003",
+      "batchId": "01a18485-b615-7081-8802-10c77b91950c",
+      "opIds": [
+        "0192f0fc-7000-7000-8000-000000004097"
+      ]
+    },
+    {
+      "dir": "in",
+      "type": "ack",
+      "serverSeq": 2,
+      "clientId": "0192f0fa-7000-7000-8000-0000000000c1",
+      "boardId": "0192f0a3-7000-7000-8000-000000000003",
+      "batchId": "01a18485-b615-7081-8802-10c77b91950c"
+    },
+    {
+      "dir": "sdk",
+      "type": "status",
+      "status": "joined",
+      "serverSeq": 2
+    },
+    {
+      "dir": "in",
+      "type": "operationBatch",
+      "serverSeq": 3,
+      "clientId": "0192f0fa-7000-7000-8000-0000000000c2",
+      "boardId": "0192f0a3-7000-7000-8000-000000000003",
+      "batchId": "01a18485-b619-78e0-8ef3-c4b9e8c9c170",
+      "opIds": [
+        "0192f0fc-7000-7000-8000-000000004098"
+      ]
+    },
+    {
+      "dir": "sdk",
+      "type": "remote",
+      "serverSeq": 3
+    },
+    {
+      "dir": "out",
+      "type": "operationBatch",
+      "seq": 4,
+      "clientId": "0192f0fa-7000-7000-8000-0000000000c1",
+      "boardId": "0192f0a3-7000-7000-8000-000000000003",
+      "batchId": "01a18485-b958-75f4-9fda-a98d1982f61e",
+      "opIds": [
+        "0192f0fb-7000-7000-8000-000000000123"
+      ]
+    },
+    {
+      "dir": "in",
+      "type": "ack",
+      "serverSeq": 4,
+      "clientId": "0192f0fa-7000-7000-8000-0000000000c1",
+      "boardId": "0192f0a3-7000-7000-8000-000000000003",
+      "batchId": "01a18485-b958-75f4-9fda-a98d1982f61e"
+    },
+    {
+      "dir": "sdk",
+      "type": "status",
+      "status": "joined",
+      "serverSeq": 4
+    },
+    {
+      "dir": "sdk",
+      "type": "status",
+      "status": "offline",
+      "serverSeq": 4
+    },
+    {
+      "dir": "sdk",
+      "type": "status",
+      "status": "connecting",
+      "serverSeq": 4
+    },
+    {
+      "dir": "out",
+      "type": "hello",
+      "seq": 5,
+      "clientId": "0192f0fa-7000-7000-8000-0000000000c1"
+    },
+    {
+      "dir": "out",
+      "type": "joinBoard",
+      "seq": 6,
+      "clientId": "0192f0fa-7000-7000-8000-0000000000c1",
+      "boardId": "0192f0a3-7000-7000-8000-000000000003"
+    },
+    {
+      "dir": "in",
+      "type": "welcome",
+      "serverSeq": 5,
+      "clientId": "0192f0fa-7000-7000-8000-0000000000c1",
+      "boardId": "0192f0a3-7000-7000-8000-000000000003"
+    },
+    {
+      "dir": "out",
+      "type": "resyncRequest",
+      "seq": 7,
+      "clientId": "0192f0fa-7000-7000-8000-0000000000c1",
+      "boardId": "0192f0a3-7000-7000-8000-000000000003",
+      "fromServerSeq": 4
+    },
+    {
+      "dir": "sdk",
+      "type": "status",
+      "status": "joined",
+      "serverSeq": 5
+    },
+    {
+      "dir": "in",
+      "type": "presence",
+      "seq": 1,
+      "clientId": "0192f0fa-7000-7000-8000-0000000000c2",
+      "boardId": "0192f0a3-7000-7000-8000-000000000003"
+    },
+    {
+      "dir": "in",
+      "type": "snapshot",
+      "serverSeq": 5,
+      "clientId": "0192f0fa-7000-7000-8000-0000000000c1",
+      "boardId": "0192f0a3-7000-7000-8000-000000000003"
+    },
+    {
+      "dir": "sdk",
+      "type": "snapshot",
+      "serverSeq": 5
+    },
+    {
+      "dir": "out",
+      "type": "operationBatch",
+      "seq": 8,
+      "clientId": "0192f0fa-7000-7000-8000-0000000000c1",
+      "boardId": "0192f0a3-7000-7000-8000-000000000003",
+      "batchId": "01a18485-c219-7bf8-bf58-57d29e591982",
+      "opIds": [
+        "0192f0fb-7000-7000-8000-000000000200"
+      ]
+    },
+    {
+      "dir": "sdk",
+      "type": "status",
+      "status": "joined",
+      "serverSeq": 5
+    },
+    {
+      "dir": "in",
+      "type": "welcome",
+      "serverSeq": 5,
+      "clientId": "0192f0fa-7000-7000-8000-0000000000c1",
+      "boardId": "0192f0a3-7000-7000-8000-000000000003"
+    },
+    {
+      "dir": "in",
+      "type": "snapshot",
+      "serverSeq": 5,
+      "clientId": "0192f0fa-7000-7000-8000-0000000000c1",
+      "boardId": "0192f0a3-7000-7000-8000-000000000003"
+    },
+    {
+      "dir": "sdk",
+      "type": "snapshot",
+      "serverSeq": 5
+    },
+    {
+      "dir": "in",
+      "type": "ack",
+      "serverSeq": 6,
+      "clientId": "0192f0fa-7000-7000-8000-0000000000c1",
+      "boardId": "0192f0a3-7000-7000-8000-000000000003",
+      "batchId": "01a18485-c219-7bf8-bf58-57d29e591982"
+    },
+    {
+      "dir": "sdk",
+      "type": "status",
+      "status": "joined",
+      "serverSeq": 6
+    }
+  ],
+  "wireB": [
+    {
+      "dir": "sdk",
+      "type": "status",
+      "status": "connecting",
+      "serverSeq": 0
+    },
+    {
+      "dir": "out",
+      "type": "hello",
+      "seq": 1,
+      "clientId": "0192f0fa-7000-7000-8000-0000000000c2"
+    },
+    {
+      "dir": "out",
+      "type": "joinBoard",
+      "seq": 2,
+      "clientId": "0192f0fa-7000-7000-8000-0000000000c2",
+      "boardId": "0192f0a3-7000-7000-8000-000000000003"
+    },
+    {
+      "dir": "in",
+      "type": "welcome",
+      "serverSeq": 1,
+      "clientId": "0192f0fa-7000-7000-8000-0000000000c2",
+      "boardId": "0192f0a3-7000-7000-8000-000000000003"
+    },
+    {
+      "dir": "sdk",
+      "type": "status",
+      "status": "joined",
+      "serverSeq": 1
+    },
+    {
+      "dir": "in",
+      "type": "snapshot",
+      "serverSeq": 1,
+      "clientId": "0192f0fa-7000-7000-8000-0000000000c2",
+      "boardId": "0192f0a3-7000-7000-8000-000000000003"
+    },
+    {
+      "dir": "sdk",
+      "type": "snapshot",
+      "serverSeq": 1
+    },
+    {
+      "dir": "in",
+      "type": "presence",
+      "seq": 1,
+      "clientId": "0192f0fa-7000-7000-8000-0000000000c1",
+      "boardId": "0192f0a3-7000-7000-8000-000000000003"
+    },
+    {
+      "dir": "in",
+      "type": "operationBatch",
+      "serverSeq": 2,
+      "clientId": "0192f0fa-7000-7000-8000-0000000000c1",
+      "boardId": "0192f0a3-7000-7000-8000-000000000003",
+      "batchId": "01a18485-b615-7081-8802-10c77b91950c",
+      "opIds": [
+        "0192f0fc-7000-7000-8000-000000004097"
+      ]
+    },
+    {
+      "dir": "sdk",
+      "type": "remote",
+      "serverSeq": 2
+    },
+    {
+      "dir": "out",
+      "type": "operationBatch",
+      "seq": 3,
+      "clientId": "0192f0fa-7000-7000-8000-0000000000c2",
+      "boardId": "0192f0a3-7000-7000-8000-000000000003",
+      "batchId": "01a18485-b619-78e0-8ef3-c4b9e8c9c170",
+      "opIds": [
+        "0192f0fc-7000-7000-8000-000000004098"
+      ]
+    },
+    {
+      "dir": "in",
+      "type": "ack",
+      "serverSeq": 3,
+      "clientId": "0192f0fa-7000-7000-8000-0000000000c2",
+      "boardId": "0192f0a3-7000-7000-8000-000000000003",
+      "batchId": "01a18485-b619-78e0-8ef3-c4b9e8c9c170"
+    },
+    {
+      "dir": "sdk",
+      "type": "status",
+      "status": "joined",
+      "serverSeq": 3
+    },
+    {
+      "dir": "in",
+      "type": "operationBatch",
+      "serverSeq": 4,
+      "clientId": "0192f0fa-7000-7000-8000-0000000000c1",
+      "boardId": "0192f0a3-7000-7000-8000-000000000003",
+      "batchId": "01a18485-b958-75f4-9fda-a98d1982f61e",
+      "opIds": [
+        "0192f0fb-7000-7000-8000-000000000123"
+      ]
+    },
+    {
+      "dir": "sdk",
+      "type": "remote",
+      "serverSeq": 4
+    },
+    {
+      "dir": "in",
+      "type": "presence",
+      "seq": 1,
+      "clientId": "0192f0fa-7000-7000-8000-0000000000c1",
+      "boardId": "0192f0a3-7000-7000-8000-000000000003"
+    },
+    {
+      "dir": "out",
+      "type": "operationBatch",
+      "seq": 4,
+      "clientId": "0192f0fa-7000-7000-8000-0000000000c2",
+      "boardId": "0192f0a3-7000-7000-8000-000000000003",
+      "batchId": "01a18485-bcb4-7d00-9083-d7c6c2e833c9",
+      "opIds": [
+        "0192f0fb-7000-7000-8000-000000000077"
+      ]
+    },
+    {
+      "dir": "in",
+      "type": "ack",
+      "serverSeq": 5,
+      "clientId": "0192f0fa-7000-7000-8000-0000000000c2",
+      "boardId": "0192f0a3-7000-7000-8000-000000000003",
+      "batchId": "01a18485-bcb4-7d00-9083-d7c6c2e833c9"
+    },
+    {
+      "dir": "sdk",
+      "type": "status",
+      "status": "joined",
+      "serverSeq": 5
+    },
+    {
+      "dir": "in",
+      "type": "presence",
+      "seq": 1,
+      "clientId": "0192f0fa-7000-7000-8000-0000000000c1",
+      "boardId": "0192f0a3-7000-7000-8000-000000000003"
+    },
+    {
+      "dir": "in",
+      "type": "operationBatch",
+      "serverSeq": 6,
+      "clientId": "0192f0fa-7000-7000-8000-0000000000c1",
+      "boardId": "0192f0a3-7000-7000-8000-000000000003",
+      "batchId": "01a18485-c219-7bf8-bf58-57d29e591982",
+      "opIds": [
+        "0192f0fb-7000-7000-8000-000000000200"
+      ]
+    },
+    {
+      "dir": "sdk",
+      "type": "remote",
+      "serverSeq": 6
+    }
+  ],
+  "stateHashesAfterReconnect": {
+    "a": "5b778d1c85799281c2e4976819b6b1f2a0275b1d51e7b4598ced03c82f2fdf94",
+    "b": "5b778d1c85799281c2e4976819b6b1f2a0275b1d51e7b4598ced03c82f2fdf94"
+  },
+  "offlineRecovery": {
+    "welcomeAtCurrentSeq": true,
+    "welcomeServerSeq": 5,
+    "snapshotServerSeq": 5,
+    "resyncFromServerSeq": 4,
+    "queuedOpSentCount": 1
+  },
+  "cardsAfterOffline": {
+    "a": 200,
+    "b": 77
+  },
+  "undoReturned": true,
+  "stateHashesAfterUndo": {
+    "a": "781c295ab6c9f0a49ded7c1efdccbc64a211638dcbd1d7725b73754ed3481926",
+    "b": "781c295ab6c9f0a49ded7c1efdccbc64a211638dcbd1d7725b73754ed3481926"
+  },
+  "cardsAfterUndo": {
+    "a": 0,
+    "b": 77
+  },
+  "passed": true
+}

@@ -1,0 +1,19 @@
+{
+  "task": "P5-07",
+  "gate": "crdt-convergence",
+  "command": "node packages/crdt/test/convergence-harness.mjs && node --test --test-concurrency=1 packages/sdk/test/offline-undo.test.mjs && node services/sync/test/offline-browser.mjs",
+  "exit_code": 0,
+  "result": "pass",
+  "slot": null,
+  "exclusive": [
+    "crdt-convergence"
+  ],
+  "lock_wait_s": 0.0,
+  "lock_warning": null,
+  "started": "2026-10-28T21:42:08+00:00",
+  "finished": "2026-10-28T21:49:54+00:00",
+  "commit": "f03165a330940f0a68f975b9b6e83106c4ef066d",
+  "dirty": true,
+  "log": "P5-07-crdt-convergence-20261028T214208Z.log",
+  "log_sha256": "377b646d5b9cc973dcb1e276c86d0c9ffc7ece6838e3d6dadb5003c522aa072c"
+}

@@ -5771,7 +5771,7 @@
       "satisfies": [
         "D11"
       ],
-      "status": "in_progress",
+      "status": "done",
       "depends_on": [
         "P5-04",
         "P5-06"
@@ -5813,11 +5813,16 @@
         "unit",
         "crdt-convergence"
       ],
-      "owner": "lead",
+      "owner": null,
       "branch": "task/P5-07",
-      "worktree": "/private/tmp/air-P5-07",
-      "round": 0,
-      "evidence": [],
+      "worktree": null,
+      "round": 4,
+      "evidence": [
+        "reviews/evidence/P5-07-board-check-20261028T215018Z.json",
+        "reviews/evidence/P5-07-boundaries-20261028T215023Z.json",
+        "reviews/evidence/P5-07-unit-20261028T215023Z.json",
+        "reviews/evidence/P5-07-crdt-convergence-20261028T215030Z.json"
+      ],
       "scope_write_forbidden": [
         "reference/"
       ],

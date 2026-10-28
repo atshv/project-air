@@ -21,7 +21,7 @@ export interface CompactionResult {
 
 export async function compactBoard(input: {
   boardId: string;
-  store: SyncStore & { writeCompactedSnapshot?: (entry: { boardId: string; boardContent: BoardContent; snapshotSeq: number }) => Promise<{ snapshotSeq: number; pruned: number }> };
+  store: SyncStore & { writeCompactedSnapshot?: (entry: { boardId: string; boardContent: BoardContent; snapshotSeq: number; docState?: string | null }) => Promise<{ snapshotSeq: number; pruned: number }> };
   documents: BoardDocumentFactory;
   minUpdates?: number;
 }): Promise<CompactionResult> {
@@ -32,10 +32,14 @@ export async function compactBoard(input: {
   if (updates.length < threshold || input.store.writeCompactedSnapshot === undefined) {
     return { boardId: input.boardId, skipped: true, updatesBefore: updates.length, snapshotSeq: state?.serverSeq ?? 1, pruned: 0 };
   }
-  const document = input.documents.fromContent(state!.boardContent);
+  const boardOnly = { ...state!.boardContent, zones: [], blocks: [], cards: [], notes: [], edges: [] };
+  const document = state!.docState != null
+    ? input.documents.fromContent(boardOnly)
+    : input.documents.fromContent(state!.boardContent);
+  if (state!.docState != null) document.applyUpdate(state!.docState);
   for (const update of updates) document.applyUpdate(update.update);
   const written = await input.store.writeCompactedSnapshot({
-    boardId: input.boardId, boardContent: document.snapshot(), snapshotSeq: state!.serverSeq,
+    boardId: input.boardId, boardContent: document.snapshot(), snapshotSeq: state!.serverSeq, docState: document.encodeUpdate(),
   });
   return { boardId: input.boardId, skipped: false, updatesBefore: updates.length, snapshotSeq: written.snapshotSeq, pruned: written.pruned };
 }

@@ -67,6 +67,12 @@ export interface BoardSyncClient {
   updatePresence(presence: { cursor: PresenceCursor; selection: readonly string[] }): void;
   participants(): readonly RemoteParticipant[];
   onPresence(listener: (participants: readonly RemoteParticipant[]) => void): () => void;
+  /** L11 realtime: undo exactly the client's own newest operation (never remote ones). */
+  undoOwn(): boolean;
+  /** L11 realtime: redo the last undo locally (client's own operation only). */
+  redoOwn(): boolean;
+  ownUndoCount(): number;
+  ownRedoCount(): number;
 }
 
 const ISO_NOW = (): string => new Date().toISOString();
@@ -90,7 +96,7 @@ export function createBoardSyncClient(options: BoardSyncClientOptions): BoardSyn
   let status: BoardSyncStatus = "idle";
   let serverSeq = 0;
   let clientSeq = 0;
-  let pending = new Map<string, number>();
+  let pending = new Map<string, { seq: number; operations: Record<string, unknown>[] }>();
   let queue: Record<string, unknown>[] = [];
   let seenBatches = new Set<string>();
   let reconnectAttempt = 0;
@@ -104,6 +110,10 @@ export function createBoardSyncClient(options: BoardSyncClientOptions): BoardSyn
   let presenceTimer: number | null = null;
   let pendingPresence: { cursor: PresenceCursor; selection: readonly string[] } | null = null;
   const presenceThrottle = options.presenceThrottleMs ?? PRESENCE_THROTTLE_MS;
+  // L11 realtime: only the client's OWN operations are recorded with their
+  // inverses; remote batches never enter this history.
+  let ownUndo: { operation: Record<string, unknown>; inverse: Record<string, unknown> }[] = [];
+  let ownRedo: { operation: Record<string, unknown>; inverse: Record<string, unknown> }[] = [];
 
   const emit = (event: BoardSyncEvent): void => options.onChange?.(event);
   const emitParticipants = (): void => {
@@ -138,9 +148,15 @@ export function createBoardSyncClient(options: BoardSyncClientOptions): BoardSyn
   };
 
   const sendBatch = (operations: readonly Record<string, unknown>[]): string => {
+    // Local-first: the SDK applies its own operations optimistically through the
+    // documented BoardDoc path so the client sees its edit immediately; the ack
+    // then advances the durable serverSeq.
+    for (const operation of operations) {
+      try { doc.apply(operation as never); } catch (error) { lastError = error; emit({ type: "error", error }); }
+    }
     const batchId = createRequestId();
     clientSeq += 1;
-    pending.set(batchId, clientSeq);
+    pending.set(batchId, { seq: clientSeq, operations: [...operations] });
     sendJson({
       id: createRequestId(), type: "operationBatch", clientId: clientId, boardId: options.boardId,
       sentAt: ISO_NOW(), seq: clientSeq,
@@ -173,7 +189,8 @@ export function createBoardSyncClient(options: BoardSyncClientOptions): BoardSyn
         });
       }
       setStatus("joined");
-      flushQueue();
+      // Do not flush the offline queue yet: the server sends the snapshot after
+      // welcome; flushing before it would be overwritten by the snapshot.
     }
   };
 
@@ -183,6 +200,14 @@ export function createBoardSyncClient(options: BoardSyncClientOptions): BoardSyn
     const content = payload["boardContent"] as BoardContent | undefined;
     if (content !== undefined && content !== null) {
       doc = options.createDocument(content);
+      // Re-apply optimistic operations that are still awaiting their ack: a
+      // catch-up snapshot may not include them yet, and they must not vanish
+      // from the local document.
+      for (const entry of pending.values()) {
+        for (const operation of entry.operations) {
+          try { doc.apply(operation as never); } catch (error) { lastError = error; emit({ type: "error", error }); }
+        }
+      }
     }
     const seq = Number(message.serverSeq ?? 0);
     if (Number.isInteger(seq) && seq > serverSeq) serverSeq = seq;
@@ -287,27 +312,33 @@ export function createBoardSyncClient(options: BoardSyncClientOptions): BoardSyn
     setStatus("connecting");
     const next = options.createSocket();
     socket = next;
-    next.addEventListener("open", () => {
-      // The handshake starts once the socket is open (real sockets emit open;
-      // fake sockets call it immediately after creation).
-    });
+    // Contract 0.3.0: hello first, then joinBoard. The handshake starts once the
+    // socket is open (real WebSockets reject send() before open; fake sockets
+    // without readyState send immediately).
+    let handshakeStarted = false;
+    const startHandshake = (): void => {
+      if (handshakeStarted) return;
+      handshakeStarted = true;
+      clientSeq += 1;
+      sendJson({
+        id: createRequestId(), type: "hello", clientId: clientId, sentAt: ISO_NOW(), seq: clientSeq,
+        payload: { tokenRef: options.tokenRef, contractVersion },
+      });
+      clientSeq += 1;
+      sendJson({
+        id: createRequestId(), type: "joinBoard", clientId: clientId, boardId: options.boardId, sentAt: ISO_NOW(), seq: clientSeq,
+        payload: {},
+      });
+    };
+    next.addEventListener("open", startHandshake);
     next.addEventListener("message", (event) => onMessage(event.data));
     next.addEventListener("close", () => onClose());
     next.addEventListener("error", (error) => {
       lastError = error;
       emit({ type: "error", error });
     });
-    // Contract 0.3.0: hello first, then joinBoard.
-    clientSeq += 1;
-    sendJson({
-      id: createRequestId(), type: "hello", clientId: clientId, sentAt: ISO_NOW(), seq: clientSeq,
-      payload: { tokenRef: options.tokenRef, contractVersion },
-    });
-    clientSeq += 1;
-    sendJson({
-      id: createRequestId(), type: "joinBoard", clientId: clientId, boardId: options.boardId, sentAt: ISO_NOW(), seq: clientSeq,
-      payload: {},
-    });
+    const readyState = (next as unknown as { readyState?: number }).readyState;
+    if (readyState === undefined || readyState === 1) startHandshake();
     reconnectAttempt = 0;
   };
 
@@ -318,7 +349,18 @@ export function createBoardSyncClient(options: BoardSyncClientOptions): BoardSyn
     },
     sendOperations(operations): string | null {
       if (operations.length === 0) return null;
+      for (const operation of operations) {
+        const inverse = (operation as { inverse?: Record<string, unknown> }).inverse;
+        if (inverse !== undefined) {
+          ownUndo.push({ operation, inverse });
+          ownRedo = [];
+        }
+      }
       if (status !== "joined" || socket === null) {
+        // Offline: apply locally now, queue in order and send on reconnect.
+        for (const operation of operations) {
+          try { doc.apply(operation as never); } catch (error) { lastError = error; emit({ type: "error", error }); }
+        }
         queue.push(...operations);
         return null;
       }
@@ -363,6 +405,31 @@ export function createBoardSyncClient(options: BoardSyncClientOptions): BoardSyn
       presenceListeners.add(listener);
       return () => presenceListeners.delete(listener);
     },
+    undoOwn(): boolean {
+      const entry = ownUndo.pop();
+      if (entry === undefined) return false;
+      const inverseOperation: Record<string, unknown> = {
+        id: createRequestId(), boardId: options.boardId, actorId: clientId, createdAt: ISO_NOW(),
+        type: entry.inverse["type"], payload: entry.inverse["payload"], inverse: entry.operation,
+      };
+      ownRedo.push(entry);
+      // The inverse is a new local operation batch; remote operations are never
+      // touched. Recording this inverse as an own op lets a later undo redo it.
+      ownUndo.push({ operation: inverseOperation, inverse: entry.operation });
+      if (status === "joined" && socket !== null) sendBatch([inverseOperation]);
+      else queue.push(inverseOperation);
+      return true;
+    },
+    redoOwn(): boolean {
+      const entry = ownRedo.pop();
+      if (entry === undefined) return false;
+      ownUndo.push({ operation: entry.operation, inverse: entry.inverse });
+      if (status === "joined" && socket !== null) sendBatch([entry.operation]);
+      else queue.push(entry.operation);
+      return true;
+    },
+    ownUndoCount: () => ownUndo.length,
+    ownRedoCount: () => ownRedo.length,
   };
 }
 

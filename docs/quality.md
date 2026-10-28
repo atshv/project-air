@@ -85,7 +85,7 @@ task from the project's manifests; until then the gate cannot pass.
 | `db-migrate` | `node services/platform/dist/db/migrate.js` | exit 0, migrations applied to the slot database |
 | `api-tests` | `node --test services/platform/test/api/*.test.mjs` | exit 0, every route has an allow and a deny case |
 | `rls-tests` | `node --test services/platform/test/rls/*.test.mjs` | exit 0, a second account sees nothing (exclusive) |
-| `crdt-convergence` | `[VERIFY: stage realtime]` | exit 0, 10,000 rounds without divergence |
+| `crdt-convergence` | `node packages/crdt/test/convergence-harness.mjs && node --test --test-concurrency=1 packages/sdk/test/offline-undo.test.mjs && node services/sync/test/offline-browser.mjs` | exit 0, 30,000 rounds (3 seeds × 10,000) without divergence, two offline SDK clients converge, own-op undo, and two offline headless-Chrome pages converge (browser: true, wire log in evidence) — exclusive; see docs/gates/crdt-convergence.md |
 | `load` | see `docs/gates/load.md` `[VERIFY: stage realtime]` | exit 0 (exclusive) |
 | `visual` | `node packages/engine/test/visual/run-visual.mjs` | exit 0, every committed WebGL2 reference image at 1440x900 and 390x844 within tolerance, real GPU recorded, capture record and diff PNGs under `reviews/evidence/` (exclusive; WebGPU reference images follow with P4-11 — see `docs/gates/visual-diff.md`) |
 | `visual-final` | `node packages/engine/test/visual/run-visual.mjs` | exit 0, the stage-exit final reference-image proof recorded by P4-28: every reference image at 1440x900 and 390x844 within tolerance for WebGL2 and WebGPU (see `docs/gates/visual-diff.md`) |

@@ -1,0 +1,40 @@
+{
+  "task": "P5-07",
+  "gate": "crdt-convergence",
+  "rounds": 30000,
+  "seeds": [
+    {
+      "seed": 6221057,
+      "rounds": 10000,
+      "offlineMerges": 57,
+      "stateHash": "1039be10da0fb075f9f21f967cc9dbb887b949b72afff8ae9c1c80b1ba65a3cb",
+      "snapshotHash": "1039be10da0fb075f9f21f967cc9dbb887b949b72afff8ae9c1c80b1ba65a3cb"
+    },
+    {
+      "seed": 6221058,
+      "rounds": 10000,
+      "offlineMerges": 57,
+      "stateHash": "eaf782cbbc0aeca53727df121e8c4655c527e2afc74400b653f3484b3d44dd28",
+      "snapshotHash": "eaf782cbbc0aeca53727df121e8c4655c527e2afc74400b653f3484b3d44dd28"
+    },
+    {
+      "seed": 6221059,
+      "rounds": 10000,
+      "offlineMerges": 57,
+      "stateHash": "f06af6d72581681c673676d3cdb9ebca18e547903f6bb324bcc80c8d34a17340",
+      "snapshotHash": "f06af6d72581681c673676d3cdb9ebca18e547903f6bb324bcc80c8d34a17340"
+    }
+  ],
+  "divergences": 0,
+  "roundsCompared": 25896,
+  "offlineMerges": 171,
+  "runtimeMs": 481036,
+  "stateHash": null,
+  "requiredRounds": 10000,
+  "passed": true,
+  "environment": {
+    "platform": "darwin",
+    "node": "v26.12.1",
+    "concurrency": "single process, deterministic seeded PRNG"
+  }
+}

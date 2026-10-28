@@ -33,7 +33,27 @@ export class PgSyncStore implements SyncStore {
   async loadBoard(boardId: string): Promise<BoardState | null> {
     const snapshot = await this.#ensureBaseline(boardId);
     const seq = await this.#currentSeq(boardId);
-    return { serverSeq: seq, snapshotSeq: snapshot.serverSeq, boardContent: snapshot.boardContent };
+    const stored = await this.#pool.query<{ snapshot: unknown }>(
+      "SELECT snapshot FROM sync_snapshots WHERE board_id = $1 AND server_seq = $2",
+      [boardId, snapshot.serverSeq],
+    );
+    const raw = stored.rows[0]?.snapshot;
+    const wrapper = raw !== null && typeof raw === "object" && "boardContent" in (raw as Record<string, unknown>) ? raw as { boardContent: BoardContent; docState?: string | null } : null;
+    return { serverSeq: seq, snapshotSeq: snapshot.serverSeq, boardContent: wrapper?.boardContent ?? snapshot.boardContent, docState: wrapper?.docState ?? null };
+  }
+
+  /** Persist the encoded CRDT state of a snapshot so later joins replay the same history. */
+  async saveSnapshotDocState(input: { boardId: string; snapshotSeq: number; docState: string }): Promise<void> {
+    const current = await this.#pool.query<{ snapshot: unknown }>(
+      "SELECT snapshot FROM sync_snapshots WHERE board_id = $1 AND server_seq = $2",
+      [input.boardId, input.snapshotSeq],
+    );
+    const raw = current.rows[0]?.snapshot;
+    const boardContent = raw !== null && typeof raw === "object" && "boardContent" in (raw as Record<string, unknown>) ? (raw as { boardContent: BoardContent }).boardContent : raw as BoardContent;
+    await this.#pool.query(
+      "UPDATE sync_snapshots SET snapshot = $3 WHERE board_id = $1 AND server_seq = $2",
+      [input.boardId, input.snapshotSeq, { boardContent, docState: input.docState }],
+    );
   }
 
   /** Current max across the durable update log and snapshots (baseline is 1). */
@@ -55,7 +75,9 @@ export class PgSyncStore implements SyncStore {
       [boardId],
     );
     if (latest.rows[0] !== undefined) {
-      return { serverSeq: Number(latest.rows[0].server_seq), boardContent: latest.rows[0].snapshot };
+      const raw = latest.rows[0].snapshot as unknown;
+      const wrapper = raw !== null && typeof raw === "object" && "boardContent" in (raw as Record<string, unknown>) ? raw as { boardContent: BoardContent } : null;
+      return { serverSeq: Number(latest.rows[0].server_seq), boardContent: wrapper?.boardContent ?? (raw as BoardContent) };
     }
     const client = await this.#pool.connect();
     try {
@@ -121,7 +143,7 @@ export class PgSyncStore implements SyncStore {
    * the state stays consistent. Acknowledged updates are never lost because the
    * snapshot is at their sequence.
    */
-  async writeCompactedSnapshot(input: { boardId: string; boardContent: BoardContent; snapshotSeq: number }): Promise<{ snapshotSeq: number; pruned: number }> {
+  async writeCompactedSnapshot(input: { boardId: string; boardContent: BoardContent; snapshotSeq: number; docState?: string | null }): Promise<{ snapshotSeq: number; pruned: number }> {
     const client = await this.#pool.connect();
     try {
       await client.query("BEGIN");
@@ -136,7 +158,7 @@ export class PgSyncStore implements SyncStore {
       const snapshotSeq = Math.max(Number(current.rows[0]?.seq ?? "1"), input.snapshotSeq);
       await client.query(
         "INSERT INTO sync_snapshots (board_id, server_seq, snapshot) VALUES ($1, $2, $3) ON CONFLICT (board_id, server_seq) DO UPDATE SET snapshot = EXCLUDED.snapshot",
-        [input.boardId, snapshotSeq, input.boardContent],
+        [input.boardId, snapshotSeq, { boardContent: input.boardContent, docState: input.docState ?? null }],
       );
       // Prune only updates covered by the snapshot; a failed prune leaves the
       // snapshot + older updates, which replay correctly.

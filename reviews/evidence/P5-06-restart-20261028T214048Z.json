@@ -1,0 +1,44 @@
+{
+  "task": "P5-06",
+  "gate": "restart-harness",
+  "result": "pass",
+  "operations": 20,
+  "ackedServerSeqs": [
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21
+  ],
+  "serverSeqAfterRestart": 21,
+  "compaction": {
+    "boardId": "0192f0f7-7000-7000-8000-0000000000b1",
+    "skipped": false,
+    "updatesBefore": 20,
+    "snapshotSeq": 21,
+    "pruned": 20
+  },
+  "catchUp": {
+    "emptyAt": 21,
+    "oneUpdateAfter": 20,
+    "largeGapRows": 20
+  },
+  "shutdown": "sockets closed on SIGTERM; the retryable 1012 close code is covered by the service close path",
+  "databaseUrl": "(slot database, not logged)",
+  "finishedAt": "2026-10-28T21:40:49.204Z"
+}

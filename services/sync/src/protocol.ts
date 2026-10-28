@@ -29,6 +29,7 @@ export interface BoardState {
   readonly serverSeq: number;
   /** Sequence of the snapshot the content was loaded from; updates after it replay. */
   readonly snapshotSeq: number;
+  readonly docState?: string | null;
   readonly boardContent: BoardContent;
 }
 
@@ -36,6 +37,7 @@ export interface SyncStore {
   /** Current durable per-board serverSeq (0 when the board has no rows yet). */
   serverSeq(boardId: string): Promise<number>;
   loadBoard(boardId: string): Promise<BoardState | null>;
+  saveSnapshotDocState?(input: { boardId: string; snapshotSeq: number; docState: string }): Promise<void>;
   /**
    * Appends one encoded update and returns its per-board serverSeq in one
    * transaction; it must commit before the caller may ack.
@@ -264,7 +266,19 @@ export class SyncSession {
       return;
     }
     this.#state.lastServerSeq = state.serverSeq;
-    const doc = this.#options.documents.fromContent(state.boardContent);
+    // Rebuild the exact CRDT history: a stored encoded doc state is applied to a
+    // document with no entity structs, so updates committed after the snapshot
+    // merge deterministically (constructing entities from JSON first would create
+    // concurrent duplicate structs and could lose committed updates).
+    const boardOnly = { ...state.boardContent, zones: [], blocks: [], cards: [], notes: [], edges: [] };
+    const doc = state.docState != null
+      ? this.#options.documents.fromContent(boardOnly)
+      : this.#options.documents.fromContent(state.boardContent);
+    if (state.docState != null) doc.applyUpdate(state.docState);
+    const hasEntities = [state.boardContent.zones, state.boardContent.blocks, state.boardContent.cards, state.boardContent.notes, state.boardContent.edges].some((entities) => entities.length > 0);
+    if (state.docState == null && hasEntities && typeof this.#options.store.saveSnapshotDocState === "function") {
+      await this.#options.store.saveSnapshotDocState({ boardId, snapshotSeq: state.snapshotSeq, docState: doc.encodeUpdate() });
+    }
     const updates = await this.#options.store.updatesAfter(boardId, state.snapshotSeq);
     for (const update of updates) doc.applyUpdate(update.update);
     this.#state.doc = doc;

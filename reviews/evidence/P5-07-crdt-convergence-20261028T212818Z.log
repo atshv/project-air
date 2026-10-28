@@ -1,0 +1,29 @@
+$ node packages/crdt/test/convergence-harness.mjs && node --test --test-concurrency=1 packages/sdk/test/offline-undo.test.mjs && node services/sync/test/offline-browser.mjs
+[exit 0]
+
+crdt-convergence: rounds=30000 seeds=3 divergences=0 runtimeMs=484354 passed=true
+evidence: reviews/evidence/P5-07-convergence-20261028T213622Z.json
+(node:71698) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.
+(Use `node --trace-warnings ...` to show where the warning was created)
+BMSG {"id":"01a18471-5a74-7b12-b1ab-3335237a18d6","type":"presence","clientId":"0192f0fa-7000-7000-8000-0000000000a1","boardId":"0192f0a3-7000-70
+BMSG {"id":"01a18471-5a8d-7997-99d4-9e2fa714aad1","type":"ack","clientId":"0192f0fa-7000-7000-8000-0000000000b1","boardId":"0192f0a3-7000-7000-80
+BMSG {"id":"01a18471-5adc-78e6-8e3a-6a0bab5cfcf7","type":"presence","clientId":"0192f0fa-7000-7000-8000-0000000000a1","boardId":"0192f0a3-7000-70
+BMSG {"id":"01a18471-5adc-7832-83d1-1aa43b533828","type":"operationBatch","clientId":"0192f0fa-7000-7000-8000-0000000000a1","boardId":"0192f0a3-7
+DEBUG aSeq=3 bSeq=3 updates=1 aOwn=1 aOffline=0 aErr=null aX=123 bX=123
+BMSG {"id":"01a18471-5e18-743e-83aa-c2a9cea8a8c1","type":"operationBatch","clientId":"0192f0fa-7000-7000-8000-0000000000a1","boardId":"0192f0a3-7
+stack proof evidence: reviews/evidence/P5-07-stack-20261028T213624Z.json
+✔ offline clients converge over the real stack and undo reverts only the client's own op (1232.877083ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 1
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1477.753542
+browser proof: passed=false browser=false evidence=reviews/evidence/P5-07-browser-20261028T213650Z.json
+blocker: browser documents did not converge after reconnect
+(node:71787) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.
+(Use `node --trace-warnings ...` to show where the warning was created)
+404 /favicon.ico
+404 /favicon.ico

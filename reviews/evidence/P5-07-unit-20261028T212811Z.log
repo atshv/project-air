@@ -1,0 +1,114 @@
+$ pnpm test --affected
+[exit 0]
+
+
+   • turbo 2.11.10
+   • Packages in scope: //, @project-air/crdt, @project-air/sdk, @project-air/sync
+   • Running test in 4 packages
+   • Remote caching disabled, using shared worktree cache
+
+@project-air/sync:build: cache miss, executing 10d045e2b487eecb
+@project-air/crdt:build: cache hit, replaying logs f1fba3069560e638
+@project-air/crdt:build: $ tsc --project tsconfig.build.json
+@project-air/crdt:test: cache hit, replaying logs 7821e9e14319bd2e
+@project-air/crdt:test: $ node --test test/*.test.mjs
+@project-air/crdt:test: yjs: rounds=10000 elapsedMs=163.3 heapDeltaMb=14.25 stateBytes=2177
+@project-air/crdt:test: fake: rounds=10000 elapsedMs=102.7 heapDeltaMb=22.33 stateBytes=2177
+@project-air/crdt:test: (node:59357) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.
+@project-air/crdt:test: (Use `node --trace-warnings ...` to show where the warning was created)
+@project-air/crdt:test: ✔ yjs: 10,000 randomized rounds in different orders converge (202.985792ms)
+@project-air/crdt:test: ✔ yjs: an offline batch merges after reconnect (6.601667ms)
+@project-air/crdt:test: ✔ yjs: the snapshot round-trips into an identical document (1.1615ms)
+@project-air/crdt:test: ✔ yjs: every operation type plus its inverse restores the state (1.364333ms)
+@project-air/crdt:test: ✔ fake: 10,000 randomized rounds in different orders converge (160.512791ms)
+@project-air/crdt:test: ✔ fake: an offline batch merges after reconnect (3.649458ms)
+@project-air/crdt:test: ✔ fake: the snapshot round-trips into an identical document (0.585166ms)
+@project-air/crdt:test: ✔ fake: every operation type plus its inverse restores the state (0.764417ms)
+@project-air/crdt:test: ℹ tests 8
+@project-air/crdt:test: ℹ suites 0
+@project-air/crdt:test: ℹ pass 8
+@project-air/crdt:test: ℹ fail 0
+@project-air/crdt:test: ℹ cancelled 0
+@project-air/crdt:test: ℹ skipped 0
+@project-air/crdt:test: ℹ todo 0
+@project-air/crdt:test: ℹ duration_ms 598.300333
+@project-air/sdk:build: cache hit, replaying logs 78707f9ea7560900
+@project-air/sdk:build: $ tsc --project tsconfig.json
+@project-air/sdk:test: cache hit, replaying logs d1a002313d384d1e
+@project-air/sdk:test: $ node --test test/*.test.mjs
+@project-air/sdk:test: (node:60084) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.
+@project-air/sdk:test: (Use `node --trace-warnings ...` to show where the warning was created)
+@project-air/sdk:test: BMSG {"id":"01a18455-6696-7622-a286-0adabd8631e8","type":"presence","clientId":"0192f0fa-7000-7000-8000-0000000000a1","boardId":"0192f0a3-7000-70
+@project-air/sdk:test: BMSG {"id":"01a18455-66b0-7730-b35f-a13fa116b7a4","type":"ack","clientId":"0192f0fa-7000-7000-8000-0000000000b1","boardId":"0192f0a3-7000-7000-80
+@project-air/sdk:test: BMSG {"id":"01a18455-66fe-7ea0-aae2-bc49d988e7ea","type":"presence","clientId":"0192f0fa-7000-7000-8000-0000000000a1","boardId":"0192f0a3-7000-70
+@project-air/sdk:test: BMSG {"id":"01a18455-66fe-7d33-936a-326346b8b04e","type":"operationBatch","clientId":"0192f0fa-7000-7000-8000-0000000000a1","boardId":"0192f0a3-7
+@project-air/sdk:test: DEBUG aSeq=3 bSeq=3 updates=1 aOwn=1 aOffline=0 aErr=null aX=123 bX=123
+@project-air/sdk:test: BMSG {"id":"01a18455-6a39-75f9-9f6d-af0aa7aa5a1d","type":"operationBatch","clientId":"0192f0fa-7000-7000-8000-0000000000a1","boardId":"0192f0a3-7
+@project-air/sdk:test: stack proof evidence: reviews/evidence/P5-07-stack-20261028T210552Z.json
+@project-air/sdk:test: ✔ offline clients converge over the real stack and undo reverts only the client's own op (1163.446291ms)
+@project-air/sdk:test: ✔ handshake sends hello first, then joinBoard; welcome/snapshot install the document (9.958375ms)
+@project-air/sdk:test: ✔ operation batches are sent with a per-connection seq; acks advance only forward (0.445917ms)
+@project-air/sdk:test: ✔ offline operations queue in order and flush on join; duplicate remote batches apply once (0.865125ms)
+@project-air/sdk:test: ✔ a dropped socket reconnects with backoff and resyncs from the last serverSeq (0.302791ms)
+@project-air/sdk:test: ✔ close is idempotent and leaves the board once (0.163709ms)
+@project-air/sdk:test: ✔ autosave debounces 400 ms after the last keystroke, saves once and reports saving -> saved (0.247709ms)
+@project-air/sdk:test: ✔ the five flush triggers save immediately and visibility only flushes when hidden (0.209875ms)
+@project-air/sdk:test: ✔ stale autosave responses never overwrite newer values; error -> retry (0.219792ms)
+@project-air/sdk:test: ✔ outgoing messages validate against sync.schema.json and ids are unique UUIDv7 (1.292792ms)
+@project-air/sdk:test: ✔ an injected authenticated clientId is used unchanged and must be a UUIDv7 (0.280833ms)
+@project-air/sdk:test: ✔ presence updates are throttled/coalesced and remote participants subscribe and clear (0.279708ms)
+@project-air/sdk:test: ✔ undoOwn applies only the client's own inverse; remote operations are never recorded (0.268208ms)
+@project-air/sdk:test: ✔ workspaces.list sends the session and requestId and parses the list envelope (21.035292ms)
+@project-air/sdk:test: ✔ a cookie session is sent as the cookie header (1.34825ms)
+@project-air/sdk:test: ✔ a string session is shorthand for the test session header (0.826833ms)
+@project-air/sdk:test: ✔ workspace create/get/update/delete use the contract envelopes (5.880375ms)
+@project-air/sdk:test: ✔ boards list/create/get/update/delete (3.559375ms)
+@project-air/sdk:test: ✔ notes list/create/get/update/delete (2.754666ms)
+@project-air/sdk:test: ✔ cards list/create/get/update/delete (4.009167ms)
+@project-air/sdk:test: ✔ pagination nextCursor is passed back as the cursor query (2.006667ms)
+@project-air/sdk:test: ✔ no session maps to a typed AUTH_REQUIRED ApiError (0.558625ms)
+@project-air/sdk:test: ✔ a validation error exposes the field paths (0.546584ms)
+@project-air/sdk:test: ✔ a conflict maps to CONFLICT and unknown ids to NOT_FOUND (0.886042ms)
+@project-air/sdk:test: ✔ an unexpected success envelope becomes an INTERNAL ApiError (0.435083ms)
+@project-air/sdk:test: ✔ an invalid baseUrl is rejected by the client (0.080375ms)
+@project-air/sdk:test: ℹ tests 26
+@project-air/sdk:test: ℹ suites 0
+@project-air/sdk:test: ℹ pass 26
+@project-air/sdk:test: ℹ fail 0
+@project-air/sdk:test: ℹ cancelled 0
+@project-air/sdk:test: ℹ skipped 0
+@project-air/sdk:test: ℹ todo 0
+@project-air/sdk:test: ℹ duration_ms 1363.981667
+@project-air/sync:build: $ tsc --project tsconfig.json
+@project-air/sync:test: cache miss, executing 7493f123d8cbca50
+@project-air/sync:test: $ node --test --test-concurrency=1 test/*.test.mjs
+@project-air/sync:test: ✔ live socket integration: join, ack-after-commit, broadcast and reconnect catch-up (123.997458ms)
+@project-air/sync:test: ✔ live presence: throttled, identity-derived, isolated, cleaned up and never blocking operations (555.686708ms)
+@project-air/sync:test: ✔ hello is required first and the first message rejection is explicit (2.181708ms)
+@project-air/sync:test: ✔ version and session validation reject before joinBoard (0.222834ms)
+@project-air/sync:test: ✔ the platform authorizer gates joinBoard and welcome/snapshot carry the durable seq (1.010792ms)
+@project-air/sync:test: ✔ operationBatch is persisted before the ack and the ack carries the new seq (0.900208ms)
+@project-air/sync:test: ✔ a failed append produces a reject and never an ack (0.385917ms)
+@project-air/sync:test: ✔ resyncRequest reads from the durable seq and leaveBoard broadcasts presence (0.32425ms)
+@project-air/sync:test: restart harness evidence: /private/tmp/air-P5-07/reviews/evidence/P5-06-restart-20261028T212814Z.json
+@project-air/sync:test: ✔ restart, catch-up and snapshot compaction preserve every acked update (1201.913667ms)
+@project-air/sync:test: ✔ the handshake accept value matches the RFC 6455 vector (1.035042ms)
+@project-air/sync:test: ✔ masked client frames decode and unmasked/reserved frames are rejected (0.400709ms)
+@project-air/sync:test: ✔ fragmentation reassembles and enforces the bounded size (0.296708ms)
+@project-air/sync:test: ✔ ping is answered with pong and close ends the connection (0.338958ms)
+@project-air/sync:test: ✔ an oversized declared frame closes with 1009 before allocating it (0.121166ms)
+@project-air/sync:test: ℹ tests 14
+@project-air/sync:test: ℹ suites 0
+@project-air/sync:test: ℹ pass 14
+@project-air/sync:test: ℹ fail 0
+@project-air/sync:test: ℹ cancelled 0
+@project-air/sync:test: ℹ skipped 0
+@project-air/sync:test: ℹ todo 0
+@project-air/sync:test: ℹ duration_ms 3004.106334
+
+ Tasks:    6 successful, 6 total
+Cached:    4 cached, 6 total
+  Time:    3.881s 
+
+$ turbo run test --affected
+ WARNING  no output files found for task @project-air/sync#test. Please check your `outputs` key in `turbo.json`

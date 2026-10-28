@@ -332,3 +332,27 @@ test("presence updates are throttled/coalesced and remote participants subscribe
   unsubscribe();
   client.close();
 });
+
+// P5-07: L11 own-ops undo — only the client's own operations carry inverses;
+// undoOwn sends the inverse as a new local batch and never touches remote ops.
+test("undoOwn applies only the client's own inverse; remote operations are never recorded", () => {
+  const { client, sockets } = clientSetup();
+  client.start();
+  const socket = sockets[0];
+  socket.receive({ id: "w", type: "welcome", serverSeq: 1, payload: { contractVersion: "0.3.0", snapshotRef: "board-1:1" } });
+  socket.receive({ id: "s", type: "snapshot", serverSeq: 1, payload: { snapshotRef: "board-1:1", boardContent: content } });
+  const own = { id: "0192f0f8-7000-7000-8000-0000000000d1", boardId: "board-1", actorId: "0192f0f8-7000-7000-8000-0000000000d2", createdAt: "2027-01-10T09:30:00.000Z", type: "moveCard", payload: { cardId: "0192f0f8-7000-7000-8000-0000000000d3", x: 16, y: 16 }, inverse: { boardId: "board-1", type: "moveCard", payload: { cardId: "0192f0f8-7000-7000-8000-0000000000d3", x: 0, y: 0 } } };
+  client.sendOperations([own]);
+  socket.receive({ id: "a1", type: "ack", serverSeq: 2, payload: { batchId: socket.lastByType("operationBatch").payload.batchId, opIds: [own.id] } });
+  socket.receive({ id: "remote", type: "operationBatch", serverSeq: 3, payload: { batchId: "0192f0f8-7000-7000-8000-0000000000e1", operations: [{ id: "0192f0f8-7000-7000-8000-0000000000e2", type: "moveCard", payload: { cardId: "0192f0f8-7000-7000-8000-0000000000e3", x: 99, y: 99 } }] } });
+  assert.equal(client.ownUndoCount(), 1, "remote operations never enter the own-op history");
+  assert.equal(client.undoOwn(), true);
+  const undoBatch = socket.lastByType("operationBatch");
+  assert.deepEqual(undoBatch.payload.operations[0].payload, own.inverse.payload, "undo sends exactly the own inverse as a new local batch");
+  assert.equal(undoBatch.payload.operations[0].type, "moveCard");
+  assert.equal(undoBatch.payload.operations[0].inverse.type, "moveCard");
+  assert.equal(client.ownUndoCount(), 1, "the inverse itself is a local op that can be undone again");
+  assert.equal(client.redoOwn(), true);
+  assert.deepEqual(socket.lastByType("operationBatch").payload.operations[0].payload, own.payload, `redo resends the own operation: ${JSON.stringify(socket.lastByType("operationBatch").payload.operations[0])}`);
+  client.close();
+});
