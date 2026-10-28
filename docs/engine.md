@@ -760,6 +760,31 @@ previous `engine_create` sequence.
   `navigator.gpu` removed at the page boundary (→ WebGL2 with `webgpu-unavailable`); the record is
   under `reviews/evidence/P4-12-backend-selection-*.json`.
 
+## Placement of new objects (L20, P4-19)
+
+Adding an object uses the pure placement rule in `src/bridge/placement.ts`. The candidate starts at the
+centre of the camera's visible world bounds, snapped to `tokens::canvas_grid` (16 px). While it
+overlaps a **visible** object of the same board it cascades `tokens::space_32` (32 px) right and down,
+at most ten attempts (documented cap). The result is always clamped to the visible world bounds and
+snapped inward to the grid (clamp first, then snap inward), and the object's full size stays inside the
+bounds; the rule is deterministic (no clock/random) and independent of zoom except through the visible
+bounds. Only visible objects block: the caller passes the visible objects and any object fully outside
+the visible bounds is ignored.
+
+The create path feeds that position into the existing create gesture/operation builders (card, block,
+zone), so one create is one `createCard`/`createBlock`/`createZone` operation with its inverse through
+the P4-05 seam — no separate position write. The playground "add note" action (`n` key, and the
+capture-only `?tools=1` button) places a card at the computed position through the seam; five
+consecutive actions produce five visible, grid-aligned, non-overlapping cards (capture evidence
+records the positions, attempt counts and operation ids for 1440x900 and 390x844).
+
+Because ten 32 px diagonal attempts are geometrically insufficient for several 224x128 notes in a
+crowded view (a 32 px step does not clear a 224 px card and the cascade stalls after the third), the
+implementation adds a documented post-cap fallback: when the tenth candidate still overlaps, it
+returns the first free 16 px grid slot inside the visible bounds (row-major), so a new object is never
+stacked invisibly and the result stays visible/grid-aligned, still as one create operation. The
+playground creates the card at the contract minimum size (176x80) — there is no default-size token.
+
 ## Auto-pan while dragging (L16, P4-18)
 
 While an object or a joint selection is dragged into the **48 screen px edge band**

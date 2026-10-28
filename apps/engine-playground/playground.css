@@ -503,3 +503,22 @@ body {
 .error[hidden] {
   display: none;
 }
+
+/* P4-19 (L20): the demo "add note" control. Hidden by default (the captured
+   reference scenes never show it); the `?tools=1` capture run reveals it. */
+.add-note {
+  position: absolute;
+  top: var(--space-16);
+  left: var(--space-16);
+  z-index: 2;
+  padding: var(--space-8) var(--space-12);
+  border: var(--border-width) solid var(--accent);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--accent);
+  font: inherit;
+  cursor: pointer;
+}
+.add-note[hidden] {
+  display: none;
+}

@@ -1,0 +1,4 @@
+area: engine
+kind: minor
+
+Add L20 placement of new objects: a pure deterministic rule starting at the snapped view centre on the 16 px grid, cascading tokens::space_32 right/down at most ten attempts while a visible object overlaps, clamped and snapped inward so the full object stays inside the visible world bounds; a documented post-cap fine-grid fallback keeps the result visible and non-overlapping (still one create operation). The playground add-note action (n key, capture-only button) creates a card at the computed position through the P4-05 create operation seam with inverse; five consecutive actions give five visible, grid-aligned, non-overlapping cards (capture record desktop/mobile). Unit suite covers centre/grid, cascade, attempt cap, visible-only avoidance, clamping, zoom determinism and the five-add integration.

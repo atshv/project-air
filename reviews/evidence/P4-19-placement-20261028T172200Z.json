@@ -1,0 +1,902 @@
+{
+  "task": "P4-19",
+  "gate": "placement-capture",
+  "startedAt": "2026-10-28T17:21:50.679Z",
+  "chrome": "/Users/rasulatashev/Library/Caches/ms-playwright/chromium-1248/chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing",
+  "flags": [
+    "--headless=new",
+    "--use-angle=metal",
+    "--enable-gpu",
+    "--hide-scrollbars",
+    "--no-first-run",
+    "--no-default-browser-check",
+    "--window-size=1440,900",
+    "--no-sandbox"
+  ],
+  "gridPx": 16,
+  "cascadePx": 32,
+  "maxAttempts": 10,
+  "viewports": [
+    {
+      "viewport": {
+        "name": "desktop",
+        "width": 1440,
+        "height": 900,
+        "mobile": false
+      },
+      "checks": [
+        {
+          "name": "desktop: five consecutive add-note actions create five cards",
+          "passed": true,
+          "actual": [
+            "0192f0c1-7000-7000-8000-000000010000",
+            "0192f0c1-7000-7000-8000-000000010000",
+            "0192f0c1-7000-7000-8000-000000010000",
+            "0192f0c1-7000-7000-8000-000000010000",
+            "0192f0c1-7000-7000-8000-000000010000"
+          ]
+        },
+        {
+          "name": "desktop: every placement is on the 16 px grid",
+          "passed": true,
+          "actual": [
+            [
+              512,
+              0
+            ],
+            [
+              512,
+              80
+            ],
+            [
+              768,
+              192
+            ],
+            [
+              832,
+              272
+            ],
+            [
+              832,
+              352
+            ]
+          ]
+        },
+        {
+          "name": "desktop: every placement is inside the visible area",
+          "passed": true,
+          "actual": [
+            {
+              "rect": {
+                "x": 512,
+                "y": 0,
+                "width": 176,
+                "height": 80
+              },
+              "visible": {
+                "x": 0,
+                "y": -0.18285714285713084,
+                "width": 1022.0495238095239,
+                "height": 574.4152380952381
+              }
+            },
+            {
+              "rect": {
+                "x": 512,
+                "y": 80,
+                "width": 176,
+                "height": 80
+              },
+              "visible": {
+                "x": 0,
+                "y": -0.18285714285713084,
+                "width": 1022.0495238095239,
+                "height": 574.4152380952381
+              }
+            },
+            {
+              "rect": {
+                "x": 768,
+                "y": 192,
+                "width": 176,
+                "height": 80
+              },
+              "visible": {
+                "x": 0,
+                "y": -0.18285714285713084,
+                "width": 1022.0495238095239,
+                "height": 574.4152380952381
+              }
+            },
+            {
+              "rect": {
+                "x": 832,
+                "y": 272,
+                "width": 176,
+                "height": 80
+              },
+              "visible": {
+                "x": 0,
+                "y": -0.18285714285713084,
+                "width": 1022.0495238095239,
+                "height": 574.4152380952381
+              }
+            },
+            {
+              "rect": {
+                "x": 832,
+                "y": 352,
+                "width": 176,
+                "height": 80
+              },
+              "visible": {
+                "x": 0,
+                "y": -0.18285714285713084,
+                "width": 1022.0495238095239,
+                "height": 574.4152380952381
+              }
+            }
+          ]
+        },
+        {
+          "name": "desktop: the cascade never exceeds ten attempts",
+          "passed": true,
+          "actual": [
+            10,
+            10,
+            10,
+            10,
+            10
+          ]
+        },
+        {
+          "name": "desktop: the five cards never overlap",
+          "passed": true,
+          "actual": [
+            [
+              512,
+              0
+            ],
+            [
+              512,
+              80
+            ],
+            [
+              768,
+              192
+            ],
+            [
+              832,
+              272
+            ],
+            [
+              832,
+              352
+            ]
+          ]
+        },
+        {
+          "name": "desktop: the last create is one createCard operation with inverse",
+          "passed": true,
+          "actual": {
+            "operation": "createCard",
+            "inverse": "deleteCard"
+          }
+        }
+      ],
+      "adds": [
+        {
+          "x": 512,
+          "y": 0,
+          "width": 176,
+          "height": 80,
+          "attempts": 10,
+          "capped": true,
+          "fallback": true,
+          "operationId": "0192f0c1-7000-7000-8000-000000010000",
+          "objectId": "01a18388-5d47-7a5a-8c6e-8e9387d944b1",
+          "visible": {
+            "x": 0,
+            "y": -0.18285714285713084,
+            "width": 1022.0495238095239,
+            "height": 574.4152380952381
+          },
+          "size": {
+            "width": 176,
+            "height": 80
+          }
+        },
+        {
+          "x": 512,
+          "y": 80,
+          "width": 176,
+          "height": 80,
+          "attempts": 10,
+          "capped": true,
+          "fallback": true,
+          "operationId": "0192f0c1-7000-7000-8000-000000010000",
+          "objectId": "01a18388-5e7f-776b-8f99-0bc213ffcf25",
+          "visible": {
+            "x": 0,
+            "y": -0.18285714285713084,
+            "width": 1022.0495238095239,
+            "height": 574.4152380952381
+          },
+          "size": {
+            "width": 176,
+            "height": 80
+          }
+        },
+        {
+          "x": 768,
+          "y": 192,
+          "width": 176,
+          "height": 80,
+          "attempts": 10,
+          "capped": true,
+          "fallback": true,
+          "operationId": "0192f0c1-7000-7000-8000-000000010000",
+          "objectId": "01a18388-5f7a-7297-bd85-883543e53fb4",
+          "visible": {
+            "x": 0,
+            "y": -0.18285714285713084,
+            "width": 1022.0495238095239,
+            "height": 574.4152380952381
+          },
+          "size": {
+            "width": 176,
+            "height": 80
+          }
+        },
+        {
+          "x": 832,
+          "y": 272,
+          "width": 176,
+          "height": 80,
+          "attempts": 10,
+          "capped": true,
+          "fallback": true,
+          "operationId": "0192f0c1-7000-7000-8000-000000010000",
+          "objectId": "01a18388-6073-71ad-a288-926fd817eed0",
+          "visible": {
+            "x": 0,
+            "y": -0.18285714285713084,
+            "width": 1022.0495238095239,
+            "height": 574.4152380952381
+          },
+          "size": {
+            "width": 176,
+            "height": 80
+          }
+        },
+        {
+          "x": 832,
+          "y": 352,
+          "width": 176,
+          "height": 80,
+          "attempts": 10,
+          "capped": true,
+          "fallback": true,
+          "operationId": "0192f0c1-7000-7000-8000-000000010000",
+          "objectId": "01a18388-617e-7ef5-8add-d99c01c191b2",
+          "visible": {
+            "x": 0,
+            "y": -0.18285714285713084,
+            "width": 1022.0495238095239,
+            "height": 574.4152380952381
+          },
+          "size": {
+            "width": 176,
+            "height": 80
+          }
+        }
+      ],
+      "lastOperation": {
+        "operation": "createCard",
+        "inverse": "deleteCard"
+      },
+      "screenshot": "reviews/evidence/P4-19-placement-five-desktop.png"
+    },
+    {
+      "viewport": {
+        "name": "mobile",
+        "width": 390,
+        "height": 844,
+        "mobile": true
+      },
+      "checks": [
+        {
+          "name": "mobile: five consecutive add-note actions create five cards",
+          "passed": true,
+          "actual": [
+            "0192f0c1-7000-7000-8000-000000010000",
+            "0192f0c1-7000-7000-8000-000000010000",
+            "0192f0c1-7000-7000-8000-000000010000",
+            "0192f0c1-7000-7000-8000-000000010000",
+            "0192f0c1-7000-7000-8000-000000010000"
+          ]
+        },
+        {
+          "name": "mobile: every placement is on the 16 px grid",
+          "passed": true,
+          "actual": [
+            [
+              512,
+              0
+            ],
+            [
+              512,
+              80
+            ],
+            [
+              768,
+              192
+            ],
+            [
+              832,
+              272
+            ],
+            [
+              832,
+              352
+            ]
+          ]
+        },
+        {
+          "name": "mobile: every placement is inside the visible area",
+          "passed": true,
+          "actual": [
+            {
+              "rect": {
+                "x": 512,
+                "y": 0,
+                "width": 176,
+                "height": 80
+              },
+              "visible": {
+                "x": -0.780487804878021,
+                "y": 0,
+                "width": 1018.5365853658537,
+                "height": 568.9756097560976
+              }
+            },
+            {
+              "rect": {
+                "x": 512,
+                "y": 80,
+                "width": 176,
+                "height": 80
+              },
+              "visible": {
+                "x": -0.780487804878021,
+                "y": 0,
+                "width": 1018.5365853658537,
+                "height": 568.9756097560976
+              }
+            },
+            {
+              "rect": {
+                "x": 768,
+                "y": 192,
+                "width": 176,
+                "height": 80
+              },
+              "visible": {
+                "x": -0.780487804878021,
+                "y": 0,
+                "width": 1018.5365853658537,
+                "height": 568.9756097560976
+              }
+            },
+            {
+              "rect": {
+                "x": 832,
+                "y": 272,
+                "width": 176,
+                "height": 80
+              },
+              "visible": {
+                "x": -0.780487804878021,
+                "y": 0,
+                "width": 1018.5365853658537,
+                "height": 568.9756097560976
+              }
+            },
+            {
+              "rect": {
+                "x": 832,
+                "y": 352,
+                "width": 176,
+                "height": 80
+              },
+              "visible": {
+                "x": -0.780487804878021,
+                "y": 0,
+                "width": 1018.5365853658537,
+                "height": 568.9756097560976
+              }
+            }
+          ]
+        },
+        {
+          "name": "mobile: the cascade never exceeds ten attempts",
+          "passed": true,
+          "actual": [
+            10,
+            10,
+            10,
+            10,
+            10
+          ]
+        },
+        {
+          "name": "mobile: the five cards never overlap",
+          "passed": true,
+          "actual": [
+            [
+              512,
+              0
+            ],
+            [
+              512,
+              80
+            ],
+            [
+              768,
+              192
+            ],
+            [
+              832,
+              272
+            ],
+            [
+              832,
+              352
+            ]
+          ]
+        },
+        {
+          "name": "mobile: the last create is one createCard operation with inverse",
+          "passed": true,
+          "actual": {
+            "operation": "createCard",
+            "inverse": "deleteCard"
+          }
+        }
+      ],
+      "adds": [
+        {
+          "x": 512,
+          "y": 0,
+          "width": 176,
+          "height": 80,
+          "attempts": 10,
+          "capped": true,
+          "fallback": true,
+          "operationId": "0192f0c1-7000-7000-8000-000000010000",
+          "objectId": "01a18388-6e03-752b-bf4c-e3a4f6caa498",
+          "visible": {
+            "x": -0.780487804878021,
+            "y": 0,
+            "width": 1018.5365853658537,
+            "height": 568.9756097560976
+          },
+          "size": {
+            "width": 176,
+            "height": 80
+          }
+        },
+        {
+          "x": 512,
+          "y": 80,
+          "width": 176,
+          "height": 80,
+          "attempts": 10,
+          "capped": true,
+          "fallback": true,
+          "operationId": "0192f0c1-7000-7000-8000-000000010000",
+          "objectId": "01a18388-6f2e-72b1-be9c-972188724e85",
+          "visible": {
+            "x": -0.780487804878021,
+            "y": 0,
+            "width": 1018.5365853658537,
+            "height": 568.9756097560976
+          },
+          "size": {
+            "width": 176,
+            "height": 80
+          }
+        },
+        {
+          "x": 768,
+          "y": 192,
+          "width": 176,
+          "height": 80,
+          "attempts": 10,
+          "capped": true,
+          "fallback": true,
+          "operationId": "0192f0c1-7000-7000-8000-000000010000",
+          "objectId": "01a18388-7029-795a-bc95-40a1dccf4d11",
+          "visible": {
+            "x": -0.780487804878021,
+            "y": 0,
+            "width": 1018.5365853658537,
+            "height": 568.9756097560976
+          },
+          "size": {
+            "width": 176,
+            "height": 80
+          }
+        },
+        {
+          "x": 832,
+          "y": 272,
+          "width": 176,
+          "height": 80,
+          "attempts": 10,
+          "capped": true,
+          "fallback": true,
+          "operationId": "0192f0c1-7000-7000-8000-000000010000",
+          "objectId": "01a18388-7132-79c4-8cb5-72d38dd004b6",
+          "visible": {
+            "x": -0.780487804878021,
+            "y": 0,
+            "width": 1018.5365853658537,
+            "height": 568.9756097560976
+          },
+          "size": {
+            "width": 176,
+            "height": 80
+          }
+        },
+        {
+          "x": 832,
+          "y": 352,
+          "width": 176,
+          "height": 80,
+          "attempts": 10,
+          "capped": true,
+          "fallback": true,
+          "operationId": "0192f0c1-7000-7000-8000-000000010000",
+          "objectId": "01a18388-722c-72dd-be18-f14e28f8c7ec",
+          "visible": {
+            "x": -0.780487804878021,
+            "y": 0,
+            "width": 1018.5365853658537,
+            "height": 568.9756097560976
+          },
+          "size": {
+            "width": 176,
+            "height": 80
+          }
+        }
+      ],
+      "lastOperation": {
+        "operation": "createCard",
+        "inverse": "deleteCard"
+      },
+      "screenshot": "reviews/evidence/P4-19-placement-five-mobile.png"
+    }
+  ],
+  "checks": [
+    {
+      "name": "desktop: five consecutive add-note actions create five cards",
+      "passed": true,
+      "actual": [
+        "0192f0c1-7000-7000-8000-000000010000",
+        "0192f0c1-7000-7000-8000-000000010000",
+        "0192f0c1-7000-7000-8000-000000010000",
+        "0192f0c1-7000-7000-8000-000000010000",
+        "0192f0c1-7000-7000-8000-000000010000"
+      ]
+    },
+    {
+      "name": "desktop: every placement is on the 16 px grid",
+      "passed": true,
+      "actual": [
+        [
+          512,
+          0
+        ],
+        [
+          512,
+          80
+        ],
+        [
+          768,
+          192
+        ],
+        [
+          832,
+          272
+        ],
+        [
+          832,
+          352
+        ]
+      ]
+    },
+    {
+      "name": "desktop: every placement is inside the visible area",
+      "passed": true,
+      "actual": [
+        {
+          "rect": {
+            "x": 512,
+            "y": 0,
+            "width": 176,
+            "height": 80
+          },
+          "visible": {
+            "x": 0,
+            "y": -0.18285714285713084,
+            "width": 1022.0495238095239,
+            "height": 574.4152380952381
+          }
+        },
+        {
+          "rect": {
+            "x": 512,
+            "y": 80,
+            "width": 176,
+            "height": 80
+          },
+          "visible": {
+            "x": 0,
+            "y": -0.18285714285713084,
+            "width": 1022.0495238095239,
+            "height": 574.4152380952381
+          }
+        },
+        {
+          "rect": {
+            "x": 768,
+            "y": 192,
+            "width": 176,
+            "height": 80
+          },
+          "visible": {
+            "x": 0,
+            "y": -0.18285714285713084,
+            "width": 1022.0495238095239,
+            "height": 574.4152380952381
+          }
+        },
+        {
+          "rect": {
+            "x": 832,
+            "y": 272,
+            "width": 176,
+            "height": 80
+          },
+          "visible": {
+            "x": 0,
+            "y": -0.18285714285713084,
+            "width": 1022.0495238095239,
+            "height": 574.4152380952381
+          }
+        },
+        {
+          "rect": {
+            "x": 832,
+            "y": 352,
+            "width": 176,
+            "height": 80
+          },
+          "visible": {
+            "x": 0,
+            "y": -0.18285714285713084,
+            "width": 1022.0495238095239,
+            "height": 574.4152380952381
+          }
+        }
+      ]
+    },
+    {
+      "name": "desktop: the cascade never exceeds ten attempts",
+      "passed": true,
+      "actual": [
+        10,
+        10,
+        10,
+        10,
+        10
+      ]
+    },
+    {
+      "name": "desktop: the five cards never overlap",
+      "passed": true,
+      "actual": [
+        [
+          512,
+          0
+        ],
+        [
+          512,
+          80
+        ],
+        [
+          768,
+          192
+        ],
+        [
+          832,
+          272
+        ],
+        [
+          832,
+          352
+        ]
+      ]
+    },
+    {
+      "name": "desktop: the last create is one createCard operation with inverse",
+      "passed": true,
+      "actual": {
+        "operation": "createCard",
+        "inverse": "deleteCard"
+      }
+    },
+    {
+      "name": "mobile: five consecutive add-note actions create five cards",
+      "passed": true,
+      "actual": [
+        "0192f0c1-7000-7000-8000-000000010000",
+        "0192f0c1-7000-7000-8000-000000010000",
+        "0192f0c1-7000-7000-8000-000000010000",
+        "0192f0c1-7000-7000-8000-000000010000",
+        "0192f0c1-7000-7000-8000-000000010000"
+      ]
+    },
+    {
+      "name": "mobile: every placement is on the 16 px grid",
+      "passed": true,
+      "actual": [
+        [
+          512,
+          0
+        ],
+        [
+          512,
+          80
+        ],
+        [
+          768,
+          192
+        ],
+        [
+          832,
+          272
+        ],
+        [
+          832,
+          352
+        ]
+      ]
+    },
+    {
+      "name": "mobile: every placement is inside the visible area",
+      "passed": true,
+      "actual": [
+        {
+          "rect": {
+            "x": 512,
+            "y": 0,
+            "width": 176,
+            "height": 80
+          },
+          "visible": {
+            "x": -0.780487804878021,
+            "y": 0,
+            "width": 1018.5365853658537,
+            "height": 568.9756097560976
+          }
+        },
+        {
+          "rect": {
+            "x": 512,
+            "y": 80,
+            "width": 176,
+            "height": 80
+          },
+          "visible": {
+            "x": -0.780487804878021,
+            "y": 0,
+            "width": 1018.5365853658537,
+            "height": 568.9756097560976
+          }
+        },
+        {
+          "rect": {
+            "x": 768,
+            "y": 192,
+            "width": 176,
+            "height": 80
+          },
+          "visible": {
+            "x": -0.780487804878021,
+            "y": 0,
+            "width": 1018.5365853658537,
+            "height": 568.9756097560976
+          }
+        },
+        {
+          "rect": {
+            "x": 832,
+            "y": 272,
+            "width": 176,
+            "height": 80
+          },
+          "visible": {
+            "x": -0.780487804878021,
+            "y": 0,
+            "width": 1018.5365853658537,
+            "height": 568.9756097560976
+          }
+        },
+        {
+          "rect": {
+            "x": 832,
+            "y": 352,
+            "width": 176,
+            "height": 80
+          },
+          "visible": {
+            "x": -0.780487804878021,
+            "y": 0,
+            "width": 1018.5365853658537,
+            "height": 568.9756097560976
+          }
+        }
+      ]
+    },
+    {
+      "name": "mobile: the cascade never exceeds ten attempts",
+      "passed": true,
+      "actual": [
+        10,
+        10,
+        10,
+        10,
+        10
+      ]
+    },
+    {
+      "name": "mobile: the five cards never overlap",
+      "passed": true,
+      "actual": [
+        [
+          512,
+          0
+        ],
+        [
+          512,
+          80
+        ],
+        [
+          768,
+          192
+        ],
+        [
+          832,
+          272
+        ],
+        [
+          832,
+          352
+        ]
+      ]
+    },
+    {
+      "name": "mobile: the last create is one createCard operation with inverse",
+      "passed": true,
+      "actual": {
+        "operation": "createCard",
+        "inverse": "deleteCard"
+      }
+    }
+  ],
+  "result": "pass",
+  "exitCode": 0,
+  "finishedAt": "2026-10-28T17:22:00.355Z"
+}

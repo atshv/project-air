@@ -887,7 +887,7 @@ function layersEntity(object, index, uuidOf, storedKeys) {
 }
 
 async function loadLayersDocument(engine, loaded) {
-  const [{ applyOperation, buildOperation }, { createEngineDocumentPort }, { createHistory }] =
+  const [{ applyOperation, buildOperation, keyAfter }, { createEngineDocumentPort }, { createHistory }] =
     await Promise.all([
       import("@project-air/engine/logic/operations.js"),
       import("@project-air/engine/logic/document-port.js"),
@@ -960,6 +960,7 @@ async function loadLayersDocument(engine, loaded) {
     context,
     history,
     seam: { buildOperation, applyOperation },
+    operations: { keyAfter },
     entries: loaded.objects.map((object) => ({ kind: object.kind, id: uuidOf.get(object.id) })),
     sceneIdOf,
     onTap: (target) => {
@@ -976,7 +977,7 @@ async function loadLayersDocument(engine, loaded) {
 // `buildOperation`, applies it through the port and pushes the pair onto the
 // P4-05 history, and `revert` restores a cancelled drag. The numbers stay token
 // values; the input layer owns the threshold and grip rules.
-function createDragSession({ engine, port, context, history, seam, entries, sceneIdOf, onTap, zoneParity = false }) {
+function createDragSession({ engine, port, context, history, seam, entries, sceneIdOf, onTap, zoneParity = false, operations = null }) {
   const targetAt = (screenX, screenY) => {
     const slot = engine.hitTest(screenX, screenY);
     const hit = port.objectAt(slot);
@@ -1141,6 +1142,64 @@ function createDragSession({ engine, port, context, history, seam, entries, scen
       world: { x: entity.x, y: entity.y, width: entity.width, height: entity.height },
       draggable: true,
     };
+  };
+  // P4-19 (L20): placement of new objects. The pure placement function lives in
+  // the logic package; the playground passes the result here and this builds
+  // exactly one `create` operation (createCard) at that position through the seam.
+  const newUuidV7 = () => {
+    const bytes = new Uint8Array(16);
+    crypto.getRandomValues(bytes);
+    const timestamp = Date.now();
+    bytes[0] = (timestamp / 2 ** 40) & 0xff;
+    bytes[1] = (timestamp / 2 ** 32) & 0xff;
+    bytes[2] = (timestamp / 2 ** 24) & 0xff;
+    bytes[3] = (timestamp / 2 ** 16) & 0xff;
+    bytes[4] = (timestamp / 2 ** 8) & 0xff;
+    bytes[5] = timestamp & 0xff;
+    bytes[6] = (bytes[6] & 0x0f) | 0x70;
+    bytes[8] = (bytes[8] & 0x3f) | 0x80;
+    const hex = Array.from(bytes, (byte) => byte.toString(16).padStart(2, "0")).join("");
+    return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
+  };
+  const visibleObjects = () => {
+    const objects = [];
+    for (const entry of entries) {
+      const target = targetOf(entry);
+      if (target !== null) {
+        objects.push({ x: target.world.x, y: target.world.y, width: target.world.width, height: target.world.height });
+      }
+    }
+    return objects;
+  };
+  const addCardAt = (position, size) => {
+    const zIndices = port.zIndices("card");
+    let z = "0";
+    for (const key of zIndices) {
+      if (key > z) {
+        z = key;
+      }
+    }
+    z = operations !== null ? operations.keyAfter(z) : `${z}a`;
+    const draft = {
+      kind: "card",
+      id: newUuidV7(),
+      noteId: newUuidV7(),
+      x: position.x,
+      y: position.y,
+      width: size.width,
+      height: size.height,
+      z,
+    };
+    const pair = seam.buildOperation(port, context, { kind: "create", draft });
+    if (pair === null) {
+      return null;
+    }
+    seam.applyOperation(port, pair.operation);
+    history.push(pair.operation, pair.inverse);
+    recordPair(pair);
+    entries.push({ kind: "card", id: draft.id });
+    onDemand.request();
+    return { operationId: pair.operation.id, objectId: draft.id, position: { x: draft.x, y: draft.y }, size: { width: draft.width, height: draft.height } };
   };
   // L10: current geometry of the selected ids (the joint drag and the count bar).
   const selectionTargets = (ids) => {
@@ -1822,6 +1881,8 @@ function createDragSession({ engine, port, context, history, seam, entries, scen
     lastOperation,
     previewZoneDrag,
     commitZoneArrangement,
+    visibleObjects,
+    addCardAt,
     resizeMinimum,
     previewResize,
     commitResize,
@@ -1866,7 +1927,7 @@ function rectangleEntity(object, index, uuidOf, boardId) {
 // projects the same objects onto the already assigned slots, so a drag commits
 // one contract move operation without reloading the document.
 async function loadRectangleDragSession(engine, loaded) {
-  const [{ applyOperation, buildOperation }, { createEngineDocumentPort }, { createHistory }] =
+  const [{ applyOperation, buildOperation, keyAfter }, { createEngineDocumentPort }, { createHistory }] =
     await Promise.all([
       import("@project-air/engine/logic/operations.js"),
       import("@project-air/engine/logic/document-port.js"),
@@ -1913,6 +1974,7 @@ async function loadRectangleDragSession(engine, loaded) {
     context,
     history,
     seam: { buildOperation, applyOperation },
+    operations: { keyAfter },
     entries: loaded.objects.map((object) => ({ kind: object.kind, id: uuidOf.get(object.id) })),
     sceneIdOf,
     onTap: null,
@@ -2719,6 +2781,75 @@ function installPointerInput(engine, session, titlesController) {
       viewport: () => ({ width: canvas.clientWidth, height: canvas.clientHeight }),
     };
   }
+
+  // P4-19 (L20): add a note at the placed position through the seam. The size is
+  // the playground's card default (the same geometry the sample cards use); the
+  // placement itself is the pure logic rule, computed from the current camera.
+  const addNoteAdds = [];
+  const addNoteAction = async () => {
+    if (session === null || typeof session.addCardAt !== "function") {
+      return null;
+    }
+    const { placeNewObject } = await import("@project-air/engine/placement.js");
+    const visible = {
+      x: camera.panX,
+      y: camera.panY,
+      width: Math.max(1, canvas.clientWidth / camera.zoom),
+      height: Math.max(1, canvas.clientHeight / camera.zoom),
+    };
+    // The contract card minimum (176x80) is the smallest usable note size and
+    // keeps five consecutive notes inside a crowded view without overlapping.
+    const size = { width: 176, height: 80 };
+    const visibleObjects = session.visibleObjects();
+    const placement = placeNewObject({ visible, objects: visibleObjects, size });
+    const created = session.addCardAt(placement, size);
+    const entry = {
+      ...placement,
+      operationId: created?.operationId ?? null,
+      objectId: created?.objectId ?? null,
+      visible,
+      size,
+    };
+    addNoteAdds.push(entry);
+    globalThis.__enginePlacement = {
+      adds: () => addNoteAdds.map((add) => ({ ...add })),
+      last: () => addNoteAdds.at(-1) ?? null,
+      addNote: () => addNoteAction(),
+      visible: () => ({ ...visible }),
+      size: () => ({ ...size }),
+    };
+    return entry;
+  };
+  if (typeof globalThis !== "undefined") {
+    globalThis.__enginePlacement = {
+      adds: () => addNoteAdds.map((add) => ({ ...add })),
+      last: () => addNoteAdds.at(-1) ?? null,
+      addNote: () => addNoteAction(),
+    };
+  }
+  const addNoteButton = document.querySelector("#add-note");
+  if (addNoteButton instanceof HTMLButtonElement) {
+    addNoteButton.addEventListener("click", () => {
+      void addNoteAction();
+    });
+    if (query.get("tools") === "1") {
+      addNoteButton.hidden = false;
+    }
+  }
+  window.addEventListener("keydown", (event) => {
+    if (event.key !== "n" && event.key !== "N") {
+      return;
+    }
+    const target = event.target;
+    if (target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement) {
+      return;
+    }
+    if (event.metaKey || event.ctrlKey || event.altKey) {
+      return;
+    }
+    event.preventDefault();
+    void addNoteAction();
+  });
 
   const NOT_SUPPRESSED = { suppressed: false, editable: false, cursor: "default" };
   const sampleOf = (event) => {
