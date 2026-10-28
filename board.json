@@ -3827,6 +3827,9 @@
       "evidence": [],
       "scope_write_forbidden": [
         "reference/"
+      ],
+      "exclusive": [
+        "perf"
       ]
     },
     {
@@ -4523,6 +4526,9 @@
       "evidence": [],
       "scope_write_forbidden": [
         "reference/"
+      ],
+      "exclusive": [
+        "visual"
       ]
     },
     {
@@ -4550,7 +4556,8 @@
       "stage": "engine-core",
       "parallel_group": null,
       "exclusive": [
-        "perf"
+        "perf",
+        "visual"
       ],
       "scope_write": [
         "packages/engine/",
@@ -5084,6 +5091,9 @@
       "evidence": [],
       "scope_write_forbidden": [
         "reference/"
+      ],
+      "exclusive": [
+        "visual"
       ]
     },
     {
@@ -5145,6 +5155,9 @@
       "evidence": [],
       "scope_write_forbidden": [
         "reference/"
+      ],
+      "exclusive": [
+        "visual"
       ]
     }
   ],
