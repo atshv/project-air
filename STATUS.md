@@ -125,7 +125,7 @@
 
 ## Ready now
 
-- `P6-06` Contract 0.4.0: note body document and content operations
+- none
 
 ## Done
 
@@ -233,7 +233,7 @@
 
 ## In progress
 
-- none
+- [ ] `P6-06` Contract 0.4.0: note body document and content operations — status: `in_progress` — owner: lead
 
 ## Blocked / failed
 
@@ -245,7 +245,6 @@
 - [ ] `P0-15` Release command and tag-based CI release — status: `pending` — owner: —
 - [ ] `P0-16` Dependency updates and Polier update check — status: `pending` — owner: —
 - [ ] `P0-17` RELEASING.md and release 0.0.1 — status: `pending` — owner: —
-- [ ] `P6-06` Contract 0.4.0: note body document and content operations — status: `pending` — owner: —
 - [ ] `P6-07` Panel and editor: overlay, own editor, note placeholder and title (L04, L06, L09) — status: `pending` — owner: —
 - [ ] `P6-08` Realtime UI: live changes, presence and save status (L05) — status: `pending` — owner: —
 - [ ] `P6-09` e2e suite: main flows and the e2e gate on the slot ports — status: `pending` — owner: —
@@ -254,7 +253,7 @@
 <!-- polier:claims -->
 ## Claims
 
-- `P6-05` in progress by dsh since 2026-10-28T23:37:25+00:00 — worktree: /private/tmp/air-P6-05 · slot 3
+- `P6-06` in progress by dsh since 2026-10-28T23:38:11+00:00 — worktree: /private/tmp/air-P6-06 · slot 3
 
 <!-- /polier:claims -->
 
