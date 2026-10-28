@@ -121,13 +121,6 @@
 
 ## Ready now
 
-- `P4-19` Placement of new objects (L20)
-  - P4-05: Closed P4-05: engine TS logic layer (gestures, operations, port, history); one gesture = one contract operation with inverse, group drag = one group operation; 31 tests validate.
-  - P4-05: Undo/redo depth 20 with redo-clear and describe() labels; fake + bridge adapter byte-identical round trips; create builders validate geometry, port read is isolated, adapter projects z.
-  - P4-05: Two review rounds, four minors fixed. The z-order gesture awaits the contract 0.2.0 reorder operation (P4-25); the moveZone description is corrected there.
-  - P4-07: Closed P4-07: pure Camera::fitBounds (min(...,1.0), 0.1 floor, 64 px L02 padding from tokens), dot grid shader (tokens faint/canvas, 16 px, visible at >=0.5), on-demand rendering (0 idle frames).
-  - P4-07: visual 10/10 0-diff incl. reviewed sample-zoom-in update + two one-card-fit baselines; perf p95 0.1 ms, 0 intervals > 16.7 ms; L01 final mean 0.049 vs basis 0.052.
-  - P4-07: Harnesses gained --task evidence prefixes; docs updated. Two review rounds, four minors fixed (record commit base, visual --task, comment wording, baseline-history precision).
 - `P4-20` Keyboard and context menu (L12)
 - `P4-22` Remember view (L17)
   - P4-07: Closed P4-07: pure Camera::fitBounds (min(...,1.0), 0.1 floor, 64 px L02 padding from tokens), dot grid shader (tokens faint/canvas, 16 px, visible at >=0.5), on-demand rendering (0 idle frames).
@@ -212,7 +205,7 @@
 
 ## In progress
 
-- none
+- [ ] `P4-19` Placement of new objects (L20) — status: `in_progress` — owner: lead
 
 ## Blocked / failed
 
@@ -224,7 +217,6 @@
 - [ ] `P0-15` Release command and tag-based CI release — status: `pending` — owner: —
 - [ ] `P0-16` Dependency updates and Polier update check — status: `pending` — owner: —
 - [ ] `P0-17` RELEASING.md and release 0.0.1 — status: `pending` — owner: —
-- [ ] `P4-19` Placement of new objects (L20) — status: `pending` — owner: —
 - [ ] `P4-20` Keyboard and context menu (L12) — status: `pending` — owner: —
 - [ ] `P4-21` Undo/redo (L11) — status: `pending` — owner: —
 - [ ] `P4-22` Remember view (L17) — status: `pending` — owner: —
@@ -233,7 +225,7 @@
 <!-- polier:claims -->
 ## Claims
 
-- `P4-18` in progress by dsh since 2026-10-28T17:11:08+00:00 — worktree: /private/tmp/air-P4-18 · slot 1
+- `P4-19` in progress by dsh since 2026-10-28T17:11:43+00:00 — worktree: /private/tmp/air-P4-19 · slot 1
 
 <!-- /polier:claims -->
 
