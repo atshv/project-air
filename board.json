@@ -3556,7 +3556,8 @@
       "scope_write": [
         "packages/engine/",
         "docs/engine.md",
-        ".changes/"
+        ".changes/",
+        "docs/gates/wasm-emscripten.md"
       ],
       "scope_read": [
         "ARCHITECTURE.md",
