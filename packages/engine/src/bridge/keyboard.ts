@@ -12,6 +12,9 @@
 export const CONTEXT_MENU_WIDTH_PX = 200;
 /** L12 interaction value: context-menu row height in CSS px. */
 export const CONTEXT_MENU_ROW_PX = 32;
+/** L11: the history hint stays visible for 3 s after a successful undo. */
+export const HISTORY_HINT_MS = 3000;
+
 /** Arrow nudge in world px. */
 export const NUDGE_STEP_PX = 16;
 /** Shift-arrow nudge in world px. */
@@ -23,6 +26,8 @@ export type KeyboardIntent =
   | { readonly kind: "duplicate" }
   | { readonly kind: "delete" }
   | { readonly kind: "nudge"; readonly dx: number; readonly dy: number }
+  | { readonly kind: "undo" }
+  | { readonly kind: "redo" }
   | { readonly kind: "escape" }
   | { readonly kind: "menu-open" }
   | null;
@@ -60,6 +65,11 @@ export function keyboardIntent(event: KeyboardEventLike): KeyboardIntent {
   if (event.altKey === true) {
     return null;
   }
+  // L11 (P4-21): Cmd/Ctrl+Z undoes, Shift+Cmd/Ctrl+Z redoes; fields keep the
+  // browser's own undo (the suppressed branch above returns null first).
+  if ((event.ctrlKey === true || event.metaKey === true) && (event.key === "z" || event.key === "Z")) {
+    return event.shiftKey === true ? { kind: "redo" } : { kind: "undo" };
+  }
   if (event.contextMenuKey === true) {
     return { kind: "menu-open" };
   }
@@ -75,6 +85,11 @@ export function keyboardIntent(event: KeyboardEventLike): KeyboardIntent {
     return { kind: "nudge", dx: arrow.dx * step, dy: arrow.dy * step };
   }
   return null;
+}
+
+/** The English "Undo: …" hint label for one history describe() value. */
+export function undoHintLabel(label: string | null): string {
+  return `Undo: ${label ?? "Edit"}`;
 }
 
 /** One accumulated arrow-key nudge series, committed once after a short pause. */

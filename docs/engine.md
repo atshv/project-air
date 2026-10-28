@@ -760,6 +760,22 @@ previous `engine_create` sequence.
   `navigator.gpu` removed at the page boundary (→ WebGL2 with `webgpu-unavailable`); the record is
   under `reviews/evidence/P4-12-backend-selection-*.json`.
 
+## Undo/redo and the history hint (L11, P4-21)
+
+The P4-05 session history (`src/logic/history.ts`, depth 20 `{do, undo}` pairs) is wired to the P4-20
+keyboard layer: `Cmd/Ctrl+Z` calls `history.undo()` and `Shift+Cmd/Ctrl+Z` calls `history.redo()`,
+outside fields only (the P4-14 suppression predicate leaves the browser's own undo untouched inside
+input/textarea/select/contenteditable/[data-field]). Each press applies exactly one stored
+inverse/operation through the document port and the operation seam (AD-1: never a direct write or a
+second counter-request). A new operation clears the redo branch (history behaviour), the stack keeps
+at most 20 steps and an empty history is a no-op.
+
+After a successful undo the DOM hint `Undo: <history.describe()>` appears for 3 s in the design-rule
+§9 bottom-centre slot (`fixed` positioning, tokens only, no layout shift, no toast queue); it is
+hidden by default so the reference scenes are unchanged, and no hint is shown for an empty history or
+for redo. The hint is the only visible chrome this task adds; the menu/shortcut router remains the
+single owner of the shortcut (no duplicate page listener).
+
 ## Keyboard and context menu (L12, P4-20)
 
 One keyboard intent layer (`src/bridge/keyboard.ts`) maps keys to intents and is routed in the

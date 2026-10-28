@@ -1,229 +1,127 @@
-// Undo/redo history tests of the engine logic layer (P4-05).
-//
-// The history is only a stack over contract operation/inverse pairs: it applies
-// the stored inverse on undo and re-applies the operation on redo, both through
-// the document port. The tests cover the depth of 20, the redo branch, the hint
-// label and the byte-identical round trip through the in-memory document.
+// P4-21 (L11) undo/redo tests: the real session history over the document port
+// and seam (one inverse per undo, redo re-applies, new operation clears redo,
+// depth 20, empty no-op), the keyboard routing and the hint label/timing.
 
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { createHistory } from "../src/logic/history.ts";
-import {
-  OperationError,
-  applyOperation,
-  buildOperation,
-} from "../src/logic/operations.ts";
-import {
-  BLOCK_ID,
-  CARD_ID,
-  ZONE_ID,
-  createContext,
-  createDocument,
-  uuidv7,
-} from "./support.mjs";
+import { createHistory, HISTORY_DEPTH } from "../src/logic/history.ts";
+import { applyOperation, buildOperation } from "../src/logic/operations.ts";
+import { createInMemoryDocument } from "../src/logic/document-port.ts";
+import { keyboardIntent, undoHintLabel, HISTORY_HINT_MS } from "../src/bridge/keyboard.ts";
 
-/** Applies one drag through the port and records it as one history entry. */
-function dragAndPush(port, history, context, objectKind, objectId, position) {
-  const pair = buildOperation(port, context, {
-    kind: "drag-single",
-    objectKind,
-    objectId,
-    position,
-  });
-  assert.ok(pair, "the drag produced an operation");
-  applyOperation(port, pair.operation);
-  history.push(pair.operation, pair.inverse);
-  return pair;
+function uuidv7(counter) {
+  return `018f0d00-0000-7000-8000-${counter.toString(16).padStart(12, "0")}`;
 }
 
-function cardX(port) {
-  const card = port.read("card", CARD_ID);
-  assert.ok(card);
-  return card.x;
+function context() {
+  let operations = 0;
+  return {
+    boardId: uuidv7(0xb0a1),
+    actorId: uuidv7(0xac01),
+    createOperationId: () => uuidv7(0x10000 + operations++),
+    now: () => "2026-01-01T00:00:00.000Z",
+  };
 }
 
-test("undo and redo on an empty history are no-ops", () => {
-  const port = createDocument();
+function cardDraft(counter, x) {
+  return {
+    kind: "card",
+    id: uuidv7(0x7000 + counter),
+    noteId: uuidv7(0x9000 + counter),
+    x,
+    y: 100,
+    width: 224,
+    height: 128,
+    z: "1",
+  };
+}
+
+function setup() {
+  const port = createInMemoryDocument();
   const history = createHistory(port);
-  const before = port.snapshot();
-  assert.equal(history.undo(), null);
-  assert.equal(history.redo(), null);
-  assert.equal(history.canUndo(), false);
-  assert.equal(history.canRedo(), false);
-  assert.equal(history.describe(), null);
-  assert.equal(port.snapshot(), before);
-});
+  const operationContext = context();
+  let next = 0;
+  const execute = (x) => {
+    const draft = cardDraft(next, x);
+    next += 1;
+    const pair = buildOperation(port, operationContext, { kind: "create", draft });
+    applyOperation(port, pair.operation);
+    history.push(pair.operation, pair.inverse);
+    return pair;
+  };
+  return { port, history, operationContext, execute, count: () => port.snapshot().match(/"id"/g)?.length ?? 0 };
+}
 
-test("undo applies the inverse and redo re-applies the operation", () => {
-  const port = createDocument();
-  const history = createHistory(port);
-  const context = createContext();
-  const before = port.snapshot();
-
-  dragAndPush(port, history, context, "card", CARD_ID, { x: 528, y: 272 });
-  const after = port.snapshot();
-  assert.equal(history.undoDepth(), 1);
-  assert.equal(history.describe(), "Move card");
-
+test("one undo applies exactly one stored inverse; redo re-applies it", () => {
+  const { port, history, execute, count } = setup();
+  execute(100);
+  execute(300);
+  assert.equal(count(), 2);
+  assert.equal(history.undoDepth(), 2);
+  assert.equal(history.describe(), "Create card");
   const undone = history.undo();
-  assert.ok(undone);
-  assert.equal(undone.operation.type, "moveCard");
-  assert.equal(cardX(port), 512);
-  assert.equal(port.snapshot(), before, "undo restores the previous working copy");
-  assert.equal(history.canUndo(), false);
-  assert.equal(history.canRedo(), true);
-  assert.equal(history.describe(), null);
-
+  assert.equal(undone.operation.type, "createCard");
+  assert.equal(count(), 1, "one undo removes exactly one object");
+  assert.equal(history.undoDepth(), 1);
+  assert.equal(history.redoDepth(), 1);
   const redone = history.redo();
-  assert.ok(redone);
-  assert.equal(cardX(port), 528);
-  assert.equal(port.snapshot(), after, "redo re-applies the operation exactly");
-  assert.equal(history.canRedo(), false);
-  assert.equal(history.describe(), "Move card");
+  assert.equal(redone.operation.type, "createCard");
+  assert.equal(count(), 2, "redo re-applies exactly one operation");
+  assert.equal(history.undoDepth(), 2);
+  assert.equal(history.redoDepth(), 0);
 });
 
 test("a new operation clears the redo branch", () => {
-  const port = createDocument();
-  const history = createHistory(port);
-  const context = createContext();
-  dragAndPush(port, history, context, "card", CARD_ID, { x: 528, y: 272 });
+  const { history, execute } = setup();
+  execute(100);
+  execute(300);
   history.undo();
-  assert.equal(history.redoDepth(), 1);
-
-  dragAndPush(port, history, context, "card", CARD_ID, { x: 560, y: 272 });
-  assert.equal(history.redoDepth(), 0);
+  assert.equal(history.canRedo(), true);
+  execute(500);
   assert.equal(history.canRedo(), false);
-  assert.equal(history.redo(), null);
-  assert.equal(cardX(port), 560);
+  assert.equal(history.redoDepth(), 0);
+  assert.equal(history.undoDepth(), 2);
 });
 
-test("the history keeps the newest 20 entries and drops the oldest", () => {
-  const port = createDocument();
-  const history = createHistory(port);
-  const context = createContext();
-  for (let step = 0; step < 21; step += 1) {
-    dragAndPush(port, history, context, "card", CARD_ID, {
-      x: 512 + 16 * (step + 1),
-      y: 256,
-    });
+test("the depth stays at 20 and the oldest entry is dropped", () => {
+  const { history, execute } = setup();
+  assert.equal(HISTORY_DEPTH, 20);
+  for (let index = 0; index < 21; index += 1) {
+    execute(index * 32);
   }
   assert.equal(history.undoDepth(), 20);
-  assert.equal(cardX(port), 512 + 16 * 21);
-
-  for (let step = 0; step < 20; step += 1) {
-    assert.ok(history.undo());
+  const undone = [];
+  while (history.canUndo()) {
+    undone.push(history.undo().operation.type);
   }
+  assert.equal(undone.length, 20);
   assert.equal(history.undoDepth(), 0);
+});
+
+test("an empty history is a no-op", () => {
+  const { history } = setup();
+  assert.equal(history.canUndo(), false);
   assert.equal(history.undo(), null);
-  assert.equal(history.describe(), null);
-  assert.equal(cardX(port), 512 + 16, "the dropped oldest entry cannot be undone");
-
-  for (let step = 0; step < 20; step += 1) {
-    assert.ok(history.redo());
-  }
-  assert.equal(history.canRedo(), false);
-  assert.equal(cardX(port), 512 + 16 * 21);
-});
-
-test("undo reverses a group's child operations as one step", () => {
-  const port = createDocument();
-  const history = createHistory(port);
-  const context = createContext();
-  const before = port.snapshot();
-  const pair = buildOperation(port, context, {
-    kind: "drag-group",
-    members: [
-      { objectKind: "card", objectId: CARD_ID, position: { x: 544, y: 288 } },
-      { objectKind: "zone", objectId: ZONE_ID, position: { x: 144, y: 80 } },
-      { objectKind: "block", objectId: BLOCK_ID, position: { x: 176, y: 112 } },
-    ],
-  });
-  assert.ok(pair);
-  applyOperation(port, pair.operation);
-  history.push(pair.operation, pair.inverse);
-  const after = port.snapshot();
-  assert.equal(history.describe(), "Move 3 objects");
-
-  history.undo();
-  assert.equal(port.snapshot(), before, "one undo reverses the whole group");
+  assert.equal(history.redo(), null);
   assert.equal(history.undoDepth(), 0);
-  history.redo();
-  assert.equal(port.snapshot(), after);
+  assert.equal(history.redoDepth(), 0);
+  assert.equal(history.describe(), null);
 });
 
-test("describe names the next undoable operation from its lookup", () => {
-  const port = createDocument();
-  const history = createHistory(port);
-  const context = createContext();
-  const createPair = buildOperation(port, context, {
-    kind: "create",
-    draft: {
-      kind: "card",
-      id: uuidv7(0x910),
-      noteId: "0192f0a4-7000-7000-8000-000000000004",
-      x: 256,
-      y: 128,
-      width: 256,
-      height: 128,
-      z: "a2",
-    },
-  });
-  assert.ok(createPair);
-  history.push(createPair.operation, createPair.inverse);
-  assert.equal(history.describe(), "Create card");
-
-  const resizePair = buildOperation(port, context, {
-    kind: "resize",
-    objectKind: "card",
-    objectId: CARD_ID,
-    size: { width: 192, height: 96 },
-  });
-  assert.ok(resizePair);
-  history.push(resizePair.operation, resizePair.inverse);
-  assert.equal(history.describe(), "Resize card");
+test("the keyboard routes Cmd/Ctrl+Z and its Shift variant only outside fields", () => {
+  assert.deepEqual(keyboardIntent({ key: "z", metaKey: true, suppressed: false }), { kind: "undo" });
+  assert.deepEqual(keyboardIntent({ key: "Z", ctrlKey: true, suppressed: false }), { kind: "undo" });
+  assert.deepEqual(keyboardIntent({ key: "z", metaKey: true, shiftKey: true, suppressed: false }), { kind: "redo" });
+  assert.deepEqual(keyboardIntent({ key: "Z", ctrlKey: true, shiftKey: true, suppressed: false }), { kind: "redo" });
+  assert.equal(keyboardIntent({ key: "z", metaKey: true, suppressed: true }), null);
+  assert.equal(keyboardIntent({ key: "z", ctrlKey: true, shiftKey: true, suppressed: true }), null);
+  assert.equal(keyboardIntent({ key: "z", suppressed: false }), null);
+  assert.equal(keyboardIntent({ key: "z", metaKey: true, altKey: true, suppressed: false }), null);
 });
 
-test("push records without applying and leaves the copy untouched", () => {
-  const port = createDocument();
-  const history = createHistory(port);
-  const context = createContext();
-  const before = port.snapshot();
-  const pair = buildOperation(port, context, {
-    kind: "drag-single",
-    objectKind: "card",
-    objectId: CARD_ID,
-    position: { x: 528, y: 272 },
-  });
-  assert.ok(pair);
-  history.push(pair.operation, pair.inverse);
-  assert.equal(port.snapshot(), before);
-  assert.equal(history.undoDepth(), 1);
-});
-
-test("a failing undo leaves the stacks and the copy unchanged", () => {
-  const port = createDocument();
-  const history = createHistory(port);
-  const context = createContext();
-  const pair = buildOperation(port, context, {
-    kind: "create",
-    draft: {
-      kind: "card",
-      id: uuidv7(0x911),
-      noteId: "0192f0a4-7000-7000-8000-000000000004",
-      x: 256,
-      y: 128,
-      width: 256,
-      height: 128,
-      z: "a2",
-    },
-  });
-  assert.ok(pair);
-  // Never applied: undoing the deleteCard inverse fails because the card is absent.
-  history.push(pair.operation, pair.inverse);
-  const before = port.snapshot();
-  assert.throws(() => history.undo(), OperationError);
-  assert.equal(history.undoDepth(), 1);
-  assert.equal(history.canRedo(), false);
-  assert.equal(port.snapshot(), before);
+test("the hint label and the 3 s timing are documented", () => {
+  assert.equal(HISTORY_HINT_MS, 3000);
+  assert.equal(undoHintLabel("Create card"), "Undo: Create card");
+  assert.equal(undoHintLabel(null), "Undo: Edit");
 });

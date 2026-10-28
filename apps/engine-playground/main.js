@@ -107,6 +107,8 @@ import {
   CONTEXT_MENU_WIDTH_PX,
   CONTEXT_MENU_ROW_PX,
   NUDGE_STEP_PX,
+  HISTORY_HINT_MS,
+  undoHintLabel,
 } from "@project-air/engine/keyboard.js";
 import {
   anchorToScreen,
@@ -1939,6 +1941,25 @@ function createDragSession({ engine, port, context, history, seam, entries, scen
     commitZoneArrangement,
     duplicateTargets,
     nudgeTargets,
+    undo: () => {
+      const label = history.describe();
+      const pair = history.undo();
+      if (pair === null || pair === undefined) {
+        return null;
+      }
+      onDemand.request();
+      return { label, operation: pair.operation.type };
+    },
+    redo: () => {
+      const pair = history.redo();
+      if (pair === null || pair === undefined) {
+        return null;
+      }
+      onDemand.request();
+      return { operation: pair.operation.type };
+    },
+    undoDepth: () => history.undoDepth(),
+    redoDepth: () => history.redoDepth(),
     visibleObjects,
     addCardAt,
     resizeMinimum,
@@ -2997,6 +3018,8 @@ function installPointerInput(engine, session, titlesController) {
   const nudgeSeries = new NudgeSeries();
   const menuModel = new ContextMenuModel();
   const menuElement = document.querySelector("#context-menu");
+  const hintElement = document.querySelector("#history-hint");
+  let hintTimer = null;
   let nudgeTimer = null;
   let lastIntent = null;
   const recordIntent = (intent, extra = {}) => {
@@ -3093,6 +3116,24 @@ function installPointerInput(engine, session, titlesController) {
       return; // selection Esc stays with the existing input/session handler
     }
     if (intent.kind === "menu-open") { openMenu(canvas.getBoundingClientRect().left + 40, canvas.getBoundingClientRect().top + 40); event.preventDefault(); event.stopPropagation(); return; }
+    if (intent.kind === "undo" || intent.kind === "redo") {
+      if (menuModel.open) return;
+      const result = intent.kind === "undo" ? session?.undo?.() ?? null : session?.redo?.() ?? null;
+      if (result === null) {
+        event.preventDefault();
+        return;
+      }
+      if (intent.kind === "undo" && hintElement instanceof HTMLElement) {
+        hintElement.textContent = undoHintLabel(result.label);
+        hintElement.removeAttribute("hidden");
+        if (hintTimer !== null) clearTimeout(hintTimer);
+        hintTimer = setTimeout(() => { hintElement.setAttribute("hidden", ""); hintTimer = null; }, HISTORY_HINT_MS);
+      }
+      refreshSelection();
+      recordIntent(intent.kind, { operation: result.operation ?? null, label: result.label ?? null });
+      event.preventDefault();
+      return;
+    }
     if (descriptor.suppressed || input.selection.length === 0) return;
     if (intent.kind === "nudge") {
       nudgeSeries.add(intent.dx, intent.dy, Date.now());
@@ -3117,6 +3158,8 @@ function installPointerInput(engine, session, titlesController) {
     series: () => ({ pending: nudgeSeries.pending, delta: nudgeSeries.delta }),
     lastOperation: () => (session === null ? null : session.lastOperation()),
     flushNudge: () => commitNudge(),
+    hint: () => (hintElement instanceof HTMLElement ? { visible: !hintElement.hidden, text: hintElement.textContent } : null),
+    history: () => ({ undoDepth: session?.undoDepth?.() ?? 0, redoDepth: session?.redoDepth?.() ?? 0 }),
   };
 
   // Evidence hook: the browser/manual check reads the layer state next to the

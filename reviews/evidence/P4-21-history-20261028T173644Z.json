@@ -1,0 +1,241 @@
+{
+  "task": "P4-21",
+  "gate": "history-capture",
+  "startedAt": "2026-10-28T17:36:18.458Z",
+  "chrome": "/Users/rasulatashev/Library/Caches/ms-playwright/chromium-1248/chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing",
+  "flags": [
+    "--headless=new",
+    "--use-angle=metal",
+    "--enable-gpu",
+    "--hide-scrollbars",
+    "--no-first-run",
+    "--no-default-browser-check",
+    "--window-size=1440,900",
+    "--no-sandbox"
+  ],
+  "checks": [
+    {
+      "name": "desktop: move/delete work, undo applies one inverse with the 3 s hint, redo re-applies",
+      "passed": true,
+      "actual": {
+        "moved": {
+          "history": {
+            "undoDepth": 2,
+            "redoDepth": 0
+          },
+          "hint": {
+            "visible": false,
+            "text": ""
+          },
+          "last": "moveCard",
+          "selection": 1
+        },
+        "deleted": {
+          "history": {
+            "undoDepth": 3,
+            "redoDepth": 0
+          },
+          "hint": {
+            "visible": false,
+            "text": ""
+          },
+          "last": "group",
+          "selection": 0
+        },
+        "undone": {
+          "history": {
+            "undoDepth": 2,
+            "redoDepth": 1
+          },
+          "hint": {
+            "visible": true,
+            "text": "Undo: Delete 1 object"
+          },
+          "last": "group",
+          "selection": 0
+        },
+        "hidden": {
+          "history": {
+            "undoDepth": 2,
+            "redoDepth": 1
+          },
+          "hint": {
+            "visible": false,
+            "text": "Undo: Delete 1 object"
+          },
+          "last": "group",
+          "selection": 0
+        },
+        "redone": {
+          "history": {
+            "undoDepth": 3,
+            "redoDepth": 0
+          },
+          "hint": {
+            "visible": false,
+            "text": "Undo: Delete 1 object"
+          },
+          "last": "group",
+          "selection": 0
+        }
+      }
+    },
+    {
+      "name": "desktop: the history keeps 20 steps and 20 undos empty it",
+      "passed": true,
+      "actual": {
+        "capped": {
+          "undoDepth": 20,
+          "redoDepth": 0
+        },
+        "emptied": {
+          "undoDepth": 0,
+          "redoDepth": 20
+        }
+      }
+    },
+    {
+      "name": "desktop: a focused field keeps its own undo",
+      "passed": true,
+      "actual": {
+        "beforeField": {
+          "history": {
+            "undoDepth": 0,
+            "redoDepth": 20
+          },
+          "hint": {
+            "visible": true,
+            "text": "Undo: Create card"
+          },
+          "last": "createCard",
+          "selection": 1
+        },
+        "afterField": {
+          "history": {
+            "undoDepth": 0,
+            "redoDepth": 20
+          },
+          "hint": {
+            "visible": true,
+            "text": "Undo: Create card"
+          },
+          "last": "createCard",
+          "selection": 1
+        }
+      }
+    },
+    {
+      "name": "mobile: move/delete work, undo applies one inverse with the 3 s hint, redo re-applies",
+      "passed": true,
+      "actual": {
+        "moved": {
+          "history": {
+            "undoDepth": 2,
+            "redoDepth": 0
+          },
+          "hint": {
+            "visible": false,
+            "text": ""
+          },
+          "last": "group",
+          "selection": 1
+        },
+        "deleted": {
+          "history": {
+            "undoDepth": 3,
+            "redoDepth": 0
+          },
+          "hint": {
+            "visible": false,
+            "text": ""
+          },
+          "last": "group",
+          "selection": 0
+        },
+        "undone": {
+          "history": {
+            "undoDepth": 2,
+            "redoDepth": 1
+          },
+          "hint": {
+            "visible": true,
+            "text": "Undo: Delete 1 object"
+          },
+          "last": "group",
+          "selection": 0
+        },
+        "hidden": {
+          "history": {
+            "undoDepth": 2,
+            "redoDepth": 1
+          },
+          "hint": {
+            "visible": false,
+            "text": "Undo: Delete 1 object"
+          },
+          "last": "group",
+          "selection": 0
+        },
+        "redone": {
+          "history": {
+            "undoDepth": 3,
+            "redoDepth": 0
+          },
+          "hint": {
+            "visible": false,
+            "text": "Undo: Delete 1 object"
+          },
+          "last": "group",
+          "selection": 0
+        }
+      }
+    },
+    {
+      "name": "mobile: the history keeps 20 steps and 20 undos empty it",
+      "passed": true,
+      "actual": {
+        "capped": {
+          "undoDepth": 20,
+          "redoDepth": 0
+        },
+        "emptied": {
+          "undoDepth": 0,
+          "redoDepth": 20
+        }
+      }
+    },
+    {
+      "name": "mobile: a focused field keeps its own undo",
+      "passed": true,
+      "actual": {
+        "beforeField": {
+          "history": {
+            "undoDepth": 0,
+            "redoDepth": 20
+          },
+          "hint": {
+            "visible": true,
+            "text": "Undo: Create card"
+          },
+          "last": "createCard",
+          "selection": 1
+        },
+        "afterField": {
+          "history": {
+            "undoDepth": 0,
+            "redoDepth": 20
+          },
+          "hint": {
+            "visible": true,
+            "text": "Undo: Create card"
+          },
+          "last": "createCard",
+          "selection": 1
+        }
+      }
+    }
+  ],
+  "result": "pass",
+  "exitCode": 0,
+  "finishedAt": "2026-10-28T17:36:44.111Z"
+}

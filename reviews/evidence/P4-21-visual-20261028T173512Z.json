@@ -1,0 +1,20 @@
+{
+  "task": "P4-21",
+  "gate": "visual",
+  "command": "node packages/engine/test/visual/run-visual.mjs --task P4-21",
+  "exit_code": 0,
+  "result": "pass",
+  "slot": null,
+  "exclusive": [
+    "perf",
+    "visual"
+  ],
+  "lock_wait_s": 0.0,
+  "lock_warning": null,
+  "started": "2026-10-28T17:35:12+00:00",
+  "finished": "2026-10-28T17:35:44+00:00",
+  "commit": "de35d330515190a90128996e16f1180e4158bac1",
+  "dirty": true,
+  "log": "P4-21-visual-20261028T173512Z.log",
+  "log_sha256": "8590aa89f9f1a314ee672442c011d61f0947722668cbff2785348a04d1fdde6b"
+}

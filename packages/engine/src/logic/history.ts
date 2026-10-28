@@ -54,11 +54,42 @@ const LABELS: Readonly<Partial<Record<Operation["type"], string>>> = {
   reorder: "Bring to front",
 };
 
-/** English hint label of one operation; groups name their object count. */
+const DELETE_TYPES: ReadonlySet<Operation["type"]> = new Set([
+  "deleteCard",
+  "deleteBlock",
+  "deleteZone",
+  "deleteEdge",
+  "deleteNote",
+]);
+const MOVE_TYPES: ReadonlySet<Operation["type"]> = new Set([
+  "moveCard",
+  "moveBlock",
+  "moveZone",
+]);
+const CREATE_TYPES: ReadonlySet<Operation["type"]> = new Set([
+  "createCard",
+  "createBlock",
+  "createZone",
+  "createEdge",
+  "createNote",
+]);
+
+function groupLabel(types: ReadonlySet<Operation["type"]>, count: number): string | null {
+  const allIn = (set: ReadonlySet<Operation["type"]>) =>
+    types.size > 0 && [...types].every((type) => set.has(type));
+  const noun = count === 1 ? "object" : "objects";
+  if (allIn(DELETE_TYPES)) return `Delete ${count} ${noun}`;
+  if (allIn(MOVE_TYPES)) return `Move ${count} ${noun}`;
+  if (allIn(CREATE_TYPES)) return `Create ${count} ${noun}`;
+  return null;
+}
+
+/** English hint label of one operation; groups name their dominant action and count. */
 export function describeOperation(operation: Operation): string {
   if (operation.type === "group") {
     const count = operation.payload.children.length;
-    return count === 1 ? "Move 1 object" : `Move ${count} objects`;
+    const types = new Set(operation.payload.children.map((child) => child.type));
+    return groupLabel(types, count) ?? (count === 1 ? "Change 1 object" : `Change ${count} objects`);
   }
   const label = LABELS[operation.type];
   return label ?? "Edit";

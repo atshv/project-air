@@ -1,0 +1,81 @@
+$ cmake -S packages/engine -B packages/engine/build -DCMAKE_BUILD_TYPE=Debug && cmake --build packages/engine/build --parallel && ctest --test-dir packages/engine/build --output-on-failure
+[exit 0]
+
+-- The CXX compiler identification is AppleClang 21.0.0.21000101
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Configuring done (0.7s)
+-- Generating done (0.0s)
+-- Build files have been written to: /tmp/air-P4-21/packages/engine/build
+[  3%] Building CXX object CMakeFiles/engine_zone_layout_tests.dir/test/engine_zone_layout_test.cpp.o
+[  6%] Building CXX object CMakeFiles/air_engine_objects.dir/src/render.cpp.o
+[  9%] Building CXX object CMakeFiles/engine_zone_lifecycle_tests.dir/test/engine_zone_lifecycle_test.cpp.o
+[ 12%] Building CXX object CMakeFiles/air_engine_objects.dir/src/doc.cpp.o
+[ 15%] Building CXX object CMakeFiles/engine_zone_tests.dir/test/engine_zone_test.cpp.o
+[ 18%] Building CXX object CMakeFiles/air_engine_objects.dir/src/camera.cpp.o
+[ 25%] Building CXX object CMakeFiles/air_engine_objects.dir/src/text.cpp.o
+[ 28%] Building CXX object CMakeFiles/air_engine_objects.dir/src/snap.cpp.o
+[ 28%] Building CXX object CMakeFiles/air_engine_objects.dir/src/spatial.cpp.o
+[ 31%] Building CXX object CMakeFiles/air_engine_objects.dir/src/engine.cpp.o
+[ 34%] Building CXX object CMakeFiles/air_engine_objects.dir/src/render_gl.cpp.o
+[ 37%] Building CXX object CMakeFiles/air_engine_objects.dir/src/text_gl.cpp.o
+[ 40%] Building CXX object CMakeFiles/air_engine_objects.dir/src/render_webgpu.cpp.o
+[ 43%] Building CXX object CMakeFiles/air_engine_objects.dir/src/text_binding.cpp.o
+[ 46%] Linking CXX executable engine_zone_tests
+[ 46%] Built target engine_zone_tests
+[ 50%] Linking CXX executable engine_zone_lifecycle_tests
+[ 50%] Built target engine_zone_lifecycle_tests
+[ 53%] Linking CXX executable engine_zone_layout_tests
+[ 53%] Built target engine_zone_layout_tests
+[ 53%] Built target air_engine_objects
+[ 56%] Linking CXX static library libair_engine.a
+[ 56%] Built target air_engine
+[ 59%] Building CXX object CMakeFiles/engine_render_backend_tests.dir/test/engine_render_backend_test.cpp.o
+[ 62%] Building CXX object CMakeFiles/engine_render_webgpu_tests.dir/test/engine_render_webgpu_test.cpp.o
+[ 65%] Building CXX object CMakeFiles/engine_unit_tests.dir/test/engine_test.cpp.o
+[ 68%] Building CXX object CMakeFiles/engine_binding_tests.dir/test/engine_binding_test.cpp.o
+[ 71%] Building CXX object CMakeFiles/engine_snap_tests.dir/test/engine_snap_test.cpp.o
+[ 78%] Building CXX object CMakeFiles/engine_core_tests.dir/test/engine_core_test.cpp.o
+[ 78%] Building CXX object CMakeFiles/engine_text_tests.dir/test/engine_text_test.cpp.o
+[ 81%] Linking CXX executable engine_render_backend_tests
+[ 84%] Linking CXX executable engine_render_webgpu_tests
+[ 84%] Built target engine_render_backend_tests
+[ 84%] Built target engine_render_webgpu_tests
+[ 87%] Linking CXX executable engine_unit_tests
+[ 87%] Built target engine_unit_tests
+[ 90%] Linking CXX executable engine_snap_tests
+[ 90%] Built target engine_snap_tests
+[ 93%] Linking CXX executable engine_text_tests
+[ 96%] Linking CXX executable engine_binding_tests
+[ 96%] Built target engine_text_tests
+[ 96%] Built target engine_binding_tests
+[100%] Linking CXX executable engine_core_tests
+[100%] Built target engine_core_tests
+Test project /tmp/air-P4-21/packages/engine/build
+      Start  1: engine_render_backend_tests
+ 1/10 Test  #1: engine_render_backend_tests ......   Passed    0.31 sec
+      Start  2: engine_render_webgpu_tests
+ 2/10 Test  #2: engine_render_webgpu_tests .......   Passed    0.17 sec
+      Start  3: engine_unit_tests
+ 3/10 Test  #3: engine_unit_tests ................   Passed    0.17 sec
+      Start  4: engine_core_tests
+ 4/10 Test  #4: engine_core_tests ................   Passed    0.41 sec
+      Start  5: engine_text_tests
+ 5/10 Test  #5: engine_text_tests ................   Passed    0.34 sec
+      Start  6: engine_binding_tests
+ 6/10 Test  #6: engine_binding_tests .............   Passed    0.23 sec
+      Start  7: engine_zone_lifecycle_tests
+ 7/10 Test  #7: engine_zone_lifecycle_tests ......   Passed    0.16 sec
+      Start  8: engine_zone_layout_tests
+ 8/10 Test  #8: engine_zone_layout_tests .........   Passed    0.17 sec
+      Start  9: engine_zone_tests
+ 9/10 Test  #9: engine_zone_tests ................   Passed    0.17 sec
+      Start 10: engine_snap_tests
+10/10 Test #10: engine_snap_tests ................   Passed    0.17 sec
+
+100% tests passed out of 10
+
+Total Test time (real) =   2.31 sec

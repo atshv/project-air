@@ -565,3 +565,22 @@ body {
   color: var(--muted);
   margin-left: auto;
 }
+
+/* P4-21 (L11): the undo hint in the design-rule §9 bottom-centre slot. Fixed
+   position so showing/hiding it never shifts the page content; tokens only. */
+.history-hint {
+  position: fixed;
+  bottom: var(--space-24);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 3;
+  padding: var(--space-8) var(--space-12);
+  border: var(--border-width) solid var(--border);
+  border-radius: var(--radius-pill);
+  background: var(--surface);
+  color: var(--muted);
+  box-shadow: var(--card-shadow);
+}
+.history-hint[hidden] {
+  display: none;
+}
