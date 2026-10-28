@@ -48,10 +48,11 @@
 
 ### Stage 6 — `realtime` Realtime
 
-- State: waiting for the owner decision
-- Owner decision: `pending`
+- State: exit gates missing: crdt-convergence, load
+- Owner decision: `continue`
 - Exit gates: `crdt-convergence` (missing record), `load` (missing record)
 - Exit criteria: Load test 25 clients p95 <= 150 ms; restart loses no acknowledged change.; Two offline browsers converge after reconnect.
+- Tasks: P5-01, P5-02, P5-03, P5-04, P5-05, P5-06, P5-07, P5-08
 
 ### Stage 7 — `web-app` Web app
 
@@ -121,7 +122,10 @@
 
 ## Ready now
 
-- none
+- `P5-01` Sync contract 0.3.0: settle the pre-realtime open points
+  - P1-04: Closed P1-04: sync protocol as JSON Schema 0.1.0 with 12 message types (6 client→server, 6 server→client), 14 valid/20 invalid fixtures plus reconnect and session sequences; 66 tests green.
+  - P1-04: reject carries the seven P1-05 wire codes; fixtures-gate/ holds the two Polier gate specimens (byte-identical copies, test-enforced); the 77-fixture parity corpus and all existing tests are untouched.
+  - P1-04: Review pass with 4 minor advisories (hello-first, wrong-order assertion, snapshotRef board/seq, serverSeq 0 bootstrap) to settle before realtime; P1-05 adds the errors.<camelCase> keys.
 
 ## Done
 
@@ -216,6 +220,14 @@
 - [ ] `P0-15` Release command and tag-based CI release — status: `pending` — owner: —
 - [ ] `P0-16` Dependency updates and Polier update check — status: `pending` — owner: —
 - [ ] `P0-17` RELEASING.md and release 0.0.1 — status: `pending` — owner: —
+- [ ] `P5-01` Sync contract 0.3.0: settle the pre-realtime open points — status: `pending` — owner: —
+- [ ] `P5-02` CRDT document core behind an own interface (Yjs) — status: `pending` — owner: —
+- [ ] `P5-03` Sync service: WebSocket protocol, auth and durable update log — status: `pending` — owner: —
+- [ ] `P5-04` SDK sync client and the one autosave path (L05 realtime half) — status: `pending` — owner: —
+- [ ] `P5-05` Presence: cursors, selection, name and colour — status: `pending` — owner: —
+- [ ] `P5-06` Durability and reconnect: restart, catch-up and snapshot compaction — status: `pending` — owner: —
+- [ ] `P5-07` crdt-convergence proof: 10,000 rounds, offline clients and own-only undo — status: `pending` — owner: —
+- [ ] `P5-08` load proof: 25 clients per board at p95 <= 150 ms and the stage report — status: `pending` — owner: —
 
 ## Decisions
 
@@ -229,12 +241,12 @@
 - 2026-10-25 `ADR-0008` API and session model
 - 2026-10-25 `ADR-0009` Canvas text and overlay strategy (`docs/adr/ADR-0009-canvas-text-and-overlay.md`)
 - 2026-10-27 `ADR-0010` Zones as containers (`docs/adr/ADR-0010-zone-containers.md`)
+- 2026-10-28 `ADR-0011` CRDT: Yjs behind an own interface (`docs/adr/ADR-0011-crdt.md`)
 
 ## Open questions
 
 - `Q1` Product name (working title: Project air) (needed before stage: v1). — blocks: — — status: `open`
 - `Q3` Hosting provider and country (CH/EU). — blocks: P0-15 — status: `open`
-- `Q4` CRDT: open-source library behind an own interface (proposal) or own algorithm (needed before stage: realtime). — blocks: — — status: `open`
 - `Q8` Which import formats, after a legal check of their terms (needed before stage: value). — blocks: — — status: `open`
 - `Q9` Pricing model for v1 (needed before stage: v1). — blocks: — — status: `open`
 - `Q14` English visible at launch or prepared only; who translates further languages (needed before stage: v1). — blocks: — — status: `open`

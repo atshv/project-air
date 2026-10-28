@@ -140,7 +140,7 @@
         "crdt-convergence",
         "load"
       ],
-      "owner_decision": "pending",
+      "owner_decision": "continue",
       "depends_on": [
         "backend-core",
         "engine-core"
@@ -5392,6 +5392,451 @@
         "Closed P4-31: playground ?text=layout and ?text=titles samples now English (Zürich, Müller, café keep accent coverage); language-check passes repo-wide.",
         "Re-captured and reviewed 12 text-* references (desktop/mobile, WebGL2/WebGPU); visual 56 captures green, other references unchanged; no engine code touched."
       ]
+    },
+    {
+      "id": "P5-01",
+      "title": "Sync contract 0.3.0: settle the pre-realtime open points",
+      "goal": "Close the four pre-realtime sync open points in a 0.3.0 bump: one documented version-negotiation rule (including the blueprint's per-message version), a fresh-board serverSeq bootstrap of 1 with a from-0 catch-up fixture, an enforced hello-first rule, and validated reconnect ordering plus <boardId>:<serverSeq> snapshotRef; valid and invalid fixtures, regenerated TS/C++ codegen and updated docs.",
+      "why": "docs/contracts.md lists these as 'settle before realtime/SDK'; P5-02…P5-04 depend on the frozen message semantics.",
+      "satisfies": [
+        "D11"
+      ],
+      "status": "pending",
+      "depends_on": [
+        "P1-04"
+      ],
+      "complexity": 5,
+      "stage": "realtime",
+      "parallel_group": null,
+      "scope_write": [
+        "packages/contracts/",
+        "docs/contracts.md",
+        "board.json",
+        ".changes/"
+      ],
+      "scope_read": [
+        "ARCHITECTURE.md",
+        "AGENTS.md",
+        "STATUS.md",
+        "docs/module-map.md",
+        "docs/quality.md",
+        "docs/contracts.md",
+        "docs/adr/ADR-0005-contract.md",
+        "docs/adr/ADR-0008-api-session-model.md",
+        "packages/contracts/"
+      ],
+      "acceptance": [
+        "A1",
+        "A2",
+        "A3"
+      ],
+      "gates": [
+        "board-check",
+        "boundaries",
+        "contracts",
+        "codegen",
+        "unit"
+      ],
+      "owner": null,
+      "branch": "task/P5-01",
+      "worktree": null,
+      "round": 0,
+      "evidence": [],
+      "scope_write_forbidden": [
+        "reference/"
+      ]
+    },
+    {
+      "id": "P5-02",
+      "title": "CRDT document core behind an own interface (Yjs)",
+      "goal": "packages/crdt provides BoardDoc (apply, encodeUpdate, applyUpdate, snapshot, stateVector) behind its own interface, backed by Yjs (MIT) with the contract operations mapped inside the package, and proves convergence for 10,000 randomized operation rounds including offline merges, snapshots and inverses.",
+      "why": "Realtime needs a convergent document both the sync service and the SDK can hold; Q4 decided Yjs behind an own interface (ADR-0011).",
+      "satisfies": [
+        "D11"
+      ],
+      "status": "pending",
+      "depends_on": [
+        "P5-01"
+      ],
+      "complexity": 6,
+      "stage": "realtime",
+      "parallel_group": null,
+      "scope_write": [
+        "packages/crdt/",
+        "docs/adr/",
+        "docs/versions.md",
+        ".changes/",
+        "pnpm-lock.yaml"
+      ],
+      "scope_read": [
+        "ARCHITECTURE.md",
+        "AGENTS.md",
+        "STATUS.md",
+        "docs/module-map.md",
+        "docs/quality.md",
+        "docs/contracts.md",
+        "docs/adr/ADR-0005-contract.md",
+        "docs/adr/ADR-0011-crdt.md",
+        "packages/crdt/",
+        "packages/contracts/",
+        "packages/test-kit/",
+        "docs/versions.md"
+      ],
+      "acceptance": [
+        "A1",
+        "A2",
+        "A3"
+      ],
+      "gates": [
+        "board-check",
+        "boundaries",
+        "unit",
+        "typecheck"
+      ],
+      "owner": null,
+      "branch": "task/P5-02",
+      "worktree": null,
+      "round": 0,
+      "evidence": [],
+      "scope_write_forbidden": [
+        "reference/"
+      ]
+    },
+    {
+      "id": "P5-03",
+      "title": "Sync service: WebSocket protocol, auth and durable update log",
+      "goal": "services/sync serves the 0.3.0 WebSocket protocol per board: hello/welcome with session and version, authorized join/leave, operationBatch applied to BoardDoc and persisted durably before the ack (serverSeq), broadcast to the other clients, and snapshot/resync/reject paths, with the sync update-log/snapshot migration and optional compose wiring.",
+      "why": "The sync service is the server source of truth of the realtime stage (AD-2); P5-04/P5-05/P5-06 build on it.",
+      "satisfies": [
+        "D11"
+      ],
+      "status": "pending",
+      "depends_on": [
+        "P5-01",
+        "P5-02",
+        "P3-04"
+      ],
+      "complexity": 6,
+      "stage": "realtime",
+      "parallel_group": null,
+      "scope_write": [
+        "services/sync/",
+        "infra/migrations/",
+        "docs/realtime.md",
+        ".changes/"
+      ],
+      "scope_read": [
+        "ARCHITECTURE.md",
+        "AGENTS.md",
+        "STATUS.md",
+        "docs/module-map.md",
+        "docs/quality.md",
+        "docs/contracts.md",
+        "docs/adr/ADR-0008-api-session-model.md",
+        "packages/contracts/",
+        "packages/crdt/",
+        "services/platform/",
+        "services/auth/",
+        "infra/migrations/",
+        "docs/gates/load.md"
+      ],
+      "acceptance": [
+        "A1",
+        "A2",
+        "A3"
+      ],
+      "gates": [
+        "board-check",
+        "boundaries",
+        "unit",
+        "db-migrate"
+      ],
+      "owner": null,
+      "branch": "task/P5-03",
+      "worktree": null,
+      "round": 0,
+      "evidence": [],
+      "scope_write_forbidden": [
+        "reference/"
+      ]
+    },
+    {
+      "id": "P5-04",
+      "title": "SDK sync client and the one autosave path (L05 realtime half)",
+      "goal": "packages/sdk gets a typed sync client (connect/joinBoard, send operationBatch, apply remote updates and snapshots, ack/serverSeq tracking, reconnect with fromServerSeq) and the one autosave path of L05 for its realtime half: 400 ms debounce after the last keystroke, immediate flush on blur, panel close, navigation, tab hidden and pagehide, sequence numbers so an older response never overwrites a newer value, an offline queue, and saving/saved/error status events.",
+      "why": "Every later client (web app, e2e and load harnesses) needs one typed sync/autosave path; L05 maps to realtime and web-app.",
+      "satisfies": [
+        "D11"
+      ],
+      "status": "pending",
+      "depends_on": [
+        "P5-01",
+        "P5-03"
+      ],
+      "complexity": 5,
+      "stage": "realtime",
+      "parallel_group": null,
+      "scope_write": [
+        "packages/sdk/",
+        ".changes/",
+        "docs/realtime.md"
+      ],
+      "scope_read": [
+        "ARCHITECTURE.md",
+        "AGENTS.md",
+        "STATUS.md",
+        "docs/module-map.md",
+        "docs/quality.md",
+        "docs/contracts.md",
+        "docs/canvas-acceptance.md",
+        "packages/contracts/",
+        "packages/crdt/",
+        "packages/sdk/",
+        "services/sync/"
+      ],
+      "acceptance": [
+        "A1",
+        "A2",
+        "A3"
+      ],
+      "gates": [
+        "board-check",
+        "boundaries",
+        "unit",
+        "typecheck"
+      ],
+      "owner": null,
+      "branch": "task/P5-04",
+      "worktree": null,
+      "round": 0,
+      "evidence": [],
+      "scope_write_forbidden": [
+        "reference/"
+      ]
+    },
+    {
+      "id": "P5-05",
+      "title": "Presence: cursors, selection, name and colour",
+      "goal": "Presence (cursor, selection, name, colour) travels over the sync protocol from services/sync to the SDK: throttled, ephemeral (never persisted), cleaned up on disconnect and joinable per board, with tests for throttling, cleanup and no interference with operation traffic.",
+      "why": "services/sync's architecture promises presence; collaboration needs it and it must stay ephemeral.",
+      "satisfies": [
+        "D11"
+      ],
+      "status": "pending",
+      "depends_on": [
+        "P5-03",
+        "P5-04"
+      ],
+      "complexity": 4,
+      "stage": "realtime",
+      "parallel_group": null,
+      "scope_write": [
+        "services/sync/",
+        "packages/sdk/",
+        ".changes/",
+        "docs/realtime.md"
+      ],
+      "scope_read": [
+        "ARCHITECTURE.md",
+        "AGENTS.md",
+        "STATUS.md",
+        "docs/module-map.md",
+        "docs/quality.md",
+        "docs/contracts.md",
+        "docs/adr/ADR-0008-api-session-model.md",
+        "packages/contracts/",
+        "packages/sdk/",
+        "services/sync/"
+      ],
+      "acceptance": [
+        "A1",
+        "A2"
+      ],
+      "gates": [
+        "board-check",
+        "boundaries",
+        "unit"
+      ],
+      "owner": null,
+      "branch": "task/P5-05",
+      "worktree": null,
+      "round": 0,
+      "evidence": [],
+      "scope_write_forbidden": [
+        "reference/"
+      ]
+    },
+    {
+      "id": "P5-06",
+      "title": "Durability and reconnect: restart, catch-up and snapshot compaction",
+      "goal": "An acknowledged change survives a service restart, catch-up from a state vector/fromServerSeq returns exactly the missed updates, serverSeq is continuous across a restart, and the update log compacts into snapshots without losing acknowledged operations, proven with a slot-database restart harness.",
+      "why": "Stage exit criterion 'restart loses no acknowledged change'; P5-07/P5-08 rely on a durable log.",
+      "satisfies": [
+        "D11"
+      ],
+      "status": "pending",
+      "depends_on": [
+        "P5-03"
+      ],
+      "complexity": 6,
+      "stage": "realtime",
+      "parallel_group": null,
+      "scope_write": [
+        "services/sync/",
+        "infra/migrations/",
+        ".changes/",
+        "docs/realtime.md"
+      ],
+      "scope_read": [
+        "ARCHITECTURE.md",
+        "AGENTS.md",
+        "STATUS.md",
+        "docs/module-map.md",
+        "docs/quality.md",
+        "docs/quality.md",
+        "docs/contracts.md",
+        "packages/crdt/",
+        "packages/contracts/",
+        "services/sync/",
+        "services/platform/",
+        "infra/migrations/"
+      ],
+      "acceptance": [
+        "A1",
+        "A2",
+        "A3"
+      ],
+      "gates": [
+        "board-check",
+        "boundaries",
+        "unit",
+        "db-migrate"
+      ],
+      "owner": null,
+      "branch": "task/P5-06",
+      "worktree": null,
+      "round": 0,
+      "evidence": [],
+      "scope_write_forbidden": [
+        "reference/"
+      ]
+    },
+    {
+      "id": "P5-07",
+      "title": "crdt-convergence proof: 10,000 rounds, offline clients and own-only undo",
+      "goal": "Prove realtime convergence: 10,000 randomized rounds without divergence (crdt-convergence gate), two clients editing offline converge to the same snapshot after reconnect, and undo/redo only ever applies the client's own operations (L11 realtime rule); the gate command and its record are committed.",
+      "why": "Stage exit gate crdt-convergence and the L11 realtime acceptance; the live proof of the contract's pre-realtime open points.",
+      "satisfies": [
+        "D11"
+      ],
+      "status": "pending",
+      "depends_on": [
+        "P5-04",
+        "P5-06"
+      ],
+      "complexity": 6,
+      "stage": "realtime",
+      "parallel_group": null,
+      "scope_write": [
+        "packages/crdt/",
+        "packages/sdk/",
+        "services/sync/",
+        "docs/gates/",
+        "docs/quality.md",
+        ".changes/",
+        "reviews/evidence/"
+      ],
+      "scope_read": [
+        "ARCHITECTURE.md",
+        "AGENTS.md",
+        "STATUS.md",
+        "docs/module-map.md",
+        "docs/quality.md",
+        "docs/quality.md",
+        "docs/contracts.md",
+        "docs/canvas-acceptance.md",
+        "packages/crdt/",
+        "packages/sdk/",
+        "services/sync/",
+        "docs/gates/"
+      ],
+      "acceptance": [
+        "A1",
+        "A2",
+        "A3"
+      ],
+      "gates": [
+        "board-check",
+        "boundaries",
+        "unit",
+        "crdt-convergence"
+      ],
+      "owner": null,
+      "branch": "task/P5-07",
+      "worktree": null,
+      "round": 0,
+      "evidence": [],
+      "scope_write_forbidden": [
+        "reference/"
+      ]
+    },
+    {
+      "id": "P5-08",
+      "title": "load proof: 25 clients per board at p95 <= 150 ms and the stage report",
+      "goal": "Prove the realtime load target: 25 clients per board at p95 <= 150 ms with no errors (load gate, exclusive), document the thresholds in docs/gates/load.md, record the measurement and commit the stage report and handoff.",
+      "why": "Stage exit gate load and the measured proof of the stage goal; closes stage 6.",
+      "satisfies": [
+        "D11"
+      ],
+      "status": "pending",
+      "depends_on": [
+        "P5-03",
+        "P5-04",
+        "P5-07"
+      ],
+      "complexity": 5,
+      "stage": "realtime",
+      "parallel_group": null,
+      "scope_write": [
+        "services/sync/",
+        "packages/sdk/",
+        "docs/gates/load.md",
+        "docs/quality.md",
+        "docs/realtime.md",
+        ".changes/",
+        "reviews/evidence/"
+      ],
+      "scope_read": [
+        "ARCHITECTURE.md",
+        "AGENTS.md",
+        "STATUS.md",
+        "docs/module-map.md",
+        "docs/quality.md",
+        "docs/quality.md",
+        "docs/gates/load.md",
+        "packages/sdk/",
+        "services/sync/",
+        "docs/realtime.md"
+      ],
+      "acceptance": [
+        "A1",
+        "A2",
+        "A3"
+      ],
+      "gates": [
+        "board-check",
+        "boundaries",
+        "unit",
+        "load"
+      ],
+      "owner": null,
+      "branch": "task/P5-08",
+      "worktree": null,
+      "round": 0,
+      "evidence": [],
+      "scope_write_forbidden": [
+        "reference/"
+      ]
     }
   ],
   "decisions": [
@@ -5453,6 +5898,12 @@
       "id": "ADR-0010",
       "title": "Zones as containers",
       "file": "docs/adr/ADR-0010-zone-containers.md"
+    },
+    {
+      "date": "2026-10-28",
+      "id": "ADR-0011",
+      "title": "CRDT: Yjs behind an own interface",
+      "file": "docs/adr/ADR-0011-crdt.md"
     }
   ],
   "open_questions": [
@@ -5481,7 +5932,8 @@
     {
       "id": "Q4",
       "question": "CRDT: open-source library behind an own interface (proposal) or own algorithm (needed before stage: realtime).",
-      "status": "open"
+      "status": "answered",
+      "answer": "Yjs (MIT) behind an own BoardDoc interface in packages/crdt (owner decision 2026-10-28); the library stays replaceable behind the package boundary and is pinned in docs/versions.md. See docs/adr/ADR-0011-crdt.md."
     },
     {
       "id": "Q5",

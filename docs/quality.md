@@ -39,6 +39,13 @@ v1) are added as D7 … when those stages are planned in detail.
   green at 1440x900 and 390x844 for WebGL2 and WebGPU (`visual`); the engine renders titles and
   previews from tokens, every content gesture is one contract operation with its inverse, and WebGPU
   runs behind the command-buffer interface with a WebGL2 fallback.
+- **D11** Realtime (stage realtime): `services/sync` persists every acknowledged operation in
+  PostgreSQL before the ack, broadcasts CRDT updates and compacts the log into snapshots; presence
+  (cursor, selection, name, colour) stays ephemeral; two offline clients converge after reconnect
+  and a service restart loses no acknowledged change; 25 clients per board are served at p95 <= 150 ms
+  (`load`) and 10,000 randomized convergence rounds run without divergence (`crdt-convergence`);
+  `packages/crdt` keeps the CRDT library behind its own `BoardDoc` interface (Yjs, MIT, ADR-0011) and
+  the SDK exposes one autosave path with status and sequence numbers (L05 realtime half).
 - **D6** Repository discipline: `main` accepts changes only through pull requests with green CI and
   one review; CI runs scope check, boundaries, board check, lint and typecheck on every pull
   request.
