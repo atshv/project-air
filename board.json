@@ -6198,6 +6198,59 @@
         "Engine draw order unchanged (zones lowest rectangle layer); doc.h comment and docs/engine.md updated; demo edge back on --layer-edges, section 06 reordered, masthead P0-38.",
         "cpp-unit not a gate: red on main since P5-01 (engine.cpp + 2 tests expect contract 0.2.0, generated 0.3.0); scratch build passes all other checks."
       ]
+    },
+    {
+      "id": "P4-32",
+      "title": "Engine follows contract 0.3.0",
+      "goal": "The engine's compile-time check and its two unit checks expect the generated contract version 0.3.0, so cpp-unit, wasm-build and wasm-size build again on main.",
+      "why": "P5-01 bumped the contract to 0.3.0 and listed packages/engine/ as a contract follow-up; engine.cpp still asserts 0.2.0, so the engine no longer compiles and cpp-unit is red on main (found in P0-38).",
+      "satisfies": [
+        "D10"
+      ],
+      "status": "pending",
+      "depends_on": [
+        "P0-38"
+      ],
+      "complexity": 2,
+      "stage": "engine-core",
+      "parallel_group": null,
+      "owner": null,
+      "round": 0,
+      "scope_write": [
+        "packages/engine/",
+        ".changes/"
+      ],
+      "scope_read": [
+        "ARCHITECTURE.md",
+        "AGENTS.md",
+        "STATUS.md",
+        "docs/module-map.md",
+        "docs/quality.md",
+        "docs/contracts.md",
+        "docs/engine.md",
+        "packages/engine/",
+        "packages/contracts/generated/contract.h"
+      ],
+      "acceptance": [
+        "A1",
+        "A2",
+        "A3"
+      ],
+      "gates": [
+        "board-check",
+        "cpp-unit",
+        "wasm-build",
+        "wasm-size",
+        "changelog-entry"
+      ],
+      "branch": "task/P4-32",
+      "worktree": null,
+      "evidence": [],
+      "scope_write_forbidden": [
+        "reference/",
+        "packages/contracts/"
+      ],
+      "handoff": []
     }
   ],
   "decisions": [

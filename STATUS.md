@@ -44,7 +44,7 @@
 - Owner decision: `continue`
 - Exit gates: `cpp-unit`, `visual-final`, `perf-final`
 - Exit criteria: 10,000 objects at 60 fps in the playground.; All engine entries of the canvas work orders done; reference images green.
-- Tasks: P4-01, P4-02, P4-03, P4-04, P4-05, P4-06, P4-07, P4-08, P4-09, P4-10, P4-11, P4-12, P4-13, P4-14, P4-15, P4-16, P4-17, P4-18, P4-19, P4-20, P4-21, P4-22, P4-23, P4-24, P4-25, P4-26, P4-27, P4-28, P4-29, P4-30, P4-31
+- Tasks: P4-01, P4-02, P4-03, P4-04, P4-05, P4-06, P4-07, P4-08, P4-09, P4-10, P4-11, P4-12, P4-13, P4-14, P4-15, P4-16, P4-17, P4-18, P4-19, P4-20, P4-21, P4-22, P4-23, P4-24, P4-25, P4-26, P4-27, P4-28, P4-29, P4-30, P4-31, P4-32
 
 ### Stage 6 — `realtime` Realtime
 
@@ -122,7 +122,10 @@
 
 ## Ready now
 
-- none
+- `P4-32` Engine follows contract 0.3.0
+  - P0-38: Closed P0-38: design law §8 now edges 2, zones 3 (ADR-0013); tokens.json swapped, tokens.css/tokens.h/layers.ts regenerated; ui-kit token test follows (owner-approved).
+  - P0-38: Engine draw order unchanged (zones lowest rectangle layer); doc.h comment and docs/engine.md updated; demo edge back on --layer-edges, section 06 reordered, masthead P0-38.
+  - P0-38: cpp-unit not a gate: red on main since P5-01 (engine.cpp + 2 tests expect contract 0.2.0, generated 0.3.0); scratch build passes all other checks.
 
 ## Done
 
@@ -229,13 +232,7 @@
 - [ ] `P0-17` RELEASING.md and release 0.0.1 — status: `pending` — owner: —
 - [ ] `P5-07` crdt-convergence proof: 10,000 rounds, offline clients and own-only undo — status: `pending` — owner: —
 - [ ] `P5-08` load proof: 25 clients per board at p95 <= 150 ms and the stage report — status: `pending` — owner: —
-
-<!-- polier:claims -->
-## Claims
-
-- `P0-38` in progress by dsh since 2026-10-28T19:35:45+00:00 — worktree: /Users/rasulatashev/Desktop/KI Projekte/Project air-P0-38 · slot 2
-
-<!-- /polier:claims -->
+- [ ] `P4-32` Engine follows contract 0.3.0 — status: `pending` — owner: —
 
 ## Decisions
 
