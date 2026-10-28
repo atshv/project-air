@@ -121,10 +121,6 @@
 
 ## Ready now
 
-- `P4-22` Remember view (L17)
-  - P4-07: Closed P4-07: pure Camera::fitBounds (min(...,1.0), 0.1 floor, 64 px L02 padding from tokens), dot grid shader (tokens faint/canvas, 16 px, visible at >=0.5), on-demand rendering (0 idle frames).
-  - P4-07: visual 10/10 0-diff incl. reviewed sample-zoom-in update + two one-card-fit baselines; perf p95 0.1 ms, 0 intervals > 16.7 ms; L01 final mean 0.049 vs basis 0.052.
-  - P4-07: Harnesses gained --task evidence prefixes; docs updated. Two review rounds, four minors fixed (record commit base, visual --task, comment wording, baseline-history precision).
 - `P4-24` Trackpad and wheel defaults (L15, desktop part)
   - P4-07: Closed P4-07: pure Camera::fitBounds (min(...,1.0), 0.1 floor, 64 px L02 padding from tokens), dot grid shader (tokens faint/canvas, 16 px, visible at >=0.5), on-demand rendering (0 idle frames).
   - P4-07: visual 10/10 0-diff incl. reviewed sample-zoom-in update + two one-card-fit baselines; perf p95 0.1 ms, 0 intervals > 16.7 ms; L01 final mean 0.049 vs basis 0.052.
@@ -207,7 +203,7 @@
 
 ## In progress
 
-- none
+- [ ] `P4-22` Remember view (L17) — status: `in_progress` — owner: lead
 
 ## Blocked / failed
 
@@ -219,13 +215,12 @@
 - [ ] `P0-15` Release command and tag-based CI release — status: `pending` — owner: —
 - [ ] `P0-16` Dependency updates and Polier update check — status: `pending` — owner: —
 - [ ] `P0-17` RELEASING.md and release 0.0.1 — status: `pending` — owner: —
-- [ ] `P4-22` Remember view (L17) — status: `pending` — owner: —
 - [ ] `P4-24` Trackpad and wheel defaults (L15, desktop part) — status: `pending` — owner: —
 
 <!-- polier:claims -->
 ## Claims
 
-- `P4-21` in progress by dsh since 2026-10-28T17:35:49+00:00 — worktree: /private/tmp/air-P4-21 · slot 1
+- `P4-22` in progress by dsh since 2026-10-28T17:37:13+00:00 — worktree: /private/tmp/air-P4-22 · slot 1
 
 <!-- /polier:claims -->
 
