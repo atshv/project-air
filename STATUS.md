@@ -60,8 +60,8 @@
 - Owner decision: `continue`
 - Exit gates: `e2e` (missing record), `design-check`, `language-check`
 - Exit criteria: Main e2e flows green on a preview environment.; Every canvas work order done with evidence; design-check and language-check green repo-wide.
-- Tasks: P6-01, P6-02, P6-03, P6-04, P6-05, P6-06, P6-07, P6-08, P6-09, P6-10, P0-45
-- Tasks open: P6-07, P6-08, P6-09, P6-10
+- Tasks: P6-01, P6-02, P6-03, P6-04, P6-05, P6-06, P6-07, P6-08, P6-09, P6-10, P0-45, P0-46
+- Tasks open: P6-07, P6-08, P6-09, P6-10, P0-46
 
 ### Stage 8 — `value` Import, export and AI
 
@@ -125,7 +125,18 @@
 
 ## Ready now
 
-- none
+- `P0-46` Preview page: back-to-top arrow
+  - P0-45: Closed P0-45: page contents under the masthead link 01-13 (labels reuse each eyebrow key); section 13 lists nine project areas with purpose, owner, folders, 53 parts with status.
+  - P0-45: Roles table maps eight roles; texts in areas.*/toc.* (EN/DE); works dark and light, no overflow at 390 px. Status is a 2026-10-29 snapshot of board.json.
+  - P0-45: Moved to stage web-app: an open foundation task failed the stage rule for in-progress web-app tasks. Gates board-check/design-check/changelog-entry green.
+
+## Orchestration
+
+- Limits: 3 attempts/task, 3 in progress
+- Next wave: `P0-46` (tasks/P0-46.md)
+- Running: `P6-07` attempt 0/3
+- Blocked: P0-02, P0-15, P0-16, P0-17 (stage waits); P6-08, P6-09, P6-10 (open dependency)
+- Approvals pending: none
 
 ## Done
 
@@ -250,14 +261,7 @@
 - [ ] `P6-08` Realtime UI: live changes, presence and save status (L05) — status: `pending` — owner: —
 - [ ] `P6-09` e2e suite: main flows and the e2e gate on the slot ports — status: `pending` — owner: —
 - [ ] `P6-10` Canvas evidence, repo-wide checks and the web-app stage report — status: `pending` — owner: —
-
-<!-- polier:claims -->
-## Claims
-
-- `P0-45` in progress by dsh since 2026-10-28T23:45:11+00:00 — worktree: /Users/rasulatashev/Desktop/KI Projekte/Project air-P0-45 · slot 4
-- `P6-07` in progress by dsh since 2026-10-28T23:46:56+00:00 — worktree: /private/tmp/air-P6-07 · slot 3
-
-<!-- /polier:claims -->
+- [ ] `P0-46` Preview page: back-to-top arrow — status: `pending` — owner: —
 
 ## Decisions
 

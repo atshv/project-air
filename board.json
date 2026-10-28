@@ -7301,6 +7301,59 @@
         "Roles table maps eight roles; texts in areas.*/toc.* (EN/DE); works dark and light, no overflow at 390 px. Status is a 2026-10-29 snapshot of board.json.",
         "Moved to stage web-app: an open foundation task failed the stage rule for in-progress web-app tasks. Gates board-check/design-check/changelog-entry green."
       ]
+    },
+    {
+      "id": "P0-46",
+      "title": "Preview page: back-to-top arrow",
+      "goal": "A quiet floating arrow button at the bottom right of the design-system page appears after scrolling down and takes the reader back to the top of the page (masthead) with one click or key press.",
+      "why": "Owner request 2026-10-29: 'baue auf der preview seite einen pfeilzeiger nach oben um immer zu oberst anfangen zu können' — the page has 13 sections and is long.",
+      "satisfies": [
+        "D3"
+      ],
+      "status": "pending",
+      "depends_on": [
+        "P0-45"
+      ],
+      "complexity": 2,
+      "stage": "web-app",
+      "parallel_group": null,
+      "owner": null,
+      "round": 0,
+      "scope_write": [
+        "apps/web/preview/",
+        ".changes/"
+      ],
+      "scope_read": [
+        "ARCHITECTURE.md",
+        "AGENTS.md",
+        "STATUS.md",
+        "docs/module-map.md",
+        "docs/versions.md",
+        "docs/design-rules.md",
+        "docs/i18n/style-de.md",
+        "docs/i18n/glossary.md",
+        "apps/web/preview/",
+        "packages/ui-kit/tokens.css",
+        "board.json"
+      ],
+      "acceptance": [
+        "A1",
+        "A2",
+        "A3"
+      ],
+      "gates": [
+        "board-check",
+        "design-check",
+        "changelog-entry"
+      ],
+      "branch": "task/P0-46",
+      "worktree": null,
+      "evidence": [],
+      "scope_write_forbidden": [
+        "reference/",
+        "docs/owner/"
+      ],
+      "handoff": []
     }
   ],
   "decisions": [
