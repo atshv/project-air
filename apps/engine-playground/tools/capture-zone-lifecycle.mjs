@@ -75,7 +75,7 @@ async function viewportRun(send, vp) {
   const groupedShot = await shot(send, `P4-30-lifecycle-grouped-${vp.name}.png`);
   const zoneId = grouped.zoneId;
   const renamed = JSON.parse(await ev(send, `JSON.stringify(globalThis.__zoneLifecycle.renameZone(${JSON.stringify(zoneId)}, "  Lake   trip  "))`));
-  check(`${vp.name}: rename normalises and commits one operation with inverse`, renamed !== null && renamed.title === "Lake trip" && renamed.applied.operation === "group" && renamed.applied.inverse === "group", renamed);
+  check(`${vp.name}: rename normalises and commits one updateZone with inverse (contract 0.5.0, P6-14)`, renamed !== null && renamed.title === "Lake trip" && renamed.applied.operation === "updateZone" && renamed.applied.inverse === "updateZone", renamed);
   const nameShot = await shot(send, `P4-30-lifecycle-renamed-${vp.name}.png`);
   const emptiedSetup = JSON.parse(await ev(send, `JSON.stringify(globalThis.__zoneLifecycle.removeAllMembers(${JSON.stringify(zoneId)}))`));
   check(`${vp.name}: emptying removes the members in one operation`, emptiedSetup !== null && emptiedSetup.operation === "group", emptiedSetup);

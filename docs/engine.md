@@ -653,14 +653,59 @@ zone with `deleteZone` keep-content as one undoable operation whose inverse rest
 members. The contract `title` renders in the fixed 40 px header (one line, ellipsis at the token title
 role); inline rename uses the P4-23 overlay: click selects all, Enter/blur commits, Escape restores,
 whitespace is collapsed, an empty value returns the language default and the title is limited to 40
-characters. Contract 0.2.0 has no updateZone operation, so a rename is one `group` (deleteZone keep +
-createZone with the new title + the member reparent moves) with an inverse that restores the old
-title, slot and members; the header is not a child of the FLIP-scaled frame and never stretches.
+characters. Since contract 0.5.0 (P6-14) a rename is one `updateZone` whose inverse carries the
+previous title (it replaced the P4-30 deleteZone + createZone + reparent group); the header is not a
+child of the FLIP-scaled frame and never stretches.
 `window.__zoneLifecycle` exposes zones/titles/free objects/thresholds and the lifecycle operations for
 the deterministic capture (`tools/capture-zone-lifecycle.mjs`) and the new reviewed baselines
 (`zone-grouping-ghost`, `zone-emptied`, `zone-names`); the native `engine_zone_lifecycle_tests` and
 `test/zone-lifecycle.test.mjs` pin the thresholds, defaults, title rules, header geometry and the
 one-operation creation/removal/rename with inverse.
+
+## Contract 0.5.0 and block content (P6-14)
+
+The engine speaks contract 0.5.0 (`kSupportedContractVersion` in `src/engine.cpp`; the static assert
+stops the build when `contract.h` is generated for another version). The document port gained two
+writes: `rename(zoneId, title)` for `updateZone` and `setContent(blockId, content)` for
+`updateBlockContent` (an empty content removes the field, like the CRDT; the port copies content
+deeply). Applying `updateBlockContent` checks that the content `kind` equals the block type and fails
+closed otherwise. The gesture `{ kind: "block-content", blockId, content }` builds one
+`updateBlockContent` with the previous content (or the empty content of the kind) as inverse, and
+nothing when the content is unchanged. `blockContentPreview(content)` (in `src/logic/operations.ts`)
+turns checklist points, lanes and their entries, and table rows into plain preview lines; with
+`fitBlockToContent` (below) a block grows to its content through the L02 binding instead of scrolling.
+Per-entry merging between clients stays in the SDK/CRDT (P6-13); the engine working copy holds the
+merged content the app projects.
+
+## Using the engine from an app (P6-14)
+
+`src/bridge/app.ts` is the one bridge module an app imports (`dist/bridge/app.js` when built); it
+re-exports `engine.ts`, `input.ts`, `placement.ts`, `overlay.ts`, `zone-parity.ts`,
+`zone-lifecycle.ts`, `keyboard.ts` and `view-persistence.ts` and adds `fitBlockToContent`. The logic
+layer (`src/logic/operations.ts`, `document-port.ts`, `history.ts`, `gestures.ts`) is imported from
+`src/logic/` directly, as `apps/web` already does; no `package.json` export was added (no manifest
+change). What the app wires itself, following `apps/engine-playground/main.js`:
+
+- **Document.** One `createEngineDocumentPort(engine)` per board; project the SDK snapshot into it and
+  apply remote operations with `applyOperation`. Hit testing returns a slot; `port.objectAt(slot)`
+  maps it to the contract id (never cache a slot across a document change).
+- **Pointer input.** `createPointerInput` with the canvas as host: it owns pointer capture, the 4 px
+  threshold, grips (whole card, 40 px header of blocks/zones), cursors, resize handles, auto-pan and
+  the wheel/trackpad intent. The app turns each finished gesture into one operation with
+  `buildOperation` and commits it through its single save path; `Escape`/`pointercancel` cancel with
+  no operation.
+- **Snapping and selection.** `engine.snapDrag` per pointer move (Shift = free) and the selection
+  chrome come from the bridge; the app keeps the selection set by contract id.
+- **Zones.** `previewZoneRelease`/`arrangeZone` during a drag and `groupingDecision`/`planZoneGroup`
+  for grouping; thresholds are screen px, convert with the zoom (`screenToWorldThreshold`). The
+  dashed landing slot, ghost and emptied frames are DOM overlay drawn by the app (ADR-0009); settle
+  with `zoneSettlePolicy` (300 ms, reduced motion instant). Names: `normalizeZoneTitle` then the
+  `zone-rename` gesture.
+- **Inline fields.** The overlay host anchors fields to world rects (`anchorToScreen`) and
+  `applyInlineKey` gives the L18 key map; each committed edit is one `block-content` gesture.
+- **Text.** `bindObjectText` for titles/previews after every document change that touches them;
+  `fitBlockToContent` for blocks; `clearObjectText` on a full reload.
+- **Keyboard.** `keyboardIntent` and the context-menu model for L12; never while a field has focus.
 
 ## Stage showcase and final proof (P4-28)
 

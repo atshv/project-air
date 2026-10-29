@@ -1,0 +1,17 @@
+{
+  "task": "P6-14",
+  "gate": "wasm-build",
+  "command": "bash packages/engine/tools/build-wasm.sh && node packages/engine/tools/wasm-smoke.mjs",
+  "exit_code": 0,
+  "result": "pass",
+  "slot": null,
+  "exclusive": [],
+  "lock_wait_s": 0.0,
+  "lock_warning": null,
+  "started": "2026-10-29T18:00:56+00:00",
+  "finished": "2026-10-29T18:01:18+00:00",
+  "commit": "d42b8937f1ffbac2c521427696dcc9511607eb03",
+  "dirty": true,
+  "log": "P6-14-wasm-build-20261029T180056Z.log",
+  "log_sha256": "a07c3891481b209d054cfe2ffaefda61f121bb35935fa8faf58f893289b62727"
+}

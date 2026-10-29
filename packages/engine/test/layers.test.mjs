@@ -3,7 +3,7 @@
 // "Bring to front" is exactly one contract `reorder` operation through the P4-05
 // seam: the object's fractional `z` moves just above its layer neighbours, the
 // inverse carries the previous key, and the design layer never changes. The
-// operation is validated against operation.schema.json (contract 0.4.0); applying
+// operation is validated against operation.schema.json (contract 0.5.0); applying
 // it and its inverse must restore a byte-identical working-copy snapshot.
 
 import assert from "node:assert/strict";

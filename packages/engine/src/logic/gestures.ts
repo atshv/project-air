@@ -7,7 +7,7 @@
 // objects are read from the `DocumentPort` when the operation and its inverse
 // are built, so the inverse always restores what the working copy really had.
 
-import type { BlockType, DeleteZonePolicy } from "../../../contracts/generated/types.ts";
+import type { BlockContentPayload, BlockType, DeleteZonePolicy } from "../../../contracts/generated/types.ts";
 import type { BoardObjectKind } from "./document-port.ts";
 
 /** World-space point in the contract's pixels. */
@@ -183,6 +183,13 @@ export interface ZoneRenameGesture {
   readonly title: string;
 }
 
+/** L18 (contract 0.5.0): the committed content of one block; one operation with inverse. */
+export interface BlockContentGesture {
+  readonly kind: "block-content";
+  readonly blockId: string;
+  readonly content: BlockContentPayload;
+}
+
 /** L08: deletion of one zone with its content policy, one operation with inverse. */
 export interface DeleteZoneGesture {
   readonly kind: "delete-zone";
@@ -221,5 +228,6 @@ export type GestureResult =
   | ZoneArrangeGesture
   | ZoneGroupGesture
   | ZoneRenameGesture
+  | BlockContentGesture
   | KeyboardNudgeGesture
   | BringToFrontGesture;

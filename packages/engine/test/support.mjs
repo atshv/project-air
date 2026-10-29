@@ -91,6 +91,8 @@ const INVERSE_TYPE = {
   resizeCard: "resizeCard",
   resizeZone: "resizeZone",
   resizeBlock: "resizeBlock",
+  updateZone: "updateZone",
+  updateBlockContent: "updateBlockContent",
   group: "group",
 };
 
@@ -111,9 +113,11 @@ function targetId(change) {
       return change.payload.cardId;
     case "moveZone":
     case "resizeZone":
+    case "updateZone":
       return change.payload.zoneId;
     case "moveBlock":
     case "resizeBlock":
+    case "updateBlockContent":
       return change.payload.blockId;
     case "group":
       return null;
@@ -124,7 +128,7 @@ function targetId(change) {
 export function assertValidOperation(operation) {
   assert.ok(
     validate(operation, OPERATION_SCHEMA, OPERATION_SCHEMA),
-    `operation is not valid contract 0.4.0: ${JSON.stringify(operation)}`,
+    `operation is not valid contract 0.5.0: ${JSON.stringify(operation)}`,
   );
 }
 

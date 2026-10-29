@@ -14,7 +14,7 @@ constexpr const char kEngineVersion[] = "0.1.0";
 // Bump the literal together with the contract version in the same task (AD-3):
 // contract.h is generated from packages/contracts, so this assert is the
 // deliberate compile-time stop when the engine was not reviewed for a bump.
-constexpr std::string_view kSupportedContractVersion = "0.4.0";
+constexpr std::string_view kSupportedContractVersion = "0.5.0";
 constexpr bool contractVersionMatches() {
   return std::string_view(project_air::contracts::kContractVersion) == kSupportedContractVersion;
 }

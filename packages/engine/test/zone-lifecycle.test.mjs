@@ -182,8 +182,10 @@ test("rename is one operation with inverse that restores the old title and membe
   const before = port.snapshot();
   const pair = buildOperation(port, context, { kind: "zone-rename", zoneId: ZONE_ID, title: "Lake trip" });
   assert.ok(pair !== null);
-  assert.equal(pair.operation.type, "group");
-  assert.equal(pair.inverse.type, "group");
+  // P6-14: contract 0.5.0 renames with one updateZone (was a P4-30 group).
+  assert.equal(pair.operation.type, "updateZone");
+  assert.equal(pair.inverse.type, "updateZone");
+  assert.equal(pair.inverse.payload.title, zoneEntity().title, "the inverse carries the previous title");
   applyOperation(port, pair.operation);
   assert.equal(port.read("zone", ZONE_ID).title, "Lake trip");
   assert.equal(port.read("card", CARD_ID).zoneId, ZONE_ID, "the members stay in the zone");

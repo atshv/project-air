@@ -15,6 +15,7 @@
 import { BLOCK_TYPE_VALUES } from "../../../contracts/generated/types.ts";
 import type {
   Block,
+  BlockContentPayload,
   BlockType,
   Card,
   MoveBlockPayload,
@@ -37,6 +38,7 @@ import type {
   ZoneArrangeGesture,
   ZoneGroupGesture,
   ZoneRenameGesture,
+  BlockContentGesture,
   DragSingleGesture,
   GestureResult,
   KeyboardNudgeGesture,
@@ -920,60 +922,118 @@ function buildZoneGroup(
 // replaces the zone entity (deleteZone keep + createZone with the new title +
 // the member reparent moves); the inverse restores the old title, slot and
 // members exactly.
+// --- block content (P6-14, contract 0.5.0) ---------------------------------
+//
+// Checklist, columns and table blocks carry plain-text content whose `kind`
+// equals the block type. The working copy keeps the content as a contract value;
+// per-entry merging between clients is the SDK/CRDT concern (P6-13). An empty
+// content removes the field (like the CRDT), and the preview text feeds the L02
+// binding so a block grows to its content (`bindObjectText` + `requiredTextHeight`).
+/** The block types that carry content in contract 0.5.0. */
+export const CONTENT_BLOCK_TYPES: readonly BlockType[] = ["checklist", "columns", "table"];
+
+/** True when a block type carries content. */
+export function carriesContent(type: BlockType): type is BlockContentPayload["kind"] {
+  return (CONTENT_BLOCK_TYPES as readonly string[]).includes(type);
+}
+
+/** The empty content of one content kind. */
+export function emptyBlockContent(kind: BlockContentPayload["kind"]): BlockContentPayload {
+  if (kind === "checklist") return { kind, items: [] };
+  if (kind === "columns") return { kind, columns: [] };
+  return { kind, columns: [], rows: [] };
+}
+
+/** True when a content has no entry besides its kind (it canonicalises to no field). */
+export function isEmptyBlockContent(content: BlockContentPayload): boolean {
+  return (content.items ?? []).length === 0
+    && (content.columns ?? []).length === 0
+    && (content.rows ?? []).length === 0;
+}
+
+/** Deep copy of a content (contract content is plain JSON). */
+export function cloneBlockContent(content: BlockContentPayload): BlockContentPayload {
+  return JSON.parse(JSON.stringify(content)) as BlockContentPayload;
+}
+
+/** Structural equality of two contents (undefined is the empty content). */
+export function sameBlockContent(
+  left: BlockContentPayload | undefined,
+  right: BlockContentPayload | undefined,
+): boolean {
+  const canonical = (content: BlockContentPayload | undefined): string =>
+    content === undefined || isEmptyBlockContent(content) ? "" : JSON.stringify(content);
+  return canonical(left) === canonical(right);
+}
+
+/**
+ * The preview text of a content for the L02 binding: one line per checklist
+ * point, per lane title and lane entry (entries indented), per table row with its
+ * cells in column order. Plain text only; state such as "done" is not rendered as
+ * a character (design rule §5), the app draws it as chrome.
+ */
+export function blockContentPreview(content: BlockContentPayload | undefined): string {
+  if (content === undefined) return "";
+  const lines: string[] = [];
+  if (content.kind === "checklist") {
+    for (const item of content.items ?? []) lines.push(item.text);
+  } else if (content.kind === "columns") {
+    for (const column of content.columns ?? []) {
+      lines.push(column.title);
+      for (const item of column.items ?? []) lines.push(`  ${item.text}`);
+    }
+  } else {
+    const columns = content.columns ?? [];
+    if (columns.length > 0) lines.push(columns.map((column) => column.title).join("  "));
+    for (const row of content.rows ?? []) {
+      const cells = new Map(row.cells.map((cell) => [cell.columnId, cell.text]));
+      lines.push(columns.map((column) => cells.get(column.id) ?? "").join("  "));
+    }
+  }
+  return lines.join("\n");
+}
+
 function buildZoneRename(
   port: DocumentPort,
   context: OperationContext,
   gesture: ZoneRenameGesture,
 ): OperationPair | null {
+  // Contract 0.5.0 (P6-14): one updateZone with the previous title as inverse;
+  // it replaces the P4-30 deleteZone + createZone + reparent group.
   const zone = requiredObject(port, "zone", gesture.zoneId);
   if (zone.title === gesture.title) {
     return null;
   }
-  const timestamp = nextTimestamp(context);
-  const members = port.members(zone.id);
-  const remove = buildDeleteZoneOperation(port, context, zone.id, "keep");
-  const recreated: Zone = {
-    ...zone,
-    title: gesture.title,
-    updatedAt: timestamp,
-  };
-  const children: Operation[] = [remove.operation];
-  const createInverse = makeInverse(context, "deleteZone", {
-    zone: recreated,
-    policy: "delete",
-    cards: [],
-    blocks: [],
-  });
-  children.push(makeOperation(context, "createZone", { zone: recreated }, createInverse));
-  for (const card of members.cards) {
-    const child = buildMoveOperation(
-      port,
-      context,
-      "card",
-      card.id,
-      { x: card.x, y: card.y },
-      zone.id,
-    );
-    if (child !== null) {
-      children.push(child);
-    }
+  if (gesture.title.length < 1 || gesture.title.length > 200) {
+    throw new OperationError("a zone title needs 1 to 200 characters");
   }
-  for (const block of members.blocks) {
-    const child = buildMoveOperation(
-      port,
-      context,
-      "block",
-      block.id,
-      { x: block.x, y: block.y },
-      zone.id,
-    );
-    if (child !== null) {
-      children.push(child);
-    }
+  const inverse = makeInverse(context, "updateZone", { zoneId: zone.id, title: zone.title });
+  const operation = makeOperation(context, "updateZone", { zoneId: zone.id, title: gesture.title }, inverse);
+  return { operation, inverse: operation.inverse };
+}
+
+function buildBlockContent(
+  port: DocumentPort,
+  context: OperationContext,
+  gesture: BlockContentGesture,
+): OperationPair | null {
+  // Contract 0.5.0 (L18): the whole new content with the previous one as inverse;
+  // the content kind must equal the block type.
+  const block = requiredObject(port, "block", gesture.blockId);
+  if (!carriesContent(block.type) || gesture.content.kind !== block.type) {
+    throw new OperationError(`a ${gesture.content.kind} content does not fit the ${block.type} block ${block.id}`);
   }
-  const inverseChildren: OperationInverse[] = children.map((child) => child.inverse).reverse();
-  const inverse = makeInverse(context, "group", { children: inverseChildren });
-  const operation = makeOperation(context, "group", { children }, inverse);
+  if (sameBlockContent(block.content, gesture.content)) {
+    return null;
+  }
+  const previous = block.content ?? emptyBlockContent(block.type);
+  const inverse = makeInverse(context, "updateBlockContent", { blockId: block.id, content: cloneBlockContent(previous) });
+  const operation = makeOperation(
+    context,
+    "updateBlockContent",
+    { blockId: block.id, content: cloneBlockContent(gesture.content) },
+    inverse,
+  );
   return { operation, inverse: operation.inverse };
 }
 
@@ -1099,6 +1159,8 @@ export function buildOperation(
       return buildZoneGroup(port, context, gesture);
     case "zone-rename":
       return buildZoneRename(port, context, gesture);
+    case "block-content":
+      return buildBlockContent(port, context, gesture);
     case "keyboard-nudge": {
       const operation = buildNudgeOperation(port, context, gesture);
       return operation === null ? null : { operation, inverse: operation.inverse };
@@ -1212,9 +1274,27 @@ function applyChange(port: DocumentPort, change: Operation | OperationInverse): 
       port.updateZ(kind, change.payload.itemId, change.payload.z);
       return;
     }
+    case "updateZone": {
+      port.rename(change.payload.zoneId, change.payload.title);
+      return;
+    }
+    case "updateBlockContent": {
+      const block = port.read("block", change.payload.blockId);
+      if (block === undefined) {
+        throw new OperationError(`the document contains no block ${change.payload.blockId}`);
+      }
+      if (change.payload.content.kind !== block.type) {
+        throw new OperationError(
+          `a ${change.payload.content.kind} content does not fit the ${block.type} block ${block.id}`,
+        );
+      }
+      port.setContent(block.id, change.payload.content);
+      return;
+    }
     case "createNote":
     case "updateNote":
     case "deleteNote":
+    case "updateNoteBody":
     case "createEdge":
     case "deleteEdge":
     case "updateBlock":

@@ -7727,7 +7727,7 @@
       "satisfies": [
         "D12"
       ],
-      "status": "pending",
+      "status": "done",
       "depends_on": [
         "P6-12"
       ],
@@ -7768,9 +7768,21 @@
       "branch": "task/P6-14",
       "worktree": "../Project air-P6-14",
       "round": 0,
-      "evidence": [],
+      "evidence": [
+        "reviews/evidence/P6-14-board-check-20261029T180212Z.json",
+        "reviews/evidence/P6-14-boundaries-20261029T180128Z.json",
+        "reviews/evidence/P6-14-cpp-unit-20261029T180118Z.json",
+        "reviews/evidence/P6-14-typecheck-20261029T180124Z.json",
+        "reviews/evidence/P6-14-unit-20261029T180126Z.json",
+        "reviews/evidence/P6-14-wasm-build-20261029T180056Z.json"
+      ],
       "scope_write_forbidden": [
         "reference/"
+      ],
+      "handoff": [
+        "Import the engine for the app from packages/engine/src/bridge/app.ts (bridge + input, placement, overlay, zone parity/lifecycle, keyboard, view persistence) and the logic layer from src/logic/.",
+        "Zone rename = gesture zone-rename -> one updateZone; block content = gesture block-content -> one updateBlockContent. Port has rename/setContent; empty content removes the field.",
+        "Grow blocks with blockContentPreview + fitBlockToContent; docs/engine.md 'Using the engine from an app' lists what the app wires itself."
       ]
     },
     {

@@ -1,0 +1,67 @@
+$ bash packages/engine/tools/build-wasm.sh && node packages/engine/tools/wasm-smoke.mjs
+[exit 0]
+
+build-wasm: Emscripten from Homebrew at /opt/homebrew/opt/emscripten
+-- Configuring done (0.6s)
+-- Generating done (0.0s)
+-- Build files have been written to: /Users/rasulatashev/Desktop/KI Projekte/Project air-P6-14/packages/engine/build-wasm
+[ 15%] Building CXX object CMakeFiles/air_engine_objects.dir/src/camera.cpp.o
+[ 15%] Building CXX object CMakeFiles/air_engine_objects.dir/src/render_gl.cpp.o
+[ 23%] Building CXX object CMakeFiles/air_engine_objects.dir/src/render.cpp.o
+[ 30%] Building CXX object CMakeFiles/air_engine_objects.dir/src/snap.cpp.o
+[ 38%] Building CXX object CMakeFiles/air_engine_objects.dir/src/doc.cpp.o
+[ 53%] Building CXX object CMakeFiles/air_engine_objects.dir/src/engine.cpp.o
+[ 53%] Building CXX object CMakeFiles/air_engine_objects.dir/src/text.cpp.o
+[ 61%] Building CXX object CMakeFiles/air_engine_objects.dir/src/render_webgpu.cpp.o
+[ 69%] Building CXX object CMakeFiles/air_engine_objects.dir/src/text_binding.cpp.o
+[ 76%] Building CXX object CMakeFiles/air_engine_objects.dir/src/text_gl.cpp.o
+[ 84%] Building CXX object CMakeFiles/air_engine_objects.dir/src/spatial.cpp.o
+[ 84%] Built target air_engine_objects
+[ 92%] Linking CXX executable engine.js
+[100%] Linking CXX static library libair_engine.a
+[100%] Built target air_engine
+[100%] Built target engine
+wasm-smoke: engine_create without WebGL2 -> 0, error: could not create a WebGL2 context on the canvas
+wasm-smoke: text plan fallback at DPR 3 / 512 px -> scale 1, 256x512
+wasm-smoke: engine_text_load_atlas before create -> 0, error: engine_create must be called before engine_text_load_atlas
+wasm-smoke: engine_load_rectangles before create -> 0, error: engine_create must be called before engine_load_rectangles
+wasm-smoke: engine_text_add_box_run before create -> 0, error: engine_create must be called before engine_text_add_box_run
+wasm-smoke: engine_text_bind_object before create -> 0, error: engine_create must be called before engine_text_bind_object
+wasm-smoke: OK
+emcmake: cmake -S '/Users/rasulatashev/Desktop/KI Projekte/Project air-P6-14/packages/engine' -B '/Users/rasulatashev/Desktop/KI Projekte/Project air-P6-14/packages/engine/build-wasm' -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=/opt/homebrew/Cellar/emscripten/6.0.13/libexec/cmake/Modules/Platform/Emscripten.cmake -DCMAKE_CROSSCOMPILING_EMULATOR=/opt/homebrew/opt/node/bin/node in directory /Users/rasulatashev/Desktop/KI Projekte/Project air-P6-14
+shared:INFO: (Emscripten: Running sanity checks)
+cache:INFO: generating system headers: sysroot_install.stamp... (this will be cached in "/Users/rasulatashev/Desktop/KI Projekte/Project air-P6-14/packages/engine/build-wasm/.emscripten-cache/sysroot_install.stamp" for subsequent builds)
+cache:INFO:  - ok
+cache:INFO: generating system library: sysroot/lib/wasm32-emscripten/libGL-webgl2-getprocaddr.a... (this will be cached in "/Users/rasulatashev/Desktop/KI Projekte/Project air-P6-14/packages/engine/build-wasm/.emscripten-cache/sysroot/lib/wasm32-emscripten/libGL-webgl2-getprocaddr.a" for subsequent builds)
+system_libs:INFO: compiled 4 inputs in 0.17s
+cache:INFO:  - ok
+cache:INFO: generating system library: sysroot/lib/wasm32-emscripten/libal.a... (this will be cached in "/Users/rasulatashev/Desktop/KI Projekte/Project air-P6-14/packages/engine/build-wasm/.emscripten-cache/sysroot/lib/wasm32-emscripten/libal.a" for subsequent builds)
+system_libs:INFO: compiled 1 inputs in 0.12s
+cache:INFO:  - ok
+cache:INFO: generating system library: sysroot/lib/wasm32-emscripten/libhtml5.a... (this will be cached in "/Users/rasulatashev/Desktop/KI Projekte/Project air-P6-14/packages/engine/build-wasm/.emscripten-cache/sysroot/lib/wasm32-emscripten/libhtml5.a" for subsequent builds)
+system_libs:INFO: compiled 5 inputs in 0.16s
+cache:INFO:  - ok
+cache:INFO: generating system library: sysroot/lib/wasm32-emscripten/libstubs.a... (this will be cached in "/Users/rasulatashev/Desktop/KI Projekte/Project air-P6-14/packages/engine/build-wasm/.emscripten-cache/sysroot/lib/wasm32-emscripten/libstubs.a" for subsequent builds)
+system_libs:INFO: compiled 2 inputs in 0.13s
+cache:INFO:  - ok
+cache:INFO: generating system library: sysroot/lib/wasm32-emscripten/libnoexit.a... (this will be cached in "/Users/rasulatashev/Desktop/KI Projekte/Project air-P6-14/packages/engine/build-wasm/.emscripten-cache/sysroot/lib/wasm32-emscripten/libnoexit.a" for subsequent builds)
+system_libs:INFO: compiled 1 inputs in 0.10s
+cache:INFO:  - ok
+cache:INFO: generating system library: sysroot/lib/wasm32-emscripten/libc.a... (this will be cached in "/Users/rasulatashev/Desktop/KI Projekte/Project air-P6-14/packages/engine/build-wasm/.emscripten-cache/sysroot/lib/wasm32-emscripten/libc.a" for subsequent builds)
+system_libs:INFO: compiled 1074 inputs in 4.78s
+cache:INFO:  - ok
+cache:INFO: generating system library: sysroot/lib/wasm32-emscripten/libdlmalloc.a... (this will be cached in "/Users/rasulatashev/Desktop/KI Projekte/Project air-P6-14/packages/engine/build-wasm/.emscripten-cache/sysroot/lib/wasm32-emscripten/libdlmalloc.a" for subsequent builds)
+system_libs:INFO: compiled 2 inputs in 0.26s
+cache:INFO:  - ok
+cache:INFO: generating system library: sysroot/lib/wasm32-emscripten/libclang_rt.builtins.a... (this will be cached in "/Users/rasulatashev/Desktop/KI Projekte/Project air-P6-14/packages/engine/build-wasm/.emscripten-cache/sysroot/lib/wasm32-emscripten/libclang_rt.builtins.a" for subsequent builds)
+system_libs:INFO: compiled 184 inputs in 1.29s
+cache:INFO:  - ok
+cache:INFO: generating system library: sysroot/lib/wasm32-emscripten/libc++-noexcept.a... (this will be cached in "/Users/rasulatashev/Desktop/KI Projekte/Project air-P6-14/packages/engine/build-wasm/.emscripten-cache/sysroot/lib/wasm32-emscripten/libc++-noexcept.a" for subsequent builds)
+system_libs:INFO: compiled 57 inputs in 5.30s
+cache:INFO:  - ok
+cache:INFO: generating system library: sysroot/lib/wasm32-emscripten/libc++abi-noexcept.a... (this will be cached in "/Users/rasulatashev/Desktop/KI Projekte/Project air-P6-14/packages/engine/build-wasm/.emscripten-cache/sysroot/lib/wasm32-emscripten/libc++abi-noexcept.a" for subsequent builds)
+system_libs:INFO: compiled 16 inputs in 1.17s
+cache:INFO:  - ok
+cache:INFO: generating system library: sysroot/lib/wasm32-emscripten/libsockets.a... (this will be cached in "/Users/rasulatashev/Desktop/KI Projekte/Project air-P6-14/packages/engine/build-wasm/.emscripten-cache/sysroot/lib/wasm32-emscripten/libsockets.a" for subsequent builds)
+system_libs:INFO: compiled 27 inputs in 0.74s
+cache:INFO:  - ok

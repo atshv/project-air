@@ -7,10 +7,10 @@
 // adapter owns the id-to-slot mapping that docs/engine.md describes. The logic
 // layer and its tests therefore never import the WASM module.
 
-import type { Block, Card, Zone } from "../../../contracts/generated/types.ts";
+import type { Block, BlockContentPayload, Card, Zone } from "../../../contracts/generated/types.ts";
 import type { Engine, EngineRectangle } from "../bridge/engine.ts";
 import type { LayerName, ToneName } from "../bridge/engine.ts";
-import { OperationError } from "./operations.ts";
+import { OperationError, cloneBlockContent, isEmptyBlockContent } from "./operations.ts";
 
 /** The three board-object kinds the engine holds a working copy of. */
 export type BoardObjectKind = "card" | "zone" | "block";
@@ -52,6 +52,13 @@ export interface DocumentPort {
   remove(kind: BoardObjectKind, id: string): void;
   /** Sets the fractional z index of one object; unknown ids are rejected. */
   updateZ(kind: BoardObjectKind, id: string, z: string): void;
+  /** Renames one zone (contract 0.5.0 `updateZone`); unknown ids are rejected. */
+  rename(zoneId: string, title: string): void;
+  /**
+   * Sets the content of one block (contract 0.5.0 `updateBlockContent`); an empty
+   * content or `undefined` removes the field. Unknown ids are rejected.
+   */
+  setContent(blockId: string, content: BlockContentPayload | undefined): void;
   /** The live members of one zone (L08), for the content policy and the size guard. */
   members(zoneId: string): { readonly cards: readonly Card[]; readonly blocks: readonly Block[] };
   /**
@@ -88,21 +95,30 @@ const compareIds = (left: { readonly id: string }, right: { readonly id: string 
   left.id < right.id ? -1 : left.id > right.id ? 1 : 0;
 
 /**
- * Shallow copy of a contract entity. Every contract field is a primitive or
- * null, so a shallow copy fully isolates the port from operation payloads and
- * history entries.
+ * Copy of a contract entity. Every field is a primitive or null except the
+ * 0.5.0 block content, which is copied deeply, so the port stays isolated from
+ * operation payloads and history entries.
  */
 function cloneObject<K extends BoardObjectKind>(
   kind: K,
   object: BoardObjectFor<K>,
 ): BoardObjectFor<K> {
-  if (kind === "card") {
-    return { ...object };
-  }
-  if (kind === "zone") {
-    return { ...object };
+  if (kind === "block") {
+    const block = object as Block;
+    return (block.content === undefined
+      ? { ...block }
+      : { ...block, content: cloneBlockContent(block.content) }) as BoardObjectFor<K>;
   }
   return { ...object };
+}
+
+/** Writes or removes the content of a stored block (empty content removes it). */
+function writeContent(block: Block, content: BlockContentPayload | undefined): void {
+  if (content === undefined || isEmptyBlockContent(content)) {
+    delete block.content;
+  } else {
+    block.content = cloneBlockContent(content);
+  }
 }
 
 /** A deterministic, pure in-memory working copy for tests. */
@@ -173,6 +189,12 @@ export function createInMemoryDocument(): InMemoryDocument {
     },
     updateZ(kind: BoardObjectKind, id: string, z: string): void {
       required(kind, id).z = z;
+    },
+    rename(zoneId: string, title: string): void {
+      required("zone", zoneId).title = title;
+    },
+    setContent(blockId: string, content: BlockContentPayload | undefined): void {
+      writeContent(required("block", blockId), content);
     },
     kindOf(id: string): BoardObjectKind | undefined {
       return cards.has(id) ? "card" : zones.has(id) ? "zone" : blocks.has(id) ? "block" : undefined;
@@ -323,6 +345,13 @@ export function createEngineDocumentPort(
       const stored = required(kind, id);
       backend.updateZ(stored.slot, z);
       stored.object.z = z;
+    },
+    rename(zoneId: string, title: string): void {
+      // The title is presentation input of the L02 binding; the caller rebinds.
+      required("zone", zoneId).object.title = title;
+    },
+    setContent(blockId: string, content: BlockContentPayload | undefined): void {
+      writeContent(required("block", blockId).object, content);
     },
     kindOf(id: string): BoardObjectKind | undefined {
       return cards.has(id) ? "card" : zones.has(id) ? "zone" : blocks.has(id) ? "block" : undefined;

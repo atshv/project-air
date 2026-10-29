@@ -21,8 +21,8 @@ void expect(bool condition, const char* description) {
 int main() {
   expect(std::string_view(air_engine_version()) == "0.1.0",
          "air_engine_version() returns 0.1.0");
-  expect(std::string_view(project_air::contracts::kContractVersion) == "0.4.0",
-         "generated contract version is 0.4.0");
+  expect(std::string_view(project_air::contracts::kContractVersion) == "0.5.0",
+         "generated contract version is 0.5.0");
   expect(__cplusplus >= 202002L, "the engine is compiled as C++20");
   expect(tokens::canvas_grid > 0.0, "the generated token header is usable from C++");
 

@@ -61,7 +61,7 @@
 - Exit gates: `e2e`, `design-check`, `language-check`
 - Exit criteria: Main e2e flows green on a preview environment.; Every canvas work order done with evidence; design-check and language-check green repo-wide.
 - Tasks: P6-01, P6-02, P6-03, P6-04, P6-05, P6-06, P6-07, P6-09, P6-10, P6-11, P0-45, P0-46, P6-08, P0-47, P6-12, P6-13, P6-14, P6-15, P6-16, P6-17, P6-18, P6-19, P6-20, P6-21, P6-22
-- Tasks open: P6-14, P6-15, P6-16, P6-17, P6-18, P6-19, P6-20, P6-21, P6-22
+- Tasks open: P6-15, P6-16, P6-17, P6-18, P6-19, P6-20, P6-21, P6-22
 
 ### Stage 8 — `value` Import, export and AI
 
@@ -125,17 +125,17 @@
 
 ## Ready now
 
-- `P6-14` Engine for the app: contract 0.5.0 and the interaction exports
-  - P6-12: 0.5.0: Block.content (kind == block type, UUIDv7 per entry: merge per entry); updateBlockContent {blockId, content} and updateZone {zoneId, title}; inverse = same type, previous value.
-  - P6-12: Reject a content kind that does not match the block when applying. SDK still sends 0.4.0: its sync-schema test is red until P6-13; merge P6-12 with P6-13.
-  - P6-12: Pre-existing for P6-13: crdt conformance test uses URL.pathname (breaks on spaces in the path); turbo reuses a stale crdt dist copy of the contract types (build --force).
+- `P6-15` Depth-ordered titles and previews in the engine
+  - P6-14: Import the engine for the app from packages/engine/src/bridge/app.ts (bridge + input, placement, overlay, zone parity/lifecycle, keyboard, view persistence) and the logic layer from src/logic/.
+  - P6-14: Zone rename = gesture zone-rename -> one updateZone; block content = gesture block-content -> one updateBlockContent. Port has rename/setContent; empty content removes the field.
+  - P6-14: Grow blocks with blockContentPreview + fitBlockToContent; docs/engine.md 'Using the engine from an app' lists what the app wires itself.
 
 ## Orchestration
 
 - Limits: 3 attempts/task, 3 in progress
-- Next wave: none — nothing is ready
-- Running: `P6-14` attempt 0/3<!-- polier:claims --> — claimed by cli<!-- /polier:claims -->
-- Blocked: P0-02, P0-15, P0-16, P0-17 (stage waits); P6-15, P6-16, P6-17, P6-18, P6-19, P6-20, P6-21, P6-22 (open dependency)
+- Next wave: `P6-15` (tasks/P6-15.md)
+- Running: none
+- Blocked: P0-02, P0-15, P0-16, P0-17 (stage waits); P6-16, P6-17, P6-18, P6-19, P6-20, P6-21, P6-22 (open dependency)
 - Approvals pending: none
 
 ## Done
@@ -253,6 +253,7 @@
 - [x] `P0-48` Live demo: visible selection frame, delete that works — status: `done` — owner: —
 - [x] `P6-12` Contract 0.5.0: block content and zone rename — status: `done` — owner: —
 - [x] `P6-13` Block content and zone rename in the CRDT, sync and SDK — status: `done` — owner: —
+- [x] `P6-14` Engine for the app: contract 0.5.0 and the interaction exports — status: `done` — owner: —
 
 ## In progress
 
@@ -268,7 +269,6 @@
 - [ ] `P0-15` Release command and tag-based CI release — status: `pending` — owner: —
 - [ ] `P0-16` Dependency updates and Polier update check — status: `pending` — owner: —
 - [ ] `P0-17` RELEASING.md and release 0.0.1 — status: `pending` — owner: —
-- [ ] `P6-14` Engine for the app: contract 0.5.0 and the interaction exports — status: `pending` — owner: —
 - [ ] `P6-15` Depth-ordered titles and previews in the engine — status: `pending` — owner: —
 - [ ] `P6-16` Titles, previews and headers on the web canvas (L02 web part) — status: `pending` — owner: —
 - [ ] `P6-17` Dragging on the web canvas (L03, L07, L16, L20) — status: `pending` — owner: —

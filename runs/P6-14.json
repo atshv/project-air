@@ -1,0 +1,115 @@
+{
+  "task": "P6-14",
+  "state": "done",
+  "attempt": 1,
+  "attempts": [
+    {
+      "n": 1,
+      "started": "2026-10-29T17:56:06+00:00",
+      "ended": "2026-10-29T18:02:39+00:00",
+      "result": "pass",
+      "note": "review pass, gates green"
+    }
+  ],
+  "events": [
+    {
+      "at": "2026-10-29T17:56:06+00:00",
+      "kind": "start",
+      "data": {
+        "actor": "lead"
+      }
+    },
+    {
+      "at": "2026-10-29T17:56:06+00:00",
+      "kind": "state",
+      "data": {
+        "from": "pending",
+        "to": "in_progress",
+        "actor": "lead"
+      }
+    },
+    {
+      "at": "2026-10-29T18:00:55+00:00",
+      "kind": "state",
+      "data": {
+        "from": "in_progress",
+        "to": "verifying",
+        "actor": "lead"
+      }
+    },
+    {
+      "at": "2026-10-29T18:01:18+00:00",
+      "kind": "gate",
+      "data": {
+        "gate": "wasm-build",
+        "result": "pass",
+        "record": "reviews/evidence/P6-14-wasm-build-20261029T180056Z.json"
+      }
+    },
+    {
+      "at": "2026-10-29T18:01:24+00:00",
+      "kind": "gate",
+      "data": {
+        "gate": "cpp-unit",
+        "result": "pass",
+        "record": "reviews/evidence/P6-14-cpp-unit-20261029T180118Z.json"
+      }
+    },
+    {
+      "at": "2026-10-29T18:01:25+00:00",
+      "kind": "gate",
+      "data": {
+        "gate": "typecheck",
+        "result": "pass",
+        "record": "reviews/evidence/P6-14-typecheck-20261029T180124Z.json"
+      }
+    },
+    {
+      "at": "2026-10-29T18:01:28+00:00",
+      "kind": "gate",
+      "data": {
+        "gate": "unit",
+        "result": "pass",
+        "record": "reviews/evidence/P6-14-unit-20261029T180126Z.json"
+      }
+    },
+    {
+      "at": "2026-10-29T18:01:28+00:00",
+      "kind": "gate",
+      "data": {
+        "gate": "boundaries",
+        "result": "pass",
+        "record": "reviews/evidence/P6-14-boundaries-20261029T180128Z.json"
+      }
+    },
+    {
+      "at": "2026-10-29T18:02:29+00:00",
+      "kind": "gate",
+      "data": {
+        "gate": "board-check",
+        "result": "pass",
+        "record": "reviews/evidence/P6-14-board-check-20261029T180212Z.json"
+      }
+    },
+    {
+      "at": "2026-10-29T18:02:39+00:00",
+      "kind": "state",
+      "data": {
+        "from": "verifying",
+        "to": "review",
+        "actor": "lead"
+      }
+    },
+    {
+      "at": "2026-10-29T18:02:39+00:00",
+      "kind": "state",
+      "data": {
+        "from": "review",
+        "to": "done",
+        "actor": "lead",
+        "note": "review pass, gates green"
+      }
+    }
+  ],
+  "updated": "2026-10-29T18:02:39+00:00"
+}
