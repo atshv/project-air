@@ -27,9 +27,9 @@
         document.documentElement.setAttribute("data-theme", theme);
       })();
     </script>
-    <link rel="stylesheet" href="../../../packages/ui-kit/tokens.css?v=P0-46" />
-    <link rel="stylesheet" href="preview.css?v=P0-46" />
-    <script src="preview.js?v=P0-46" defer></script>
+    <link rel="stylesheet" href="../../../packages/ui-kit/tokens.css?v=P0-47" />
+    <link rel="stylesheet" href="preview.css?v=P0-47" />
+    <script src="preview.js?v=P0-47" defer></script>
   </head>
   <body>
     <main class="page">
@@ -46,14 +46,14 @@
         <p class="masthead__version" data-preview-meta>
           <span data-preview-version data-i18n="masthead.version">Version 0.0.1</span>
           <span data-preview-status data-i18n="masthead.unreleased">unreleased</span>
-          <span data-preview-last-change data-i18n="masthead.lastChange">Last change: P0-46 — Preview page: back-to-top arrow</span>
-          <span data-preview-last-change-time data-i18n="masthead.lastChangeTime">2026-10-29 00:59 (Europe/Zurich)</span>
+          <span data-preview-last-change data-i18n="masthead.lastChange">Last change: P0-47 — Preview page: connections diagram instead of roles</span>
+          <span data-preview-last-change-time data-i18n="masthead.lastChangeTime">2026-10-29 01:09 (Europe/Zurich)</span>
         </p>
         <div class="masthead__meta">
           <span data-i18n-html="masthead.tokensPackagesUiKitTokens">Tokens: <code>packages/ui-kit/tokens.css</code></span>
           <span data-i18n-html="masthead.iconsPackagesUiKitIcons">Icons: <code>packages/ui-kit/icons/</code></span>
           <span data-i18n-html="masthead.demoPreviewJs">Demo: <code>preview.js</code></span>
-          <span data-i18n="masthead.tasks">Tasks: P0-19, P0-20, P0-21, P0-22, P0-23, P0-24, P0-25, P0-26, P0-27, P0-28, P0-29, P0-30, P0-31, P0-32, P0-33, P0-34, P0-35, P0-36, P0-37, P0-38, P0-39, P0-40, P0-41, P0-42, P0-43, P0-44, P0-45, P0-46, P1-07</span>
+          <span data-i18n="masthead.tasks">Tasks: P0-19, P0-20, P0-21, P0-22, P0-23, P0-24, P0-25, P0-26, P0-27, P0-28, P0-29, P0-30, P0-31, P0-32, P0-33, P0-34, P0-35, P0-36, P0-37, P0-38, P0-39, P0-40, P0-41, P0-42, P0-43, P0-44, P0-45, P0-46, P0-47, P1-07</span>
           <div class="masthead__switches">
             <div
               class="preview-locale"
@@ -2235,23 +2235,112 @@
           </li>
         </ol>
         <div class="detail-grid">
-          <div class="detail-card">
-            <h3 data-i18n="areas.roles.title">Roles at a glance</h3>
-            <div class="area-roles-scroll">
-              <table class="area-roles">
-                <thead><tr><th scope="col" data-i18n="areas.roles.role">Role</th><th scope="col" data-i18n="areas.roles.areas">Responsible for</th></tr></thead>
-                <tbody>
-                  <tr><th scope="row" data-i18n="areas.roles.engine.name">Engine team</th><td data-i18n="areas.roles.engine.areas">Engine, playground</td></tr>
-                  <tr><th scope="row" data-i18n="areas.roles.web.name">Web team</th><td data-i18n="areas.roles.web.areas">Web app, editor, translations</td></tr>
-                  <tr><th scope="row" data-i18n="areas.roles.design.name">Design</th><td data-i18n="areas.roles.design.areas">Design system, design law, this page</td></tr>
-                  <tr><th scope="row" data-i18n="areas.roles.server.name">Server team</th><td data-i18n="areas.roles.server.areas">Platform API, auth, rights</td></tr>
-                  <tr><th scope="row" data-i18n="areas.roles.db.name">Database</th><td data-i18n="areas.roles.db.areas">Tables, migrations, storage, local containers</td></tr>
-                  <tr><th scope="row" data-i18n="areas.roles.realtime.name">Realtime team</th><td data-i18n="areas.roles.realtime.areas">Sync, CRDT, SDK</td></tr>
-                  <tr><th scope="row" data-i18n="areas.roles.contract.name">Data model</th><td data-i18n="areas.roles.contract.areas">Schemas, operations, code generation</td></tr>
-                  <tr><th scope="row" data-i18n="areas.roles.quality.name">Quality and DevOps</th><td data-i18n="areas.roles.quality.areas">Checks, tests, releases, CI</td></tr>
-                </tbody>
-              </table>
+          <div class="detail-card detail-card--wide area-map">
+            <h3 data-i18n="areas.map.title">How it connects</h3>
+            <p class="token-caption" data-i18n="areas.map.intro">Who uses whom. Each arrow points to the part that is used.</p>
+            <p class="area-map__legend">
+              <span class="area-map__key"><span class="area-map__swatch" aria-hidden="true"></span><span data-i18n="areas.map.legend.uses">uses in code</span></span>
+              <span class="area-map__key"><span class="area-map__swatch area-map__swatch--network" aria-hidden="true"></span><span data-i18n="areas.map.legend.network">talks over the network</span></span>
+            </p>
+            <div class="area-map__scroll">
+                <svg class="area-map__svg" viewBox="0 20 1000 530" role="img" aria-labelledby="area-map-title">
+                  <title id="area-map-title" data-i18n="areas.map.svgTitle">Connections between the parts of Project air</title>
+                  <defs>
+                    <marker id="area-map-arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto">
+                      <path class="area-map__arrow" d="M0 0 L8 4 L0 8 Z" />
+                    </marker>
+                  </defs>
+                  <g class="area-map__edges">
+                    <path class="area-map__edge" d="M110 272 C110 40 420 44 560 52" marker-end="url(#area-map-arrow)" />
+                    <path class="area-map__edge" d="M200 290 C245 290 245 100 290 100" marker-end="url(#area-map-arrow)" />
+                    <path class="area-map__edge" d="M200 296 C245 296 245 190 290 190" marker-end="url(#area-map-arrow)" />
+                    <path class="area-map__edge" d="M200 312 C245 312 245 360 290 360" marker-end="url(#area-map-arrow)" />
+                    <path class="area-map__edge area-map__edge--network" d="M110 328 C110 470 180 510 290 510" marker-end="url(#area-map-arrow)" />
+                    <path class="area-map__edge" d="M470 190 L560 190" marker-end="url(#area-map-arrow)" />
+                    <path class="area-map__edge" d="M470 176 C515 176 515 66 560 66" marker-end="url(#area-map-arrow)" />
+                    <path class="area-map__edge" d="M380 332 C380 270 640 262 800 262" marker-end="url(#area-map-arrow)" />
+                    <path class="area-map__edge area-map__edge--network" d="M470 350 L560 334" marker-end="url(#area-map-arrow)" />
+                    <path class="area-map__edge area-map__edge--network" d="M470 372 L560 414" marker-end="url(#area-map-arrow)" />
+                    <path class="area-map__edge" d="M740 322 L800 276" marker-end="url(#area-map-arrow)" />
+                    <path class="area-map__edge" d="M740 342 L800 380" marker-end="url(#area-map-arrow)" />
+                    <path class="area-map__edge" d="M740 414 L800 400" marker-end="url(#area-map-arrow)" />
+                    <path class="area-map__edge" d="M740 434 L800 492" marker-end="url(#area-map-arrow)" />
+                    <path class="area-map__edge" d="M470 510 L560 510" marker-end="url(#area-map-arrow)" />
+                  </g>
+                  <text class="area-map__label" x="128" y="462" text-anchor="end" data-i18n="areas.map.edge.signin">Sign-in</text>
+                  <text class="area-map__label" x="515" y="322" text-anchor="middle" data-i18n="areas.map.edge.ws">WebSocket</text>
+                  <text class="area-map__label" x="505" y="414" text-anchor="middle" data-i18n="areas.map.edge.http">HTTP</text>
+                  <g class="area-map__node">
+                    <rect class="area-map__box" x="20" y="272" width="180" height="56" />
+                    <text class="area-map__name" x="110" y="296" text-anchor="middle" data-i18n="areas.map.node.web">Web app</text>
+                    <text class="area-map__tech" x="110" y="314" text-anchor="middle" data-i18n="areas.map.node.web.tech">React 19 + Vite</text>
+                  </g>
+                  <g class="area-map__node">
+                    <rect class="area-map__box" x="290" y="72" width="180" height="56" />
+                    <text class="area-map__name" x="380" y="105" text-anchor="middle" data-i18n="areas.map.node.editor">Editor</text>
+                  </g>
+                  <g class="area-map__node">
+                    <rect class="area-map__box" x="290" y="162" width="180" height="56" />
+                    <text class="area-map__name" x="380" y="186" text-anchor="middle" data-i18n="areas.map.node.engine">Engine</text>
+                    <text class="area-map__tech" x="380" y="204" text-anchor="middle" data-i18n="areas.map.node.engine.tech">C++ / WASM</text>
+                  </g>
+                  <g class="area-map__node">
+                    <rect class="area-map__box" x="290" y="332" width="180" height="56" />
+                    <text class="area-map__name" x="380" y="356" text-anchor="middle" data-i18n="areas.map.node.sdk">SDK</text>
+                    <text class="area-map__tech" x="380" y="374" text-anchor="middle" data-i18n="areas.map.node.sdk.tech">Client</text>
+                  </g>
+                  <g class="area-map__node">
+                    <rect class="area-map__box" x="290" y="482" width="180" height="56" />
+                    <text class="area-map__name" x="380" y="515" text-anchor="middle" data-i18n="areas.map.node.auth">Auth</text>
+                  </g>
+                  <g class="area-map__node">
+                    <rect class="area-map__box" x="560" y="32" width="180" height="56" />
+                    <text class="area-map__name" x="650" y="56" text-anchor="middle" data-i18n="areas.map.node.uikit">ui-kit</text>
+                    <text class="area-map__tech" x="650" y="74" text-anchor="middle" data-i18n="areas.map.node.uikit.tech">Tokens + icons</text>
+                  </g>
+                  <g class="area-map__node">
+                    <rect class="area-map__box" x="560" y="162" width="180" height="56" />
+                    <text class="area-map__name" x="650" y="186" text-anchor="middle" data-i18n="areas.map.node.contracts">Data model</text>
+                    <text class="area-map__tech" x="650" y="204" text-anchor="middle" data-i18n="areas.map.node.contracts.tech">contracts</text>
+                  </g>
+                  <g class="area-map__node">
+                    <rect class="area-map__box" x="560" y="302" width="180" height="56" />
+                    <text class="area-map__name" x="650" y="335" text-anchor="middle" data-i18n="areas.map.node.sync">Sync</text>
+                  </g>
+                  <g class="area-map__node">
+                    <rect class="area-map__box" x="560" y="392" width="180" height="56" />
+                    <text class="area-map__name" x="650" y="425" text-anchor="middle" data-i18n="areas.map.node.platform">Platform API</text>
+                  </g>
+                  <g class="area-map__node">
+                    <rect class="area-map__box" x="560" y="482" width="180" height="56" />
+                    <text class="area-map__name" x="650" y="515" text-anchor="middle" data-i18n="areas.map.node.kratos">Ory Kratos</text>
+                  </g>
+                  <g class="area-map__node">
+                    <rect class="area-map__box" x="800" y="232" width="180" height="56" />
+                    <text class="area-map__name" x="890" y="256" text-anchor="middle" data-i18n="areas.map.node.crdt">CRDT</text>
+                    <text class="area-map__tech" x="890" y="274" text-anchor="middle" data-i18n="areas.map.node.crdt.tech">Yjs</text>
+                  </g>
+                  <g class="area-map__node">
+                    <path class="area-map__box" d="M800 370 a90 8 0 0 1 180 0 v40 a90 8 0 0 1 -180 0 Z" />
+                    <path class="area-map__rim" d="M800 370 a90 8 0 0 0 180 0" />
+                    <text class="area-map__name" x="890" y="399" text-anchor="middle" data-i18n="areas.map.node.postgres">PostgreSQL</text>
+                  </g>
+                  <g class="area-map__node">
+                    <path class="area-map__box" d="M800 480 a90 8 0 0 1 180 0 v40 a90 8 0 0 1 -180 0 Z" />
+                    <path class="area-map__rim" d="M800 480 a90 8 0 0 0 180 0" />
+                    <text class="area-map__name" x="890" y="500" text-anchor="middle" data-i18n="areas.map.node.s3">File storage</text>
+                    <text class="area-map__tech" x="890" y="518" text-anchor="middle" data-i18n="areas.map.node.s3.tech">S3</text>
+                  </g>
+                </svg>
             </div>
+            <ul class="area-map__words">
+              <li data-i18n="areas.map.words.web">Web app: uses the editor, the engine, the SDK and the ui-kit; sign-in goes through auth.</li>
+              <li data-i18n="areas.map.words.engine">Engine: draws with the ui-kit tokens and reads the data model.</li>
+              <li data-i18n="areas.map.words.sdk">SDK: keeps the board as a CRDT and talks to sync over WebSocket and to the platform API over HTTP.</li>
+              <li data-i18n="areas.map.words.sync">Sync: merges changes with the CRDT and stores them in PostgreSQL.</li>
+              <li data-i18n="areas.map.words.auth">Auth: manages accounts and sign-in with Ory Kratos.</li>
+              <li data-i18n="areas.map.words.platform">Platform API: stores boards in PostgreSQL and files in the S3 file storage.</li>
+            </ul>
           </div>
         </div>
       </section>

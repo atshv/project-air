@@ -1,4 +1,4 @@
-# Design preview (P0-19, P0-20, P0-21, P0-22, P0-23, P0-24, P0-25, P0-26, P0-27, P0-28, P0-29, P0-30, P0-31, P0-32, P0-33, P0-34, P0-35, P0-36, P0-37, P0-38, P0-39, P0-40, P0-41, P0-42, P0-43, P0-44, P0-45, P0-46, P1-07)
+# Design preview (P0-19, P0-20, P0-21, P0-22, P0-23, P0-24, P0-25, P0-26, P0-27, P0-28, P0-29, P0-30, P0-31, P0-32, P0-33, P0-34, P0-35, P0-36, P0-37, P0-38, P0-39, P0-40, P0-41, P0-42, P0-43, P0-44, P0-45, P0-46, P0-47, P1-07)
 
 A design preview of the Project air design system. It is **not the product**: there is no engine,
 no data, no server and no build step. It exists so the owner can see the look and feel between
@@ -15,9 +15,9 @@ its two values come from:
   `0.0.1 – unreleased`; the status word comes from the same heading. `CHANGELOG.md` is the display
   source and currently agrees with the root `package.json` version `0.0.1`.
 - **Last change** — the newest preview change entry, currently
-  `.changes/P0-46-back-to-top.md`; the line shows the task id and that task's title from
-  `board.json` / the task brief: `P0-46 — Preview page: back-to-top arrow`. The line follows the
-  `P0-*` preview tasks (P0-19 … P0-46, P1-07); the engine tasks
+  `.changes/P0-47-connections.md`; the line shows the task id and that task's title from
+  `board.json` / the task brief: `P0-47 — Preview page: connections diagram instead of roles`. The line follows the
+  `P0-*` preview tasks (P0-19 … P0-47, P1-07); the engine tasks
   (`P4-*`) and the other stages run in parallel and do not move it, so "highest numeric id" alone is
   not the rule. If several files exist for the same preview task, the most recent one is used;
   `.changes/README.md` and `.changes/TEMPLATE.md` do not count as entries.
@@ -222,6 +222,27 @@ is cleared on reload.
   token colours, the 4 px spacing series, `--radius-md`/`--radius-sm` and the `--shadow`. Under
   `prefers-reduced-motion: reduce` the swatch transition is off.
 
+## How it connects (P0-47)
+
+Owner request of 2026-10-29: show how the parts connect instead of the roles table, after the
+owner's diagram.
+
+- **Diagram** — section 13's last card, "How it connects", is an inline SVG drawn only with tokens:
+  `--surface` boxes with a `--border-strong` line and `--radius-sm`, names in `--fg`, technology
+  in `--muted`, lines in `--muted` at `--border-width-strong` with small arrowheads. It shows 13
+  parts in four columns: the web app; editor, engine, SDK and auth; ui-kit, data model, sync,
+  platform API and Ory Kratos; and CRDT, PostgreSQL and file storage (S3), the last two as
+  cylinders. The 15 connections follow the owner's template, and no line crosses a box.
+- **Legend and words** — solid means "uses in code", dashed means "talks over the network"
+  (sign-in, WebSocket, HTTP). Below the diagram the same connections read as six short sentences.
+  The SVG is labelled by its title.
+- **Phone** — below 760 px the diagram keeps a readable size and scrolls sideways inside its own
+  container; the page does not overflow. Texts live in `areas.map.*`; the `areas.roles.*` keys
+  are gone.
+
+Evidence: `P0-47-connections-dark-en.png`, `P0-47-connections-light-de.png`,
+`P0-47-connections-mobile.png` and `P0-47-preview.log` in `reviews/evidence/`.
+
 ## Back to top (P0-46)
 
 Owner request of 2026-10-29: an arrow to get back to the top of the long page at any time.
@@ -254,8 +275,8 @@ for, and a contents list with the numbered sections.
   total) with a status, and a "connected" line.
 - **Status** — done, in progress or planned, each shown as a dot plus a word (`--accent`,
   `--tone-b`, an outlined `--muted` dot). The status reflects `board.json` on 2026-10-29.
-- **Roles at a glance** — eight roles mapped to what they are responsible for; the table scrolls
-  inside its own container on narrow screens. All texts live in `areas.*` and `toc.*`.
+- **Roles at a glance** — replaced by the connections diagram in P0-47; each area card still names
+  its owner role. All texts live in `areas.*` and `toc.*`.
 
 Evidence: `P0-45-contents.png`, `P0-45-areas-dark-en.png`, `P0-45-areas-light-de.png`,
 `P0-45-areas-mobile.png` and `P0-45-preview.log` in `reviews/evidence/`.
@@ -718,9 +739,9 @@ P0-26 markup with the old stylesheet and a broken-looking demo. The preview ther
 assets with a version query:
 
 ```html
-<link rel="stylesheet" href="../../../packages/ui-kit/tokens.css?v=P0-46" />
-<link rel="stylesheet" href="preview.css?v=P0-46" />
-<script src="preview.js?v=P0-46" defer></script>
+<link rel="stylesheet" href="../../../packages/ui-kit/tokens.css?v=P0-47" />
+<link rel="stylesheet" href="preview.css?v=P0-47" />
+<script src="preview.js?v=P0-47" defer></script>
 ```
 
 - **Bump rule:** every task that changes a file in `apps/web/preview/` — or the shared
@@ -729,7 +750,7 @@ assets with a version query:
   never cached and gets the current files, which also covers a changed design system that would
   otherwise be served from the cached token stylesheet.
 - The locale files reuse the script's version automatically: `preview.js` reads the `v` query of its
-  own script URL and appends it to the locale request (`locales/de.json?v=P0-46`), so one bump
+  own script URL and appends it to the locale request (`locales/de.json?v=P0-47`), so one bump
   covers the translations as well.
 - The icon SVGs are referenced from `preview.css` and keep stable, unversioned URLs; they only
   change with a design-system task, and every such task bumps the preview version anyway.

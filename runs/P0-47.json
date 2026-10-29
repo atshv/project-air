@@ -1,0 +1,45 @@
+{
+  "task": "P0-47",
+  "state": "idle",
+  "attempt": 0,
+  "attempts": [],
+  "events": [
+    {
+      "at": "2026-10-29T00:10:34+00:00",
+      "kind": "gate",
+      "data": {
+        "gate": "board-check",
+        "result": "fail",
+        "record": "reviews/evidence/P0-47-board-check-20261029T001017Z.json"
+      }
+    },
+    {
+      "at": "2026-10-29T00:10:35+00:00",
+      "kind": "gate",
+      "data": {
+        "gate": "design-check",
+        "result": "pass",
+        "record": "reviews/evidence/P0-47-design-check-20261029T001034Z.json"
+      }
+    },
+    {
+      "at": "2026-10-29T00:10:35+00:00",
+      "kind": "gate",
+      "data": {
+        "gate": "changelog-entry",
+        "result": "pass",
+        "record": "reviews/evidence/P0-47-changelog-entry-20261029T001035Z.json"
+      }
+    },
+    {
+      "at": "2026-10-29T00:12:58+00:00",
+      "kind": "gate",
+      "data": {
+        "gate": "board-check",
+        "result": "pass",
+        "record": "reviews/evidence/P0-47-board-check-20261029T001240Z.json"
+      }
+    }
+  ],
+  "updated": "2026-10-29T00:12:58+00:00"
+}

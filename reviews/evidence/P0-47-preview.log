@@ -1,0 +1,11 @@
+# P0-47 preview evidence (2026-10-29)
+# serve: cd "/Users/rasulatashev/Desktop/KI Projekte/Project air-P0-47"; PORT=$(python3 -c "import json; print(json.load(open('.polier-slot'))['ports']['web'])"); python3 -m http.server "$PORT" --bind 127.0.0.1
+# drive: out-of-repo CDP helper (Chrome for Testing 1248, headless); 1440x900 dark EN + light DE, 390x844
+# crossings = sampled points of every edge (3 %..97 % of its length) that fall inside any node box
+# url: http://127.0.0.1:4400/apps/web/preview/index.html
+desktop dark en: nodes=13 edges=15 dashed=3 crossings=0 words=6 roles=0 title="How it connects" web="Web app" svgWidth=1102 scrollOverflow=0 pageOverflow=0
+screenshot P0-47-connections-dark-en.png
+desktop light de: nodes=13 edges=15 dashed=3 crossings=0 words=6 roles=0 title="Wie alles zusammenhängt" web="Web-App" svgWidth=1102 scrollOverflow=0 pageOverflow=0 theme=light
+screenshot P0-47-connections-light-de.png
+mobile: nodes=13 edges=15 dashed=3 crossings=0 words=6 roles=0 title="How it connects" web="Web app" svgWidth=760 scrollOverflow=436 pageOverflow=0
+screenshot P0-47-connections-mobile.png

@@ -4190,40 +4190,92 @@ kbd {
   font-size: var(--text-12);
 }
 
-.area-roles-scroll {
+/* Connections diagram (P0-47): inline SVG drawn only with tokens. Solid
+   lines = uses in code, dashed = talks over the network. Below 760 px the
+   diagram keeps a readable size and scrolls inside its own container. */
+.area-map__legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4) var(--space-16);
+  margin-block: var(--space-8) var(--space-12);
+  color: var(--muted);
+  font-size: var(--text-12);
+}
+
+.area-map__key {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-8);
+}
+
+.area-map__swatch {
+  inline-size: var(--space-24);
+  border-block-start: var(--border-width-strong) solid var(--muted);
+}
+
+.area-map__swatch--network {
+  border-block-start-style: dashed;
+}
+
+.area-map__scroll {
   overflow-x: auto;
 }
 
-.area-roles {
+.area-map__svg {
+  display: block;
   inline-size: 100%;
-  border-collapse: collapse;
+  min-inline-size: 760px;
+  block-size: auto;
+}
+
+.area-map__box {
+  fill: var(--surface);
+  stroke: var(--border-strong);
+  stroke-width: var(--border-width);
+  rx: var(--radius-sm);
+}
+
+.area-map__rim {
+  fill: none;
+  stroke: var(--border-strong);
+  stroke-width: var(--border-width);
+}
+
+.area-map__name {
+  fill: var(--fg);
+  font-family: var(--font-sans);
   font-size: var(--text-13);
-}
-
-.area-roles th,
-.area-roles td {
-  padding: var(--space-8) var(--space-12);
-  border-block-end: var(--border-width) solid var(--border);
-  text-align: start;
-  vertical-align: top;
-}
-
-.area-roles thead th {
-  color: var(--muted);
-  font-size: var(--text-11);
   font-weight: var(--weight-semibold);
-  letter-spacing: var(--tracking-label);
-  text-transform: uppercase;
 }
 
-.area-roles tbody th {
-  color: var(--fg);
-  font-weight: var(--weight-semibold);
-  white-space: nowrap;
+.area-map__tech,
+.area-map__label {
+  fill: var(--muted);
+  font-family: var(--font-sans);
+  font-size: var(--text-12);
 }
 
-.area-roles td {
+.area-map__edge {
+  fill: none;
+  stroke: var(--muted);
+  stroke-width: var(--border-width-strong);
+}
+
+.area-map__edge--network {
+  stroke-dasharray: var(--space-4) var(--space-4);
+}
+
+.area-map__arrow {
+  fill: var(--muted);
+}
+
+.area-map__words {
+  display: grid;
+  gap: var(--space-4);
+  margin: var(--space-12) 0 0;
+  padding-inline-start: var(--space-16);
   color: var(--muted);
+  font-size: var(--text-13);
 }
 
 @media (max-width: 560px) {
