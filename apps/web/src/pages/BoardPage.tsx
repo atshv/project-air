@@ -45,7 +45,7 @@ import zoneIcon from "../../../../packages/ui-kit/icons/zone.svg";
 import checklistIcon from "../../../../packages/ui-kit/icons/checklist.svg";
 import columnsIcon from "../../../../packages/ui-kit/icons/columns.svg";
 import type { Board } from "../../../../packages/sdk/src/types.ts";
-import type { BoardContent } from "../../../../packages/contracts/generated/types.ts";
+import { CONTRACT_VERSION, type BoardContent } from "../../../../packages/contracts/generated/types.ts";
 
 interface BoardPageProps { readonly t: (key: string, values?: Readonly<Record<string, string | number>>) => string; readonly language: string; readonly clientId: string; }
 
@@ -58,7 +58,7 @@ function projectContent(engine: Engine, content: BoardContent): void {
   ];
   engine.loadRectangles(rectangles);
 }
-const EMPTY_CONTENT = (board: Board): BoardContent => ({ contractVersion: "0.4.0", board: { id: board.id, workspaceId: board.workspaceId, ownerId: board.ownerId, title: board.title, visibility: board.visibility, archived: board.archived, createdAt: board.createdAt, updatedAt: board.updatedAt }, zones: [], blocks: [], cards: [], notes: [], edges: [] });
+const EMPTY_CONTENT = (board: Board): BoardContent => ({ contractVersion: CONTRACT_VERSION, board: { id: board.id, workspaceId: board.workspaceId, ownerId: board.ownerId, title: board.title, visibility: board.visibility, archived: board.archived, createdAt: board.createdAt, updatedAt: board.updatedAt }, zones: [], blocks: [], cards: [], notes: [], edges: [] });
 function bounds(content: BoardContent): EngineGeometry {
   const objects = [...content.cards, ...content.zones, ...content.blocks];
   if (objects.length === 0) return { x: 0, y: 0, width: 0, height: 0 };

@@ -1,0 +1,24 @@
+{
+  "schema": "schemas/block-content-payload.schema.json",
+  "valid": false,
+  "reason": "every checklist point needs its UUIDv7 id so concurrent edits merge per point",
+  "data": {
+    "kind": "checklist",
+    "items": [
+      {
+        "id": "0192f0e0-7000-7000-8000-000000000001",
+        "text": "Draft the outline",
+        "done": true
+      },
+      {
+        "text": "Collect sources",
+        "done": false
+      },
+      {
+        "id": "0192f0e0-7000-7000-8000-000000000003",
+        "text": "",
+        "done": false
+      }
+    ]
+  }
+}

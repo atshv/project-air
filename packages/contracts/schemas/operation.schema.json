@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://project-air.dev/contracts/0.4.0/operation.schema.json",
+  "$id": "https://project-air.dev/contracts/0.5.0/operation.schema.json",
   "title": "Board operation",
   "description": "One board change with exactly one inverse (AD-1): one gesture is one operation. A group bundles ordered child operations and reverses their inverses.",
   "$ref": "#/$defs/operation",
@@ -27,7 +27,9 @@
         "deleteEdge",
         "reorder",
         "group",
-        "updateNoteBody"
+        "updateNoteBody",
+        "updateBlockContent",
+        "updateZone"
       ]
     },
     "operation": {
@@ -472,6 +474,44 @@
               }
             }
           }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "updateBlockContent"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "payload": {
+                "$ref": "update-block-content-payload.schema.json"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "updateZone"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "payload": {
+                "$ref": "update-zone-payload.schema.json"
+              }
+            }
+          }
         }
       ]
     },
@@ -893,6 +933,44 @@
             "properties": {
               "payload": {
                 "$ref": "#/$defs/payload-update-note-body"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "updateBlockContent"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "payload": {
+                "$ref": "update-block-content-payload.schema.json"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "updateZone"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "payload": {
+                "$ref": "update-zone-payload.schema.json"
               }
             }
           }
@@ -1425,7 +1503,7 @@
                 "null"
               ],
               "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
-              "description": "New parent zone; null moves the block to the board. Block content updates arrive with the block-content contract."
+              "description": "New parent zone; null moves the block to the board. Block content changes use updateBlockContent."
             }
           }
         }

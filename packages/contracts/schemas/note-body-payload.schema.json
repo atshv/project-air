@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://project-air.dev/contracts/0.4.0/note-body-payload.schema.json",
+  "$id": "https://project-air.dev/contracts/0.5.0/note-body-payload.schema.json",
   "title": "Note body document",
   "description": "Versioned structured editor document: blocks paragraph/heading/list with inline marks bold/italic/code/link; link hrefs scheme-restricted; limits 1000 blocks, 10000 chars per block, 50000 plainText.",
   "type": "object",

@@ -1,0 +1,26 @@
+{
+  "schema": "schemas/block-content-payload.schema.json",
+  "valid": false,
+  "reason": "a checklist content must not carry table rows (kind decides the fields)",
+  "data": {
+    "kind": "checklist",
+    "items": [
+      {
+        "id": "0192f0e0-7000-7000-8000-000000000001",
+        "text": "Draft the outline",
+        "done": true
+      },
+      {
+        "id": "0192f0e0-7000-7000-8000-000000000002",
+        "text": "Collect sources",
+        "done": false
+      },
+      {
+        "id": "0192f0e0-7000-7000-8000-000000000003",
+        "text": "",
+        "done": false
+      }
+    ],
+    "rows": []
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "schema": "schemas/block-content-payload.schema.json",
+  "valid": false,
+  "reason": "a table content requires rows next to its columns",
+  "data": {
+    "kind": "table",
+    "columns": [
+      {
+        "id": "0192f0e0-7000-7000-8000-000000000015",
+        "title": "Source"
+      },
+      {
+        "id": "0192f0e0-7000-7000-8000-000000000016",
+        "title": "Year"
+      }
+    ]
+  }
+}

@@ -1,4 +1,4 @@
-// Tests for the operation contract 0.4.0 (AD-1).
+// Tests for the operation contract 0.5.0 (AD-1).
 //
 // The suite checks the operation schema, the fixture coverage per operation type,
 // schema validity of the fixtures, and the model rules that JSON Schema cannot
@@ -38,6 +38,8 @@ const EXPECTED_TYPES = [
   "reorder",
   "group",
   "updateNoteBody",
+  "updateBlockContent",
+  "updateZone",
 ];
 
 const EXPECTED_INVERSE_TYPE = {
@@ -61,6 +63,8 @@ const EXPECTED_INVERSE_TYPE = {
   deleteEdge: "createEdge",
   reorder: "reorder",
   updateNoteBody: "updateNoteBody",
+  updateBlockContent: "updateBlockContent",
+  updateZone: "updateZone",
   group: "group",
 };
 
@@ -128,6 +132,7 @@ function targetIds({ type, payload }) {
       break;
     case "moveZone":
     case "resizeZone":
+    case "updateZone":
       push(payload.zoneId);
       break;
     case "deleteZone":
@@ -141,6 +146,7 @@ function targetIds({ type, payload }) {
     case "moveBlock":
     case "resizeBlock":
     case "updateBlock":
+    case "updateBlockContent":
       push(payload.blockId);
       break;
     case "deleteBlock":
@@ -221,7 +227,7 @@ function modelProblems(operation) {
 test("the operation schema is versioned JSON Schema 2020-12 with the operation vocabulary", () => {
   assert.equal(OPERATION_SCHEMA.$schema, "https://json-schema.org/draft/2020-12/schema");
   assert.equal(OPERATION_SCHEMA.$id, schemaId("operation"));
-  assert.ok(OPERATION_SCHEMA.$id.includes("/0.4.0/"));
+  assert.ok(OPERATION_SCHEMA.$id.includes("/0.5.0/"));
   assert.equal(OPERATION_SCHEMA.$ref, "#/$defs/operation");
   assert.deepEqual(OPERATION_SCHEMA.$defs.operationType.enum, EXPECTED_TYPES);
   assert.deepEqual([...OPERATION_TYPES], EXPECTED_TYPES);
@@ -371,6 +377,36 @@ test("updates store only changed fields and the inverse stores the previous valu
   const updateBlock = payloadDefinition("updateBlock");
   assert.equal(updateBlock.properties.changes.minProperties, 1);
   assert.equal(updateBlock.properties.changes.additionalProperties, false);
+});
+
+test("block content and zone renames carry the whole new value and the inverse the previous one", () => {
+  const cases = [
+    { file: "valid-update-block-content.json", target: "blockId", value: "content" },
+    { file: "valid-update-zone.json", target: "zoneId", value: "title" },
+  ];
+  for (const { file, target, value } of cases) {
+    const { data } = fixtureOf(OPERATION_FIXTURES, file);
+    const definition = schemaOf(`${kebab(data.type)}-payload`);
+    assert.deepEqual([...definition.required].sort(), [target, value].sort(), `${data.type} requires target and value`);
+    assert.equal(definition.additionalProperties, false);
+    assert.equal(data.inverse.type, data.type);
+    assert.equal(data.inverse.payload[target], data.payload[target], `${file}: the inverse restores the same object`);
+    assert.notDeepEqual(data.inverse.payload[value], data.payload[value], `${file}: the inverse carries the previous value`);
+    // Apply, then apply the inverse: the object is back in its previous state.
+    const previous = { [target]: data.payload[target], [value]: data.inverse.payload[value] };
+    const applied = { ...previous, [value]: data.payload[value] };
+    const restored = { ...applied, [value]: data.inverse.payload[value] };
+    assert.deepEqual(restored, previous, `${file}: apply + inverse round-trips`);
+  }
+  for (const file of [
+    "invalid-update-block-content.json",
+    "invalid-update-block-content-missing.json",
+    "invalid-update-zone.json",
+    "invalid-update-zone-too-long.json",
+  ]) {
+    const { data } = fixtureOf(OPERATION_FIXTURES, file);
+    assert.ok(!schemaValid(data) || modelProblems(data).length > 0, `${file} is rejected`);
+  }
 });
 
 test("deletes store the object and creates have the matching delete as inverse", () => {

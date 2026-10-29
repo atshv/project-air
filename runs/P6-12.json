@@ -1,0 +1,106 @@
+{
+  "task": "P6-12",
+  "state": "done",
+  "attempt": 1,
+  "attempts": [
+    {
+      "n": 1,
+      "started": "2026-10-29T17:19:57+00:00",
+      "ended": "2026-10-29T17:20:27+00:00",
+      "result": "pass",
+      "note": "review pass, gates green"
+    }
+  ],
+  "events": [
+    {
+      "at": "2026-10-29T17:19:57+00:00",
+      "kind": "start",
+      "data": {
+        "actor": "lead"
+      }
+    },
+    {
+      "at": "2026-10-29T17:19:57+00:00",
+      "kind": "state",
+      "data": {
+        "from": "pending",
+        "to": "in_progress",
+        "actor": "lead"
+      }
+    },
+    {
+      "at": "2026-10-29T17:19:57+00:00",
+      "kind": "state",
+      "data": {
+        "from": "in_progress",
+        "to": "verifying",
+        "actor": "lead"
+      }
+    },
+    {
+      "at": "2026-10-29T17:19:58+00:00",
+      "kind": "gate",
+      "data": {
+        "gate": "contracts",
+        "result": "pass",
+        "record": "reviews/evidence/P6-12-contracts-20261029T171957Z.json"
+      }
+    },
+    {
+      "at": "2026-10-29T17:19:58+00:00",
+      "kind": "gate",
+      "data": {
+        "gate": "codegen",
+        "result": "pass",
+        "record": "reviews/evidence/P6-12-codegen-20261029T171958Z.json"
+      }
+    },
+    {
+      "at": "2026-10-29T17:19:59+00:00",
+      "kind": "gate",
+      "data": {
+        "gate": "boundaries",
+        "result": "pass",
+        "record": "reviews/evidence/P6-12-boundaries-20261029T171958Z.json"
+      }
+    },
+    {
+      "at": "2026-10-29T17:19:59+00:00",
+      "kind": "gate",
+      "data": {
+        "gate": "unit",
+        "result": "pass",
+        "record": "reviews/evidence/P6-12-unit-20261029T171959Z.json"
+      }
+    },
+    {
+      "at": "2026-10-29T17:20:27+00:00",
+      "kind": "gate",
+      "data": {
+        "gate": "board-check",
+        "result": "pass",
+        "record": "reviews/evidence/P6-12-board-check-20261029T172007Z.json"
+      }
+    },
+    {
+      "at": "2026-10-29T17:20:27+00:00",
+      "kind": "state",
+      "data": {
+        "from": "verifying",
+        "to": "review",
+        "actor": "lead"
+      }
+    },
+    {
+      "at": "2026-10-29T17:20:27+00:00",
+      "kind": "state",
+      "data": {
+        "from": "review",
+        "to": "done",
+        "actor": "lead",
+        "note": "review pass, gates green"
+      }
+    }
+  ],
+  "updated": "2026-10-29T17:20:27+00:00"
+}

@@ -1,0 +1,26 @@
+{
+  "schema": "schemas/block-content-payload.schema.json",
+  "valid": false,
+  "reason": "a checklist point rejects unknown fields (plain text only, no styling)",
+  "data": {
+    "kind": "checklist",
+    "items": [
+      {
+        "id": "0192f0e0-7000-7000-8000-000000000001",
+        "text": "Draft the outline",
+        "done": true,
+        "color": "red"
+      },
+      {
+        "id": "0192f0e0-7000-7000-8000-000000000002",
+        "text": "Collect sources",
+        "done": false
+      },
+      {
+        "id": "0192f0e0-7000-7000-8000-000000000003",
+        "text": "",
+        "done": false
+      }
+    ]
+  }
+}

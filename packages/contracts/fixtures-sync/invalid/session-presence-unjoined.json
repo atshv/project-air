@@ -3,7 +3,7 @@
   "valid": false,
   "reason": "presence for a board the client has not joined is invalid",
   "data": {
-    "contractVersion": "0.4.0",
+    "contractVersion": "0.5.0",
     "clientId": "0192f0b0-7000-7000-8000-0000000000c1",
     "serverSeq": 0,
     "messages": [
@@ -15,7 +15,7 @@
         "seq": 1,
         "payload": {
           "tokenRef": "session:0192f0b0-7000-7000-8000-0000000000c1",
-          "contractVersion": "0.4.0"
+          "contractVersion": "0.5.0"
         }
       },
       {

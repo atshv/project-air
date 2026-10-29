@@ -1,0 +1,9 @@
+{
+  "schema": "schemas/update-zone-payload.schema.json",
+  "valid": true,
+  "reason": "the zone id and its new title",
+  "data": {
+    "zoneId": "0192f0a5-7000-7000-8000-000000000005",
+    "title": "Field research"
+  }
+}

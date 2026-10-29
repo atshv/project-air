@@ -1,0 +1,8 @@
+{
+  "schema": "schemas/update-zone-payload.schema.json",
+  "valid": false,
+  "reason": "updateZone needs the new title next to the zone id",
+  "data": {
+    "zoneId": "0192f0a5-7000-7000-8000-000000000005"
+  }
+}

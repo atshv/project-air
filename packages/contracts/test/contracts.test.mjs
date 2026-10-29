@@ -1,4 +1,4 @@
-// Unit tests for the board-content contract 0.4.0.
+// Unit tests for the board-content contract 0.5.0.
 //
 // The suite parses every schema and fixture, validates the fixtures against the
 // schemas with a small structural validator for the keywords this contract uses,
@@ -39,6 +39,7 @@ const SCHEMA_NAMES = Object.keys(SCHEMA_FILES);
 const EXPECTED_SCHEMA_NAMES = [
   "account",
   "block",
+  "block-content-payload",
   "board",
   "board-content",
   "card",
@@ -47,6 +48,8 @@ const EXPECTED_SCHEMA_NAMES = [
   "note-body-payload",
   "operation",
   "reorder-payload",
+  "update-block-content-payload",
+  "update-zone-payload",
   "workspace",
   "zone",
 ];
@@ -67,8 +70,8 @@ const EXPECTED_MINIMUMS = {
 // --- the contract -------------------------------------------------------------
 
 test("index exports the versioned schema and fixture paths", () => {
-  assert.equal(CONTRACT_VERSION, "0.4.0");
-  assert.equal(CONTRACT_BASE_URI, "https://project-air.dev/contracts/0.4.0/");
+  assert.equal(CONTRACT_VERSION, "0.5.0");
+  assert.equal(CONTRACT_BASE_URI, "https://project-air.dev/contracts/0.5.0/");
   assert.deepEqual([...SCHEMA_NAMES].sort(), EXPECTED_SCHEMA_NAMES);
   assert.deepEqual(Object.keys(FIXTURE_DIRS).sort(), EXPECTED_SCHEMA_NAMES);
   for (const name of EXPECTED_SCHEMA_NAMES) {
@@ -100,7 +103,7 @@ test("every schema is JSON Schema 2020-12 with a versioned $id and required fiel
     const schema = schemaOf(name);
     assert.equal(schema.$schema, JSON_SCHEMA_2020_12, `${name} uses JSON Schema 2020-12`);
     assert.equal(schema.$id, schemaId(name), `${name} has the versioned $id`);
-    assert.ok(schema.$id.includes("/0.4.0/"), `${name} carries version 0.4.0`);
+    assert.ok(schema.$id.includes("/0.5.0/"), `${name} carries version 0.5.0`);
     assert.equal(typeof schema.title, "string");
     assert.ok(schema.title.length > 0, `${name} has a title`);
     assert.equal(typeof schema.description, "string");
@@ -247,7 +250,30 @@ test("fixed enums are part of the schemas", () => {
     "table",
   ]);
   assert.deepEqual(schemaOf("board-content").required[0], "contractVersion");
-  assert.equal(schemaOf("board-content").properties.contractVersion.const, "0.4.0");
+  assert.equal(schemaOf("board-content").properties.contractVersion.const, "0.5.0");
+});
+
+test("block content is typed by its kind and only checklist, columns and table blocks carry it", () => {
+  const content = schemaOf("block-content-payload");
+  assert.deepEqual(content.properties.kind.enum, ["checklist", "columns", "table"]);
+  assert.deepEqual(content.required, ["kind"]);
+  const block = schemaOf("block");
+  assert.equal(block.properties.content.$ref, "block-content-payload.schema.json");
+  for (const branch of block.allOf) {
+    const type = branch.if.properties.type.const;
+    const rule = branch.then.properties.content;
+    if (content.properties.kind.enum.includes(type)) {
+      assert.equal(rule.properties.kind.const, type, `${type} content kind equals the block type`);
+    } else {
+      assert.deepEqual(rule, { not: {} }, `${type} blocks carry no content`);
+    }
+  }
+  const mismatch = fixtureOf("block", "invalid-content-kind-mismatch.json").data;
+  assert.notEqual(mismatch.content.kind, mismatch.type);
+  for (const file of ["valid-content-checklist.json", "valid-content-table.json"]) {
+    const { data } = fixtureOf("block", file);
+    assert.equal(data.content.kind, data.type, `${file} content matches its block`);
+  }
 });
 
 test("the fractional index is a string", () => {

@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://project-air.dev/contracts/0.5.0/update-block-content-payload.schema.json",
+  "title": "Update block content payload",
+  "description": "The payload of updateBlockContent: replaces the content of a checklist, columns or table block. The inverse is updateBlockContent with the previous content of the same block. The operation and its inverse both use this payload.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "blockId",
+    "content"
+  ],
+  "properties": {
+    "blockId": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+      "description": "Reference to the block id."
+    },
+    "content": {
+      "$ref": "block-content-payload.schema.json",
+      "description": "The whole new content; its kind must equal the block type (checked when the operation is applied)."
+    }
+  }
+}

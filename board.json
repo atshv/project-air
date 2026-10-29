@@ -387,7 +387,7 @@
     {
       "name": "project-air-contract",
       "path": "packages/contracts",
-      "version": "0.4.0",
+      "version": "0.5.0",
       "schema_files": [
         "packages/contracts/schemas/account.schema.json",
         "packages/contracts/schemas/workspace.schema.json",
@@ -406,14 +406,20 @@
         "packages/contracts/schemas/api/note.schema.json",
         "packages/contracts/schemas/api/card.schema.json",
         "packages/contracts/schemas/api/errors.schema.json",
-        "packages/contracts/schemas/note-body-payload.schema.json"
+        "packages/contracts/schemas/note-body-payload.schema.json",
+        "packages/contracts/schemas/block-content-payload.schema.json",
+        "packages/contracts/schemas/update-block-content-payload.schema.json",
+        "packages/contracts/schemas/update-zone-payload.schema.json"
       ],
       "fixtures_dir": "packages/contracts/fixtures-gate",
       "dependants": [
         "packages/engine",
         "packages/sdk",
         "services/platform",
-        "services/auth"
+        "services/auth",
+        "packages/crdt",
+        "services/sync",
+        "apps/web"
       ]
     }
   ],
@@ -7587,7 +7593,7 @@
       "satisfies": [
         "D12"
       ],
-      "status": "in_progress",
+      "status": "done",
       "depends_on": [
         "P6-11"
       ],
@@ -7598,6 +7604,7 @@
         "packages/contracts/",
         "docs/contracts.md",
         "board.json",
+        "apps/web/src/pages/BoardPage.tsx",
         ".changes/"
       ],
       "scope_read": [
@@ -7625,11 +7632,22 @@
       ],
       "owner": null,
       "branch": "task/P6-12",
-      "worktree": "../Project air-P6-12",
+      "worktree": null,
       "round": 0,
-      "evidence": [],
+      "evidence": [
+        "reviews/evidence/P6-12-board-check-20261029T172007Z.json",
+        "reviews/evidence/P6-12-boundaries-20261029T171958Z.json",
+        "reviews/evidence/P6-12-codegen-20261029T171958Z.json",
+        "reviews/evidence/P6-12-contracts-20261029T171957Z.json",
+        "reviews/evidence/P6-12-unit-20261029T171959Z.json"
+      ],
       "scope_write_forbidden": [
         "reference/"
+      ],
+      "handoff": [
+        "0.5.0: Block.content (kind == block type, UUIDv7 per entry: merge per entry); updateBlockContent {blockId, content} and updateZone {zoneId, title}; inverse = same type, previous value.",
+        "Reject a content kind that does not match the block when applying. SDK still sends 0.4.0: its sync-schema test is red until P6-13; merge P6-12 with P6-13.",
+        "Pre-existing for P6-13: crdt conformance test uses URL.pathname (breaks on spaces in the path); turbo reuses a stale crdt dist copy of the contract types (build --force)."
       ]
     },
     {

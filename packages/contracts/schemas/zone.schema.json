@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://project-air.dev/contracts/0.4.0/zone.schema.json",
+  "$id": "https://project-air.dev/contracts/0.5.0/zone.schema.json",
   "title": "Zone",
   "description": "A zone groups cards on one board. Zones are not nested in v1: a zone has no parent zone, only its board.",
   "type": "object",

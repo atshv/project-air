@@ -1,0 +1,5 @@
+$ pnpm --dir packages/contracts run codegen && git diff --exit-code -- packages/contracts
+[exit 0]
+
+contracts codegen: wrote generated/types.ts, generated/contract.h
+$ node codegen.mjs

@@ -1,0 +1,37 @@
+{
+  "schema": "schemas/operation.schema.json",
+  "valid": false,
+  "reason": "updateBlockContent needs the content; a payload with the block id only is rejected",
+  "data": {
+    "id": "0192f0c1-7000-7000-8000-000000000022",
+    "boardId": "0192f0a3-7000-7000-8000-000000000003",
+    "actorId": "0192f0a1-7000-7000-8000-000000000001",
+    "createdAt": "2027-01-10T09:00:00.000Z",
+    "type": "updateBlockContent",
+    "payload": {
+      "blockId": "0192f0a7-7000-7000-8000-000000000007"
+    },
+    "inverse": {
+      "boardId": "0192f0a3-7000-7000-8000-000000000003",
+      "type": "updateBlockContent",
+      "payload": {
+        "blockId": "0192f0a7-7000-7000-8000-000000000007",
+        "content": {
+          "kind": "checklist",
+          "items": [
+            {
+              "id": "0192f0e0-7000-7000-8000-000000000001",
+              "text": "Draft the outline",
+              "done": true
+            },
+            {
+              "id": "0192f0e0-7000-7000-8000-000000000002",
+              "text": "Collect sources",
+              "done": false
+            }
+          ]
+        }
+      }
+    }
+  }
+}

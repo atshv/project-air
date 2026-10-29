@@ -1,9 +1,9 @@
-# Contract 0.4.0
+# Contract 0.5.0
 
 The contract is the common language: everything two parts exchange is in
 [`packages/contracts`](../packages/contracts/README.md), the JSON Schema source of truth for board
-content, operations, sync protocol and API resources/errors. Version **0.4.0**; base URI
-`https://project-air.dev/contracts/0.4.0/`, a placeholder until the domain is decided (Q1), changed
+content, operations, sync protocol and API resources/errors. Version **0.5.0**; base URI
+`https://project-air.dev/contracts/0.5.0/`, a placeholder until the domain is decided (Q1), changed
 only with a version bump (ADR-0004). It binds `AD-1`
 (operation inverses), `AD-2` (durable acks), `AD-3` (versioned schemas with fixtures), `AD-4` (one
 note, many placements) and `AD-8` (translated `messageKey`). The engine includes
@@ -11,14 +11,18 @@ note, many placements) and `AD-8` (translated `messageKey`). The engine includes
 
 ## Schema families and files
 
-All 17 are JSON Schema 2020-12, closed, UUIDv7/ISO-8601, versioned `$id`.
+All 21 are JSON Schema 2020-12, closed, UUIDv7/ISO-8601, versioned `$id`.
 
 - **Board content** (codegen input): `schemas/account.schema.json`, `schemas/workspace.schema.json`,
   `schemas/board.schema.json`, `schemas/note.schema.json`, `schemas/card.schema.json`,
-  `schemas/zone.schema.json`, `schemas/block.schema.json`, `schemas/edge.schema.json`,
-  `schemas/operation.schema.json` (20 types, one inverse each; ordered non-nesting `group`),
-  `schemas/reorder-payload.schema.json` (the payload shared by `reorder` and its inverse) and the
-  root `schemas/board-content.schema.json` (`contractVersion` const `0.4.0`).
+  `schemas/zone.schema.json`, `schemas/block.schema.json` (with optional content from
+  `schemas/block-content-payload.schema.json`, 0.5.0), `schemas/edge.schema.json`,
+  `schemas/note-body-payload.schema.json` (0.4.0),
+  `schemas/operation.schema.json` (23 types, one inverse each; ordered non-nesting `group`),
+  `schemas/reorder-payload.schema.json` (the payload shared by `reorder` and its inverse),
+  `schemas/update-block-content-payload.schema.json` and `schemas/update-zone-payload.schema.json`
+  (0.5.0, each shared by its operation and inverse) and the
+  root `schemas/board-content.schema.json` (`contractVersion` const `0.5.0`).
 - **Sync**: `schemas/sync/sync.schema.json` — one `oneOf` envelope, 12 message types (6
   client→server, 6 server→client) plus reconnect and session sequences.
 - **REST API**: `schemas/api/workspace.schema.json`, `schemas/api/board.schema.json`,
@@ -44,10 +48,11 @@ the TS/C++ parity corpus, and `test/containment.test.mjs` rejects a parent that 
 of the same board. At rest the platform migration enforces the same rule with a nullable foreign key
 and the board's row-level security (P4-26); the engine and UI use the field in P4-27.
 
-## Operations (20 types, AD-1)
+## Operations (23 types, AD-1)
 
 Every board-content change is one operation with exactly one inverse. The 19 types of 0.1.0 remain
-unchanged; 0.2.0 adds `reorder`.
+unchanged; 0.2.0 adds `reorder`, 0.4.0 `updateNoteBody`, 0.5.0 `updateBlockContent` and `updateZone`
+(see the 0.4.0 and 0.5.0 sections).
 
 - **Content:** `createNote`, `updateNote`, `deleteNote`, `createCard`, `moveCard`, `resizeCard`,
   `deleteCard`, `createZone`, `moveZone`, `resizeZone`, `deleteZone`, `createBlock`, `moveBlock`,
@@ -70,8 +75,9 @@ unchanged; 0.2.0 adds `reorder`.
 Fixture wrapper: `{ "schema", "valid", "reason", "data" }`; invalid ones name the rule; the sync,
 API and gate corpora stay outside the parity count.
 
-- `fixtures/` — 86 parity fixtures (37 valid, 49 invalid) over the ten board-content entity schemas,
-  the reorder payload and the containment corpus; the operation fixtures cover all 20 types, the
+- `fixtures/` — 119 parity fixtures (49 valid, 70 invalid) over the board-content entity schemas,
+  the note body, the block content, the three shared payloads and the containment corpus; the operation
+  fixtures cover all 23 types, the
   inverse pair, `group` and `reorder`, and `fixtures/reorder-payload/` covers the shared payload.
 - `fixtures-sync/` — 14 valid (one per message type and the two sequence logs), 20 invalid.
 - `fixtures-api/` — 35 valid (envelopes per resource plus one per error code), 20 invalid.
@@ -86,7 +92,7 @@ structs, enums, unions, `kContractVersion`). Output is deterministic (sorted, LF
 timestamps or paths); generated files are never hand-edited and the `codegen` gate fails on a diff.
 Sync/API schemas live in subdirectories and do not change the model.
 
-`test/parity/canonical.ts` reduces all 86 fixtures to canonical lines; `test/cpp/parity.cpp` reads
+`test/parity/canonical.ts` reduces all 119 fixtures to canonical lines; `test/cpp/parity.cpp` reads
 the same wrappers and includes the header; `test/parity.test.mjs` compiles it with
 `-std=c++20 -Wall -Wextra -Wpedantic -Werror` and asserts equal line sets. Without a local C++
 compiler it fails loudly; it never skips. The 0.2.0 model adds `ReorderPayload` to the TypeScript
@@ -111,6 +117,8 @@ The server understands current/previous major; never rename: add, deprecate, rem
 | 0.1.0 | Initial contract: board-content model, 19 operations with inverses, sync protocol and REST API envelopes. |
 | 0.2.0 | Zone parent reference documented and fixtures added (cards and blocks nullable `zoneId`, no nested zones), `reorder` operation with inverse, `moveZone` `zoneId` description corrected. Limits, visibility and error codes unchanged (ADR-0004); additive fields only. |
 | 0.3.0 | Pre-realtime sync: once-per-connection version negotiation (`hello`/`welcome`), fresh-board `serverSeq` 1 / `fromServerSeq` 0 empty catch-up, `snapshotRef = <boardId>:<serverSeq>`, hello-first and reconnect ordering enforced by fixtures; 0.2.0 content/operation semantics unchanged. |
+| 0.4.0 | Note body as a structured JSON editor document with derived `plainText`, `updateNoteBody` with inverse (P6-06). |
+| 0.5.0 | Optional plain-text `content` for checklist, columns and table blocks (`block-content-payload.schema.json`, `kind` equals the block type), `updateBlockContent` and `updateZone` with inverses (P6-12); additive only. |
 
 Per task: edit schemas; add valid and invalid fixtures; run codegen and commit generated files;
 update every dependant in the same task (AD-3), or list a deferred one in `contract_followups` for
@@ -128,9 +136,10 @@ still fails.
 ## board.contracts[] metadata
 
 `board.json` → `contracts[]` has one entry for the contract: `name`
-`project-air-contract`, `path` `packages/contracts`, `version` `0.2.0`, the 17 `schema_files` named
-above, `fixtures_dir` `packages/contracts/fixtures-gate`, and the four `dependants`
-(`packages/engine`, `packages/sdk`, `services/platform`, `services/auth`).
+`project-air-contract`, `path` `packages/contracts`, `version` `0.5.0`, the 21 `schema_files` named
+above, `fixtures_dir` `packages/contracts/fixtures-gate`, and the seven `dependants`
+(`packages/engine`, `packages/sdk`, `services/platform`, `services/auth`, `packages/crdt`,
+`services/sync`, `apps/web`).
 `python3 $POLIER/tools/contracts.py check` validates the entry, schema files, fixtures, base-branch
 bump and dependant coverage. The lead owns `board.json`; a contract change bumps its
 version in the same task.
@@ -210,3 +219,48 @@ normalised (inner runs collapse to one space, trimmed), non-empty blocks are
 joined with a newline, and list blocks are prefixed `- ` (unordered) or `1. `
 (ordered). `plainTextMatches(body, plainText)` is the consistency check used by
 the contracts unit test; the app derives it on save and search consumes it.
+
+## 0.5.0 — block content and zone rename
+
+Checklist, columns and table blocks gain optional plain-text **content** (no HTML, no marks) in
+`schemas/block-content-payload.schema.json`. The content names its `kind`, which must equal the
+block `type` (enforced in `block.schema.json`); palette and timeline blocks carry no content yet.
+
+- **checklist:** `{ kind, items: [{ id, text, done }] }` — at most 200 points; an empty `text` is a
+  valid point while it is typed (L18 `Enter` creates one, `Backspace` deletes it).
+- **columns:** `{ kind, columns: [{ id, title, items: [{ id, text }] }] }` — at most 8 lanes with 50
+  entries each.
+- **table:** `{ kind, columns: [{ id, title }], rows: [{ id, cells: [{ columnId, text }] }] }` — at
+  most 8 columns (without `items`) and 100 rows; a missing cell is an empty cell.
+- **Limits:** item text 500, column title 120, cell text 200 characters; the largest content (a full
+  columns block) is 200,960 characters, well inside the 1 MiB sync frame. Every point, lane, row
+  and column has a UUIDv7 id, so clients can merge concurrent edits per entry.
+
+**Operations.** Both payloads have required fields, so each lives in its own schema file (the
+`reorder` pattern; the `contracts` gate then classifies the bump as minor).
+`updateBlockContent` (`update-block-content-payload.schema.json`, `{ blockId, content }`) replaces the whole content; its
+inverse is `updateBlockContent` with the previous content of the same block. A `kind` that does not
+match the target block is rejected when the operation is applied (the payload has no block type).
+`updateZone` (`update-zone-payload.schema.json`, `{ zoneId, title }`, 1–200 characters like `zone.title`) renames a zone; its
+inverse carries the previous title. Clients may cap names lower (the canvas caps them at 40) and
+collapse whitespace before sending. `updateZone` replaces the P4-30 rename through a
+`deleteZone` + `createZone` group. `updateBlock` keeps its `zoneId`-only `changes`.
+
+**Fixtures.** `fixtures/block-content/` (4 valid, 8 invalid: fields of another kind, table column
+items, missing rows, unknown field, text over 500, missing point id, 201 points, palette kind),
+block fixtures with matching content and a kind mismatch / palette content, operation fixtures for
+both operations (valid plus wrong inverse target, missing content, empty and 201-character title),
+valid/invalid fixtures for both payload files, and the board-content fixture (and its gate copy)
+carries a checklist content.
+
+**contract_followups** (each adopts 0.5.0 in its own task; until then they keep speaking 0.4.0 on
+the wire, and the repo typecheck stays green because no dependant pins the version literal):
+
+- `packages/crdt`, `packages/sdk`, `services/sync` — accept, apply, merge per entry and replay both
+  operations; negotiate 0.5.0 (P6-13).
+- `packages/engine` — wasm version assertion, rename through `updateZone`, block height from
+  content (P6-14).
+- `apps/web` — the empty-board document now takes `CONTRACT_VERSION` from the generated types
+  (P6-12, so the bump keeps the app typecheck green); the block/zone UI follows in P6-16, P6-20 and
+  P6-21.
+- `services/platform`, `services/auth` — no shape change; they pass content through unchanged.

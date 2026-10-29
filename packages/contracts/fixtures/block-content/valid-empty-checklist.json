@@ -1,0 +1,9 @@
+{
+  "schema": "schemas/block-content-payload.schema.json",
+  "valid": true,
+  "reason": "an empty checklist content: the items list is present and empty",
+  "data": {
+    "kind": "checklist",
+    "items": []
+  }
+}

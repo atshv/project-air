@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://project-air.dev/contracts/0.5.0/update-zone-payload.schema.json",
+  "title": "Update zone payload",
+  "description": "The payload of updateZone: renames one zone. The inverse is updateZone with the previous title of the same zone. The operation and its inverse both use this payload.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "zoneId",
+    "title"
+  ],
+  "properties": {
+    "zoneId": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+      "description": "Reference to the zone id."
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200,
+      "description": "The new zone name; the same bounds as zone.title (clients collapse whitespace and may cap it lower)."
+    }
+  }
+}

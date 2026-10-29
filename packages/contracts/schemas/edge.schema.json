@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://project-air.dev/contracts/0.4.0/edge.schema.json",
+  "$id": "https://project-air.dev/contracts/0.5.0/edge.schema.json",
   "title": "Edge",
   "description": "A connection between two note cards on one board. Edges join cards only; a card-to-zone edge is invalid in v1.",
   "type": "object",

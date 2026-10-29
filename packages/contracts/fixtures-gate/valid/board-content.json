@@ -3,7 +3,7 @@
   "valid": true,
   "reason": "one board with two notes, two cards, one zone, one checklist block and one edge; every reference resolves",
   "data": {
-    "contractVersion": "0.4.0",
+    "contractVersion": "0.5.0",
     "board": {
       "id": "0192f0a3-7000-7000-8000-000000000003",
       "workspaceId": "0192f0a2-7000-7000-8000-000000000002",
@@ -93,6 +93,21 @@
         "createdAt": "2027-01-10T09:00:00.000Z",
         "updatedAt": "2027-01-10T09:30:00.000Z",
         "type": "checklist",
+        "content": {
+          "kind": "checklist",
+          "items": [
+            {
+              "id": "0192f0e0-7000-7000-8000-000000000001",
+              "text": "Draft the outline",
+              "done": true
+            },
+            {
+              "id": "0192f0e0-7000-7000-8000-000000000002",
+              "text": "Collect sources",
+              "done": false
+            }
+          ]
+        },
         "width": 224,
         "height": 128
       }

@@ -1,0 +1,37 @@
+{
+  "schema": "schemas/block-content-payload.schema.json",
+  "valid": true,
+  "reason": "a table content with two columns, a filled row and a row whose missing cells are empty",
+  "data": {
+    "kind": "table",
+    "columns": [
+      {
+        "id": "0192f0e0-7000-7000-8000-000000000015",
+        "title": "Source"
+      },
+      {
+        "id": "0192f0e0-7000-7000-8000-000000000016",
+        "title": "Year"
+      }
+    ],
+    "rows": [
+      {
+        "id": "0192f0e0-7000-7000-8000-000000000017",
+        "cells": [
+          {
+            "columnId": "0192f0e0-7000-7000-8000-000000000015",
+            "text": "Field study"
+          },
+          {
+            "columnId": "0192f0e0-7000-7000-8000-000000000016",
+            "text": "2026"
+          }
+        ]
+      },
+      {
+        "id": "0192f0e0-7000-7000-8000-000000000018",
+        "cells": []
+      }
+    ]
+  }
+}

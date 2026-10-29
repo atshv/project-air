@@ -1,0 +1,29 @@
+{
+  "schema": "schemas/update-block-content-payload.schema.json",
+  "valid": false,
+  "reason": "the payload is closed: the block type is not sent, the content kind names it",
+  "data": {
+    "blockId": "0192f0a7-7000-7000-8000-000000000007",
+    "content": {
+      "kind": "checklist",
+      "items": [
+        {
+          "id": "0192f0e0-7000-7000-8000-000000000001",
+          "text": "Draft the outline",
+          "done": true
+        },
+        {
+          "id": "0192f0e0-7000-7000-8000-000000000002",
+          "text": "Collect sources",
+          "done": false
+        },
+        {
+          "id": "0192f0e0-7000-7000-8000-000000000003",
+          "text": "",
+          "done": false
+        }
+      ]
+    },
+    "blockType": "checklist"
+  }
+}

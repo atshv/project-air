@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://project-air.dev/contracts/0.4.0/reorder-payload.schema.json",
+  "$id": "https://project-air.dev/contracts/0.5.0/reorder-payload.schema.json",
   "title": "Reorder payload",
   "description": "The payload of the reorder operation (L13): one item whose fractional index changes and the new value. The operation and its inverse both use this payload, the inverse carrying the previous z.",
   "type": "object",

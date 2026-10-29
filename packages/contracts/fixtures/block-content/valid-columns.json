@@ -1,0 +1,25 @@
+{
+  "schema": "schemas/block-content-payload.schema.json",
+  "valid": true,
+  "reason": "a columns content with two lanes, one of them empty",
+  "data": {
+    "kind": "columns",
+    "columns": [
+      {
+        "id": "0192f0e0-7000-7000-8000-00000000000b",
+        "title": "To do",
+        "items": [
+          {
+            "id": "0192f0e0-7000-7000-8000-00000000000c",
+            "text": "Interview notes"
+          }
+        ]
+      },
+      {
+        "id": "0192f0e0-7000-7000-8000-00000000000d",
+        "title": "Done",
+        "items": []
+      }
+    ]
+  }
+}

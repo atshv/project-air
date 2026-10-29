@@ -3,7 +3,7 @@
   "valid": true,
   "reason": "after a reconnect the client asks from serverSeq 42 and the server answers welcome plus the snapshot at 43",
   "data": {
-    "contractVersion": "0.4.0",
+    "contractVersion": "0.5.0",
     "clientId": "0192f0b0-7000-7000-8000-0000000000c1",
     "boardId": "0192f0b1-7000-7000-8000-0000000000b1",
     "serverSeq": 43,
@@ -28,7 +28,7 @@
         "sentAt": "2027-01-10T09:00:08.100Z",
         "serverSeq": 43,
         "payload": {
-          "contractVersion": "0.4.0",
+          "contractVersion": "0.5.0",
           "snapshotRef": "0192f0b1-7000-7000-8000-0000000000b1:43"
         }
       },
@@ -42,7 +42,7 @@
         "payload": {
           "snapshotRef": "0192f0b1-7000-7000-8000-0000000000b1:43",
           "boardContent": {
-            "contractVersion": "0.4.0",
+            "contractVersion": "0.5.0",
             "board": {
               "id": "0192f0b1-7000-7000-8000-0000000000b1",
               "workspaceId": "0192f0a2-7000-7000-8000-000000000002",

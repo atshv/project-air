@@ -1,0 +1,38 @@
+{
+  "schema": "schemas/block-content-payload.schema.json",
+  "valid": false,
+  "reason": "a table column must not carry lane items; only a columns block has them",
+  "data": {
+    "kind": "table",
+    "columns": [
+      {
+        "id": "0192f0e0-7000-7000-8000-000000000015",
+        "title": "Source",
+        "items": []
+      },
+      {
+        "id": "0192f0e0-7000-7000-8000-000000000016",
+        "title": "Year"
+      }
+    ],
+    "rows": [
+      {
+        "id": "0192f0e0-7000-7000-8000-000000000017",
+        "cells": [
+          {
+            "columnId": "0192f0e0-7000-7000-8000-000000000015",
+            "text": "Field study"
+          },
+          {
+            "columnId": "0192f0e0-7000-7000-8000-000000000016",
+            "text": "2026"
+          }
+        ]
+      },
+      {
+        "id": "0192f0e0-7000-7000-8000-000000000018",
+        "cells": []
+      }
+    ]
+  }
+}

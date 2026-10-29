@@ -3,7 +3,7 @@
   "valid": false,
   "reason": "required field board is missing",
   "data": {
-    "contractVersion": "0.4.0",
+    "contractVersion": "0.5.0",
     "notes": [
       {
         "id": "0192f0a4-7000-7000-8000-000000000004",

@@ -1,11 +1,22 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://project-air.dev/contracts/0.4.0/block.schema.json",
+  "$id": "https://project-air.dev/contracts/0.5.0/block.schema.json",
   "title": "Block",
-  "description": "A block object on one board. The block type is fixed and each type has its own minimum size: checklist 224x128, palette 224x128, columns 368x192, timeline 320x160, table 288x160.",
+  "description": "A block object on one board. The block type is fixed and each type has its own minimum size: checklist 224x128, palette 224x128, columns 368x192, timeline 320x160, table 288x160. Checklist, columns and table blocks may carry plain-text content (block-content-payload.schema.json) whose kind equals the block type.",
   "type": "object",
   "additionalProperties": false,
-  "required": ["id", "boardId", "type", "x", "y", "width", "height", "z", "createdAt", "updatedAt"],
+  "required": [
+    "id",
+    "boardId",
+    "type",
+    "x",
+    "y",
+    "width",
+    "height",
+    "z",
+    "createdAt",
+    "updatedAt"
+  ],
   "properties": {
     "id": {
       "type": "string",
@@ -17,12 +28,25 @@
       "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
     },
     "zoneId": {
-      "type": ["string", "null"],
+      "type": [
+        "string",
+        "null"
+      ],
       "description": "Parent zone. Omitted or null means the block sits directly on the board.",
       "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
     },
     "type": {
-      "enum": ["checklist", "palette", "columns", "timeline", "table"]
+      "enum": [
+        "checklist",
+        "palette",
+        "columns",
+        "timeline",
+        "table"
+      ]
+    },
+    "content": {
+      "$ref": "block-content-payload.schema.json",
+      "description": "Content of a checklist, columns or table block; its kind equals the block type. Omitted means an empty block; palette and timeline blocks carry no content yet."
     },
     "x": {
       "type": "number",
@@ -58,47 +82,139 @@
   },
   "allOf": [
     {
-      "if": { "properties": { "type": { "const": "checklist" } }, "required": ["type"] },
+      "if": {
+        "properties": {
+          "type": {
+            "const": "checklist"
+          }
+        },
+        "required": [
+          "type"
+        ]
+      },
       "then": {
         "properties": {
-          "width": { "minimum": 224 },
-          "height": { "minimum": 128 }
+          "width": {
+            "minimum": 224
+          },
+          "height": {
+            "minimum": 128
+          },
+          "content": {
+            "properties": {
+              "kind": {
+                "const": "checklist"
+              }
+            }
+          }
         }
       }
     },
     {
-      "if": { "properties": { "type": { "const": "palette" } }, "required": ["type"] },
+      "if": {
+        "properties": {
+          "type": {
+            "const": "palette"
+          }
+        },
+        "required": [
+          "type"
+        ]
+      },
       "then": {
         "properties": {
-          "width": { "minimum": 224 },
-          "height": { "minimum": 128 }
+          "width": {
+            "minimum": 224
+          },
+          "height": {
+            "minimum": 128
+          },
+          "content": {
+            "not": {}
+          }
         }
       }
     },
     {
-      "if": { "properties": { "type": { "const": "columns" } }, "required": ["type"] },
+      "if": {
+        "properties": {
+          "type": {
+            "const": "columns"
+          }
+        },
+        "required": [
+          "type"
+        ]
+      },
       "then": {
         "properties": {
-          "width": { "minimum": 368 },
-          "height": { "minimum": 192 }
+          "width": {
+            "minimum": 368
+          },
+          "height": {
+            "minimum": 192
+          },
+          "content": {
+            "properties": {
+              "kind": {
+                "const": "columns"
+              }
+            }
+          }
         }
       }
     },
     {
-      "if": { "properties": { "type": { "const": "timeline" } }, "required": ["type"] },
+      "if": {
+        "properties": {
+          "type": {
+            "const": "timeline"
+          }
+        },
+        "required": [
+          "type"
+        ]
+      },
       "then": {
         "properties": {
-          "width": { "minimum": 320 },
-          "height": { "minimum": 160 }
+          "width": {
+            "minimum": 320
+          },
+          "height": {
+            "minimum": 160
+          },
+          "content": {
+            "not": {}
+          }
         }
       }
     },
     {
-      "if": { "properties": { "type": { "const": "table" } }, "required": ["type"] },
+      "if": {
+        "properties": {
+          "type": {
+            "const": "table"
+          }
+        },
+        "required": [
+          "type"
+        ]
+      },
       "then": {
         "properties": {
-          "width": { "minimum": 288 },
-          "height": { "minimum": 160 }
+          "width": {
+            "minimum": 288
+          },
+          "height": {
+            "minimum": 160
+          },
+          "content": {
+            "properties": {
+              "kind": {
+                "const": "table"
+              }
+            }
+          }
         }
       }
     }

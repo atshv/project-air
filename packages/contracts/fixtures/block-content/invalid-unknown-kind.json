@@ -1,0 +1,9 @@
+{
+  "schema": "schemas/block-content-payload.schema.json",
+  "valid": false,
+  "reason": "palette and timeline blocks carry no content yet, so palette is not a content kind",
+  "data": {
+    "kind": "palette",
+    "items": []
+  }
+}

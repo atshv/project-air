@@ -1,0 +1,50 @@
+{
+  "schema": "schemas/block.schema.json",
+  "valid": true,
+  "reason": "a table block carrying table content whose kind equals the block type",
+  "data": {
+    "id": "0192f0a7-7000-7000-8000-000000000007",
+    "boardId": "0192f0a3-7000-7000-8000-000000000003",
+    "zoneId": "0192f0a5-7000-7000-8000-000000000005",
+    "x": 160,
+    "y": 96,
+    "z": "a1",
+    "createdAt": "2027-01-10T09:00:00.000Z",
+    "updatedAt": "2027-01-10T09:30:00.000Z",
+    "type": "table",
+    "content": {
+      "kind": "table",
+      "columns": [
+        {
+          "id": "0192f0e0-7000-7000-8000-000000000015",
+          "title": "Source"
+        },
+        {
+          "id": "0192f0e0-7000-7000-8000-000000000016",
+          "title": "Year"
+        }
+      ],
+      "rows": [
+        {
+          "id": "0192f0e0-7000-7000-8000-000000000017",
+          "cells": [
+            {
+              "columnId": "0192f0e0-7000-7000-8000-000000000015",
+              "text": "Field study"
+            },
+            {
+              "columnId": "0192f0e0-7000-7000-8000-000000000016",
+              "text": "2026"
+            }
+          ]
+        },
+        {
+          "id": "0192f0e0-7000-7000-8000-000000000018",
+          "cells": []
+        }
+      ]
+    },
+    "width": 288,
+    "height": 160
+  }
+}

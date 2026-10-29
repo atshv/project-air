@@ -1,0 +1,240 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://project-air.dev/contracts/0.5.0/block-content-payload.schema.json",
+  "title": "Block content",
+  "description": "Plain-text content of a checklist, columns or table block (no HTML, no marks); `kind` names the block type it belongs to and must equal that block's `type`. A checklist uses items; a columns block uses columns with their items; a table uses columns without items plus rows of cells keyed by column id. `kind` decides which fields are present; block.schema.json ties `kind` to the block type. Limits: checklist 200 items; 8 columns with 50 items each; table 8 columns and 100 rows; item text 500, column title 120, cell text 200 characters; the largest content (a full columns block) is 200,960 characters.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "kind"
+  ],
+  "properties": {
+    "kind": {
+      "enum": [
+        "checklist",
+        "columns",
+        "table"
+      ],
+      "description": "The block type this content belongs to; it decides which fields are present."
+    },
+    "items": {
+      "type": "array",
+      "description": "Checklist points in display order.",
+      "maxItems": 200,
+      "items": {
+        "$ref": "#/$defs/checklistItem"
+      }
+    },
+    "columns": {
+      "type": "array",
+      "description": "Columns in display order: lanes of a columns block (with items) or the header of a table (without items).",
+      "maxItems": 8,
+      "items": {
+        "$ref": "#/$defs/column"
+      }
+    },
+    "rows": {
+      "type": "array",
+      "description": "Table rows in display order.",
+      "maxItems": 100,
+      "items": {
+        "$ref": "#/$defs/tableRow"
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "kind": {
+            "const": "checklist"
+          }
+        },
+        "required": [
+          "kind"
+        ]
+      },
+      "then": {
+        "required": [
+          "items"
+        ],
+        "properties": {
+          "columns": {
+            "not": {}
+          },
+          "rows": {
+            "not": {}
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "kind": {
+            "const": "columns"
+          }
+        },
+        "required": [
+          "kind"
+        ]
+      },
+      "then": {
+        "required": [
+          "columns"
+        ],
+        "properties": {
+          "items": {
+            "not": {}
+          },
+          "rows": {
+            "not": {}
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "kind": {
+            "const": "table"
+          }
+        },
+        "required": [
+          "kind"
+        ]
+      },
+      "then": {
+        "required": [
+          "columns",
+          "rows"
+        ],
+        "properties": {
+          "items": {
+            "not": {}
+          },
+          "columns": {
+            "items": {
+              "properties": {
+                "items": {
+                  "not": {}
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "checklistItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "One checklist point; an empty text is a valid point while it is being typed.",
+      "required": [
+        "id",
+        "text",
+        "done"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+        },
+        "text": {
+          "type": "string",
+          "maxLength": 500
+        },
+        "done": {
+          "type": "boolean"
+        }
+      }
+    },
+    "column": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "One column: a lane of a columns block carries items, a table column does not.",
+      "required": [
+        "id",
+        "title"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+        },
+        "title": {
+          "type": "string",
+          "maxLength": 120
+        },
+        "items": {
+          "type": "array",
+          "maxItems": 50,
+          "items": {
+            "$ref": "#/$defs/columnItem"
+          }
+        }
+      }
+    },
+    "columnItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "One entry of a columns-block lane.",
+      "required": [
+        "id",
+        "text"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+        },
+        "text": {
+          "type": "string",
+          "maxLength": 500
+        }
+      }
+    },
+    "tableRow": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "One table row; a missing cell for a column means an empty cell.",
+      "required": [
+        "id",
+        "cells"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+        },
+        "cells": {
+          "type": "array",
+          "maxItems": 8,
+          "items": {
+            "$ref": "#/$defs/tableCell"
+          }
+        }
+      }
+    },
+    "tableCell": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "One table cell, keyed by the id of its column.",
+      "required": [
+        "columnId",
+        "text"
+      ],
+      "properties": {
+        "columnId": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+        },
+        "text": {
+          "type": "string",
+          "maxLength": 200
+        }
+      }
+    }
+  }
+}

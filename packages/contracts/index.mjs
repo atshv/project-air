@@ -1,4 +1,4 @@
-// Entry point of the Project air contract, version 0.4.0.
+// Entry point of the Project air contract, version 0.5.0.
 //
 // The contract is the single JSON Schema source for the board data model: one
 // schema per entity, one root board-content schema, and valid/invalid fixtures
@@ -11,12 +11,12 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 /** Contract version carried by every schema `$id` and the root document. */
-export const CONTRACT_VERSION = "0.4.0";
+export const CONTRACT_VERSION = "0.5.0";
 
 /** Base URI of the versioned schemas. It is a namespace, not a fetched URL. */
 export const CONTRACT_BASE_URI = `https://project-air.dev/contracts/${CONTRACT_VERSION}/`;
 
-/** Operation types of contract 0.4.0 (AD-1: one gesture = one operation). */
+/** Operation types of contract 0.5.0 (AD-1: one gesture = one operation). */
 export const OPERATION_TYPES = Object.freeze([
   "createNote",
   "updateNote",
@@ -39,6 +39,8 @@ export const OPERATION_TYPES = Object.freeze([
   "reorder",
   "group",
   "updateNoteBody",
+  "updateBlockContent",
+  "updateZone",
 ]);
 
 /** Sync protocol schema file, relative to the package directory. */
@@ -104,7 +106,7 @@ export const API_SCHEMA_FILES = Object.freeze({
   errors: "schemas/api/errors.schema.json",
 });
 
-/** Error codes of contract 0.4.0: stable UPPER_SNAKE wire codes, never translated. */
+/** Error codes of contract 0.5.0: stable UPPER_SNAKE wire codes, never translated. */
 export const ERROR_CODES = Object.freeze([
   "AUTH_REQUIRED",
   "FORBIDDEN",
@@ -149,9 +151,12 @@ export const SCHEMA_FILES = Object.freeze({
   card: "schemas/card.schema.json",
   zone: "schemas/zone.schema.json",
   block: "schemas/block.schema.json",
+  "block-content-payload": "schemas/block-content-payload.schema.json",
   edge: "schemas/edge.schema.json",
   operation: "schemas/operation.schema.json",
   "reorder-payload": "schemas/reorder-payload.schema.json",
+  "update-block-content-payload": "schemas/update-block-content-payload.schema.json",
+  "update-zone-payload": "schemas/update-zone-payload.schema.json",
   "board-content": "schemas/board-content.schema.json",
 });
 
@@ -165,9 +170,12 @@ export const FIXTURE_DIRS = Object.freeze({
   card: "fixtures/card",
   zone: "fixtures/zone",
   block: "fixtures/block",
+  "block-content-payload": "fixtures/block-content",
   edge: "fixtures/edge",
   operation: "fixtures/operation",
   "reorder-payload": "fixtures/reorder-payload",
+  "update-block-content-payload": "fixtures/update-block-content-payload",
+  "update-zone-payload": "fixtures/update-zone-payload",
   "board-content": "fixtures/board-content",
 });
 
