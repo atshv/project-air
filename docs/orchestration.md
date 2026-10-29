@@ -1,6 +1,6 @@
 # Orchestration — Project air
 
-> How a task moves through this project with Polier 1.1, what the tools check and where the records
+> How a task moves through this project with Polier 1.3, what the tools check and where the records
 > live. The numbers live in `policy.json`, not in this file. Adopted 2026-10-29 (owner decision).
 
 ## Where the state lives
@@ -37,7 +37,7 @@ precondition and the command that records it.
 
 | To | Needs |
 |---|---|
-| `in_progress` | an attempt below the limit; fewer than `max_in_progress` tasks running; the stage not stopped or waiting |
+| `in_progress` | every dependency done; the token budget not used up (`budget` in `policy.json`, off while `max_tokens_per_task` is `null`); an attempt below the limit; fewer than `max_in_progress` tasks running; the stage not stopped or waiting |
 | `verifying` | an open attempt in `runs/<ID>.json` |
 | `review` | a passing record for every gate of the task |
 | `done` | review `verdict: pass`; handoff when another task depends on this one; the run record; a granted `new_dependency` approval when a manifest is touched |
