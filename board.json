@@ -7377,7 +7377,7 @@
       "satisfies": [
         "D12"
       ],
-      "status": "pending",
+      "status": "in_progress",
       "depends_on": [
         "P6-06",
         "P6-07"
@@ -7415,14 +7415,67 @@
         "unit",
         "typecheck"
       ],
-      "owner": null,
+      "owner": "lead",
       "branch": "task/P6-08",
-      "worktree": null,
+      "worktree": "/private/tmp/air-P6-08",
       "round": 0,
       "evidence": [],
       "scope_write_forbidden": [
         "reference/"
       ]
+    },
+    {
+      "id": "P0-47",
+      "title": "Preview page: connections diagram instead of roles",
+      "goal": "Section 13 replaces the 'Roles at a glance' table with a connections diagram of the system (web app, editor, engine, SDK, auth, ui-kit, data model, sync, Ory Kratos, platform API, CRDT, PostgreSQL, file storage) drawn with tokens, plus the same connections in words.",
+      "why": "Owner request 2026-10-29: 'statt die rollen auf einen blick, fuege die zusammenhaenge hinzu', with a diagram of the system connections as the template.",
+      "satisfies": [
+        "D3"
+      ],
+      "status": "pending",
+      "depends_on": [
+        "P0-46"
+      ],
+      "complexity": 3,
+      "stage": "web-app",
+      "parallel_group": null,
+      "owner": null,
+      "round": 0,
+      "scope_write": [
+        "apps/web/preview/",
+        ".changes/"
+      ],
+      "scope_read": [
+        "ARCHITECTURE.md",
+        "AGENTS.md",
+        "STATUS.md",
+        "docs/module-map.md",
+        "docs/versions.md",
+        "docs/design-rules.md",
+        "docs/i18n/style-de.md",
+        "docs/i18n/glossary.md",
+        "apps/web/preview/",
+        "packages/ui-kit/tokens.css",
+        "board.json"
+      ],
+      "acceptance": [
+        "A1",
+        "A2",
+        "A3"
+      ],
+      "gates": [
+        "board-check",
+        "design-check",
+        "changelog-entry"
+      ],
+      "branch": "task/P0-47",
+      "worktree": null,
+      "evidence": [],
+      "scope_write_forbidden": [
+        "reference/",
+        "docs/owner/"
+      ],
+      "handoff": []
     }
   ],
   "decisions": [
