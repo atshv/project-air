@@ -7156,7 +7156,8 @@
         "docs/quality.md",
         ".changes/",
         "pnpm-lock.yaml",
-        "docs/versions.md"
+        "docs/versions.md",
+        "packages/engine/"
       ],
       "scope_read": [
         "ARCHITECTURE.md",
@@ -7170,7 +7171,8 @@
         "services/platform/",
         "services/auth/",
         "services/sync/",
-        "tools/dev/"
+        "tools/dev/",
+        "packages/engine/"
       ],
       "acceptance": [
         "A1",
@@ -7182,7 +7184,9 @@
         "boundaries",
         "unit",
         "typecheck",
-        "e2e"
+        "e2e",
+        "wasm-build",
+        "cpp-unit"
       ],
       "owner": "lead",
       "branch": "task/P6-10",
