@@ -9,6 +9,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import test from "node:test";
+import { fileURLToPath } from "node:url";
 
 import pg from "pg";
 
@@ -45,7 +46,7 @@ const BODY = {
 const BODY_PLAIN_TEXT = "Hello world.\n- Source\nNotes";
 
 function slotConfig() {
-  const slot = JSON.parse(readFileSync(join(new URL("../../..", import.meta.url).pathname, ".polier-slot"), "utf8"));
+  const slot = JSON.parse(readFileSync(join(fileURLToPath(new URL("../../..", import.meta.url)), ".polier-slot"), "utf8"));
   const host = process.env.PGHOST ?? "127.0.0.1";
   const port = process.env.PGPORT ?? "5433";
   const user = process.env.PGUSER ?? "projectair";
@@ -53,10 +54,10 @@ function slotConfig() {
   return { syncPort: slot.ports.sync, databaseUrl: `postgresql://${user}:${password}@${host}:${port}/${slot.db_name}` };
 }
 
-/** The platform-bootstrap board content a fresh board starts from (contract 0.4.0). */
+/** The platform-bootstrap board content a fresh board starts from (contract 0.5.0). */
 function emptyBoardContent() {
   return {
-    contractVersion: "0.4.0",
+    contractVersion: "0.5.0",
     board: {
       id: BOARD_ID, workspaceId: WORKSPACE_ID, ownerId: OWNER_ID, title: "Integration board",
       visibility: "private", archived: false, createdAt: "1970-01-01T00:00:00.000Z", updatedAt: "1970-01-01T00:00:00.000Z",
@@ -139,7 +140,7 @@ test("live socket integration: join, ack-after-commit, updateNoteBody log/broadc
       documents: { fromContent: (content) => createYjsBoardDoc({ content }), fromEmpty: () => createYjsBoardDoc({ content: emptyBoardContent() }) },
       logger: { debug() {}, info() {}, warn() {}, error() {}, },
     });
-    const hello = (clientId) => JSON.stringify({ id: uid(2), type: "hello", clientId, payload: { tokenRef: "test-token", contractVersion: "0.4.0" } });
+    const hello = (clientId) => JSON.stringify({ id: uid(2), type: "hello", clientId, payload: { tokenRef: "test-token", contractVersion: "0.5.0" } });
     const join = (clientId) => JSON.stringify({ id: uid(3), type: "joinBoard", clientId, boardId: BOARD_ID, seq: 1, payload: {} });
 
     const a = await connect(service.url); sockets.push(a);
@@ -188,7 +189,7 @@ test("live socket integration: join, ack-after-commit, updateNoteBody log/broadc
     assert.equal(cWelcome.serverSeq, 2, "the join returns the current document at the current serverSeq");
     assert.equal(cWelcome.payload.snapshotRef, `${BOARD_ID}:2`);
     assert.equal(cSnapshot.serverSeq, 2);
-    assert.equal(validate(cSnapshot.payload.boardContent, BOARD_CONTENT_SCHEMA, BOARD_CONTENT_SCHEMA), true, "the snapshot is contract 0.4.0 board content");
+    assert.equal(validate(cSnapshot.payload.boardContent, BOARD_CONTENT_SCHEMA, BOARD_CONTENT_SCHEMA), true, "the snapshot is contract 0.5.0 board content");
     c.send(JSON.stringify({ id: uid(6), type: "resyncRequest", clientId: CLIENT_C, boardId: BOARD_ID, seq: 2, payload: { fromServerSeq: 1 } }));
     const resyncWelcome = await c.next((m) => m.type === "welcome");
     const resyncSnapshot = await c.next((m) => m.type === "snapshot");
@@ -233,7 +234,7 @@ test("live socket integration: join, ack-after-commit, updateNoteBody log/broadc
     const dSnapshot = await d.next((m) => m.type === "snapshot");
     assert.equal(dWelcome.serverSeq, 3, "a fresh join replays the body batch");
     assert.equal(dWelcome.payload.snapshotRef, `${BOARD_ID}:3`);
-    assert.equal(validate(dSnapshot.payload.boardContent, BOARD_CONTENT_SCHEMA, BOARD_CONTENT_SCHEMA), true, "the fresh join snapshot is valid contract 0.4.0 board content");
+    assert.equal(validate(dSnapshot.payload.boardContent, BOARD_CONTENT_SCHEMA, BOARD_CONTENT_SCHEMA), true, "the fresh join snapshot is valid contract 0.5.0 board content");
     const joinedNote = dSnapshot.payload.boardContent.notes.find((note) => note.id === NOTE_ID);
     assert.deepEqual(joinedNote.body, BODY, "the fresh join snapshot contains the structured body");
     assert.equal(joinedNote.plainText, BODY_PLAIN_TEXT, "the fresh join snapshot contains the derived plainText");
@@ -259,6 +260,35 @@ test("live socket integration: join, ack-after-commit, updateNoteBody log/broadc
     const snapshots = await client.query("SELECT server_seq FROM sync_snapshots WHERE board_id = $1", [BOARD_ID]);
     assert.equal(snapshots.rowCount, 1, "the fresh board has exactly the baseline snapshot row (no stale snapshot written on join)");
     assert.equal(Number(snapshots.rows[0].server_seq), 1);
+
+    // P6-13: contract 0.5.0 — a zone rename and a checklist content edit go
+    // through ack, log, broadcast and a fresh join's replay on the real Yjs core.
+    const zone = { id: uid(20), boardId: BOARD_ID, title: "Research", x: 0, y: 0, width: 256, height: 192, z: "a", createdAt: TIMESTAMP, updatedAt: TIMESTAMP };
+    const block = { id: uid(21), boardId: BOARD_ID, type: "checklist", x: 0, y: 240, width: 224, height: 128, z: "a", createdAt: TIMESTAMP, updatedAt: TIMESTAMP };
+    const checklist = { kind: "checklist", items: [{ id: uid(22), text: "Synced point", done: false }] };
+    const contentBatchId = uid(23);
+    const contentOperations = [
+      { id: uid(24), boardId: BOARD_ID, actorId: ACTOR_ID, createdAt: TIMESTAMP, type: "createZone", payload: { zone }, inverse: { boardId: BOARD_ID, type: "deleteZone", payload: { zone, policy: "keep", cards: [], blocks: [] } } },
+      { id: uid(25), boardId: BOARD_ID, actorId: ACTOR_ID, createdAt: TIMESTAMP, type: "updateZone", payload: { zoneId: zone.id, title: "Field research" }, inverse: { boardId: BOARD_ID, type: "updateZone", payload: { zoneId: zone.id, title: zone.title } } },
+      { id: uid(26), boardId: BOARD_ID, actorId: ACTOR_ID, createdAt: TIMESTAMP, type: "createBlock", payload: { block }, inverse: { boardId: BOARD_ID, type: "deleteBlock", payload: { block } } },
+      { id: uid(27), boardId: BOARD_ID, actorId: ACTOR_ID, createdAt: TIMESTAMP, type: "updateBlockContent", payload: { blockId: block.id, content: checklist }, inverse: { boardId: BOARD_ID, type: "updateBlockContent", payload: { blockId: block.id, content: { kind: "checklist", items: [] } } } },
+    ];
+    a.send(JSON.stringify({ id: uid(28), type: "operationBatch", clientId: CLIENT_A, boardId: BOARD_ID, seq: 4, payload: { batchId: contentBatchId, operations: contentOperations } }));
+    const contentAck = await a.next((m) => m.type === "ack" && m.payload?.batchId === contentBatchId);
+    assert.equal(contentAck.serverSeq, 4, "the 0.5.0 batch is acked with the next serverSeq");
+    const contentBroadcast = await b.next((m) => m.type === "operationBatch" && m.serverSeq === 4);
+    assert.deepEqual(contentBroadcast.payload.operations.map((operation) => operation.type), ["createZone", "updateZone", "createBlock", "updateBlockContent"]);
+    const e = await connect(service.url); sockets.push(e);
+    e.send(hello(CLIENT_D)); e.send(join(CLIENT_D));
+    const eWelcome = await e.next((m) => m.type === "welcome");
+    const eSnapshot = await e.next((m) => m.type === "snapshot");
+    assert.equal(eWelcome.serverSeq, 4, "a fresh join replays the 0.5.0 batch");
+    assert.equal(validate(eSnapshot.payload.boardContent, BOARD_CONTENT_SCHEMA, BOARD_CONTENT_SCHEMA), true, "the snapshot with block content is valid contract 0.5.0 board content");
+    assert.equal(eSnapshot.payload.boardContent.zones.find((entry) => entry.id === zone.id).title, "Field research");
+    assert.deepEqual(eSnapshot.payload.boardContent.blocks.find((entry) => entry.id === block.id).content, checklist);
+    for (const emitted of [...a.messages, ...b.messages, ...e.messages].filter((entry) => VALIDATED_TYPES.has(entry.type))) {
+      assert.equal(validate(emitted, SYNC_SCHEMA, SYNC_SCHEMA), true, `${emitted.type} must validate against sync.schema.json`);
+    }
   } finally {
     for (const socket of sockets) { try { socket.close(); } catch { /* closed */ } }
     if (service !== null) await service.close().catch(() => undefined);

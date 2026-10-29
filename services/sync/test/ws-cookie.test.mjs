@@ -140,7 +140,7 @@ const hello = () => ({
   clientId: CLIENT_ID,
   sentAt: new Date().toISOString(),
   seq: 1,
-  payload: { tokenRef: BROWSER_TOKEN_REF, contractVersion: "0.4.0" },
+  payload: { tokenRef: BROWSER_TOKEN_REF, contractVersion: "0.5.0" },
 });
 const join = () => ({
   id: "0192f0e7-7000-7000-8000-0000000000d2",
@@ -160,7 +160,7 @@ function fakeDocument() {
     stateVector() { return "state"; },
     snapshot() {
       return {
-        contractVersion: "0.4.0",
+        contractVersion: "0.5.0",
         board: { id: BOARD_ID, workspaceId: "0192f0e7-7000-7000-8000-0000000000e1", ownerId: "0192f0e7-7000-7000-8000-0000000000e2", title: "Board", visibility: "private", archived: false, createdAt: "1970-01-01T00:00:00.000Z", updatedAt: "1970-01-01T00:00:00.000Z" },
         zones: [], blocks: [], cards: [], notes: [], edges: [],
       };
@@ -267,7 +267,7 @@ test("the tokenRef path is still handed to the authenticator for test/non-browse
   try {
     socket.send({
       ...hello(),
-      payload: { tokenRef: "test-token-ref", contractVersion: "0.4.0" },
+      payload: { tokenRef: "test-token-ref", contractVersion: "0.5.0" },
     });
     socket.send(join());
     await socket.next((message) => message.type === "welcome");

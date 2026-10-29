@@ -21,7 +21,7 @@ const logger = createLogger(config.logLevel);
 const store = new PgSyncStore({ connectionString: config.databaseUrl });
 
 const emptyBoardContent = (): BoardContent => ({
-  contractVersion: "0.4.0",
+  contractVersion: "0.5.0",
   board: {
     id: "00000000-0000-7000-8000-000000000000", workspaceId: "", ownerId: "", title: "",
     visibility: "private", archived: false, createdAt: "1970-01-01T00:00:00.000Z", updatedAt: "1970-01-01T00:00:00.000Z",
@@ -35,9 +35,11 @@ const emptyBoardContent = (): BoardContent => ({
 // services/sync/dist/index.js. Resolve exactly that path: the old
 // `dist/index.js` guess made a real `node dist/index.js` start fail.
 const crdt = await import("../../../packages/crdt/dist/packages/crdt/src/index.js" as string);
-const createYjsBoardDoc = (crdt as { createYjsBoardDoc: (options: { content: BoardContent }) => never }).createYjsBoardDoc;
+const createYjsBoardDoc = (crdt as { createYjsBoardDoc: (options: { content: BoardContent; contractVersion?: string }) => never }).createYjsBoardDoc;
+// Stored 0.4.0 snapshots are valid 0.5.0 content (the bump is additive), so a
+// document loaded from one speaks the current version.
 const documents = {
-  fromContent: (content: BoardContent) => createYjsBoardDoc({ content }) as never,
+  fromContent: (content: BoardContent) => createYjsBoardDoc({ content, contractVersion: "0.5.0" }) as never,
   fromEmpty: () => createYjsBoardDoc({ content: emptyBoardContent() }) as never,
 };
 

@@ -5,8 +5,9 @@
 import { createSyncService } from "../src/service.ts";
 import { createLogger } from "../src/log.ts";
 import { readFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
 
-const ROOT = new URL("../../..", import.meta.url).pathname;
+const ROOT = fileURLToPath(new URL("../../..", import.meta.url));
 const FIXTURE = JSON.parse(readFileSync(`${ROOT}/packages/contracts/fixtures/board-content/valid.json`, "utf8")).data;
 const clone = (value) => JSON.parse(JSON.stringify(value));
 

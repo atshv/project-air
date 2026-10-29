@@ -8,6 +8,7 @@ import { spawn } from "node:child_process";
 import { readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import test from "node:test";
+import { fileURLToPath } from "node:url";
 
 import pg from "pg";
 
@@ -22,7 +23,7 @@ const CLIENT_B = "0192f0f7-7000-7000-8000-0000000000c2";
 const UUID = (tail) => `0192f0f7-7000-7000-8000-${String(tail).padStart(12, "0")}`;
 
 function slot() {
-  const config = JSON.parse(readFileSync(join(new URL("../../..", import.meta.url).pathname, ".polier-slot"), "utf8"));
+  const config = JSON.parse(readFileSync(join(fileURLToPath(new URL("../../..", import.meta.url)), ".polier-slot"), "utf8"));
   const host = process.env.PGHOST ?? "127.0.0.1";
   const port = process.env.PGPORT ?? "5433";
   return { syncPort: config.ports.sync, databaseUrl: `postgresql://${process.env.PGUSER ?? "projectair"}:${process.env.PGPASSWORD ?? "projectair_local_only"}@${host}:${port}/${config.db_name}` };
@@ -38,7 +39,7 @@ async function waitHealth(port) {
 
 function spawnServer({ syncPort, databaseUrl }) {
   return spawn(process.execPath, ["services/sync/test/restart-server.mjs"], {
-    cwd: new URL("../../..", import.meta.url).pathname,
+    cwd: fileURLToPath(new URL("../../..", import.meta.url)),
     env: {
       ...process.env,
       SYNC_PORT: String(syncPort),
@@ -75,7 +76,7 @@ async function connect(port) {
 
 async function joinBoard(port, clientId = CLIENT_ID) {
   const socket = await connect(port);
-  socket.send({ id: UUID(0x9000 + Math.floor(Math.random() * 1000)), type: "hello", clientId, payload: { tokenRef: "test-token-ref", contractVersion: "0.4.0" } });
+  socket.send({ id: UUID(0x9000 + Math.floor(Math.random() * 1000)), type: "hello", clientId, payload: { tokenRef: "test-token-ref", contractVersion: "0.5.0" } });
   socket.send({ id: UUID(0x9100 + Math.floor(Math.random() * 1000)), type: "joinBoard", clientId, boardId: BOARD_ID, seq: 2, payload: {} });
   const welcome = await socket.waitFor((message) => message.type === "welcome");
   const snapshot = await socket.waitFor((message) => message.type === "snapshot");
@@ -112,13 +113,39 @@ const bodyOperations = [
   },
 ];
 
+// P6-13: contract 0.5.0 — a zone rename and a checklist content edit take the
+// same ack → persist → restart → compaction path.
+const ZONE = { id: UUID(0x7100), boardId: BOARD_ID, title: "Research", x: 0, y: 0, width: 256, height: 192, z: "a", createdAt: "2027-01-10T09:30:00.000Z", updatedAt: "2027-01-10T09:30:00.000Z" };
+const BLOCK = { id: UUID(0x7200), boardId: BOARD_ID, type: "checklist", x: 0, y: 240, width: 224, height: 128, z: "a", createdAt: "2027-01-10T09:30:00.000Z", updatedAt: "2027-01-10T09:30:00.000Z" };
+const CHECKLIST = { kind: "checklist", items: [{ id: UUID(0x7300), text: "Survives the restart", done: true }] };
+const contentOperations = [
+  {
+    id: UUID(0x2200), boardId: BOARD_ID, actorId: UUID(0x3000), createdAt: new Date().toISOString(),
+    type: "createZone", payload: { zone: ZONE }, inverse: { boardId: BOARD_ID, type: "deleteZone", payload: { zone: ZONE, policy: "keep", cards: [], blocks: [] } },
+  },
+  {
+    id: UUID(0x2201), boardId: BOARD_ID, actorId: UUID(0x3000), createdAt: new Date().toISOString(),
+    type: "updateZone", payload: { zoneId: ZONE.id, title: "Field research" }, inverse: { boardId: BOARD_ID, type: "updateZone", payload: { zoneId: ZONE.id, title: ZONE.title } },
+  },
+  {
+    id: UUID(0x2202), boardId: BOARD_ID, actorId: UUID(0x3000), createdAt: new Date().toISOString(),
+    type: "createBlock", payload: { block: BLOCK }, inverse: { boardId: BOARD_ID, type: "deleteBlock", payload: { block: BLOCK } },
+  },
+  {
+    id: UUID(0x2203), boardId: BOARD_ID, actorId: UUID(0x3000), createdAt: new Date().toISOString(),
+    type: "updateBlockContent", payload: { blockId: BLOCK.id, content: CHECKLIST },
+    inverse: { boardId: BOARD_ID, type: "updateBlockContent", payload: { blockId: BLOCK.id, content: { kind: "checklist", items: [] } } },
+  },
+];
+const tailOperations = [...bodyOperations, ...contentOperations];
+
 test("restart, catch-up and snapshot compaction preserve every acked update", { timeout: 90_000 }, async () => {
   const { syncPort, databaseUrl } = slot();
   const client = new Client({ connectionString: databaseUrl });
   await client.connect();
   const store = new PgSyncStore({ connectionString: databaseUrl });
   const operationCount = 22;
-  const evidencePath = join(new URL("../../..", import.meta.url).pathname, "reviews", "evidence", `P5-06-restart-${new Date().toISOString().replace(/[-:]/g, "").replace(/\.\d+Z$/, "Z")}.json`);
+  const evidencePath = join(fileURLToPath(new URL("../../..", import.meta.url)), "reviews", "evidence", `P5-06-restart-${new Date().toISOString().replace(/[-:]/g, "").replace(/\.\d+Z$/, "Z")}.json`);
   let child = null;
   try {
     await client.query("DELETE FROM sync_updates WHERE board_id = $1", [BOARD_ID]);
@@ -132,7 +159,7 @@ test("restart, catch-up and snapshot compaction preserve every acked update", { 
     const acked = [];
     let seq = 3;
     for (let index = 0; index < operationCount; index += 1) {
-      const op = index < operationCount - bodyOperations.length ? operation(index) : bodyOperations[index - (operationCount - bodyOperations.length)];
+      const op = index < operationCount - tailOperations.length ? operation(index) : tailOperations[index - (operationCount - tailOperations.length)];
       first.socket.send({ id: UUID(0x5000 + index), type: "operationBatch", clientId: CLIENT_ID, boardId: BOARD_ID, seq, payload: { batchId: UUID(0x6000 + index), operations: [op] } });
       const ack = await first.socket.waitFor((message) => message.type === "ack" && message.payload?.batchId === UUID(0x6000 + index));
       acked.push({ id: op.id, serverSeq: ack.serverSeq });
@@ -158,6 +185,8 @@ test("restart, catch-up and snapshot compaction preserve every acked update", { 
     const restartedNote = second.snapshot.payload.boardContent.notes.find((note) => note.id === NOTE_ID);
     assert.deepEqual(restartedNote.body, BODY, "the updateNoteBody body survives the restart (replayed update)");
     assert.equal(restartedNote.plainText, BODY_PLAIN_TEXT, "the derived plainText survives the restart");
+    assert.equal(second.snapshot.payload.boardContent.zones.find((zone) => zone.id === ZONE.id).title, "Field research", "the updateZone title survives the restart");
+    assert.deepEqual(second.snapshot.payload.boardContent.blocks.find((block) => block.id === BLOCK.id).content, CHECKLIST, "the updateBlockContent content survives the restart");
     const preCompactionSnapshot = second.snapshot.payload.boardContent;
     // Exact catch-up boundaries at the log level: empty, one, large gaps.
     assert.equal((await client.query("SELECT count(*)::int AS count FROM sync_updates WHERE board_id = $1 AND server_seq > $2", [BOARD_ID, operationCount + 1])).rows[0].count, 0, "empty catch-up at the current sequence");
@@ -197,6 +226,8 @@ test("restart, catch-up and snapshot compaction preserve every acked update", { 
     const compactedNote = third.snapshot.payload.boardContent.notes.find((note) => note.id === NOTE_ID);
     assert.deepEqual(compactedNote.body, BODY, "compaction keeps the note body");
     assert.equal(compactedNote.plainText, BODY_PLAIN_TEXT, "compaction keeps the derived plainText");
+    assert.equal(third.snapshot.payload.boardContent.zones.find((zone) => zone.id === ZONE.id).title, "Field research", "compaction keeps the zone title");
+    assert.deepEqual(third.snapshot.payload.boardContent.blocks.find((block) => block.id === BLOCK.id).content, CHECKLIST, "compaction keeps the block content");
     third.socket.ws.close();
 
     writeFileSync(evidencePath, JSON.stringify({

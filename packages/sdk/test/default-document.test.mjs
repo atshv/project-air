@@ -5,7 +5,7 @@ import test from "node:test";
 
 import { createBoardSyncClient } from "../src/index.ts";
 
-const content = { contractVersion: "0.4.0", board: { id: "0192f0a3-7000-7000-8000-000000000003", workspaceId: "0192f0a2-7000-7000-8000-000000000002", ownerId: "0192f0a1-7000-7000-8000-000000000001", title: "Board", visibility: "private", archived: false, createdAt: "2027-01-10T09:00:00.000Z", updatedAt: "2027-01-10T09:00:00.000Z" }, zones: [], blocks: [], cards: [], notes: [], edges: [] };
+const content = { contractVersion: "0.5.0", board: { id: "0192f0a3-7000-7000-8000-000000000003", workspaceId: "0192f0a2-7000-7000-8000-000000000002", ownerId: "0192f0a1-7000-7000-8000-000000000001", title: "Board", visibility: "private", archived: false, createdAt: "2027-01-10T09:00:00.000Z", updatedAt: "2027-01-10T09:00:00.000Z" }, zones: [], blocks: [], cards: [], notes: [], edges: [] };
 
 test("the default createDocument is a real CRDT document that applies remote operations", () => {
   const socket = { sent: [], close() {}, addEventListener() {}, send(data) { this.sent.push(JSON.parse(data)); } };

@@ -65,7 +65,7 @@ function staticServer(yjsPath) {
 function pageHtml(yjsPath, clientId, port) {
   void yjsPath;
   return `<!doctype html><html><head><title>starting</title>
-<script type="importmap">{"imports":{"yjs":"/vendor/yjs.mjs","lib0/":"/vendor/lib0/","lib0":"/vendor/lib0/","isomorphic.js":"/vendor/isomorphic-browser.mjs"}}</script></head><body>
+<script type="importmap">{"imports":{"@project-air/crdt":"/crdt/index.js","yjs":"/vendor/yjs.mjs","lib0/":"/vendor/lib0/","lib0":"/vendor/lib0/","isomorphic.js":"/vendor/isomorphic-browser.mjs"}}</script></head><body>
 <script>window.__fixture = ${JSON.stringify(EMPTY)}; window.__wire = [];</script>
 <script type="module">
 import { createBoardSyncClient } from "/sdk/index.js";

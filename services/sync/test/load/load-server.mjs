@@ -3,16 +3,17 @@
 // (the SDK may import crdt; services/sync may not import the SDK).
 import fs from "node:fs";
 import pg from "pg";
+import { fileURLToPath } from "node:url";
 
 import { createYjsBoardDoc } from "../../../../packages/crdt/dist/packages/crdt/src/index.js";
 import { createSyncService } from "../../src/service.ts";
 import { PgSyncStore } from "../../src/store.ts";
 
-const ROOT = new URL("../../../../", import.meta.url).pathname;
+const ROOT = fileURLToPath(new URL("../../../../", import.meta.url));
 const SLOT = JSON.parse(fs.readFileSync(`${ROOT}.polier-slot`, "utf8"));
 const DATABASE_URL = `postgresql://${process.env.PGUSER ?? "projectair"}:${process.env.PGPASSWORD ?? "projectair_local_only"}@${process.env.PGHOST ?? "127.0.0.1"}:${process.env.PGPORT ?? "5433"}/${SLOT.db_name}`;
 const BOARD_ID = "0192f0f9-7000-7000-8000-0000000000b1";
-const EMPTY = { contractVersion: "0.4.0", board: { id: BOARD_ID, workspaceId: "0192f0f9-7000-7000-8000-000000000002", ownerId: "0192f0f9-7000-7000-8000-000000000003", title: "Load board", visibility: "private", archived: false, createdAt: "2027-01-10T09:00:00.000Z", updatedAt: "2027-01-10T09:00:00.000Z" }, zones: [], blocks: [], cards: [], notes: [], edges: [] };
+const EMPTY = { contractVersion: "0.5.0", board: { id: BOARD_ID, workspaceId: "0192f0f9-7000-7000-8000-000000000002", ownerId: "0192f0f9-7000-7000-8000-000000000003", title: "Load board", visibility: "private", archived: false, createdAt: "2027-01-10T09:00:00.000Z", updatedAt: "2027-01-10T09:00:00.000Z" }, zones: [], blocks: [], cards: [], notes: [], edges: [] };
 const cleanup = new pg.Client({ connectionString: DATABASE_URL });
 await cleanup.connect();
 const clear = async () => {

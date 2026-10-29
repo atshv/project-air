@@ -1,6 +1,6 @@
 // P5-04: the SDK board-sync client. One client = one board = one BoardDoc
 // (injected factory; the SDK sees only the CRDT interface), speaking contract
-// 0.4.0 over an injected WebSocket-like connection with an ordered offline queue,
+// 0.5.0 over an injected WebSocket-like connection with an ordered offline queue,
 // ack/serverSeq tracking, backoff reconnect + resyncRequest, and idempotent close.
 
 import type { BoardContent } from "../../../contracts/generated/types.ts";
@@ -10,7 +10,7 @@ import { createRequestId } from "../uuid.ts";
 import type { CreateSocket, SyncSocket } from "./connection.ts";
 import { realTimers, type Timers } from "./timers.ts";
 
-export const SYNC_CONTRACT_VERSION = "0.4.0";
+export const SYNC_CONTRACT_VERSION = "0.5.0";
 export const PRESENCE_THROTTLE_MS = 50;
 
 export type BoardSyncStatus = "idle" | "connecting" | "joined" | "offline" | "closed";
@@ -91,7 +91,7 @@ const UUID_V7 = /^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f
 function resolveClientId(candidate: string | undefined): string {
   const clientId = candidate ?? createRequestId();
   if (!UUID_V7.test(clientId)) {
-    throw new RangeError("clientId must be a UUIDv7 (contract 0.4.0 sync message envelope)");
+    throw new RangeError("clientId must be a UUIDv7 (contract 0.5.0 sync message envelope)");
   }
   return clientId;
 }
@@ -282,7 +282,7 @@ export function createBoardSyncClient(options: BoardSyncClientOptions): BoardSyn
         const y = Number(cursor["y"] ?? 0);
         if (participantId.length > 0) {
           // Removal sentinel: empty selection and cursor at the origin (the
-          // contract 0.4.0 has no separate leave message; documented).
+          // contract 0.5.0 has no separate leave message; documented).
           if (selection.length === 0 && x === 0 && y === 0) {
             if (participants.delete(participantId)) emitParticipants();
           } else {
@@ -325,7 +325,7 @@ export function createBoardSyncClient(options: BoardSyncClientOptions): BoardSyn
     setStatus("connecting");
     const next = options.createSocket();
     socket = next;
-    // Contract 0.4.0: hello first, then joinBoard. The handshake starts once the
+    // Contract 0.5.0: hello first, then joinBoard. The handshake starts once the
     // socket is open (real WebSockets reject send() before open; fake sockets
     // without readyState send immediately).
     let handshakeStarted = false;
@@ -449,9 +449,13 @@ export function createBoardSyncClient(options: BoardSyncClientOptions): BoardSyn
     undoOwn(): boolean {
       const entry = ownUndo.pop();
       if (entry === undefined) return false;
+      // P6-13: the embedded inverse is the contract inverse shape (board, type,
+      // payload) of the undone operation, not the whole operation envelope, so
+      // the undo batch validates against sync.schema.json.
       const inverseOperation: Record<string, unknown> = {
         id: createRequestId(), boardId: options.boardId, actorId: clientId, createdAt: ISO_NOW(),
-        type: entry.inverse["type"], payload: entry.inverse["payload"], inverse: entry.operation,
+        type: entry.inverse["type"], payload: entry.inverse["payload"],
+        inverse: { boardId: options.boardId, type: entry.operation["type"], payload: entry.operation["payload"] },
       };
       ownRedo.push(entry);
       // The inverse is a new local operation batch; remote operations are never

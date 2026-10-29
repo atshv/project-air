@@ -7,6 +7,7 @@ import assert from "node:assert/strict";
 import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import test from "node:test";
+import { fileURLToPath } from "node:url";
 
 import { createFakeBoardDoc } from "../src/index.ts";
 import { derivePlainText, validateNoteBody } from "../src/note-body.ts";
@@ -14,7 +15,7 @@ import { createYjsBoardDoc } from "../src/yjs-doc.ts";
 import { validate as contractValidate } from "../../contracts/test/support.mjs";
 import { derivePlainText as contractPlainText } from "../../contracts/plaintext.mjs";
 
-const PACKAGE_DIR = new URL("..", import.meta.url).pathname;
+const PACKAGE_DIR = fileURLToPath(new URL("..", import.meta.url));
 const CONTENT = JSON.parse(readFileSync(join(PACKAGE_DIR, "../contracts/fixtures/board-content/valid.json"), "utf8")).data;
 const NOTE_BODY_SCHEMA = JSON.parse(readFileSync(join(PACKAGE_DIR, "../contracts/schemas/note-body-payload.schema.json"), "utf8"));
 const NOTE_BODY_FIXTURES = join(PACKAGE_DIR, "../contracts/fixtures/note-body");
@@ -295,6 +296,176 @@ function suite(name, create) {
     ];
     for (const body of bodies) assert.equal(derivePlainText(body), contractPlainText(body), "derived plainText matches the contract module");
   });
+
+  // P6-13: contract 0.5.0 block content and zone rename.
+  const block = base.blocks[0];
+  const contentOf = (doc, id = block.id) => doc.snapshot().blocks.find((entry) => entry.id === id).content;
+  const point = (n, text, done = false) => ({ id: UUID(0xe000 + n), text, done });
+
+  test(`${name}: updateBlockContent stores the content, round-trips and its inverse restores the block`, () => {
+    const doc = create({ content: base });
+    const before = doc.encodeState();
+    const next = { kind: "checklist", items: [...block.content.items, point(1, "Write the summary")] };
+    const op = contentOp(block.id, block.content, next, 0x501);
+    doc.apply(op);
+    assert.deepEqual(contentOf(doc), next);
+    const snapshot = doc.snapshot();
+    const restored = create({ content: snapshot });
+    assert.equal(restored.encodeState(), doc.encodeState(), "the snapshot round-trips the content");
+    doc.apply(contentInverse(op));
+    assert.equal(doc.encodeState(), before, "the inverse restores the previous content byte-identically");
+  });
+
+  test(`${name}: an empty content clears the field and its inverse restores it`, () => {
+    const doc = create({ content: base });
+    const before = doc.encodeState();
+    const op = contentOp(block.id, block.content, { kind: "checklist", items: [] }, 0x502);
+    doc.apply(op);
+    assert.equal(contentOf(doc), undefined, "an empty content canonicalises to no content field");
+    doc.apply(contentInverse(op));
+    assert.equal(doc.encodeState(), before);
+  });
+
+  // Clients converge by exchanging operations (the sync service broadcasts each
+  // acknowledged batch, the SDK applies it): each replica applies its own
+  // operation first and the other one second. A Yjs-state merge of two
+  // independently loaded replicas is last-writer-wins per entity and is not the
+  // product's sync path.
+  const exchange = (left, right, leftOp, rightOp) => {
+    left.apply(leftOp);
+    right.apply(rightOp);
+    left.apply(rightOp);
+    right.apply(leftOp);
+  };
+
+  test(`${name}: concurrent edits of different points both survive the exchange`, () => {
+    const [first, second] = block.content.items;
+    const left = create({ content: base });
+    const right = create({ content: base });
+    // Left adds a point at the end; right edits the first point and inserts one
+    // between the two existing points. Each operation carries its own previous.
+    exchange(left, right,
+      contentOp(block.id, block.content, { kind: "checklist", items: [first, second, point(2, "Left")] }, 0x511),
+      contentOp(block.id, block.content, { kind: "checklist", items: [{ ...first, done: false, text: "Edited" }, point(3, "Right"), second] }, 0x512));
+    assert.equal(left.encodeState(), right.encodeState(), "the encoded states are byte-identical");
+    assert.deepEqual(contentOf(left).items, [
+      { ...first, done: false, text: "Edited" },
+      point(3, "Right"),
+      second,
+      point(2, "Left"),
+    ]);
+  });
+
+  test(`${name}: two points inserted at the same place keep a deterministic order`, () => {
+    const [first, second] = block.content.items;
+    const left = create({ content: base });
+    const right = create({ content: base });
+    exchange(left, right,
+      contentOp(block.id, block.content, { kind: "checklist", items: [first, point(4, "A"), second] }, 0x521),
+      contentOp(block.id, block.content, { kind: "checklist", items: [first, point(5, "B"), second] }, 0x522));
+    assert.deepEqual(contentOf(left), contentOf(right));
+    assert.deepEqual(contentOf(left).items.map((item) => item.text), [first.text, "A", "B", second.text]);
+  });
+
+  test(`${name}: a point deleted on one replica stays deleted when the other edits it`, () => {
+    const [first, second] = block.content.items;
+    const left = create({ content: base });
+    const right = create({ content: base });
+    exchange(left, right,
+      contentOp(block.id, block.content, { kind: "checklist", items: [second] }, 0x531),
+      contentOp(block.id, block.content, { kind: "checklist", items: [{ ...first, text: "Late edit" }, second] }, 0x532));
+    assert.deepEqual(contentOf(left), contentOf(right));
+    assert.deepEqual(contentOf(left).items.map((item) => item.id), [second.id]);
+  });
+
+  test(`${name}: columns and table content move entries and keep cells per column`, () => {
+    const lane = (n, title, items) => ({ id: UUID(0xe100 + n), title, items });
+    const entry = (n, text) => ({ id: UUID(0xe200 + n), text });
+    const columnsBlock = { ...block, id: UUID(0xe300), type: "columns", width: 368, height: 192, content: { kind: "columns", columns: [lane(1, "To do", [entry(1, "One"), entry(2, "Two")]), lane(2, "Done", [])] } };
+    const tableColumn = (n, title) => ({ id: UUID(0xe400 + n), title });
+    const tableBlock = {
+      ...block, id: UUID(0xe500), type: "table", width: 288, height: 160,
+      content: { kind: "table", columns: [tableColumn(1, "Source"), tableColumn(2, "Year")], rows: [{ id: UUID(0xe600), cells: [{ columnId: UUID(0xe401), text: "Study" }] }] },
+    };
+    const doc = create({ content: { ...base, blocks: [...base.blocks, columnsBlock, tableBlock] } });
+    const moved = { kind: "columns", columns: [lane(1, "To do", [entry(2, "Two")]), lane(2, "Done", [entry(1, "One")])] };
+    doc.apply(contentOp(columnsBlock.id, columnsBlock.content, moved, 0x541));
+    assert.deepEqual(contentOf(doc, columnsBlock.id), moved, "an entry moves from one lane to the other");
+    const filled = {
+      kind: "table",
+      columns: [tableColumn(1, "Source"), tableColumn(2, "Year")],
+      rows: [
+        { id: UUID(0xe600), cells: [{ columnId: UUID(0xe401), text: "Study" }, { columnId: UUID(0xe402), text: "2026" }] },
+        { id: UUID(0xe601), cells: [] },
+      ],
+    };
+    doc.apply(contentOp(tableBlock.id, tableBlock.content, filled, 0x542));
+    assert.deepEqual(contentOf(doc, tableBlock.id), filled, "a new cell and a new empty row are stored");
+    const restored = create({ content: doc.snapshot() });
+    assert.equal(restored.encodeState(), doc.encodeState());
+  });
+
+  test(`${name}: an undo built from the original operation restores the content`, () => {
+    // The SDK undo sends the inverse as a new operation whose inverse is the
+    // original operation (board-sync-client undoOwn).
+    const doc = create({ content: base });
+    const before = doc.encodeState();
+    const next = { kind: "checklist", items: [block.content.items[1]] };
+    const op = contentOp(block.id, block.content, next, 0x551);
+    doc.apply(op);
+    doc.apply({ ...op, id: UUID(0x100000 + 0x552), payload: op.inverse.payload, inverse: { boardId: op.boardId, type: op.type, payload: op.payload } });
+    assert.equal(doc.encodeState(), before);
+  });
+
+  test(`${name}: block content rejections fail closed`, () => {
+    const rejects = (operationToApply, pattern) => {
+      const doc = create({ content: base });
+      assert.throws(() => {
+        doc.apply(operationToApply);
+        doc.snapshot();
+      }, pattern);
+    };
+    const table = { kind: "table", columns: [], rows: [] };
+    rejects(contentOp(block.id, block.content, table, 0x561), /does not match block/);
+    rejects(contentOp(UUID(0xdead), block.content, block.content, 0x562), /missing block/);
+    rejects(contentOp(block.id, block.content, { kind: "checklist", items: [{ id: "not-a-uuid", text: "x", done: false }] }, 0x563), /invalid block content/);
+    rejects(contentOp(block.id, block.content, { kind: "checklist", items: [{ ...point(6, "x"), color: "red" }] }, 0x564), /invalid block content/);
+    rejects(contentOp(block.id, block.content, { kind: "palette", items: [] }, 0x565), /invalid block content/);
+    rejects(operation("updateZone", { zoneId: UUID(0xdead), title: "Gone" }, 0x566), /missing zone/);
+    rejects(operation("updateZone", { zoneId: base.zones[0].id, title: "" }, 0x567), /title/);
+  });
+
+  test(`${name}: updateZone renames and its inverse restores; a concurrent member move converges`, () => {
+    const zone = base.zones[0];
+    const doc = create({ content: base });
+    const before = doc.encodeState();
+    const rename = { ...operation("updateZone", { zoneId: zone.id, title: "Field research" }, 0x571), inverse: { boardId: base.board.id, type: "updateZone", payload: { zoneId: zone.id, title: zone.title } } };
+    doc.apply(rename);
+    assert.equal(doc.snapshot().zones.find((entry) => entry.id === zone.id).title, "Field research");
+    doc.apply({ id: rename.id, boardId: base.board.id, type: "updateZone", payload: rename.inverse.payload });
+    assert.equal(doc.encodeState(), before);
+
+    const left = create({ content: base });
+    const right = create({ content: base });
+    const member = base.cards.find((card) => card.zoneId === zone.id) ?? base.cards[0];
+    exchange(left, right, rename, operation("moveCard", { cardId: member.id, x: member.x + 32, y: member.y, zoneId: zone.id }, 0x572));
+    assert.equal(left.encodeState(), right.encodeState());
+    assert.equal(left.snapshot().zones.find((entry) => entry.id === zone.id).title, "Field research");
+    assert.equal(left.snapshot().cards.find((card) => card.id === member.id).x, member.x + 32);
+  });
+}
+
+/** An updateBlockContent operation whose embedded inverse carries the previous content. */
+function contentOp(blockId, previous, next, index) {
+  return {
+    ...operation("updateBlockContent", { blockId, content: clone(next) }, index),
+    inverse: { boardId: base.board.id, type: "updateBlockContent", payload: { blockId, content: clone(previous) } },
+  };
+}
+
+/** The inverse of a content operation on the same operation id (as bodyInverse). */
+function contentInverse(op) {
+  return { id: op.id, boardId: op.boardId, type: op.type, payload: clone(op.inverse.payload), inverse: { boardId: op.boardId, type: op.type, payload: clone(op.payload) } };
 }
 
 function inverseOf(op) {

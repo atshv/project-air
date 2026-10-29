@@ -1,12 +1,26 @@
 // The Yjs (MIT) adapter: Yjs types are used only here, never in the public API
 // (ADR-0011). Each contract entity is one Y.Map of its contract fields; the
 // document is the only CRDT state and updates travel through encodeUpdate().
+// Block content (0.5.0) lives beside the entities: one Y.Map per content entry
+// in the "content" map, keyed `<blockId>|<entryKey>`, so concurrent edits of
+// different points, lanes, rows or cells merge (see block-content.ts).
 
 import * as Y from "yjs";
 
 import type { BoardContent } from "../../contracts/generated/types.d.ts";
 import type { BoardDoc, BoardDocOptions, BoardEntityKind, BoardOp, EntityStore } from "./index.ts";
 import { encodeStore, storeSnapshot } from "./index.ts";
+import {
+  assertContentKind,
+  composeContent,
+  contentDelta,
+  decomposeContent,
+  readUpdateBlockContent,
+  readUpdateZone,
+  validateBlockContent,
+  type ContentEntries,
+  type ContentEntry,
+} from "./block-content.ts";
 import { readUpdateNoteBody } from "./note-body.ts";
 
 const KINDS: readonly BoardEntityKind[] = ["card", "zone", "block", "note", "edge"];
@@ -29,6 +43,7 @@ type AnyPayload = Record<string, unknown>;
 export class YjsBoardDoc implements BoardDoc {
   readonly #doc: Y.Doc;
   readonly #objects: Y.Map<Y.Map<unknown>>;
+  readonly #content: Y.Map<Y.Map<unknown>>;
   readonly #contractVersion: BoardContent["contractVersion"];
   readonly #contentBoard: Record<string, unknown>;
 
@@ -37,6 +52,7 @@ export class YjsBoardDoc implements BoardDoc {
     this.#contentBoard = JSON.parse(JSON.stringify(options.content.board)) as Record<string, unknown>;
     this.#doc = new Y.Doc();
     this.#objects = this.#doc.getMap<Y.Map<unknown>>("objects");
+    this.#content = this.#doc.getMap<Y.Map<unknown>>("content");
     this.#doc.transact(() => {
       for (const [kind, entities] of [
         ["zone", options.content.zones], ["block", options.content.blocks], ["card", options.content.cards],
@@ -49,8 +65,53 @@ export class YjsBoardDoc implements BoardDoc {
 
   #write(kind: BoardEntityKind, entity: AnyPayload): void {
     const map = new Y.Map<unknown>();
-    for (const [name, value] of Object.entries(entity)) map.set(name, value);
+    const { content, ...fields } = entity;
+    for (const [name, value] of Object.entries(kind === "block" ? fields : entity)) map.set(name, value);
     this.#objects.set(keyOf(kind, String(entity["id"])), map);
+    if (kind === "block" && content !== undefined) {
+      const validated = validateBlockContent(content);
+      assertContentKind(entity["type"], validated, String(entity["id"]));
+      for (const [key, entry] of decomposeContent(validated)) this.#setEntry(String(entity["id"]), key, entry);
+    }
+  }
+
+  #entries(blockId: string): ContentEntries {
+    const entries: ContentEntries = new Map();
+    const prefix = `${blockId}|`;
+    for (const [key, map] of this.#content.entries()) {
+      if (!key.startsWith(prefix)) continue;
+      const entry: ContentEntry = {};
+      for (const [name, value] of map.entries()) entry[name] = value as unknown;
+      entries.set(key.slice(prefix.length), entry);
+    }
+    return entries;
+  }
+
+  #setEntry(blockId: string, key: string, changes: ContentEntry): void {
+    const id = `${blockId}|${key}`;
+    let map = this.#content.get(id);
+    if (map === undefined) {
+      map = new Y.Map<unknown>();
+      this.#content.set(id, map);
+    }
+    for (const [name, value] of Object.entries(changes)) map.set(name, value);
+  }
+
+  #deleteContent(blockId: string): void {
+    const prefix = `${blockId}|`;
+    for (const key of [...this.#content.keys()]) if (key.startsWith(prefix)) this.#content.delete(key);
+  }
+
+  /** Every entity as a plain object and the block content entries (storeSnapshot composes them). */
+  #store(): EntityStore {
+    const store: EntityStore = { board: { ...this.#contentBoard }, entities: new Map(), content: new Map() };
+    for (const [key, map] of this.#objects.entries()) {
+      const entity: AnyPayload = {};
+      for (const [name, value] of map.entries()) entity[name] = value as unknown;
+      store.entities.set(key, entity);
+      if (key.startsWith("block:")) store.content.set(String(entity["id"]), this.#entries(String(entity["id"])));
+    }
+    return store;
   }
 
   #find(id: string): { key: string; kind: BoardEntityKind; map: Y.Map<unknown> } | null {
@@ -68,7 +129,10 @@ export class YjsBoardDoc implements BoardDoc {
     for (const [name, value] of Object.entries(changes)) if (value !== undefined) found.map.set(name, value);
   }
 
-  #delete(kind: BoardEntityKind, id: string): void { this.#objects.delete(keyOf(kind, id)); }
+  #delete(kind: BoardEntityKind, id: string): void {
+    this.#objects.delete(keyOf(kind, id));
+    if (kind === "block") this.#deleteContent(id);
+  }
 
   #applyOperation(operation: BoardOp): void {
     const payload = operation.payload as unknown as AnyPayload;
@@ -120,6 +184,27 @@ export class YjsBoardDoc implements BoardDoc {
         }
         return;
       }
+      case "updateBlockContent": {
+        // Contract 0.5.0: write only the delta between the embedded previous
+        // content and the new one, entry by entry (block-content.ts).
+        const update = readUpdateBlockContent(payload, (operation as { inverse?: unknown }).inverse);
+        const found = this.#find(update.blockId);
+        if (found === null || found.kind !== "block") throw new Error(`updateBlockContent targets the missing block ${update.blockId}`);
+        assertContentKind(found.map.get("type"), update.content, update.blockId);
+        const entries = this.#entries(update.blockId);
+        const previous = update.hasPrevious ? update.previous : composeContent(entries);
+        const delta = contentDelta(entries, previous, update.content);
+        for (const key of delta.remove) this.#content.delete(`${update.blockId}|${key}`);
+        for (const [key, changes] of delta.set) this.#setEntry(update.blockId, key, changes);
+        return;
+      }
+      case "updateZone": {
+        const update = readUpdateZone(payload);
+        const found = this.#find(update.zoneId);
+        if (found === null || found.kind !== "zone") throw new Error(`updateZone targets the missing zone ${update.zoneId}`);
+        found.map.set("title", update.title);
+        return;
+      }
       case "reorder": this.#change(String(payload["itemId"]), { z: payload["z"] }); return;
       case "group":
         for (const child of (payload["children"] as BoardOp[]) ?? []) this.#applyOperation(child);
@@ -137,30 +222,9 @@ export class YjsBoardDoc implements BoardDoc {
   applyUpdate(update: string): void { Y.applyUpdate(this.#doc, fromBase64(update)); }
   stateVector(): string { return toBase64(Y.encodeStateVector(this.#doc)); }
 
-  snapshot(): BoardContent {
-    const store: EntityStore = { board: { ...this.#contentBoard }, entities: new Map() };
-    for (const [key, map] of this.#objects.entries()) {
-      const entity: AnyPayload = {};
-      for (const [name, value] of map.entries()) entity[name] = value as unknown;
-      store.entities.set(key, entity);
-    }
-    return storeSnapshot(store, this.#contractVersion);
-  }
+  snapshot(): BoardContent { return storeSnapshot(this.#store(), this.#contractVersion); }
 
-  encodeState(): string {
-    return encodeStore(
-      (() => {
-        const store: EntityStore = { board: { ...this.#contentBoard }, entities: new Map() };
-        for (const [key, map] of this.#objects.entries()) {
-          const entity: AnyPayload = {};
-          for (const [name, value] of map.entries()) entity[name] = value as unknown;
-          store.entities.set(key, entity);
-        }
-        return store;
-      })(),
-      this.#contractVersion,
-    );
-  }
+  encodeState(): string { return encodeStore(this.#store(), this.#contractVersion); }
 
   merge(other: BoardDoc): void { this.applyUpdate(other.encodeUpdate()); }
 }

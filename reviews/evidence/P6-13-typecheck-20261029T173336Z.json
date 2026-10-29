@@ -1,0 +1,19 @@
+{
+  "task": "P6-13",
+  "gate": "typecheck",
+  "command": "pnpm typecheck",
+  "exit_code": 0,
+  "result": "pass",
+  "slot": null,
+  "exclusive": [
+    "crdt-convergence"
+  ],
+  "lock_wait_s": 0.0,
+  "lock_warning": null,
+  "started": "2026-10-29T17:33:36+00:00",
+  "finished": "2026-10-29T17:33:37+00:00",
+  "commit": "9f76f6c0d1f171bec6ea3a68b9476cec776c3454",
+  "dirty": true,
+  "log": "P6-13-typecheck-20261029T173336Z.log",
+  "log_sha256": "ba02cad5829aea89a727db4efebaa769756dc717d216a8757bb6352f9cfaaddf"
+}

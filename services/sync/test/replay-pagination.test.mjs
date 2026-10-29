@@ -5,6 +5,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import test from "node:test";
+import { fileURLToPath } from "node:url";
 
 import pg from "pg";
 
@@ -14,11 +15,11 @@ import { compactBoard } from "../src/compaction.ts";
 import { createSyncService } from "../src/service.ts";
 import { PgSyncStore } from "../src/store.ts";
 
-const ROOT = join(new URL("../../..", import.meta.url).pathname);
+const ROOT = join(fileURLToPath(new URL("../../..", import.meta.url)));
 const SLOT = JSON.parse(readFileSync(join(ROOT, ".polier-slot"), "utf8"));
 const UUID = (tail) => `0192f0fb-7000-7000-8000-${String(tail).padStart(12, "0")}`;
 const BOARD = UUID(0xb1);
-const EMPTY = { contractVersion: "0.4.0", board: { id: BOARD, workspaceId: UUID(0xb2), ownerId: UUID(0xb3), title: "Pagination", visibility: "private", archived: false, createdAt: "2027-01-10T09:00:00.000Z", updatedAt: "2027-01-10T09:00:00.000Z" }, zones: [], blocks: [], cards: [], notes: [], edges: [] };
+const EMPTY = { contractVersion: "0.5.0", board: { id: BOARD, workspaceId: UUID(0xb2), ownerId: UUID(0xb3), title: "Pagination", visibility: "private", archived: false, createdAt: "2027-01-10T09:00:00.000Z", updatedAt: "2027-01-10T09:00:00.000Z" }, zones: [], blocks: [], cards: [], notes: [], edges: [] };
 const CARD = UUID(0xc1);
 const card = (x) => ({ id: CARD, boardId: BOARD, noteId: UUID(0xd1), x, y: 0, width: 176, height: 80, z: "a", createdAt: "2027-01-10T09:00:00.000Z", updatedAt: "2027-01-10T09:00:00.000Z" });
 const UPDATES = 1200;
@@ -31,7 +32,7 @@ async function connect(url) {
 }
 async function joinBoard(port, clientId, seq = 2) {
   const socket = await connect(`ws://127.0.0.1:${port}`);
-  socket.send({ id: UUID(0x9000), type: "hello", clientId, payload: { tokenRef: "test-token-ref", contractVersion: "0.4.0" } });
+  socket.send({ id: UUID(0x9000), type: "hello", clientId, payload: { tokenRef: "test-token-ref", contractVersion: "0.5.0" } });
   socket.send({ id: UUID(0x9001), type: "joinBoard", clientId, boardId: BOARD, seq, payload: {} });
   const welcome = await socket.waitFor((message) => message.type === "welcome");
   const snapshot = await socket.waitFor((message) => message.type === "snapshot");

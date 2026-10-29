@@ -1,0 +1,19 @@
+{
+  "task": "P6-13",
+  "gate": "unit",
+  "command": "pnpm test --affected",
+  "exit_code": 0,
+  "result": "pass",
+  "slot": null,
+  "exclusive": [
+    "crdt-convergence"
+  ],
+  "lock_wait_s": 0.0,
+  "lock_warning": null,
+  "started": "2026-10-29T17:33:37+00:00",
+  "finished": "2026-10-29T17:33:45+00:00",
+  "commit": "9f76f6c0d1f171bec6ea3a68b9476cec776c3454",
+  "dirty": true,
+  "log": "P6-13-unit-20261029T173337Z.log",
+  "log_sha256": "dbd95d46f54eca5ce68b2d94abc98d7a8cae30f080383718aab7b0e8efb564e7"
+}

@@ -32,7 +32,7 @@ function fakeStore() {
 function fakeDoc() {
   return {
     apply() {}, encodeUpdate() { return "dXBkYXRl"; }, applyUpdate() {}, stateVector() { return "v"; },
-    snapshot() { return { contractVersion: "0.4.0", board: { id: BOARD_A, workspaceId: UUID("e1"), ownerId: UUID("e2"), title: "Board", visibility: "private", archived: false, createdAt: "1970-01-01T00:00:00.000Z", updatedAt: "1970-01-01T00:00:00.000Z" }, zones: [], blocks: [], cards: [], notes: [], edges: [] }; },
+    snapshot() { return { contractVersion: "0.5.0", board: { id: BOARD_A, workspaceId: UUID("e1"), ownerId: UUID("e2"), title: "Board", visibility: "private", archived: false, createdAt: "1970-01-01T00:00:00.000Z", updatedAt: "1970-01-01T00:00:00.000Z" }, zones: [], blocks: [], cards: [], notes: [], edges: [] }; },
   };
 }
 
@@ -58,7 +58,7 @@ function connect(url) {
   });
 }
 
-const hello = (clientId) => ({ id: UUID("10" + clientId.slice(-1)), type: "hello", clientId, payload: { tokenRef: "test-token-ref", contractVersion: "0.4.0" } });
+const hello = (clientId) => ({ id: UUID("10" + clientId.slice(-1)), type: "hello", clientId, payload: { tokenRef: "test-token-ref", contractVersion: "0.5.0" } });
 const join = (clientId, boardId = BOARD_A) => ({ id: UUID("20" + clientId.slice(-1)), type: "joinBoard", clientId, boardId, seq: 2, payload: {} });
 const presence = (clientId, boardId, cursor, selection = []) => ({ id: UUID("30" + clientId.slice(-1)), type: "presence", clientId, boardId, seq: 3, sentAt: new Date().toISOString(), payload: { nameRef: "user:client-supplied", colorRef: "tone-e", cursor, selection } });
 

@@ -12,6 +12,17 @@ import type {
   OperationInverse,
   Zone,
 } from "../../contracts/generated/types.d.ts";
+import {
+  applyContentDelta,
+  assertContentKind,
+  composeContent,
+  contentDelta,
+  decomposeContent,
+  readUpdateBlockContent,
+  readUpdateZone,
+  validateBlockContent,
+  type ContentEntries,
+} from "./block-content.ts";
 import { readUpdateNoteBody } from "./note-body.ts";
 
 export type BoardEntityKind = "card" | "zone" | "block" | "note" | "edge";
@@ -41,6 +52,8 @@ const KIND_KEY: Record<BoardEntityKind, keyof BoardContent> = {
 export interface EntityStore {
   board: Record<string, unknown>;
   entities: Map<string, Record<string, unknown>>;
+  /** Block content entries (0.5.0) by block id; composed into `content` by storeSnapshot. */
+  content: Map<string, ContentEntries>;
 }
 
 const keyOf = (kind: BoardEntityKind, id: string): string => `${kind}:${id}`;
@@ -65,6 +78,18 @@ function change(store: EntityStore, id: string, changes: Record<string, unknown>
   for (const [name, value] of Object.entries(changes)) if (value !== undefined) entity[name] = value;
 }
 
+/** Stores a block: its content becomes entries beside the entity (validated). */
+function putBlock(store: EntityStore, block: Record<string, unknown>): void {
+  const { content, ...fields } = block;
+  const id = entityId(fields);
+  store.entities.set(keyOf("block", id), fields);
+  store.content.delete(id);
+  if (content === undefined) return;
+  const validated = validateBlockContent(content);
+  assertContentKind(fields["type"], validated, id);
+  store.content.set(id, decomposeContent(validated));
+}
+
 /** Applies one entity-level operation change to a plain entity store. */
 export function applyToStore(store: EntityStore, operation: BoardOp): void {
   type AnyPayload = Record<string, unknown>;
@@ -72,11 +97,16 @@ export function applyToStore(store: EntityStore, operation: BoardOp): void {
   switch (operation.type) {
     case "createCard": store.entities.set(keyOf("card", entityId(payload["card"] as AnyPayload)), clone(payload["card"] as AnyPayload)); return;
     case "createZone": store.entities.set(keyOf("zone", entityId(payload["zone"] as AnyPayload)), clone(payload["zone"] as AnyPayload)); return;
-    case "createBlock": store.entities.set(keyOf("block", entityId(payload["block"] as AnyPayload)), clone(payload["block"] as AnyPayload)); return;
+    case "createBlock": putBlock(store, clone(payload["block"] as AnyPayload)); return;
     case "createNote": store.entities.set(keyOf("note", entityId(payload["note"] as AnyPayload)), clone(payload["note"] as AnyPayload)); return;
     case "createEdge": store.entities.set(keyOf("edge", entityId(payload["edge"] as AnyPayload)), clone(payload["edge"] as AnyPayload)); return;
     case "deleteCard": store.entities.delete(keyOf("card", entityId(payload["card"] as AnyPayload))); return;
-    case "deleteBlock": store.entities.delete(keyOf("block", entityId(payload["block"] as AnyPayload))); return;
+    case "deleteBlock": {
+      const id = entityId(payload["block"] as AnyPayload);
+      store.entities.delete(keyOf("block", id));
+      store.content.delete(id);
+      return;
+    }
     case "deleteEdge": store.entities.delete(keyOf("edge", entityId(payload["edge"] as AnyPayload))); return;
     case "deleteNote":
       store.entities.delete(keyOf("note", entityId(payload["note"] as AnyPayload)));
@@ -87,7 +117,10 @@ export function applyToStore(store: EntityStore, operation: BoardOp): void {
       store.entities.delete(keyOf("zone", entityId(zone)));
       if (payload["policy"] === "delete") {
         for (const card of (payload["cards"] as AnyPayload[]) ?? []) store.entities.delete(keyOf("card", entityId(card)));
-        for (const block of (payload["blocks"] as AnyPayload[]) ?? []) store.entities.delete(keyOf("block", entityId(block)));
+        for (const block of (payload["blocks"] as AnyPayload[]) ?? []) {
+          store.entities.delete(keyOf("block", entityId(block)));
+          store.content.delete(entityId(block));
+        }
       }
       return;
     }
@@ -117,6 +150,25 @@ export function applyToStore(store: EntityStore, operation: BoardOp): void {
       }
       return;
     }
+    case "updateBlockContent": {
+      // Contract 0.5.0: the block must exist and match the content kind; only the
+      // delta between the embedded previous content and the new one is written.
+      const update = readUpdateBlockContent(payload, (operation as { inverse?: unknown }).inverse);
+      const block = store.entities.get(keyOf("block", update.blockId));
+      if (block === undefined) throw new Error(`updateBlockContent targets the missing block ${update.blockId}`);
+      assertContentKind(block["type"], update.content, update.blockId);
+      const entries = store.content.get(update.blockId) ?? new Map();
+      applyContentDelta(entries, contentDelta(entries, update.hasPrevious ? update.previous : composeContent(entries), update.content));
+      store.content.set(update.blockId, entries);
+      return;
+    }
+    case "updateZone": {
+      const update = readUpdateZone(payload);
+      const zone = store.entities.get(keyOf("zone", update.zoneId));
+      if (zone === undefined) throw new Error(`updateZone targets the missing zone ${update.zoneId}`);
+      zone["title"] = update.title;
+      return;
+    }
     case "reorder": change(store, String(payload["itemId"]), { z: payload["z"] }); return;
     case "group":
       for (const child of (payload["children"] as BoardOp[]) ?? []) applyToStore(store, child);
@@ -129,7 +181,13 @@ export function applyToStore(store: EntityStore, operation: BoardOp): void {
 export function storeSnapshot(store: EntityStore, contractVersion: BoardContent["contractVersion"]): BoardContent {
   const groups: Record<string, Record<string, unknown>[]> = { cards: [], zones: [], blocks: [], notes: [], edges: [] };
   for (const [key, entity] of [...store.entities.entries()].sort(([left], [right]) => left.localeCompare(right))) {
-    groups[KIND_KEY[kindOfKey(key)]]!.push(clone(entity));
+    const copy = clone(entity);
+    if (kindOfKey(key) === "block") {
+      const entries = store.content.get(String(copy["id"]));
+      const content = entries === undefined ? undefined : composeContent(entries);
+      if (content !== undefined) copy["content"] = content;
+    }
+    groups[KIND_KEY[kindOfKey(key)]]!.push(copy);
   }
   return {
     contractVersion,
@@ -143,9 +201,9 @@ export function storeSnapshot(store: EntityStore, contractVersion: BoardContent[
 }
 
 export function loadStore(content: BoardContent): EntityStore {
-  const store: EntityStore = { board: clone(content.board) as unknown as Record<string, unknown>, entities: new Map() };
+  const store: EntityStore = { board: clone(content.board) as unknown as Record<string, unknown>, entities: new Map(), content: new Map() };
   for (const zone of content.zones) store.entities.set(keyOf("zone", zone.id), clone(zone as unknown as Record<string, unknown>));
-  for (const block of content.blocks) store.entities.set(keyOf("block", block.id), clone(block as unknown as Record<string, unknown>));
+  for (const block of content.blocks) putBlock(store, clone(block as unknown as Record<string, unknown>));
   for (const card of content.cards) store.entities.set(keyOf("card", card.id), clone(card as unknown as Record<string, unknown>));
   for (const note of content.notes) store.entities.set(keyOf("note", note.id), clone(note as unknown as Record<string, unknown>));
   for (const edge of content.edges) store.entities.set(keyOf("edge", edge.id), clone(edge as unknown as Record<string, unknown>));

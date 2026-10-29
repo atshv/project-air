@@ -26,7 +26,7 @@ function uid(prefix) {
 
 function emptyBoardContent() {
   return {
-    contractVersion: "0.4.0",
+    contractVersion: "0.5.0",
     board: {
       id: BOARD_ID, workspaceId: WORKSPACE_ID, ownerId: USER_ID, title: "Remote apply board",
       visibility: "private", archived: false, createdAt: TIMESTAMP, updatedAt: TIMESTAMP,
@@ -97,7 +97,7 @@ test("a session accepts an updateNoteBody for a note another client created afte
   const b = await client(service.url);
   try {
     for (const [connection, clientId] of [[a, CLIENT_A], [b, CLIENT_B]]) {
-      connection.send(envelope("hello", clientId, { tokenRef: "valid-test-session", contractVersion: "0.4.0" }));
+      connection.send(envelope("hello", clientId, { tokenRef: "valid-test-session", contractVersion: "0.5.0" }));
       connection.send(envelope("joinBoard", clientId, {}));
       const joined = await connection.next((message) => message.type === "welcome" || message.type === "reject");
       assert.equal(joined.type, "welcome", `joinBoard must be accepted, got ${JSON.stringify(joined.payload)}`);

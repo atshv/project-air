@@ -11,9 +11,23 @@ RFC 6455 implementation on `node:http` `upgrade` (`src/ws.ts`): handshake via
 `node:crypto` SHA-1, masked client frames, fragmentation/continuation, ping/pong,
 close frames, a 1 MiB inbound message bound and no extensions.
 
-`src/protocol.ts` implements contract 0.4.0 session semantics on top of the
+`src/protocol.ts` implements contract 0.5.0 session semantics on top of the
 `packages/crdt` `BoardDoc` core; `src/store.ts` is the PostgreSQL update log.
 Contract 0.4.0 note-body operations (`updateNoteBody`) are supported by the same generic log/replay path: a body batch is validated, persisted, acked, broadcast, replayed for catch-up and included (body + `plainText`) in a fresh join's snapshot.
+
+Contract 0.5.0 (P6-13) adds `updateBlockContent` and `updateZone` on the same path. The sync
+service and the SDK negotiate `0.5.0` (a 0.4.0 `hello` is rejected with the version-mismatch code);
+stored 0.4.0 snapshots load as 0.5.0 content because the bump is additive. In `packages/crdt` a
+block's content is one entry per checklist point, lane, lane entry, table column, row and cell,
+keyed by its UUIDv7 id; ordered entries carry a fractional position (ties by key). An
+`updateBlockContent` writes only the delta between its embedded previous content (the inverse) and
+the new one, so two clients editing different entries of one block both keep their edit, a point
+deleted on one client stays deleted when the other edits it, and two inserts at the same place keep
+a deterministic order. A content kind that does not match the block type, a missing block or zone
+and an invalid content are rejected (`VALIDATION`). Clients converge by exchanging operations; a
+Yjs-state merge of two independently loaded replicas stays last-writer-wins per entity (as before).
+The SDK's undo now embeds the contract inverse shape (`boardId`, `type`, `payload`) instead of the
+whole undone operation, so undo batches validate against `sync.schema.json`.
 
 ## Protocol flow
 
@@ -79,10 +93,10 @@ factory; the SDK sees only the CRDT interface, never Yjs), takes an injected
 WebSocket-like `SyncSocket` (browser/Node WebSocket in production, a fake pair in
 tests), and requires an authenticated **UUIDv7 `clientId`**: the caller may pass
 its session's client id, otherwise one is generated per client instance with the
-SDK's `createRequestId()` (UUIDv7, stable across reconnects; contract 0.4.0 types
+SDK's `createRequestId()` (UUIDv7, stable across reconnects; contract 0.5.0 types
 `clientId` as `$defs.uuid`). Every message and batch id is a fresh
 `createRequestId()` UUIDv7, so two clients never collide. The client speaks
-contract 0.4.0: hello first, joinBoard, snapshot install at its
+contract 0.5.0: hello first, joinBoard, snapshot install at its
 `serverSeq`, catch-up from the durable sequence; local operations go out as
 `operationBatch` with a per-connection `seq`; remote batches and acks are applied
 through the `BoardDoc`, acks only move `serverSeq` forward, duplicate remote
@@ -103,7 +117,7 @@ optional panel-close registration.
 
 ## Presence (P5-05)
 
-`presence` stays the existing contract 0.4.0 message — no new message type. The
+`presence` stays the existing contract 0.5.0 message — no new message type. The
 client sends cursor/selection updates; the sync service validates the payload,
 derives the identity server-side (participant identity = validated session user;
 `nameRef` is `user:<userId>`, `colorRef` is a server-derived `tone-*` palette
