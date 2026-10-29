@@ -232,7 +232,9 @@
       "joined": "Connected",
       "offline": "Reconnecting …",
       "closed": "Disconnected",
-      "error": "Connection failed"
+      "error": "Connection failed",
+      "offlineChanges": "Offline – changes are kept and sent when the connection returns.",
+      "authRequired": "Your session has expired. Sign in again to save changes."
     },
     "errors": {
       "title": "Board could not be opened",
@@ -254,6 +256,9 @@
     },
     "duplicate": {
       "title": "Copy"
+    },
+    "presence": {
+      "label": "Person {id}"
     }
   }
 }

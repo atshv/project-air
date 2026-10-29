@@ -51,7 +51,7 @@ cookie/cipher secrets and the admin token into the gitignored `infra/compose/.en
 | --- | --- |
 | `GET /health` | 200, liveness: `{ "status": "ok", "service": "auth" }` |
 | `GET /health/ready` | 200 when the database and Kratos are reachable; 503 `INTERNAL` otherwise |
-| `GET /session` | forwards the session cookie to Kratos `/sessions/whoami`; 200 `{ accountId, email, displayName }`; 401 `AUTH_REQUIRED` without a valid session |
+| `GET /session` | forwards the session cookie to Kratos `/sessions/whoami`; 200 `{ accountId, email, displayName }`; 401 `AUTH_REQUIRED` without a valid session. This is also the validation path of the sync service's browser WebSocket handshake (it forwards the upgrade cookie unchanged, P6-09) |
 | `POST /internal/invitations` | admin-token protected; creates the Kratos identity via the admin API and returns `{ identityId, email }`; 401 without the token, 409 `CONFLICT` on a duplicate e-mail |
 | `POST /test/session` | test mode only; mints an HMAC test session for integration tests |
 

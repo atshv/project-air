@@ -61,7 +61,7 @@
 - Exit gates: `e2e` (missing record), `design-check`, `language-check`
 - Exit criteria: Main e2e flows green on a preview environment.; Every canvas work order done with evidence; design-check and language-check green repo-wide.
 - Tasks: P6-01, P6-02, P6-03, P6-04, P6-05, P6-06, P6-07, P6-09, P6-10, P6-11, P0-45, P0-46, P6-08, P0-47
-- Tasks open: P6-09, P6-10, P6-11
+- Tasks open: P6-10, P6-11
 
 ### Stage 8 — `value` Import, export and AI
 
@@ -125,14 +125,14 @@
 
 ## Ready now
 
-- none
+- `P6-10` e2e suite: main flows and the e2e gate on the slot ports
 
 ## Orchestration
 
 - Limits: 3 attempts/task, 3 in progress
-- Next wave: none — nothing is ready
-- Running: `P6-09` attempt 0/3<!-- polier:claims --> — claimed by dsh<!-- /polier:claims -->
-- Blocked: P0-02, P0-15, P0-16, P0-17 (stage waits); P6-10, P6-11 (open dependency)
+- Next wave: `P6-10` (tasks/P6-10.md)
+- Running: none
+- Blocked: P0-02, P0-15, P0-16, P0-17 (stage waits); P6-11 (open dependency)
 - Approvals pending: none
 
 ## Done
@@ -240,6 +240,7 @@
 - [x] `P6-05` Board interactions: context menu, keyboard and undo/redo UI (L12, L11 hint) — status: `done` — owner: —
 - [x] `P6-06` Contract 0.4.0: note body document and content operations — status: `done` — owner: —
 - [x] `P6-07` Panel and editor: overlay, own editor, note placeholder and title (L04, L06, L09) — status: `done` — owner: —
+- [x] `P6-09` Realtime UI: live changes, presence and save status (L05) — status: `done` — owner: —
 - [x] `P0-45` Preview page: project areas, their tasks and purpose — status: `done` — owner: —
 - [x] `P0-46` Preview page: back-to-top arrow — status: `done` — owner: —
 - [x] `P6-08` Contract 0.4.0 operation support in crdt and sync — status: `done` — owner: —
@@ -248,7 +249,7 @@
 
 ## In progress
 
-- [ ] `P6-09` Realtime UI: live changes, presence and save status (L05) — status: `in_progress` — owner: lead
+- none
 
 ## Blocked / failed
 
@@ -262,13 +263,6 @@
 - [ ] `P0-17` RELEASING.md and release 0.0.1 — status: `pending` — owner: —
 - [ ] `P6-10` e2e suite: main flows and the e2e gate on the slot ports — status: `pending` — owner: —
 - [ ] `P6-11` Canvas evidence, repo-wide checks and the web-app stage report — status: `pending` — owner: —
-
-<!-- polier:claims -->
-## Claims
-
-- `P6-09` in progress by dsh since 2026-10-29T00:26:31+00:00 — worktree: /private/tmp/air-P6-09 · slot 3
-
-<!-- /polier:claims -->
 
 ## Decisions
 

@@ -8,7 +8,7 @@
 
 import { useEffect, useRef, useState } from "react";
 
-import { createAutosave, installFlushTriggers, type Autosave } from "../../../../packages/sdk/src/index.ts";
+import { createAutosave, installFlushTriggers, type Autosave, type AutosaveEvent } from "../../../../packages/sdk/src/index.ts";
 import {
   bodiesEqual,
   createEditor,
@@ -32,10 +32,18 @@ export interface NotePanelProps {
   readonly open: boolean;
   readonly onClose: () => void;
   readonly onClosed: () => void;
-  readonly sendOperations: (operations: readonly Record<string, unknown>[]) => void;
+  /**
+   * Sends one note save and resolves only on the server ack (L05); rejects when
+   * the batch is rejected or the connection is lost before the confirmation.
+   */
+  readonly sendOperations: (operations: readonly Record<string, unknown>[]) => Promise<void>;
+  /** L05: the board's bottom status region consumes the one autosave's events. */
+  readonly onAutosaveEvent?: ((event: AutosaveEvent) => void) | undefined;
+  /** L05: registers the retry control behind "Not saved – retry". */
+  readonly onAutosaveReady?: ((control: { retry: () => void } | null) => void) | undefined;
 }
 
-export function NotePanel({ t, boardId, actorId, noteId, note, open, onClose, onClosed, sendOperations }: NotePanelProps) {
+export function NotePanel({ t, boardId, actorId, noteId, note, open, onClose, onClosed, sendOperations, onAutosaveEvent, onAutosaveReady }: NotePanelProps) {
   const hostRef = useRef<HTMLDivElement | null>(null);
   const editorRef = useRef<EditorController | null>(null);
   const autosaveRef = useRef<Autosave | null>(null);
@@ -43,8 +51,8 @@ export function NotePanel({ t, boardId, actorId, noteId, note, open, onClose, on
   const bodyRef = useRef<NoteBody>(noteBodyOrEmpty(note));
   const savedRef = useRef({ title: normalizeNoteTitle(note?.title ?? ""), body: noteBodyOrEmpty(note) });
   const externalBodyRef = useRef(JSON.stringify(noteBodyOrEmpty(note)));
-  const latest = useRef({ t, note, sendOperations, boardId, actorId, noteId, onClose, onClosed });
-  latest.current = { t, note, sendOperations, boardId, actorId, noteId, onClose, onClosed };
+  const latest = useRef({ t, note, sendOperations, boardId, actorId, noteId, onClose, onClosed, onAutosaveEvent, onAutosaveReady });
+  latest.current = { t, note, sendOperations, boardId, actorId, noteId, onClose, onClosed, onAutosaveEvent, onAutosaveReady };
   const [title, setTitle] = useState(note?.title ?? "");
   const [titleError, setTitleError] = useState<string | null>(null);
   const [saveError, setSaveError] = useState<string | null>(null);
@@ -81,25 +89,35 @@ export function NotePanel({ t, boardId, actorId, noteId, note, open, onClose, on
 
   // L06/L09: one autosave path for title + body per open note.
   useEffect(() => {
+    let confirmedSequence = 0;
     const autosave = createAutosave({
-      save: (value) => {
+      // L05: "Saved" only after the server confirmation. The SDK's autosave
+      // sequence numbers make a stale response harmless; the saved baseline
+      // advances only for an acknowledged save, so a failed save is retried from
+      // the last confirmed value instead of silently disappearing.
+      save: async (value, sequence) => {
         const next = parseSavePayload(value);
         if (next === null) throw new Error("invalid autosave payload");
         const previous = savedRef.current;
         const id = latest.current;
         const result = buildNoteSaveOperations({ boardId: id.boardId, actorId: id.actorId, noteId: id.noteId, previous, next });
-        if (result.operations.length > 0) {
-          id.sendOperations(result.operations);
+        if (result.operations.length === 0) return;
+        await id.sendOperations(result.operations);
+        // Only the newest acknowledged save advances the confirmed baseline; an
+        // older ack that resolves later never rewinds it.
+        if (sequence >= confirmedSequence) {
+          confirmedSequence = sequence;
           savedRef.current = next;
         }
-        return Promise.resolve();
       },
       onChange: (event) => {
         if (event.type === "error") setSaveError(describeSaveError(event.error));
         else if (event.type === "saved") setSaveError(null);
+        latest.current.onAutosaveEvent?.(event);
       },
     });
     autosaveRef.current = autosave;
+    latest.current.onAutosaveReady?.({ retry: () => { void autosave.retry(); } });
     const uninstall = installFlushTriggers({
       autosave,
       windowTarget: window,
@@ -107,7 +125,11 @@ export function NotePanel({ t, boardId, actorId, noteId, note, open, onClose, on
       isHidden: () => document.hidden,
     });
     return () => {
+      // The retry control stays registered while the panel is closed but the
+      // board page is alive: a failed flush on close must stay retryable. A
+      // board switch clears it in the board page.
       uninstall();
+      // Navigation/close still flushes the last value through the SDK autosave.
       void autosave.flush("unmount");
       autosave.detach();
       autosaveRef.current = null;

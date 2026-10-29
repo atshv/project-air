@@ -215,7 +215,13 @@ export function createWsConnection(socket: Duplex, remoteAddress = ""): WsConnec
   });
   socket.on("close", finish);
   socket.on("error", finish);
-  socket.on("end", finish);
+  socket.on("end", () => {
+    // A peer may half-close without a WebSocket close handshake (a crashed tab
+    // or a destroyed test client). Finish the server side too, otherwise the
+    // half-open socket keeps the HTTP server's shutdown waiting forever.
+    finish();
+    socket.end();
+  });
   return connection;
 }
 

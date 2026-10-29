@@ -1,0 +1,63 @@
+{
+  "task": "P6-09",
+  "state": "idle",
+  "attempt": 0,
+  "attempts": [],
+  "events": [
+    {
+      "at": "2026-10-29T00:47:22+00:00",
+      "kind": "gate",
+      "data": {
+        "gate": "board-check",
+        "result": "pass",
+        "record": "reviews/evidence/P6-09-board-check-20261029T004707Z.json"
+      }
+    },
+    {
+      "at": "2026-10-29T00:47:26+00:00",
+      "kind": "gate",
+      "data": {
+        "gate": "boundaries",
+        "result": "pass",
+        "record": "reviews/evidence/P6-09-boundaries-20261029T004725Z.json"
+      }
+    },
+    {
+      "at": "2026-10-29T00:47:26+00:00",
+      "kind": "gate",
+      "data": {
+        "gate": "unit",
+        "result": "pass",
+        "record": "reviews/evidence/P6-09-unit-20261029T004726Z.json"
+      }
+    },
+    {
+      "at": "2026-10-29T00:47:27+00:00",
+      "kind": "gate",
+      "data": {
+        "gate": "typecheck",
+        "result": "pass",
+        "record": "reviews/evidence/P6-09-typecheck-20261029T004726Z.json"
+      }
+    },
+    {
+      "at": "2026-10-29T00:47:27+00:00",
+      "kind": "gate",
+      "data": {
+        "gate": "design-check",
+        "result": "pass",
+        "record": "reviews/evidence/P6-09-design-check-20261029T004727Z.json"
+      }
+    },
+    {
+      "at": "2026-10-29T00:47:28+00:00",
+      "kind": "gate",
+      "data": {
+        "gate": "language-check",
+        "result": "pass",
+        "record": "reviews/evidence/P6-09-language-check-20261029T004727Z.json"
+      }
+    }
+  ],
+  "updated": "2026-10-29T00:47:28+00:00"
+}

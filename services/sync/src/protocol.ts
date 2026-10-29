@@ -11,13 +11,26 @@ export interface SessionIdentity {
   readonly userId: string;
 }
 
+/**
+ * P6-09: per-connection credentials. A browser connection carries the
+ * same-origin session cookie from the WebSocket upgrade; tests and non-browser
+ * clients use the hello tokenRef (the auth service's test-session path).
+ */
+export interface SessionAuthContext {
+  readonly cookie?: string;
+  readonly tokenRef?: string;
+}
+
 export interface SessionAuthenticator {
-  /** Validates the hello token reference; null means unauthorized. */
-  authenticate(tokenRef: string): Promise<SessionIdentity | null>;
+  /**
+   * Validates the hello token reference and/or the upgrade cookie; null means
+   * unauthorized. The cookie context is only forwarded to the auth service.
+   */
+  authenticate(tokenRef: string, context?: SessionAuthContext): Promise<SessionIdentity | null>;
 }
 
 export interface BoardAuthorizer {
-  canJoin(userId: string, boardId: string): Promise<boolean>;
+  canJoin(userId: string, boardId: string, context?: SessionAuthContext): Promise<boolean>;
 }
 
 export interface StoredUpdate {
@@ -84,6 +97,11 @@ export interface CreateSyncSessionOptions {
   readonly broadcast?: (boardId: string, message: Record<string, unknown>, exceptClientId: string) => void;
   /** P5-06: graceful shutdown — when false, no ack is sent after the update committed. */
   readonly shouldAck?: () => boolean;
+  /**
+   * P6-09: the same-origin session cookie read from the WebSocket upgrade. It is
+   * handed to the injected authenticator/authorizer and never logged.
+   */
+  readonly connectionCookie?: string;
   /** P5-05: ephemeral presence hub (no persistence). */
   readonly presence?: {
     publish(input: { boardId: string; clientId: string; userId: string; messageId: string; seq: number; sentAt: string; payload: unknown }): boolean;
@@ -95,6 +113,7 @@ export interface CreateSyncSessionOptions {
 interface SessionState {
   identity: SessionIdentity | null;
   helloSeen: boolean;
+  tokenRef: string;
   contractVersion: string;
   joinedBoard: string | null;
   doc: BoardDocument | null;
@@ -121,6 +140,7 @@ export class SyncSession {
   #state: SessionState = {
     identity: null,
     helloSeen: false,
+    tokenRef: "",
     contractVersion: SYNC_CONTRACT_VERSION,
     joinedBoard: null,
     doc: null,
@@ -201,11 +221,23 @@ export class SyncSession {
     }
   }
 
+  /** Per-connection credentials for the injected authenticator/authorizer. */
+  #authContext(): SessionAuthContext {
+    const cookie = this.#options.connectionCookie ?? "";
+    const tokenRef = this.#state.tokenRef;
+    return {
+      ...(cookie === "" ? {} : { cookie }),
+      ...(tokenRef === "" ? {} : { tokenRef }),
+    };
+  }
+
   async #hello(message: SyncMessage, send: SendMessage): Promise<Record<string, unknown>[]> {
     const payload = (message.payload ?? {}) as Record<string, unknown>;
-    const tokenRef = payload["tokenRef"];
+    const rawTokenRef = payload["tokenRef"];
+    const tokenRef = typeof rawTokenRef === "string" ? rawTokenRef : "";
+    const cookie = this.#options.connectionCookie ?? "";
     const version = payload["contractVersion"] ?? this.#state.contractVersion;
-    if (typeof tokenRef !== "string" || tokenRef.length === 0) {
+    if (tokenRef.length === 0 && cookie.length === 0) {
       this.#reject(send, message, REJECT_CODES.unauthorized, "hello carries no tokenRef");
       return [];
     }
@@ -213,13 +245,14 @@ export class SyncSession {
       this.#reject(send, message, REJECT_CODES.versionMismatch, `contractVersion must be ${SYNC_CONTRACT_VERSION}`, version);
       return [];
     }
-    const identity = await this.#options.authenticator.authenticate(tokenRef);
+    const identity = await this.#options.authenticator.authenticate(tokenRef, this.#authContext());
     if (identity === null) {
       this.#reject(send, message, REJECT_CODES.unauthorized, "session token rejected");
       return [];
     }
     this.#state.identity = identity;
     this.#state.helloSeen = true;
+    this.#state.tokenRef = tokenRef;
     this.#state.clientId = message.clientId;
     this.#state.contractVersion = SYNC_CONTRACT_VERSION;
     return [];
@@ -231,7 +264,7 @@ export class SyncSession {
       this.#reject(send, message, REJECT_CODES.invalidMessage, "joinBoard needs a boardId");
       return;
     }
-    const allowed = await this.#options.authorizer.canJoin(this.#state.identity.userId, boardId);
+    const allowed = await this.#options.authorizer.canJoin(this.#state.identity.userId, boardId, this.#authContext());
     if (!allowed) {
       this.#reject(send, message, REJECT_CODES.forbidden, "the session has no access to this board");
       return;

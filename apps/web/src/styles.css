@@ -162,3 +162,83 @@ body { margin: 0; background: var(--bg); color: var(--fg); font-family: var(--fo
     transition: none;
   }
 }
+
+/* P6-09 (L05, realtime): the bottom save-status region and layer 7a remote cursors. */
+.board-status {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-8);
+  min-height: var(--header-height);
+  padding: 0 var(--space-16);
+  background: var(--surface);
+  border-top: var(--border-width) solid var(--border);
+}
+
+.board-status-text {
+  font-size: var(--text-12);
+  color: var(--muted);
+  transition: opacity var(--motion-fade) ease;
+}
+
+.board-status-text[data-tone="danger"],
+.board-status-retry {
+  color: var(--danger);
+}
+
+.board-status-retry {
+  padding: 0;
+  background: transparent;
+  border: none;
+  font-family: var(--font-sans);
+  font-size: var(--text-12);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.board-status-retry:focus-visible {
+  outline: var(--outline-width) solid var(--accent);
+  outline-offset: var(--outline-offset);
+}
+
+.remote-cursors {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: var(--layer-remote-cursors);
+}
+
+.remote-cursor {
+  position: absolute;
+  top: 0;
+  left: 0;
+  color: var(--remote-color);
+  will-change: transform;
+}
+
+.remote-cursor-pointer {
+  display: block;
+  width: var(--icon-card);
+  height: var(--icon-card);
+}
+
+.remote-cursor-label {
+  position: absolute;
+  top: var(--space-16);
+  left: var(--space-12);
+  padding: var(--space-4) var(--space-8);
+  border-radius: var(--radius-tooltip);
+  background: var(--remote-color);
+  color: var(--bg);
+  font-size: var(--text-12);
+  white-space: nowrap;
+}
+
+.remote-selection {
+  position: absolute;
+  top: 0;
+  left: 0;
+  border: var(--border-width-strong) solid var(--remote-color);
+  pointer-events: none;
+}

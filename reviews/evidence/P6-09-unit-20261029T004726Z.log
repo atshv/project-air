@@ -1,0 +1,212 @@
+$ pnpm test --affected
+[exit 0]
+
+
+   • turbo 2.11.10
+   • Packages in scope: //, @project-air/auth, @project-air/sync, @project-air/web
+   • Running test in 4 packages
+   • Remote caching disabled, using shared worktree cache
+
+@project-air/web:build: cache hit, replaying logs 51262ff8317eb6d1
+@project-air/sync:build: cache hit, replaying logs f257d1ec61578e29
+@project-air/web:build: $ vite build
+@project-air/web:build: vite v8.3.5 building client environment for production...
+@project-air/web:build: transforming...
+@project-air/web:build: ✓ 192 modules transformed.
+@project-air/web:build: rendering chunks...
+@project-air/web:build: computing gzip size...
+@project-air/web:build: dist/index.html                   0.44 kB │ gzip:   0.28 kB
+@project-air/web:build: dist/assets/index-CNQQJIAj.css   13.85 kB │ gzip:   3.22 kB
+@project-air/web:build: dist/assets/index-UQ5PRkWB.js   452.30 kB │ gzip: 139.48 kB
+@project-air/web:build: 
+@project-air/web:build: ✓ built in 142ms
+@project-air/auth:build: cache hit, replaying logs 0dadd69b3d9ab7a9
+@project-air/sync:build: $ tsc --project tsconfig.json
+@project-air/auth:build: $ tsc --project tsconfig.json
+@project-air/web:test: cache hit, replaying logs a5044b7c24ce3917
+@project-air/sync:test: cache hit, replaying logs 79b195f0e56f6bc1
+@project-air/auth:test: cache hit, replaying logs 6cc6f9bc318e9877
+@project-air/sync:test: $ node --test --test-concurrency=1 test/*.test.mjs
+@project-air/sync:test: (node:14321) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.
+@project-air/sync:test: (Use `node --trace-warnings ...` to show where the warning was created)
+@project-air/sync:test: ✔ live socket integration: join, ack-after-commit, updateNoteBody log/broadcast/catch-up and reconnect (155.45775ms)
+@project-air/sync:test: (node:14343) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.
+@project-air/sync:test: (Use `node --trace-warnings ...` to show where the warning was created)
+@project-air/sync:test: ✔ join replay rebuilds the committed state after compaction (real Pg store) (220.885958ms)
+@project-air/sync:test: ✔ a >1 MiB snapshot is delivered to a joining client (37.1515ms)
+@project-air/sync:test: ✔ live presence: throttled, identity-derived, isolated, cleaned up and never blocking operations (556.04925ms)
+@project-air/sync:test: ✔ the built production entry starts, resolves the built CRDT and shuts down (238.204ms)
+@project-air/sync:test: ✔ hello is required first and the first message rejection is explicit (1.633ms)
+@project-air/sync:test: ✔ version and session validation reject before joinBoard (0.294917ms)
+@project-air/sync:test: ✔ the platform authorizer gates joinBoard and welcome/snapshot carry the durable seq (0.663708ms)
+@project-air/sync:test: ✔ operationBatch is persisted before the ack and the ack carries the new seq (0.540208ms)
+@project-air/sync:test: ✔ a failed append produces a reject and never an ack (0.204625ms)
+@project-air/sync:test: ✔ resyncRequest reads from the durable seq and leaveBoard broadcasts presence (0.239917ms)
+@project-air/sync:test: (node:14365) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.
+@project-air/sync:test: (Use `node --trace-warnings ...` to show where the warning was created)
+@project-air/sync:test: ✔ join/resync/compaction replay more than the 500-row page (1894.219041ms)
+@project-air/sync:test: restart harness evidence: /private/tmp/air-P6-09/reviews/evidence/P5-06-restart-20261029T004402Z.json
+@project-air/sync:test: ✔ restart, catch-up and snapshot compaction preserve every acked update (1103.421542ms)
+@project-air/sync:test: ✔ the browser cookie is validated through auth /session and mapped to the contract account id (15.457916ms)
+@project-air/sync:test: ✔ a UUIDv4 Kratos identity is resolved through the platform session route with the same cookie (5.201791ms)
+@project-air/sync:test: ✔ the tokenRef test-mode path is forwarded as x-test-session, not as a cookie (2.302166ms)
+@project-air/sync:test: ✔ a rejected or unreachable auth service denies without leaking the cookie (2.351584ms)
+@project-air/sync:test: ✔ the platform board check receives the session cookie and returns the allow/deny decision (2.094292ms)
+@project-air/sync:test: ✔ credentialHeaders prefers the browser cookie and never invents credentials (0.093375ms)
+@project-air/sync:test: ✔ a browser cookie on the upgrade authenticates the socket; missing or foreign cookies are rejected without data (12.170917ms)
+@project-air/sync:test: ✔ the tokenRef path is still handed to the authenticator for test/non-browser clients (2.097542ms)
+@project-air/sync:test: ✔ encodeFrame produces a valid 127-length frame for a 1.5 MiB outbound payload (0.882791ms)
+@project-air/sync:test: ✔ the default inbound bound still rejects >1 MiB frames (0.567875ms)
+@project-air/sync:test: ✔ the handshake accept value matches the RFC 6455 vector (0.809625ms)
+@project-air/sync:test: ✔ masked client frames decode and unmasked/reserved frames are rejected (0.319084ms)
+@project-air/sync:test: ✔ fragmentation reassembles and enforces the bounded size (0.245125ms)
+@project-air/sync:test: ✔ ping is answered with pong and close ends the connection (0.299417ms)
+@project-air/sync:test: ✔ an oversized declared frame closes with 1009 before allocating it (0.111459ms)
+@project-air/sync:test: ℹ tests 28
+@project-air/sync:test: ℹ suites 0
+@project-air/sync:test: ℹ pass 28
+@project-air/sync:test: ℹ fail 0
+@project-air/sync:test: ℹ cancelled 0
+@project-air/sync:test: ℹ skipped 0
+@project-air/sync:test: ℹ todo 0
+@project-air/sync:test: ℹ duration_ms 6822.646625
+@project-air/web:test: $ node --test test/*.test.mjs
+@project-air/web:test: ✔ toolbar has groups, one primary accent tool and a default active tool (0.43625ms)
+@project-air/web:test: ✔ view camera clamps zoom and rejects foreign/corrupt records (0.433792ms)
+@project-air/web:test: ✔ backend selection defaults to WebGL2 and fails closed without an adapter (0.064292ms)
+@project-air/web:test: ✔ board titles are trimmed, non-empty and at most 120 characters (0.425084ms)
+@project-air/web:test: ✔ boards sort by updatedAt descending without mutating the input (0.375916ms)
+@project-air/web:test: ✔ dates format with Intl for the active language and invalid dates are empty (20.326083ms)
+@project-air/web:test: ✔ workspace selection uses the stored id when present, otherwise the first workspace (0.423916ms)
+@project-air/web:test: (node:17095) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.
+@project-air/web:test: (Use `node --trace-warnings ...` to show where the warning was created)
+@project-air/web:test: ✔ the duplicated note is contract-valid with the board workspaceId and no extra fields (4.145708ms)
+@project-air/web:test: ✔ delete and reorder operations carry inverses and never empty metadata (0.341625ms)
+@project-air/web:test: ✔ en and de catalogs have identical key sets (1.719208ms)
+@project-air/web:test: ✔ translate resolves nested keys and interpolates values (0.168167ms)
+@project-air/web:test: ✔ German is the default and a stored choice persists (0.091875ms)
+@project-air/web:test: ✔ keyboard map handles modifiers, delete, escape and arrows; fields suppress shortcuts (0.474708ms)
+@project-air/web:test: ✔ arrows group into one delta after the 300 ms burst (0.471709ms)
+@project-air/web:test: ✔ context menu model has the L12 items, shortcuts and disabled states (0.156167ms)
+@project-air/web:test: ✔ fractional z sits between neighbours and carries the previous z as inverse (0.096917ms)
+@project-air/web:test: (node:17098) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.
+@project-air/web:test: (Use `node --trace-warnings ...` to show where the warning was created)
+@project-air/web:test: ✔ one body save is exactly one updateNoteBody operation whose inverse is the previous body (3.250042ms)
+@project-air/web:test: ✔ a title change is exactly one updateNote whose inverse is the previous title (0.200042ms)
+@project-air/web:test: ✔ one save batches at most one body and one title operation through the one writer (0.419625ms)
+@project-air/web:test: ✔ a body-only save sends exactly one updateNoteBody; a title-only save exactly one updateNote (0.320459ms)
+@project-air/web:test: ✔ the autosave value round-trips the title and the contract body (0.134833ms)
+@project-air/web:test: ✔ contract limit and rejection errors surface honestly and send nothing (0.377333ms)
+@project-air/web:test: ✔ a changed invalid title writes nothing while an unchanged stored title is kept (0.093416ms)
+@project-air/web:test: ✔ a card resolves its one referenced note (AD-4, never duplicated) (0.445625ms)
+@project-air/web:test: ✔ a card whose note is gone yields the missing state, not a new note (0.335958ms)
+@project-air/web:test: ✔ a missing, absent or invalid note body falls back to the contract empty body (0.34075ms)
+@project-air/web:test: ✔ only an empty note focuses its editor on open (L06) (0.170209ms)
+@project-air/web:test: ✔ note titles are trimmed, non-empty and at most 300 characters (L09) (0.08075ms)
+@project-air/web:test: ✔ the panel is 400 px with a 12 px gap and full width at a 390 px viewport (0.608542ms)
+@project-air/web:test: ✔ the L04 state machine has closed/opening/open/closing transitions (0.0975ms)
+@project-air/web:test: ✔ a card that is already clear of the panel never moves the view (0.097ms)
+@project-air/web:test: ✔ a card under the panel is panned 24 px left of it in one transient camera (0.104292ms)
+@project-air/web:test: ✔ the pan respects zoom and never applies to the full-width mobile panel (0.102167ms)
+@project-air/web:test: ✔ the panel pan is 300 ms and respects reduced motion (0.07125ms)
+@project-air/web:test: ✔ browser hello carries an opaque contract-valid token reference, never a token (0.74425ms)
+@project-air/web:test: ✔ same-origin sync URL follows the page protocol and host (0.083542ms)
+@project-air/web:test: ✔ connection state maps SDK status to connecting/joined/offline/error (0.079167ms)
+@project-air/web:test: ✔ only an AUTH_REQUIRED reject is terminal session expiry (0.061041ms)
+@project-air/web:test: ✔ presence colours use tokens and fall back to a token, never a raw colour (0.075417ms)
+@project-air/web:test: ✔ presence labels come from the server nameRef, not from client text (0.098ms)
+@project-air/web:test: ✔ remote cursors fade after 5 s and project into screen space with clipping (0.791625ms)
+@project-air/web:test: ✔ remote selection resolves known ids and skips removed objects (0.104209ms)
+@project-air/web:test: ✔ L05 status maps saving/saved/error/offline/session-expiry honestly (0.120042ms)
+@project-air/web:test: ✔ Saved disappears exactly after 2 s (0.091959ms)
+@project-air/web:test: ✔ every required route exists with message-backed title and body keys (0.519708ms)
+@project-air/web:test: ✔ route helpers stay pure and encode board ids (0.119708ms)
+@project-air/web:test: ✔ login validation mirrors the server rules (0.640666ms)
+@project-air/web:test: ✔ registration requires email, display name and at least 8 password characters (0.097667ms)
+@project-air/web:test: ✔ recovery validates the email and maps typed errors to message keys (0.097333ms)
+@project-air/web:test: ℹ tests 49
+@project-air/web:test: ℹ suites 0
+@project-air/web:test: ℹ pass 49
+@project-air/web:test: ℹ fail 0
+@project-air/web:test: ℹ cancelled 0
+@project-air/web:test: ℹ skipped 0
+@project-air/web:test: ℹ todo 0
+@project-air/web:test: ℹ duration_ms 514.281084
+@project-air/auth:test: $ node --test test/*.test.mjs
+@project-air/auth:test: ✔ login creates+submits the flow, forwards the session cookie and keeps credentials out of the response (75.375542ms)
+@project-air/auth:test: ✔ invalid credentials and provider failure are typed errors (11.712375ms)
+@project-air/auth:test: ✔ registration, recovery and logout map success/conflict/cookie clear (9.452875ms)
+@project-air/auth:test: ✔ test-mode session path is untouched and still gated by the flag (2.259291ms)
+@project-air/auth:test: ✔ parses a complete environment and normalises the Kratos URLs (2.178041ms)
+@project-air/auth:test: ✔ defaults NODE_ENV, LOG_LEVEL and HOST (0.144542ms)
+@project-air/auth:test: ✔ AUTH_PORT is required and must be a valid port number (0.762417ms)
+@project-air/auth:test: ✔ secrets are required, long enough and never echoed (1.422167ms)
+@project-air/auth:test: ✔ the Kratos URLs are required http(s) URLs (0.523042ms)
+@project-air/auth:test: ✔ a missing or invalid DATABASE_URL fails fast (0.203708ms)
+@project-air/auth:test: ✔ NODE_ENV and LOG_LEVEL reject unknown values (0.790416ms)
+@project-air/auth:test: ✔ the test-session mode is opt-in and impossible in production (0.170958ms)
+@project-air/auth:test: ✔ liveness answers 200 while the database is down (26.076625ms)
+@project-air/auth:test: ✔ readiness answers 200 when the database ping succeeds (5.249125ms)
+@project-air/auth:test: ✔ readiness includes the Kratos check when wired (2.736042ms)
+@project-air/auth:test: ✔ readiness answers 503 when the database ping fails (1.779083ms)
+@project-air/auth:test: ✔ readiness answers 503 when the database is unreachable (3.179416ms)
+@project-air/auth:test: ✔ creates an identity through the Kratos admin API and returns its id (93.838917ms)
+@project-air/auth:test: ✔ a missing or wrong admin token is 401 AUTH_REQUIRED (35.369ms)
+@project-air/auth:test: ✔ an invalid invitation body is 400 VALIDATION with field details (3.28075ms)
+@project-air/auth:test: ✔ a duplicate e-mail is 409 CONFLICT (8.252292ms)
+@project-air/auth:test: ✔ a Kratos failure is a 503 INTERNAL (5.800792ms)
+@project-air/auth:test: ✔ whoami returns the mapped identity and forwards the cookie (49.058709ms)
+@project-air/auth:test: ✔ whoami returns null for a missing or expired session (4.99125ms)
+@project-air/auth:test: ✔ whoami rejects an unexpected Kratos status (4.989334ms)
+@project-air/auth:test: ✔ createIdentity sends the traits and returns the identity (62.975958ms)
+@project-air/auth:test: ✔ createIdentity maps a duplicate e-mail to conflict (7.540417ms)
+@project-air/auth:test: ✔ createRecoveryLink and listIdentities call the admin API (18.799ms)
+@project-air/auth:test: ✔ the public flow clients return id and action (17.220125ms)
+@project-air/auth:test: ✔ ready is true for a healthy Kratos and false for 503 or a closed port (5.3685ms)
+@project-air/auth:test: ✔ a slow Kratos times out as unavailable (55.417375ms)
+@project-air/auth:test: ✔ an invalid JSON body is a bad_response error (0.472208ms)
+@project-air/auth:test: ✔ loads the migrations in file-name order with SHA-256 checksums (6.455041ms)
+@project-air/auth:test: ✔ returns the success envelope with a UUIDv7 request id in the header (48.072459ms)
+@project-air/auth:test: ✔ keeps a valid UUIDv7 client request id and replaces anything else (27.913417ms)
+@project-air/auth:test: ✔ parses the query string (2.585833ms)
+@project-air/auth:test: ✔ returns the contract error envelope for an unknown path (4.859958ms)
+@project-air/auth:test: ✔ returns 405 with an Allow header for a known path and the wrong method (2.057416ms)
+@project-air/auth:test: ✔ reads a JSON body and wraps the result (10.577667ms)
+@project-air/auth:test: ✔ rejects invalid JSON with a VALIDATION envelope (2.347791ms)
+@project-air/auth:test: ✔ rejects a non-JSON content type with 415 (8.303667ms)
+@project-air/auth:test: ✔ rejects a body above the limit with 413 (2.825375ms)
+@project-air/auth:test: ✔ a custom status and headers are preserved (2.014958ms)
+@project-air/auth:test: ✔ an empty handler result is a 204 without a body (3.210125ms)
+@project-air/auth:test: ✔ an unexpected error becomes a generic INTERNAL envelope (2.939791ms)
+@project-air/auth:test: ✔ a valid Kratos session returns the account id, e-mail and display name (19.471583ms)
+@project-air/auth:test: ✔ no session cookie is 401 AUTH_REQUIRED (1.355334ms)
+@project-air/auth:test: ✔ an invalid or expired Kratos session is 401 AUTH_REQUIRED (1.695041ms)
+@project-air/auth:test: ✔ an error response from Kratos is a 503 INTERNAL (1.25775ms)
+@project-air/auth:test: ✔ an unreachable Kratos is a 503 INTERNAL (1.522292ms)
+@project-air/auth:test: ✔ POST /test/session mints a session that GET /session accepts (7.353041ms)
+@project-air/auth:test: ✔ a tampered or expired test session is 401, never 500 (2.350625ms)
+@project-air/auth:test: ✔ POST /test/session validates its body (1.559542ms)
+@project-air/auth:test: ✔ without test mode the test-session route does not exist and the header is ignored (0.882375ms)
+@project-air/auth:test: ✔ the forwarded upgrade cookie yields the session user sync maps to the socket (17.666459ms)
+@project-air/auth:test: ✔ a missing or expired session is 401 AUTH_REQUIRED, which sync rejects without data (3.428584ms)
+@project-air/auth:test: ✔ the tokenRef fallback validates through the test-mode header (non-browser clients) (1.650709ms)
+@project-air/auth:test: ✔ mints the documented three-part token and verifies it (1.443958ms)
+@project-air/auth:test: ✔ rejects a tampered signature and another secret (0.124625ms)
+@project-air/auth:test: ✔ rejects an expired token (0.083625ms)
+@project-air/auth:test: ✔ rejects malformed tokens (0.071916ms)
+@project-air/auth:test: ✔ rejects an invalid account id and an out-of-range TTL (0.363084ms)
+@project-air/auth:test: ✔ the header name and the deterministic test profile are stable (0.217958ms)
+@project-air/auth:test: ℹ tests 63
+@project-air/auth:test: ℹ suites 0
+@project-air/auth:test: ℹ pass 63
+@project-air/auth:test: ℹ fail 0
+@project-air/auth:test: ℹ cancelled 0
+@project-air/auth:test: ℹ skipped 0
+@project-air/auth:test: ℹ todo 0
+@project-air/auth:test: ℹ duration_ms 1141.57275
+
+ Tasks:    6 successful, 6 total
+Cached:    6 cached, 6 total
+  Time:    62ms >>> FULL TURBO
+
+$ turbo run test --affected

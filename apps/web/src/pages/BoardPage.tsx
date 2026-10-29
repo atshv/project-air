@@ -1,11 +1,35 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import { Link, useNavigate, useParams } from "react-router";
 
 import { createEngine, EngineError, type Engine, type EngineCamera, type EngineGeometry } from "../../../../packages/engine/src/bridge/engine.ts";
 import { deviceKeyFor, parseViewRecord, storageKeyFor } from "../../../../packages/engine/src/bridge/view-persistence.ts";
-import { createBoardSyncClient, createRequestId, type BoardSyncClient } from "../../../../packages/sdk/src/index.ts";
+import {
+  createBoardSyncClient,
+  createRequestId,
+  type AutosaveEvent,
+  type AutosaveStatus,
+  type BoardSyncClient,
+  type BoardSyncStatus,
+  type RemoteParticipant,
+} from "../../../../packages/sdk/src/index.ts";
 import { LAYER_Z_INDEX } from "../../../../packages/ui-kit/layers.ts";
 import { api } from "../auth/client.ts";
+import {
+  BROWSER_SESSION_TOKEN_REF,
+  SAVED_VISIBLE_MS,
+  connectionMessageKey,
+  connectionPhase,
+  cursorOpacity,
+  cursorScreenPoint,
+  isSessionExpired,
+  presenceColor,
+  presenceLabel,
+  saveStatusView,
+  savedStillVisible,
+  selectionRects,
+  syncUrl,
+  worldToScreen,
+} from "../board/realtime.ts";
 import { toolGroups, type ToolId } from "../board/toolbar.ts";
 import { createArrowBurst, arrowDelta, contextMenuModel, shortcutFor, suppressesShortcuts, undoHintKey, type FocusLike } from "../board/interactions.ts";
 import { buildDeleteOperation, buildDuplicateCardOperation, buildReorderOperation } from "../board/operations.ts";
@@ -50,9 +74,24 @@ export function BoardPage({ t, language, clientId }: BoardPageProps) {
   void language;
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const engineRef = useRef<Engine | null>(null); const syncRef = useRef<BoardSyncClient | null>(null); const cameraRef = useRef<EngineCamera>(DEFAULT_CAMERA); const saveTimer = useRef<number | null>(null); const contentRef = useRef<BoardContent | null>(null);
-  const [state, setState] = useState<{ loading: boolean; errorKey: string | null; board: Board | null; backend: string | null; empty: boolean; syncStatus: string }>({ loading: true, errorKey: null, board: null, backend: null, empty: true, syncStatus: "idle" });
+  const ackWaitersRef = useRef<Map<string, { resolve: () => void; reject: (error: unknown) => void }>>(new Map());
+  const queuedWaitersRef = useRef<{ resolve: () => void; reject: (error: unknown) => void }[]>([]);
+  const autosaveControlRef = useRef<{ retry: () => void } | null>(null);
+  const selectedRef = useRef<{ kind: "card" | "zone" | "block"; id: string } | null>(null);
+  const lastPresenceCursor = useRef<{ x: number; y: number } | null>(null);
+  const [state, setState] = useState<{ loading: boolean; errorKey: string | null; board: Board | null; backend: string | null; empty: boolean }>({ loading: true, errorKey: null, board: null, backend: null, empty: true });
+  const [syncStatus, setSyncStatus] = useState<BoardSyncStatus>("idle");
+  const [sessionExpired, setSessionExpired] = useState(false);
+  const [autosaveStatus, setAutosaveStatus] = useState<AutosaveStatus>("idle");
+  const [savedAt, setSavedAt] = useState<number | null>(null);
+  const [participants, setParticipants] = useState<readonly RemoteParticipant[]>([]);
+  const [presenceSeen, setPresenceSeen] = useState<Readonly<Record<string, number>>>({});
+  const [presenceNow, setPresenceNow] = useState(0);
+  const [camera, setCamera] = useState<EngineCamera>(DEFAULT_CAMERA);
+  const [viewport, setViewport] = useState({ width: 0, height: 0 });
   const [tool, setTool] = useState<ToolId>("select");
   const [selected, setSelected] = useState<{ kind: "card" | "zone" | "block"; id: string } | null>(null);
+  selectedRef.current = selected;
   const [content, setContent] = useState<BoardContent | null>(null);
   const [panel, setPanel] = useState<{ cardId: string; open: boolean } | null>(null);
   const panelRef = useRef<{ cardId: string; open: boolean } | null>(null);
@@ -63,7 +102,14 @@ export function BoardPage({ t, language, clientId }: BoardPageProps) {
   const hintTimer = useRef<number | null>(null);
   const burstRef = useRef<ReturnType<typeof createArrowBurst> | null>(null);
 
-  const applyCamera = useCallback((camera: EngineCamera) => { const engine = engineRef.current; if (engine === null) return; cameraRef.current = clampCamera(camera); engine.setCamera(cameraRef.current); engine.visibleInstanceCount(); }, []);
+  const applyCamera = useCallback((camera: EngineCamera) => {
+    const engine = engineRef.current;
+    if (engine === null) return;
+    cameraRef.current = clampCamera(camera);
+    engine.setCamera(cameraRef.current);
+    engine.visibleInstanceCount();
+    setCamera(cameraRef.current);
+  }, []);
   const persistCamera = useCallback(() => {
     if (saveTimer.current !== null) window.clearTimeout(saveTimer.current);
     saveTimer.current = window.setTimeout(() => {
@@ -113,14 +159,113 @@ export function BoardPage({ t, language, clientId }: BoardPageProps) {
     const reduced = typeof window.matchMedia === "function" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     animateCameraTo(target, reduced ? 0 : PANEL_PAN_MS);
   }, [animateCameraTo]);
-  const sendNoteOperations = useCallback((operations: readonly Record<string, unknown>[]) => {
-    syncRef.current?.sendOperations(operations);
+  /**
+   * L05: one note save resolves only on the server ack of its batch. The SDK
+   * queues the batch while offline (no ack yet); a reconnect flush acknowledges
+   * it. A rejected batch or a lost connection rejects the save, so the panel
+   * never reports "Saved" before the server confirmed (AD-2).
+   */
+  const sendNoteOperations = useCallback((operations: readonly Record<string, unknown>[]): Promise<void> => {
+    if (operations.length === 0) return Promise.resolve();
+    const sync = syncRef.current;
+    if (sync === null) return Promise.reject(new Error("sync is not available"));
+    const batchId = sync.sendOperations(operations);
+    return new Promise<void>((resolve, reject) => {
+      if (batchId === null) queuedWaitersRef.current.push({ resolve, reject });
+      else ackWaitersRef.current.set(batchId, { resolve, reject });
+    });
   }, []);
+
+  const onAutosaveEvent = useCallback((event: AutosaveEvent): void => {
+    if (event.type === "status") setAutosaveStatus(event.status);
+    else if (event.type === "saved") {
+      setAutosaveStatus("saved");
+      setSavedAt(Date.now());
+    } else if (event.type === "error") setAutosaveStatus("error");
+  }, []);
+  const onAutosaveReady = useCallback((control: { retry: () => void } | null): void => {
+    autosaveControlRef.current = control;
+  }, []);
+
+  // "Saved" fades after the --motion-saved window (2 s), never before.
+  useEffect(() => {
+    if (savedAt === null) return undefined;
+    const timer = window.setTimeout(() => setSavedAt(null), SAVED_VISIBLE_MS);
+    return () => window.clearTimeout(timer);
+  }, [savedAt]);
+
+  // The 5 s cursor fade needs a heartbeat while remote participants exist.
+  useEffect(() => {
+    if (participants.length === 0) return undefined;
+    const timer = window.setInterval(() => setPresenceNow(Date.now()), 1_000);
+    return () => window.clearInterval(timer);
+  }, [participants.length]);
+
+  const retrySave = useCallback((): void => {
+    if (sessionExpired) {
+      // Terminal session expiry: re-check the session once, then reload into a
+      // fresh handshake or go to the login page. No reconnect loop.
+      void (async () => {
+        try {
+          await api.auth.getSession();
+          window.location.reload();
+        } catch {
+          await navigate(`/login?next=${encodeURIComponent(window.location.pathname)}`);
+        }
+      })();
+      return;
+    }
+    autosaveControlRef.current?.retry();
+  }, [sessionExpired, navigate]);
+
+  // Presence: the SDK throttles outbound updates; the app only reports the world
+  // cursor and the selected ids. The server derives name and colour.
+  const onCanvasMouseMove = useCallback((event: React.MouseEvent<HTMLCanvasElement>): void => {
+    const sync = syncRef.current;
+    if (sync === null) return;
+    const rect = event.currentTarget.getBoundingClientRect();
+    const zoom = cameraRef.current.zoom > 0 ? cameraRef.current.zoom : 1;
+    const cursor = { x: (event.clientX - rect.left) / zoom + cameraRef.current.panX, y: (event.clientY - rect.top) / zoom + cameraRef.current.panY };
+    lastPresenceCursor.current = cursor;
+    sync.updatePresence({ cursor, selection: selectedRef.current === null ? [] : [selectedRef.current.id] });
+  }, []);
+  useEffect(() => {
+    const sync = syncRef.current;
+    const cursor = lastPresenceCursor.current;
+    if (sync === null || cursor === null) return;
+    sync.updatePresence({ cursor, selection: selected === null ? [] : [selected.id] });
+  }, [selected]);
 
   useEffect(() => {
     const canvas = canvasRef.current; const boardId = id;
     if (canvas === null || boardId === undefined) return;
-    let disposed = false; let observer: ResizeObserver | null = null; let engine: Engine | null = null; let sync: BoardSyncClient | null = null;
+    let disposed = false; let observer: ResizeObserver | null = null; let engine: Engine | null = null; let sync: BoardSyncClient | null = null; let unsubscribePresence: (() => void) | null = null;
+    {
+      // A board switch starts a fresh session: clear the old board's presence
+      // and save state immediately (no stale cursors, no stale status).
+      setSyncStatus("connecting");
+      setSessionExpired(false);
+      setParticipants([]);
+      setPresenceSeen({});
+      setAutosaveStatus("idle");
+      setSavedAt(null);
+      // The previous board's retry control must never send to the new session.
+      autosaveControlRef.current = null;
+    }
+    const rejectAcks = (error: unknown): void => {
+      for (const waiter of ackWaitersRef.current.values()) waiter.reject(error);
+      ackWaitersRef.current.clear();
+    };
+    const resolveAck = (batchId: string): void => {
+      const waiter = ackWaitersRef.current.get(batchId);
+      if (waiter !== undefined) {
+        ackWaitersRef.current.delete(batchId);
+        waiter.resolve();
+      }
+      // A reconnect flush sends the queued offline edits in one batch; that ack
+      // confirms every save that was waiting on the offline queue.
+      for (const queued of queuedWaitersRef.current.splice(0)) queued.resolve();
+    };
     const start = async (): Promise<void> => {
       try {
         const board = await api.boards.get(boardId);
@@ -134,7 +279,12 @@ export function BoardPage({ t, language, clientId }: BoardPageProps) {
         engineRef.current = engine;
         setState((current) => ({ ...current, backend: engine?.activeBackend ?? backend }));
         
-        const resize = (): void => { const rect = canvas.getBoundingClientRect(); engine?.resize(Math.max(1, rect.width), Math.max(1, rect.height), window.devicePixelRatio || 1); persistCamera(); };
+        const resize = (): void => {
+          const rect = canvas.getBoundingClientRect();
+          engine?.resize(Math.max(1, rect.width), Math.max(1, rect.height), window.devicePixelRatio || 1);
+          setViewport({ width: Math.max(1, rect.width), height: Math.max(1, rect.height) });
+          persistCamera();
+        };
         resize(); observer = new ResizeObserver(resize); observer.observe(canvas);
         // Restore the L17 camera for this board/device, else fit the board.
         const deviceKey = deviceKeyFor(canvas.clientWidth, canvas.clientHeight, window.devicePixelRatio); void language;
@@ -143,7 +293,7 @@ export function BoardPage({ t, language, clientId }: BoardPageProps) {
         const content = EMPTY_CONTENT(board); contentRef.current = content; setContent(content);
         const fitted = engine.fitView(bounds(content), { width: canvas.clientWidth, height: canvas.clientHeight });
         applyCamera(restored ?? fitted);
-        const syncUrl = `${window.location.protocol === "https:" ? "wss" : "ws"}://${window.location.host}/v1/sync`;
+        const socketUrl = syncUrl(window.location);
         // The SDK owns the client document (real CRDT default, ADR-0012); the app
         // only projects the resulting board content to the engine.
         const project = (): void => {
@@ -155,16 +305,53 @@ export function BoardPage({ t, language, clientId }: BoardPageProps) {
           projectContent(activeEngine, snapshot);
           setState((current) => ({ ...current, empty: snapshot.cards.length + snapshot.zones.length + snapshot.blocks.length === 0 }));
         };
+        // P6-09: the browser handshake. No token is read in JS: the same-origin
+        // session cookie rides on the WebSocket upgrade and the tokenRef is only
+        // the opaque contract reference the service ignores for cookie sessions.
         sync = createBoardSyncClient({
-          createSocket: () => new WebSocket(syncUrl),
-          boardId, tokenRef: "session", clientId: clientId || createRequestId(),
+          createSocket: () => new WebSocket(socketUrl),
+          boardId, tokenRef: BROWSER_SESSION_TOKEN_REF, clientId: clientId || createRequestId(),
           initialContent: content,
           onChange: (event) => {
-            if (event.type === "status") setState((current) => ({ ...current, syncStatus: event.status }));
-            if (event.type === "snapshot" || event.type === "remote" || event.type === "ack") project();
+            if (event.type === "status") {
+              setSyncStatus(event.status);
+              // Batches sent on a dropped connection are not acknowledged; the
+              // save is not confirmed, so the L05 status must say so. Offline
+              // queued edits stay queued and flush on the reconnect.
+              if (event.status === "offline") rejectAcks(new Error("connection lost before the server confirmed the save"));
+            } else if (event.type === "ack") {
+              resolveAck(event.batchId);
+              project();
+            } else if (event.type === "snapshot" || event.type === "remote") {
+              project();
+            }
+            if (event.type === "error") {
+              if (isSessionExpired(event.error)) {
+                // Terminal: the session is gone. Stop the client so the SDK does
+                // not reconnect in a loop, and let the L05 region offer retry/login.
+                setSessionExpired(true);
+                setSyncStatus("closed");
+                setParticipants([]);
+                for (const waiter of ackWaitersRef.current.values()) waiter.reject(event.error);
+                ackWaitersRef.current.clear();
+                for (const waiter of queuedWaitersRef.current.splice(0)) waiter.reject(event.error);
+                sync?.close();
+              } else {
+                rejectAcks(event.error);
+              }
+            }
           },
         });
         syncRef.current = sync;
+        unsubscribePresence = sync.onPresence((list) => {
+          const now = Date.now();
+          setParticipants(list);
+          setPresenceSeen((current) => {
+            const next: Record<string, number> = { ...current };
+            for (const participant of list) next[participant.clientId] = now;
+            return next;
+          });
+        });
         sync.start(); project();
         setState((current) => ({ ...current, loading: false }));
       } catch (error) {
@@ -172,12 +359,16 @@ export function BoardPage({ t, language, clientId }: BoardPageProps) {
         const status = error !== null && typeof error === "object" && "status" in error ? error.status : 0;
         if (status === 404 || status === 403) { void navigate("/boards", { replace: true }); return; }
         const messageKey = error instanceof EngineError ? "board.errors.engine" : "errors.generic";
-        setState({ loading: false, errorKey: messageKey, board: null, backend: null, empty: true, syncStatus: "error" });
+        setSyncStatus("closed");
+        setState({ loading: false, errorKey: messageKey, board: null, backend: null, empty: true });
       }
     };
     void start();
     return () => {
-      disposed = true; if (saveTimer.current !== null) window.clearTimeout(saveTimer.current); cancelPanelPan(); observer?.disconnect(); sync?.close(); syncRef.current = null; engine?.dispose(); engineRef.current = null;
+      disposed = true; if (saveTimer.current !== null) window.clearTimeout(saveTimer.current); cancelPanelPan(); observer?.disconnect(); unsubscribePresence?.(); sync?.close(); syncRef.current = null; engine?.dispose(); engineRef.current = null;
+      // No save may stay pending forever after the board page closes.
+      rejectAcks(new Error("board closed"));
+      for (const waiter of queuedWaitersRef.current.splice(0)) waiter.reject(new Error("board closed"));
     };
   }, [id, clientId, navigate, applyCamera, persistCamera, cancelPanelPan]);
 
@@ -293,15 +484,57 @@ export function BoardPage({ t, language, clientId }: BoardPageProps) {
   if (state.errorKey !== null) return <section className="page"><h1 className="page-title">{t("board.errors.title")}</h1><p className="form-error" role="alert">{t(state.errorKey)}</p><Link className="text-link" to="/boards">{t("boards.backToList")}</Link></section>;
   const groups = toolGroups();
   const panelCard = panel === null ? null : resolveCardNote(content, panel.cardId);
+  const saveView = saveStatusView({ autosave: autosaveStatus, sync: syncStatus, sessionExpired });
+  // "Saved" is shown for the token window after the server confirmation only.
+  const statusView = saveView.state === "saved" && !savedStillVisible(Date.now(), savedAt) ? { state: "hidden" as const, messageKey: "", retryable: false } : saveView;
   return (
     <section className="board-page">
       <header className="board-bar">
         <Link className="text-link" to="/boards" aria-label={t("boards.backToList")}>←</Link>
         <h1 className="board-title">{state.board?.title ?? t("board.untitled")}</h1>
-        <span className="muted small" aria-live="polite">{t("board.sync." + state.syncStatus)}</span>
+        <span className="muted small" aria-live="polite">{t(connectionMessageKey(connectionPhase(syncStatus, sessionExpired)))}</span>
       </header>
       <div className="board-canvas-wrap">
-        <canvas ref={canvasRef} className="board-canvas" tabIndex={-1} aria-label={t("board.canvasLabel")} onClick={pickAt} onContextMenu={openMenu} />
+        <canvas ref={canvasRef} className="board-canvas" tabIndex={-1} aria-label={t("board.canvasLabel")} onClick={pickAt} onContextMenu={openMenu} onMouseMove={onCanvasMouseMove} />
+        {syncStatus === "joined" && !sessionExpired && participants.length > 0 ? (
+          <div className="remote-cursors" aria-hidden="true">
+            {participants.flatMap((participant) => {
+              const nodes: ReactNode[] = [];
+              const color = presenceColor(participant.colorRef);
+              const label = presenceLabel(participant.nameRef);
+              const cursor = cursorScreenPoint(camera, participant.cursor, viewport);
+              if (cursor.visible) {
+                nodes.push(
+                  <span
+                    key={`cursor:${participant.clientId}`}
+                    className="remote-cursor"
+                    data-remote-client={participant.clientId}
+                    style={{ transform: `translate3d(${cursor.point.x}px, ${cursor.point.y}px, 0)`, "--remote-color": color, opacity: cursorOpacity(presenceSeen[participant.clientId] ?? 0, presenceNow) } as CSSProperties}
+                  >
+                    <svg className="remote-cursor-pointer" viewBox="0 0 16 16" focusable="false"><path d="M2 1 L14 8 L8.5 9.5 L6 15 Z" fill="currentColor" /></svg>
+                    <span className="remote-cursor-label">{t("board.presence.label", { id: label })}</span>
+                  </span>,
+                );
+              }
+              selectionRects(content, participant.selection).forEach((rect, index) => {
+                const topLeft = worldToScreen(camera, rect);
+                nodes.push(
+                  <span
+                    key={`selection:${participant.clientId}:${index}`}
+                    className="remote-selection"
+                    style={{
+                      transform: `translate3d(${topLeft.x}px, ${topLeft.y}px, 0)`,
+                      width: `${rect.width * camera.zoom}px`,
+                      height: `${rect.height * camera.zoom}px`,
+                      "--remote-color": color,
+                    } as CSSProperties}
+                  />,
+                );
+              });
+              return nodes;
+            })}
+          </div>
+        ) : null}
         {state.empty ? <p className="board-empty muted">{t("canvas.empty")}</p> : null}
       </div>
       <div className="toolbar" role="toolbar" aria-label={t("canvas.toolbar.label")}>
@@ -347,8 +580,24 @@ export function BoardPage({ t, language, clientId }: BoardPageProps) {
           onClose={closePanel}
           onClosed={() => setPanel(null)}
           sendOperations={sendNoteOperations}
+          onAutosaveEvent={onAutosaveEvent}
+          onAutosaveReady={onAutosaveReady}
         />
       )}
+      <footer className="board-status" data-state={statusView.state} role="status" aria-live="polite">
+        {statusView.retryable ? (
+          <button type="button" className="board-status-retry" onClick={retrySave}>{t(statusView.messageKey)}</button>
+        ) : (
+          <span
+            className="board-status-text"
+            data-tone={statusView.state === "error" || statusView.state === "auth" ? "danger" : "muted"}
+            style={{ opacity: statusView.state === "hidden" ? 0 : 1 }}
+            aria-hidden={statusView.state === "hidden"}
+          >
+            {statusView.state === "hidden" ? "" : t(statusView.messageKey)}
+          </span>
+        )}
+      </footer>
       {hint === null ? null : <p className="undo-hint" role="status" aria-live="polite">{hint}</p>}
       <span className="visually-hidden" data-commit-operation={String(commitOperation.length)} />
     </section>

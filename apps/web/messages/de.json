@@ -232,7 +232,9 @@
       "joined": "Verbunden",
       "offline": "Erneut verbinden …",
       "closed": "Getrennt",
-      "error": "Verbindung fehlgeschlagen"
+      "error": "Verbindung fehlgeschlagen",
+      "offlineChanges": "Offline – Änderungen bleiben erhalten und werden gesendet, sobald die Verbindung wieder da ist.",
+      "authRequired": "Deine Sitzung ist abgelaufen. Melde dich erneut an, um Änderungen zu speichern."
     },
     "errors": {
       "title": "Board konnte nicht geöffnet werden",
@@ -254,6 +256,9 @@
     },
     "duplicate": {
       "title": "Kopie"
+    },
+    "presence": {
+      "label": "Person {id}"
     }
   }
 }

@@ -65,6 +65,11 @@ export async function createSyncService(options: SyncServiceOptions): Promise<Ru
     }
     socket.write(handshakeResponse(String(request.headers["sec-websocket-key"])));
     const connection = createWsConnection(socket as Duplex, request.socket.remoteAddress ?? "");
+    // P6-09: the browser's same-origin session cookie arrives with the upgrade.
+    // It is handed to the injected adapters only — never logged and never sent
+    // anywhere but the auth/platform services.
+    const rawCookie = request.headers.cookie;
+    const connectionCookie = typeof rawCookie === "string" ? rawCookie.trim() : "";
     const sessionOptions: CreateSyncSessionOptions = {
       send: (message) => connection.sendJson(message),
       authenticator: options.authenticator,
@@ -73,6 +78,7 @@ export async function createSyncService(options: SyncServiceOptions): Promise<Ru
       documents: options.documents,
       shouldAck: () => !stopping,
       presence,
+      ...(connectionCookie === "" ? {} : { connectionCookie }),
       broadcast: (boardId, message, exceptClientId) => {
         for (const record of clients) {
           if (record.session.clientId === exceptClientId) continue;

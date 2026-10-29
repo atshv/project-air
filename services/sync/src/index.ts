@@ -6,6 +6,7 @@ import type { BoardContent } from "./types.ts";
 import { loadSyncConfig } from "./config.ts";
 import { createLogger } from "./log.ts";
 import { PgSyncStore } from "./store.ts";
+import { createSessionAdapters } from "./session-auth.ts";
 import { createSyncService } from "./service.ts";
 
 const config = (() => {
@@ -29,34 +30,30 @@ const emptyBoardContent = (): BoardContent => ({
 });
 
 // The CRDT core comes from its built package; Yjs stays inside packages/crdt.
-const crdt = await import("../../../packages/crdt/dist/index.js" as string);
+// The build output of packages/crdt is `dist/packages/crdt/src/index.js` (the
+// package's `main`/`exports` target), relative to this file at
+// services/sync/dist/index.js. Resolve exactly that path: the old
+// `dist/index.js` guess made a real `node dist/index.js` start fail.
+const crdt = await import("../../../packages/crdt/dist/packages/crdt/src/index.js" as string);
 const createYjsBoardDoc = (crdt as { createYjsBoardDoc: (options: { content: BoardContent }) => never }).createYjsBoardDoc;
 const documents = {
   fromContent: (content: BoardContent) => createYjsBoardDoc({ content }) as never,
   fromEmpty: () => createYjsBoardDoc({ content: emptyBoardContent() }) as never,
 };
 
-async function authenticate(tokenRef: string): Promise<{ userId: string } | null> {
-  const response = await fetch(`${config.authServiceUrl}/sessions/validate`, {
-    method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ tokenRef }),
-  });
-  if (!response.ok) return null;
-  const body = (await response.json()) as { userId?: string };
-  return typeof body.userId === "string" ? { userId: body.userId } : null;
-}
-
-async function canJoin(userId: string, boardId: string): Promise<boolean> {
-  const response = await fetch(`${config.platformServiceUrl}/boards/${encodeURIComponent(boardId)}`, {
-    headers: { "x-user-id": userId },
-  });
-  return response.ok;
-}
+// P6-09: the browser session cookie from the WebSocket upgrade is validated
+// through the auth service and the board is authorised through the platform with
+// the same credentials; a hello tokenRef stays the test/non-browser path.
+const { authenticator, authorizer } = createSessionAdapters({
+  authServiceUrl: config.authServiceUrl,
+  platformServiceUrl: config.platformServiceUrl,
+});
 
 const service = await createSyncService({
   host: config.host,
   port: config.port,
-  authenticator: { authenticate },
-  authorizer: { canJoin },
+  authenticator,
+  authorizer,
   store,
   documents,
   logger,

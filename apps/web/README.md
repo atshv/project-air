@@ -69,15 +69,38 @@ package exports the logic modules used by the app (`./logic/operations.js`,
 proxy forwards `/v1/sync` as a WebSocket (`ws: true`) to the slot sync port, and `/v1`/`/v1/auth`
 to platform/auth, so cookies and the sync socket are same-origin in development.
 
-### P6-04 limits (explicit)
+### Realtime, L05 save status and presence (P6-09)
 
-- **Sync authentication is not wired yet:** the browser session cookie / hello
-  handshake for the sync service is **P6-08's** responsibility. Until then the
-  board page connects with a placeholder token and live sync may be rejected.
-- **Browser proof is P6-09 e2e:** engine mount/rendering, WebGL2/WebGPU
-  selection, /v1/sync WebSocket, remote-operation application, gesture -> one
-  operation and view restore across reload are not exercised by this task's
-  tests (they are typechecked/built only).
+The board page now uses the authenticated sync session (P6-09; this supersedes the
+P6-04 placeholder token note). `BoardSyncClient` connects to the same-origin
+`/v1/sync` URL with `clientId` = the session account id and the opaque token
+reference `browser-session`; the session cookie travels with the WebSocket upgrade
+and the SDK receives `hello`/`welcome`/`snapshot`/catch-up, reconnects, projects
+remote operations to the engine and throttles presence. No token is read from or
+written to JavaScript storage, and `apps/web` makes no direct `fetch` call.
+
+**L05 save status.** The bottom status region (fixed 40 px, text from messages, no
+layout shift) is driven by the SDK's one autosave path: "Saving …" while a save
+runs, "Saved" for 2 s after the server ack (never before the ack), a clickable
+"Not saved – retry" on failure, and an honest offline notice while the SDK queue
+holds edits (they flush on reconnect). Title/body saving waits for the
+`operationBatch` ack of its batch; an older response never overwrites a newer value.
+`installFlushTriggers` keeps blur, panel close, navigation, tab-hidden and page-hide
+flushes, the editor keeps its selection on external updates, and a failed save
+retries from the last confirmed value.
+
+**Presence.** Remote cursors and selection outlines render on layer 7a
+(`remote-cursors`) from the server-derived `nameRef`/`colorRef` only: the label is a
+short id fragment (the contract carries a name reference, not a name) and the colour
+is a `--tone-*` token with a token fallback. Cursors fade after 5 s, clip outside the
+viewport, and clear on leave, reconnect/snapshot and board switch. An
+`AUTH_REQUIRED` reject is terminal: the page shows the L05 retry/login state and
+closes the socket instead of reconnecting in a loop.
+
+**Still browser-proven by the stage e2e (P6-10):** engine mount/rendering,
+WebGL2/WebGPU selection, the live two-user edit/offline/reconnect flow and the
+view-restore reload. This task proves the handshake (sync/auth live cookie tests),
+the status/presence mapping (`node --test`) and the production entry start.
 - Toolbar -> engine tool binding and pointer gesture mapping stay P6-05; P6-04
   only selects the active tool state.
 
