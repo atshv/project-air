@@ -125,13 +125,13 @@
 
 ## Ready now
 
-- `P6-10` e2e suite: main flows and the e2e gate on the slot ports
+- none
 
 ## Orchestration
 
 - Limits: 3 attempts/task, 3 in progress
-- Next wave: `P6-10` (tasks/P6-10.md)
-- Running: none
+- Next wave: none — nothing is ready
+- Running: `P6-10` attempt 0/3<!-- polier:claims --> — claimed by dsh<!-- /polier:claims -->
 - Blocked: P0-02, P0-15, P0-16, P0-17 (stage waits); P6-11 (open dependency)
 - Approvals pending: none
 
@@ -249,7 +249,7 @@
 
 ## In progress
 
-- none
+- [ ] `P6-10` e2e suite: main flows and the e2e gate on the slot ports — status: `in_progress` — owner: lead
 
 ## Blocked / failed
 
@@ -261,8 +261,14 @@
 - [ ] `P0-15` Release command and tag-based CI release — status: `pending` — owner: —
 - [ ] `P0-16` Dependency updates and Polier update check — status: `pending` — owner: —
 - [ ] `P0-17` RELEASING.md and release 0.0.1 — status: `pending` — owner: —
-- [ ] `P6-10` e2e suite: main flows and the e2e gate on the slot ports — status: `pending` — owner: —
 - [ ] `P6-11` Canvas evidence, repo-wide checks and the web-app stage report — status: `pending` — owner: —
+
+<!-- polier:claims -->
+## Claims
+
+- `P6-10` in progress by dsh since 2026-10-29T00:49:12+00:00 — worktree: /private/tmp/air-P6-10 · slot 3
+
+<!-- /polier:claims -->
 
 ## Decisions
 
