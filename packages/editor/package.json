@@ -1,0 +1,13 @@
+{
+  "name": "@project-air/editor",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Framework-agnostic contenteditable note editor for the contract 0.4.0 note body document: paragraph/heading/list blocks, bold/italic/code/link marks, plain-text paste, IME-safe editing and deterministic plainText.",
+  "scripts": {
+    "build": "tsc --noEmit --project tsconfig.json",
+    "typecheck": "tsc --noEmit --project tsconfig.json",
+    "lint": "eslint --max-warnings=0 .",
+    "test": "node --test test/*.test.mjs"
+  }
+}

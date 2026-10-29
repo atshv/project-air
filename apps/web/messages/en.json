@@ -54,14 +54,24 @@
     "editorLabel": "Note content",
     "newTitle": "New note",
     "placeholder": "Start writing …",
-    "untitled": "Untitled"
+    "untitled": "Untitled",
+    "titleLabel": "Title",
+    "validation": {
+      "titleEmpty": "Enter a title.",
+      "titleTooLong": "Use at most 300 characters."
+    },
+    "errors": {
+      "tooLong": "The note is too long to save. Shorten the text.",
+      "invalidLink": "Use a link starting with https, http or mailto."
+    }
   },
   "panel": {
     "addToBoard": "Move to another board",
     "backlinks": "Backlinks",
     "close": "Close",
     "eyebrow": "Note",
-    "label": "Note"
+    "label": "Note",
+    "missing": "This note no longer exists."
   },
   "app": {
     "name": "Project air",

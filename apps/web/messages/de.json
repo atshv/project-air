@@ -54,14 +54,24 @@
     "editorLabel": "Notizinhalt",
     "newTitle": "Neue Notiz",
     "placeholder": "Schreib los …",
-    "untitled": "Ohne Titel"
+    "untitled": "Ohne Titel",
+    "titleLabel": "Titel",
+    "validation": {
+      "titleEmpty": "Gib einen Titel ein.",
+      "titleTooLong": "Verwende höchstens 300 Zeichen."
+    },
+    "errors": {
+      "tooLong": "Die Notiz ist zu lang zum Speichern. Kürze den Text.",
+      "invalidLink": "Nutze einen Link mit https, http oder mailto."
+    }
   },
   "panel": {
     "addToBoard": "Auf ein anderes Board legen",
     "backlinks": "Backlinks",
     "close": "Schliessen",
     "eyebrow": "Notiz",
-    "label": "Notiz"
+    "label": "Notiz",
+    "missing": "Diese Notiz gibt es nicht mehr."
   },
   "app": {
     "name": "Project air",

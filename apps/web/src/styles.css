@@ -78,3 +78,87 @@ body { margin: 0; background: var(--bg); color: var(--fg); font-family: var(--fo
 .context-menu-item:disabled { color: var(--muted); cursor: default; }
 .context-menu-shortcut { color: var(--muted); font-size: var(--text-12, 12px); }
 .undo-hint { position: fixed; bottom: var(--space-24); left: 50%; transform: translateX(-50%); margin: 0; padding: var(--space-8) var(--space-16); background: var(--surface); color: var(--fg); border: var(--border-width) solid var(--border); border-radius: var(--radius-pill); font-size: var(--text-12, 12px); box-shadow: var(--card-shadow); }
+
+/* P6-07 (L04, L06, L09): note panel overlay on the canvas. */
+.board-panel {
+  position: absolute;
+  inset-block: var(--space-12);
+  inset-inline-end: var(--space-12);
+  width: 400px;
+  max-width: calc(100% - var(--space-24));
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-16);
+  padding: var(--space-16);
+  background: var(--surface);
+  border: var(--border-width) solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow);
+  z-index: var(--layer-side-panel);
+  overflow: hidden;
+  opacity: 1;
+  transform: translateX(0);
+  transition: transform var(--motion-panel) ease-out, opacity var(--motion-panel) ease-out;
+}
+
+.board-panel[data-phase="closed"],
+.board-panel[data-phase="opening"],
+.board-panel[data-phase="closing"] {
+  opacity: 0;
+  transform: translateX(var(--space-16));
+}
+
+.board-panel-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-8);
+}
+
+.board-panel-title {
+  width: 100%;
+  padding: var(--space-4) 0;
+  background: transparent;
+  color: var(--fg);
+  border: none;
+  border-bottom: var(--border-width) solid transparent;
+  border-radius: 0;
+  font-family: var(--font-serif);
+  font-size: var(--text-24);
+  font-weight: var(--weight-regular);
+}
+
+.board-panel-title:hover {
+  border-bottom-color: var(--border-strong);
+}
+
+.board-panel-title:focus-visible {
+  outline: var(--outline-width) solid var(--accent);
+  outline-offset: var(--outline-offset);
+  border-bottom-color: var(--border-strong);
+}
+
+.board-panel-editor {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.board-panel-missing {
+  margin: 0;
+}
+
+@media (max-width: 430px) {
+  .board-panel {
+    inset: 0;
+    width: auto;
+    max-width: none;
+    border-radius: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .board-panel {
+    transition: none;
+  }
+}

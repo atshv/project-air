@@ -1,4 +1,5 @@
 import "../../../packages/ui-kit/tokens.css";
+import "../../../packages/editor/src/editor.css";
 import "./styles.css";
 
 import { StrictMode } from "react";

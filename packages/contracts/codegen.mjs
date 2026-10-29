@@ -115,11 +115,21 @@ for (const [key, schema] of schemas) {
 }
 const ENTITY_ORDER = [...ENTITY_NAMES.entries()].sort((a, b) => compareStrings(a[1], b[1]));
 
+// Local `$defs` of the 0.4.0 note body document collide with the board entity
+// type names (`block` is both a canvas block entity and a note body block). The
+// note body keeps the contract schema names but its generated types are scoped
+// to `NoteBody*`, so `NoteBodyPayload.blocks` is the editor document block and
+// not the canvas `Block` entity.
+const DEF_NAME_OVERRIDES = {
+  "note-body-payload": { block: "NoteBodyBlock" },
+};
+
 for (const [key, name] of ENTITY_ORDER) {
   const schema = schemas.get(key);
   registerObject(name, schema, schema.description);
+  const overrides = DEF_NAME_OVERRIDES[key] ?? {};
   for (const [defKey, def] of Object.entries(schema.$defs ?? {})) {
-    if (def.type === "object") registerObject(pascal(defKey), def, def.description);
+    if (def.type === "object") registerObject(overrides[defKey] ?? pascal(defKey), def, def.description);
   }
 }
 
@@ -145,6 +155,9 @@ const LOCAL_REF_NAMES = {
   "#/$defs/group-payload": "GroupPayload",
   "#/$defs/group-inverse-payload": "GroupInversePayload",
   "#/$defs/operationType": "OperationType",
+  // The only local `block` definition is the note body block of
+  // note-body-payload.schema.json; see DEF_NAME_OVERRIDES above.
+  "#/$defs/block": "NoteBodyBlock",
 };
 
 function refTypeName(ref) {

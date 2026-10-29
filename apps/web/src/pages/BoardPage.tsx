@@ -10,7 +10,10 @@ import { toolGroups, type ToolId } from "../board/toolbar.ts";
 import { createArrowBurst, arrowDelta, contextMenuModel, shortcutFor, suppressesShortcuts, undoHintKey, type FocusLike } from "../board/interactions.ts";
 import { buildDeleteOperation, buildDuplicateCardOperation, buildReorderOperation } from "../board/operations.ts";
 import { DEFAULT_CAMERA, backendChoice, clampCamera, zoomBy } from "../board/view.ts";
+import { PANEL_PAN_MS, panelCameraForCard } from "../board/panel.ts";
+import { resolveCardNote } from "../board/note.ts";
 import { Button } from "../components/Button.tsx";
+import { NotePanel } from "../components/NotePanel.tsx";
 import { ToolbarButton } from "../components/ToolbarButton.tsx";
 import sourceIcon from "../../../../packages/ui-kit/icons/source.svg";
 import noteIcon from "../../../../packages/ui-kit/icons/note.svg";
@@ -31,7 +34,7 @@ function projectContent(engine: Engine, content: BoardContent): void {
   ];
   engine.loadRectangles(rectangles);
 }
-const EMPTY_CONTENT = (board: Board): BoardContent => ({ contractVersion: "0.3.0", board: { id: board.id, workspaceId: board.workspaceId, ownerId: board.ownerId, title: board.title, visibility: board.visibility, archived: board.archived, createdAt: board.createdAt, updatedAt: board.updatedAt }, zones: [], blocks: [], cards: [], notes: [], edges: [] });
+const EMPTY_CONTENT = (board: Board): BoardContent => ({ contractVersion: "0.4.0", board: { id: board.id, workspaceId: board.workspaceId, ownerId: board.ownerId, title: board.title, visibility: board.visibility, archived: board.archived, createdAt: board.createdAt, updatedAt: board.updatedAt }, zones: [], blocks: [], cards: [], notes: [], edges: [] });
 function bounds(content: BoardContent): EngineGeometry {
   const objects = [...content.cards, ...content.zones, ...content.blocks];
   if (objects.length === 0) return { x: 0, y: 0, width: 0, height: 0 };
@@ -50,6 +53,11 @@ export function BoardPage({ t, language, clientId }: BoardPageProps) {
   const [state, setState] = useState<{ loading: boolean; errorKey: string | null; board: Board | null; backend: string | null; empty: boolean; syncStatus: string }>({ loading: true, errorKey: null, board: null, backend: null, empty: true, syncStatus: "idle" });
   const [tool, setTool] = useState<ToolId>("select");
   const [selected, setSelected] = useState<{ kind: "card" | "zone" | "block"; id: string } | null>(null);
+  const [content, setContent] = useState<BoardContent | null>(null);
+  const [panel, setPanel] = useState<{ cardId: string; open: boolean } | null>(null);
+  const panelRef = useRef<{ cardId: string; open: boolean } | null>(null);
+  panelRef.current = panel;
+  const panFrameRef = useRef<number | null>(null);
   const [menu, setMenu] = useState<{ x: number; y: number } | null>(null);
   const [hint, setHint] = useState<string | null>(null);
   const hintTimer = useRef<number | null>(null);
@@ -69,6 +77,45 @@ export function BoardPage({ t, language, clientId }: BoardPageProps) {
       } catch { /* storage may be unavailable */ }
     }, SAVE_DELAY_MS);
   }, [id]);
+
+  const cancelPanelPan = useCallback(() => {
+    if (panFrameRef.current !== null) { window.cancelAnimationFrame(panFrameRef.current); panFrameRef.current = null; }
+  }, []);
+  const animateCameraTo = useCallback((target: EngineCamera, durationMs: number) => {
+    cancelPanelPan();
+    if (durationMs <= 0) { applyCamera(target); return; }
+    const from = cameraRef.current; const startedAt = performance.now();
+    const step = (now: number): void => {
+      const progress = Math.min(1, (now - startedAt) / durationMs);
+      const eased = progress * progress * (3 - 2 * progress);
+      applyCamera({ panX: from.panX + (target.panX - from.panX) * eased, panY: from.panY + (target.panY - from.panY) * eased, zoom: from.zoom + (target.zoom - from.zoom) * eased });
+      panFrameRef.current = progress < 1 ? window.requestAnimationFrame(step) : null;
+    };
+    panFrameRef.current = window.requestAnimationFrame(step);
+  }, [applyCamera, cancelPanelPan]);
+  // User camera input wins over the transient L04 panel pan and is the only one persisted (L17).
+  const userCamera = useCallback((camera: EngineCamera) => {
+    cancelPanelPan();
+    applyCamera(camera);
+    persistCamera();
+  }, [applyCamera, cancelPanelPan, persistCamera]);
+  const closePanel = useCallback(() => {
+    setPanel((current) => (current === null || !current.open ? current : { ...current, open: false }));
+  }, []);
+  const openPanelForCard = useCallback((cardId: string) => {
+    const existing = contentRef.current?.cards.find((card) => card.id === cardId);
+    if (existing === undefined) return;
+    setPanel({ cardId, open: true });
+    const canvas = canvasRef.current;
+    if (canvas === null) return;
+    const target = panelCameraForCard({ camera: cameraRef.current, card: existing, viewportWidth: canvas.clientWidth });
+    if (target === null) return;
+    const reduced = typeof window.matchMedia === "function" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    animateCameraTo(target, reduced ? 0 : PANEL_PAN_MS);
+  }, [animateCameraTo]);
+  const sendNoteOperations = useCallback((operations: readonly Record<string, unknown>[]) => {
+    syncRef.current?.sendOperations(operations);
+  }, []);
 
   useEffect(() => {
     const canvas = canvasRef.current; const boardId = id;
@@ -93,7 +140,7 @@ export function BoardPage({ t, language, clientId }: BoardPageProps) {
         const deviceKey = deviceKeyFor(canvas.clientWidth, canvas.clientHeight, window.devicePixelRatio); void language;
         let stored: string | null = null; try { stored = window.localStorage.getItem(storageKeyFor(boardId, deviceKey)); } catch { stored = null; }
         const restored = parseViewRecord(stored, { boardId, deviceKey });
-        const content = EMPTY_CONTENT(board); contentRef.current = content;
+        const content = EMPTY_CONTENT(board); contentRef.current = content; setContent(content);
         const fitted = engine.fitView(bounds(content), { width: canvas.clientWidth, height: canvas.clientHeight });
         applyCamera(restored ?? fitted);
         const syncUrl = `${window.location.protocol === "https:" ? "wss" : "ws"}://${window.location.host}/v1/sync`;
@@ -102,8 +149,9 @@ export function BoardPage({ t, language, clientId }: BoardPageProps) {
         const project = (): void => {
           const active = syncRef.current; const activeEngine = engineRef.current;
           if (active === null || activeEngine === null) return;
-          const snapshot = active.document().snapshot() as BoardContent;
+          const snapshot = active.document().snapshot();
           contentRef.current = snapshot;
+          setContent(snapshot);
           projectContent(activeEngine, snapshot);
           setState((current) => ({ ...current, empty: snapshot.cards.length + snapshot.zones.length + snapshot.blocks.length === 0 }));
         };
@@ -122,16 +170,16 @@ export function BoardPage({ t, language, clientId }: BoardPageProps) {
       } catch (error) {
         if (disposed) return;
         const status = error !== null && typeof error === "object" && "status" in error ? error.status : 0;
-        if (status === 404 || status === 403) { navigate("/boards", { replace: true }); return; }
+        if (status === 404 || status === 403) { void navigate("/boards", { replace: true }); return; }
         const messageKey = error instanceof EngineError ? "board.errors.engine" : "errors.generic";
         setState({ loading: false, errorKey: messageKey, board: null, backend: null, empty: true, syncStatus: "error" });
       }
     };
     void start();
     return () => {
-      disposed = true; if (saveTimer.current !== null) window.clearTimeout(saveTimer.current); observer?.disconnect(); sync?.close(); syncRef.current = null; engine?.dispose(); engineRef.current = null;
+      disposed = true; if (saveTimer.current !== null) window.clearTimeout(saveTimer.current); cancelPanelPan(); observer?.disconnect(); sync?.close(); syncRef.current = null; engine?.dispose(); engineRef.current = null;
     };
-  }, [id, clientId, navigate, applyCamera, persistCamera]);
+  }, [id, clientId, navigate, applyCamera, persistCamera, cancelPanelPan]);
 
   const commitOperation = useCallback((operation: Record<string, unknown>) => {
     const sync = syncRef.current;
@@ -186,6 +234,10 @@ export function BoardPage({ t, language, clientId }: BoardPageProps) {
     });
     burstRef.current = burst;
     const onKey = (event: KeyboardEvent) => {
+      // The panel owns its keys (L04 isolation): the aside closes on Escape and
+      // the board shortcut layer never sees editor or title input.
+      const eventElement = event.target instanceof Element ? event.target : null;
+      if (eventElement !== null && eventElement.closest("[data-board-panel]") !== null) return;
       const target = event.target as unknown as FocusLike | null;
       if (suppressesShortcuts(target)) return;
       if (menu !== null && event.key === "Escape") { event.preventDefault(); setMenu(null); canvasRef.current?.focus(); return; }
@@ -193,7 +245,11 @@ export function BoardPage({ t, language, clientId }: BoardPageProps) {
       if (action === null) return;
       const sync = syncRef.current;
       if (action === "undo" || action === "redo") { event.preventDefault(); const used = action === "undo" ? sync?.undoOwn() : sync?.redoOwn(); if (used === true) showHint(action); return; }
-      if (action === "escape") { setMenu(null); setSelected(null); return; }
+      if (action === "escape") {
+        event.preventDefault(); setMenu(null);
+        if (panelRef.current?.open === true) closePanel(); else setSelected(null);
+        return;
+      }
       if (action === "delete") { event.preventDefault(); deleteSelected(); return; }
       if (action === "duplicate") { event.preventDefault(); duplicateSelected(); return; }
       const delta = arrowDelta(action, event.shiftKey === true);
@@ -201,7 +257,21 @@ export function BoardPage({ t, language, clientId }: BoardPageProps) {
     };
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
-  }, [menu, selected, selectedObject, commitOperation, deleteSelected, duplicateSelected, showHint]);
+  }, [menu, selected, selectedObject, commitOperation, deleteSelected, duplicateSelected, showHint, closePanel]);
+
+  // L04: a selected card opens the panel; any other selection or deletion closes it.
+  useEffect(() => {
+    if (selected === null || selected.kind !== "card") {
+      if (panelRef.current !== null && panelRef.current.open) closePanel();
+      return;
+    }
+    if (panelRef.current?.cardId !== selected.id || panelRef.current?.open !== true) openPanelForCard(selected.id);
+  }, [selected, closePanel, openPanelForCard]);
+  // A remotely deleted card closes the panel (the note-missing state stays for a live card).
+  useEffect(() => {
+    if (panel === null) return;
+    if (resolveCardNote(content, panel.cardId) === null) closePanel();
+  }, [content, panel, closePanel]);
   useEffect(() => () => { if (hintTimer.current !== null) window.clearTimeout(hintTimer.current); }, []);
   const openMenu = (event: React.MouseEvent<HTMLCanvasElement>) => {
     event.preventDefault();
@@ -214,14 +284,15 @@ export function BoardPage({ t, language, clientId }: BoardPageProps) {
     if (engine === null) return;
     const rect = canvas.getBoundingClientRect();
     const slot = engine.hitTest(event.clientX - rect.left, event.clientY - rect.top);
-    if (slot < 0) { setSelected(null); setMenu(null); return; }
+    if (slot < 0) { setSelected(null); setMenu(null); closePanel(); return; }
     const content = contentRef.current; if (content === null) return;
     const ordered = [...content.zones.map((zone) => ({ kind: "zone" as const, id: zone.id })), ...content.blocks.map((block) => ({ kind: "block" as const, id: block.id })), ...content.cards.map((card) => ({ kind: "card" as const, id: card.id }))];
-    const hit = ordered[slot]; if (hit !== undefined) setSelected(hit);
+    const hit = ordered[slot]; if (hit !== undefined) { setSelected(hit); if (hit.kind !== "card") closePanel(); }
   };
   if (state.loading) return <section className="page" aria-busy="true"><p className="muted">{t("board.loading")}</p></section>;
   if (state.errorKey !== null) return <section className="page"><h1 className="page-title">{t("board.errors.title")}</h1><p className="form-error" role="alert">{t(state.errorKey)}</p><Link className="text-link" to="/boards">{t("boards.backToList")}</Link></section>;
   const groups = toolGroups();
+  const panelCard = panel === null ? null : resolveCardNote(content, panel.cardId);
   return (
     <section className="board-page">
       <header className="board-bar">
@@ -244,16 +315,17 @@ export function BoardPage({ t, language, clientId }: BoardPageProps) {
         ))}
       </div>
       <div className="zoom-controls" role="group" aria-label={t("canvas.zoom.label")}>
-        <Button size="bar" variant="ghost" aria-label={t("canvas.zoom.out")} onClick={() => applyCamera(zoomBy(cameraRef.current, 0.9))}>{t("canvas.zoom.out")}</Button>
-        <Button size="bar" variant="ghost" aria-label={t("canvas.zoom.fit")} onClick={() => { const engine = engineRef.current; const canvas = canvasRef.current; const fallback = contentRef.current ?? (state.board !== null ? EMPTY_CONTENT(state.board) : null); if (engine !== null && canvas !== null && fallback !== null) applyCamera(engine.fitView(bounds(fallback), { width: canvas.clientWidth, height: canvas.clientHeight })); }}>{t("canvas.zoom.fit")}</Button>
-        <Button size="bar" variant="ghost" aria-label={t("canvas.zoom.in")} onClick={() => applyCamera(zoomBy(cameraRef.current, 1.1))}>{t("canvas.zoom.in")}</Button>
+        <Button size="bar" variant="ghost" aria-label={t("canvas.zoom.out")} onClick={() => userCamera(zoomBy(cameraRef.current, 0.9))}>{t("canvas.zoom.out")}</Button>
+        <Button size="bar" variant="ghost" aria-label={t("canvas.zoom.fit")} onClick={() => { const engine = engineRef.current; const canvas = canvasRef.current; const fallback = contentRef.current ?? (state.board !== null ? EMPTY_CONTENT(state.board) : null); if (engine !== null && canvas !== null && fallback !== null) userCamera(engine.fitView(bounds(fallback), { width: canvas.clientWidth, height: canvas.clientHeight })); }}>{t("canvas.zoom.fit")}</Button>
+        <Button size="bar" variant="ghost" aria-label={t("canvas.zoom.in")} onClick={() => userCamera(zoomBy(cameraRef.current, 1.1))}>{t("canvas.zoom.in")}</Button>
       </div>
       {menu === null ? null : (
         <div className="context-menu" role="menu" aria-label={t("board.menu.label")} style={{ left: menu.x, top: menu.y, zIndex: LAYER_Z_INDEX["context-menu"] }}>
           {contextMenuModel({ hasSelection: selected !== null, multiSelection: false }).map((item) => (
             <button key={item.id} type="button" role="menuitem" className="context-menu-item" disabled={item.disabled} onClick={() => {
               setMenu(null); canvasRef.current?.focus();
-              if (item.id === "delete") deleteSelected();
+              if (item.id === "open" && selected !== null && selected.kind === "card") openPanelForCard(selected.id);
+              else if (item.id === "delete") deleteSelected();
               else if (item.id === "duplicate") duplicateSelected();
               else if (item.id === "bringForward") reorderSelected("forward");
               else if (item.id === "sendBackward") reorderSelected("backward");
@@ -263,6 +335,19 @@ export function BoardPage({ t, language, clientId }: BoardPageProps) {
             </button>
           ))}
         </div>
+      )}
+      {panel === null || panelCard === null ? null : (
+        <NotePanel
+          t={t}
+          boardId={state.board?.id ?? id ?? ""}
+          actorId={clientId}
+          noteId={panelCard.card.noteId}
+          note={panelCard.note}
+          open={panel.open}
+          onClose={closePanel}
+          onClosed={() => setPanel(null)}
+          sendOperations={sendNoteOperations}
+        />
       )}
       {hint === null ? null : <p className="undo-hint" role="status" aria-live="polite">{hint}</p>}
       <span className="visually-hidden" data-commit-operation={String(commitOperation.length)} />

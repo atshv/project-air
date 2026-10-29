@@ -1,0 +1,4 @@
+area: web
+kind: minor
+
+Add the note panel and the own editor (P6-07): 400 px overlay with 180 ms motion, Esc close, no canvas width change and a transient 300 ms camera pan to 24 px left of the panel; framework-agnostic contenteditable editor for contract 0.4.0 (paragraph/heading/list blocks, bold/italic/code/link marks with href allow-list, plain-text paste, IME safety, selection preservation, deterministic plainText via the contracts helper, typed contract size limits); L06 empty-note focus with a muted 15 px placeholder that is never saved; L09 serif 24 px title field with validation and Enter-to-editor; one SDK autosave path that sends one updateNoteBody operation with its inverse (previous body) plus one updateNote for title changes through BoardSyncClient.sendOperations; messages en/de, editor plaintext typings, note-body codegen type fix, tests and README notes.

@@ -15,6 +15,8 @@ enum class AccountLocale { de, en };
 enum class BlockType { checklist, columns, palette, table, timeline };
 enum class BoardVisibility { link, private_, workspace };
 enum class DeleteZonePolicy { delete_, keep };
+enum class NoteBodyBlockMarksItem { bold, code, italic, link };
+enum class NoteBodyBlockType { heading, list, paragraph };
 enum class OperationType { createBlock, createCard, createEdge, createNote, createZone, deleteBlock, deleteCard, deleteEdge, deleteNote, deleteZone, group, moveBlock, moveCard, moveZone, reorder, resizeBlock, resizeCard, resizeZone, updateBlock, updateNote, updateNoteBody };
 
 struct Account {
@@ -79,8 +81,17 @@ struct Edge {
   std::string updatedAt;
 };
 
+struct NoteBodyBlock {
+  std::optional<std::string> href;
+  std::optional<double> level;
+  std::optional<std::vector<NoteBodyBlockMarksItem>> marks;
+  std::optional<bool> ordered;
+  std::string text;
+  NoteBodyBlockType type;
+};
+
 struct NoteBodyPayload {
-  std::vector<Block> blocks;
+  std::vector<NoteBodyBlock> blocks;
   std::string version;
 };
 

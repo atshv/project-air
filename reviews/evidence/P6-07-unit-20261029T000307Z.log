@@ -1,0 +1,226 @@
+$ pnpm test --affected
+[exit 0]
+
+
+   • turbo 2.11.10
+   • Packages in scope: //, @project-air/contracts, @project-air/editor, @project-air/web
+   • Running test in 4 packages
+   • Remote caching disabled, using shared worktree cache
+
+@project-air/web:build: cache hit, replaying logs c2bc6cacef507b38
+@project-air/web:build: $ vite build
+@project-air/web:build: vite v8.3.5 building client environment for production...
+@project-air/web:build: transforming...
+@project-air/web:build: ✓ 190 modules transformed.
+@project-air/web:build: rendering chunks...
+@project-air/web:build: computing gzip size...
+@project-air/web:build: dist/index.html                   0.44 kB │ gzip:   0.27 kB
+@project-air/web:build: dist/assets/index-B03uqUVV.css   12.50 kB │ gzip:   3.02 kB
+@project-air/web:build: dist/assets/index-X0HkZ40q.js   443.12 kB │ gzip: 136.45 kB
+@project-air/web:build: 
+@project-air/web:build: ✓ built in 157ms
+@project-air/editor:build: cache hit, replaying logs 178998750efd441b
+@project-air/editor:build: $ tsc --noEmit --project tsconfig.json
+@project-air/web:test: cache miss, executing e07cdbde4437a6c8
+@project-air/editor:test: cache hit, replaying logs 0f983a911b51e499
+@project-air/contracts:test: cache hit, replaying logs 1639fcd46180e081
+@project-air/editor:test: $ node --test test/*.test.mjs
+@project-air/editor:test: ✔ Enter splits a paragraph at the caret and keeps the marks (3.07425ms)
+@project-air/editor:test: ✔ Enter in a list continues the list, Enter in a heading starts a paragraph (0.205125ms)
+@project-air/editor:test: ✔ Enter on an empty list item turns it back into a paragraph (0.149ms)
+@project-air/editor:test: ✔ Tab indents a paragraph into a list and Shift+Tab outdents it again (0.192625ms)
+@project-air/editor:test: ✔ marks toggle on the whole contract block and code/bold/italic stay independent (0.508791ms)
+@project-air/editor:test: ✔ pasted blocks merge into the block under the caret with the caret after the first line (0.332291ms)
+@project-air/editor:test: ✔ single-line paste inserts inside the current block (0.206708ms)
+@project-air/editor:test: ✔ a contract body round-trips through the editor model without losing blocks or marks (11.846916ms)
+@project-air/editor:test: ✔ plainText is derived only by the contract helper and matches the serialised body (0.398125ms)
+@project-air/editor:test: ✔ an invalid body derives empty plain text and never reports a match for a missing body (0.223125ms)
+@project-air/editor:test: ✔ empty surface blocks persist as the contract empty body (0.0995ms)
+@project-air/editor:test: ✔ marks are normalised to the contract order and de-duplicated (0.06ms)
+@project-air/editor:test: ✔ link hrefs follow the contract allow-list (0.101458ms)
+@project-air/editor:test: ✔ bodies with disallowed links degrade to plain text instead of a broken operation (0.066916ms)
+@project-air/editor:test: ✔ contract size limits surface as typed errors (15.089541ms)
+@project-air/editor:test: ✔ HTML is reduced to plain text: tags, scripts and styles never survive (1.232875ms)
+@project-air/editor:test: ✔ entities are decoded to text and never re-interpreted as markup (0.11975ms)
+@project-air/editor:test: ✔ plain text normalises newlines, control characters and trailing spaces (1.95125ms)
+@project-air/editor:test: ✔ the paste payload prefers plain text and falls back to sanitised HTML (1.673583ms)
+@project-air/editor:test: ✔ pasted text becomes paragraph blocks and over-long lines are chunked, not truncated (0.340458ms)
+@project-air/editor:test: ✔ a caret is clamped into the existing blocks and offsets (2.240584ms)
+@project-air/editor:test: ✔ an external content change restores the caret by block and offset (0.161167ms)
+@project-air/editor:test: ✔ the placeholder is visible exactly while every block is empty (0.099458ms)
+@project-air/editor:test: ✔ L06: only an empty note focuses its editor on open and never forces focus otherwise (8.46675ms)
+@project-air/editor:test: ℹ tests 24
+@project-air/editor:test: ℹ suites 0
+@project-air/editor:test: ℹ pass 24
+@project-air/editor:test: ℹ fail 0
+@project-air/editor:test: ℹ cancelled 0
+@project-air/editor:test: ℹ skipped 0
+@project-air/editor:test: ℹ todo 0
+@project-air/editor:test: ℹ duration_ms 1144.457
+@project-air/contracts:test: $ node --test test/*.test.mjs
+@project-air/contracts:test: ✔ the error schema is versioned JSON Schema 2020-12 with the fixed code enum (16.634375ms)
+@project-air/contracts:test: ✔ the wire codes stay UPPER_SNAKE and the message keys are lowerCamelCase (2.9635ms)
+@project-air/contracts:test: ✔ the oneOf ties every code to exactly one message key (3.015042ms)
+@project-air/contracts:test: ✔ every error code has a valid fixture and the invalid ones are rejected (2.398709ms)
+@project-air/contracts:test: ✔ details carry field paths, never user text (0.323125ms)
+@project-air/contracts:test: ✔ every error code has exactly one message key in de, en and en-XA (2.401458ms)
+@project-air/contracts:test: ✔ the German error messages follow the style rules and the English ones differ (0.489542ms)
+@project-air/contracts:test: ✔ the pseudo locale carries the generated values for the error keys (0.430875ms)
+@project-air/contracts:test: ✔ the index exports the error code table and the API schema path (0.382416ms)
+@project-air/contracts:test: ✔ the four API resource schemas are versioned JSON Schema 2020-12 with closed envelopes (21.2445ms)
+@project-air/contracts:test: ✔ the envelopes cover list, get, create, update and delete (4.006584ms)
+@project-air/contracts:test: ✔ the envelopes reference the P1-01 entity schemas instead of restating them (13.617833ms)
+@project-air/contracts:test: ✔ card create and changes mirror the P1-01 minimum sizes and the nullable zone parent (5.5275ms)
+@project-air/contracts:test: ✔ every resource envelope has a valid fixture that satisfies it (30.8395ms)
+@project-air/contracts:test: ✔ the invalid fixtures violate their envelope and name the rule (20.881917ms)
+@project-air/contracts:test: ✔ every API fixture has the wrapper and maps to an API schema (5.737208ms)
+@project-air/contracts:test: ✔ valid API fixtures use UUIDv7 ids and ISO-8601 timestamps (8.809291ms)
+@project-air/contracts:test: ✔ an empty list is valid with items [] and nextCursor null (6.035333ms)
+@project-air/contracts:test: ✔ pagination bounds are encoded in the schema (4.788333ms)
+@project-air/contracts:test: ✔ update requests need a non-empty changes object (1.56875ms)
+@project-air/contracts:test: ✔ delete envelopes name the resource id (1.832917ms)
+@project-air/contracts:test: ✔ the index exports the API resources, schema paths and fixture paths (1.062667ms)
+@project-air/contracts:test: ✔ the generated directory holds exactly the two committed files (0.861583ms)
+@project-air/contracts:test: ✔ the committed generated files equal the generator output (53.623417ms)
+@project-air/contracts:test: ✔ codegen is deterministic and free of timestamps and absolute paths (2.689792ms)
+@project-air/contracts:test: ✔ the TypeScript output exposes the entities, enums, union and inverse pair (1.109625ms)
+@project-air/contracts:test: ✔ the generated files carry the 0.4.0 reorder payload in both languages (0.35275ms)
+@project-air/contracts:test: ✔ the generated operation vocabulary matches the contract index (0.679333ms)
+@project-air/contracts:test: ✔ the C++ output exposes the model, enums and the operation envelope (0.213916ms)
+@project-air/contracts:test: ✔ the containment corpus is additive and uses the board-content schema (8.267292ms)
+@project-air/contracts:test: ✔ valid containment fixtures are schema-valid and follow the parent rule (1.347125ms)
+@project-air/contracts:test: ✔ the dangling parent fixture is rejected by the containment rule (0.420375ms)
+@project-air/contracts:test: ✔ a nested zone is rejected by the zone schema (4.022292ms)
+@project-air/contracts:test: ✔ cards and blocks carry an optional nullable parent and zones carry none (8.993167ms)
+@project-air/contracts:test: ✔ index exports the versioned schema and fixture paths (3.013875ms)
+@project-air/contracts:test: ✔ board.contracts metadata names the current version and all 18 schema files (7.775292ms)
+@project-air/contracts:test: ✔ every schema is JSON Schema 2020-12 with a versioned $id and required fields (1.566875ms)
+@project-air/contracts:test: ✔ every schema has at least one valid and one invalid fixture with the wrapper (67.289375ms)
+@project-air/contracts:test: ✔ every fixture schema path resolves to a schema (21.753708ms)
+@project-air/contracts:test: ✔ valid fixtures satisfy their schema (3.512208ms)
+@project-air/contracts:test: ✔ invalid fixtures violate their schema and name the broken rule (5.224291ms)
+@project-air/contracts:test: ✔ valid fixtures carry every required top-level field (1.187167ms)
+@project-air/contracts:test: ✔ valid ids are UUIDv7 and valid timestamps are ISO-8601 with timezone (1.191625ms)
+@project-air/contracts:test: ✔ minimum sizes are encoded in the schemas (0.321833ms)
+@project-air/contracts:test: ✔ valid fixtures sit exactly on the minimum sizes (0.306458ms)
+@project-air/contracts:test: ✔ invalid minimum-size fixtures are below their type minimum (0.250875ms)
+@project-air/contracts:test: ✔ fixed enums are part of the schemas (0.203042ms)
+@project-air/contracts:test: ✔ the fractional index is a string (23.756542ms)
+@project-air/contracts:test: ✔ timestamps are ISO-8601 strings with timezone (75.978959ms)
+@project-air/contracts:test: ✔ AD-4: a note exists once and cards only reference it (5.849667ms)
+@project-air/contracts:test: ✔ the parent relation is board to zone to card, without nested zones (54.999083ms)
+@project-air/contracts:test: ✔ edges connect cards only (0.671084ms)
+@project-air/contracts:test: ✔ the root schema references every board-content entity (14.501542ms)
+@project-air/contracts:test: ✔ the package has no runtime dependencies and defines the test command (0.342417ms)
+@project-air/contracts:test: ✔ the gate specimens are byte-identical copies of canonical fixtures (9.786ms)
+@project-air/contracts:test: ✔ the gate fixture directories hold direct JSON files for Polier (3.993375ms)
+@project-air/contracts:test: ✔ the gate specimens keep the fixture wrapper (0.45525ms)
+@project-air/contracts:test: ✔ the sync gate specimens are byte-identical copies of canonical fixtures (7.399625ms)
+@project-air/contracts:test: ✔ the operation schema is versioned JSON Schema 2020-12 with the operation vocabulary (1.013917ms)
+@project-air/contracts:test: ✔ index exports the operation schema path, id and type vocabulary (0.199167ms)
+@project-air/contracts:test: ✔ every operation type has a valid and at least one invalid fixture (2.143292ms)
+@project-air/contracts:test: ✔ every operation fixture maps to the operation schema with the fixture wrapper (4.056375ms)
+@project-air/contracts:test: ✔ valid operation fixtures satisfy the schema and the inverse model (7.238625ms)
+@project-air/contracts:test: ✔ invalid operation fixtures break the schema or the inverse model and name the rule (5.947625ms)
+@project-air/contracts:test: ✔ every operation carries exactly one inverse with board, type and payload (1.771375ms)
+@project-air/contracts:test: ✔ operation ids are UUIDv7 and timestamps are ISO-8601 (1.1375ms)
+@project-air/contracts:test: ✔ each operation type pairs with its documented inverse type (1.114291ms)
+@project-air/contracts:test: ✔ groups have ordered children and the inverse reverses the child inverses (0.261167ms)
+@project-air/contracts:test: ✔ groups do not nest and need at least one child (0.217125ms)
+@project-air/contracts:test: ✔ updates store only changed fields and the inverse stores the previous values (0.381417ms)
+@project-air/contracts:test: ✔ deletes store the object and creates have the matching delete as inverse (0.482667ms)
+@project-air/contracts:test: ✔ the reorder operation stores the new z and its inverse the previous z (0.859917ms)
+@project-air/contracts:test: ✔ resize operations respect the P1-01 minimum sizes (1.004375ms)
+@project-air/contracts:test: ✔ move payloads carry a position and an optional zone parent (0.1475ms)
+@project-air/contracts:test: ✔ the group inverse is checked against the reversed child inverses (0.698ms)
+@project-air/contracts:test: ✔ an inverse with a mismatching board or target is invalid (0.481458ms)
+@project-air/contracts:test: ✔ every valid operation payload object still satisfies the P1-01 entity schemas (4.68625ms)
+@project-air/contracts:test: ✔ every fixture has a canonical TypeScript result (0.535583ms)
+@project-air/contracts:test: ✔ the canonical TypeScript description is deterministic (1.005125ms)
+@project-air/contracts:test: ✔ the parity program compiles with the local C++ compiler (1742.609ms)
+@project-air/contracts:test: ✔ TypeScript and C++ canonical results match for every fixture (561.352208ms)
+@project-air/contracts:test: ✔ a tampered canonical line is detected as a parity difference (0.410583ms)
+@project-air/contracts:test: ✔ invalid fixtures keep their validity verdict and model fields in the canonical form (0.901459ms)
+@project-air/contracts:test: ✔ plainText is derived deterministically from the structured body (0.986917ms)
+@project-air/contracts:test: ✔ the sync schema is versioned JSON Schema 2020-12 with one message union (2.208791ms)
+@project-air/contracts:test: ✔ every message type is documented with its direction and the required metadata (2.32175ms)
+@project-air/contracts:test: ✔ the index exports the sync schema, message table and fixture paths (0.676ms)
+@project-air/contracts:test: ✔ every message type has a valid and an invalid fixture in the wrapper (11.322166ms)
+@project-air/contracts:test: ✔ every sync fixture names the sync schema and its validity (12.039541ms)
+@project-air/contracts:test: ✔ valid message fixtures use UUIDv7 ids and ISO-8601 timestamps (1.443875ms)
+@project-air/contracts:test: ✔ operation batches carry P1-02 operations through the operation schema reference (0.951083ms)
+@project-air/contracts:test: ✔ presence messages carry presence only, never operation data (0.331042ms)
+@project-air/contracts:test: ✔ message ids and sequence rules live in the envelope (0.638333ms)
+@project-air/contracts:test: ✔ no unknown message type matches the envelope (1.021958ms)
+@project-air/contracts:test: ✔ the reconnect sequence starts from a known serverSeq and ends with the snapshot (0.469167ms)
+@project-air/contracts:test: ✔ the session sequence keeps join order, sequences, duplicate batches and ack coverage (0.930625ms)
+@project-air/contracts:test: ✔ every acknowledged batch is durable before the client sees the ack (0.419458ms)
+@project-air/contracts:test: ✔ the board content in a snapshot is the root board-content document (0.464333ms)
+@project-air/contracts:test: ✔ P5-01: version negotiation, fresh-board serverSeq and reconnect ordering fixtures (1.41875ms)
+@project-air/contracts:test: ℹ tests 99
+@project-air/contracts:test: ℹ suites 0
+@project-air/contracts:test: ℹ pass 99
+@project-air/contracts:test: ℹ fail 0
+@project-air/contracts:test: ℹ cancelled 0
+@project-air/contracts:test: ℹ skipped 0
+@project-air/contracts:test: ℹ todo 0
+@project-air/contracts:test: ℹ duration_ms 3834.970792
+@project-air/web:test: $ node --test test/*.test.mjs
+@project-air/web:test: ✔ toolbar has groups, one primary accent tool and a default active tool (0.620833ms)
+@project-air/web:test: ✔ view camera clamps zoom and rejects foreign/corrupt records (0.675208ms)
+@project-air/web:test: ✔ backend selection defaults to WebGL2 and fails closed without an adapter (0.174209ms)
+@project-air/web:test: ✔ board titles are trimmed, non-empty and at most 120 characters (0.788ms)
+@project-air/web:test: ✔ boards sort by updatedAt descending without mutating the input (2.597041ms)
+@project-air/web:test: ✔ dates format with Intl for the active language and invalid dates are empty (91.067708ms)
+@project-air/web:test: ✔ workspace selection uses the stored id when present, otherwise the first workspace (0.260416ms)
+@project-air/web:test: (node:69500) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.
+@project-air/web:test: (Use `node --trace-warnings ...` to show where the warning was created)
+@project-air/web:test: ✔ the duplicated note is contract-valid with the board workspaceId and no extra fields (5.823209ms)
+@project-air/web:test: ✔ delete and reorder operations carry inverses and never empty metadata (0.493375ms)
+@project-air/web:test: ✔ en and de catalogs have identical key sets (2.390291ms)
+@project-air/web:test: ✔ translate resolves nested keys and interpolates values (0.209584ms)
+@project-air/web:test: ✔ German is the default and a stored choice persists (0.1125ms)
+@project-air/web:test: ✔ keyboard map handles modifiers, delete, escape and arrows; fields suppress shortcuts (1.654542ms)
+@project-air/web:test: ✔ arrows group into one delta after the 300 ms burst (1.309916ms)
+@project-air/web:test: ✔ context menu model has the L12 items, shortcuts and disabled states (0.1935ms)
+@project-air/web:test: ✔ fractional z sits between neighbours and carries the previous z as inverse (0.159167ms)
+@project-air/web:test: (node:69503) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.
+@project-air/web:test: (Use `node --trace-warnings ...` to show where the warning was created)
+@project-air/web:test: ✔ one body save is exactly one updateNoteBody operation whose inverse is the previous body (6.528709ms)
+@project-air/web:test: ✔ a title change is exactly one updateNote whose inverse is the previous title (0.52025ms)
+@project-air/web:test: ✔ one save batches at most one body and one title operation through the one writer (0.988792ms)
+@project-air/web:test: ✔ a body-only save sends exactly one updateNoteBody; a title-only save exactly one updateNote (0.749833ms)
+@project-air/web:test: ✔ the autosave value round-trips the title and the contract body (0.312792ms)
+@project-air/web:test: ✔ contract limit and rejection errors surface honestly and send nothing (0.988209ms)
+@project-air/web:test: ✔ a changed invalid title writes nothing while an unchanged stored title is kept (0.264125ms)
+@project-air/web:test: ✔ a card resolves its one referenced note (AD-4, never duplicated) (0.474542ms)
+@project-air/web:test: ✔ a card whose note is gone yields the missing state, not a new note (0.357583ms)
+@project-air/web:test: ✔ a missing, absent or invalid note body falls back to the contract empty body (0.807208ms)
+@project-air/web:test: ✔ only an empty note focuses its editor on open (L06) (0.471167ms)
+@project-air/web:test: ✔ note titles are trimmed, non-empty and at most 300 characters (L09) (0.282625ms)
+@project-air/web:test: ✔ the panel is 400 px with a 12 px gap and full width at a 390 px viewport (0.497708ms)
+@project-air/web:test: ✔ the L04 state machine has closed/opening/open/closing transitions (0.103833ms)
+@project-air/web:test: ✔ a card that is already clear of the panel never moves the view (0.100125ms)
+@project-air/web:test: ✔ a card under the panel is panned 24 px left of it in one transient camera (0.084375ms)
+@project-air/web:test: ✔ the pan respects zoom and never applies to the full-width mobile panel (0.071791ms)
+@project-air/web:test: ✔ the panel pan is 300 ms and respects reduced motion (0.049083ms)
+@project-air/web:test: ✔ every required route exists with message-backed title and body keys (0.4965ms)
+@project-air/web:test: ✔ route helpers stay pure and encode board ids (0.144125ms)
+@project-air/web:test: ✔ login validation mirrors the server rules (0.97975ms)
+@project-air/web:test: ✔ registration requires email, display name and at least 8 password characters (0.110709ms)
+@project-air/web:test: ✔ recovery validates the email and maps typed errors to message keys (0.106875ms)
+@project-air/web:test: ℹ tests 39
+@project-air/web:test: ℹ suites 0
+@project-air/web:test: ℹ pass 39
+@project-air/web:test: ℹ fail 0
+@project-air/web:test: ℹ cancelled 0
+@project-air/web:test: ℹ skipped 0
+@project-air/web:test: ℹ todo 0
+@project-air/web:test: ℹ duration_ms 640.522584
+
+ Tasks:    5 successful, 5 total
+Cached:    4 cached, 5 total
+  Time:    815ms 
+
+$ turbo run test --affected
+ WARNING  no output files found for task @project-air/web#test. Please check your `outputs` key in `turbo.json`

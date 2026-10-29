@@ -93,3 +93,42 @@ hint). Shortcuts are suppressed while an input/textarea/contenteditable/dialog o
 Send use the contract `reorder` with fractional z and its inverse; duplicate is card+note group
 operation with inverse (multi-select duplicate stays disabled with a message, recorded gap).
 Browser/DOM behaviour is P6-09 e2e and not claimed here; live sync auth remains P6-08.
+
+## Note panel and editor (P6-07)
+
+The board page owns the L04 note panel: a 400 px overlay on the right, 12 px from the
+top/right/bottom canvas edge and full width at a 390 px viewport, shown and hidden with a
+180 ms `translateX(16px)` + opacity transition, closed with `Esc` (or the panel's close
+button), and it never changes the canvas width. Selecting a card opens the panel for the one
+note the card references (AD-4; a missing note shows the panel's missing state, a deleted
+card closes it). When the selected card would sit under the panel, one transient 300 ms
+camera pan places its right edge 24 px left of the panel; the L17 view is persisted only for
+user camera input and the pan is cancelled by it. While the panel has focus the board
+shortcut layer never receives its keys; the panel itself has an accessible label and closes
+on `Esc`.
+
+The panel embeds `packages/editor` (own contenteditable editor, contract 0.4.0 note body). An
+empty note focuses the editor with the muted 15 px placeholder "Schreib los …" / "Start
+writing …"; the placeholder is a generated `::before` and is never part of the saved body.
+The title is a serif 24 px field without a border at rest and an underline on hover/focus;
+it validates as trimmed, non-empty and at most 300 characters (message keys), `Enter` moves
+the focus into the editor, and an invalid title writes nothing while keeping the old stored
+title.
+
+Saving uses the SDK's one autosave path (P5-04 `createAutosave`/`installFlushTriggers`, 400 ms
+debounce plus blur/panel-close/visibility/pagehide/navigation flush and composition-end
+flush). The panel keeps one autosave value (title + body) and sends at most one
+`updateNoteBody` operation with the previous body as its inverse plus at most one
+`updateNote` operation with the previous title as its inverse, in one
+`BoardSyncClient.sendOperations` batch; `plainText` is derived through
+`packages/contracts/plaintext.mjs` and contract limits are validated before the send, with
+typed errors mapped to message keys. There is no second timer, no panel persistence and no
+storage of its own. The pure helpers (panel layout/state/camera, note resolution, title
+validation, save operation building) are covered by `node --test`; DOM/engine behaviour and
+"edits survive a reload" are P6-09 e2e evidence.
+
+Known integration gap (recorded in the task result): `packages/crdt` and `services/sync` do
+not apply the contract 0.4.0 `updateNoteBody` operation yet (they predate P6-06), so the
+local/remote document does not yet show the saved body; the panel still produces the correct
+contract operation through the one writer, and the server-side follow-up is outside P6-07's
+write scope. Live sync authentication remains P6-08.

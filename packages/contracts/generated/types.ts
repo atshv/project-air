@@ -17,6 +17,12 @@ export const BOARD_VISIBILITY_VALUES = ["link", "private", "workspace"] as const
 export type DeleteZonePolicy = "delete" | "keep";
 export const DELETE_ZONE_POLICY_VALUES = ["delete", "keep"] as const;
 
+export type NoteBodyBlockMarksItem = "bold" | "code" | "italic" | "link";
+export const NOTE_BODY_BLOCK_MARKS_ITEM_VALUES = ["bold", "code", "italic", "link"] as const;
+
+export type NoteBodyBlockType = "heading" | "list" | "paragraph";
+export const NOTE_BODY_BLOCK_TYPE_VALUES = ["heading", "list", "paragraph"] as const;
+
 export type OperationType = "createBlock" | "createCard" | "createEdge" | "createNote" | "createZone" | "deleteBlock" | "deleteCard" | "deleteEdge" | "deleteNote" | "deleteZone" | "group" | "moveBlock" | "moveCard" | "moveZone" | "reorder" | "resizeBlock" | "resizeCard" | "resizeZone" | "updateBlock" | "updateNote" | "updateNoteBody";
 export const OPERATION_TYPES = ["createBlock", "createCard", "createEdge", "createNote", "createZone", "deleteBlock", "deleteCard", "deleteEdge", "deleteNote", "deleteZone", "group", "moveBlock", "moveCard", "moveZone", "reorder", "resizeBlock", "resizeCard", "resizeZone", "updateBlock", "updateNote", "updateNoteBody"] as const;
 
@@ -174,8 +180,17 @@ export interface Note {
   workspaceId: string;
 }
 
+export interface NoteBodyBlock {
+  href?: string;
+  level?: number;
+  marks?: NoteBodyBlockMarksItem[];
+  ordered?: boolean;
+  text: string;
+  type: NoteBodyBlockType;
+}
+
 export interface NoteBodyPayload {
-  blocks: Block[];
+  blocks: NoteBodyBlock[];
   version: "1";
 }
 
