@@ -51,6 +51,8 @@ export function NotePanel({ t, boardId, actorId, noteId, note, open, onClose, on
   const bodyRef = useRef<NoteBody>(noteBodyOrEmpty(note));
   const savedRef = useRef({ title: normalizeNoteTitle(note?.title ?? ""), body: noteBodyOrEmpty(note) });
   const externalBodyRef = useRef(JSON.stringify(noteBodyOrEmpty(note)));
+  const externalTitleRef = useRef(note?.title ?? "");
+  const titleInputRef = useRef<HTMLInputElement | null>(null);
   const latest = useRef({ t, note, sendOperations, boardId, actorId, noteId, onClose, onClosed, onAutosaveEvent, onAutosaveReady });
   latest.current = { t, note, sendOperations, boardId, actorId, noteId, onClose, onClosed, onAutosaveEvent, onAutosaveReady };
   const [title, setTitle] = useState(note?.title ?? "");
@@ -147,6 +149,7 @@ export function NotePanel({ t, boardId, actorId, noteId, note, open, onClose, on
     bodyRef.current = initialBody;
     savedRef.current = { title: normalizeNoteTitle(initialTitle), body: initialBody };
     externalBodyRef.current = JSON.stringify(initialBody);
+    externalTitleRef.current = initialTitle;
     setTitle(initialTitle);
     setTitleError(null);
     setSaveError(null);
@@ -183,6 +186,20 @@ export function NotePanel({ t, boardId, actorId, noteId, note, open, onClose, on
     externalBodyRef.current = nextExternal;
     if (!bodiesEqual(external, editor.getBody())) editor.setBody(external, { preserveSelection: true });
   }, [note]);
+
+  // External title changes (L05 realtime): a remote title edit appears in the
+  // open panel unless the field is focused and holds an unsaved local edit.
+  useEffect(() => {
+    const external = note?.title;
+    if (external === undefined || external === externalTitleRef.current) return;
+    externalTitleRef.current = external;
+    const focused = document.activeElement === titleInputRef.current;
+    const localDirty = normalizeNoteTitle(titleRef.current) !== savedRef.current.title;
+    if (focused && localDirty) return;
+    titleRef.current = external;
+    setTitle(external);
+    setTitleError(validateNoteTitle(external));
+  }, [note?.title]);
 
   // A language switch updates the accessible name and placeholder without a remount.
   useEffect(() => {
@@ -231,6 +248,7 @@ export function NotePanel({ t, boardId, actorId, noteId, note, open, onClose, on
       ) : (
         <>
           <input
+            ref={titleInputRef}
             className="board-panel-title"
             type="text"
             value={title}

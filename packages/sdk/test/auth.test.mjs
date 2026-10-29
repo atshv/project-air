@@ -59,3 +59,16 @@ test("error envelopes become typed ApiError with code/messageKey/requestId", asy
     return true;
   });
 });
+
+test("session.get accepts the platform's flat {requestId, accountId} envelope", async () => {
+  const fake = fakeFetch([{ ok: true, status: 200, json: async () => ({ requestId: "r", accountId: "0192f0a1-7000-7000-8000-000000000001" }) }]);
+  const client = createClient({ baseUrl: "http://platform.test", fetch: fake.fetch });
+  const user = await client.auth.getSession();
+  assert.deepEqual(user, { accountId: "0192f0a1-7000-7000-8000-000000000001", email: "", displayName: "" });
+});
+
+test("session.get rejects a 200 response without an account id", async () => {
+  const fake = fakeFetch([{ ok: true, status: 200, json: async () => ({ requestId: "r" }) }]);
+  const client = createClient({ baseUrl: "http://platform.test", fetch: fake.fetch });
+  await assert.rejects(() => client.auth.getSession(), /account id/);
+});

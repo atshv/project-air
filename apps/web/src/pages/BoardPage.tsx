@@ -32,7 +32,7 @@ import {
 } from "../board/realtime.ts";
 import { toolGroups, type ToolId } from "../board/toolbar.ts";
 import { createArrowBurst, arrowDelta, contextMenuModel, shortcutFor, suppressesShortcuts, undoHintKey, type FocusLike } from "../board/interactions.ts";
-import { buildDeleteOperation, buildDuplicateCardOperation, buildReorderOperation } from "../board/operations.ts";
+import { NOTE_CARD_HEIGHT, NOTE_CARD_WIDTH, buildCreateNoteCardOperation, buildDeleteOperation, buildDuplicateCardOperation, buildReorderOperation, nextCardZ } from "../board/operations.ts";
 import { DEFAULT_CAMERA, backendChoice, clampCamera, zoomBy } from "../board/view.ts";
 import { PANEL_PAN_MS, panelCameraForCard } from "../board/panel.ts";
 import { resolveCardNote } from "../board/note.ts";
@@ -78,6 +78,9 @@ export function BoardPage({ t, language, clientId }: BoardPageProps) {
   const queuedWaitersRef = useRef<{ resolve: () => void; reject: (error: unknown) => void }[]>([]);
   const autosaveControlRef = useRef<{ retry: () => void } | null>(null);
   const selectedRef = useRef<{ kind: "card" | "zone" | "block"; id: string } | null>(null);
+  // A card created by a gesture is selected once its document projection exists;
+  // selecting immediately would target a card the content state does not carry yet.
+  const pendingSelectionRef = useRef<string | null>(null);
   const lastPresenceCursor = useRef<{ x: number; y: number } | null>(null);
   const [state, setState] = useState<{ loading: boolean; errorKey: string | null; board: Board | null; backend: string | null; empty: boolean }>({ loading: true, errorKey: null, board: null, backend: null, empty: true });
   const [syncStatus, setSyncStatus] = useState<BoardSyncStatus>("idle");
@@ -352,7 +355,9 @@ export function BoardPage({ t, language, clientId }: BoardPageProps) {
             return next;
           });
         });
-        sync.start(); project();
+        sync.start();
+        if (typeof navigator !== "undefined" && navigator.onLine === false) sync.goOffline();
+        project();
         setState((current) => ({ ...current, loading: false }));
       } catch (error) {
         if (disposed) return;
@@ -403,7 +408,7 @@ export function BoardPage({ t, language, clientId }: BoardPageProps) {
     const sourceNote = contentRef.current?.notes.find((note) => note.id === object.noteId);
     const noteId = object.noteId ?? createRequestId();
     const built = buildDuplicateCardOperation({ board: state.board, card: { ...object, boardId: object.boardId, noteId }, sourceNoteTitle: sourceNote?.title ?? t("board.duplicate.title"), actorId: clientId });
-    if (commitOperation(built.operation)) setSelected({ kind: "card", id: built.cardId });
+    if (commitOperation(built.operation)) pendingSelectionRef.current = built.cardId;
   }, [selectedObject, selected, clientId, commitOperation, t, state.board]);
 
   const reorderSelected = useCallback((direction: "forward" | "backward") => {
@@ -417,10 +422,10 @@ export function BoardPage({ t, language, clientId }: BoardPageProps) {
       const moves = delta.dx * delta.dx + delta.dy * delta.dy === 0 ? null : { x: (object.x ?? 0) + delta.dx, y: (object.y ?? 0) + delta.dy };
       if (moves === null || selected === null) return;
       const operation = selected.kind === "card"
-        ? { id: createRequestId(), boardId: object.boardId, actorId: clientId, createdAt: new Date().toISOString(), type: "moveCard", payload: { cardId: object.id, ...moves }, inverse: { type: "moveCard", payload: { cardId: object.id, x: object.x ?? 0, y: object.y ?? 0 } } }
+        ? { id: createRequestId(), boardId: object.boardId, actorId: clientId, createdAt: new Date().toISOString(), type: "moveCard", payload: { cardId: object.id, ...moves }, inverse: { boardId: object.boardId, type: "moveCard", payload: { cardId: object.id, x: object.x ?? 0, y: object.y ?? 0 } } }
         : selected.kind === "zone"
-          ? { id: createRequestId(), boardId: object.boardId, actorId: clientId, createdAt: new Date().toISOString(), type: "moveZone", payload: { zoneId: object.id, ...moves }, inverse: { type: "moveZone", payload: { zoneId: object.id, x: object.x ?? 0, y: object.y ?? 0 } } }
-          : { id: createRequestId(), boardId: object.boardId, actorId: clientId, createdAt: new Date().toISOString(), type: "moveBlock", payload: { blockId: object.id, ...moves }, inverse: { type: "moveBlock", payload: { blockId: object.id, x: object.x ?? 0, y: object.y ?? 0 } } };
+          ? { id: createRequestId(), boardId: object.boardId, actorId: clientId, createdAt: new Date().toISOString(), type: "moveZone", payload: { zoneId: object.id, ...moves }, inverse: { boardId: object.boardId, type: "moveZone", payload: { zoneId: object.id, x: object.x ?? 0, y: object.y ?? 0 } } }
+          : { id: createRequestId(), boardId: object.boardId, actorId: clientId, createdAt: new Date().toISOString(), type: "moveBlock", payload: { blockId: object.id, ...moves }, inverse: { boardId: object.boardId, type: "moveBlock", payload: { blockId: object.id, x: object.x ?? 0, y: object.y ?? 0 } } };
       commitOperation(operation);
     });
     burstRef.current = burst;
@@ -450,7 +455,9 @@ export function BoardPage({ t, language, clientId }: BoardPageProps) {
     return () => document.removeEventListener("keydown", onKey);
   }, [menu, selected, selectedObject, commitOperation, deleteSelected, duplicateSelected, showHint, closePanel]);
 
-  // L04: a selected card opens the panel; any other selection or deletion closes it.
+  // L04: a selected card opens the panel; any other selection or deletion closes
+  // it. This runs on selection changes only: a later content projection (a save
+  // ack, a remote edit) must not reopen a panel the user just closed.
   useEffect(() => {
     if (selected === null || selected.kind !== "card") {
       if (panelRef.current !== null && panelRef.current.open) closePanel();
@@ -458,29 +465,80 @@ export function BoardPage({ t, language, clientId }: BoardPageProps) {
     }
     if (panelRef.current?.cardId !== selected.id || panelRef.current?.open !== true) openPanelForCard(selected.id);
   }, [selected, closePanel, openPanelForCard]);
+
+  // Select a newly created card as soon as the content projection carries it.
+  useEffect(() => {
+    const pendingId = pendingSelectionRef.current;
+    if (pendingId === null || contentRef.current === null) return;
+    if (!contentRef.current.cards.some((card) => card.id === pendingId)) return;
+    pendingSelectionRef.current = null;
+    setSelected({ kind: "card", id: pendingId });
+  }, [content]);
   // A remotely deleted card closes the panel (the note-missing state stays for a live card).
   useEffect(() => {
     if (panel === null) return;
     if (resolveCardNote(content, panel.cardId) === null) closePanel();
   }, [content, panel, closePanel]);
   useEffect(() => () => { if (hintTimer.current !== null) window.clearTimeout(hintTimer.current); }, []);
+  // P6-10: the browser's own offline/online events. A Chromium offline context
+  // keeps an idle WebSocket half-open and silently drops frames, so the view
+  // cannot rely on the socket close alone; the SDK closes it and keeps the
+  // unacknowledged edits for the reconnect (L05 offline notice, flush on online).
+  useEffect(() => {
+    const goOffline = (): void => syncRef.current?.goOffline();
+    const goOnline = (): void => syncRef.current?.goOnline();
+    window.addEventListener("offline", goOffline);
+    window.addEventListener("online", goOnline);
+    return () => {
+      window.removeEventListener("offline", goOffline);
+      window.removeEventListener("online", goOnline);
+    };
+  }, []);
   const openMenu = (event: React.MouseEvent<HTMLCanvasElement>) => {
     event.preventDefault();
     const rect = event.currentTarget.getBoundingClientRect();
     const x = Math.min(event.clientX, window.innerWidth - 208); const y = Math.min(event.clientY, window.innerHeight - 200);
     setMenu({ x: Math.max(8, x), y: Math.max(8, y) }); void rect;
   };
+  /**
+   * L00 note creation (P6-10 in-scope fix): with the "Add note" tool active, a
+   * canvas click creates one note card centred on the pointer through the same
+   * sync path as every other authored gesture, selects it (the L04 panel opens)
+   * and returns the toolbar to select.
+   */
+  const createNoteAt = (screenX: number, screenY: number) => {
+    const board = state.board; const canvas = canvasRef.current;
+    if (board === null || canvas === null) return false;
+    const zoom = cameraRef.current.zoom > 0 ? cameraRef.current.zoom : 1;
+    const worldX = screenX / zoom + cameraRef.current.panX;
+    const worldY = screenY / zoom + cameraRef.current.panY;
+    const built = buildCreateNoteCardOperation({
+      board,
+      actorId: clientId,
+      title: t("note.newTitle"),
+      x: worldX - NOTE_CARD_WIDTH / 2,
+      y: worldY - NOTE_CARD_HEIGHT / 2,
+      z: nextCardZ(contentRef.current?.cards ?? []),
+    });
+    if (!commitOperation(built.operation)) return false;
+    pendingSelectionRef.current = built.cardId;
+    setTool("select");
+    return true;
+  };
   const pickAt = (event: React.MouseEvent<HTMLCanvasElement>) => {
     const engine = engineRef.current; const canvas = event.currentTarget;
     if (engine === null) return;
     const rect = canvas.getBoundingClientRect();
+    if (tool === "note") {
+      createNoteAt(event.clientX - rect.left, event.clientY - rect.top);
+      return;
+    }
     const slot = engine.hitTest(event.clientX - rect.left, event.clientY - rect.top);
     if (slot < 0) { setSelected(null); setMenu(null); closePanel(); return; }
     const content = contentRef.current; if (content === null) return;
     const ordered = [...content.zones.map((zone) => ({ kind: "zone" as const, id: zone.id })), ...content.blocks.map((block) => ({ kind: "block" as const, id: block.id })), ...content.cards.map((card) => ({ kind: "card" as const, id: card.id }))];
     const hit = ordered[slot]; if (hit !== undefined) { setSelected(hit); if (hit.kind !== "card") closePanel(); }
   };
-  if (state.loading) return <section className="page" aria-busy="true"><p className="muted">{t("board.loading")}</p></section>;
   if (state.errorKey !== null) return <section className="page"><h1 className="page-title">{t("board.errors.title")}</h1><p className="form-error" role="alert">{t(state.errorKey)}</p><Link className="text-link" to="/boards">{t("boards.backToList")}</Link></section>;
   const groups = toolGroups();
   const panelCard = panel === null ? null : resolveCardNote(content, panel.cardId);
@@ -488,7 +546,7 @@ export function BoardPage({ t, language, clientId }: BoardPageProps) {
   // "Saved" is shown for the token window after the server confirmation only.
   const statusView = saveView.state === "saved" && !savedStillVisible(Date.now(), savedAt) ? { state: "hidden" as const, messageKey: "", retryable: false } : saveView;
   return (
-    <section className="board-page">
+    <section className="board-page" aria-busy={state.loading}>
       <header className="board-bar">
         <Link className="text-link" to="/boards" aria-label={t("boards.backToList")}>←</Link>
         <h1 className="board-title">{state.board?.title ?? t("board.untitled")}</h1>
@@ -535,7 +593,8 @@ export function BoardPage({ t, language, clientId }: BoardPageProps) {
             })}
           </div>
         ) : null}
-        {state.empty ? <p className="board-empty muted">{t("canvas.empty")}</p> : null}
+        {state.loading ? <p className="board-empty muted" role="status">{t("board.loading")}</p> : null}
+        {!state.loading && state.empty ? <p className="board-empty muted">{t("canvas.empty")}</p> : null}
       </div>
       <div className="toolbar" role="toolbar" aria-label={t("canvas.toolbar.label")}>
         {groups.map((group, index) => (

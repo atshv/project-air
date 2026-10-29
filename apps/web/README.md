@@ -155,3 +155,32 @@ not apply the contract 0.4.0 `updateNoteBody` operation yet (they predate P6-06)
 local/remote document does not yet show the saved body; the panel still produces the correct
 contract operation through the one writer, and the server-side follow-up is outside P6-07's
 write scope. Live sync authentication remains P6-08.
+
+## End-to-end tests (P6-10)
+
+`apps/web/e2e/` is the Playwright suite for the main product flows (login/boards, note panel and
+editor, toolbar/zoom/context menu/undo, L17 view persistence, two-user realtime + offline/reconnect
+and the session guard). It runs the built app against the slot services on the slot's ports; the
+Playwright `webServer` starts the whole environment with one command.
+
+```bash
+bash tools/dev/setup                     # once per worktree (slot DB/role/bucket)
+pnpm install                             # includes @playwright/test 1.64.1
+bash packages/engine/tools/build-wasm.sh # gitignored engine.js/engine.wasm
+pnpm build                               # apps/web/dist + service entrypoints
+pnpm --filter ./apps/web exec playwright install chromium   # cached after the first time
+
+pnpm --filter ./apps/web exec playwright test               # the e2e gate (exclusive)
+pnpm --filter ./apps/web exec playwright test -- e2e/realtime.spec.ts   # one file
+pnpm --filter ./apps/web exec playwright show-report        # HTML report
+```
+
+The environment (`tools/dev/e2e-env.mjs`, served by `tools/dev/e2e-server.mjs`) resets only this
+slot's database, starts auth (gated test-session mode), platform and sync on the slot ports, seeds a
+deterministic workspace/board, serves the built app with the same-origin `/v1` HTTP + WebSocket
+proxies on the `web-e2e` port, and tears its processes and rows down on `SIGTERM`. A second run
+passes without manual steps. Traces and screenshots on failure go to the ignored
+`apps/web/test-results/`, the HTML report to `apps/web/playwright-report/`. No retries are configured
+and one worker is used: a flaky test is fixed, not retried. The gate and the authentication choice
+(test-mode session, optional manual Kratos spec) are documented in
+[docs/gates/playwright.md](../../docs/gates/playwright.md).

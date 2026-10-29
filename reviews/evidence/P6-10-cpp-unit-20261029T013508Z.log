@@ -1,0 +1,47 @@
+$ cmake -S packages/engine -B packages/engine/build -DCMAKE_BUILD_TYPE=Debug && cmake --build packages/engine/build --parallel && ctest --test-dir packages/engine/build --output-on-failure
+[exit 0]
+
+-- Configuring done (0.1s)
+-- Generating done (0.0s)
+-- Build files have been written to: /tmp/air-P6-10/packages/engine/build
+[  6%] Built target engine_zone_tests
+[ 18%] Built target engine_zone_lifecycle_tests
+[ 18%] Built target engine_zone_layout_tests
+[ 53%] Built target air_engine_objects
+[ 56%] Built target air_engine
+[ 62%] Built target engine_render_backend_tests
+[ 68%] Built target engine_render_webgpu_tests
+[ 71%] Building CXX object CMakeFiles/engine_unit_tests.dir/test/engine_test.cpp.o
+[ 78%] Built target engine_binding_tests
+[ 84%] Built target engine_text_tests
+[ 87%] Building CXX object CMakeFiles/engine_core_tests.dir/test/engine_core_test.cpp.o
+[ 93%] Built target engine_snap_tests
+[ 96%] Linking CXX executable engine_unit_tests
+[ 96%] Built target engine_unit_tests
+[100%] Linking CXX executable engine_core_tests
+[100%] Built target engine_core_tests
+Test project /tmp/air-P6-10/packages/engine/build
+      Start  1: engine_render_backend_tests
+ 1/10 Test  #1: engine_render_backend_tests ......   Passed    0.00 sec
+      Start  2: engine_render_webgpu_tests
+ 2/10 Test  #2: engine_render_webgpu_tests .......   Passed    0.00 sec
+      Start  3: engine_unit_tests
+ 3/10 Test  #3: engine_unit_tests ................   Passed    0.17 sec
+      Start  4: engine_core_tests
+ 4/10 Test  #4: engine_core_tests ................   Passed    0.41 sec
+      Start  5: engine_text_tests
+ 5/10 Test  #5: engine_text_tests ................   Passed    0.14 sec
+      Start  6: engine_binding_tests
+ 6/10 Test  #6: engine_binding_tests .............   Passed    0.04 sec
+      Start  7: engine_zone_lifecycle_tests
+ 7/10 Test  #7: engine_zone_lifecycle_tests ......   Passed    0.00 sec
+      Start  8: engine_zone_layout_tests
+ 8/10 Test  #8: engine_zone_layout_tests .........   Passed    0.00 sec
+      Start  9: engine_zone_tests
+ 9/10 Test  #9: engine_zone_tests ................   Passed    0.00 sec
+      Start 10: engine_snap_tests
+10/10 Test #10: engine_snap_tests ................   Passed    0.00 sec
+
+100% tests passed out of 10
+
+Total Test time (real) =   0.78 sec

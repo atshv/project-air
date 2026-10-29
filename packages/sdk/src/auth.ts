@@ -27,6 +27,28 @@ interface Envelope {
   readonly data?: unknown;
 }
 
+function isRecord(value: unknown): value is Readonly<Record<string, unknown>> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function text(record: Readonly<Record<string, unknown>>, key: string): string {
+  const value = record[key];
+  return typeof value === "string" ? value : "";
+}
+
+/** Accepts both the platform's flat session envelope and the `{data}` envelope. */
+function sessionUserOf(payload: unknown): SessionUser | undefined {
+  if (!isRecord(payload)) {
+    return undefined;
+  }
+  const data = isRecord(payload.data) ? payload.data : payload;
+  const accountId = text(data, "accountId");
+  if (accountId === "") {
+    return undefined;
+  }
+  return { accountId, email: text(data, "email"), displayName: text(data, "displayName") };
+}
+
 export class AuthResource {
   readonly #authBase: string;
   readonly #sessionBase: string;
@@ -40,7 +62,7 @@ export class AuthResource {
     this.#requestId = options.requestId ?? (() => createRequestId());
   }
 
-  async #request(method: string, url: string, body?: unknown): Promise<unknown> {
+  async #requestPayload(method: string, url: string, body?: unknown): Promise<unknown> {
     const requestId = this.#requestId();
     const headers: Record<string, string> = { accept: "application/json" };
     if (body !== undefined) headers["content-type"] = "application/json";
@@ -53,12 +75,30 @@ export class AuthResource {
     let parsed: unknown;
     try { parsed = await response.json(); } catch { parsed = undefined; }
     if (!response.ok) throw toApiError(parsed, response.status, requestId);
-    return (parsed as Envelope | undefined)?.data;
+    return parsed;
   }
 
-  /** `GET /v1/session`; throws `ApiError` AUTH_REQUIRED when unauthenticated. */
+  async #request(method: string, url: string, body?: unknown): Promise<unknown> {
+    return (await this.#requestPayload(method, url, body) as Envelope | undefined)?.data;
+  }
+
+  /**
+   * `GET /v1/session`; throws `ApiError` AUTH_REQUIRED when unauthenticated.
+   *
+   * The platform's contract route returns the flat `{requestId, accountId}`
+   * envelope (its session probe only resolves the account id); the auth service
+   * additionally serves `{requestId, data: {accountId, email, displayName}}`.
+   * Both shapes are accepted so the client never crashes on the real platform;
+   * a missing profile stays an empty string and the UI shows an honest account
+   * label fallback instead of inventing a name.
+   */
   async getSession(): Promise<SessionUser> {
-    return await this.#request("GET", `${this.#sessionBase}/v1/session`) as SessionUser;
+    const payload = await this.#requestPayload("GET", `${this.#sessionBase}/v1/session`);
+    const user = sessionUserOf(payload);
+    if (user === undefined) {
+      throw new Error("the session response does not carry an account id");
+    }
+    return user;
   }
 
   async login(email: string, password: string): Promise<void> {

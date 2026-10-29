@@ -4,6 +4,7 @@ import { Link, NavLink, Navigate, Route, Routes, useLocation, useNavigate } from
 import de from "../messages/de.json";
 import en from "../messages/en.json";
 import { api } from "./auth/client.ts";
+import { accountLabel } from "./auth/session-label.ts";
 import type { SessionUser } from "../../../packages/sdk/src/auth.ts";
 import { LoginPage, RecoveryPage, RegisterPage } from "./pages/AuthPages.tsx";
 import { BoardsPage } from "./pages/BoardsPage.tsx";
@@ -47,7 +48,7 @@ function SettingsPage({ t, language, setLanguage, user, onSignOut }: { readonly 
       <h2 className="section-title">{t("settings.account")}</h2>
       {user === null ? <p className="muted">{t("auth.signedOut")}</p> : (
         <>
-          <p className="muted small">{t("settings.signedInAs")}: {user.displayName} ({user.email})</p>
+          <p className="muted small">{t("settings.signedInAs")}: {accountLabel(user)}{user.email === "" ? "" : ` (${user.email})`}</p>
           <Button variant="secondary" onClick={() => { void onSignOut(); }}>{t("auth.signOut")}</Button>
         </>
       )}
@@ -114,7 +115,7 @@ export function App() {
             <span className="account muted" aria-label={t("auth.signedOut")}>{t("auth.signedOut")}</span>
           ) : (
             <>
-              <span className="account" aria-label={t("auth.signedInAs")}>{session.user.displayName}</span>
+              <span className="account" aria-label={t("auth.signedInAs")}>{accountLabel(session.user)}</span>
               <Button variant="secondary" size="card" onClick={() => { void signOut(); }}>{t("auth.signOut")}</Button>
             </>
           )}

@@ -95,7 +95,7 @@ task from the project's manifests; until then the gate cannot pass.
 | `load` | `node packages/sdk/test/load/run-load.mjs` | exit 0 (exclusive), 25 SDK clients on one board, >= 5,000 ops / >= 30 s window (warm-up 5 s), p95 send->ack <= 150 ms, 0 errors, exact client<->fresh-join convergence; 3 repetitions recorded (see docs/gates/load.md) |
 | `visual` | `node packages/engine/test/visual/run-visual.mjs` | exit 0, every committed WebGL2 reference image at 1440x900 and 390x844 within tolerance, real GPU recorded, capture record and diff PNGs under `reviews/evidence/` (exclusive; WebGPU reference images follow with P4-11 — see `docs/gates/visual-diff.md`) |
 | `visual-final` | `node packages/engine/test/visual/run-visual.mjs` | exit 0, the stage-exit final reference-image proof recorded by P4-28: every reference image at 1440x900 and 390x844 within tolerance for WebGL2 and WebGPU (see `docs/gates/visual-diff.md`) |
-| `e2e` | see `docs/gates/playwright.md` `[VERIFY: stage web-app]` | exit 0 (exclusive) |
+| `e2e` | `pnpm --filter ./apps/web exec playwright test` (slot ports, built app and services; see `docs/gates/playwright.md`) | exit 0, `12 passed` (1 skipped manual spec), exclusive |
 | `import-tests` | `[VERIFY: stage value]` | exit 0 |
 
 `board-check` scans every `*.md` under the project root, including `node_modules/`. Run it before

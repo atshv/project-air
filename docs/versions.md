@@ -4,7 +4,7 @@ Every dependency in every manifest appears here. `[UNVERIFIED]` and `[VERIFY: �
 a release. P0-04 added the workspace rows from the root manifest and lockfile; P0-09 added the
 GitHub Actions rows from `.github/workflows/ci.yml`; P2-01 added the C++ engine toolchain rows from
 the Homebrew formulae; P2-04 added the Chrome for Testing row used by the local performance
-baseline; P3-01 added the backend rows (`pg`, `@types/pg`, `@types/node`) and the Ory Kratos image; P6-01 added the ADR-0013 web-app rows (React 19, React Router, Vite and their types).
+baseline; P3-01 added the backend rows (`pg`, `@types/pg`, `@types/node`) and the Ory Kratos image; P6-01 added the ADR-0013 web-app rows (React 19, React Router, Vite and their types); P6-10 added the Playwright runner and its Chromium browser build.
 
 | Tool / library | Exact version | Source URL | Date checked | Approved by |
 | --- | --- | --- | --- | --- |
@@ -31,7 +31,9 @@ baseline; P3-01 added the backend rows (`pg`, `@types/pg`, `@types/node`) and th
 | PostgreSQL (official image, local compose) | `17.11-alpine3.23@sha256:01ea903aa65deb58eb49d6e09d859ecff63a6bb7d61feca55f2abad71d08f72a` | https://hub.docker.com/_/postgres — PostgreSQL Licence (OSI permissive; blueprint-mandated server) | 2026-10-25 | lead (P0-07) |
 | PostgreSQL client (`pg`, backend runtime) | `8.23.1` | https://www.npmjs.com/package/pg/v/8.23.1 — MIT | 2026-10-25 | owner (2026-10-25) |
 | `@types/pg` (dev, backend) | `8.23.1` | https://www.npmjs.com/package/@types/pg/v/8.23.1 — MIT | 2026-10-25 | owner (2026-10-25) |
-| `@types/node` (dev, backend) | `24.19.2` | https://www.npmjs.com/package/@types/node/v/24.19.2 — MIT | 2026-10-25 | lead (P3-01, type declarations for the Node builtins) |
+| `@types/node` (dev, backend and web e2e) | `24.19.2` | https://www.npmjs.com/package/@types/node/v/24.19.2 — MIT | 2026-10-25 | lead (P3-01, type declarations for the Node builtins; P6-10 uses it for the e2e config/state helpers) |
+| `@playwright/test` (web app e2e runner, dev) | `1.64.1` | https://www.npmjs.com/package/@playwright/test/v/1.64.1 — Apache-2.0 | 2026-10-29 | owner (P6-10) |
+| Chromium (Playwright e2e browser) | Playwright build `1248` (Chrome `156.0.8078.4`) | https://github.com/microsoft/playwright/releases/tag/v1.64.1 (browsers.json) — Chromium, BSD-3-Clause; local cache only, not in the repository, never shipped | 2026-10-29 | owner (P6-10) |
 | Ory Kratos (identity service, local compose) | `v26.2.0@sha256:2a13bb8d362c7a7ae33bd7c0f5168aee46921f15c916a06346db91c06dc76643` | https://github.com/ory/kratos/releases/tag/v26.2.0 — Apache-2.0 | 2026-10-25 | owner (2026-10-25) |
 | SeaweedFS (S3, local compose) | `4.50@sha256:c2658820e763294a9e9de7b36c81e59b879e3459148351aee4e31a126ca64860` | https://github.com/seaweedfs/seaweedfs — Apache-2.0 | 2026-10-25 | lead (P0-07) |
 | Mailpit (mail catcher, local compose) | `v1.32.0@sha256:0790692be935ea4420d085694f7985b1f692ca6a8771ab0e0bd8ba75ac180498` | https://github.com/axllent/mailpit — MIT | 2026-10-25 | lead (P0-07) |
@@ -46,6 +48,11 @@ typescript-eslint in the root `devDependencies`, and Node in `.nvmrc` (`24.22.1`
 PostgreSQL Licence (OSI-approved, permissive) is a recorded exception to the licence list below,
 alongside the two local-tool exceptions: Docker Desktop and the Chrome for Testing binary used by
 the local performance baseline (owner-approved, local only, never shipped).
+
+The web-app e2e runner (P6-10) is `@playwright/test` `1.64.1` (Apache-2.0, pinned in
+`apps/web/package.json` and the lockfile, dev-only, never shipped). Its Chromium build `1248`
+(Chrome `156.0.8078.4`) is installed by `pnpm --filter ./apps/web exec playwright install chromium`
+into the user-level Playwright cache and is not part of the repository, the bundle or CI artifacts.
 
 Backend rows (P3-01): `pg` is the only runtime dependency of `services/platform` and
 `services/auth`, pinned in their manifests and the lockfile; `@types/pg` is its type declaration

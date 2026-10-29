@@ -1,0 +1,34 @@
+$ pnpm --filter ./apps/web exec playwright test
+[exit 0]
+
+[WebServer] e2e-env: slot 3 | database project-air_slot_3 | web-e2e 4301 | platform 4310 | auth 4320 | sync 4330
+[WebServer] e2e-env: resetting and migrating the slot database (tools/dev/reset-db)
+[WebServer] e2e-env: starting auth (test mode), platform and sync from the built services
+[WebServer] e2e-env: minted 2 test-mode sessions
+[WebServer] e2e-env: seeding accounts, workspace, membership and board with fixed ids
+[WebServer] e2e-env: ready at http://127.0.0.1:4301 (stop with SIGTERM; the suite cleans up after itself)
+
+Running 13 tests using 1 worker
+
+  ✓   1 [chromium] › e2e/boards.spec.ts:7:3 › boards list › shows the seeded workspace and board, creates a board and opens it (971ms)
+  ✓   2 [chromium] › e2e/boards.spec.ts:28:3 › boards list › a missing board redirects back to the boards list (164ms)
+  ✓   3 [chromium] › e2e/interactions.spec.ts:20:3 › board interactions › the L12 context menu offers open, duplicate, bring forward, send backward and delete (2.0s)
+  ✓   4 [chromium] › e2e/interactions.spec.ts:74:3 › board interactions › keyboard shortcuts duplicate/delete, L11 undo/redo shows the 3 s hint and the editor suppresses board shortcuts (4.4s)
+  -   5 [chromium] › e2e/manual/kratos-login.spec.ts:23:3 › real Kratos login (manual) › a seeded Kratos account signs in through the login form and reaches the boards page
+  ✓   6 [chromium] › e2e/note-panel.spec.ts:20:3 › note panel and editor › a note added from the toolbar opens the 400 px overlay without changing the canvas width and closes on Escape (700ms)
+  ✓   7 [chromium] › e2e/note-panel.spec.ts:46:3 › note panel and editor › an empty note shows the placeholder, then typing and the title survive a reload (1.4s)
+  ✓   8 [chromium] › e2e/realtime.spec.ts:21:3 › realtime › two accounts edit live, see presence and the L05 Saving -> Saved transition (2.3s)
+  ✓   9 [chromium] › e2e/realtime.spec.ts:56:3 › realtime › an offline edit is kept, shows the offline notice and converges after reconnect (1.5s)
+  ✓  10 [chromium] › e2e/session.spec.ts:8:3 › session guard › a logged-out visitor is redirected to the login page and returns to the intended board after signing in (551ms)
+  ✓  11 [chromium] › e2e/session.spec.ts:33:3 › session guard › signing out returns to the login page and the session stays gone after a reload (294ms)
+  ✓  12 [chromium] › e2e/toolbar-view.spec.ts:26:3 › toolbar and view › the L00 toolbar groups the tools and the zoom controls change the persisted view (3.4s)
+  ✓  13 [chromium] › e2e/toolbar-view.spec.ts:53:3 › toolbar and view › the L17 view survives a reload and a new board starts fitted (2.2s)
+[WebServer] e2e-env: shutting down (server, services, seeded rows)
+[WebServer] e2e-env: seeded rows and the run's sync log removed
+
+  1 skipped
+  12 passed (25.7s)
+[WebServer] (node:58574) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+(node:58753) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)

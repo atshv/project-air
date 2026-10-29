@@ -7142,7 +7142,7 @@
       "satisfies": [
         "D12"
       ],
-      "status": "in_progress",
+      "status": "done",
       "depends_on": [
         "P6-09"
       ],
@@ -7191,11 +7191,19 @@
         "wasm-build",
         "cpp-unit"
       ],
-      "owner": "lead",
+      "owner": null,
       "branch": "task/P6-10",
-      "worktree": "/private/tmp/air-P6-10",
-      "round": 0,
-      "evidence": [],
+      "worktree": null,
+      "round": 1,
+      "evidence": [
+        "reviews/evidence/P6-10-board-check-20261029T013935Z.json",
+        "reviews/evidence/P6-10-boundaries-20261029T013631Z.json",
+        "reviews/evidence/P6-10-unit-20261029T013629Z.json",
+        "reviews/evidence/P6-10-typecheck-20261029T013434Z.json",
+        "reviews/evidence/P6-10-wasm-build-20261029T013441Z.json",
+        "reviews/evidence/P6-10-cpp-unit-20261029T013508Z.json",
+        "reviews/evidence/P6-10-e2e-20261029T013559Z.json"
+      ],
       "scope_write_forbidden": [
         "reference/"
       ],

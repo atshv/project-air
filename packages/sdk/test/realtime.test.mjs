@@ -356,3 +356,33 @@ test("undoOwn applies only the client's own inverse; remote operations are never
   assert.deepEqual(socket.lastByType("operationBatch").payload.operations[0].payload, own.payload, `redo resends the own operation: ${JSON.stringify(socket.lastByType("operationBatch").payload.operations[0])}`);
   client.close();
 });
+
+test("browser offline keeps unacknowledged operations, does not reconnect in a loop and flushes them on online", () => {
+  const { client, sockets, timers } = clientSetup();
+  client.start();
+  const first = sockets[0];
+  first.receive({ id: "w", type: "welcome", serverSeq: 1, payload: { contractVersion: "0.4.0", snapshotRef: "board-1:1" } });
+  first.receive({ id: "s", type: "snapshot", serverSeq: 1, payload: { snapshotRef: "board-1:1", boardContent: content } });
+  assert.equal(client.status(), "joined");
+  const batchId = client.sendOperations([{ id: "op-1", type: "reorder", payload: { itemId: "x", z: "a" } }]);
+  assert.ok(batchId !== null, "the batch is sent while joined");
+  assert.equal(client.pendingCount(), 1);
+
+  client.goOffline();
+  assert.equal(client.status(), "offline");
+  assert.equal(client.pendingCount(), 0, "the unacknowledged batch left the pending map");
+  assert.equal(client.offlineCount(), 1, "it is kept in the ordered offline queue");
+  timers.advance(10_000);
+  assert.equal(sockets.length, 1, "no reconnect attempt while the browser is offline");
+  assert.equal(client.status(), "offline");
+
+  client.goOnline();
+  assert.equal(sockets.length, 2, "going online opens a fresh connection");
+  const second = sockets[1];
+  second.receive({ id: "w2", type: "welcome", serverSeq: 1, payload: { contractVersion: "0.4.0", snapshotRef: "board-1:1" } });
+  second.receive({ id: "s2", type: "snapshot", serverSeq: 1, payload: { snapshotRef: "board-1:1", boardContent: content } });
+  const flushed = second.lastByType("operationBatch");
+  assert.ok(flushed !== undefined, "the kept batch flushes after the reconnect snapshot");
+  assert.deepEqual(flushed.payload.operations.map((operation) => operation.id), ["op-1"]);
+  assert.equal(client.offlineCount(), 0);
+});

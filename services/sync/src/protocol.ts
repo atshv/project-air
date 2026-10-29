@@ -154,6 +154,18 @@ export class SyncSession {
   }
 
   get joinedBoard(): string | null { return this.#state.joinedBoard; }
+
+  /**
+   * P6-10: apply a batch another client authored to this session's server-side
+   * document. Every connection keeps its own document; without this a client
+   * that joined before another client's change would apply its next dependent
+   * operation (e.g. `updateNoteBody` on a note the other client created) to a
+   * stale document and get a VALIDATION reject.
+   */
+  applyRemoteOperations(operations: readonly Record<string, unknown>[]): void {
+    if (this.#state.doc === null) return;
+    for (const operation of operations) this.#state.doc.apply(operation);
+  }
   get helloSeen(): boolean { return this.#state.helloSeen; }
   get lastServerSeq(): number { return this.#state.lastServerSeq; }
   get clientId(): string { return this.#state.clientId; }

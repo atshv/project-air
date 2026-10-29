@@ -80,9 +80,22 @@ export async function createSyncService(options: SyncServiceOptions): Promise<Ru
       presence,
       ...(connectionCookie === "" ? {} : { connectionCookie }),
       broadcast: (boardId, message, exceptClientId) => {
+        const operations = message.type === "operationBatch"
+          ? ((message.payload as Record<string, unknown> | undefined)?.["operations"] as Record<string, unknown>[] | undefined)
+          : undefined;
         for (const record of clients) {
           if (record.session.clientId === exceptClientId) continue;
           if (record.session.joinedBoard !== boardId) continue;
+          // Keep every other session's server-side document current before the
+          // broadcast: a later dependent operation from that session must apply
+          // to the same history the clients see (P6-10).
+          if (operations !== undefined) {
+            try {
+              record.session.applyRemoteOperations(operations);
+            } catch (error) {
+              logger.error("sync.remote_apply_failed", { error: String((error as Error).message) });
+            }
+          }
           record.connection.sendJson(message);
         }
       },

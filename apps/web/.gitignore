@@ -1,0 +1,4 @@
+# P6-10 e2e runtime: the state file the webServer writes and its artifacts.
+e2e/.state/
+test-results/
+playwright-report/

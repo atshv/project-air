@@ -1,0 +1,135 @@
+{
+  "task": "P6-10",
+  "state": "idle",
+  "attempt": 0,
+  "attempts": [],
+  "events": [
+    {
+      "at": "2026-10-29T01:34:13+00:00",
+      "kind": "gate",
+      "data": {
+        "gate": "board-check",
+        "result": "fail",
+        "record": "reviews/evidence/P6-10-board-check-20261029T013358Z.json"
+      }
+    },
+    {
+      "at": "2026-10-29T01:34:22+00:00",
+      "kind": "gate",
+      "data": {
+        "gate": "boundaries",
+        "result": "pass",
+        "record": "reviews/evidence/P6-10-boundaries-20261029T013422Z.json"
+      }
+    },
+    {
+      "at": "2026-10-29T01:34:31+00:00",
+      "kind": "gate",
+      "data": {
+        "gate": "unit",
+        "result": "pass",
+        "record": "reviews/evidence/P6-10-unit-20261029T013422Z.json"
+      }
+    },
+    {
+      "at": "2026-10-29T01:34:37+00:00",
+      "kind": "gate",
+      "data": {
+        "gate": "typecheck",
+        "result": "pass",
+        "record": "reviews/evidence/P6-10-typecheck-20261029T013434Z.json"
+      }
+    },
+    {
+      "at": "2026-10-29T01:34:45+00:00",
+      "kind": "gate",
+      "data": {
+        "gate": "wasm-build",
+        "result": "pass",
+        "record": "reviews/evidence/P6-10-wasm-build-20261029T013441Z.json"
+      }
+    },
+    {
+      "at": "2026-10-29T01:34:53+00:00",
+      "kind": "gate",
+      "data": {
+        "gate": "cpp-unit",
+        "result": "fail",
+        "record": "reviews/evidence/P6-10-cpp-unit-20261029T013448Z.json"
+      }
+    },
+    {
+      "at": "2026-10-29T01:35:10+00:00",
+      "kind": "gate",
+      "data": {
+        "gate": "cpp-unit",
+        "result": "pass",
+        "record": "reviews/evidence/P6-10-cpp-unit-20261029T013508Z.json"
+      }
+    },
+    {
+      "at": "2026-10-29T01:35:44+00:00",
+      "kind": "gate",
+      "data": {
+        "gate": "e2e",
+        "result": "pass",
+        "record": "reviews/evidence/P6-10-e2e-20261029T013516Z.json"
+      }
+    },
+    {
+      "at": "2026-10-29T01:36:26+00:00",
+      "kind": "gate",
+      "data": {
+        "gate": "e2e",
+        "result": "pass",
+        "record": "reviews/evidence/P6-10-e2e-20261029T013559Z.json"
+      }
+    },
+    {
+      "at": "2026-10-29T01:36:31+00:00",
+      "kind": "gate",
+      "data": {
+        "gate": "unit",
+        "result": "pass",
+        "record": "reviews/evidence/P6-10-unit-20261029T013629Z.json"
+      }
+    },
+    {
+      "at": "2026-10-29T01:36:31+00:00",
+      "kind": "gate",
+      "data": {
+        "gate": "boundaries",
+        "result": "pass",
+        "record": "reviews/evidence/P6-10-boundaries-20261029T013631Z.json"
+      }
+    },
+    {
+      "at": "2026-10-29T01:36:56+00:00",
+      "kind": "gate",
+      "data": {
+        "gate": "board-check",
+        "result": "fail",
+        "record": "reviews/evidence/P6-10-board-check-20261029T013641Z.json"
+      }
+    },
+    {
+      "at": "2026-10-29T01:38:05+00:00",
+      "kind": "gate",
+      "data": {
+        "gate": "board-check",
+        "result": "fail",
+        "record": "reviews/evidence/P6-10-board-check-20261029T013750Z.json"
+      }
+    },
+    {
+      "at": "2026-10-29T01:39:50+00:00",
+      "kind": "gate",
+      "data": {
+        "gate": "board-check",
+        "result": "pass",
+        "record": "reviews/evidence/P6-10-board-check-20261029T013935Z.json"
+      }
+    }
+  ],
+  "updated": "2026-10-29T01:39:50+00:00"
+}

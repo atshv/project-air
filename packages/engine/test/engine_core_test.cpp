@@ -660,8 +660,8 @@ void tonesAndContract() {
   test::expect(std::string_view(toneColor(Tone::toneE)) == std::string_view(tokens::tone_e),
                "tone E resolves to token tone_e");
 
-  test::expect(std::string_view(project_air::contracts::kContractVersion) == "0.3.0",
-               "the generated contract is version 0.3.0");
+  test::expect(std::string_view(project_air::contracts::kContractVersion) == "0.4.0",
+               "the generated contract is version 0.4.0");
 
   project_air::contracts::BoardContent content{};
   project_air::contracts::Zone zone{};

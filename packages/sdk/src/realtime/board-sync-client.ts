@@ -65,6 +65,14 @@ export interface BoardSyncClient {
   offlineCount(): number;
   pendingCount(): number;
   lastError(): unknown;
+  /**
+   * P6-10: the browser went offline. Closes the (possibly half-open) socket,
+   * keeps unacknowledged operations for the reconnect and reports `offline`
+   * instead of reconnecting in a loop; `goOnline` resumes the connection.
+   */
+  goOffline(): void;
+  /** P6-10: the browser is online again; reconnect and flush the kept operations. */
+  goOnline(): void;
   /** P5-05: throttled outbound cursor/selection (name/colour are server-derived). */
   updatePresence(presence: { cursor: PresenceCursor; selection: readonly string[] }): void;
   participants(): readonly RemoteParticipant[];
@@ -106,6 +114,7 @@ export function createBoardSyncClient(options: BoardSyncClientOptions): BoardSyn
   let reconnectTimer: number | null = null;
   let closedByUser = false;
   let resumeFrom = 0;
+  let suspended = false;
   let lastError: unknown = null;
   let flushWaiters: (() => void)[] = [];
   const participants = new Map<string, RemoteParticipant>();
@@ -292,7 +301,7 @@ export function createBoardSyncClient(options: BoardSyncClientOptions): BoardSyn
   };
 
   const scheduleReconnect = (): void => {
-    if (closedByUser || reconnectTimer !== null) return;
+    if (closedByUser || suspended || reconnectTimer !== null) return;
     const delay = Math.min(backoff.maxMs, backoff.initialMs * 2 ** reconnectAttempt);
     reconnectAttempt += 1;
     reconnectTimer = timers.setTimeout(() => {
@@ -312,7 +321,7 @@ export function createBoardSyncClient(options: BoardSyncClientOptions): BoardSyn
   };
 
   const connect = (): void => {
-    if (closedByUser) return;
+    if (closedByUser || suspended) return;
     setStatus("connecting");
     const next = options.createSocket();
     socket = next;
@@ -376,6 +385,34 @@ export function createBoardSyncClient(options: BoardSyncClientOptions): BoardSyn
         return;
       }
       await new Promise<void>((resolve) => flushWaiters.push(resolve));
+    },
+    goOffline(): void {
+      if (closedByUser) return;
+      suspended = true;
+      clearReconnect();
+      // Operations sent on a connection the network just closed were not
+      // acknowledged; keep them in order for the reconnect instead of losing
+      // them with the pending map. Reapplying them is idempotent per operation
+      // id on the server document.
+      for (const entry of pending.values()) {
+        queue.push(...entry.operations);
+      }
+      pending.clear();
+      pendingPresence = null;
+      if (socket !== null) {
+        const closing = socket;
+        socket = null;
+        closing.close();
+      }
+      clearParticipants();
+      if (status !== "offline") setStatus("offline");
+    },
+    goOnline(): void {
+      if (closedByUser) return;
+      suspended = false;
+      if (status === "joined") return;
+      clearReconnect();
+      connect();
     },
     close(): void {
       if (closedByUser) return;

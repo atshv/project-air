@@ -1,0 +1,399 @@
+$ pnpm test --affected
+[exit 0]
+
+
+   • turbo 2.11.10
+   • Packages in scope: //, @project-air/engine, @project-air/sdk, @project-air/sync, @project-air/web
+   • Running test in 5 packages
+   • Remote caching disabled, using shared worktree cache
+
+@project-air/sync:build: cache hit, replaying logs 08ea326cf1a77427
+@project-air/crdt:build: cache hit, replaying logs aa21a9ca48a86ec7
+@project-air/web:build: cache hit, replaying logs c3209c54a21e187e
+@project-air/crdt:build: $ tsc --project tsconfig.build.json
+@project-air/web:build: $ vite build
+@project-air/web:build: vite v8.3.5 building client environment for production...
+@project-air/web:build: transforming...
+@project-air/web:build: ✓ 193 modules transformed.
+@project-air/web:build: rendering chunks...
+@project-air/web:build: computing gzip size...
+@project-air/web:build: dist/index.html                   0.44 kB │ gzip:   0.28 kB
+@project-air/web:build: dist/assets/index-IHrK_9c2.css   13.87 kB │ gzip:   3.23 kB
+@project-air/web:build: dist/assets/index-DUxYHY5T.js   455.19 kB │ gzip: 140.16 kB
+@project-air/web:build: 
+@project-air/web:build: ✓ built in 283ms
+@project-air/engine:build: cache miss, executing 1e6a1fb43230b9fb
+@project-air/sync:build: $ tsc --project tsconfig.json
+@project-air/sync:test: cache hit, replaying logs de7fcad46aa3c1e7
+@project-air/sdk:build: cache hit, replaying logs ecae716a5d3776f4
+@project-air/sync:test: $ node --test --test-concurrency=1 test/*.test.mjs
+@project-air/sync:test: (node:56747) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.
+@project-air/sync:test: (Use `node --trace-warnings ...` to show where the warning was created)
+@project-air/sync:test: ✔ live socket integration: join, ack-after-commit, updateNoteBody log/broadcast/catch-up and reconnect (283.975209ms)
+@project-air/sync:test: (node:56782) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.
+@project-air/sync:test: (Use `node --trace-warnings ...` to show where the warning was created)
+@project-air/sync:test: ✔ join replay rebuilds the committed state after compaction (real Pg store) (243.722833ms)
+@project-air/sync:test: ✔ a >1 MiB snapshot is delivered to a joining client (35.239125ms)
+@project-air/sync:test: ✔ live presence: throttled, identity-derived, isolated, cleaned up and never blocking operations (565.12ms)
+@project-air/sync:test: ✔ the built production entry starts, resolves the built CRDT and shuts down (250.038959ms)
+@project-air/sync:test: ✔ hello is required first and the first message rejection is explicit (1.233708ms)
+@project-air/sync:test: ✔ version and session validation reject before joinBoard (0.160834ms)
+@project-air/sync:test: ✔ the platform authorizer gates joinBoard and welcome/snapshot carry the durable seq (0.685917ms)
+@project-air/sync:test: ✔ operationBatch is persisted before the ack and the ack carries the new seq (0.5425ms)
+@project-air/sync:test: ✔ a failed append produces a reject and never an ack (0.206125ms)
+@project-air/sync:test: ✔ resyncRequest reads from the durable seq and leaveBoard broadcasts presence (0.242833ms)
+@project-air/sync:test: (node:56806) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.
+@project-air/sync:test: (Use `node --trace-warnings ...` to show where the warning was created)
+@project-air/sync:test: ✔ a session accepts an updateNoteBody for a note another client created after it joined (21.732166ms)
+@project-air/sync:test: (node:56822) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.
+@project-air/sync:test: (Use `node --trace-warnings ...` to show where the warning was created)
+@project-air/sync:test: ✔ join/resync/compaction replay more than the 500-row page (1921.525292ms)
+@project-air/sync:test: restart harness evidence: /private/tmp/air-P6-10/reviews/evidence/P5-06-restart-20261029T013429Z.json
+@project-air/sync:test: ✔ restart, catch-up and snapshot compaction preserve every acked update (1090.846125ms)
+@project-air/sync:test: ✔ the browser cookie is validated through auth /session and mapped to the contract account id (14.885292ms)
+@project-air/sync:test: ✔ a UUIDv4 Kratos identity is resolved through the platform session route with the same cookie (4.545333ms)
+@project-air/sync:test: ✔ the tokenRef test-mode path is forwarded as x-test-session, not as a cookie (2.276667ms)
+@project-air/sync:test: ✔ a rejected or unreachable auth service denies without leaking the cookie (2.015334ms)
+@project-air/sync:test: ✔ the platform board check receives the session cookie and returns the allow/deny decision (1.790709ms)
+@project-air/sync:test: ✔ credentialHeaders prefers the browser cookie and never invents credentials (0.094375ms)
+@project-air/sync:test: ✔ a browser cookie on the upgrade authenticates the socket; missing or foreign cookies are rejected without data (12.336667ms)
+@project-air/sync:test: ✔ the tokenRef path is still handed to the authenticator for test/non-browser clients (1.997542ms)
+@project-air/sync:test: ✔ encodeFrame produces a valid 127-length frame for a 1.5 MiB outbound payload (0.865ms)
+@project-air/sync:test: ✔ the default inbound bound still rejects >1 MiB frames (0.516333ms)
+@project-air/sync:test: ✔ the handshake accept value matches the RFC 6455 vector (0.7895ms)
+@project-air/sync:test: ✔ masked client frames decode and unmasked/reserved frames are rejected (0.309125ms)
+@project-air/sync:test: ✔ fragmentation reassembles and enforces the bounded size (0.275917ms)
+@project-air/sync:test: ✔ ping is answered with pong and close ends the connection (0.299333ms)
+@project-air/sync:test: ✔ an oversized declared frame closes with 1009 before allocating it (0.105792ms)
+@project-air/sync:test: ℹ tests 29
+@project-air/sync:test: ℹ suites 0
+@project-air/sync:test: ℹ pass 29
+@project-air/sync:test: ℹ fail 0
+@project-air/sync:test: ℹ cancelled 0
+@project-air/sync:test: ℹ skipped 0
+@project-air/sync:test: ℹ todo 0
+@project-air/sync:test: ℹ duration_ms 7523.489167
+@project-air/web:test: cache hit, replaying logs d22d757c0a6183aa
+@project-air/sdk:build: $ tsc --project tsconfig.json
+@project-air/web:test: $ node --test test/*.test.mjs
+@project-air/web:test: ✔ toolbar has groups, one primary accent tool and a default active tool (0.43325ms)
+@project-air/web:test: ✔ view camera clamps zoom and rejects foreign/corrupt records (0.430833ms)
+@project-air/web:test: ✔ backend selection defaults to WebGL2 and fails closed without an adapter (0.069291ms)
+@project-air/web:test: ✔ board titles are trimmed, non-empty and at most 120 characters (0.75425ms)
+@project-air/web:test: ✔ boards sort by updatedAt descending without mutating the input (2.656458ms)
+@project-air/web:test: ✔ dates format with Intl for the active language and invalid dates are empty (189.972959ms)
+@project-air/web:test: ✔ workspace selection uses the stored id when present, otherwise the first workspace (0.158833ms)
+@project-air/web:test: (node:56756) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.
+@project-air/web:test: (Use `node --trace-warnings ...` to show where the warning was created)
+@project-air/web:test: ✔ the duplicated note is contract-valid with the board workspaceId and no extra fields (8.859042ms)
+@project-air/web:test: ✔ delete and reorder operations carry inverses and never empty metadata (0.490334ms)
+@project-air/web:test: ✔ en and de catalogs have identical key sets (1.5875ms)
+@project-air/web:test: ✔ translate resolves nested keys and interpolates values (0.211417ms)
+@project-air/web:test: ✔ German is the default and a stored choice persists (0.108958ms)
+@project-air/web:test: ✔ keyboard map handles modifiers, delete, escape and arrows; fields suppress shortcuts (0.463833ms)
+@project-air/web:test: ✔ arrows group into one delta after the 300 ms burst (0.470458ms)
+@project-air/web:test: ✔ context menu model has the L12 items, shortcuts and disabled states (0.150542ms)
+@project-air/web:test: ✔ fractional z sits between neighbours and carries the previous z as inverse (0.096041ms)
+@project-air/web:test: (node:56763) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.
+@project-air/web:test: (Use `node --trace-warnings ...` to show where the warning was created)
+@project-air/web:test: ✔ add note is one group operation with createNote and createCard and the deletion inverse (5.353417ms)
+@project-air/web:test: ✔ the inverse deletes exactly the created card and note (0.369792ms)
+@project-air/web:test: ✔ a new card is placed above every existing card (0.19ms)
+@project-air/web:test: (node:56765) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.
+@project-air/web:test: (Use `node --trace-warnings ...` to show where the warning was created)
+@project-air/web:test: ✔ one body save is exactly one updateNoteBody operation whose inverse is the previous body (24.43375ms)
+@project-air/web:test: ✔ a title change is exactly one updateNote whose inverse is the previous title (0.231875ms)
+@project-air/web:test: ✔ one save batches at most one body and one title operation through the one writer (0.412ms)
+@project-air/web:test: ✔ a body-only save sends exactly one updateNoteBody; a title-only save exactly one updateNote (0.310959ms)
+@project-air/web:test: ✔ the autosave value round-trips the title and the contract body (0.12775ms)
+@project-air/web:test: ✔ contract limit and rejection errors surface honestly and send nothing (0.397292ms)
+@project-air/web:test: ✔ a changed invalid title writes nothing while an unchanged stored title is kept (0.094333ms)
+@project-air/web:test: ✔ a card resolves its one referenced note (AD-4, never duplicated) (0.497542ms)
+@project-air/web:test: ✔ a card whose note is gone yields the missing state, not a new note (0.418292ms)
+@project-air/web:test: ✔ a missing, absent or invalid note body falls back to the contract empty body (0.400791ms)
+@project-air/web:test: ✔ only an empty note focuses its editor on open (L06) (0.18325ms)
+@project-air/web:test: ✔ note titles are trimmed, non-empty and at most 300 characters (L09) (0.084458ms)
+@project-air/web:test: ✔ the panel is 400 px with a 12 px gap and full width at a 390 px viewport (0.438375ms)
+@project-air/web:test: ✔ the L04 state machine has closed/opening/open/closing transitions (0.101791ms)
+@project-air/web:test: ✔ a card that is already clear of the panel never moves the view (0.099292ms)
+@project-air/web:test: ✔ a card under the panel is panned 24 px left of it in one transient camera (0.084208ms)
+@project-air/web:test: ✔ the pan respects zoom and never applies to the full-width mobile panel (0.070959ms)
+@project-air/web:test: ✔ the panel pan is 300 ms and respects reduced motion (0.051375ms)
+@project-air/web:test: ✔ browser hello carries an opaque contract-valid token reference, never a token (0.512125ms)
+@project-air/web:test: ✔ same-origin sync URL follows the page protocol and host (0.083917ms)
+@project-air/web:test: ✔ connection state maps SDK status to connecting/joined/offline/error (0.078917ms)
+@project-air/web:test: ✔ only an AUTH_REQUIRED reject is terminal session expiry (0.067041ms)
+@project-air/web:test: ✔ presence colours use tokens and fall back to a token, never a raw colour (0.076417ms)
+@project-air/web:test: ✔ presence labels come from the server nameRef, not from client text (0.100917ms)
+@project-air/web:test: ✔ remote cursors fade after 5 s and project into screen space with clipping (0.380125ms)
+@project-air/web:test: ✔ remote selection resolves known ids and skips removed objects (0.101542ms)
+@project-air/web:test: ✔ L05 status maps saving/saved/error/offline/session-expiry honestly (1.134542ms)
+@project-air/web:test: ✔ Saved disappears exactly after 2 s (0.368333ms)
+@project-air/web:test: ✔ every required route exists with message-backed title and body keys (3.415833ms)
+@project-air/web:test: ✔ route helpers stay pure and encode board ids (0.169333ms)
+@project-air/web:test: ✔ the display name wins, then the e-mail, then a short account-id fragment (8.849292ms)
+@project-air/web:test: ✔ login validation mirrors the server rules (1.588709ms)
+@project-air/web:test: ✔ registration requires email, display name and at least 8 password characters (0.231333ms)
+@project-air/web:test: ✔ recovery validates the email and maps typed errors to message keys (0.264167ms)
+@project-air/web:test: ℹ tests 53
+@project-air/web:test: ℹ suites 0
+@project-air/web:test: ℹ pass 53
+@project-air/web:test: ℹ fail 0
+@project-air/web:test: ℹ cancelled 0
+@project-air/web:test: ℹ skipped 0
+@project-air/web:test: ℹ todo 0
+@project-air/web:test: ℹ duration_ms 1471.133959
+@project-air/sdk:test: cache hit, replaying logs df9065f41390db95
+@project-air/sdk:test: $ node --test test/*.test.mjs
+@project-air/sdk:test: (node:56749) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.
+@project-air/sdk:test: (Use `node --trace-warnings ...` to show where the warning was created)
+@project-air/sdk:test: ✔ session.get uses GET /v1/session with credentials include (9.685ms)
+@project-air/sdk:test: ✔ login/registration/recovery/logout hit the auth base with cookie mode and JSON bodies (0.895584ms)
+@project-air/sdk:test: ✔ error envelopes become typed ApiError with code/messageKey/requestId (0.359417ms)
+@project-air/sdk:test: ✔ session.get accepts the platform's flat {requestId, accountId} envelope (0.110042ms)
+@project-air/sdk:test: ✔ session.get rejects a 200 response without an account id (0.111875ms)
+@project-air/sdk:test: (node:56751) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.
+@project-air/sdk:test: (Use `node --trace-warnings ...` to show where the warning was created)
+@project-air/sdk:test: ✔ the default createDocument is a real CRDT document that applies remote operations (81.9415ms)
+@project-air/sdk:test: (node:56754) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.
+@project-air/sdk:test: (Use `node --trace-warnings ...` to show where the warning was created)
+@project-air/sdk:test: BMSG {"id":"01a1854b-44ba-7f58-b503-498c4652b3d8","type":"presence","clientId":"0192f0fa-7000-7000-8000-0000000000a1","boardId":"0192f0a3-7000-70
+@project-air/sdk:test: BMSG {"id":"01a1854b-44d4-7c6a-866d-f7c7725eb165","type":"ack","clientId":"0192f0fa-7000-7000-8000-0000000000b1","boardId":"0192f0a3-7000-7000-80
+@project-air/sdk:test: BMSG {"id":"01a1854b-4525-76ff-afbd-bacff9d3bc6e","type":"presence","clientId":"0192f0fa-7000-7000-8000-0000000000a1","boardId":"0192f0a3-7000-70
+@project-air/sdk:test: BMSG {"id":"01a1854b-4525-7e5e-a55e-0fea9844e1a2","type":"operationBatch","clientId":"0192f0fa-7000-7000-8000-0000000000a1","boardId":"0192f0a3-7
+@project-air/sdk:test: DEBUG aSeq=3 bSeq=3 updates=1 aOwn=1 aOffline=0 aErr=null aX=123 bX=123
+@project-air/sdk:test: BMSG {"id":"01a1854b-4865-7391-b9cf-34f80d518e59","type":"operationBatch","clientId":"0192f0fa-7000-7000-8000-0000000000a1","boardId":"0192f0a3-7
+@project-air/sdk:test: stack proof evidence: reviews/evidence/P5-07-stack-20261029T013425Z.json
+@project-air/sdk:test: ✔ offline clients converge over the real stack and undo reverts only the client's own op (1636.321625ms)
+@project-air/sdk:test: (node:56755) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.
+@project-air/sdk:test: (Use `node --trace-warnings ...` to show where the warning was created)
+@project-air/sdk:test: ✔ handshake sends hello first, then joinBoard; welcome/snapshot install the document (7.276625ms)
+@project-air/sdk:test: ✔ operation batches are sent with a per-connection seq; acks advance only forward (0.432791ms)
+@project-air/sdk:test: ✔ offline operations queue in order and flush on join; duplicate remote batches apply once (1.57575ms)
+@project-air/sdk:test: ✔ a dropped socket reconnects with backoff and resyncs from the last serverSeq (0.881459ms)
+@project-air/sdk:test: ✔ close is idempotent and leaves the board once (0.4225ms)
+@project-air/sdk:test: ✔ autosave debounces 400 ms after the last keystroke, saves once and reports saving -> saved (0.547459ms)
+@project-air/sdk:test: ✔ the five flush triggers save immediately and visibility only flushes when hidden (0.503208ms)
+@project-air/sdk:test: ✔ stale autosave responses never overwrite newer values; error -> retry (0.42ms)
+@project-air/sdk:test: ✔ outgoing messages validate against sync.schema.json and ids are unique UUIDv7 (35.032417ms)
+@project-air/sdk:test: ✔ an injected authenticated clientId is used unchanged and must be a UUIDv7 (8.285667ms)
+@project-air/sdk:test: ✔ presence updates are throttled/coalesced and remote participants subscribe and clear (6.484583ms)
+@project-air/sdk:test: ✔ undoOwn applies only the client's own inverse; remote operations are never recorded (0.326292ms)
+@project-air/sdk:test: ✔ browser offline keeps unacknowledged operations, does not reconnect in a loop and flushes them on online (0.208167ms)
+@project-air/sdk:test: (node:56758) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.
+@project-air/sdk:test: (Use `node --trace-warnings ...` to show where the warning was created)
+@project-air/sdk:test: ✔ workspaces.list sends the session and requestId and parses the list envelope (198.798666ms)
+@project-air/sdk:test: ✔ a cookie session is sent as the cookie header (4.090167ms)
+@project-air/sdk:test: ✔ a string session is shorthand for the test session header (3.755208ms)
+@project-air/sdk:test: ✔ workspace create/get/update/delete use the contract envelopes (31.351166ms)
+@project-air/sdk:test: ✔ boards list/create/get/update/delete (6.757792ms)
+@project-air/sdk:test: ✔ notes list/create/get/update/delete (31.664125ms)
+@project-air/sdk:test: ✔ cards list/create/get/update/delete (8.535917ms)
+@project-air/sdk:test: ✔ pagination nextCursor is passed back as the cursor query (132.768583ms)
+@project-air/sdk:test: ✔ no session maps to a typed AUTH_REQUIRED ApiError (4.222083ms)
+@project-air/sdk:test: ✔ a validation error exposes the field paths (1.532541ms)
+@project-air/sdk:test: ✔ a conflict maps to CONFLICT and unknown ids to NOT_FOUND (1.709583ms)
+@project-air/sdk:test: ✔ an unexpected success envelope becomes an INTERNAL ApiError (1.9235ms)
+@project-air/sdk:test: ✔ an invalid baseUrl is rejected by the client (0.26325ms)
+@project-air/sdk:test: ℹ tests 33
+@project-air/sdk:test: ℹ suites 0
+@project-air/sdk:test: ℹ pass 33
+@project-air/sdk:test: ℹ fail 0
+@project-air/sdk:test: ℹ cancelled 0
+@project-air/sdk:test: ℹ skipped 0
+@project-air/sdk:test: ℹ todo 0
+@project-air/sdk:test: ℹ duration_ms 2504.698375
+@project-air/engine:build: $ tsc --project tsconfig.build.json && tsc --project tsconfig.logic.json
+@project-air/engine:test: cache miss, executing ab35622febb5786b
+@project-air/engine:test: $ node --test test/*.test.mjs
+@project-air/engine:test: ✔ the 48 px band from tokens::space_48 only pans inside the band (14.489167ms)
+@project-air/engine:test: ✔ the speed ramps monotonically from 0 at the inner edge to a bounded maximum (0.363083ms)
+@project-air/engine:test: ✔ the direction follows the pointer on every edge and corner (0.187292ms)
+@project-air/engine:test: ✔ no drag or no time delta produces no pan (0.164209ms)
+@project-air/engine:test: ✔ the time-based ramp is deterministic and scales with the delta (0.165584ms)
+@project-air/engine:test: ✔ while a drag runs, the camera pans and the preview follows the pointer (1.576375ms)
+@project-air/engine:test: ✔ a cancelled drag stops the loop, reverts and writes no operation (0.326125ms)
+@project-air/engine:test: ✔ no loop starts without a drag or outside the band (0.191875ms)
+@project-air/engine:test: ✔ the reason and backend code tables are stable (0.7575ms)
+@project-air/engine:test: ✔ no navigator.gpu: the browser probe reports webgpu-unavailable (0.130041ms)
+@project-air/engine:test: ✔ adapter null and adapter rejection map to adapter-null and webgpu-unavailable (0.191292ms)
+@project-air/engine:test: ✔ device rejection maps to device-rejected without keeping a device (0.102125ms)
+@project-air/engine:test: ✔ the probe timeout is bounded and returns probe-timeout (20.908583ms)
+@project-air/engine:test: ✔ a successful probe records the adapter identity and destroys the probe device (1.198917ms)
+@project-air/engine:test: ✔ explicit webgl2 creates WebGL2 without probing (0.491208ms)
+@project-air/engine:test: ✔ auto prefers WebGPU when the probe passes (0.139959ms)
+@project-air/engine:test: ✔ auto falls back to WebGL2 on every probe failure with its reason (0.225625ms)
+@project-air/engine:test: ✔ auto falls back when the WebGPU renderer creation fails, with renderer-create-failed (0.154ms)
+@project-air/engine:test: ✔ explicit webgpu without capability fails cleanly with the probe reason (0.28475ms)
+@project-air/engine:test: ✔ explicit webgpu with capability creates WebGPU; creation failure is a clean error (0.228792ms)
+@project-air/engine:test: ✔ a failing WebGL2 creation fails cleanly as webgl2-unavailable (0.177166ms)
+@project-air/engine:test: ✔ the in-memory fake stores isolated copies and rejects duplicates (19.479458ms)
+@project-air/engine:test: ✔ the fake writes geometry, z and removals and rejects unknown ids (0.609458ms)
+@project-air/engine:test: ✔ the fake snapshot is canonical and changes only on writes (0.898417ms)
+@project-air/engine:test: ✔ the bridge adapter maps contract ids to slots and projects to the engine (0.671584ms)
+@project-air/engine:test: ✔ an operation and its inverse round-trip through the bridge adapter (1.209791ms)
+@project-air/engine:test: ✔ the logic layer imports the bridge for types only and uses no DOM or network (2.45ms)
+@project-air/engine:test: ✔ one undo applies exactly one stored inverse; redo re-applies it (13.402541ms)
+@project-air/engine:test: ✔ a new operation clears the redo branch (0.148208ms)
+@project-air/engine:test: ✔ the depth stays at 20 and the oldest entry is dropped (0.219917ms)
+@project-air/engine:test: ✔ an empty history is a no-op (0.063541ms)
+@project-air/engine:test: ✔ the keyboard routes Cmd/Ctrl+Z and its Shift variant only outside fields (0.399792ms)
+@project-air/engine:test: ✔ the hint label and the 3 s timing are documented (0.0535ms)
+@project-air/engine:test: ✔ anchor math maps world to CSS px through the camera (3.947958ms)
+@project-air/engine:test: ✔ the anchor is independent of the device pixel ratio (0.113583ms)
+@project-air/engine:test: ✔ a field hides when its object leaves the viewport (0.809291ms)
+@project-air/engine:test: ✔ a stale camera or viewport returns a hidden rectangle instead of throwing (0.355292ms)
+@project-air/engine:test: ✔ focus order wraps at both ends (0.1965ms)
+@project-air/engine:test: ✔ Enter inserts a new entry directly below the focused one (0.208292ms)
+@project-air/engine:test: ✔ Tab and Shift+Tab move focus with the wrap rule (0.153916ms)
+@project-air/engine:test: ✔ Backspace removes only an empty entry and focuses the previous (0.297084ms)
+@project-air/engine:test: ✔ every other key stays in the field, and an invalid index emits nothing (0.221333ms)
+@project-air/engine:test: ✔ the inline policy writes nothing (15.666583ms)
+@project-air/engine:test: ✔ the colour field is the 24 px token value (0.778ms)
+@project-air/engine:test: ✔ the playground colour field uses the token, not a raw 24 px value (1.175959ms)
+@project-air/engine:test: ✔ field pointer events stop at the field and never prevent the wheel default (0.139541ms)
+@project-air/engine:test: ✔ the input layer enforces the token values of L03 (0.768666ms)
+@project-air/engine:test: ✔ 3.9 px is a click, 4.1 px crosses the threshold (0.083ms)
+@project-air/engine:test: ✔ a release below the threshold is a click that writes nothing (3.571875ms)
+@project-air/engine:test: ✔ a drag starts once at the threshold and follows the pointer 1:1 (0.601209ms)
+@project-air/engine:test: ✔ a note card drags on its whole body, blocks and zones only on the header (0.418125ms)
+@project-air/engine:test: ✔ field, button, editable and scrollable targets are suppressed (0.462583ms)
+@project-air/engine:test: ✔ cursors map to grab, grabbing, text and default (0.2635ms)
+@project-air/engine:test: ✔ the header hover surface applies to block/zone headers only (0.112833ms)
+@project-air/engine:test: ✔ a second pointer cancels the drag and pinches instead (0.227ms)
+@project-air/engine:test: ✔ a cancelled drag is reverted without an operation (0.151792ms)
+@project-air/engine:test: ✔ the right button and the wheel do not drag the board (0.110209ms)
+@project-air/engine:test: ✔ panning is view-only and writes no operation (0.081125ms)
+@project-air/engine:test: ✔ one completed drag is one move operation with its inverse through the seam (0.749125ms)
+@project-air/engine:test: ✔ a click or a cancel on the seam writes no operation and no history (0.141333ms)
+@project-air/engine:test: ✔ the 200 % state keeps the same token rule set (0.048375ms)
+@project-air/engine:test: ✔ a drag previews and commits the snapped position from the host (0.119208ms)
+@project-air/engine:test: ✔ Shift asks the host for a free position and commits the pointer position (0.094709ms)
+@project-air/engine:test: ✔ panning and zooming never request a snap (0.070583ms)
+@project-air/engine:test: ✔ the shortcut map routes only the L12 intents (1.657625ms)
+@project-air/engine:test: ✔ field focus blocks every shortcut but keeps Escape (0.215334ms)
+@project-air/engine:test: ✔ Ctrl/Cmd+D, delete and Esc keep the documented precedence (0.151375ms)
+@project-air/engine:test: ✔ an arrow series accumulates 16/160 px and commits once after 300 ms (0.714041ms)
+@project-air/engine:test: ✔ the menu model opens, wraps with arrows, activates and closes (0.548625ms)
+@project-air/engine:test: ✔ duplicate is one create operation at +16/+16, same note (AD-4 note-once) (1.228833ms)
+@project-air/engine:test: ✔ an arrow series is one keyboard-nudge gesture -> one move operation with inverse (0.3915ms)
+@project-air/engine:test: ✔ keyAfter forms a strictly greater key in the engine's lexicographic order (0.813292ms)
+@project-air/engine:test: ✔ keys stay ordered far beyond float precision (0.084375ms)
+@project-air/engine:test: ✔ bring to front is one reorder above the layer's highest key and its inverse restores it (1.253083ms)
+@project-air/engine:test: ✔ the layer is the object kind: a card's front key ignores zone keys (0.106209ms)
+@project-air/engine:test: ✔ an equal key loses the insertion-order tie, so it still gets a new key (0.158375ms)
+@project-air/engine:test: ✔ an object already strictly on top, or alone in its layer, yields no operation (0.079916ms)
+@project-air/engine:test: ✔ a zone comes to the front of the zone layer only (0.137ms)
+@project-air/engine:test: ✔ a reload from the stored keys reproduces the front order (0.408667ms)
+@project-air/engine:test: ✔ a reorder for an unknown item is rejected without a write (0.171458ms)
+@project-air/engine:test: ✔ a plain click replaces the selection, Shift-click toggles add and remove (9.076333ms)
+@project-air/engine:test: ✔ a plain empty click clears the selection, Esc clears it too (0.240458ms)
+@project-air/engine:test: ✔ a Shift-drag on empty canvas draws a band and selects by intersection (0.262333ms)
+@project-air/engine:test: ✔ a plain drag on empty canvas still pans and draws no band (0.090667ms)
+@project-air/engine:test: ✔ the world-space band rule is bounds intersection, not containment (0.07575ms)
+@project-air/engine:test: ✔ a joint drag previews and commits once, and the selection survives (0.344ms)
+@project-air/engine:test: ✔ dragging an unselected object makes it the sole selection (0.124083ms)
+@project-air/engine:test: ✔ a cancelled joint drag restores every member and writes nothing (0.130125ms)
+@project-air/engine:test: ✔ the joint drag snap moves every member by the snapped delta (0.138708ms)
+@project-air/engine:test: ✔ one selection delete is exactly one group operation with an inverse (0.74125ms)
+@project-air/engine:test: ✔ a joint drag is exactly one group operation with an inverse (0.287542ms)
+@project-air/engine:test: ✔ an empty selection delete and a duplicate member are rejected (0.257417ms)
+@project-air/engine:test: ✔ a single drag yields exactly one moveCard operation and its inverse restores the card (3.12775ms)
+@project-air/engine:test: ✔ a move onto the current position is a no-op without an operation (0.121125ms)
+@project-air/engine:test: ✔ a keyboard nudge series is batched into one move operation (5.80575ms)
+@project-air/engine:test: ✔ a group drag is exactly one group operation, not one per object (0.874667ms)
+@project-air/engine:test: ✔ an empty or unchanged group drag yields no operation (0.108125ms)
+@project-air/engine:test: ✔ a group drag rejects the same object twice (0.248375ms)
+@project-air/engine:test: ✔ a resize builds resizeCard and restores the previous card size (0.255458ms)
+@project-air/engine:test: ✔ resize rejects sizes below the contract minimum before writing (0.101875ms)
+@project-air/engine:test: ✔ a create builds one createCard operation with a deleteCard inverse (0.38775ms)
+@project-air/engine:test: ✔ create rejects a card or zone below its minimum size and an empty zone title (0.173833ms)
+@project-air/engine:test: ✔ create rejects a non-finite draft position for every object kind (0.188833ms)
+@project-air/engine:test: ✔ create builds a zone and a block with exactly the contract minimum size (0.312625ms)
+@project-air/engine:test: ✔ delete stores the whole card and its createCard inverse restores it (0.169833ms)
+@project-air/engine:test: ✔ deleting an object that is already gone is rejected (0.082959ms)
+@project-air/engine:test: ✔ unknown and malformed object ids are rejected without a write (0.101958ms)
+@project-air/engine:test: ✔ an invalid session context is rejected before any operation (0.082208ms)
+@project-air/engine:test: ✔ an operation survives a contract-native JSON round trip (4.088625ms)
+@project-air/engine:test: ✔ a new object starts at the snapped view centre on the 16 px grid (1.766708ms)
+@project-air/engine:test: ✔ an overlapping visible object cascades the candidate 32 px right and down (0.323916ms)
+@project-air/engine:test: ✔ the cascade never exceeds ten attempts and returns the tenth candidate (0.379917ms)
+@project-air/engine:test: ✔ only visible objects block the candidate (0.302875ms)
+@project-air/engine:test: ✔ the result is clamped inside the visible area and stays on the grid (0.167917ms)
+@project-air/engine:test: ✔ the placement is deterministic and independent of zoom except for the visible bounds (0.119709ms)
+@project-air/engine:test: ✔ five consecutive creates through the seam give five visible, non-overlapping cards (0.84375ms)
+@project-air/engine:test: ✔ the handle hit area is 8 screen px and zoom-independent (0.586209ms)
+@project-air/engine:test: ✔ cursors and anchors follow the handle role (0.363833ms)
+@project-air/engine:test: ✔ the opposite edge/corner stays anchored and sizes snap to 16 px (0.152584ms)
+@project-air/engine:test: ✔ the minima clamp every type, and a zone keeps its member extent + 16 px (0.127667ms)
+@project-air/engine:test: ✔ a resize gesture is exactly one operation with an inverse (0.631667ms)
+@project-air/engine:test: ✔ a west/north handle commits one group of the resize and the anchoring move (14.830583ms)
+@project-air/engine:test: ✔ the seam rejects sizes below the type minimum and the zone content minimum (0.463834ms)
+@project-air/engine:test: ✔ the resized size survives a snapshot round trip (0.136583ms)
+@project-air/engine:test: ✔ pressing a handle previews and commits exactly one resize; cancel restores (0.598375ms)
+@project-air/engine:test: ✔ the zoom buckets are the documented 25/50/100/200/400 percent set (0.872625ms)
+@project-air/engine:test: ✔ the raster scale is the bucket times the DPR, capped at 4x (0.17525ms)
+@project-air/engine:test: ✔ a session rasterises a bounded number of atlas scales (1.093458ms)
+@project-air/engine:test: ✔ a zoom inside a bucket keeps the same raster scale (0.145458ms)
+@project-air/engine:test: ✔ a saved view is restored for the same board and device (0.821084ms)
+@project-air/engine:test: ✔ boards and devices keep separate entries (0.112541ms)
+@project-air/engine:test: ✔ invalid JSON, wrong version and foreign/unknown records are ignored (0.094542ms)
+@project-air/engine:test: ✔ the zoom is clamped to 0.1 … 8 on read and write (0.083958ms)
+@project-air/engine:test: ✔ throwing getters/setters and quota errors fall back safely (0.083833ms)
+@project-air/engine:test: ✔ restore never writes; a valid save contains the versioned record (0.075166ms)
+@project-air/engine:test: ✔ the device fingerprint is a coarse viewport class + DPR (0.067833ms)
+@project-air/engine:test: ✔ a plain two-finger wheel pans 1:1 with the delta (0.772167ms)
+@project-air/engine:test: ✔ Cmd/Ctrl+wheel zooms around the pointer and clamps at both limits (0.15ms)
+@project-air/engine:test: ✔ the pointer world anchor stays stable for the zoom at several levels (0.135833ms)
+@project-air/engine:test: ✔ a suppressed target or an active drag never moves the view (0.078833ms)
+@project-air/engine:test: ✔ wheelGesture routes pan/zoom through the existing view callbacks (0.208041ms)
+@project-air/engine:test: ✔ two-pointer pinch zooms around the midpoint (0.266666ms)
+@project-air/engine:test: ✔ an active object drag consumes the wheel without a camera update (0.508792ms)
+@project-air/engine:test: ✔ grouping starts at 20 % overlap or 16 px, and 32 px contact keeps it (0.479667ms)
+@project-air/engine:test: ✔ presentation look: dashed while grouping, dashed and dimmed when emptied (0.349583ms)
+@project-air/engine:test: ✔ default titles follow the playground language (0.05925ms)
+@project-air/engine:test: ✔ rename normalises whitespace, emptiness and the 40-character limit (0.178125ms)
+@project-air/engine:test: ✔ the header stays 40 px and never scales with the frame (0.08225ms)
+@project-air/engine:test: ✔ the group layout places members with padding below the header (0.245583ms)
+@project-air/engine:test: ✔ grouping two free objects creates the zone in one operation with inverse (0.807833ms)
+@project-air/engine:test: ✔ a one-item zone wraps both members and keeps its title (0.174708ms)
+@project-air/engine:test: ✔ an emptied zone is removed as one undoable operation (0.25075ms)
+@project-air/engine:test: ✔ rename is one operation with inverse that restores the old title and members (0.235ms)
+@project-air/engine:test: ✔ a rename to the same title writes nothing (0.098375ms)
+@project-air/engine:test: ✔ the zone inset is the 16 px space-16 token (0.480125ms)
+@project-air/engine:test: ✔ the drop helpers use the world-space centre and the topmost live zone (2.969958ms)
+@project-air/engine:test: ✔ a drop writes membership in the same single move operation (2.750209ms)
+@project-air/engine:test: ✔ dragging the centre out writes zoneId null in the same move operation (0.368042ms)
+@project-air/engine:test: ✔ a zone cannot be nested into another zone (0.865125ms)
+@project-air/engine:test: ✔ a zone drag with members is exactly one group operation with one inverse (0.236583ms)
+@project-air/engine:test: ✔ deleteZone keep-content is one operation whose inverse restores the members (0.203792ms)
+@project-air/engine:test: ✔ deleteZone delete-content is one operation whose inverse restores the members (0.120292ms)
+@project-air/engine:test: ✔ a selection delete with a zone is one group with the keep-content default (0.20025ms)
+@project-air/engine:test: ✔ a zone never shrinks below its content extent plus the 16 px inset (0.330334ms)
+@project-air/engine:test: ✔ membership survives a snapshot round trip (0.136083ms)
+@project-air/engine:test: ✔ orientation follows the size-normalised offsets with 1.25 dominance (0.543125ms)
+@project-air/engine:test: ✔ a hold of half an item keeps the orientation (0.083458ms)
+@project-air/engine:test: ✔ order comes from the centre with the 12 px band (0.379042ms)
+@project-air/engine:test: ✔ the arrangement uses padding, gap and the 40 px header (0.169125ms)
+@project-air/engine:test: ✔ an arrangement that does not fit falls back without changing the request (0.080375ms)
+@project-air/engine:test: ✔ the release preview enters on the frame or 25 % coverage (0.167417ms)
+@project-air/engine:test: ✔ staying inside allows the 24 px catch margin, leaving shrinks the frame (0.078417ms)
+@project-air/engine:test: ✔ a placement against the drag-start positions becomes dock, reorder or orientation (0.076458ms)
+@project-air/engine:test: ✔ a release is exactly one group operation with one inverse (0.819958ms)
+@project-air/engine:test: ✔ a cancelled preview writes nothing (0.267708ms)
+@project-air/engine:test: ✔ reduced motion applies the end states instantly (0.266959ms)
+@project-air/engine:test: ℹ tests 176
+@project-air/engine:test: ℹ suites 0
+@project-air/engine:test: ℹ pass 176
+@project-air/engine:test: ℹ fail 0
+@project-air/engine:test: ℹ cancelled 0
+@project-air/engine:test: ℹ skipped 0
+@project-air/engine:test: ℹ todo 0
+@project-air/engine:test: ℹ duration_ms 761.537417
+
+ Tasks:    9 successful, 9 total
+Cached:    7 cached, 9 total
+  Time:    2.069s 
+
+$ turbo run test --affected
+ WARNING  no output files found for task @project-air/engine#test. Please check your `outputs` key in `turbo.json`

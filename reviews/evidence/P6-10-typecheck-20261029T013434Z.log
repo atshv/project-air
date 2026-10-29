@@ -1,0 +1,41 @@
+$ pnpm typecheck
+[exit 0]
+
+
+   • turbo 2.11.10
+   • Packages in scope: @project-air/auth, @project-air/contracts, @project-air/crdt, @project-air/design-check, @project-air/editor, @project-air/engine, @project-air/language-check, @project-air/platform, @project-air/release, @project-air/sdk, @project-air/sync, @project-air/test-kit, @project-air/ui-kit, @project-air/web
+   • Running typecheck in 14 packages
+   • Remote caching disabled, using shared worktree cache
+
+@project-air/editor:typecheck: cache miss, executing 2d6ec0f4fce4e086
+@project-air/ui-kit:typecheck: cache miss, executing daf1ad182189a37f
+@project-air/auth:typecheck: cache miss, executing 209b7e8d0f6d13a6
+@project-air/sync:typecheck: cache miss, executing 0cf8a1d93b8f67fe
+@project-air/test-kit:typecheck: cache miss, executing 8768f5a07fcc912f
+@project-air/web:typecheck: cache miss, executing 21b49bae53dc39eb
+@project-air/crdt:typecheck: cache miss, executing b7190f96f9060a6d
+@project-air/crdt:build: cache hit, replaying logs aa21a9ca48a86ec7
+@project-air/platform:typecheck: cache miss, executing dd735cf1c78b2564
+@project-air/crdt:build: $ tsc --project tsconfig.build.json
+@project-air/design-check:typecheck: cache miss, executing 829f39b28a314c92
+@project-air/engine:typecheck: cache miss, executing 71a6372831fee207
+@project-air/auth:typecheck: $ tsc --noEmit --project tsconfig.json
+@project-air/sync:typecheck: $ tsc --noEmit --project tsconfig.json
+@project-air/editor:typecheck: $ tsc --noEmit --project tsconfig.json
+@project-air/web:typecheck: $ tsc --noEmit --project tsconfig.json
+@project-air/crdt:typecheck: $ tsc --noEmit --project tsconfig.json
+@project-air/ui-kit:typecheck: $ tsc --noEmit --project tsconfig.json
+@project-air/platform:typecheck: $ tsc --noEmit --project tsconfig.json
+@project-air/test-kit:typecheck: $ tsc --noEmit --project tsconfig.json
+@project-air/engine:typecheck: $ tsc --noEmit --project tsconfig.json
+@project-air/design-check:typecheck: $ node --check check.mjs && node --check index.mjs && node --check test/design-check.test.mjs
+@project-air/contracts:typecheck: cache miss, executing ac2ff66a4b8e3d6b
+@project-air/contracts:typecheck: $ tsc --noEmit --project tsconfig.json
+@project-air/sdk:typecheck: cache miss, executing 00a7922f72099f74
+@project-air/sdk:typecheck: $ tsc --noEmit --project tsconfig.json
+
+ Tasks:    13 successful, 13 total
+Cached:    1 cached, 13 total
+  Time:    2.771s 
+
+$ turbo run typecheck && tsc -b tsconfig.json
