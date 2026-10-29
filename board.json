@@ -7476,6 +7476,59 @@
         "docs/owner/"
       ],
       "handoff": []
+    },
+    {
+      "id": "P0-48",
+      "title": "Live demo: visible selection frame, delete that works",
+      "goal": "A selected object shows a visibly thicker accent frame set slightly outside its own border, deleting a selected object really removes it, and a single selection also shows the count bar with its delete button.",
+      "why": "Owner feedback 2026-10-29: make the resize frame slightly thicker so it can be seen; select does not work; the delete for a selection was not visible.",
+      "satisfies": [
+        "D3"
+      ],
+      "status": "pending",
+      "depends_on": [
+        "P0-41"
+      ],
+      "complexity": 4,
+      "stage": "foundation",
+      "parallel_group": null,
+      "owner": null,
+      "round": 0,
+      "scope_write": [
+        "apps/web/preview/",
+        "docs/canvas-acceptance.md",
+        ".changes/"
+      ],
+      "scope_read": [
+        "ARCHITECTURE.md",
+        "AGENTS.md",
+        "STATUS.md",
+        "docs/module-map.md",
+        "docs/quality.md",
+        "docs/design-rules.md",
+        "docs/canvas-acceptance.md",
+        "apps/web/preview/",
+        "packages/ui-kit/tokens.css"
+      ],
+      "acceptance": [
+        "A1",
+        "A2",
+        "A3",
+        "A4"
+      ],
+      "gates": [
+        "board-check",
+        "design-check",
+        "changelog-entry"
+      ],
+      "branch": "task/P0-48",
+      "worktree": null,
+      "evidence": [],
+      "scope_write_forbidden": [
+        "reference/",
+        "docs/owner/"
+      ],
+      "handoff": []
     }
   ],
   "decisions": [

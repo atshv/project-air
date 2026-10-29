@@ -8,15 +8,16 @@
 
 ### Stage 1 — `foundation` Foundation
 
-- State: complete
+- State: tasks open
 - Owner decision: `continue`
 - Exit gates: `board-check`, `install`, `boundaries`, `dev-setup`, `compose-config`, `tokens-codegen`, `design-check`, `language-check`, `changelog-entry`, `ci-local`, `polier-version`
 - Exit criteria: Every packages[] folder exists with a README and an ARCHITECTURE.md; package map and versions are filled in.; A fresh clone installs reproducibly with the committed lockfile; root lint, typecheck, test and build pass.; Two worktrees run install, lint, typecheck and tests side by side without port or database collision; tools/dev/setup and teardown create and remove the slot database and bucket and refuse slot 0.; design-check, language-check, changelog-entry and boundaries reject a violating change locally; every code change carries a .changes entry.; The CI workflow is authored and proven locally (actionlint + act) and local sessions use Polier at the board's generator_version; the real GitHub run, branch protection, hosting and releases are deferred to the remote stage after hardening (ADR-0003).; A runnable design preview page exists with desktop and mobile screenshots and a live two-note connection demo (P0-19, P0-20).
-- Tasks: P0-03, P0-04, P0-06, P0-07, P0-08, P0-09, P0-10, P0-11, P0-12, P0-13, P0-14, P0-18, P0-19, P0-20, P0-21, P0-22, P0-23, P0-24, P0-25, P0-26, P0-27, P0-28, P0-29, P0-30, P0-31, P0-32, P0-33, P0-34, P0-35, P0-36, P0-37, P0-38, P0-39, P0-40, P0-41, P0-42, P0-43, P0-44
+- Tasks: P0-03, P0-04, P0-06, P0-07, P0-08, P0-09, P0-10, P0-11, P0-12, P0-13, P0-14, P0-18, P0-19, P0-20, P0-21, P0-22, P0-23, P0-24, P0-25, P0-26, P0-27, P0-28, P0-29, P0-30, P0-31, P0-32, P0-33, P0-34, P0-35, P0-36, P0-37, P0-38, P0-39, P0-40, P0-41, P0-42, P0-43, P0-44, P0-48
+- Tasks open: P0-48
 
 ### Stage 2 — `contract` Contract
 
-- State: complete
+- State: blocked by stage foundation
 - Owner decision: `continue`
 - Exit gates: `contracts`, `codegen`
 - Exit criteria: contracts 0.1.0 tagged; every schema has a valid and an invalid fixture.; TS and C++ read the same fixtures identically.
@@ -24,7 +25,7 @@
 
 ### Stage 3 — `engine-spike` Engine spike
 
-- State: complete
+- State: blocked by stage contract
 - Owner decision: `continue`
 - Exit gates: `cpp-unit`, `wasm-build`, `perf-baseline`
 - Exit criteria: 60 fps with 50,000 rectangles on the reference hardware; WASM <= 300 KB gzip.; Measured report and ADR for the engine architecture.
@@ -32,7 +33,7 @@
 
 ### Stage 4 — `backend-core` Backend core
 
-- State: complete
+- State: blocked by stage contract
 - Owner decision: `continue`
 - Exit gates: `api-tests`, `rls-tests`
 - Exit criteria: API suite covers allow and deny for every route; RLS tests green.; A script creates account, workspace, board and note via the SDK; a second account sees nothing.
@@ -40,7 +41,7 @@
 
 ### Stage 5 — `engine-core` Engine core
 
-- State: complete
+- State: blocked by stage engine-spike
 - Owner decision: `continue`
 - Exit gates: `cpp-unit`, `visual-final`, `perf-final`
 - Exit criteria: 10,000 objects at 60 fps in the playground.; All engine entries of the canvas work orders done; reference images green.
@@ -48,7 +49,7 @@
 
 ### Stage 6 — `realtime` Realtime
 
-- State: complete
+- State: blocked by stage backend-core, engine-core
 - Owner decision: `continue`
 - Exit gates: `crdt-convergence`, `load`
 - Exit criteria: Load test 25 clients p95 <= 150 ms; restart loses no acknowledged change.; Two offline browsers converge after reconnect.
@@ -125,14 +126,17 @@
 
 ## Ready now
 
-- none
+- `P0-48` Live demo: visible selection frame, delete that works
+  - P0-41: Closed P0-41: selection/multi-select/teammate frames follow the object radius via --frame-radius; hovered corner is a 2 px arc bracket. Blocks/zones use --radius-lg, notes --radius-md.
+  - P0-41: Done checklist entries render --muted at opacity 0.6 with a full --accent tick and no strikethrough; design law section 6 row and L14 wording follow the demo.
+  - P0-41: The three intro blocks became one line plus a numbered, two-column <details> contents list (ten points, EN/DE, keyboard); screenshots and the headless-Chrome log are committed.
 
 ## Orchestration
 
 - Limits: 3 attempts/task, 3 in progress
-- Next wave: none — nothing is ready
+- Next wave: `P0-48` (tasks/P0-48.md)
 - Running: `P6-08` attempt 0/3<!-- polier:claims --> — claimed by dsh<!-- /polier:claims -->; `P0-47` attempt 0/3<!-- polier:claims --> — claimed by dsh<!-- /polier:claims -->
-- Blocked: P0-02, P0-15, P0-16, P0-17 (stage waits); P6-09, P6-10, P6-11 (open dependency)
+- Blocked: P0-02, P0-15, P0-16, P0-17, P6-09, P6-10, P6-11 (stage waits)
 - Approvals pending: none
 
 ## Done
@@ -261,6 +265,7 @@
 - [ ] `P6-09` Realtime UI: live changes, presence and save status (L05) — status: `pending` — owner: —
 - [ ] `P6-10` e2e suite: main flows and the e2e gate on the slot ports — status: `pending` — owner: —
 - [ ] `P6-11` Canvas evidence, repo-wide checks and the web-app stage report — status: `pending` — owner: —
+- [ ] `P0-48` Live demo: visible selection frame, delete that works — status: `pending` — owner: —
 
 <!-- polier:claims -->
 ## Claims
