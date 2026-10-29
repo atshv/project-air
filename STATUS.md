@@ -251,7 +251,7 @@
 
 ## In progress
 
-- [ ] `P6-12` CI passes on GitHub for the current main — status: `in_progress` — owner: —
+- [ ] `P6-12` CI passes on GitHub for the current main — status: `review` — owner: —
 
 ## Blocked / failed
 

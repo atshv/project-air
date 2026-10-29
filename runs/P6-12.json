@@ -128,8 +128,26 @@
         "result": "pass",
         "record": "reviews/evidence/P6-12-changelog-entry-20261029T171654Z.json"
       }
+    },
+    {
+      "at": "2026-10-29T17:17:26+00:00",
+      "kind": "state",
+      "data": {
+        "from": "in_progress",
+        "to": "verifying",
+        "actor": "lead"
+      }
+    },
+    {
+      "at": "2026-10-29T17:17:26+00:00",
+      "kind": "state",
+      "data": {
+        "from": "verifying",
+        "to": "review",
+        "actor": "lead"
+      }
     }
   ],
   "usage": {},
-  "updated": "2026-10-29T17:16:55+00:00"
+  "updated": "2026-10-29T17:17:26+00:00"
 }
