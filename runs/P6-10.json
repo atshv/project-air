@@ -129,7 +129,17 @@
         "result": "pass",
         "record": "reviews/evidence/P6-10-board-check-20261029T013935Z.json"
       }
+    },
+    {
+      "at": "2026-10-29T01:40:23+00:00",
+      "kind": "approval",
+      "data": {
+        "id": "AP-015",
+        "action": "new_dependency",
+        "status": "granted",
+        "by": "owner"
+      }
     }
   ],
-  "updated": "2026-10-29T01:39:50+00:00"
+  "updated": "2026-10-29T01:40:23+00:00"
 }
