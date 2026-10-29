@@ -7766,7 +7766,7 @@
       ],
       "owner": null,
       "branch": "task/P6-14",
-      "worktree": "../Project air-P6-14",
+      "worktree": null,
       "round": 0,
       "evidence": [
         "reviews/evidence/P6-14-board-check-20261029T180212Z.json",

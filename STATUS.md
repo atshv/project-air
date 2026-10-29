@@ -278,13 +278,6 @@
 - [ ] `P6-21` Blocks on the web canvas with inline comfort (L18, L00 tools) — status: `pending` — owner: —
 - [ ] `P6-22` Demo-parity evidence, canvas status and the stage-7 close — status: `pending` — owner: —
 
-<!-- polier:claims -->
-## Claims
-
-- `P6-14` in progress by cli since 2026-10-29T17:56:05+00:00 — worktree: /Users/rasulatashev/Desktop/KI Projekte/Project air-P6-14 · slot 4
-
-<!-- /polier:claims -->
-
 ## Decisions
 
 - 2026-10-25 `ADR-0001` Monorepo with packages, services, apps, tools and infra (`docs/adr/ADR-0001-monorepo.md`)
