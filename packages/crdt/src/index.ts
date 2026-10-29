@@ -22,6 +22,7 @@ import {
   readUpdateZone,
   validateBlockContent,
   type ContentEntries,
+  type ContentEntry,
 } from "./block-content.ts";
 import { readUpdateNoteBody } from "./note-body.ts";
 
@@ -157,7 +158,7 @@ export function applyToStore(store: EntityStore, operation: BoardOp): void {
       const block = store.entities.get(keyOf("block", update.blockId));
       if (block === undefined) throw new Error(`updateBlockContent targets the missing block ${update.blockId}`);
       assertContentKind(block["type"], update.content, update.blockId);
-      const entries = store.content.get(update.blockId) ?? new Map();
+      const entries: ContentEntries = store.content.get(update.blockId) ?? new Map<string, ContentEntry>();
       applyContentDelta(entries, contentDelta(entries, update.hasPrevious ? update.previous : composeContent(entries), update.content));
       store.content.set(update.blockId, entries);
       return;

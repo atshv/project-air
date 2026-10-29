@@ -41,8 +41,8 @@ const createYjsBoardDoc = (crdt as { createYjsBoardDoc: (options: { content: Boa
 // Stored 0.4.0 snapshots are valid 0.5.0 content (the bump is additive), so a
 // document loaded from one speaks the current version.
 const documents = {
-  fromContent: (content: BoardContent) => createYjsBoardDoc({ content, contractVersion: "0.5.0" }) as never,
-  fromEmpty: () => createYjsBoardDoc({ content: emptyBoardContent() }) as never,
+  fromContent: (content: BoardContent) => createYjsBoardDoc({ content, contractVersion: "0.5.0" }),
+  fromEmpty: () => createYjsBoardDoc({ content: emptyBoardContent() }),
 };
 
 // P6-09: the browser session cookie from the WebSocket upgrade is validated

@@ -81,7 +81,7 @@ export class YjsBoardDoc implements BoardDoc {
     for (const [key, map] of this.#content.entries()) {
       if (!key.startsWith(prefix)) continue;
       const entry: ContentEntry = {};
-      for (const [name, value] of map.entries()) entry[name] = value as unknown;
+      for (const [name, value] of map.entries()) entry[name] = value;
       entries.set(key.slice(prefix.length), entry);
     }
     return entries;
@@ -107,7 +107,7 @@ export class YjsBoardDoc implements BoardDoc {
     const store: EntityStore = { board: { ...this.#contentBoard }, entities: new Map(), content: new Map() };
     for (const [key, map] of this.#objects.entries()) {
       const entity: AnyPayload = {};
-      for (const [name, value] of map.entries()) entity[name] = value as unknown;
+      for (const [name, value] of map.entries()) entity[name] = value;
       store.entities.set(key, entity);
       if (key.startsWith("block:")) store.content.set(String(entity["id"]), this.#entries(String(entity["id"])));
     }

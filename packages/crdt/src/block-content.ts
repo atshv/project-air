@@ -261,7 +261,7 @@ export function contentDelta(
   }
 
   const placed = new Map<string, string>();
-  const positionOf = (key: string): string | null => placed.get(key) ?? (current.get(key)?.pos as string | undefined) ?? null;
+  const positionOf = (key: string): string | null => placed.get(key) ?? current.get(key)?.pos ?? null;
 
   for (const [listName, keys] of after.lists) {
     const previousOrder = (before.lists.get(listName) ?? []).filter((key) => keys.includes(key));
@@ -289,7 +289,9 @@ export function contentDelta(
         if (low !== null && high !== null && low >= high) high = null;
         const position = positionBetween(low, high);
         placed.set(key, position);
-        const { list: _list, ...entryFields } = after.entries.get(key)!;
+        const source = after.entries.get(key)!;
+        const entryFields: ContentEntry = {};
+        for (const [field, value] of Object.entries(source)) if (field !== "list") entryFields[field] = value;
         delta.set.set(key, { ...entryFields, list: listName, pos: position });
       }
     }
@@ -334,7 +336,7 @@ export function readUpdateBlockContent(payload: RecordValue, inverse: unknown): 
   if (!("content" in payload)) throw new Error("updateBlockContent needs a content");
   const content = validateBlockContent(payload["content"]);
   if (isRecord(inverse) && inverse["type"] === "updateBlockContent" && isRecord(inverse["payload"])) {
-    const previous = validateBlockContent((inverse["payload"] as RecordValue)["content"]);
+    const previous = validateBlockContent(inverse["payload"]["content"]);
     return { blockId, content, previous, hasPrevious: true };
   }
   return { blockId, content, previous: undefined, hasPrevious: false };

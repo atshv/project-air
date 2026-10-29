@@ -86,7 +86,7 @@ test("the repository itself is clean", () => {
   // P0-28…P0-32 zone preview), and the preview.js arithmetic expressions are
   // scanner-unparsed JS in the zone layout that never reaches a raw spacing
   // value. Refreshed after P0-31/P0-32 changed the preview files (owner approval
-  // 2026-10-28), and by P6-12 for the playground, web and editor files scanned
+  // 2026-10-28), and by P6-23 for the playground, web and editor files scanned
   // since then (owner approval 2026-10-29); no test logic changed.
   assert.deepEqual(
     result.skipped.map(({ file, line, rule, property, value, reason }) => ({
@@ -100,7 +100,7 @@ test("the repository itself is clean", () => {
     [
       {
         file: "apps/engine-playground/main.js",
-        line: 2709,
+        line: 2816,
         rule: RULES.OFF_GRID_SPACING,
         property: "margin",
         value: "box.y",
