@@ -7155,7 +7155,8 @@
         "docs/gates/playwright.md",
         "docs/quality.md",
         ".changes/",
-        "pnpm-lock.yaml"
+        "pnpm-lock.yaml",
+        "docs/versions.md"
       ],
       "scope_read": [
         "ARCHITECTURE.md",
