@@ -134,8 +134,8 @@
 ## Orchestration
 
 - Limits: 3 attempts/task, 3 in progress
-- Next wave: none — nothing is ready
-- Running: `P6-08` attempt 0/3; `P0-48` attempt 0/3<!-- polier:claims --> — claimed by dsh<!-- /polier:claims -->
+- Next wave: `P0-48` (tasks/P0-48.md)
+- Running: `P6-08` attempt 0/3
 - Blocked: P0-02, P0-15, P0-16, P0-17, P6-09, P6-10, P6-11 (stage waits)
 - Approvals pending: none
 
@@ -266,13 +266,6 @@
 - [ ] `P6-10` e2e suite: main flows and the e2e gate on the slot ports — status: `pending` — owner: —
 - [ ] `P6-11` Canvas evidence, repo-wide checks and the web-app stage report — status: `pending` — owner: —
 - [ ] `P0-48` Live demo: visible selection frame, delete that works — status: `pending` — owner: —
-
-<!-- polier:claims -->
-## Claims
-
-- `P0-48` in progress by dsh since 2026-10-29T00:09:33+00:00 — worktree: /Users/rasulatashev/Desktop/KI Projekte/Project air-P0-48 · slot 5
-
-<!-- /polier:claims -->
 
 ## Decisions
 
