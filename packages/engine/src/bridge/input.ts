@@ -933,7 +933,7 @@ export class PointerInput {
     ) {
       const selected = this.#host.selectionTargets?.() ?? this.#selection;
       for (const candidate of selected) {
-        const handle = resizeHandleAt(sample.screen, candidate.world, this.#host.worldToScreen);
+        const handle = resizeHandleAt(sample.screen, candidate.world, this.#host.worldToScreen.bind(this.#host));
         if (handle !== null) {
           const cursor = resizeCursor(handle);
           this.#setCursor(cursor);
@@ -1027,7 +1027,7 @@ export class PointerInput {
     ) {
       const selected = this.#host.selectionTargets?.() ?? this.#selection;
       for (const candidate of selected) {
-        const handle = resizeHandleAt(sample.screen, candidate.world, this.#host.worldToScreen);
+        const handle = resizeHandleAt(sample.screen, candidate.world, this.#host.worldToScreen.bind(this.#host));
         if (handle !== null) {
           this.#host.capturePointer(sample.pointerId);
           this.#phase = "resizing";

@@ -133,6 +133,8 @@ const REJECT_CODES = {
   persistenceFailed: "INTERNAL",
 } as const;
 
+// Protocol ids are strings; any other value counts as missing.
+const textOf = (value: unknown): string => (typeof value === "string" ? value : "");
 const sentAt = (): string => new Date().toISOString();
 
 export class SyncSession {
@@ -244,7 +246,7 @@ export class SyncSession {
   }
 
   async #hello(message: SyncMessage, send: SendMessage): Promise<Record<string, unknown>[]> {
-    const payload = (message.payload ?? {}) as Record<string, unknown>;
+    const payload = (message.payload ?? {});
     const rawTokenRef = payload["tokenRef"];
     const tokenRef = typeof rawTokenRef === "string" ? rawTokenRef : "";
     const cookie = this.#options.connectionCookie ?? "";
@@ -271,7 +273,7 @@ export class SyncSession {
   }
 
   async #joinBoard(message: SyncMessage, send: SendMessage): Promise<void> {
-    const boardId = message.boardId ?? String((message.payload ?? {})["boardId"] ?? "");
+    const boardId = message.boardId ?? textOf((message.payload ?? {})["boardId"]);
     if (this.#state.identity === null || boardId.length === 0) {
       this.#reject(send, message, REJECT_CODES.invalidMessage, "joinBoard needs a boardId");
       return;
@@ -353,7 +355,7 @@ export class SyncSession {
       this.#reject(send, message, REJECT_CODES.notJoined, "operationBatch requires joinBoard first");
       return;
     }
-    const payload = (message.payload ?? {}) as Record<string, unknown>;
+    const payload = (message.payload ?? {});
     const operations = payload["operations"];
     const batchId = payload["batchId"];
     if (!Array.isArray(operations) || operations.length === 0 || typeof batchId !== "string") {
@@ -404,7 +406,7 @@ export class SyncSession {
       this.#reject(send, message, REJECT_CODES.notJoined, "resyncRequest requires joinBoard first");
       return;
     }
-    const payload = (message.payload ?? {}) as Record<string, unknown>;
+    const payload = (message.payload ?? {});
     const fromServerSeq = Number(payload["fromServerSeq"] ?? 0);
     if (!Number.isInteger(fromServerSeq) || fromServerSeq < 0 || fromServerSeq > this.#state.lastServerSeq) {
       this.#reject(send, message, REJECT_CODES.invalidMessage, "fromServerSeq must be between 0 and the board serverSeq");

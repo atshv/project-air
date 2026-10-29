@@ -1,0 +1,11 @@
+{
+  "id": "AP-016",
+  "action": "scope_change",
+  "task": "P6-12",
+  "status": "granted",
+  "requested_by": "lead",
+  "requested_at": "2026-10-29T17:07:32+00:00",
+  "approved_by": "owner",
+  "approved_at": "2026-10-29T17:07:44+00:00",
+  "note": "A fresh-clone CI run exposes 36 lint errors in 9 files (sdk, auth, sync, engine, web) and a stale schema-test expectation (0006_sync_log); widen scope_write to these files and the platform schema test; lint fixes keep behaviour | owner in the session chat 2026-10-29 (option: widen P6-12); also approves the schema-test expectation refresh"
+}

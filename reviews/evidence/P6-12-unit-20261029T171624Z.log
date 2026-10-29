@@ -1,0 +1,921 @@
+$ TURBO_FORCE=1 pnpm test
+[exit 0]
+
+
+   • turbo 2.11.10
+   • Packages in scope: @project-air/auth, @project-air/contracts, @project-air/crdt, @project-air/design-check, @project-air/editor, @project-air/engine, @project-air/language-check, @project-air/platform, @project-air/release, @project-air/sdk, @project-air/sync, @project-air/test-kit, @project-air/ui-kit, @project-air/web
+   • Running test in 14 packages
+   • Remote caching disabled, using shared worktree cache
+
+@project-air/test-kit:build: cache bypass, force executing 02170fb43cd5dd53
+@project-air/sync:build: cache bypass, force executing 7955ad80688af6d7
+@project-air/ui-kit:build: cache bypass, force executing 33c53c772784185a
+@project-air/platform:build: cache bypass, force executing 608be56b7796a11d
+@project-air/crdt:build: cache bypass, force executing 740e4ec7247a32c2
+@project-air/editor:build: cache bypass, force executing 17bd4e9b9b4a1d98
+@project-air/auth:build: cache bypass, force executing 9411c5fa28c1b280
+@project-air/engine:build: cache bypass, force executing fb69f781a078bdab
+@project-air/contracts:test: cache bypass, force executing f5064e625d0e722d
+@project-air/design-check:test: cache bypass, force executing 584fe2f0bc540206
+@project-air/design-check:test: $ node --test test/*.test.mjs
+@project-air/sync:build: $ tsc --project tsconfig.json
+@project-air/editor:build: $ tsc --noEmit --project tsconfig.json
+@project-air/test-kit:build: $ tsc --project tsconfig.json
+@project-air/auth:build: $ tsc --project tsconfig.json
+@project-air/ui-kit:build: $ node codegen.mjs
+@project-air/platform:build: $ tsc --project tsconfig.json
+@project-air/crdt:build: $ tsc --project tsconfig.build.json
+@project-air/engine:build: $ tsc --project tsconfig.build.json && tsc --project tsconfig.logic.json
+@project-air/contracts:test: $ node --test test/*.test.mjs
+@project-air/ui-kit:build: ui-kit codegen: wrote tokens.css, tokens.h, layers.ts
+@project-air/language-check:test: cache bypass, force executing 3c810c5754930f97
+@project-air/language-check:test: $ node --test test/*.test.mjs
+@project-air/contracts:test: ✔ the error schema is versioned JSON Schema 2020-12 with the fixed code enum (15.922185ms)
+@project-air/contracts:test: ✔ the wire codes stay UPPER_SNAKE and the message keys are lowerCamelCase (0.632759ms)
+@project-air/contracts:test: ✔ the oneOf ties every code to exactly one message key (9.006552ms)
+@project-air/contracts:test: ✔ every error code has a valid fixture and the invalid ones are rejected (16.123257ms)
+@project-air/contracts:test: ✔ details carry field paths, never user text (0.420819ms)
+@project-air/contracts:test: ✔ every error code has exactly one message key in de, en and en-XA (20.382872ms)
+@project-air/contracts:test: ✔ the German error messages follow the style rules and the English ones differ (1.01395ms)
+@project-air/contracts:test: ✔ the pseudo locale carries the generated values for the error keys (1.02573ms)
+@project-air/contracts:test: ✔ the index exports the error code table and the API schema path (10.199035ms)
+@project-air/contracts:test: ✔ the four API resource schemas are versioned JSON Schema 2020-12 with closed envelopes (17.78921ms)
+@project-air/contracts:test: ✔ the envelopes cover list, get, create, update and delete (0.597709ms)
+@project-air/contracts:test: ✔ the envelopes reference the P1-01 entity schemas instead of restating them (18.230157ms)
+@project-air/contracts:test: ✔ card create and changes mirror the P1-01 minimum sizes and the nullable zone parent (0.286103ms)
+@project-air/contracts:test: ✔ every resource envelope has a valid fixture that satisfies it (35.311721ms)
+@project-air/contracts:test: ✔ the invalid fixtures violate their envelope and name the rule (2.019435ms)
+@project-air/contracts:test: ✔ every API fixture has the wrapper and maps to an API schema (39.70899ms)
+@project-air/contracts:test: ✔ valid API fixtures use UUIDv7 ids and ISO-8601 timestamps (9.321466ms)
+@project-air/contracts:test: ✔ an empty list is valid with items [] and nextCursor null (0.434352ms)
+@project-air/contracts:test: ✔ pagination bounds are encoded in the schema (0.47387ms)
+@project-air/contracts:test: ✔ update requests need a non-empty changes object (0.492551ms)
+@project-air/contracts:test: ✔ delete envelopes name the resource id (0.357689ms)
+@project-air/contracts:test: ✔ the index exports the API resources, schema paths and fixture paths (0.667166ms)
+@project-air/contracts:test: ✔ the generated directory holds exactly the two committed files (1.807763ms)
+@project-air/contracts:test: ✔ the committed generated files equal the generator output (4.117772ms)
+@project-air/contracts:test: ✔ codegen is deterministic and free of timestamps and absolute paths (1.71657ms)
+@project-air/contracts:test: ✔ the TypeScript output exposes the entities, enums, union and inverse pair (0.497739ms)
+@project-air/contracts:test: ✔ the generated files carry the 0.4.0 reorder payload in both languages (0.455167ms)
+@project-air/contracts:test: ✔ the generated operation vocabulary matches the contract index (0.526788ms)
+@project-air/contracts:test: ✔ the C++ output exposes the model, enums and the operation envelope (0.291005ms)
+@project-air/contracts:test: ✔ the containment corpus is additive and uses the board-content schema (2.359267ms)
+@project-air/contracts:test: ✔ valid containment fixtures are schema-valid and follow the parent rule (1.778635ms)
+@project-air/contracts:test: ✔ the dangling parent fixture is rejected by the containment rule (0.657304ms)
+@project-air/contracts:test: ✔ a nested zone is rejected by the zone schema (0.474288ms)
+@project-air/contracts:test: ✔ cards and blocks carry an optional nullable parent and zones carry none (2.104142ms)
+@project-air/contracts:test: ✔ index exports the versioned schema and fixture paths (2.99832ms)
+@project-air/contracts:test: ✔ board.contracts metadata names the current version and all 18 schema files (4.858518ms)
+@project-air/contracts:test: ✔ every schema is JSON Schema 2020-12 with a versioned $id and required fields (1.175936ms)
+@project-air/contracts:test: ✔ every schema has at least one valid and one invalid fixture with the wrapper (2.310478ms)
+@project-air/contracts:test: ✔ every fixture schema path resolves to a schema (5.679649ms)
+@project-air/contracts:test: ✔ valid fixtures satisfy their schema (4.551687ms)
+@project-air/contracts:test: ✔ invalid fixtures violate their schema and name the broken rule (3.993678ms)
+@project-air/contracts:test: ✔ valid fixtures carry every required top-level field (1.068673ms)
+@project-air/contracts:test: ✔ valid ids are UUIDv7 and valid timestamps are ISO-8601 with timezone (1.78248ms)
+@project-air/contracts:test: ✔ minimum sizes are encoded in the schemas (0.732002ms)
+@project-air/contracts:test: ✔ valid fixtures sit exactly on the minimum sizes (1.376938ms)
+@project-air/contracts:test: ✔ invalid minimum-size fixtures are below their type minimum (0.356403ms)
+@project-air/contracts:test: ✔ fixed enums are part of the schemas (0.555211ms)
+@project-air/contracts:test: ✔ the fractional index is a string (0.260968ms)
+@project-air/contracts:test: ✔ timestamps are ISO-8601 strings with timezone (0.652912ms)
+@project-air/contracts:test: ✔ AD-4: a note exists once and cards only reference it (0.515236ms)
+@project-air/contracts:test: ✔ the parent relation is board to zone to card, without nested zones (0.34389ms)
+@project-air/contracts:test: ✔ edges connect cards only (0.281238ms)
+@project-air/contracts:test: ✔ the root schema references every board-content entity (0.596386ms)
+@project-air/contracts:test: ✔ the package has no runtime dependencies and defines the test command (0.194614ms)
+@project-air/contracts:test: ✔ the gate specimens are byte-identical copies of canonical fixtures (3.664587ms)
+@project-air/contracts:test: ✔ the gate fixture directories hold direct JSON files for Polier (1.105996ms)
+@project-air/contracts:test: ✔ the gate specimens keep the fixture wrapper (1.280163ms)
+@project-air/contracts:test: ✔ the sync gate specimens are byte-identical copies of canonical fixtures (23.700329ms)
+@project-air/contracts:test: ✔ the operation schema is versioned JSON Schema 2020-12 with the operation vocabulary (14.987644ms)
+@project-air/contracts:test: ✔ index exports the operation schema path, id and type vocabulary (0.252084ms)
+@project-air/contracts:test: ✔ every operation type has a valid and at least one invalid fixture (8.427652ms)
+@project-air/contracts:test: ✔ every operation fixture maps to the operation schema with the fixture wrapper (7.732971ms)
+@project-air/contracts:test: ✔ valid operation fixtures satisfy the schema and the inverse model (48.023418ms)
+@project-air/contracts:test: ✔ invalid operation fixtures break the schema or the inverse model and name the rule (36.569125ms)
+@project-air/contracts:test: ✔ every operation carries exactly one inverse with board, type and payload (8.714204ms)
+@project-air/contracts:test: ✔ operation ids are UUIDv7 and timestamps are ISO-8601 (17.636668ms)
+@project-air/contracts:test: ✔ each operation type pairs with its documented inverse type (1.927863ms)
+@project-air/contracts:test: ✔ groups have ordered children and the inverse reverses the child inverses (0.805546ms)
+@project-air/contracts:test: ✔ groups do not nest and need at least one child (0.646522ms)
+@project-air/contracts:test: ✔ updates store only changed fields and the inverse stores the previous values (0.710546ms)
+@project-air/contracts:test: ✔ deletes store the object and creates have the matching delete as inverse (0.992237ms)
+@project-air/contracts:test: ✔ the reorder operation stores the new z and its inverse the previous z (0.78591ms)
+@project-air/contracts:test: ✔ resize operations respect the P1-01 minimum sizes (18.329607ms)
+@project-air/contracts:test: ✔ move payloads carry a position and an optional zone parent (1.515473ms)
+@project-air/contracts:test: ✔ the group inverse is checked against the reversed child inverses (6.224029ms)
+@project-air/contracts:test: ✔ an inverse with a mismatching board or target is invalid (6.561175ms)
+@project-air/contracts:test: ✔ every valid operation payload object still satisfies the P1-01 entity schemas (6.52258ms)
+@project-air/release:test: cache bypass, force executing 8352787c44f7b1d4
+@project-air/release:test: $ node --test test/*.test.mjs
+@project-air/design-check:test: ✔ the design source is read from tokens.json and layers.ts (8.888696ms)
+@project-air/design-check:test: ✔ the clean fixture has no findings (3.205467ms)
+@project-air/design-check:test: ✔ the repository itself is clean (387.113655ms)
+@project-air/design-check:test: ✔ raw colours are reported; var() and currentColor are allowed (1.277968ms)
+@project-air/design-check:test: ✔ off-grid spacing is reported and non-px values are skipped (17.606714ms)
+@project-air/design-check:test: ✔ numeric z-index values must come from layers.ts (0.784991ms)
+@project-air/design-check:test: ✔ ignored directories, generated token files and test files are skipped (17.774475ms)
+@project-air/design-check:test: ✔ node_modules, VCS, cache and build directories are skipped (34.001239ms)
+@project-air/design-check:test: ✔ isIgnored covers generated, ignored and test paths (0.354287ms)
+@project-air/design-check:test: ✔ allowed values come from the project's own tokens.json and layers.ts (9.689616ms)
+@project-air/design-check:test: ✔ --task requires the before and after screenshots (16.125402ms)
+@project-air/design-check:test: ✔ an empty project is clean (0.273429ms)
+@project-air/design-check:test: ✔ missing design source is a configuration error (237.193165ms)
+@project-air/design-check:test: ✔ the CLI reports findings as file:line: rule and supports --json (683.784571ms)
+@project-air/design-check:test: ✔ the CLI exits 0 on the repository and with JSON (1259.084308ms)
+@project-air/design-check:test: ✔ the CLI validates its arguments and the root (663.268973ms)
+@project-air/design-check:test: ℹ tests 16
+@project-air/design-check:test: ℹ suites 0
+@project-air/design-check:test: ℹ pass 16
+@project-air/design-check:test: ℹ fail 0
+@project-air/design-check:test: ℹ cancelled 0
+@project-air/design-check:test: ℹ skipped 0
+@project-air/design-check:test: ℹ todo 0
+@project-air/design-check:test: ℹ duration_ms 3622.470809
+@project-air/ui-kit:test: cache bypass, force executing ddb6b566e7badf8d
+@project-air/ui-kit:test: $ node --test tests/*.test.mjs
+@project-air/test-kit:test: cache bypass, force executing 20050d850b4ca2af
+@project-air/test-kit:test: $ node --test test/*.test.mjs
+@project-air/editor:test: cache bypass, force executing 55d9757211714fdc
+@project-air/ui-kit:test: ✔ committed tokens.css equals the generated CSS (2.531269ms)
+@project-air/ui-kit:test: ✔ committed tokens.h equals the generated C++ header (2.517651ms)
+@project-air/ui-kit:test: ✔ committed layers.ts equals the generated layer order (0.478127ms)
+@project-air/ui-kit:test: ✔ every token appears in the generated CSS with the token value (8.714881ms)
+@project-air/ui-kit:test: ✔ every token appears in the generated C++ header with the token value (0.851156ms)
+@project-air/ui-kit:test: ✔ a second render is byte-identical (no timestamps, stable ordering) (12.413796ms)
+@project-air/ui-kit:test: ✔ codegen.mjs uses Node builtins only (0.667991ms)
+@project-air/ui-kit:test: ✔ layers.ts data matches tokens.json (0.578832ms)
+@project-air/ui-kit:test: ✔ writeGenerated writes the three documented files (17.513317ms)
+@project-air/ui-kit:test: ✔ icons/ contains exactly the ten toolbar icons (31.537287ms)
+@project-air/ui-kit:test: ✔ note.svg is a valid standalone 24x24 stroke icon (0.934449ms)
+@project-air/ui-kit:test: ✔ source.svg is a valid standalone 24x24 stroke icon (7.297997ms)
+@project-air/ui-kit:test: ✔ image.svg is a valid standalone 24x24 stroke icon (0.334171ms)
+@project-air/ui-kit:test: ✔ file.svg is a valid standalone 24x24 stroke icon (0.214078ms)
+@project-air/ui-kit:test: ✔ zone.svg is a valid standalone 24x24 stroke icon (0.20054ms)
+@project-air/ui-kit:test: ✔ checklist.svg is a valid standalone 24x24 stroke icon (0.167687ms)
+@project-air/ui-kit:test: ✔ palette.svg is a valid standalone 24x24 stroke icon (0.141466ms)
+@project-air/ui-kit:test: ✔ columns.svg is a valid standalone 24x24 stroke icon (8.804244ms)
+@project-air/ui-kit:test: ✔ timeline.svg is a valid standalone 24x24 stroke icon (0.551279ms)
+@project-air/ui-kit:test: ✔ table.svg is a valid standalone 24x24 stroke icon (0.297052ms)
+@project-air/ui-kit:test: ✔ package.json defines the five required scripts and no dependencies (1.872464ms)
+@project-air/ui-kit:test: ✔ the generated files exist and are documented in README.md (4.733464ms)
+@project-air/ui-kit:test: ✔ the open questions live in README.md, not in tokens.json (0.509495ms)
+@project-air/ui-kit:test: ✔ only tokens.json holds raw colour values; generated files are derived (1.599256ms)
+@project-air/ui-kit:test: ✔ no placeholder or TODO ships in the package (0.77463ms)
+@project-air/ui-kit:test: ✔ ARCHITECTURE.md stays within the 400-word package budget and names commands (0.490381ms)
+@project-air/ui-kit:test: ✔ tsconfig.json includes the generated layer module (0.356823ms)
+@project-air/editor:test: $ node --test test/*.test.mjs
+@project-air/ui-kit:test: ✔ tokens.json holds token data only (12.526318ms)
+@project-air/ui-kit:test: ✔ colours carry the design-law names and the blueprint/reference values (11.180189ms)
+@project-air/ui-kit:test: ✔ spacing is the 4-px series only (0.900699ms)
+@project-air/ui-kit:test: ✔ sizes cover borders, focus outline, grid, thresholds, targets, icons and header (0.266124ms)
+@project-air/ui-kit:test: ✔ radii carry the design-law names and values, including the tooltip radius (0.258292ms)
+@project-air/ui-kit:test: ✔ typography has both stacks, the seven sizes and the three weights (5.072663ms)
+@project-air/ui-kit:test: ✔ motion has the four design-law durations plus the 2 s saved fade (0.281097ms)
+@project-air/ui-kit:test: ✔ shadows are exactly card-shadow and shadow (0.159789ms)
+@project-air/ui-kit:test: ✔ layers keep the design-law order 1-11 including 7a (6.575816ms)
+@project-air/ui-kit:test: ✔ no token value is null, empty or a placeholder (0.861076ms)
+@project-air/ui-kit:test: ℹ tests 37
+@project-air/ui-kit:test: ℹ suites 0
+@project-air/ui-kit:test: ℹ pass 37
+@project-air/ui-kit:test: ℹ fail 0
+@project-air/ui-kit:test: ℹ cancelled 0
+@project-air/ui-kit:test: ℹ skipped 0
+@project-air/ui-kit:test: ℹ todo 0
+@project-air/ui-kit:test: ℹ duration_ms 798.45591
+@project-air/crdt:test: cache bypass, force executing 86a52c87ec937429
+@project-air/crdt:test: $ node --test test/*.test.mjs
+@project-air/test-kit:test: ✔ engine-core board has exactly 10,000 mixed objects (139.282232ms)
+@project-air/test-kit:test: ✔ engine-core board is deterministic across builds (115.308421ms)
+@project-air/test-kit:test: ✔ engine-core ids are short, stable and unique (113.128942ms)
+@project-air/test-kit:test: ✔ engine-core geometry is finite, positive and on the 16 px grid (142.735313ms)
+@project-air/test-kit:test: ✔ engine-core objects stay inside the world (49.272879ms)
+@project-air/test-kit:test: ✔ engine-core follows the layer order and varies in size and tone (66.294341ms)
+@project-air/test-kit:test: ✔ engine-core blocks sit in their zone and each zone has three (87.175284ms)
+@project-air/test-kit:test: ✔ engine-core cards are either contained in a zone or free (150.244559ms)
+@project-air/test-kit:test: ✔ engine-core fit clamps the zoom at 1440x900 and 390x844 (119.377107ms)
+@project-air/test-kit:test: ✔ buildScene resolves the engine-core scene and the scene name guard (139.392762ms)
+@project-air/editor:test: ✔ Enter splits a paragraph at the caret and keeps the marks (1.932573ms)
+@project-air/test-kit:test: ✔ the layers scene is deterministic and loadable by name (23.944294ms)
+@project-air/test-kit:test: ✔ every object has a contract key, grid geometry and stays inside the world (7.771762ms)
+@project-air/test-kit:test: ✔ the keys contradict the layers, so only the layer rule can explain the order (0.388891ms)
+@project-air/test-kit:test: ✔ sample board has exactly 500 cards and 50 zones with contained blocks (65.68915ms)
+@project-air/test-kit:test: ✔ sample board is deterministic across builds (26.273507ms)
+@project-air/test-kit:test: ✔ sample ids are short, stable and unique (16.84902ms)
+@project-air/test-kit:test: ✔ sample geometry is finite, positive and on the 16 px grid (35.841863ms)
+@project-air/test-kit:test: ✔ sample stays inside the world and reaches its edges (22.349374ms)
+@project-air/test-kit:test: ✔ sample objects follow the layer order and vary in size and tone (8.839036ms)
+@project-air/test-kit:test: ✔ sample blocks and zone cards are contained in their zone (6.448323ms)
+@project-air/test-kit:test: ✔ sample fit clamps the zoom at 1440x900 and 390x844 (0.697339ms)
+@project-air/test-kit:test: ✔ stress scene defaults to 10,000 deterministic objects (166.630074ms)
+@project-air/test-kit:test: ✔ stress scene handles the empty and maximum document sizes (381.012078ms)
+@project-air/test-kit:test: ✔ buildScene resolves scene names and forwards the stress count (79.321695ms)
+@project-air/test-kit:test: ✔ the seeded PRNG repeats and the source uses no ambient randomness (1.114796ms)
+@project-air/test-kit:test: ℹ tests 25
+@project-air/test-kit:test: ℹ suites 0
+@project-air/test-kit:test: ℹ pass 25
+@project-air/test-kit:test: ℹ fail 0
+@project-air/test-kit:test: ℹ cancelled 0
+@project-air/test-kit:test: ℹ skipped 0
+@project-air/test-kit:test: ℹ todo 0
+@project-air/test-kit:test: ℹ duration_ms 1799.919962
+@project-air/editor:test: ✔ Enter in a list continues the list, Enter in a heading starts a paragraph (0.251496ms)
+@project-air/editor:test: ✔ Enter on an empty list item turns it back into a paragraph (0.277929ms)
+@project-air/editor:test: ✔ Tab indents a paragraph into a list and Shift+Tab outdents it again (0.299548ms)
+@project-air/editor:test: ✔ marks toggle on the whole contract block and code/bold/italic stay independent (0.290977ms)
+@project-air/editor:test: ✔ pasted blocks merge into the block under the caret with the caret after the first line (0.341114ms)
+@project-air/editor:test: ✔ single-line paste inserts inside the current block (0.188766ms)
+@project-air/editor:test: ✔ a contract body round-trips through the editor model without losing blocks or marks (28.013406ms)
+@project-air/editor:test: ✔ plainText is derived only by the contract helper and matches the serialised body (40.64273ms)
+@project-air/editor:test: ✔ an invalid body derives empty plain text and never reports a match for a missing body (4.369959ms)
+@project-air/editor:test: ✔ empty surface blocks persist as the contract empty body (0.40073ms)
+@project-air/editor:test: ✔ marks are normalised to the contract order and de-duplicated (0.196256ms)
+@project-air/editor:test: ✔ link hrefs follow the contract allow-list (0.281165ms)
+@project-air/editor:test: ✔ bodies with disallowed links degrade to plain text instead of a broken operation (0.224624ms)
+@project-air/editor:test: ✔ contract size limits surface as typed errors (11.208593ms)
+@project-air/sdk:build: cache bypass, force executing 41f120059d97e667
+@project-air/editor:test: ✔ HTML is reduced to plain text: tags, scripts and styles never survive (7.10467ms)
+@project-air/editor:test: ✔ entities are decoded to text and never re-interpreted as markup (0.370488ms)
+@project-air/editor:test: ✔ plain text normalises newlines, control characters and trailing spaces (0.376769ms)
+@project-air/editor:test: ✔ the paste payload prefers plain text and falls back to sanitised HTML (5.658001ms)
+@project-air/editor:test: ✔ pasted text becomes paragraph blocks and over-long lines are chunked, not truncated (0.56765ms)
+@project-air/editor:test: ✔ a caret is clamped into the existing blocks and offsets (3.448679ms)
+@project-air/editor:test: ✔ an external content change restores the caret by block and offset (0.428802ms)
+@project-air/editor:test: ✔ the placeholder is visible exactly while every block is empty (2.288222ms)
+@project-air/editor:test: ✔ L06: only an empty note focuses its editor on open and never forces focus otherwise (1.330668ms)
+@project-air/editor:test: ℹ tests 24
+@project-air/editor:test: ℹ suites 0
+@project-air/editor:test: ℹ pass 24
+@project-air/editor:test: ℹ fail 0
+@project-air/sdk:build: $ tsc --project tsconfig.json
+@project-air/editor:test: ℹ cancelled 0
+@project-air/editor:test: ℹ skipped 0
+@project-air/editor:test: ℹ todo 0
+@project-air/editor:test: ℹ duration_ms 1440.647502
+@project-air/web:build: cache bypass, force executing f1ce7913fde85dac
+@project-air/sync:test: cache bypass, force executing c08cdf6d8a24fa18
+@project-air/web:build: $ vite build
+@project-air/sync:test: $ node --test --test-concurrency=1 test/*.test.mjs
+@project-air/auth:test: cache bypass, force executing f009d2856f35a4f5
+@project-air/auth:test: $ node --test test/*.test.mjs
+@project-air/platform:test: cache bypass, force executing 8e19420a898d9cdc
+@project-air/platform:test: $ node --test --test-concurrency=1 test/*.test.mjs test/migrations/*.test.mjs
+@project-air/crdt:test: yjs: rounds=10000 elapsedMs=1397.0 heapDeltaMb=12.54 stateBytes=2297
+@project-air/web:build: vite v8.3.5 building client environment for production...
+@project-air/web:build: transforming...
+@project-air/platform:test: ✔ parses a complete environment (2.130872ms)
+@project-air/platform:test: ✔ defaults NODE_ENV, LOG_LEVEL and HOST (0.607577ms)
+@project-air/platform:test: ✔ a missing DATABASE_URL fails fast (0.595603ms)
+@project-air/platform:test: ✔ the app_user connection is required and must be a PostgreSQL URL (0.370687ms)
+@project-air/platform:test: ✔ the auth service URL is required and must be http(s) (0.507226ms)
+@project-air/platform:test: ✔ port, NODE_ENV, LOG_LEVEL and HOST are validated (0.413921ms)
+@project-air/release:test: ✔ writes a deterministic entry from flags (855.46987ms)
+@project-air/release:test: ✔ derives the task id from the branch and accepts positional arguments (408.621338ms)
+@project-air/release:test: ✔ defaults the kind to patch (443.963016ms)
+@project-air/release:test: ✔ refuses unknown areas and kinds without writing a file (556.563802ms)
+@project-air/release:test: ✔ refuses invalid task ids, missing and multi-line summaries (1231.772341ms)
+@project-air/release:test: ✔ refuses a task id when the branch is not task/<ID> (311.906902ms)
+@project-air/release:test: ✔ refuses to overwrite an entry unless --force is passed (858.849448ms)
+@project-air/release:test: ✔ ignores a -- separator forwarded by a package manager (734.577178ms)
+@project-air/release:test: ✔ never edits CHANGELOG.md (516.996281ms)
+@project-air/auth:test: ✔ login creates+submits the flow, forwards the session cookie and keeps credentials out of the response (153.301897ms)
+@project-air/auth:test: ✔ invalid credentials and provider failure are typed errors (193.445265ms)
+@project-air/sync:test: ✔ live socket integration: join, ack-after-commit, updateNoteBody log/broadcast/catch-up and reconnect (654.984779ms)
+@project-air/auth:test: ✔ registration, recovery and logout map success/conflict/cookie clear (149.057915ms)
+@project-air/auth:test: ✔ test-mode session path is untouched and still gated by the flag (20.403041ms)
+@project-air/auth:test: ✔ parses a complete environment and normalises the Kratos URLs (22.205037ms)
+@project-air/auth:test: ✔ defaults NODE_ENV, LOG_LEVEL and HOST (0.457894ms)
+@project-air/auth:test: ✔ AUTH_PORT is required and must be a valid port number (7.344144ms)
+@project-air/auth:test: ✔ secrets are required, long enough and never echoed (0.877912ms)
+@project-air/auth:test: ✔ the Kratos URLs are required http(s) URLs (0.62059ms)
+@project-air/auth:test: ✔ a missing or invalid DATABASE_URL fails fast (0.245002ms)
+@project-air/auth:test: ✔ NODE_ENV and LOG_LEVEL reject unknown values (6.779007ms)
+@project-air/auth:test: ✔ the test-session mode is opt-in and impossible in production (0.799759ms)
+@project-air/auth:test: ✔ liveness answers 200 while the database is down (277.009554ms)
+@project-air/auth:test: ✔ readiness answers 200 when the database ping succeeds (28.788612ms)
+@project-air/auth:test: ✔ readiness includes the Kratos check when wired (20.273931ms)
+@project-air/auth:test: ✔ readiness answers 503 when the database ping fails (33.541198ms)
+@project-air/auth:test: ✔ readiness answers 503 when the database is unreachable (34.377812ms)
+@project-air/auth:test: ✔ creates an identity through the Kratos admin API and returns its id (297.426841ms)
+@project-air/auth:test: ✔ a missing or wrong admin token is 401 AUTH_REQUIRED (61.074042ms)
+@project-air/auth:test: ✔ an invalid invitation body is 400 VALIDATION with field details (43.440526ms)
+@project-air/auth:test: ✔ a duplicate e-mail is 409 CONFLICT (51.461834ms)
+@project-air/auth:test: ✔ a Kratos failure is a 503 INTERNAL (53.478296ms)
+@project-air/crdt:test: fake: rounds=10000 elapsedMs=688.6 heapDeltaMb=18.26 stateBytes=2297
+@project-air/web:build: ✓ 193 modules transformed.
+@project-air/crdt:test: ✔ yjs: 10,000 randomized rounds in different orders converge (1532.351926ms)
+@project-air/crdt:test: ✔ yjs: an offline batch merges after reconnect (74.706678ms)
+@project-air/crdt:test: ✔ yjs: the snapshot round-trips into an identical document (23.698987ms)
+@project-air/crdt:test: ✔ yjs: every operation type plus its inverse restores the state (25.023603ms)
+@project-air/crdt:test: ✔ yjs: updateNoteBody stores the body and derived plainText and snapshots round-trip it (31.040477ms)
+@project-air/crdt:test: ✔ yjs: a bodyless note stays byte-identical through apply and the empty-body inverse (1.296602ms)
+@project-air/crdt:test: ✔ yjs: an empty body clears a note and its inverse restores the body (28.417724ms)
+@project-air/crdt:test: ✔ yjs: body rejections fail closed and leave the document unchanged (32.361141ms)
+@project-air/crdt:test: ✔ yjs: two replicas converge with body operations (16.165102ms)
+@project-air/crdt:test: ✔ yjs: body validation agrees with the contract schema and fixtures (2.620426ms)
+@project-air/crdt:test: ✔ fake: 10,000 randomized rounds in different orders converge (1623.148774ms)
+@project-air/crdt:test: ✔ fake: an offline batch merges after reconnect (30.416148ms)
+@project-air/crdt:test: ✔ fake: the snapshot round-trips into an identical document (1.156026ms)
+@project-air/crdt:test: ✔ fake: every operation type plus its inverse restores the state (10.100744ms)
+@project-air/crdt:test: ✔ fake: updateNoteBody stores the body and derived plainText and snapshots round-trip it (7.962526ms)
+@project-air/crdt:test: ✔ fake: a bodyless note stays byte-identical through apply and the empty-body inverse (0.459544ms)
+@project-air/crdt:test: ✔ fake: an empty body clears a note and its inverse restores the body (0.639409ms)
+@project-air/crdt:test: ✔ fake: body rejections fail closed and leave the document unchanged (10.419921ms)
+@project-air/crdt:test: ✔ fake: two replicas converge with body operations (0.893013ms)
+@project-air/crdt:test: ✔ fake: body validation agrees with the contract schema and fixtures (1.263666ms)
+@project-air/language-check:test: ✔ clean fixture passes with exit 0 and no findings (344.770805ms)
+@project-air/language-check:test: ✔ key drift is reported per key with file, line and rule (538.133736ms)
+@project-air/language-check:test: ✔ broken ICU is reported with the message key (404.110243ms)
+@project-air/language-check:test: ✔ the German sharp-s character in code is reported (576.494589ms)
+@project-air/language-check:test: ✔ a German word in a user-facing string is reported (200.18436ms)
+@project-air/language-check:test: ✔ a drifting pseudo-locale is reported per key (491.021131ms)
+@project-air/language-check:test: ✔ --write-pseudo repairs en-XA.json and is deterministic on a second run (1279.145584ms)
+@project-air/language-check:test: ✔ a missing root is a configuration error with exit 2 (129.818694ms)
+@project-air/language-check:test: ✔ the repository itself passes (5972.892505ms)
+@project-air/platform:test: ✔ liveness answers 200 while the database is down (127.388838ms)
+@project-air/platform:test: ✔ readiness answers 200 when the database ping succeeds (40.293524ms)
+@project-air/language-check:test: ℹ tests 9
+@project-air/language-check:test: ℹ suites 0
+@project-air/language-check:test: ℹ pass 9
+@project-air/language-check:test: ℹ fail 0
+@project-air/language-check:test: ℹ cancelled 0
+@project-air/language-check:test: ℹ skipped 0
+@project-air/language-check:test: ℹ todo 0
+@project-air/language-check:test: ℹ duration_ms 10343.279873
+@project-air/crdt:test: ℹ tests 20
+@project-air/crdt:test: ℹ suites 0
+@project-air/crdt:test: ℹ pass 20
+@project-air/crdt:test: ℹ fail 0
+@project-air/crdt:test: ℹ cancelled 0
+@project-air/crdt:test: ℹ skipped 0
+@project-air/crdt:test: ℹ todo 0
+@project-air/crdt:test: ℹ duration_ms 4680.752016
+@project-air/platform:test: ✔ readiness answers 503 INTERNAL when the database ping fails (28.418473ms)
+@project-air/release:test: ✔ fails on a committed code change without an entry (788.36517ms)
+@project-air/release:test: ✔ passes with a matching entry (510.598731ms)
+@project-air/release:test: ✔ passes for docs-only changes (550.600452ms)
+@project-air/release:test: ✔ passes with the owner exception and the reason (667.877933ms)
+@project-air/release:test: ✔ rejects --no-changelog without a reason (683.715902ms)
+@project-air/release:test: ✔ detects uncommitted working-tree code changes (295.296444ms)
+@project-air/release:test: ✔ requires an entry for a changed root manifest (872.670909ms)
+@project-air/release:test: ✔ fails on an invalid entry (441.417708ms)
+@project-air/release:test: ✔ fails when a task has more than one entry (393.078857ms)
+@project-air/release:test: ✔ exits 2 for usage and configuration errors (1156.345679ms)
+@project-air/release:test: ✔ accepts an explicit --task on a branch that is not task/<ID> (535.480249ms)
+@project-air/platform:test: ✔ readiness answers 503 when the database is unreachable (34.84596ms)
+@project-air/release:test: ✔ areas and kinds are fixed (27.088647ms)
+@project-air/release:test: ✔ task ids are normalized to upper case and validated (2.269045ms)
+@project-air/release:test: ✔ slug is deterministic and stays short (4.28985ms)
+@project-air/release:test: ✔ entry file name uses the task id and the slug (0.402934ms)
+@project-air/release:test: ✔ entry render and parse round-trip (6.493864ms)
+@project-air/release:test: ✔ parse rejects invalid entries (1.437052ms)
+@project-air/release:test: ✔ entry files for a task are listed sorted and ignore other files (26.856636ms)
+@project-air/release:test: ✔ code paths follow the gate policy (0.892413ms)
+@project-air/release:test: ℹ tests 28
+@project-air/release:test: ℹ suites 0
+@project-air/release:test: ℹ pass 28
+@project-air/release:test: ℹ fail 0
+@project-air/release:test: ℹ cancelled 0
+@project-air/release:test: ℹ skipped 0
+@project-air/release:test: ℹ todo 0
+@project-air/release:test: ℹ duration_ms 7493.620716
+@project-air/auth:test: ✔ whoami returns the mapped identity and forwards the cookie (185.368308ms)
+@project-air/web:build: rendering chunks...
+@project-air/auth:test: ✔ whoami returns null for a missing or expired session (62.741459ms)
+@project-air/auth:test: ✔ whoami rejects an unexpected Kratos status (64.404079ms)
+@project-air/auth:test: ✔ createIdentity sends the traits and returns the identity (80.777793ms)
+@project-air/auth:test: ✔ createIdentity maps a duplicate e-mail to conflict (56.909739ms)
+@project-air/auth:test: ✔ createRecoveryLink and listIdentities call the admin API (42.50653ms)
+@project-air/auth:test: ✔ the public flow clients return id and action (121.915048ms)
+@project-air/web:build: computing gzip size...
+@project-air/web:build: dist/index.html                   0.44 kB │ gzip:   0.27 kB
+@project-air/web:build: dist/assets/index-iPDlsCS7.css   14.02 kB │ gzip:   3.26 kB
+@project-air/web:build: dist/assets/index-D_h0sJ7I.js   455.29 kB │ gzip: 140.18 kB
+@project-air/web:build: 
+@project-air/web:build: ✓ built in 2.79s
+@project-air/auth:test: ✔ ready is true for a healthy Kratos and false for 503 or a closed port (60.252972ms)
+@project-air/web:test: cache bypass, force executing 891505fc145ad00c
+@project-air/auth:test: ✔ a slow Kratos times out as unavailable (58.505836ms)
+@project-air/auth:test: ✔ an invalid JSON body is a bad_response error (1.298808ms)
+@project-air/sdk:test: cache bypass, force executing 1b8f461916722101
+@project-air/platform:test: ▶ migration runner
+@project-air/platform:test:   ✔ loads the migrations in file-name order with SHA-256 checksums (48.927641ms)
+@project-air/sync:test: ✔ join replay rebuilds the committed state after compaction (real Pg store) (596.378013ms)
+@project-air/platform:test: {"time":"2026-10-29T17:16:36.343Z","level":"info","message":"migrations complete","applied":0,"skipped":6}
+@project-air/platform:test:   ✔ applies the migrations once and records versions in schema_migrations (133.38564ms)
+@project-air/platform:test: {"time":"2026-10-29T17:16:36.443Z","level":"info","message":"migrations complete","applied":0,"skipped":6}
+@project-air/sdk:test: $ node --test test/*.test.mjs
+@project-air/web:test: $ node --test test/*.test.mjs
+@project-air/platform:test:   ✔ a second run is a no-op (52.372705ms)
+@project-air/platform:test:   ✔ fails when an applied migration changed (74.166021ms)
+@project-air/auth:test: ✔ loads the migrations in file-name order with SHA-256 checksums (99.317978ms)
+@project-air/auth:test: ✔ returns the success envelope with a UUIDv7 request id in the header (170.076186ms)
+@project-air/auth:test: ✔ keeps a valid UUIDv7 client request id and replaces anything else (47.75584ms)
+@project-air/auth:test: ✔ parses the query string (34.978251ms)
+@project-air/auth:test: ✔ returns the contract error envelope for an unknown path (22.480646ms)
+@project-air/auth:test: ✔ returns 405 with an Allow header for a known path and the wrong method (33.262076ms)
+@project-air/auth:test: ✔ reads a JSON body and wraps the result (9.146722ms)
+@project-air/auth:test: ✔ rejects invalid JSON with a VALIDATION envelope (22.404587ms)
+@project-air/auth:test: ✔ rejects a non-JSON content type with 415 (18.032936ms)
+@project-air/auth:test: ✔ rejects a body above the limit with 413 (23.477765ms)
+@project-air/auth:test: ✔ a custom status and headers are preserved (2.490002ms)
+@project-air/auth:test: ✔ an empty handler result is a 204 without a body (10.033594ms)
+@project-air/auth:test: ✔ an unexpected error becomes a generic INTERNAL envelope (20.677456ms)
+@project-air/auth:test: ✔ a valid Kratos session returns the account id, e-mail and display name (120.766438ms)
+@project-air/auth:test: ✔ no session cookie is 401 AUTH_REQUIRED (28.834444ms)
+@project-air/auth:test: ✔ an invalid or expired Kratos session is 401 AUTH_REQUIRED (26.210294ms)
+@project-air/auth:test: ✔ an error response from Kratos is a 503 INTERNAL (13.549259ms)
+@project-air/auth:test: ✔ an unreachable Kratos is a 503 INTERNAL (17.48547ms)
+@project-air/auth:test: ✔ POST /test/session mints a session that GET /session accepts (55.944711ms)
+@project-air/auth:test: ✔ a tampered or expired test session is 401, never 500 (21.824026ms)
+@project-air/auth:test: ✔ POST /test/session validates its body (9.724524ms)
+@project-air/auth:test: ✔ without test mode the test-session route does not exist and the header is ignored (3.981854ms)
+@project-air/platform:test:   ✔ fails when an applied migration disappeared (62.209684ms)
+@project-air/platform:test: ✔ migration runner (373.828525ms)
+@project-air/auth:test: ✔ the forwarded upgrade cookie yields the session user sync maps to the socket (98.21457ms)
+@project-air/auth:test: ✔ a missing or expired session is 401 AUTH_REQUIRED, which sync rejects without data (70.412855ms)
+@project-air/auth:test: ✔ the tokenRef fallback validates through the test-mode header (non-browser clients) (12.971584ms)
+@project-air/contracts:test: ✔ every fixture has a canonical TypeScript result (8.74929ms)
+@project-air/contracts:test: ✔ the canonical TypeScript description is deterministic (9.082122ms)
+@project-air/contracts:test: ✔ the parity program compiles with the local C++ compiler (10968.910252ms)
+@project-air/contracts:test: ✔ TypeScript and C++ canonical results match for every fixture (14.065511ms)
+@project-air/contracts:test: ✔ a tampered canonical line is detected as a parity difference (0.391135ms)
+@project-air/contracts:test: ✔ invalid fixtures keep their validity verdict and model fields in the canonical form (0.565051ms)
+@project-air/contracts:test: ✔ plainText is derived deterministically from the structured body (16.552203ms)
+@project-air/contracts:test: ✔ the sync schema is versioned JSON Schema 2020-12 with one message union (18.221566ms)
+@project-air/contracts:test: ✔ every message type is documented with its direction and the required metadata (21.410271ms)
+@project-air/contracts:test: ✔ the index exports the sync schema, message table and fixture paths (1.104372ms)
+@project-air/contracts:test: ✔ every message type has a valid and an invalid fixture in the wrapper (45.762785ms)
+@project-air/contracts:test: ✔ every sync fixture names the sync schema and its validity (22.621252ms)
+@project-air/contracts:test: ✔ valid message fixtures use UUIDv7 ids and ISO-8601 timestamps (15.960284ms)
+@project-air/contracts:test: ✔ operation batches carry P1-02 operations through the operation schema reference (9.558166ms)
+@project-air/contracts:test: ✔ presence messages carry presence only, never operation data (29.14889ms)
+@project-air/contracts:test: ✔ message ids and sequence rules live in the envelope (1.575222ms)
+@project-air/contracts:test: ✔ no unknown message type matches the envelope (1.093305ms)
+@project-air/contracts:test: ✔ the reconnect sequence starts from a known serverSeq and ends with the snapshot (31.506222ms)
+@project-air/contracts:test: ✔ the session sequence keeps join order, sequences, duplicate batches and ack coverage (31.003058ms)
+@project-air/contracts:test: ✔ every acknowledged batch is durable before the client sees the ack (0.82089ms)
+@project-air/contracts:test: ✔ the board content in a snapshot is the root board-content document (9.08967ms)
+@project-air/contracts:test: ✔ P5-01: version negotiation, fresh-board serverSeq and reconnect ordering fixtures (16.519513ms)
+@project-air/contracts:test: ℹ tests 99
+@project-air/contracts:test: ℹ suites 0
+@project-air/contracts:test: ℹ pass 99
+@project-air/contracts:test: ℹ fail 0
+@project-air/contracts:test: ℹ cancelled 0
+@project-air/contracts:test: ℹ skipped 0
+@project-air/contracts:test: ℹ todo 0
+@project-air/contracts:test: ℹ duration_ms 12378.643765
+@project-air/auth:test: ✔ mints the documented three-part token and verifies it (6.298747ms)
+@project-air/auth:test: ✔ rejects a tampered signature and another secret (0.507181ms)
+@project-air/auth:test: ✔ rejects an expired token (0.361052ms)
+@project-air/auth:test: ✔ rejects malformed tokens (0.313574ms)
+@project-air/auth:test: ✔ rejects an invalid account id and an out-of-range TTL (0.494054ms)
+@project-air/auth:test: ✔ the header name and the deterministic test profile are stable (0.323545ms)
+@project-air/auth:test: ℹ tests 63
+@project-air/auth:test: ℹ suites 0
+@project-air/auth:test: ℹ pass 63
+@project-air/auth:test: ℹ fail 0
+@project-air/auth:test: ℹ cancelled 0
+@project-air/auth:test: ℹ skipped 0
+@project-air/auth:test: ℹ todo 0
+@project-air/auth:test: ℹ duration_ms 3862.955618
+@project-air/web:test: ✔ toolbar has groups, one primary accent tool and a default active tool (18.63051ms)
+@project-air/web:test: ✔ view camera clamps zoom and rejects foreign/corrupt records (3.116977ms)
+@project-air/web:test: ✔ backend selection defaults to WebGL2 and fails closed without an adapter (0.250858ms)
+@project-air/web:test: ✔ board titles are trimmed, non-empty and at most 120 characters (1.155038ms)
+@project-air/web:test: ✔ boards sort by updatedAt descending without mutating the input (1.336644ms)
+@project-air/web:test: ✔ dates format with Intl for the active language and invalid dates are empty (87.733631ms)
+@project-air/web:test: ✔ workspace selection uses the stored id when present, otherwise the first workspace (0.384954ms)
+@project-air/platform:test: {"time":"2026-10-29T17:16:37.193Z","level":"info","message":"migrations complete","applied":0,"skipped":6}
+@project-air/platform:test: ✔ F1: a note cannot be moved to another workspace, even by a writer of both (255.328028ms)
+@project-air/platform:test: ✔ F1: a board cannot be moved to another workspace, even by a writer of both (35.589111ms)
+@project-air/sdk:test: ✔ session.get uses GET /v1/session with credentials include (2.762069ms)
+@project-air/sdk:test: ✔ login/registration/recovery/logout hit the auth base with cookie mode and JSON bodies (1.546013ms)
+@project-air/sdk:test: ✔ error envelopes become typed ApiError with code/messageKey/requestId (1.199778ms)
+@project-air/sdk:test: ✔ session.get accepts the platform's flat {requestId, accountId} envelope (0.319758ms)
+@project-air/sdk:test: ✔ session.get rejects a 200 response without an account id (0.490882ms)
+@project-air/platform:test: ✔ F2: a member cannot be promoted to the owner role (21.432856ms)
+@project-air/web:test: ✔ the duplicated note is contract-valid with the board workspaceId and no extra fields (15.916145ms)
+@project-air/web:test: ✔ delete and reorder operations carry inverses and never empty metadata (0.686821ms)
+@project-air/platform:test: ✔ F2: an owner membership row cannot be inserted directly (24.000858ms)
+@project-air/platform:test: ✔ F5: as app_user, creating a workspace creates exactly one owner row (12.863433ms)
+@project-air/platform:test: ✔ F2: the owner of a workspace cannot be deleted, a member can (5.175348ms)
+@project-air/sync:test: ✔ a >1 MiB snapshot is delivered to a joining client (362.324741ms)
+@project-air/platform:test: ✔ F4: a malformed app.account_id yields no rows instead of an error (33.028148ms)
+@project-air/platform:test: ✔ F6: the contract minimum lengths are enforced (10.658072ms)
+@project-air/platform:test: ✔ F3: the helpers are executable by app_user only (7.11149ms)
+@project-air/platform:test: ✔ P3-06: the identity mapping helper returns one account id and the index is unique (5.05118ms)
+@project-air/platform:test: ✔ F3: the note/board helper does not answer for a foreign workspace (4.111941ms)
+@project-air/web:test: ✔ en and de catalogs have identical key sets (6.406119ms)
+@project-air/sdk:test: ✔ the default createDocument is a real CRDT document that applies remote operations (21.795493ms)
+@project-air/web:test: ✔ translate resolves nested keys and interpolates values (0.387648ms)
+@project-air/web:test: ✔ German is the default and a stored choice persists (0.238192ms)
+@project-air/web:test: ✔ keyboard map handles modifiers, delete, escape and arrows; fields suppress shortcuts (9.453793ms)
+@project-air/web:test: ✔ arrows group into one delta after the 300 ms burst (1.435851ms)
+@project-air/web:test: ✔ context menu model has the L12 items, shortcuts and disabled states (7.409334ms)
+@project-air/web:test: ✔ fractional z sits between neighbours and carries the previous z as inverse (0.428061ms)
+@project-air/engine:test: cache bypass, force executing a375b78d623c320f
+@project-air/sdk:test: BMSG {"id":"01a188a9-e4cf-70f4-8f02-e7042d8e1924","type":"presence","clientId":"0192f0fa-7000-7000-8000-0000000000a1","boardId":"0192f0a3-7000-70
+@project-air/platform:test: {"time":"2026-10-29T17:16:37.996Z","level":"info","message":"migrations complete","applied":0,"skipped":6}
+@project-air/sdk:test: BMSG {"id":"01a188a9-e4ea-77d5-bde0-df7d6d05dedc","type":"ack","clientId":"0192f0fa-7000-7000-8000-0000000000b1","boardId":"0192f0a3-7000-7000-80
+@project-air/web:test: ✔ add note is one group operation with createNote and createCard and the deletion inverse (13.746715ms)
+@project-air/web:test: ✔ the inverse deletes exactly the created card and note (1.059233ms)
+@project-air/web:test: ✔ a new card is placed above every existing card (0.289215ms)
+@project-air/sdk:test: BMSG {"id":"01a188a9-e547-7da5-9aa8-d7ce0ef8befc","type":"presence","clientId":"0192f0fa-7000-7000-8000-0000000000a1","boardId":"0192f0a3-7000-70
+@project-air/sdk:test: BMSG {"id":"01a188a9-e54f-7b15-b191-1bd9eaf2e23d","type":"operationBatch","clientId":"0192f0fa-7000-7000-8000-0000000000a1","boardId":"0192f0a3-7
+@project-air/engine:test: $ node --test test/*.test.mjs
+@project-air/platform:test: ✔ returns null and no rows when app.account_id is unset (295.636791ms)
+@project-air/platform:test: ✔ does not leak app.account_id into the next transaction (26.599052ms)
+@project-air/platform:test: ✔ a member sees only rows of their own workspaces (36.578026ms)
+@project-air/platform:test: ✔ the owner sees the membership list of their workspace only (18.141914ms)
+@project-air/platform:test: ✔ an account cannot insert rows into a foreign workspace (19.482851ms)
+@project-air/platform:test: ✔ an account cannot create a workspace for somebody else (6.848176ms)
+@project-air/platform:test: ✔ an owner can write, delete and manage membership (20.01155ms)
+@project-air/platform:test: ✔ an editor can write but cannot manage the workspace (22.375651ms)
+@project-air/platform:test: ✔ an editor cannot claim board ownership for somebody else (7.277687ms)
+@project-air/platform:test: ✔ a reader can only read (19.120129ms)
+@project-air/platform:test: ✔ a card cannot attach a note from a foreign workspace (12.102419ms)
+@project-air/web:test: ✔ one body save is exactly one updateNoteBody operation whose inverse is the previous body (8.322406ms)
+@project-air/web:test: ✔ a title change is exactly one updateNote whose inverse is the previous title (0.970276ms)
+@project-air/web:test: ✔ one save batches at most one body and one title operation through the one writer (1.314697ms)
+@project-air/platform:test: ✔ the owner membership row cannot be changed or removed (31.559099ms)
+@project-air/web:test: ✔ a body-only save sends exactly one updateNoteBody; a title-only save exactly one updateNote (1.48296ms)
+@project-air/web:test: ✔ the autosave value round-trips the title and the contract body (0.634046ms)
+@project-air/web:test: ✔ contract limit and rejection errors surface honestly and send nothing (1.083534ms)
+@project-air/web:test: ✔ a changed invalid title writes nothing while an unchanged stored title is kept (0.376701ms)
+@project-air/platform:test: ✔ profiles are visible and writable only for the owning account (10.629119ms)
+@project-air/web:test: ✔ a card resolves its one referenced note (AD-4, never duplicated) (6.309214ms)
+@project-air/web:test: ✔ a card whose note is gone yields the missing state, not a new note (1.475219ms)
+@project-air/web:test: ✔ a missing, absent or invalid note body falls back to the contract empty body (5.182498ms)
+@project-air/web:test: ✔ only an empty note focuses its editor on open (L06) (2.344834ms)
+@project-air/web:test: ✔ note titles are trimmed, non-empty and at most 300 characters (L09) (3.937967ms)
+@project-air/web:test: ✔ the panel is 400 px with a 12 px gap and full width at a 390 px viewport (9.907154ms)
+@project-air/web:test: ✔ the L04 state machine has closed/opening/open/closing transitions (0.291309ms)
+@project-air/web:test: ✔ a card that is already clear of the panel never moves the view (0.295723ms)
+@project-air/web:test: ✔ a card under the panel is panned 24 px left of it in one transient camera (0.266274ms)
+@project-air/web:test: ✔ the pan respects zoom and never applies to the full-width mobile panel (0.201182ms)
+@project-air/web:test: ✔ the panel pan is 300 ms and respects reduced motion (0.147865ms)
+@project-air/engine:test: ✔ the 48 px band from tokens::space_48 only pans inside the band (2.412237ms)
+@project-air/engine:test: ✔ the speed ramps monotonically from 0 at the inner edge to a bounded maximum (0.529911ms)
+@project-air/engine:test: ✔ the direction follows the pointer on every edge and corner (0.402514ms)
+@project-air/engine:test: ✔ no drag or no time delta produces no pan (0.25814ms)
+@project-air/engine:test: ✔ the time-based ramp is deterministic and scales with the delta (0.317451ms)
+@project-air/engine:test: ✔ while a drag runs, the camera pans and the preview follows the pointer (1.622569ms)
+@project-air/engine:test: ✔ a cancelled drag stops the loop, reverts and writes no operation (0.423962ms)
+@project-air/engine:test: ✔ no loop starts without a drag or outside the band (0.239396ms)
+@project-air/engine:test: ✔ the reason and backend code tables are stable (14.288997ms)
+@project-air/engine:test: ✔ no navigator.gpu: the browser probe reports webgpu-unavailable (0.449278ms)
+@project-air/engine:test: ✔ adapter null and adapter rejection map to adapter-null and webgpu-unavailable (0.575039ms)
+@project-air/engine:test: ✔ device rejection maps to device-rejected without keeping a device (0.643482ms)
+@project-air/web:test: ✔ browser hello carries an opaque contract-valid token reference, never a token (2.360079ms)
+@project-air/web:test: ✔ same-origin sync URL follows the page protocol and host (0.188358ms)
+@project-air/web:test: ✔ connection state maps SDK status to connecting/joined/offline/error (0.221662ms)
+@project-air/web:test: ✔ only an AUTH_REQUIRED reject is terminal session expiry (0.153638ms)
+@project-air/web:test: ✔ presence colours use tokens and fall back to a token, never a raw colour (1.122105ms)
+@project-air/web:test: ✔ presence labels come from the server nameRef, not from client text (0.248209ms)
+@project-air/web:test: ✔ remote cursors fade after 5 s and project into screen space with clipping (1.17487ms)
+@project-air/web:test: ✔ remote selection resolves known ids and skips removed objects (1.713315ms)
+@project-air/web:test: ✔ L05 status maps saving/saved/error/offline/session-expiry honestly (0.880006ms)
+@project-air/web:test: ✔ Saved disappears exactly after 2 s (0.516428ms)
+@project-air/engine:test: ✔ the probe timeout is bounded and returns probe-timeout (34.162595ms)
+@project-air/engine:test: ✔ a successful probe records the adapter identity and destroys the probe device (3.094578ms)
+@project-air/engine:test: ✔ explicit webgl2 creates WebGL2 without probing (0.46489ms)
+@project-air/engine:test: ✔ auto prefers WebGPU when the probe passes (5.240322ms)
+@project-air/engine:test: ✔ auto falls back to WebGL2 on every probe failure with its reason (0.857516ms)
+@project-air/engine:test: ✔ auto falls back when the WebGPU renderer creation fails, with renderer-create-failed (0.408524ms)
+@project-air/engine:test: ✔ explicit webgpu without capability fails cleanly with the probe reason (0.903984ms)
+@project-air/engine:test: ✔ explicit webgpu with capability creates WebGPU; creation failure is a clean error (0.390934ms)
+@project-air/engine:test: ✔ a failing WebGL2 creation fails cleanly as webgl2-unavailable (13.337707ms)
+@project-air/web:test: ✔ every required route exists with message-backed title and body keys (3.876446ms)
+@project-air/web:test: ✔ route helpers stay pure and encode board ids (0.349442ms)
+@project-air/engine:test: ✔ the in-memory fake stores isolated copies and rejects duplicates (1.665317ms)
+@project-air/engine:test: ✔ the fake writes geometry, z and removals and rejects unknown ids (0.594369ms)
+@project-air/engine:test: ✔ the fake snapshot is canonical and changes only on writes (1.042244ms)
+@project-air/engine:test: ✔ the bridge adapter maps contract ids to slots and projects to the engine (0.732898ms)
+@project-air/engine:test: ✔ an operation and its inverse round-trip through the bridge adapter (1.537388ms)
+@project-air/engine:test: ✔ the logic layer imports the bridge for types only and uses no DOM or network (1.648973ms)
+@project-air/web:test: ✔ the display name wins, then the e-mail, then a short account-id fragment (1.271526ms)
+@project-air/sync:test: ✔ live presence: throttled, identity-derived, isolated, cleaned up and never blocking operations (826.282604ms)
+@project-air/sdk:test: DEBUG aSeq=3 bSeq=3 updates=1 aOwn=1 aOffline=0 aErr=null aX=123 bX=123
+@project-air/sdk:test: BMSG {"id":"01a188a9-e87c-7828-82c7-9c47c5100362","type":"operationBatch","clientId":"0192f0fa-7000-7000-8000-0000000000a1","boardId":"0192f0a3-7
+@project-air/sdk:test: stack proof evidence: reviews/evidence/P5-07-stack-20261029T171638Z.json
+@project-air/web:test: ✔ login validation mirrors the server rules (1.961163ms)
+@project-air/web:test: ✔ registration requires email, display name and at least 8 password characters (0.31472ms)
+@project-air/web:test: ✔ recovery validates the email and maps typed errors to message keys (0.351187ms)
+@project-air/sdk:test: ✔ offline clients converge over the real stack and undo reverts only the client's own op (1777.040769ms)
+@project-air/web:test: ℹ tests 53
+@project-air/web:test: ℹ suites 0
+@project-air/web:test: ℹ pass 53
+@project-air/web:test: ℹ fail 0
+@project-air/web:test: ℹ cancelled 0
+@project-air/web:test: ℹ skipped 0
+@project-air/web:test: ℹ todo 0
+@project-air/web:test: ℹ duration_ms 2396.031831
+@project-air/sdk:test: ✔ handshake sends hello first, then joinBoard; welcome/snapshot install the document (3.744199ms)
+@project-air/sdk:test: ✔ operation batches are sent with a per-connection seq; acks advance only forward (1.47633ms)
+@project-air/sdk:test: ✔ offline operations queue in order and flush on join; duplicate remote batches apply once (6.915743ms)
+@project-air/sdk:test: ✔ a dropped socket reconnects with backoff and resyncs from the last serverSeq (0.812506ms)
+@project-air/sdk:test: ✔ close is idempotent and leaves the board once (0.560589ms)
+@project-air/sdk:test: ✔ autosave debounces 400 ms after the last keystroke, saves once and reports saving -> saved (0.676781ms)
+@project-air/sdk:test: ✔ the five flush triggers save immediately and visibility only flushes when hidden (0.633462ms)
+@project-air/sdk:test: ✔ stale autosave responses never overwrite newer values; error -> retry (0.551959ms)
+@project-air/sdk:test: ✔ outgoing messages validate against sync.schema.json and ids are unique UUIDv7 (8.65108ms)
+@project-air/sdk:test: ✔ an injected authenticated clientId is used unchanged and must be a UUIDv7 (0.794801ms)
+@project-air/sdk:test: ✔ presence updates are throttled/coalesced and remote participants subscribe and clear (0.846021ms)
+@project-air/sdk:test: ✔ undoOwn applies only the client's own inverse; remote operations are never recorded (0.703307ms)
+@project-air/sdk:test: ✔ browser offline keeps unacknowledged operations, does not reconnect in a loop and flushes them on online (0.603228ms)
+@project-air/sdk:test: ✔ workspaces.list sends the session and requestId and parses the list envelope (86.820127ms)
+@project-air/sdk:test: ✔ a cookie session is sent as the cookie header (13.996359ms)
+@project-air/sdk:test: ✔ a string session is shorthand for the test session header (16.261361ms)
+@project-air/sdk:test: ✔ workspace create/get/update/delete use the contract envelopes (84.964043ms)
+@project-air/sdk:test: ✔ boards list/create/get/update/delete (51.389689ms)
+@project-air/sdk:test: ✔ notes list/create/get/update/delete (26.197711ms)
+@project-air/sdk:test: ✔ cards list/create/get/update/delete (34.735438ms)
+@project-air/sdk:test: ✔ pagination nextCursor is passed back as the cursor query (34.759654ms)
+@project-air/sdk:test: ✔ no session maps to a typed AUTH_REQUIRED ApiError (16.425573ms)
+@project-air/sdk:test: ✔ a validation error exposes the field paths (9.685192ms)
+@project-air/sdk:test: ✔ a conflict maps to CONFLICT and unknown ids to NOT_FOUND (21.331569ms)
+@project-air/sdk:test: ✔ an unexpected success envelope becomes an INTERNAL ApiError (21.465293ms)
+@project-air/sdk:test: ✔ an invalid baseUrl is rejected by the client (8.122646ms)
+@project-air/sdk:test: ℹ tests 33
+@project-air/sdk:test: ℹ suites 0
+@project-air/sdk:test: ℹ pass 33
+@project-air/sdk:test: ℹ fail 0
+@project-air/sdk:test: ℹ cancelled 0
+@project-air/sdk:test: ℹ skipped 0
+@project-air/sdk:test: ℹ todo 0
+@project-air/sdk:test: ℹ duration_ms 2465.234843
+@project-air/engine:test: ✔ one undo applies exactly one stored inverse; redo re-applies it (3.1966ms)
+@project-air/engine:test: ✔ a new operation clears the redo branch (0.374323ms)
+@project-air/engine:test: ✔ the depth stays at 20 and the oldest entry is dropped (0.955855ms)
+@project-air/engine:test: ✔ an empty history is a no-op (0.215798ms)
+@project-air/engine:test: ✔ the keyboard routes Cmd/Ctrl+Z and its Shift variant only outside fields (1.149749ms)
+@project-air/platform:test: {"time":"2026-10-29T17:16:39.037Z","level":"info","message":"migrations complete","applied":0,"skipped":6}
+@project-air/engine:test: ✔ the hint label and the 3 s timing are documented (0.152388ms)
+@project-air/engine:test: ✔ anchor math maps world to CSS px through the camera (2.282789ms)
+@project-air/engine:test: ✔ the anchor is independent of the device pixel ratio (0.281606ms)
+@project-air/engine:test: ✔ a field hides when its object leaves the viewport (0.414775ms)
+@project-air/engine:test: ✔ a stale camera or viewport returns a hidden rectangle instead of throwing (3.81783ms)
+@project-air/engine:test: ✔ focus order wraps at both ends (4.061956ms)
+@project-air/engine:test: ✔ Enter inserts a new entry directly below the focused one (0.311185ms)
+@project-air/engine:test: ✔ Tab and Shift+Tab move focus with the wrap rule (0.167057ms)
+@project-air/engine:test: ✔ Backspace removes only an empty entry and focuses the previous (0.283658ms)
+@project-air/engine:test: ✔ every other key stays in the field, and an invalid index emits nothing (0.2308ms)
+@project-air/engine:test: ✔ the inline policy writes nothing (0.490463ms)
+@project-air/engine:test: ✔ the colour field is the 24 px token value (5.392882ms)
+@project-air/engine:test: ✔ the playground colour field uses the token, not a raw 24 px value (0.811089ms)
+@project-air/engine:test: ✔ field pointer events stop at the field and never prevent the wheel default (1.783655ms)
+@project-air/platform:test: {"time":"2026-10-29T17:16:39.179Z","level":"info","message":"migrations complete","applied":0,"skipped":6}
+@project-air/platform:test: ✔ applies the migrations once and records every version with its checksum (270.545354ms)
+@project-air/platform:test: ✔ creates the six application tables with the expected columns and types (20.360433ms)
+@project-air/platform:test: ✔ uses the contract enums for roles and board visibility (6.455069ms)
+@project-air/platform:test: ✔ has the primary keys, check constraints, foreign-key delete rules and indexes (15.514229ms)
+@project-air/engine:test: ✔ the input layer enforces the token values of L03 (1.979828ms)
+@project-air/engine:test: ✔ 3.9 px is a click, 4.1 px crosses the threshold (0.235298ms)
+@project-air/engine:test: ✔ a release below the threshold is a click that writes nothing (9.100818ms)
+@project-air/platform:test: ✔ enables and forces row-level security on every table (2.774484ms)
+@project-air/engine:test: ✔ a drag starts once at the threshold and follows the pointer 1:1 (0.76417ms)
+@project-air/engine:test: ✔ a note card drags on its whole body, blocks and zones only on the header (0.803766ms)
+@project-air/engine:test: ✔ field, button, editable and scrollable targets are suppressed (0.688459ms)
+@project-air/engine:test: ✔ cursors map to grab, grabbing, text and default (0.802808ms)
+@project-air/engine:test: ✔ the header hover surface applies to block/zone headers only (0.616409ms)
+@project-air/platform:test: ✔ has a policy for every operation of the permission matrix, bound to app_user (4.536523ms)
+@project-air/engine:test: ✔ a second pointer cancels the drag and pinches instead (0.97804ms)
+@project-air/engine:test: ✔ a cancelled drag is reverted without an operation (0.670216ms)
+@project-air/engine:test: ✔ the right button and the wheel do not drag the board (0.39448ms)
+@project-air/engine:test: ✔ panning is view-only and writes no operation (0.353376ms)
+@project-air/engine:test: ✔ one completed drag is one move operation with its inverse through the seam (5.765756ms)
+@project-air/engine:test: ✔ a click or a cancel on the seam writes no operation and no history (0.503213ms)
+@project-air/engine:test: ✔ the 200 % state keeps the same token rule set (0.200572ms)
+@project-air/engine:test: ✔ a drag previews and commits the snapped position from the host (5.088236ms)
+@project-air/engine:test: ✔ Shift asks the host for a free position and commits the pointer position (1.569171ms)
+@project-air/engine:test: ✔ panning and zooming never request a snap (0.953777ms)
+@project-air/platform:test: ✔ gives app_user CRUD grants but no superuser, bypass or table ownership (50.151745ms)
+@project-air/engine:test: ✔ the shortcut map routes only the L12 intents (7.699765ms)
+@project-air/engine:test: ✔ field focus blocks every shortcut but keeps Escape (0.285753ms)
+@project-air/engine:test: ✔ Ctrl/Cmd+D, delete and Esc keep the documented precedence (0.216142ms)
+@project-air/engine:test: ✔ an arrow series accumulates 16/160 px and commits once after 300 ms (0.280334ms)
+@project-air/engine:test: ✔ the menu model opens, wraps with arrows, activates and closes (0.320504ms)
+@project-air/engine:test: ✔ duplicate is one create operation at +16/+16, same note (AD-4 note-once) (5.803429ms)
+@project-air/engine:test: ✔ an arrow series is one keyboard-nudge gesture -> one move operation with inverse (0.625873ms)
+@project-air/platform:test: ✔ creating a workspace creates the owner membership atomically (14.073926ms)
+@project-air/platform:test: ▶ rejects invalid rows
+@project-air/platform:test:   ✔ an orphan board (2.83453ms)
+@project-air/platform:test:   ✔ a workspace with a missing owner profile (1.860658ms)
+@project-air/platform:test:   ✔ a card without a note (2.005217ms)
+@project-air/platform:test:   ✔ a card with a note from another workspace (11.906695ms)
+@project-air/platform:test:   ✔ a card below the minimum size (8.3297ms)
+@project-air/platform:test:   ✔ a card with an invalid fractional z (5.749415ms)
+@project-air/platform:test:   ✔ a note title above the contract limit (2.972629ms)
+@project-air/platform:test:   ✔ a workspace name above the contract limit (4.461834ms)
+@project-air/platform:test:   ✔ a display name above the contract limit (1.546949ms)
+@project-air/platform:test:   ✔ an unknown locale (1.862041ms)
+@project-air/platform:test:   ✔ a duplicate membership (1.939418ms)
+@project-air/platform:test:   ✔ removing or demoting the owner membership (3.194659ms)
+@project-air/platform:test:   ✔ transferring workspace ownership (1.781299ms)
+@project-air/platform:test:   ✔ deleting a note that still has cards (1.959852ms)
+@project-air/platform:test:   ✔ deleting a board cascades its cards and keeps the note (11.57678ms)
+@project-air/platform:test:   ✔ deleting a workspace cascades every child row (9.507375ms)
+@project-air/platform:test: ✔ rejects invalid rows (82.218314ms)
+@project-air/platform:test: {"time":"2026-10-29T17:16:39.453Z","level":"info","message":"migration applied","version":"0004_account_mapping","name":"0004_account_mapping.sql"}
+@project-air/platform:test: {"time":"2026-10-29T17:16:39.454Z","level":"info","message":"migrations complete","applied":1,"skipped":5}
+@project-air/engine:test: ✔ keyAfter forms a strictly greater key in the engine's lexicographic order (3.766812ms)
+@project-air/engine:test: ✔ keys stay ordered far beyond float precision (0.331068ms)
+@project-air/engine:test: ✔ bring to front is one reorder above the layer's highest key and its inverse restores it (3.74617ms)
+@project-air/engine:test: ✔ the layer is the object kind: a card's front key ignores zone keys (0.328024ms)
+@project-air/engine:test: ✔ an equal key loses the insertion-order tie, so it still gets a new key (0.657803ms)
+@project-air/engine:test: ✔ an object already strictly on top, or alone in its layer, yields no operation (0.208389ms)
+@project-air/engine:test: ✔ a zone comes to the front of the zone layer only (0.660982ms)
+@project-air/engine:test: ✔ a reload from the stored keys reproduces the front order (0.291635ms)
+@project-air/engine:test: ✔ a reorder for an unknown item is rejected without a write (0.959074ms)
+@project-air/platform:test: ✔ P3-06: migration 0004 backfills the mapping only for legacy non-v7 account ids (80.27422ms)
+@project-air/platform:test: ▶ P4-26: a card parent is a zone of the same board, and zones are not nested
+@project-air/platform:test:   ✔ zones carry no parent column and the card key is composite with SET NULL (zone_id) (27.810542ms)
+@project-air/platform:test:   ✔ a card in a zone of its own board is accepted (4.726391ms)
+@project-air/platform:test:   ✔ a zone of another board, an unknown id and a card id are rejected (14.12428ms)
+@project-air/platform:test:   ✔ deleting a zone keeps its cards on the board (6.401855ms)
+@project-air/platform:test:   ✔ deleting a board cascades its zones and zoned cards (6.332008ms)
+@project-air/platform:test:   ✔ a zone cannot move to another board (3.084415ms)
+@project-air/platform:test:   ✔ the contract zone limits are enforced (3.358728ms)
+@project-air/platform:test: ✔ P4-26: a card parent is a zone of the same board, and zones are not nested (67.645961ms)
+@project-air/sync:test: ✔ the built production entry starts, resolves the built CRDT and shuts down (496.555921ms)
+@project-air/platform:test: {"time":"2026-10-29T17:16:39.603Z","level":"info","message":"migration applied","version":"0005_zone_containers","name":"0005_zone_containers.sql"}
+@project-air/platform:test: {"time":"2026-10-29T17:16:39.603Z","level":"info","message":"migrations complete","applied":1,"skipped":5}
+@project-air/platform:test: {"time":"2026-10-29T17:16:39.638Z","level":"info","message":"migrations complete","applied":0,"skipped":6}
+@project-air/platform:test: ✔ P4-26: migration 0005 upgrades a 0004 database and drops unresolvable parents (112.258203ms)
+@project-air/engine:test: ✔ a plain click replaces the selection, Shift-click toggles add and remove (3.173824ms)
+@project-air/engine:test: ✔ a plain empty click clears the selection, Esc clears it too (0.681054ms)
+@project-air/engine:test: ✔ a Shift-drag on empty canvas draws a band and selects by intersection (1.265531ms)
+@project-air/engine:test: ✔ a plain drag on empty canvas still pans and draws no band (0.344381ms)
+@project-air/engine:test: ✔ the world-space band rule is bounds intersection, not containment (0.524576ms)
+@project-air/engine:test: ✔ a joint drag previews and commits once, and the selection survives (0.809171ms)
+@project-air/engine:test: ✔ dragging an unselected object makes it the sole selection (0.328914ms)
+@project-air/engine:test: ✔ a cancelled joint drag restores every member and writes nothing (0.294474ms)
+@project-air/engine:test: ✔ the joint drag snap moves every member by the snapped delta (2.052506ms)
+@project-air/engine:test: ✔ one selection delete is exactly one group operation with an inverse (1.520247ms)
+@project-air/engine:test: ✔ a joint drag is exactly one group operation with an inverse (1.865756ms)
+@project-air/engine:test: ✔ an empty selection delete and a duplicate member are rejected (0.55458ms)
+@project-air/engine:test: ✔ a single drag yields exactly one moveCard operation and its inverse restores the card (11.548723ms)
+@project-air/engine:test: ✔ a move onto the current position is a no-op without an operation (0.289323ms)
+@project-air/engine:test: ✔ a keyboard nudge series is batched into one move operation (1.005893ms)
+@project-air/engine:test: ✔ a group drag is exactly one group operation, not one per object (4.931882ms)
+@project-air/engine:test: ✔ an empty or unchanged group drag yields no operation (0.255431ms)
+@project-air/engine:test: ✔ a group drag rejects the same object twice (0.542276ms)
+@project-air/engine:test: ✔ a resize builds resizeCard and restores the previous card size (11.002688ms)
+@project-air/engine:test: ✔ resize rejects sizes below the contract minimum before writing (0.436386ms)
+@project-air/engine:test: ✔ a create builds one createCard operation with a deleteCard inverse (3.53138ms)
+@project-air/engine:test: ✔ create rejects a card or zone below its minimum size and an empty zone title (2.868758ms)
+@project-air/engine:test: ✔ create rejects a non-finite draft position for every object kind (0.664837ms)
+@project-air/engine:test: ✔ create builds a zone and a block with exactly the contract minimum size (1.57086ms)
+@project-air/engine:test: ✔ delete stores the whole card and its createCard inverse restores it (1.08922ms)
+@project-air/engine:test: ✔ deleting an object that is already gone is rejected (1.929479ms)
+@project-air/engine:test: ✔ unknown and malformed object ids are rejected without a write (0.286367ms)
+@project-air/engine:test: ✔ an invalid session context is rejected before any operation (0.218976ms)
+@project-air/engine:test: ✔ an operation survives a contract-native JSON round trip (8.12314ms)
+@project-air/engine:test: ✔ a new object starts at the snapped view centre on the 16 px grid (4.101601ms)
+@project-air/engine:test: ✔ an overlapping visible object cascades the candidate 32 px right and down (0.836539ms)
+@project-air/engine:test: ✔ the cascade never exceeds ten attempts and returns the tenth candidate (0.860741ms)
+@project-air/engine:test: ✔ only visible objects block the candidate (0.444547ms)
+@project-air/engine:test: ✔ the result is clamped inside the visible area and stays on the grid (0.535115ms)
+@project-air/engine:test: ✔ the placement is deterministic and independent of zoom except for the visible bounds (0.42344ms)
+@project-air/engine:test: ✔ five consecutive creates through the seam give five visible, non-overlapping cards (12.243044ms)
+@project-air/sync:test: ✔ hello is required first and the first message rejection is explicit (1.720963ms)
+@project-air/sync:test: ✔ version and session validation reject before joinBoard (0.797851ms)
+@project-air/sync:test: ✔ the platform authorizer gates joinBoard and welcome/snapshot carry the durable seq (0.924847ms)
+@project-air/sync:test: ✔ operationBatch is persisted before the ack and the ack carries the new seq (3.353993ms)
+@project-air/sync:test: ✔ a failed append produces a reject and never an ack (0.837687ms)
+@project-air/sync:test: ✔ resyncRequest reads from the durable seq and leaveBoard broadcasts presence (0.724525ms)
+@project-air/platform:test: ✔ wraps `data` in {requestId, data} and mirrors the UUIDv7 id in the header (50.372302ms)
+@project-air/engine:test: ✔ the handle hit area is 8 screen px and zoom-independent (7.321129ms)
+@project-air/platform:test: ✔ sends a `body` envelope unchanged and matches path parameters (14.725347ms)
+@project-air/engine:test: ✔ cursors and anchors follow the handle role (1.027618ms)
+@project-air/engine:test: ✔ the opposite edge/corner stays anchored and sizes snap to 16 px (0.459872ms)
+@project-air/engine:test: ✔ the minima clamp every type, and a zone keeps its member extent + 16 px (0.521244ms)
+@project-air/engine:test: ✔ a resize gesture is exactly one operation with an inverse (1.37667ms)
+@project-air/engine:test: ✔ a west/north handle commits one group of the resize and the anchoring move (0.662704ms)
+@project-air/engine:test: ✔ the seam rejects sizes below the type minimum and the zone content minimum (1.064836ms)
+@project-air/engine:test: ✔ the resized size survives a snapshot round trip (0.400252ms)
+@project-air/engine:test: ✔ pressing a handle previews and commits exactly one resize; cancel restores (2.131493ms)
+@project-air/platform:test: ✔ keeps a valid UUIDv7 client request id and replaces anything else (20.244093ms)
+@project-air/platform:test: ✔ returns 404 for an unknown path and 405 for a known path with a wrong method (13.215086ms)
+@project-air/engine:test: ✔ the zoom buckets are the documented 25/50/100/200/400 percent set (2.054027ms)
+@project-air/engine:test: ✔ the raster scale is the bucket times the DPR, capped at 4x (0.73816ms)
+@project-air/engine:test: ✔ a session rasterises a bounded number of atlas scales (1.87499ms)
+@project-air/engine:test: ✔ a zoom inside a bucket keeps the same raster scale (0.188122ms)
+@project-air/platform:test: ✔ reads a JSON body and wraps the result (18.514061ms)
+@project-air/engine:test: ✔ a saved view is restored for the same board and device (6.180906ms)
+@project-air/engine:test: ✔ boards and devices keep separate entries (0.33168ms)
+@project-air/engine:test: ✔ invalid JSON, wrong version and foreign/unknown records are ignored (0.355275ms)
+@project-air/engine:test: ✔ the zoom is clamped to 0.1 … 8 on read and write (0.23786ms)
+@project-air/engine:test: ✔ throwing getters/setters and quota errors fall back safely (0.421348ms)
+@project-air/engine:test: ✔ restore never writes; a valid save contains the versioned record (0.316071ms)
+@project-air/engine:test: ✔ the device fingerprint is a coarse viewport class + DPR (0.281361ms)
+@project-air/platform:test: ✔ rejects invalid JSON, non-JSON content types and oversized bodies (28.2709ms)
+@project-air/platform:test: ✔ a custom status and headers are preserved, and an empty result is 204 (8.59571ms)
+@project-air/platform:test: ✔ an unexpected error becomes a generic INTERNAL envelope (10.390479ms)
+@project-air/platform:test: ℹ tests 83
+@project-air/platform:test: ℹ suites 0
+@project-air/platform:test: ℹ pass 83
+@project-air/platform:test: ℹ fail 0
+@project-air/platform:test: ℹ cancelled 0
+@project-air/platform:test: ℹ skipped 0
+@project-air/platform:test: ℹ todo 0
+@project-air/platform:test: ℹ duration_ms 6726.467944
+@project-air/engine:test: ✔ a plain two-finger wheel pans 1:1 with the delta (2.382202ms)
+@project-air/engine:test: ✔ Cmd/Ctrl+wheel zooms around the pointer and clamps at both limits (0.390278ms)
+@project-air/engine:test: ✔ the pointer world anchor stays stable for the zoom at several levels (0.52951ms)
+@project-air/engine:test: ✔ a suppressed target or an active drag never moves the view (0.290262ms)
+@project-air/engine:test: ✔ wheelGesture routes pan/zoom through the existing view callbacks (0.482071ms)
+@project-air/engine:test: ✔ two-pointer pinch zooms around the midpoint (0.627671ms)
+@project-air/engine:test: ✔ an active object drag consumes the wheel without a camera update (1.081835ms)
+@project-air/engine:test: ✔ grouping starts at 20 % overlap or 16 px, and 32 px contact keeps it (5.239098ms)
+@project-air/engine:test: ✔ presentation look: dashed while grouping, dashed and dimmed when emptied (1.194222ms)
+@project-air/engine:test: ✔ default titles follow the playground language (0.592763ms)
+@project-air/engine:test: ✔ rename normalises whitespace, emptiness and the 40-character limit (5.465507ms)
+@project-air/engine:test: ✔ the header stays 40 px and never scales with the frame (0.357232ms)
+@project-air/engine:test: ✔ the group layout places members with padding below the header (0.578598ms)
+@project-air/engine:test: ✔ grouping two free objects creates the zone in one operation with inverse (1.760196ms)
+@project-air/engine:test: ✔ a one-item zone wraps both members and keeps its title (0.459533ms)
+@project-air/engine:test: ✔ an emptied zone is removed as one undoable operation (1.693395ms)
+@project-air/engine:test: ✔ rename is one operation with inverse that restores the old title and members (0.805268ms)
+@project-air/engine:test: ✔ a rename to the same title writes nothing (0.280329ms)
+@project-air/engine:test: ✔ the zone inset is the 16 px space-16 token (1.43411ms)
+@project-air/engine:test: ✔ the drop helpers use the world-space centre and the topmost live zone (1.028455ms)
+@project-air/engine:test: ✔ a drop writes membership in the same single move operation (1.635008ms)
+@project-air/engine:test: ✔ dragging the centre out writes zoneId null in the same move operation (0.441743ms)
+@project-air/engine:test: ✔ a zone cannot be nested into another zone (0.86991ms)
+@project-air/engine:test: ✔ a zone drag with members is exactly one group operation with one inverse (0.60622ms)
+@project-air/engine:test: ✔ deleteZone keep-content is one operation whose inverse restores the members (0.742949ms)
+@project-air/engine:test: ✔ deleteZone delete-content is one operation whose inverse restores the members (0.565536ms)
+@project-air/engine:test: ✔ a selection delete with a zone is one group with the keep-content default (4.41098ms)
+@project-air/engine:test: ✔ a zone never shrinks below its content extent plus the 16 px inset (1.36565ms)
+@project-air/engine:test: ✔ membership survives a snapshot round trip (0.529342ms)
+@project-air/sync:test: ✔ a session accepts an updateNoteBody for a note another client created after it joined (82.595161ms)
+@project-air/engine:test: ✔ orientation follows the size-normalised offsets with 1.25 dominance (1.330003ms)
+@project-air/engine:test: ✔ a hold of half an item keeps the orientation (0.260559ms)
+@project-air/engine:test: ✔ order comes from the centre with the 12 px band (1.117925ms)
+@project-air/engine:test: ✔ the arrangement uses padding, gap and the 40 px header (0.517972ms)
+@project-air/engine:test: ✔ an arrangement that does not fit falls back without changing the request (0.471968ms)
+@project-air/engine:test: ✔ the release preview enters on the frame or 25 % coverage (0.547931ms)
+@project-air/engine:test: ✔ staying inside allows the 24 px catch margin, leaving shrinks the frame (0.310424ms)
+@project-air/engine:test: ✔ a placement against the drag-start positions becomes dock, reorder or orientation (0.200618ms)
+@project-air/engine:test: ✔ a release is exactly one group operation with one inverse (2.226085ms)
+@project-air/engine:test: ✔ a cancelled preview writes nothing (0.504508ms)
+@project-air/engine:test: ✔ reduced motion applies the end states instantly (0.235482ms)
+@project-air/engine:test: ℹ tests 176
+@project-air/engine:test: ℹ suites 0
+@project-air/engine:test: ℹ pass 176
+@project-air/engine:test: ℹ fail 0
+@project-air/engine:test: ℹ cancelled 0
+@project-air/engine:test: ℹ skipped 0
+@project-air/engine:test: ℹ todo 0
+@project-air/engine:test: ℹ duration_ms 2113.327015
+@project-air/sync:test: ✔ join/resync/compaction replay more than the 500-row page (4650.621008ms)
+@project-air/sync:test: restart harness evidence: /home/user/project-air-P6-12/reviews/evidence/P5-06-restart-20261029T171645Z.json
+@project-air/sync:test: ✔ restart, catch-up and snapshot compaction preserve every acked update (1240.836656ms)
+@project-air/sync:test: ✔ the browser cookie is validated through auth /session and mapped to the contract account id (36.205124ms)
+@project-air/sync:test: ✔ a UUIDv4 Kratos identity is resolved through the platform session route with the same cookie (16.761551ms)
+@project-air/sync:test: ✔ the tokenRef test-mode path is forwarded as x-test-session, not as a cookie (7.556743ms)
+@project-air/sync:test: ✔ a rejected or unreachable auth service denies without leaking the cookie (6.469128ms)
+@project-air/sync:test: ✔ the platform board check receives the session cookie and returns the allow/deny decision (5.852393ms)
+@project-air/sync:test: ✔ credentialHeaders prefers the browser cookie and never invents credentials (0.378029ms)
+@project-air/sync:test: ✔ a browser cookie on the upgrade authenticates the socket; missing or foreign cookies are rejected without data (30.03464ms)
+@project-air/sync:test: ✔ the tokenRef path is still handed to the authenticator for test/non-browser clients (5.50765ms)
+@project-air/sync:test: ✔ encodeFrame produces a valid 127-length frame for a 1.5 MiB outbound payload (3.995461ms)
+@project-air/sync:test: ✔ the default inbound bound still rejects >1 MiB frames (2.364598ms)
+@project-air/sync:test: ✔ the handshake accept value matches the RFC 6455 vector (1.714055ms)
+@project-air/sync:test: ✔ masked client frames decode and unmasked/reserved frames are rejected (0.835393ms)
+@project-air/sync:test: ✔ fragmentation reassembles and enforces the bounded size (0.850543ms)
+@project-air/sync:test: ✔ ping is answered with pong and close ends the connection (1.083816ms)
+@project-air/sync:test: ✔ an oversized declared frame closes with 1009 before allocating it (0.367513ms)
+@project-air/sync:test: ℹ tests 29
+@project-air/sync:test: ℹ suites 0
+@project-air/sync:test: ℹ pass 29
+@project-air/sync:test: ℹ fail 0
+@project-air/sync:test: ℹ cancelled 0
+@project-air/sync:test: ℹ skipped 0
+@project-air/sync:test: ℹ todo 0
+@project-air/sync:test: ℹ duration_ms 14911.773777
+
+ Tasks:    24 successful, 24 total
+Cached:    0 cached, 24 total
+  Time:    23.248s 
+
+$ turbo run test
+ WARNING  no output files found for task @project-air/auth#test. Please check your `outputs` key in `turbo.json`
+ WARNING  no output files found for task @project-air/contracts#test. Please check your `outputs` key in `turbo.json`
+ WARNING  no output files found for task @project-air/crdt#test. Please check your `outputs` key in `turbo.json`
+ WARNING  no output files found for task @project-air/design-check#test. Please check your `outputs` key in `turbo.json`
+ WARNING  no output files found for task @project-air/editor#build. Please check your `outputs` key in `turbo.json`
+ WARNING  no output files found for task @project-air/editor#test. Please check your `outputs` key in `turbo.json`
+ WARNING  no output files found for task @project-air/engine#test. Please check your `outputs` key in `turbo.json`
+ WARNING  no output files found for task @project-air/language-check#test. Please check your `outputs` key in `turbo.json`
+ WARNING  no output files found for task @project-air/platform#test. Please check your `outputs` key in `turbo.json`
+ WARNING  no output files found for task @project-air/release#test. Please check your `outputs` key in `turbo.json`
+ WARNING  no output files found for task @project-air/sdk#test. Please check your `outputs` key in `turbo.json`
+ WARNING  no output files found for task @project-air/sync#test. Please check your `outputs` key in `turbo.json`
+ WARNING  no output files found for task @project-air/test-kit#test. Please check your `outputs` key in `turbo.json`
+ WARNING  no output files found for task @project-air/ui-kit#build. Please check your `outputs` key in `turbo.json`
+ WARNING  no output files found for task @project-air/ui-kit#test. Please check your `outputs` key in `turbo.json`
+ WARNING  no output files found for task @project-air/web#test. Please check your `outputs` key in `turbo.json`

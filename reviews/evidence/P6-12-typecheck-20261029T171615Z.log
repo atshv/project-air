@@ -1,0 +1,41 @@
+$ TURBO_FORCE=1 pnpm typecheck
+[exit 0]
+
+
+   • turbo 2.11.10
+   • Packages in scope: @project-air/auth, @project-air/contracts, @project-air/crdt, @project-air/design-check, @project-air/editor, @project-air/engine, @project-air/language-check, @project-air/platform, @project-air/release, @project-air/sdk, @project-air/sync, @project-air/test-kit, @project-air/ui-kit, @project-air/web
+   • Running typecheck in 14 packages
+   • Remote caching disabled, using shared worktree cache
+
+@project-air/auth:typecheck: cache bypass, force executing c16c904e43154d8b
+@project-air/ui-kit:typecheck: cache bypass, force executing daf1ad182189a37f
+@project-air/engine:typecheck: cache bypass, force executing de3a95dd14aab7f1
+@project-air/crdt:build: cache bypass, force executing 740e4ec7247a32c2
+@project-air/contracts:typecheck: cache bypass, force executing f63d5efab5bf22cc
+@project-air/design-check:typecheck: cache bypass, force executing 7c292d08ae39eca9
+@project-air/test-kit:typecheck: cache bypass, force executing 8768f5a07fcc912f
+@project-air/editor:typecheck: cache bypass, force executing 2d6ec0f4fce4e086
+@project-air/platform:typecheck: cache bypass, force executing 11c1849fbe0bbcbd
+@project-air/crdt:typecheck: cache bypass, force executing 9c20704cda9395b5
+@project-air/design-check:typecheck: $ node --check check.mjs && node --check index.mjs && node --check test/design-check.test.mjs
+@project-air/engine:typecheck: $ tsc --noEmit --project tsconfig.json
+@project-air/contracts:typecheck: $ tsc --noEmit --project tsconfig.json
+@project-air/auth:typecheck: $ tsc --noEmit --project tsconfig.json
+@project-air/crdt:typecheck: $ tsc --noEmit --project tsconfig.json
+@project-air/ui-kit:typecheck: $ tsc --noEmit --project tsconfig.json
+@project-air/crdt:build: $ tsc --project tsconfig.build.json
+@project-air/test-kit:typecheck: $ tsc --noEmit --project tsconfig.json
+@project-air/editor:typecheck: $ tsc --noEmit --project tsconfig.json
+@project-air/platform:typecheck: $ tsc --noEmit --project tsconfig.json
+@project-air/sdk:typecheck: cache bypass, force executing ad58919c460cec83
+@project-air/sync:typecheck: cache bypass, force executing 4879e37c43ce7b85
+@project-air/web:typecheck: cache bypass, force executing b4702612f6003ad1
+@project-air/sync:typecheck: $ tsc --noEmit --project tsconfig.json
+@project-air/web:typecheck: $ tsc --noEmit --project tsconfig.json
+@project-air/sdk:typecheck: $ tsc --noEmit --project tsconfig.json
+
+ Tasks:    13 successful, 13 total
+Cached:    0 cached, 13 total
+  Time:    8.457s 
+
+$ turbo run typecheck && tsc -b tsconfig.json

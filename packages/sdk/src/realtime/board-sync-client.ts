@@ -86,6 +86,8 @@ export interface BoardSyncClient {
 }
 
 const ISO_NOW = (): string => new Date().toISOString();
+// Protocol ids and refs are strings; any other value counts as missing.
+const textOf = (value: unknown): string => (typeof value === "string" ? value : "");
 const UUID_V7 = /^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/;
 
 function resolveClientId(candidate: string | undefined): string {
@@ -107,16 +109,16 @@ export function createBoardSyncClient(options: BoardSyncClientOptions): BoardSyn
   let status: BoardSyncStatus = "idle";
   let serverSeq = 0;
   let clientSeq = 0;
-  let pending = new Map<string, { seq: number; operations: Record<string, unknown>[] }>();
+  const pending = new Map<string, { seq: number; operations: Record<string, unknown>[] }>();
   let queue: Record<string, unknown>[] = [];
-  let seenBatches = new Set<string>();
+  const seenBatches = new Set<string>();
   let reconnectAttempt = 0;
   let reconnectTimer: number | null = null;
   let closedByUser = false;
   let resumeFrom = 0;
   let suspended = false;
   let lastError: unknown = null;
-  let flushWaiters: (() => void)[] = [];
+  const flushWaiters: (() => void)[] = [];
   const participants = new Map<string, RemoteParticipant>();
   const presenceListeners = new Set<(participants: readonly RemoteParticipant[]) => void>();
   let presenceTimer: number | null = null;
@@ -124,7 +126,7 @@ export function createBoardSyncClient(options: BoardSyncClientOptions): BoardSyn
   const presenceThrottle = options.presenceThrottleMs ?? PRESENCE_THROTTLE_MS;
   // L11 realtime: only the client's OWN operations are recorded with their
   // inverses; remote batches never enter this history.
-  let ownUndo: { operation: Record<string, unknown>; inverse: Record<string, unknown> }[] = [];
+  const ownUndo: { operation: Record<string, unknown>; inverse: Record<string, unknown> }[] = [];
   let ownRedo: { operation: Record<string, unknown>; inverse: Record<string, unknown> }[] = [];
 
   const emit = (event: BoardSyncEvent): void => options.onChange?.(event);
@@ -230,7 +232,7 @@ export function createBoardSyncClient(options: BoardSyncClientOptions): BoardSyn
 
   const onAck = (message: Record<string, unknown>): void => {
     const payload = (message.payload ?? {}) as Record<string, unknown>;
-    const batchId = String(payload["batchId"] ?? "");
+    const batchId = textOf(payload["batchId"]);
     pending.delete(batchId);
     const seq = Number(message.serverSeq ?? 0);
     // Only a newer durable sequence advances the client; stale acks are ignored.
@@ -241,7 +243,7 @@ export function createBoardSyncClient(options: BoardSyncClientOptions): BoardSyn
 
   const onRemoteBatch = (message: Record<string, unknown>): void => {
     const payload = (message.payload ?? {}) as Record<string, unknown>;
-    const batchId = String(payload["batchId"] ?? "");
+    const batchId = textOf(payload["batchId"]);
     if (batchId.length === 0 || seenBatches.has(batchId)) return; // duplicate suppression
     seenBatches.add(batchId);
     const operations = (payload["operations"] as Record<string, unknown>[]) ?? [];
@@ -275,7 +277,7 @@ export function createBoardSyncClient(options: BoardSyncClientOptions): BoardSyn
       case "operationBatch": onRemoteBatch(message); return;
       case "presence": {
         const payload = (message.payload ?? {}) as Record<string, unknown>;
-        const participantId = String(message.clientId ?? "");
+        const participantId = textOf(message.clientId);
         const cursor = (payload["cursor"] ?? {}) as Record<string, unknown>;
         const selection = (payload["selection"] as string[]) ?? [];
         const x = Number(cursor["x"] ?? 0);
@@ -286,7 +288,7 @@ export function createBoardSyncClient(options: BoardSyncClientOptions): BoardSyn
           if (selection.length === 0 && x === 0 && y === 0) {
             if (participants.delete(participantId)) emitParticipants();
           } else {
-            participants.set(participantId, { clientId: participantId, nameRef: String(payload["nameRef"] ?? ""), colorRef: String(payload["colorRef"] ?? ""), cursor: { x, y }, selection });
+            participants.set(participantId, { clientId: participantId, nameRef: textOf(payload["nameRef"]), colorRef: textOf(payload["colorRef"]), cursor: { x, y }, selection });
             emitParticipants();
           }
         }

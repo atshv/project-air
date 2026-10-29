@@ -9,7 +9,7 @@
       "outputs": ["dist/**", "build/**"]
     },
     "lint": {
-      "dependsOn": ["^lint"],
+      "dependsOn": ["^lint", "^build"],
       "inputs": ["$TURBO_DEFAULT$"],
       "outputs": []
     },
@@ -20,6 +20,36 @@
     },
     "test": {
       "dependsOn": ["build"],
+      "inputs": ["$TURBO_DEFAULT$"],
+      "outputs": ["coverage/**"]
+    },
+    "@project-air/web#build": {
+      "dependsOn": ["^build", "@project-air/crdt#build"],
+      "inputs": ["$TURBO_DEFAULT$", "tsconfig.json"],
+      "outputs": ["dist/**", "build/**"]
+    },
+    "@project-air/web#lint": {
+      "dependsOn": ["^lint", "@project-air/crdt#build"],
+      "inputs": ["$TURBO_DEFAULT$"],
+      "outputs": []
+    },
+    "@project-air/web#typecheck": {
+      "dependsOn": ["^build", "@project-air/crdt#build"],
+      "inputs": ["$TURBO_DEFAULT$", "tsconfig.json"],
+      "outputs": []
+    },
+    "@project-air/sync#lint": {
+      "dependsOn": ["^lint", "@project-air/crdt#build"],
+      "inputs": ["$TURBO_DEFAULT$"],
+      "outputs": []
+    },
+    "@project-air/sync#typecheck": {
+      "dependsOn": ["^build", "@project-air/crdt#build"],
+      "inputs": ["$TURBO_DEFAULT$", "tsconfig.json"],
+      "outputs": []
+    },
+    "@project-air/sync#test": {
+      "dependsOn": ["build", "@project-air/crdt#build"],
       "inputs": ["$TURBO_DEFAULT$"],
       "outputs": ["coverage/**"]
     }

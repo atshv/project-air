@@ -13,6 +13,10 @@ jobs:
     name: Board check, install and gates
     runs-on: ubuntu-24.04
     timeout-minutes: 30
+    env:
+      # The checkout is slot 0 (the owner's main checkout); tools/dev/setup refuses it.
+      # Install, build and every gate run in a git worktree that holds a non-zero slot.
+      CI_WORKTREE: ${{ github.workspace }}/../ci-worktree
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -44,25 +48,53 @@ jobs:
       - name: Board check
         run: python3 "$POLIER/tools/check.py" .
 
+      - name: Create the CI worktree and its slot
+        run: |
+          git worktree add --detach "$CI_WORKTREE" HEAD
+          python3 "$POLIER/tools/slot.py" acquire --root "$CI_WORKTREE"
+
+      - name: Start the compose stack and the slot database
+        working-directory: ${{ env.CI_WORKTREE }}
+        run: bash tools/dev/setup
+
       - name: Install
+        working-directory: ${{ env.CI_WORKTREE }}
         run: pnpm install --frozen-lockfile
 
+      - name: Build
+        working-directory: ${{ env.CI_WORKTREE }}
+        run: pnpm build
+
+      - name: Migrate the slot database
+        working-directory: ${{ env.CI_WORKTREE }}
+        run: |
+          # Local-only compose credentials, the same defaults the tests use; nothing secret.
+          DB_NAME="$(python3 -c 'import json; print(json.load(open(".polier-slot"))["db_name"])')"
+          DATABASE_URL="postgresql://projectair:projectair_local_only@127.0.0.1:5433/${DB_NAME}" \
+            node services/platform/dist/db/migrate.js
+
       - name: Lint
+        working-directory: ${{ env.CI_WORKTREE }}
         run: pnpm lint
 
       - name: Typecheck
+        working-directory: ${{ env.CI_WORKTREE }}
         run: pnpm typecheck
 
       - name: Test
+        working-directory: ${{ env.CI_WORKTREE }}
         run: pnpm test
 
       - name: Boundaries
+        working-directory: ${{ env.CI_WORKTREE }}
         run: python3 "$POLIER/tools/boundaries.py" .
 
       - name: Design check
+        working-directory: ${{ env.CI_WORKTREE }}
         run: node tools/design-check/index.mjs .
 
       - name: Language check
+        working-directory: ${{ env.CI_WORKTREE }}
         run: node tools/language-check/index.mjs .
 
       - name: Change-entry gate
@@ -78,3 +110,8 @@ jobs:
         if: "github.event_name != 'pull_request' || !startsWith(github.head_ref, 'task/')"
         run: |
           echo "Skipping the change-entry gate: only branches named task/* require a .changes entry."
+
+      - name: Stop the compose stack
+        if: always()
+        working-directory: ${{ env.CI_WORKTREE }}
+        run: docker compose -f infra/compose/compose.yaml down --volumes

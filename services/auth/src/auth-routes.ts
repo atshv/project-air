@@ -51,7 +51,7 @@ function mapError(error: unknown): never {
 export function registerAuthRoutes(router: Router, options: AuthRoutesOptions): void {
   const secure = options.cookieSecure ?? false;
   router.post("/v1/auth/login", async (context) => {
-    const body = (await context.readJson()) as Record<string, unknown>;
+    const body = await context.readJson<Record<string, unknown>>();
     const email = readString(body, "email");
     const password = typeof body["password"] === "string" ? body["password"] : "";
     if (!validateEmail(email) || password.length < MIN_PASSWORD_LENGTH) {
@@ -68,7 +68,7 @@ export function registerAuthRoutes(router: Router, options: AuthRoutesOptions): 
   });
 
   router.post("/v1/auth/registration", async (context) => {
-    const body = (await context.readJson()) as Record<string, unknown>;
+    const body = await context.readJson<Record<string, unknown>>();
     const email = readString(body, "email");
     const password = typeof body["password"] === "string" ? body["password"] : "";
     const displayName = readString(body, "displayName");
@@ -86,7 +86,7 @@ export function registerAuthRoutes(router: Router, options: AuthRoutesOptions): 
   });
 
   router.post("/v1/auth/recovery", async (context) => {
-    const body = (await context.readJson()) as Record<string, unknown>;
+    const body = await context.readJson<Record<string, unknown>>();
     const email = readString(body, "email");
     if (!validateEmail(email)) throw validationFailed(["email"]);
     try {

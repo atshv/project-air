@@ -1,0 +1,153 @@
+{
+  "task": "P6-12",
+  "state": "running",
+  "attempt": 1,
+  "attempts": [
+    {
+      "n": 1,
+      "started": "2026-10-29T16:37:39+00:00",
+      "ended": null,
+      "result": null,
+      "note": null
+    }
+  ],
+  "events": [
+    {
+      "at": "2026-10-29T16:37:39+00:00",
+      "kind": "start",
+      "data": {
+        "actor": "lead"
+      }
+    },
+    {
+      "at": "2026-10-29T16:37:39+00:00",
+      "kind": "state",
+      "data": {
+        "from": "pending",
+        "to": "in_progress",
+        "actor": "lead",
+        "note": "lead session, owner request 2026-10-29"
+      }
+    },
+    {
+      "at": "2026-10-29T17:07:44+00:00",
+      "kind": "approval",
+      "data": {
+        "id": "AP-016",
+        "action": "scope_change",
+        "status": "granted",
+        "by": "owner"
+      }
+    },
+    {
+      "at": "2026-10-29T17:15:49+00:00",
+      "kind": "gate",
+      "data": {
+        "gate": "board-check",
+        "result": "pass",
+        "record": "reviews/evidence/P6-12-board-check-20261029T171531Z.json"
+      }
+    },
+    {
+      "at": "2026-10-29T17:15:57+00:00",
+      "kind": "gate",
+      "data": {
+        "gate": "boundaries",
+        "result": "pass",
+        "record": "reviews/evidence/P6-12-boundaries-20261029T171557Z.json"
+      }
+    },
+    {
+      "at": "2026-10-29T17:15:58+00:00",
+      "kind": "gate",
+      "data": {
+        "gate": "typecheck",
+        "result": "pass",
+        "record": "reviews/evidence/P6-12-typecheck-20261029T171558Z.json"
+      }
+    },
+    {
+      "at": "2026-10-29T17:15:58+00:00",
+      "kind": "gate",
+      "data": {
+        "gate": "unit",
+        "result": "pass",
+        "record": "reviews/evidence/P6-12-unit-20261029T171558Z.json"
+      }
+    },
+    {
+      "at": "2026-10-29T17:15:59+00:00",
+      "kind": "gate",
+      "data": {
+        "gate": "design-check",
+        "result": "pass",
+        "record": "reviews/evidence/P6-12-design-check-20261029T171558Z.json"
+      }
+    },
+    {
+      "at": "2026-10-29T17:16:00+00:00",
+      "kind": "gate",
+      "data": {
+        "gate": "language-check",
+        "result": "pass",
+        "record": "reviews/evidence/P6-12-language-check-20261029T171559Z.json"
+      }
+    },
+    {
+      "at": "2026-10-29T17:16:04+00:00",
+      "kind": "gate",
+      "data": {
+        "gate": "ci-local",
+        "result": "pass",
+        "record": "reviews/evidence/P6-12-ci-local-20261029T171604Z.json"
+      }
+    },
+    {
+      "at": "2026-10-29T17:16:23+00:00",
+      "kind": "gate",
+      "data": {
+        "gate": "typecheck",
+        "result": "pass",
+        "record": "reviews/evidence/P6-12-typecheck-20261029T171615Z.json"
+      }
+    },
+    {
+      "at": "2026-10-29T17:16:47+00:00",
+      "kind": "gate",
+      "data": {
+        "gate": "unit",
+        "result": "pass",
+        "record": "reviews/evidence/P6-12-unit-20261029T171624Z.json"
+      }
+    },
+    {
+      "at": "2026-10-29T17:16:55+00:00",
+      "kind": "gate",
+      "data": {
+        "gate": "changelog-entry",
+        "result": "pass",
+        "record": "reviews/evidence/P6-12-changelog-entry-20261029T171654Z.json"
+      }
+    },
+    {
+      "at": "2026-10-29T17:17:26+00:00",
+      "kind": "state",
+      "data": {
+        "from": "in_progress",
+        "to": "verifying",
+        "actor": "lead"
+      }
+    },
+    {
+      "at": "2026-10-29T17:17:26+00:00",
+      "kind": "state",
+      "data": {
+        "from": "verifying",
+        "to": "review",
+        "actor": "lead"
+      }
+    }
+  ],
+  "usage": {},
+  "updated": "2026-10-29T17:17:26+00:00"
+}

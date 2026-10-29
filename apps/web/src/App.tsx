@@ -13,7 +13,7 @@ import { Button } from "./components/Button.tsx";
 import { catalogParity, createTranslate, DEFAULT_LANGUAGE, LANGUAGES, persistLanguage, readStoredLanguage, type Language, type MessageCatalog } from "./i18n/i18n.ts";
 import { ROUTES } from "./routes.ts";
 
-const catalogs: Record<Language, MessageCatalog> = { de: de as unknown as MessageCatalog, en: en as unknown as MessageCatalog };
+const catalogs: Record<Language, MessageCatalog> = { de, en };
 const LANGUAGE_NAMES: Record<Language, string> = { de: "language.de", en: "language.en" };
 
 type SessionState = { readonly loading: boolean; readonly user: SessionUser | null; readonly errorKey: string | null };
@@ -90,7 +90,7 @@ export function App() {
   }, [language]);
   const parity = useMemo(() => catalogParity(catalogs.de, catalogs.en), []);
   if (parity.missingInRight.length > 0 || parity.missingInLeft.length > 0) throw new Error("translation catalogs differ");
-  const signOut = useCallback(async () => { try { await api.auth.logout(); } finally { setSession({ loading: false, user: null, errorKey: null }); navigate("/login", { replace: true }); } }, [navigate]);
+  const signOut = useCallback(async () => { try { await api.auth.logout(); } finally { setSession({ loading: false, user: null, errorKey: null }); void navigate("/login", { replace: true }); } }, [navigate]);
   const signIn = useCallback(async () => { await refreshSession(); }, [refreshSession]);
   const requireAuth = (element: ReactElement): ReactElement => {
     if (session.loading) return <section className="page" aria-busy="true"><p className="muted">{t("auth.checkingSession")}</p></section>;

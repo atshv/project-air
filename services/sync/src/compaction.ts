@@ -46,7 +46,7 @@ export async function compactBoard(input: {
     : input.documents.fromContent(state!.boardContent);
   if (state!.docState != null) document.applyUpdate(state!.docState);
   for (const row of allUpdates) {
-    const operations = JSON.parse(Buffer.from(row.update, "base64").toString("utf8"));
+    const operations: unknown = JSON.parse(Buffer.from(row.update, "base64").toString("utf8"));
     if (!Array.isArray(operations)) throw new Error("legacy sync update row (expected operations JSON; the log format changed in stage 6)");
     for (const operation of operations) document.apply(operation);
   }

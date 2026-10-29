@@ -4,7 +4,6 @@
 // monkey-patching.
 
 import { createServer, type IncomingMessage, type Server, type ServerResponse } from "node:http";
-import type { Duplex } from "node:stream";
 import type { Duplex as DuplexStream } from "node:stream";
 
 import { createLogger, type Logger } from "./log.ts";
@@ -64,7 +63,7 @@ export async function createSyncService(options: SyncServiceOptions): Promise<Ru
       return;
     }
     socket.write(handshakeResponse(String(request.headers["sec-websocket-key"])));
-    const connection = createWsConnection(socket as Duplex, request.socket.remoteAddress ?? "");
+    const connection = createWsConnection(socket, request.socket.remoteAddress ?? "");
     // P6-09: the browser's same-origin session cookie arrives with the upgrade.
     // It is handed to the injected adapters only — never logged and never sent
     // anywhere but the auth/platform services.
