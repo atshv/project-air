@@ -125,13 +125,13 @@
 
 ## Ready now
 
-- `P6-12` Contract 0.5.0: block content and zone rename
+- none
 
 ## Orchestration
 
 - Limits: 3 attempts/task, 3 in progress
-- Next wave: `P6-12` (tasks/P6-12.md)
-- Running: none
+- Next wave: none — nothing is ready
+- Running: `P6-12` attempt 1/3<!-- polier:claims --> — claimed by cli<!-- /polier:claims -->
 - Blocked: P0-02, P0-15, P0-16, P0-17 (stage waits); P6-13, P6-14, P6-15, P6-16, P6-17, P6-18, P6-19, P6-20, P6-21, P6-22 (open dependency)
 - Approvals pending: none
 
@@ -251,7 +251,7 @@
 
 ## In progress
 
-- none
+- [ ] `P6-12` Contract 0.5.0: block content and zone rename — status: `in_progress` — owner: —
 
 ## Blocked / failed
 
@@ -263,7 +263,6 @@
 - [ ] `P0-15` Release command and tag-based CI release — status: `pending` — owner: —
 - [ ] `P0-16` Dependency updates and Polier update check — status: `pending` — owner: —
 - [ ] `P0-17` RELEASING.md and release 0.0.1 — status: `pending` — owner: —
-- [ ] `P6-12` Contract 0.5.0: block content and zone rename — status: `pending` — owner: —
 - [ ] `P6-13` Block content and zone rename in the CRDT, sync and SDK — status: `pending` — owner: —
 - [ ] `P6-14` Engine for the app: contract 0.5.0 and the interaction exports — status: `pending` — owner: —
 - [ ] `P6-15` Depth-ordered titles and previews in the engine — status: `pending` — owner: —
@@ -274,6 +273,13 @@
 - [ ] `P6-20` Zone lifecycle and names on the web canvas (L08, part 2) — status: `pending` — owner: —
 - [ ] `P6-21` Blocks on the web canvas with inline comfort (L18, L00 tools) — status: `pending` — owner: —
 - [ ] `P6-22` Demo-parity evidence, canvas status and the stage-7 close — status: `pending` — owner: —
+
+<!-- polier:claims -->
+## Claims
+
+- `P6-12` in progress by cli since 2026-10-29T17:07:19+00:00 — worktree: /Users/rasulatashev/Desktop/KI Projekte/Project air-P6-12 · slot 4
+
+<!-- /polier:claims -->
 
 ## Decisions
 
