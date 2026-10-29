@@ -1,0 +1,19 @@
+# P0-48 preview evidence (2026-10-29)
+# serve: cd "/Users/rasulatashev/Desktop/KI Projekte/Project air-P0-48"; PORT=$(python3 -c "import json; print(json.load(open('.polier-slot'))['ports']['web'])"); python3 -m http.server "$PORT" --bind 127.0.0.1
+# drive: out-of-repo CDP helper (Chrome for Testing 1248, headless, fresh profile, real Input.dispatchMouseEvent / rawKeyDown) at 1440x900
+# before the fix (main 4de2cde): Delete reported "1 deleted" while note A stayed displayed; a single selection showed no delete button
+select note A: frame 2px rgb(143, 191, 175), gap left 4.0 top 4.0, radius frame 18px vs card 14px
+count bar: visible=true label=1 selected
+screenshot P0-48-selected.png
+hover east edge: lit=1 width=3px
+east edge +32: width 176 -> 208; Size changed.
+count-bar delete: note A shown=false edge visibility=hidden; 1 deleted — Cmd/Ctrl+Z brings it back.
+screenshot P0-48-deleted.png
+Cmd+Z: note A shown=true; 1 deleted — Cmd/Ctrl+Z brings it back.
+Delete key on checklist: shown=false; 1 deleted — Cmd/Ctrl+Z brings it back.
+Cmd+Z: checklist shown=true
+menu delete on photo: menu found=true shown=false; 1 deleted — Cmd/Ctrl+Z brings it back.
+Cmd+Z: photo shown=true
+multi: 2px r18px, 2px r24px; bar=2 selected
+screenshot P0-48-multi.png
+errors: none

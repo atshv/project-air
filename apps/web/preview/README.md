@@ -1,4 +1,4 @@
-# Design preview (P0-19, P0-20, P0-21, P0-22, P0-23, P0-24, P0-25, P0-26, P0-27, P0-28, P0-29, P0-30, P0-31, P0-32, P0-33, P0-34, P0-35, P0-36, P0-37, P0-38, P0-39, P0-40, P0-41, P0-42, P0-43, P0-44, P0-45, P0-46, P0-47, P1-07)
+# Design preview (P0-19, P0-20, P0-21, P0-22, P0-23, P0-24, P0-25, P0-26, P0-27, P0-28, P0-29, P0-30, P0-31, P0-32, P0-33, P0-34, P0-35, P0-36, P0-37, P0-38, P0-39, P0-40, P0-41, P0-42, P0-43, P0-44, P0-45, P0-46, P0-47, P0-48, P1-07)
 
 A design preview of the Project air design system. It is **not the product**: there is no engine,
 no data, no server and no build step. It exists so the owner can see the look and feel between
@@ -15,9 +15,9 @@ its two values come from:
   `0.0.1 – unreleased`; the status word comes from the same heading. `CHANGELOG.md` is the display
   source and currently agrees with the root `package.json` version `0.0.1`.
 - **Last change** — the newest preview change entry, currently
-  `.changes/P0-47-connections.md`; the line shows the task id and that task's title from
-  `board.json` / the task brief: `P0-47 — Preview page: connections diagram instead of roles`. The line follows the
-  `P0-*` preview tasks (P0-19 … P0-47, P1-07); the engine tasks
+  `.changes/P0-48-select-delete.md`; the line shows the task id and that task's title from
+  `board.json` / the task brief: `P0-48 — Live demo: visible selection frame, delete that works`. The line follows the
+  `P0-*` preview tasks (P0-19 … P0-48, P1-07); the engine tasks
   (`P4-*`) and the other stages run in parallel and do not move it, so "highest numeric id" alone is
   not the rule. If several files exist for the same preview task, the most recent one is used;
   `.changes/README.md` and `.changes/TEMPLATE.md` do not count as entries.
@@ -221,6 +221,26 @@ is cleared on reload.
   focus-visible, `aria-pressed`) and both appear in the DE/EN strings; the palette popover uses only
   token colours, the 4 px spacing series, `--radius-md`/`--radius-sm` and the `--shadow`. Under
   `prefers-reduced-motion: reduce` the swatch transition is off.
+
+## Visible selection frame, delete that works (P0-48)
+
+Owner feedback of 2026-10-29: the resize frame should be slightly thicker, selection did not seem
+to work, and no delete was visible for a selection. A headless check found three causes:
+
+- **Frame** — it was 1 px and sat exactly on the object's own accent border. The single and
+  multi-selection frames are now 2 px (`--outline-width`) and sit 4 px (`--space-4`) outside the
+  object (`frameBoxOf`), with the object's radius plus the gap, so they stay concentric. The resize
+  hit bands follow the frame. The hovered edge lights up 3 px (outline plus border width) and the
+  corner arc follows the larger radius. L14 and the section 10 specimen show the same.
+- **Delete** — deleting sets `hidden`, but the objects' own `display` rules overrode it, so the
+  status said "1 deleted" while the card stayed. `.demo .demo__world [hidden] { display: none; }`
+  now wins. Undo clears the attribute again.
+- **Delete for one object** — a single selection also shows the count bar ("1 selected") with its
+  delete button. A press on the count bar or the menu no longer clears the selection first, which
+  had made that button do nothing.
+
+Evidence: `P0-48-selected.png`, `P0-48-deleted.png`, `P0-48-multi.png` and `P0-48-preview.log` in
+`reviews/evidence/`.
 
 ## How it connects (P0-47)
 
@@ -739,9 +759,9 @@ P0-26 markup with the old stylesheet and a broken-looking demo. The preview ther
 assets with a version query:
 
 ```html
-<link rel="stylesheet" href="../../../packages/ui-kit/tokens.css?v=P0-47" />
-<link rel="stylesheet" href="preview.css?v=P0-47" />
-<script src="preview.js?v=P0-47" defer></script>
+<link rel="stylesheet" href="../../../packages/ui-kit/tokens.css?v=P0-48" />
+<link rel="stylesheet" href="preview.css?v=P0-48" />
+<script src="preview.js?v=P0-48" defer></script>
 ```
 
 - **Bump rule:** every task that changes a file in `apps/web/preview/` — or the shared
@@ -750,7 +770,7 @@ assets with a version query:
   never cached and gets the current files, which also covers a changed design system that would
   otherwise be served from the cached token stylesheet.
 - The locale files reuse the script's version automatically: `preview.js` reads the `v` query of its
-  own script URL and appends it to the locale request (`locales/de.json?v=P0-47`), so one bump
+  own script URL and appends it to the locale request (`locales/de.json?v=P0-48`), so one bump
   covers the translations as well.
 - The icon SVGs are referenced from `preview.css` and keep stable, unversioned URLs; they only
   change with a design-system task, and every such task bumps the preview version anyway.

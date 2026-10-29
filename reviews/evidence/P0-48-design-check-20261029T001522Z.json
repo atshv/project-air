@@ -1,0 +1,17 @@
+{
+  "task": "P0-48",
+  "gate": "design-check",
+  "command": "node tools/design-check/index.mjs .",
+  "exit_code": 0,
+  "result": "pass",
+  "slot": null,
+  "exclusive": [],
+  "lock_wait_s": 0.0,
+  "lock_warning": null,
+  "started": "2026-10-29T00:15:22+00:00",
+  "finished": "2026-10-29T00:15:22+00:00",
+  "commit": "f3bd443e6c75eee041dbb8006492e59db473e31e",
+  "dirty": true,
+  "log": "P0-48-design-check-20261029T001522Z.log",
+  "log_sha256": "ffa556e23d40616c4720395afe0b5df39d0bd1904dc48671f3d045004909d59d"
+}

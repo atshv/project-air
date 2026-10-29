@@ -3222,8 +3222,8 @@ kbd {
 }
 
 .chrome-card--selected {
-  outline: var(--border-width) solid var(--accent);
-  outline-offset: 0;
+  outline: var(--outline-width) solid var(--accent);
+  outline-offset: var(--space-4);
 }
 
 .chrome-card--snapped {
@@ -3244,20 +3244,20 @@ kbd {
 .chrome-edge {
   position: absolute;
   inset-block: var(--radius-md);
-  inset-inline-end: calc(var(--border-width) * -1);
-  inline-size: var(--outline-width);
+  inset-inline-end: calc((var(--space-4) + var(--outline-width) + var(--border-width) / 2) * -1);
+  inline-size: calc(var(--outline-width) + var(--border-width));
   background-color: var(--accent);
 }
 
 .chrome-corner {
   position: absolute;
-  inset-block-end: calc(var(--border-width) * -1);
-  inset-inline-start: calc(var(--border-width) * -1);
-  inline-size: calc(var(--radius-md) + var(--space-8));
-  block-size: calc(var(--radius-md) + var(--space-8));
-  border-block-end: var(--outline-width) solid var(--accent);
-  border-inline-start: var(--outline-width) solid var(--accent);
-  border-end-start-radius: var(--radius-md);
+  inset-block-end: calc((var(--space-4) + var(--outline-width)) * -1);
+  inset-inline-start: calc((var(--space-4) + var(--outline-width)) * -1);
+  inline-size: calc(var(--radius-md) + var(--space-12));
+  block-size: calc(var(--radius-md) + var(--space-12));
+  border-block-end: calc(var(--outline-width) + var(--border-width)) solid var(--accent);
+  border-inline-start: calc(var(--outline-width) + var(--border-width)) solid var(--accent);
+  border-end-start-radius: calc(var(--radius-md) + var(--space-4));
 }
 
 .chrome-count {
@@ -3374,7 +3374,7 @@ kbd {
   inset-inline-start: 0;
   z-index: var(--layer-snap-guides);
   display: none;
-  border: calc(var(--border-width) * var(--chrome-inverse)) solid var(--accent);
+  border: calc(var(--outline-width) * var(--chrome-inverse)) solid var(--accent);
   border-radius: var(--frame-radius, 0);
   pointer-events: none;
 }
@@ -3391,7 +3391,7 @@ kbd {
 .demo-selection__handle {
   --handle-band: calc(var(--space-8) * var(--chrome-inverse));
   --handle-corner: calc(var(--space-16) * var(--chrome-inverse));
-  --handle-line: calc(var(--outline-width) * var(--chrome-inverse));
+  --handle-line: calc((var(--outline-width) + var(--border-width)) * var(--chrome-inverse));
   --handle-arm: calc(var(--frame-radius, 0px) + var(--space-8) * var(--chrome-inverse));
   position: absolute;
   pointer-events: auto;
@@ -3536,7 +3536,7 @@ kbd {
 }
 
 .demo-multi-frame {
-  border: calc(var(--border-width) * var(--chrome-inverse)) solid var(--accent);
+  border: calc(var(--outline-width) * var(--chrome-inverse)) solid var(--accent);
   border-radius: var(--frame-radius, 0);
 }
 
@@ -4296,4 +4296,13 @@ kbd {
   .page-toc__link {
     transition: none;
   }
+}
+
+/* ---------- deleted objects (P0-48) ---------- */
+
+/* Deleting hides a demo object with the hidden attribute; this rule wins over
+   the objects' own display values, so a deleted card really leaves the canvas.
+   Undo clears the attribute again. */
+.demo .demo__world [hidden] {
+  display: none;
 }

@@ -420,11 +420,12 @@ and map to `contract` and `backend-core`.
 *Reference work order: C15.*
 
 - **Goal:** Sizes are changed precisely and stay on the grid.
-- **Target values:** no square handles: the 1 px `--accent` frame of a selected object is the handle
-  (owner decision 2026-10-28, P0-39) — each edge has a hit band of 8 screen px centred on the line,
-  each corner a 16 × 16 px hit square; the frame follows the object's corner radius (P0-41); the
-  hovered or dragged edge lights up as a 2 px `--accent` line along its straight part, a corner as
-  a 2 px `--accent` arc along the rounded corner; size snaps to 16 px (`Shift`
+- **Target values:** no square handles: the 2 px `--accent` frame of a selected object, set 4 screen
+  px outside the object (P0-48), is the handle (owner decision 2026-10-28, P0-39) — each edge has a
+  hit band of 8 screen px centred on the line, each corner a 16 × 16 px hit square; the frame is
+  concentric with the object's rounded corner (radius plus the 4 px gap, P0-41/P0-48); the hovered
+  or dragged edge lights up as a 3 px `--accent` line along its straight part, a corner as a 3 px
+  `--accent` arc along the rounded corner; size snaps to 16 px (`Shift`
   free); minimum sizes: note 176×80, checklist 224×128, table 288×160, zone 256×192, columns 368×192,
   timeline 320×160, palette 224×128 (blueprint; reference C15).
 - **States:** selected, edge/corner hover, resizing, snapped, `Shift` free.

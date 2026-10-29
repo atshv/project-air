@@ -7495,7 +7495,7 @@
       "satisfies": [
         "D3"
       ],
-      "status": "pending",
+      "status": "done",
       "depends_on": [
         "P0-41"
       ],
@@ -7503,7 +7503,7 @@
       "stage": "foundation",
       "parallel_group": null,
       "owner": null,
-      "round": 0,
+      "round": 1,
       "scope_write": [
         "apps/web/preview/",
         "docs/canvas-acceptance.md",
@@ -7532,8 +7532,11 @@
         "changelog-entry"
       ],
       "branch": "task/P0-48",
-      "worktree": "../Project air-P0-48",
-      "evidence": [],
+      "worktree": null,
+      "evidence": [
+        "reviews/evidence/P0-48-design-check-20261029T001522Z.json",
+        "reviews/evidence/P0-48-changelog-entry-20261029T001522Z.json"
+      ],
       "scope_write_forbidden": [
         "reference/",
         "docs/owner/"

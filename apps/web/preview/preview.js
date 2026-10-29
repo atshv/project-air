@@ -2207,14 +2207,29 @@
       return isFinite(radius) ? radius : 0;
     }
 
+    // The frame sits 4 screen px outside the object (P0-48), so it never hides
+    // behind the object's own accent border; its radius grows by the same gap
+    // to stay concentric with the rounded corner.
+    function frameBoxOf(element) {
+      var box = worldRectOf(element);
+      var gap = readPixelToken("--space-4", 4) / scale;
+      return {
+        x: box.x - gap,
+        y: box.y - gap,
+        w: box.w + gap * 2,
+        h: box.h + gap * 2,
+        radius: cornerRadius(element) + gap,
+      };
+    }
+
     function renderSelection() {
       if (selectedTarget === null) {
         selectionChrome.classList.remove("is-visible");
         return;
       }
-      var box = worldRectOf(selectedTarget.element);
+      var box = frameBoxOf(selectedTarget.element);
       selectionChrome.style.setProperty("--chrome-inverse", (1 / scale).toFixed(4));
-      selectionChrome.style.setProperty("--frame-radius", cornerRadius(selectedTarget.element) + "px");
+      selectionChrome.style.setProperty("--frame-radius", box.radius.toFixed(2) + "px");
       selectionChrome.style.transform =
         "translate3d(" + box.x.toFixed(1) + "px, " + box.y.toFixed(1) + "px, 0)";
       selectionChrome.style.inlineSize = box.w.toFixed(1) + "px";
@@ -2247,7 +2262,9 @@
         if (!(target instanceof Element)) return;
         // The pen owns the press: drawing never selects or moves an object.
         if (penMode) return;
-        if (target.closest(".demo-selection, .demo-toolbar, .demo-zoom")) return;
+        // The count bar and the menu act on the selection, so a press on them
+        // keeps it (P0-48).
+        if (target.closest(".demo-selection, .demo-toolbar, .demo-zoom, .demo-count, .demo-menu")) return;
         var hit = null;
         for (var index = 0; index < selectionTargets.length && hit === null; index += 1) {
           if (selectionTargets[index].element.contains(target)) hit = selectionTargets[index];
@@ -2881,12 +2898,12 @@
           frame.classList.remove("is-visible");
           return;
         }
-        var box = worldRectOf(target.element);
+        var box = frameBoxOf(target.element);
         frame.style.transform = "translate3d(" + box.x.toFixed(1) + "px, " + box.y.toFixed(1) + "px, 0)";
         frame.style.inlineSize = box.w.toFixed(1) + "px";
         frame.style.blockSize = box.h.toFixed(1) + "px";
         frame.style.setProperty("--chrome-inverse", (1 / scale).toFixed(4));
-        frame.style.setProperty("--frame-radius", cornerRadius(target.element) + "px");
+        frame.style.setProperty("--frame-radius", box.radius.toFixed(2) + "px");
         frame.classList.add("is-visible");
         union = union === null
           ? { left: box.x, top: box.y, right: box.x + box.w, bottom: box.y + box.h }
@@ -2897,16 +2914,22 @@
             bottom: Math.max(union.bottom, box.y + box.h),
           };
       });
-      if (!multi || union === null) {
+      // A single selection shows the bar too, so its delete is visible (P0-48).
+      if (!multi && selectedTarget !== null && isShown(selectedTarget.element)) {
+        var single = worldRectOf(selectedTarget.element);
+        union = { left: single.x, top: single.y, right: single.x + single.w, bottom: single.y + single.h };
+      }
+      if (union === null) {
         countBar.classList.remove("is-visible");
         return;
       }
-      countLabel.textContent = translate("demo.chrome.selected", { count: multiSelection.length });
-      // Centred over the selection, 8 px above its frames — or 8 px below when
+      countLabel.textContent = translate("demo.chrome.selected", { count: multi ? multiSelection.length : 1 });
+      // Centred over the selection, 8 px above its frames (which sit 4 px
+      // outside the objects, P0-48) — or below when
       // there is no room above — and always clamped into the visible canvas,
       // which clips everything outside it. The bar keeps its screen size at
       // every zoom (inverse scale from its top-left corner).
-      var gap = readPixelToken("--space-8", 8) / scale;
+      var gap = (readPixelToken("--space-8", 8) + readPixelToken("--space-4", 4)) / scale;
       var barHeight = countBar.offsetHeight / scale;
       var visible = visibleWorldBounds();
       var barTop = union.top - gap - barHeight;
@@ -3028,7 +3051,12 @@
     }
 
     countDelete.addEventListener("click", function () {
-      deleteTargets(multiSelection.slice());
+      if (multiSelection.length > 1) {
+        deleteTargets(multiSelection.slice());
+      } else if (selectedTarget !== null) {
+        deleteTargets([selectedTarget]);
+        setSelectedTarget(null);
+      }
     });
 
     // Zone header delete: removes the zone and keeps its content on the canvas.
