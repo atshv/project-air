@@ -7388,7 +7388,8 @@
       "scope_write": [
         "packages/crdt/",
         "services/sync/",
-        ".changes/"
+        ".changes/",
+        "docs/realtime.md"
       ],
       "scope_read": [
         "ARCHITECTURE.md",
