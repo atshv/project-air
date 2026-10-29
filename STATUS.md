@@ -132,9 +132,9 @@
 ## Orchestration
 
 - Limits: 3 attempts/task, 3 in progress
-- Next wave: none — nothing is ready
+- Next wave: `P0-47` (tasks/P0-47.md)
 - Running: `P6-08` attempt 0/3<!-- polier:claims --> — claimed by dsh<!-- /polier:claims -->
-- Blocked: P0-02, P0-15, P0-16, P0-17 (stage waits); P6-09, P6-10, P6-11 (open dependency); P0-47 (missing brief)
+- Blocked: P0-02, P0-15, P0-16, P0-17 (stage waits); P6-09, P6-10, P6-11 (open dependency)
 - Approvals pending: none
 
 ## Done
