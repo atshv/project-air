@@ -34,11 +34,13 @@ const emptyBoardContent = (): BoardContent => ({
 // package's `main`/`exports` target), relative to this file at
 // services/sync/dist/index.js. Resolve exactly that path: the old
 // `dist/index.js` guess made a real `node dist/index.js` start fail.
-const crdt = await import("../../../packages/crdt/dist/packages/crdt/src/index.js" as string);
+// A path held in a variable keeps tsc from resolving the build output at typecheck time.
+const crdtEntry = "../../../packages/crdt/dist/packages/crdt/src/index.js";
+const crdt: unknown = await import(crdtEntry);
 const createYjsBoardDoc = (crdt as { createYjsBoardDoc: (options: { content: BoardContent }) => never }).createYjsBoardDoc;
 const documents = {
-  fromContent: (content: BoardContent) => createYjsBoardDoc({ content }) as never,
-  fromEmpty: () => createYjsBoardDoc({ content: emptyBoardContent() }) as never,
+  fromContent: (content: BoardContent) => createYjsBoardDoc({ content }),
+  fromEmpty: () => createYjsBoardDoc({ content: emptyBoardContent() }),
 };
 
 // P6-09: the browser session cookie from the WebSocket upgrade is validated

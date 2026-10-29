@@ -23,6 +23,10 @@
 
 namespace {
 
+// An object member. A named struct instead of std::pair<std::string, Json>:
+// std::pair needs a complete Json, which libstdc++ enforces inside Json itself.
+struct JsonMember;
+
 struct Json {
   enum class Type { Null, Boolean, Number, String, Array, Object };
 
@@ -30,15 +34,24 @@ struct Json {
   bool boolean = false;
   std::string text;
   std::vector<Json> items;
-  std::vector<std::pair<std::string, Json>> members;
+  std::vector<JsonMember> members;
 
-  const Json* find(const std::string& key) const {
-    for (const auto& member : members) {
-      if (member.first == key) return &member.second;
-    }
-    return nullptr;
-  }
+  const Json* find(const std::string& key) const;
 };
+
+struct JsonMember {
+  JsonMember(std::string key, Json value) : first(std::move(key)), second(std::move(value)) {}
+
+  std::string first;
+  Json second;
+};
+
+const Json* Json::find(const std::string& key) const {
+  for (const auto& member : members) {
+    if (member.first == key) return &member.second;
+  }
+  return nullptr;
+}
 
 class JsonReader {
  public:

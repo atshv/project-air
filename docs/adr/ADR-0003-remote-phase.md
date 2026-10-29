@@ -30,6 +30,11 @@ remote stage into `foundation` and are proven locally with actionlint plus the w
 step commands; the real GitHub run and the remaining remote tasks (`P0-02`, `P0-15`,
 `P0-16`, `P0-17`) stay in the `remote` stage.
 
+**Update 2026-10-29:** the first pull request against `main` ran the workflow on GitHub and
+exposed failures that the local checks had missed. By owner decision, `P6-12` makes the real
+GitHub run green in the `web-app` stage. Branch protection, releases and dependency updates
+(`P0-02`, `P0-15`, `P0-16`, `P0-17`) stay in `remote`.
+
 ## Consequences
 
 - **Positive:** the product can be built and verified locally without a paid GitHub plan or a

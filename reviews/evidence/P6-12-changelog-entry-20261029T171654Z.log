@@ -1,0 +1,5 @@
+$ node tools/release/check-changes.mjs --task P6-12 --base main
+[exit 0]
+
+check-changes: task P6-12, base main, 45 changed path(s), 14 code path(s)
+changelog-entry: OK (.changes/P6-12-ci-green-on-github.md)

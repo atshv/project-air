@@ -141,7 +141,7 @@ export class YjsBoardDoc implements BoardDoc {
     const store: EntityStore = { board: { ...this.#contentBoard }, entities: new Map() };
     for (const [key, map] of this.#objects.entries()) {
       const entity: AnyPayload = {};
-      for (const [name, value] of map.entries()) entity[name] = value as unknown;
+      for (const [name, value] of map.entries()) entity[name] = value;
       store.entities.set(key, entity);
     }
     return storeSnapshot(store, this.#contractVersion);
@@ -153,7 +153,7 @@ export class YjsBoardDoc implements BoardDoc {
         const store: EntityStore = { board: { ...this.#contentBoard }, entities: new Map() };
         for (const [key, map] of this.#objects.entries()) {
           const entity: AnyPayload = {};
-          for (const [name, value] of map.entries()) entity[name] = value as unknown;
+          for (const [name, value] of map.entries()) entity[name] = value;
           store.entities.set(key, entity);
         }
         return store;

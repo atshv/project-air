@@ -102,6 +102,14 @@ task from the project's manifests; until then the gate cannot pass.
 `pnpm install` or remove `node_modules/` first; CI runs `board-check` before the install job (P0-08).
 Third-party README links inside `node_modules/` are not project defects.
 
+CI (`.github/workflows/ci.yml`, P6-12) runs the board check in the checkout, then works in a git
+worktree with its own slot, because the checkout is slot 0 and `tools/dev/setup` refuses it. In
+that worktree it runs `tools/dev/setup` (compose stack and slot database), `pnpm install`,
+`pnpm build`, the platform migrations, `pnpm lint`, `pnpm typecheck` and `pnpm test` across the
+whole repository, then `boundaries`, `design-check` and `language-check`. `lint` waits for the
+packages it imports to be built (`turbo.json`), so a fresh clone lints the same as a checkout with
+an old `dist/` left in it.
+
 A gate passes when command, exit code and expected output match; the output is the evidence.
 The task passes when all gates are green, every acceptance criterion is evidenced and the
 reviewer gives `pass` with no blockers.
