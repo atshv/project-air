@@ -58,7 +58,7 @@ v1) are added as D7 … when those stages are planned in detail.
 
 ## Gates
 
-`$POLIER` is a checkout of Polier `v1.4.0`. Commands marked `[VERIFY: …]` are fixed by the named
+`$POLIER` is a checkout of Polier `v2.6.0`. Commands marked `[VERIFY: …]` are fixed by the named
 task from the project's manifests; until then the gate cannot pass.
 
 | Gate | Command | Expected |

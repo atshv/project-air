@@ -8,7 +8,7 @@ baseline; P3-01 added the backend rows (`pg`, `@types/pg`, `@types/node`) and th
 
 | Tool / library | Exact version | Source URL | Date checked | Approved by |
 | --- | --- | --- | --- | --- |
-| Polier | `1.4.0` | https://github.com/atshv/Polier/releases/tag/v1.4.0 (tag on `cc961c5`) | 2026-10-29 | owner (2026-10-29, update request) |
+| Polier | `2.6.0` | https://github.com/atshv/Polier/releases/tag/v2.6.0 (tag on `bbde7d4`) | 2026-10-30 | owner (2026-10-30, update request) |
 | C++ compiler (local/CI) | Apple clang `21.0.0` (also accepts g++) | https://developer.apple.com/xcode/ — Apple clang licence (toolchain) | 2026-10-25 | lead (P1-03) |
 | GitHub Action `actions/checkout` | `v7.0.1@3d3c42e5aac5ba805825da76410c181273ba90b1` | https://github.com/actions/checkout/releases/tag/v7.0.1 — MIT | 2026-10-25 | owner (2026-10-25) |
 | GitHub Action `actions/setup-node` | `v7.1.0@949feb2413d6458794dcd2491c4babbbce0c15c1` | https://github.com/actions/setup-node/releases/tag/v7.1.0 — MIT | 2026-10-25 | owner (2026-10-25) |

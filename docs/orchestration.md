@@ -1,7 +1,8 @@
 # Orchestration — Project air
 
-> How a task moves through this project with Polier 1.4, what the tools check and where the records
-> live. The numbers live in `policy.json`, not in this file. Adopted 2026-10-29 (owner decision).
+> How a task moves through this project with Polier 2.6, what the tools check and where the records
+> live. The numbers live in `policy.json`, not in this file. Adopted 2026-10-29, updated to 2.6.0 on
+> 2026-10-30 (owner decision).
 
 ## Where the state lives
 
@@ -18,6 +19,9 @@ then `bash tools/polier.sh --check`.
 
 `STATUS.html` is the local status page (`python3 $POLIER/tools/render_status.py . --html [--watch]`);
 it is generated, never committed and changes no state.
+
+The optional local dashboard (`python3 $POLIER/tools/serve.py .`) reads the same files over loopback
+and writes only to `<git-common-dir>/polier/dashboard/`; the CLI never needs it.
 
 ## The task loop
 

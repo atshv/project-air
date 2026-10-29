@@ -1,9 +1,9 @@
 {
-  "schema_version": "1.0",
+  "schema_version": "1.2",
   "project": "project-air",
   "profile": "L",
   "base_branch": "main",
-  "generator_version": "1.4.0",
+  "generator_version": "2.6.0",
   "stage": 7,
   "worktrees": "required",
   "resources": {
@@ -7357,7 +7357,8 @@
       ],
       "handoff": [
         "Renumbered from P6-12 on 2026-10-29: the stage-7 plan keeps P6-12 for contract 0.5.0; this CI task carries the brief, run record, gate records (P6-23-*) and AP-020."
-      ]
+      ],
+      "labels": []
     },
     {
       "id": "P0-45",
