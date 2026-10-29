@@ -19,7 +19,7 @@ native apps.
 - **Legal:** GDPR and nDSG; hosting in CH/EU; licences MIT, BSD, Apache-2.0, ISC, Zlib only.
 - **Secrets:** server-side environment only; never in the repo, client bundle or logs.
 - **Language:** code and agent files English; UI text from translation files, German first.
-- **Planning tool:** Polier `v1.0.0`, outside the repo, version pinned on the board.
+- **Planning tool:** Polier `v1.1.0`, outside the repo, version pinned on the board; rules in `policy.json`, loop in `docs/orchestration.md`.
 
 ## 3. System shape and module structure
 

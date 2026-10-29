@@ -1,0 +1,11 @@
+{
+  "id": "AP-009",
+  "action": "new_dependency",
+  "task": "P1-06",
+  "status": "granted",
+  "requested_by": "lead",
+  "requested_at": "2026-10-29T00:00:06+00:00",
+  "approved_by": "owner",
+  "approved_at": "2026-10-29T00:00:06+00:00",
+  "note": "Retroactive record for Polier 1.1 adoption: P1-06 touched a dependency manifest before approvals were recorded as files; its dependencies are listed with owner approval in docs/versions.md. | Owner decision 2026-10-29 (chat, Polier 1.1 adoption): record the earlier dependency approvals from docs/versions.md retroactively."
+}

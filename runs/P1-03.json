@@ -1,0 +1,19 @@
+{
+  "task": "P1-03",
+  "state": "idle",
+  "attempt": 0,
+  "attempts": [],
+  "events": [
+    {
+      "at": "2026-10-29T00:00:06+00:00",
+      "kind": "approval",
+      "data": {
+        "id": "AP-006",
+        "action": "new_dependency",
+        "status": "granted",
+        "by": "owner"
+      }
+    }
+  ],
+  "updated": "2026-10-29T00:00:06+00:00"
+}

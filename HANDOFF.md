@@ -2,7 +2,7 @@
 
 **As of:** 2026-10-27 22:55 (Europe/Zurich) · **Repository:** `/Users/rasulatashev/Desktop/KI Projekte/Project air` · **Base branch:** `main` · **Pushed:** `origin/main` now tracks `main` (owner request 2026-10-25, after the stage-5 plan); the remote commit `30626f0` (branding fix in `reference/`) was merged first with `fccf5c5`. The remote stage (`P0-02` branch protection, CI, release) is still pending.
 
-Read `AGENTS.md`, `ARCHITECTURE.md`, `STATUS.md`, `docs/module-map.md` and the task brief before working. Polier is pinned to v1.0.0: `export POLIER=/Users/rasulatashev/Desktop/Polier-main` then `bash tools/polier.sh --check`.
+Read `AGENTS.md`, `ARCHITECTURE.md`, `STATUS.md`, `docs/module-map.md` and the task brief before working. Polier is pinned to v1.1.0 (`policy.json`, `docs/orchestration.md`): `export POLIER=/Users/rasulatashev/Desktop/Polier-main` then `bash tools/polier.sh --check`.
 
 ## State
 

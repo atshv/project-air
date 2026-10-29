@@ -11,7 +11,7 @@ first and move the guarded workflow to GitHub later.
 
 ## Decision
 
-Build and verify the project locally with the pinned Polier `v1.0.0`; `gate.py` records are the
+Build and verify the project locally with the pinned Polier (board `generator_version`; `v1.0.0` at the time, `v1.1.0` since 2026-10-29); `gate.py` records are the
 evidence. Work continues in task worktrees with claims and one commit per task on `main`, but
 nothing is pushed, tagged, opened as a pull request or published until the owner switches to
 GitHub. Branch protection, CI runs, preview deployments and tag-based releases are deferred to a
