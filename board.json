@@ -7433,7 +7433,7 @@
       "satisfies": [
         "D3"
       ],
-      "status": "pending",
+      "status": "done",
       "depends_on": [
         "P0-46"
       ],
@@ -7470,13 +7470,20 @@
         "changelog-entry"
       ],
       "branch": "task/P0-47",
-      "worktree": "../Project air-P0-47",
-      "evidence": [],
+      "worktree": null,
+      "evidence": [
+        "reviews/evidence/P0-47-board-check-20261029T001240Z.json",
+        "reviews/evidence/P0-47-changelog-entry-20261029T001035Z.json",
+        "reviews/evidence/P0-47-design-check-20261029T001034Z.json"
+      ],
       "scope_write_forbidden": [
         "reference/",
         "docs/owner/"
       ],
-      "handoff": []
+      "handoff": [
+        "Closed P0-47: section 13's roles table replaced by 'How it connects', a token-only SVG of 13 parts and 15 connections (3 dashed: sign-in, WebSocket, HTTP) plus six sentences.",
+        "Phone: the diagram keeps 760 px and scrolls in its own container; keys areas.map.*, areas.roles.* removed. Scope narrowed to its own change entry (Polier 1.1.0 disjoint scopes)."
+      ]
     },
     {
       "id": "P0-48",
