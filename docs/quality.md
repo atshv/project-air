@@ -58,7 +58,7 @@ v1) are added as D7 … when those stages are planned in detail.
 
 ## Gates
 
-`$POLIER` is a checkout of Polier `v1.1.0`. Commands marked `[VERIFY: …]` are fixed by the named
+`$POLIER` is a checkout of Polier `v1.4.0`. Commands marked `[VERIFY: …]` are fixed by the named
 task from the project's manifests; until then the gate cannot pass.
 
 | Gate | Command | Expected |
@@ -101,6 +101,9 @@ task from the project's manifests; until then the gate cannot pass.
 `board-check` scans every `*.md` under the project root, including `node_modules/`. Run it before
 `pnpm install` or remove `node_modules/` first; CI runs `board-check` before the install job (P0-08).
 Third-party README links inside `node_modules/` are not project defects.
+
+`python3 $POLIER/tools/research.py check` validates `docs/versions.md` and `docs/research/` (Polier
+1.2+) and belongs to the lint pass; the check is green, not a board gate.
 
 A gate passes when command, exit code and expected output match; the output is the evidence.
 The task passes when all gates are green, every acceptance criterion is evidenced and the

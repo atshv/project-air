@@ -1,6 +1,6 @@
 # Orchestration — Project air
 
-> How a task moves through this project with Polier 1.1, what the tools check and where the records
+> How a task moves through this project with Polier 1.4, what the tools check and where the records
 > live. The numbers live in `policy.json`, not in this file. Adopted 2026-10-29 (owner decision).
 
 ## Where the state lives
@@ -8,12 +8,16 @@
 | File | Holds | Written by | Committed |
 |---|---|---|---|
 | `board.json` | plan: tasks, dependencies, scopes, status, stages | `tools/state.py` for status; the lead for plan fields | yes |
-| `runs/<ID>.json` | execution: attempt counter, gate/review/state events | `tools/state.py`, gate events by `tools/gate.py` | yes |
+| `runs/<ID>.json` | execution: attempt counter, gate/review/state events, token usage | `tools/state.py`, gate events by `tools/gate.py`, usage by `tools/usage.py` | yes |
 | `reviews/approvals/AP-NNN.json` | owner decisions: pending, granted, denied | `tools/approve.py` | yes |
 | `policy.json` | limits, protected paths, approvals, denied commands | the owner | yes |
 | `.polier-slot`, claims | liveness: ports per worktree, which session is on which task | `tools/slot.py`, `tools/claim.py` | no |
 
-`$POLIER` points at the pinned Polier checkout (`bash tools/polier.sh --check`).
+`$POLIER` points at the pinned Polier checkout: `export POLIER="$(bash tools/polier.sh --install)"`,
+then `bash tools/polier.sh --check`.
+
+`STATUS.html` is the local status page (`python3 $POLIER/tools/render_status.py . --html [--watch]`);
+it is generated, never committed and changes no state.
 
 ## The task loop
 
@@ -28,7 +32,7 @@ python3 $POLIER/tools/state.py set <ID> verifying
 python3 $POLIER/tools/state.py set <ID> review
 # reviewer writes reviews/<ID>.md with a plain line "verdict: pass"
 python3 $POLIER/tools/state.py set <ID> done --note "review pass, gates green"
-python3 $POLIER/tools/render_status.py .
+python3 $POLIER/tools/render_status.py . --html
 ```
 
 `state.py show <ID>` prints the board status against the run record, gates, review, approvals and
@@ -37,7 +41,7 @@ precondition and the command that records it.
 
 | To | Needs |
 |---|---|
-| `in_progress` | an attempt below the limit; fewer than `max_in_progress` tasks running; the stage not stopped or waiting |
+| `in_progress` | every dependency done; the token budget not used up; an attempt below the limit; fewer than `max_in_progress` tasks running; the stage not stopped or waiting |
 | `verifying` | an open attempt in `runs/<ID>.json` |
 | `review` | a passing record for every gate of the task |
 | `done` | review `verdict: pass`; handoff when another task depends on this one; the run record; a granted `new_dependency` approval when a manifest is touched |
@@ -48,6 +52,12 @@ precondition and the command that records it.
 **Attempts and rounds.** An attempt opens on `in_progress` and closes as `pass`, `fail` or
 `cancelled` (limit `max_attempts_per_task`). A round is one review; `rework` adds one (limit
 `max_review_rounds`). Never reset a counter by editing a file. At a limit: stop and escalate.
+
+**Token budget.** `policy.json` → `budget.max_tokens_per_task` caps what one task may spend over all
+its attempts and sessions (`null` = off); `warn_at` sets the warning point. Usage is recorded in
+`runs/<ID>.json` by `tools/usage.py record` or the harness hook, and a repeated report replaces the
+older one. `state.py` warns at `warn_at`, refuses `in_progress` when the budget is used up, and the
+dispatch plan lists such a task as blocked.
 
 ## Tasks done before the adoption
 
@@ -91,6 +101,8 @@ Do not retry around a refusal and do not force without an approval.
 - Run `tools/dispatch.py` before starting a task; the first wave is the plan.
 - `tools/audit.py` is the compliance view; `tools/check.py .` is the project check. Run every tool
   from the repository root.
+- `python3 $POLIER/tools/research.py check` validates `docs/versions.md` and `docs/research/`; keep
+  it green when a dependency or a research note changes.
 
 ## What is not covered
 

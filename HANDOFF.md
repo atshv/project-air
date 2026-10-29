@@ -2,7 +2,7 @@
 
 **As of:** 2026-10-27 22:55 (Europe/Zurich) · **Repository:** `/Users/rasulatashev/Desktop/KI Projekte/Project air` · **Base branch:** `main` · **Pushed:** `origin/main` now tracks `main` (owner request 2026-10-25, after the stage-5 plan); the remote commit `30626f0` (branding fix in `reference/`) was merged first with `fccf5c5`. The remote stage (`P0-02` branch protection, CI, release) is still pending.
 
-Read `AGENTS.md`, `ARCHITECTURE.md`, `STATUS.md`, `docs/module-map.md` and the task brief before working. Polier is pinned to v1.1.0 (`policy.json`, `docs/orchestration.md`): `export POLIER=/Users/rasulatashev/Desktop/Polier-main` then `bash tools/polier.sh --check`.
+Read `AGENTS.md`, `ARCHITECTURE.md`, `STATUS.md`, `docs/module-map.md` and the task brief before working. Polier is pinned to v1.4.0 (`board.json`, `docs/versions.md`, `docs/orchestration.md`): `export POLIER="$(bash tools/polier.sh --install)"` then `bash tools/polier.sh --check`.
 
 ## State
 
@@ -171,6 +171,7 @@ Read `AGENTS.md`, `ARCHITECTURE.md`, `STATUS.md`, `docs/module-map.md` and the t
 - Perf measurement: Chrome for Testing 156.0.8078.4 from the Playwright cache with `--headless=new --use-angle=metal --enable-gpu` (real ANGLE Metal GPU); the harness rejects software renderers.
 - DSH sessions: Chrome for Testing starts inside the workspace sandbox when the harness passes its own `--user-data-dir` and `--no-sandbox` (the perf/visual/idle harnesses do); the P4-10 run produced real ANGLE Metal evidence this way. Never replace evidence with a screenshot from another build.
 - Disk: ~19 GiB free (freed during the backend stage). Still clean `node_modules/`, build dirs, `dist/` and `/tmp` after each task.
+- **Polier update (2026-10-29):** the pin moved from 1.1.0 to **1.4.0** (`board.json`, `docs/versions.md`, `ARCHITECTURE.md`, `docs/quality.md`, `README.md`, `docs/orchestration.md`). Adopted: the optional `policy.json` → `budget` block (`max_tokens_per_task: null` = off, `warn_at: 0.8`), the generated `STATUS.html` (`render_status.py . --html`, gitignored) and the `tools/research.py check` lint pass (`docs/quality.md`, green; `AGENTS.md` stays at its 400-word budget). The checkout must be the **exact tag**: `bash tools/polier.sh --install` clones `~/.polier/1.4.0`; `$POLIER` must point there. The old `Desktop/Polier-main` copy sits at `main` (one commit past `v1.4.0`) and fails the exact-tag check of `polier.sh --check`.
 
 ## Next steps
 
@@ -186,7 +187,7 @@ Read `AGENTS.md`, `ARCHITECTURE.md`, `STATUS.md`, `docs/module-map.md` and the t
 ## Standard task loop
 
 ```
-export POLIER=/Users/rasulatashev/Desktop/Polier-main
+export POLIER="$(bash tools/polier.sh --install)"
 python3 $POLIER/tools/worktree.py start <ID> --root . --session lead --harness dsh
 # set task in_progress in board.json, render_status.py, commit "chore: start <ID>"
 # worker implements the brief in the worktree

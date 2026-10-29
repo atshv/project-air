@@ -2,7 +2,7 @@
 
 Working title **Project air**: a web whiteboard with its own engine (C++/WebAssembly/WebGPU), its
 own backend and realtime collaboration. This repository is planned and guarded with Polier
-`v1.1.0`.
+`v1.4.0`.
 
 ## Start here
 
@@ -11,8 +11,9 @@ own backend and realtime collaboration. This repository is planned and guarded w
 | `ARCHITECTURE.md` | system shape, invariants, gates |
 | `AGENTS.md` | commands and rules for every agent |
 | `STATUS.md` | progress, generated from `board.json` |
+| `STATUS.html` | local status page (`render_status.py . --html`), not committed |
 | `board.json` | stages, packages, tasks, resources, open questions |
-| `policy.json` | Polier 1.1 rules: limits, protected paths, approvals, denied commands |
+| `policy.json` | Polier 1.4 rules: limits, protected paths, approvals, denied commands, token budget |
 | `docs/orchestration.md` | the task loop: state changes, gates, approvals, escalation |
 | `runs/` | execution record per task (attempts, gate and state events) |
 | `reviews/approvals/` | owner decisions on high-risk actions |
