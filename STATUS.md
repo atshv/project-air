@@ -126,7 +126,10 @@
 
 ## Ready now
 
-- none
+- `P0-48` Live demo: visible selection frame, delete that works
+  - P0-41: Closed P0-41: selection/multi-select/teammate frames follow the object radius via --frame-radius; hovered corner is a 2 px arc bracket. Blocks/zones use --radius-lg, notes --radius-md.
+  - P0-41: Done checklist entries render --muted at opacity 0.6 with a full --accent tick and no strikethrough; design law section 6 row and L14 wording follow the demo.
+  - P0-41: The three intro blocks became one line plus a numbered, two-column <details> contents list (ten points, EN/DE, keyboard); screenshots and the headless-Chrome log are committed.
 
 ## Orchestration
 
@@ -248,7 +251,6 @@
 
 - [ ] `P6-08` Contract 0.4.0 operation support in crdt and sync — status: `in_progress` — owner: lead
 - [ ] `P0-47` Preview page: connections diagram instead of roles — status: `in_progress` — owner: —
-- [ ] `P0-48` Live demo: visible selection frame, delete that works — status: `in_progress` — owner: —
 
 ## Blocked / failed
 
@@ -263,6 +265,7 @@
 - [ ] `P6-09` Realtime UI: live changes, presence and save status (L05) — status: `pending` — owner: —
 - [ ] `P6-10` e2e suite: main flows and the e2e gate on the slot ports — status: `pending` — owner: —
 - [ ] `P6-11` Canvas evidence, repo-wide checks and the web-app stage report — status: `pending` — owner: —
+- [ ] `P0-48` Live demo: visible selection frame, delete that works — status: `pending` — owner: —
 
 <!-- polier:claims -->
 ## Claims
