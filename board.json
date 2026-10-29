@@ -7158,7 +7158,8 @@
         "pnpm-lock.yaml",
         "docs/versions.md",
         "packages/engine/",
-        "packages/sdk/"
+        "packages/sdk/",
+        "services/sync/"
       ],
       "scope_read": [
         "ARCHITECTURE.md",
