@@ -61,7 +61,7 @@
 - Exit gates: `e2e`, `design-check`, `language-check`
 - Exit criteria: Main e2e flows green on a preview environment.; Every canvas work order done with evidence; design-check and language-check green repo-wide.
 - Tasks: P6-01, P6-02, P6-03, P6-04, P6-05, P6-06, P6-07, P6-09, P6-10, P6-11, P0-45, P0-46, P6-08, P0-47, P6-12, P6-13, P6-14, P6-15, P6-16, P6-17, P6-18, P6-19, P6-20, P6-21, P6-22
-- Tasks open: P6-15, P6-16, P6-17, P6-18, P6-19, P6-20, P6-21, P6-22
+- Tasks open: P6-16, P6-17, P6-18, P6-19, P6-20, P6-21, P6-22
 
 ### Stage 8 — `value` Import, export and AI
 
@@ -125,14 +125,20 @@
 
 ## Ready now
 
-- none
+- `P6-16` Titles, previews and headers on the web canvas (L02 web part)
+  - P6-13: crdt/sync/sdk speak 0.5.0. Send updateBlockContent with the whole new content and the previous content in its inverse: only the delta is written, so concurrent edits of other entries survive.
+  - P6-13: Every new checklist point, lane, row or column needs a fresh UUIDv7 id; an empty content clears the field. Undo/redo go through the SDK own history (an undo is itself undoable).
+  - P6-13: Offline undoOwn/redoOwn only queue (no local apply) while sendOperations applies; check this when the app wires undo for content (P6-21).
+  - P6-15: P6-15: CommandBuffer::build(..., interleave) + bands(); both backends draw a band's objects, then its chrome/glyphs; tail = page runs + global chrome.
+  - P6-15: Bands only when text is bound (text-free frames keep one draw). Plan rebuilds on document version change (~20-30 ms Debug on 10k) - incremental plan is a P6-16/17 follow-up.
+  - P6-15: New ?text=overlapping scene + reviewed overlapping-titles baselines; engine_depth_order_tests; perf harness copy list fixed (keyboard/view-persistence).
 
 ## Orchestration
 
 - Limits: 3 attempts/task, 3 in progress
-- Next wave: none — nothing is ready
-- Running: `P6-15` attempt 1/3
-- Blocked: P0-02, P0-15, P0-16, P0-17 (stage waits); P6-16, P6-17, P6-18, P6-19, P6-20, P6-21, P6-22 (open dependency)
+- Next wave: `P6-16` (tasks/P6-16.md)
+- Running: none
+- Blocked: P0-02, P0-15, P0-16, P0-17 (stage waits); P6-17, P6-18, P6-19, P6-20, P6-21, P6-22 (open dependency)
 - Approvals pending: none
 
 ## Done
@@ -251,10 +257,11 @@
 - [x] `P6-12` Contract 0.5.0: block content and zone rename — status: `done` — owner: —
 - [x] `P6-13` Block content and zone rename in the CRDT, sync and SDK — status: `done` — owner: —
 - [x] `P6-14` Engine for the app: contract 0.5.0 and the interaction exports — status: `done` — owner: —
+- [x] `P6-15` Depth-ordered titles and previews in the engine — status: `done` — owner: —
 
 ## In progress
 
-- [ ] `P6-15` Depth-ordered titles and previews in the engine — status: `review` — owner: —
+- none
 
 ## Blocked / failed
 

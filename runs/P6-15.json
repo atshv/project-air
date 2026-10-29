@@ -1,14 +1,14 @@
 {
   "task": "P6-15",
-  "state": "running",
+  "state": "done",
   "attempt": 1,
   "attempts": [
     {
       "n": 1,
       "started": "2026-10-29T18:15:19+00:00",
-      "ended": null,
-      "result": null,
-      "note": null
+      "ended": "2026-10-29T18:44:39+00:00",
+      "result": "pass",
+      "note": "review pass, gates green"
     }
   ],
   "events": [
@@ -144,8 +144,28 @@
         "to": "review",
         "actor": "lead"
       }
+    },
+    {
+      "at": "2026-10-29T18:44:19+00:00",
+      "kind": "approval",
+      "data": {
+        "id": "AP-019",
+        "action": "merge_to_base",
+        "status": "granted",
+        "by": "owner"
+      }
+    },
+    {
+      "at": "2026-10-29T18:44:39+00:00",
+      "kind": "state",
+      "data": {
+        "from": "review",
+        "to": "done",
+        "actor": "lead",
+        "note": "review pass, gates green"
+      }
     }
   ],
   "usage": {},
-  "updated": "2026-10-29T18:43:49+00:00"
+  "updated": "2026-10-29T18:44:39+00:00"
 }

@@ -1,0 +1,11 @@
+{
+  "id": "AP-019",
+  "action": "merge_to_base",
+  "task": "P6-15",
+  "status": "granted",
+  "requested_by": "lead",
+  "requested_at": "2026-10-29T18:44:19+00:00",
+  "approved_by": "owner",
+  "approved_at": "2026-10-29T18:44:19+00:00",
+  "note": "merge task/P6-15 into main (local, no push) | Owner in chat 2026-10-29: 'Ja, mergen' (merge P6-15 into main, local, no push)"
+}

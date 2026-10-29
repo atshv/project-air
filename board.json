@@ -7793,7 +7793,7 @@
       "satisfies": [
         "D12"
       ],
-      "status": "review",
+      "status": "done",
       "depends_on": [
         "P6-14"
       ],
@@ -7837,7 +7837,6 @@
         "reviews/evidence/P6-15-cpp-unit-20261029T182646Z.json",
         "reviews/evidence/P6-15-boundaries-20261029T182649Z.json",
         "reviews/evidence/P6-15-visual-20261029T182652Z.json",
-        "reviews/evidence/P6-15-visual-run-20261029T182653Z.json",
         "reviews/evidence/P6-15-perf-20261029T184145Z.json",
         "reviews/evidence/P6-15-board-check-20261029T184217Z.json"
       ],
@@ -7847,6 +7846,11 @@
       "exclusive": [
         "visual",
         "perf"
+      ],
+      "handoff": [
+        "P6-15: CommandBuffer::build(..., interleave) + bands(); both backends draw a band's objects, then its chrome/glyphs; tail = page runs + global chrome.",
+        "Bands only when text is bound (text-free frames keep one draw). Plan rebuilds on document version change (~20-30 ms Debug on 10k) - incremental plan is a P6-16/17 follow-up.",
+        "New ?text=overlapping scene + reviewed overlapping-titles baselines; engine_depth_order_tests; perf harness copy list fixed (keyboard/view-persistence)."
       ]
     },
     {
