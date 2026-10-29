@@ -7389,7 +7389,8 @@
         "packages/crdt/",
         "services/sync/",
         ".changes/",
-        "docs/realtime.md"
+        "docs/realtime.md",
+        "packages/sdk/"
       ],
       "scope_read": [
         "ARCHITECTURE.md",
@@ -7403,7 +7404,8 @@
         "packages/contracts/plaintext.mjs",
         "packages/crdt/",
         "services/sync/",
-        "docs/realtime.md"
+        "docs/realtime.md",
+        "packages/sdk/src/realtime/"
       ],
       "acceptance": [
         "A1",
