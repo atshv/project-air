@@ -109,7 +109,17 @@
         "actor": "lead",
         "note": "review pass, gates green"
       }
+    },
+    {
+      "at": "2026-10-29T18:04:34+00:00",
+      "kind": "approval",
+      "data": {
+        "id": "AP-018",
+        "action": "merge_to_base",
+        "status": "granted",
+        "by": "owner"
+      }
     }
   ],
-  "updated": "2026-10-29T18:02:39+00:00"
+  "updated": "2026-10-29T18:04:34+00:00"
 }
