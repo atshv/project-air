@@ -7535,7 +7535,8 @@
       "worktree": null,
       "evidence": [
         "reviews/evidence/P0-48-design-check-20261029T001522Z.json",
-        "reviews/evidence/P0-48-changelog-entry-20261029T001522Z.json"
+        "reviews/evidence/P0-48-changelog-entry-20261029T001522Z.json",
+        "evidence/P0-48-board-check-20261029T002123Z.json"
       ],
       "scope_write_forbidden": [
         "reference/",
