@@ -28,8 +28,18 @@
         "actor": "lead",
         "note": "lead session, owner request 2026-10-29"
       }
+    },
+    {
+      "at": "2026-10-29T17:07:44+00:00",
+      "kind": "approval",
+      "data": {
+        "id": "AP-016",
+        "action": "scope_change",
+        "status": "granted",
+        "by": "owner"
+      }
     }
   ],
   "usage": {},
-  "updated": "2026-10-29T16:37:39+00:00"
+  "updated": "2026-10-29T17:07:44+00:00"
 }
