@@ -76,8 +76,15 @@ export function NotePanel({ t, boardId, actorId, noteId, note, open, onClose, on
   }, [open]);
   useEffect(() => {
     if (phase === "opening") {
+      // The opening phase is one paint gate before the transition to "open". A
+      // throttled or stalled animation frame must never leave the panel invisible,
+      // so a short timer is the fallback after the frame.
       const frame = window.requestAnimationFrame(() => setPhase("open"));
-      return () => window.cancelAnimationFrame(frame);
+      const timer = window.setTimeout(() => setPhase("open"), 250);
+      return () => {
+        window.cancelAnimationFrame(frame);
+        window.clearTimeout(timer);
+      };
     }
     if (phase === "closing") {
       const timer = window.setTimeout(() => setPhase("closed"), PANEL_MOTION_MS);

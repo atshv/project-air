@@ -595,21 +595,36 @@ export function BoardPage({ t, language, clientId }: BoardPageProps) {
         ) : null}
         {state.loading ? <p className="board-empty muted" role="status">{t("board.loading")}</p> : null}
         {!state.loading && state.empty ? <p className="board-empty muted">{t("canvas.empty")}</p> : null}
-      </div>
-      <div className="toolbar" role="toolbar" aria-label={t("canvas.toolbar.label")}>
-        {groups.map((group, index) => (
-          <div className="toolbar-group" key={index}>
-            {index > 0 ? <span className="toolbar-divider" aria-hidden="true" /> : null}
-            {group.map((definition) => (
-              <ToolbarButton key={definition.id} icon={ICONS[definition.icon] ?? sourceIcon} label={t(definition.labelKey)} pressed={definition.id === tool} onSelect={() => setTool(definition.id)} />
-            ))}
-          </div>
-        ))}
-      </div>
-      <div className="zoom-controls" role="group" aria-label={t("canvas.zoom.label")}>
-        <Button size="bar" variant="ghost" aria-label={t("canvas.zoom.out")} onClick={() => userCamera(zoomBy(cameraRef.current, 0.9))}>{t("canvas.zoom.out")}</Button>
-        <Button size="bar" variant="ghost" aria-label={t("canvas.zoom.fit")} onClick={() => { const engine = engineRef.current; const canvas = canvasRef.current; const fallback = contentRef.current ?? (state.board !== null ? EMPTY_CONTENT(state.board) : null); if (engine !== null && canvas !== null && fallback !== null) userCamera(engine.fitView(bounds(fallback), { width: canvas.clientWidth, height: canvas.clientHeight })); }}>{t("canvas.zoom.fit")}</Button>
-        <Button size="bar" variant="ghost" aria-label={t("canvas.zoom.in")} onClick={() => userCamera(zoomBy(cameraRef.current, 1.1))}>{t("canvas.zoom.in")}</Button>
+        <div className="toolbar" role="toolbar" aria-label={t("canvas.toolbar.label")}>
+          {groups.map((group, index) => (
+            <div className="toolbar-group" key={index}>
+              {index > 0 ? <span className="toolbar-divider" aria-hidden="true" /> : null}
+              {group.map((definition) => (
+                <ToolbarButton key={definition.id} icon={ICONS[definition.icon] ?? sourceIcon} label={t(definition.labelKey)} pressed={definition.id === tool} onSelect={() => setTool(definition.id)} />
+              ))}
+            </div>
+          ))}
+        </div>
+        <div className="zoom-controls" role="group" aria-label={t("canvas.zoom.label")}>
+          <Button size="bar" variant="ghost" aria-label={t("canvas.zoom.out")} onClick={() => userCamera(zoomBy(cameraRef.current, 0.9))}>{t("canvas.zoom.out")}</Button>
+          <Button size="bar" variant="ghost" aria-label={t("canvas.zoom.fit")} onClick={() => { const engine = engineRef.current; const canvas = canvasRef.current; const fallback = contentRef.current ?? (state.board !== null ? EMPTY_CONTENT(state.board) : null); if (engine !== null && canvas !== null && fallback !== null) userCamera(engine.fitView(bounds(fallback), { width: canvas.clientWidth, height: canvas.clientHeight })); }}>{t("canvas.zoom.fit")}</Button>
+          <Button size="bar" variant="ghost" aria-label={t("canvas.zoom.in")} onClick={() => userCamera(zoomBy(cameraRef.current, 1.1))}>{t("canvas.zoom.in")}</Button>
+        </div>
+        {panel === null || panelCard === null ? null : (
+          <NotePanel
+            t={t}
+            boardId={state.board?.id ?? id ?? ""}
+            actorId={clientId}
+            noteId={panelCard.card.noteId}
+            note={panelCard.note}
+            open={panel.open}
+            onClose={closePanel}
+            onClosed={() => setPanel(null)}
+            sendOperations={sendNoteOperations}
+            onAutosaveEvent={onAutosaveEvent}
+            onAutosaveReady={onAutosaveReady}
+          />
+        )}
       </div>
       {menu === null ? null : (
         <div className="context-menu" role="menu" aria-label={t("board.menu.label")} style={{ left: menu.x, top: menu.y, zIndex: LAYER_Z_INDEX["context-menu"] }}>
@@ -627,21 +642,6 @@ export function BoardPage({ t, language, clientId }: BoardPageProps) {
             </button>
           ))}
         </div>
-      )}
-      {panel === null || panelCard === null ? null : (
-        <NotePanel
-          t={t}
-          boardId={state.board?.id ?? id ?? ""}
-          actorId={clientId}
-          noteId={panelCard.card.noteId}
-          note={panelCard.note}
-          open={panel.open}
-          onClose={closePanel}
-          onClosed={() => setPanel(null)}
-          sendOperations={sendNoteOperations}
-          onAutosaveEvent={onAutosaveEvent}
-          onAutosaveReady={onAutosaveReady}
-        />
       )}
       <footer className="board-status" data-state={statusView.state} role="status" aria-live="polite">
         {statusView.retryable ? (

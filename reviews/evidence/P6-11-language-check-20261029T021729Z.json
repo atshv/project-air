@@ -1,0 +1,19 @@
+{
+  "task": "P6-11",
+  "gate": "language-check",
+  "command": "node tools/language-check/index.mjs .",
+  "exit_code": 0,
+  "result": "pass",
+  "slot": null,
+  "exclusive": [
+    "e2e"
+  ],
+  "lock_wait_s": 0.0,
+  "lock_warning": null,
+  "started": "2026-10-29T02:17:29+00:00",
+  "finished": "2026-10-29T02:17:31+00:00",
+  "commit": "00ea22b7b3f0287d621cf10f654e7f12e20d4d78",
+  "dirty": true,
+  "log": "P6-11-language-check-20261029T021729Z.log",
+  "log_sha256": "e5d83f75dafad1f4f7383e82565ea5055e9be1b2773a76d0a76e82eb8e5ddaed"
+}

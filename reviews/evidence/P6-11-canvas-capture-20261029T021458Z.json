@@ -1,0 +1,559 @@
+{
+  "task": "P6-11",
+  "kind": "canvas-capture",
+  "spec": "apps/web/e2e/canvas-evidence.capture.ts",
+  "startedAt": "2026-10-29T02:14:37.493Z",
+  "commit": "00ea22b7b3f0287d621cf10f654e7f12e20d4d78",
+  "environment": {
+    "slot": 3,
+    "database": "project-air_slot_3",
+    "ports": {
+      "web": 4300,
+      "web-e2e": 4301,
+      "platform": 4310,
+      "auth": 4320,
+      "sync": 4330,
+      "media": 4340,
+      "ai": 4350,
+      "playground": 4360
+    },
+    "locale": "en (e2e fixture init script); de for the L05 offline-hint capture",
+    "browser": "156.0.8078.4",
+    "baseURL": "http://127.0.0.1:4301",
+    "commit": "00ea22b7b3f0287d621cf10f654e7f12e20d4d78"
+  },
+  "captures": [
+    {
+      "entry": "L00",
+      "viewport": "desktop",
+      "file": "reviews/evidence/P6-11-L00-desktop.png",
+      "width": 1440,
+      "height": 900,
+      "statusText": "",
+      "panel": null,
+      "specStep": "board ready; tooltip visible on the Add note tool"
+    },
+    {
+      "entry": "L00",
+      "viewport": "mobile",
+      "file": "reviews/evidence/P6-11-L00-mobile.png",
+      "width": 390,
+      "height": 844,
+      "statusText": "",
+      "panel": null,
+      "specStep": "390 px viewport ready; tooltip visible on the Add note tool"
+    },
+    {
+      "entry": "L02",
+      "viewport": "desktop",
+      "file": "reviews/evidence/P6-11-L02-desktop.png",
+      "width": 1440,
+      "height": 900,
+      "statusText": "Saved",
+      "panel": null,
+      "specStep": "two note cards on the canvas; app-level rendering state"
+    },
+    {
+      "entry": "L02",
+      "viewport": "mobile",
+      "file": "reviews/evidence/P6-11-L02-mobile.png",
+      "width": 390,
+      "height": 844,
+      "statusText": "Saved",
+      "panel": null,
+      "specStep": "390 px canvas with the same two cards"
+    },
+    {
+      "entry": "L04",
+      "viewport": "desktop",
+      "file": "reviews/evidence/P6-11-L04-desktop.png",
+      "width": 1440,
+      "height": 900,
+      "statusText": "",
+      "panel": {
+        "x": 1012,
+        "width": 400,
+        "height": 680
+      },
+      "specStep": "note panel open over the canvas"
+    },
+    {
+      "entry": "L04",
+      "viewport": "mobile",
+      "file": "reviews/evidence/P6-11-L04-mobile.png",
+      "width": 390,
+      "height": 844,
+      "statusText": "",
+      "panel": {
+        "x": 16,
+        "width": 358,
+        "height": 626
+      },
+      "specStep": "full-width note panel at the 390 px viewport"
+    },
+    {
+      "entry": "L05",
+      "viewport": "desktop",
+      "file": "reviews/evidence/P6-11-L05-desktop.png",
+      "width": 1440,
+      "height": 900,
+      "statusText": "Saved",
+      "panel": {
+        "x": 1012,
+        "width": 400,
+        "height": 680
+      },
+      "specStep": "editor focused after typing; the status region shows Saved"
+    },
+    {
+      "entry": "L05",
+      "viewport": "mobile",
+      "file": "reviews/evidence/P6-11-L05-mobile.png",
+      "width": 390,
+      "height": 844,
+      "statusText": "Saved",
+      "panel": {
+        "x": 16,
+        "width": 358,
+        "height": 626
+      },
+      "specStep": "editor focused at 390 px; the status region shows Saved"
+    },
+    {
+      "entry": "L05-offline-de",
+      "viewport": "desktop",
+      "file": "reviews/evidence/P6-11-L05-offline-de-desktop.png",
+      "width": 390,
+      "height": 844,
+      "statusText": "Offline – Änderungen bleiben erhalten und werden gesendet, sobald die Verbindung wieder da ist.",
+      "panel": null,
+      "specStep": "the offline queue hint with the edited title kept (network off)"
+    },
+    {
+      "entry": "L06",
+      "viewport": "desktop",
+      "file": "reviews/evidence/P6-11-L06-desktop.png",
+      "width": 1440,
+      "height": 900,
+      "statusText": "",
+      "panel": {
+        "x": 1012,
+        "width": 400,
+        "height": 680
+      },
+      "specStep": "empty note with the focused own editor and its placeholder"
+    },
+    {
+      "entry": "L06",
+      "viewport": "mobile",
+      "file": "reviews/evidence/P6-11-L06-mobile.png",
+      "width": 390,
+      "height": 844,
+      "statusText": "",
+      "panel": {
+        "x": 16,
+        "width": 358,
+        "height": 604
+      },
+      "specStep": "empty note in the full-width panel at 390 px"
+    },
+    {
+      "entry": "L09",
+      "viewport": "desktop",
+      "file": "reviews/evidence/P6-11-L09-desktop.png",
+      "width": 1440,
+      "height": 900,
+      "statusText": "Saved",
+      "panel": {
+        "x": 1012,
+        "width": 400,
+        "height": 680
+      },
+      "specStep": "title edited in the panel; Enter moved the focus into the editor"
+    },
+    {
+      "entry": "L09",
+      "viewport": "mobile",
+      "file": "reviews/evidence/P6-11-L09-mobile.png",
+      "width": 390,
+      "height": 844,
+      "statusText": "Saved",
+      "panel": {
+        "x": 16,
+        "width": 358,
+        "height": 626
+      },
+      "specStep": "title field and editor in the full-width panel at 390 px"
+    },
+    {
+      "entry": "L12",
+      "viewport": "desktop",
+      "file": "reviews/evidence/P6-11-L12-desktop.png",
+      "width": 1440,
+      "height": 900,
+      "statusText": "",
+      "panel": null,
+      "specStep": "context menu open over the selected note"
+    },
+    {
+      "entry": "L12",
+      "viewport": "mobile",
+      "file": "reviews/evidence/P6-11-L12-mobile.png",
+      "width": 390,
+      "height": 844,
+      "statusText": "",
+      "panel": null,
+      "specStep": "context menu inside the 390 px viewport"
+    },
+    {
+      "entry": "L17",
+      "viewport": "desktop",
+      "file": "reviews/evidence/P6-11-L17-desktop.png",
+      "width": 1440,
+      "height": 900,
+      "statusText": "",
+      "panel": null,
+      "specStep": "zoomed view restored after a reload"
+    },
+    {
+      "entry": "L17",
+      "viewport": "mobile",
+      "file": "reviews/evidence/P6-11-L17-mobile.png",
+      "width": 390,
+      "height": 844,
+      "statusText": "",
+      "panel": null,
+      "specStep": "zoomed view restored after a reload at 390 px"
+    },
+    {
+      "entry": "L18",
+      "viewport": "desktop",
+      "file": "reviews/evidence/P6-11-L18-desktop.png",
+      "width": 1440,
+      "height": 900,
+      "statusText": "Saved",
+      "panel": {
+        "x": 1012,
+        "width": 400,
+        "height": 680
+      },
+      "specStep": "own editor with three keyboard-written lines"
+    },
+    {
+      "entry": "L18",
+      "viewport": "mobile",
+      "file": "reviews/evidence/P6-11-L18-mobile.png",
+      "width": 390,
+      "height": 844,
+      "statusText": "Saved",
+      "panel": {
+        "x": 16,
+        "width": 358,
+        "height": 604
+      },
+      "specStep": "the keyboard-written editor content in the full-width panel"
+    },
+    {
+      "entry": "a11y-login",
+      "viewport": "desktop",
+      "file": "reviews/evidence/P6-11-a11y-login-desktop.png",
+      "width": 1440,
+      "height": 900,
+      "statusText": "",
+      "panel": null,
+      "specStep": "login page, keyboard focus on the email field"
+    },
+    {
+      "entry": "a11y-board-focus",
+      "viewport": "desktop",
+      "file": "reviews/evidence/P6-11-a11y-board-focus-desktop.png",
+      "width": 1440,
+      "height": 900,
+      "statusText": "",
+      "panel": null,
+      "specStep": "board page, keyboard focus visible on a toolbar button"
+    }
+  ],
+  "checks": {
+    "L00": {
+      "tooltipMs": 827,
+      "tooltipShownAfterDwell": true,
+      "tooltipHiddenOnEscape": true,
+      "toolbarButtons": 6,
+      "toolbarInsideCanvas": true,
+      "toolbarTopGap": 12,
+      "toolbarBarHeight": 48,
+      "toolbarButtonSize": {
+        "width": 36,
+        "height": 36
+      },
+      "keyboardReachedButtons": [
+        "Select",
+        "Add note",
+        "Zone",
+        "Checklist",
+        "Connect",
+        "Select"
+      ],
+      "keyboardReachable": true,
+      "focusOutline": "auto 1px rgb(153, 200, 255)"
+    },
+    "L02": {
+      "canvas": {
+        "width": 1408,
+        "height": 704
+      },
+      "appProjects": "rectangles only (BoardPage.projectContent); note titles and body are not passed to the engine in P6",
+      "engineEvidence": [
+        "reviews/evidence/P4-10-capture-before-20261027T212735Z.json",
+        "reviews/evidence/P4-10-capture-after-20261027T214803Z.json",
+        "reviews/evidence/P4-28-visual-final-20261028T164920Z.json"
+      ]
+    },
+    "L04": {
+      "canvasBefore": 1408,
+      "canvasAfter": 1408,
+      "canvasWidthUnchanged": true,
+      "canvasDesktop": {
+        "x": 16,
+        "y": 128,
+        "width": 1408,
+        "height": 704
+      },
+      "panelDesktop": {
+        "x": 1012,
+        "y": 140,
+        "width": 400,
+        "height": 680
+      },
+      "panelWidth400": true,
+      "panelGap12": true,
+      "panelTopGap12": true,
+      "canvasMobile": 358,
+      "panelMobile": {
+        "x": 16,
+        "width": 358
+      },
+      "panelSpansCanvas": true
+    },
+    "L05": {
+      "lastKeyToSavedMs": 418,
+      "within500ms": true,
+      "observedAfterMs": 806,
+      "caretInEditor": true,
+      "reloadKeptContent": true,
+      "persistedText": "Saved within the deadline and kept at the cursor.",
+      "mobileSaved": true,
+      "offlineHintShown": true,
+      "inputKeptWhileOffline": true,
+      "convergedAfterReconnect": true
+    },
+    "L06": {
+      "desktop": {
+        "dataEmpty": "true",
+        "placeholder": "Start writing …",
+        "editorFocused": true
+      },
+      "mobile": {
+        "dataEmpty": "true",
+        "placeholder": "Start writing …",
+        "editorFocused": true
+      }
+    },
+    "L09": {
+      "titleValue": "Stage report note",
+      "enterFocusesEditor": true,
+      "titleAccessibleName": "Title"
+    },
+    "L12": {
+      "menuWidth": 200,
+      "menuItems": 5,
+      "keyboardReachedMenuitem": true,
+      "keyboardActivatedOpen": true,
+      "focusSteps": [
+        "button:Select",
+        "button:Add note",
+        "button:Zone",
+        "button:Checklist",
+        "button:Connect",
+        "button:Select",
+        "button:Zoom out",
+        "button:Show all",
+        "button:Zoom in",
+        "button:OpenEnter"
+      ],
+      "mobileMenuWithinViewport": true
+    },
+    "L17": {
+      "desktop": {
+        "zoom": 1.2100000000000002,
+        "restoredZoom": 1.2100000000000002
+      },
+      "mobile": {
+        "zoom": 1.2100000000000002
+      }
+    },
+    "L18": {
+      "lines": [
+        "First point",
+        "Second point",
+        "Third point"
+      ],
+      "appLevelBehaviour": "own editor: keyboard-only line editing inside the note panel",
+      "engineEvidence": "reviews/evidence/P4-23-inline-20261028T071434Z.json (24/24 browser checks on the inline block overlay)"
+    }
+  },
+  "a11y": {
+    "keyboardPath": {
+      "login": {
+        "reachedEmailAfterTabs": 6,
+        "tabOrder": [
+          "a:Project air",
+          "a:Boards",
+          "a:Settings",
+          "button:DE",
+          "button:EN",
+          "input:"
+        ],
+        "submittedWithKeyboard": true,
+        "submitButton": "Sign in"
+      },
+      "boards": {
+        "openedBoardWithKeyboard": true
+      },
+      "board": {
+        "toolbarReachableByTab": true
+      },
+      "focusOutline": "auto 1px rgb(153, 200, 255)",
+      "panel": "panel internals are keyboard operable once a card is selected; creating/selecting a canvas object needs a pointer (a11y gap, hardening)"
+    },
+    "rolesAndLabels": {
+      "navigationMain": 1,
+      "toolbarTools": 1,
+      "viewControls": 1,
+      "canvasLabel": 1,
+      "status": 1,
+      "languageGroup": 1
+    },
+    "panel": {
+      "closeTarget": {
+        "width": 58,
+        "height": 28
+      },
+      "shiftTabFromEditor": {
+        "tag": "div",
+        "name": "Note content",
+        "inPanel": true
+      },
+      "savedWithKeyboardOnly": true,
+      "escapeClosedPanel": true
+    },
+    "tapTargetsDesktop": {
+      "toolbar": [
+        {
+          "name": "Select",
+          "width": 36,
+          "height": 36
+        },
+        {
+          "name": "Add note",
+          "width": 36,
+          "height": 36
+        },
+        {
+          "name": "Zone",
+          "width": 36,
+          "height": 36
+        },
+        {
+          "name": "Checklist",
+          "width": 36,
+          "height": 36
+        },
+        {
+          "name": "Connect",
+          "width": 36,
+          "height": 36
+        },
+        {
+          "name": "Select",
+          "width": 36,
+          "height": 36
+        }
+      ],
+      "zoom": [
+        {
+          "width": 96,
+          "height": 36
+        },
+        {
+          "width": 88,
+          "height": 36
+        },
+        {
+          "width": 86,
+          "height": 36
+        }
+      ]
+    },
+    "tapTargetsMobile": {
+      "toolbar": [
+        {
+          "name": "Select",
+          "width": 36,
+          "height": 36
+        },
+        {
+          "name": "Add note",
+          "width": 36,
+          "height": 36
+        },
+        {
+          "name": "Zone",
+          "width": 36,
+          "height": 36
+        },
+        {
+          "name": "Checklist",
+          "width": 36,
+          "height": 36
+        },
+        {
+          "name": "Connect",
+          "width": 36,
+          "height": 36
+        },
+        {
+          "name": "Select",
+          "width": 36,
+          "height": 36
+        }
+      ],
+      "zoom": [
+        {
+          "width": 96,
+          "height": 36
+        },
+        {
+          "width": 88,
+          "height": 36
+        },
+        {
+          "width": 86,
+          "height": 36
+        }
+      ]
+    },
+    "tokenSizes": {
+      "buttonBar": "36px",
+      "buttonCard": "28px",
+      "headerHeight": "40px"
+    },
+    "contrast": {
+      "fg on bg": 15.69,
+      "muted on surface": 8.01,
+      "accent on surface": 8.29,
+      "danger on surface": 8.76
+    }
+  }
+}

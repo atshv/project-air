@@ -1,0 +1,61 @@
+$ pnpm --filter ./apps/web exec playwright test && pnpm --filter ./apps/web exec playwright test --config playwright.capture.config.mjs
+[exit 0]
+
+[WebServer] e2e-env: slot 3 | database project-air_slot_3 | web-e2e 4301 | platform 4310 | auth 4320 | sync 4330
+[WebServer] e2e-env: resetting and migrating the slot database (tools/dev/reset-db)
+[WebServer] e2e-env: starting auth (test mode), platform and sync from the built services
+[WebServer] e2e-env: minted 2 test-mode sessions
+[WebServer] e2e-env: seeding accounts, workspace, membership and board with fixed ids
+[WebServer] e2e-env: ready at http://127.0.0.1:4301 (stop with SIGTERM; the suite cleans up after itself)
+
+Running 13 tests using 1 worker
+
+  ✓   1 [chromium] › e2e/boards.spec.ts:7:3 › boards list › shows the seeded workspace and board, creates a board and opens it (949ms)
+  ✓   2 [chromium] › e2e/boards.spec.ts:28:3 › boards list › a missing board redirects back to the boards list (178ms)
+  ✓   3 [chromium] › e2e/interactions.spec.ts:20:3 › board interactions › the L12 context menu offers open, duplicate, bring forward, send backward and delete (2.0s)
+  ✓   4 [chromium] › e2e/interactions.spec.ts:74:3 › board interactions › keyboard shortcuts duplicate/delete, L11 undo/redo shows the 3 s hint and the editor suppresses board shortcuts (4.5s)
+  -   5 [chromium] › e2e/manual/kratos-login.spec.ts:23:3 › real Kratos login (manual) › a seeded Kratos account signs in through the login form and reaches the boards page
+  ✓   6 [chromium] › e2e/note-panel.spec.ts:20:3 › note panel and editor › a note added from the toolbar opens the 400 px overlay without changing the canvas width and closes on Escape (724ms)
+  ✓   7 [chromium] › e2e/note-panel.spec.ts:46:3 › note panel and editor › an empty note shows the placeholder, then typing and the title survive a reload (1.6s)
+  ✓   8 [chromium] › e2e/realtime.spec.ts:21:3 › realtime › two accounts edit live, see presence and the L05 Saving -> Saved transition (2.3s)
+  ✓   9 [chromium] › e2e/realtime.spec.ts:56:3 › realtime › an offline edit is kept, shows the offline notice and converges after reconnect (1.5s)
+  ✓  10 [chromium] › e2e/session.spec.ts:8:3 › session guard › a logged-out visitor is redirected to the login page and returns to the intended board after signing in (572ms)
+  ✓  11 [chromium] › e2e/session.spec.ts:33:3 › session guard › signing out returns to the login page and the session stays gone after a reload (313ms)
+  ✓  12 [chromium] › e2e/toolbar-view.spec.ts:26:3 › toolbar and view › the L00 toolbar groups the tools and the zoom controls change the persisted view (3.4s)
+  ✓  13 [chromium] › e2e/toolbar-view.spec.ts:53:3 › toolbar and view › the L17 view survives a reload and a new board starts fitted (2.2s)
+[WebServer] e2e-env: shutting down (server, services, seeded rows)
+[WebServer] e2e-env: seeded rows and the run's sync log removed
+
+  1 skipped
+  12 passed (26.1s)
+[WebServer] e2e-env: slot 3 | database project-air_slot_3 | web-e2e 4301 | platform 4310 | auth 4320 | sync 4330
+[WebServer] e2e-env: resetting and migrating the slot database (tools/dev/reset-db)
+[WebServer] e2e-env: starting auth (test mode), platform and sync from the built services
+[WebServer] e2e-env: minted 2 test-mode sessions
+[WebServer] e2e-env: seeding accounts, workspace, membership and board with fixed ids
+[WebServer] e2e-env: ready at http://127.0.0.1:4301 (stop with SIGTERM; the suite cleans up after itself)
+
+Running 10 tests using 1 worker
+
+  ✓   1 [chromium] › e2e/canvas-evidence.capture.ts:266:3 › canvas evidence › L00 toolbar: 300 ms tooltip, keyboard reachability and both viewports (2.0s)
+  ✓   2 [chromium] › e2e/canvas-evidence.capture.ts:327:3 › canvas evidence › L02 visible quality: app-level canvas capture with the engine evidence cited (2.3s)
+  ✓   3 [chromium] › e2e/canvas-evidence.capture.ts:356:3 › canvas evidence › L04 panel: 400 px overlay without canvas resize, full width at 390 (1.1s)
+  ✓   4 [chromium] › e2e/canvas-evidence.capture.ts:392:3 › canvas evidence › L05 saving: measured save latency, reload, mobile capture and the German offline hint (3.7s)
+  ✓   5 [chromium] › e2e/canvas-evidence.capture.ts:494:3 › canvas evidence › L06 empty note: placeholder, focus and the 390 px panel (518ms)
+  ✓   6 [chromium] › e2e/canvas-evidence.capture.ts:519:3 › canvas evidence › L09 title in the panel: title edit, Enter into the editor, both viewports (1.3s)
+  ✓   7 [chromium] › e2e/canvas-evidence.capture.ts:540:3 › canvas evidence › L12 keyboard and context menu: menu capture and keyboard operability (1.3s)
+  ✓   8 [chromium] › e2e/canvas-evidence.capture.ts:587:3 › canvas evidence › L17 remember view: a zoomed view survives a reload at both viewports (3.1s)
+  ✓   9 [chromium] › e2e/canvas-evidence.capture.ts:645:3 › canvas evidence › L18 inline comfort: app-level own-editor keyboard capture, engine evidence cited (1.7s)
+  ✓  10 [chromium] › e2e/canvas-evidence.capture.ts:673:3 › canvas evidence › a11y: keyboard path, roles and labels, focus-visible, tap targets and contrast (3.8s)
+[WebServer] e2e-env: shutting down (server, services, seeded rows)
+[WebServer] e2e-env: seeded rows and the run's sync log removed
+
+  10 passed (27.0s)
+[WebServer] (node:89849) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+(node:90014) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:90235) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+(node:90419) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)

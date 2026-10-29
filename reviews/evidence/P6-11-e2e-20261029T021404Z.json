@@ -1,0 +1,19 @@
+{
+  "task": "P6-11",
+  "gate": "e2e",
+  "command": "pnpm --filter ./apps/web exec playwright test && pnpm --filter ./apps/web exec playwright test --config playwright.capture.config.mjs",
+  "exit_code": 0,
+  "result": "pass",
+  "slot": null,
+  "exclusive": [
+    "e2e"
+  ],
+  "lock_wait_s": 0.0,
+  "lock_warning": null,
+  "started": "2026-10-29T02:14:04+00:00",
+  "finished": "2026-10-29T02:14:59+00:00",
+  "commit": "00ea22b7b3f0287d621cf10f654e7f12e20d4d78",
+  "dirty": true,
+  "log": "P6-11-e2e-20261029T021404Z.log",
+  "log_sha256": "9f3d1946f5010f0b8f17e36e22980419ebd1ca7d77cbb8e137a0f003ea8e986d"
+}

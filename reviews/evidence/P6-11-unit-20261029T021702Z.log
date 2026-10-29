@@ -1,0 +1,97 @@
+$ pnpm test --affected
+[exit 0]
+
+
+   • turbo 2.11.10
+   • Packages in scope: //, @project-air/web
+   • Running test in 2 packages
+   • Remote caching disabled, using shared worktree cache
+
+@project-air/web:build: cache miss, executing 019616403deb08c6
+@project-air/web:build: $ vite build
+@project-air/web:build: vite v8.3.5 building client environment for production...
+@project-air/web:build: transforming...
+@project-air/web:build: ✓ 193 modules transformed.
+@project-air/web:build: rendering chunks...
+@project-air/web:build: computing gzip size...
+@project-air/web:build: dist/index.html                   0.44 kB │ gzip:   0.27 kB
+@project-air/web:build: dist/assets/index-iPDlsCS7.css   14.02 kB │ gzip:   3.26 kB
+@project-air/web:build: dist/assets/index-rn7YvjXn.js   455.26 kB │ gzip: 140.18 kB
+@project-air/web:build: 
+@project-air/web:build: ✓ built in 142ms
+@project-air/web:test: cache miss, executing 09e864941289b192
+@project-air/web:test: $ node --test test/*.test.mjs
+@project-air/web:test: ✔ toolbar has groups, one primary accent tool and a default active tool (1.3725ms)
+@project-air/web:test: ✔ view camera clamps zoom and rejects foreign/corrupt records (1.587042ms)
+@project-air/web:test: ✔ backend selection defaults to WebGL2 and fails closed without an adapter (0.074292ms)
+@project-air/web:test: ✔ board titles are trimmed, non-empty and at most 120 characters (0.477208ms)
+@project-air/web:test: ✔ boards sort by updatedAt descending without mutating the input (0.383083ms)
+@project-air/web:test: ✔ dates format with Intl for the active language and invalid dates are empty (57.145291ms)
+@project-air/web:test: ✔ workspace selection uses the stored id when present, otherwise the first workspace (0.157291ms)
+@project-air/web:test: (node:92957) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.
+@project-air/web:test: (Use `node --trace-warnings ...` to show where the warning was created)
+@project-air/web:test: ✔ the duplicated note is contract-valid with the board workspaceId and no extra fields (6.471ms)
+@project-air/web:test: ✔ delete and reorder operations carry inverses and never empty metadata (0.300625ms)
+@project-air/web:test: ✔ en and de catalogs have identical key sets (3.087458ms)
+@project-air/web:test: ✔ translate resolves nested keys and interpolates values (0.410875ms)
+@project-air/web:test: ✔ German is the default and a stored choice persists (0.220417ms)
+@project-air/web:test: ✔ keyboard map handles modifiers, delete, escape and arrows; fields suppress shortcuts (0.481625ms)
+@project-air/web:test: ✔ arrows group into one delta after the 300 ms burst (0.470708ms)
+@project-air/web:test: ✔ context menu model has the L12 items, shortcuts and disabled states (0.154ms)
+@project-air/web:test: ✔ fractional z sits between neighbours and carries the previous z as inverse (0.093833ms)
+@project-air/web:test: (node:92960) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.
+@project-air/web:test: (Use `node --trace-warnings ...` to show where the warning was created)
+@project-air/web:test: ✔ add note is one group operation with createNote and createCard and the deletion inverse (3.483292ms)
+@project-air/web:test: ✔ the inverse deletes exactly the created card and note (0.157584ms)
+@project-air/web:test: ✔ a new card is placed above every existing card (0.086333ms)
+@project-air/web:test: (node:92961) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.
+@project-air/web:test: (Use `node --trace-warnings ...` to show where the warning was created)
+@project-air/web:test: ✔ one body save is exactly one updateNoteBody operation whose inverse is the previous body (5.801125ms)
+@project-air/web:test: ✔ a title change is exactly one updateNote whose inverse is the previous title (0.22575ms)
+@project-air/web:test: ✔ one save batches at most one body and one title operation through the one writer (0.419291ms)
+@project-air/web:test: ✔ a body-only save sends exactly one updateNoteBody; a title-only save exactly one updateNote (0.315166ms)
+@project-air/web:test: ✔ the autosave value round-trips the title and the contract body (0.12875ms)
+@project-air/web:test: ✔ contract limit and rejection errors surface honestly and send nothing (0.401458ms)
+@project-air/web:test: ✔ a changed invalid title writes nothing while an unchanged stored title is kept (0.088875ms)
+@project-air/web:test: ✔ a card resolves its one referenced note (AD-4, never duplicated) (0.524583ms)
+@project-air/web:test: ✔ a card whose note is gone yields the missing state, not a new note (0.345375ms)
+@project-air/web:test: ✔ a missing, absent or invalid note body falls back to the contract empty body (0.347958ms)
+@project-air/web:test: ✔ only an empty note focuses its editor on open (L06) (0.171583ms)
+@project-air/web:test: ✔ note titles are trimmed, non-empty and at most 300 characters (L09) (0.077916ms)
+@project-air/web:test: ✔ the panel is 400 px with a 12 px gap and full width at a 390 px viewport (1.03075ms)
+@project-air/web:test: ✔ the L04 state machine has closed/opening/open/closing transitions (0.198459ms)
+@project-air/web:test: ✔ a card that is already clear of the panel never moves the view (0.206875ms)
+@project-air/web:test: ✔ a card under the panel is panned 24 px left of it in one transient camera (0.199458ms)
+@project-air/web:test: ✔ the pan respects zoom and never applies to the full-width mobile panel (0.1685ms)
+@project-air/web:test: ✔ the panel pan is 300 ms and respects reduced motion (0.142875ms)
+@project-air/web:test: ✔ browser hello carries an opaque contract-valid token reference, never a token (0.499292ms)
+@project-air/web:test: ✔ same-origin sync URL follows the page protocol and host (0.076542ms)
+@project-air/web:test: ✔ connection state maps SDK status to connecting/joined/offline/error (0.081ms)
+@project-air/web:test: ✔ only an AUTH_REQUIRED reject is terminal session expiry (0.060709ms)
+@project-air/web:test: ✔ presence colours use tokens and fall back to a token, never a raw colour (0.071417ms)
+@project-air/web:test: ✔ presence labels come from the server nameRef, not from client text (0.097208ms)
+@project-air/web:test: ✔ remote cursors fade after 5 s and project into screen space with clipping (0.368583ms)
+@project-air/web:test: ✔ remote selection resolves known ids and skips removed objects (0.154417ms)
+@project-air/web:test: ✔ L05 status maps saving/saved/error/offline/session-expiry honestly (0.141916ms)
+@project-air/web:test: ✔ Saved disappears exactly after 2 s (0.111459ms)
+@project-air/web:test: ✔ every required route exists with message-backed title and body keys (0.459958ms)
+@project-air/web:test: ✔ route helpers stay pure and encode board ids (0.114875ms)
+@project-air/web:test: ✔ the display name wins, then the e-mail, then a short account-id fragment (0.404041ms)
+@project-air/web:test: ✔ login validation mirrors the server rules (0.649209ms)
+@project-air/web:test: ✔ registration requires email, display name and at least 8 password characters (0.087083ms)
+@project-air/web:test: ✔ recovery validates the email and maps typed errors to message keys (0.096833ms)
+@project-air/web:test: ℹ tests 53
+@project-air/web:test: ℹ suites 0
+@project-air/web:test: ℹ pass 53
+@project-air/web:test: ℹ fail 0
+@project-air/web:test: ℹ cancelled 0
+@project-air/web:test: ℹ skipped 0
+@project-air/web:test: ℹ todo 0
+@project-air/web:test: ℹ duration_ms 541.546333
+
+ Tasks:    2 successful, 2 total
+Cached:    0 cached, 2 total
+  Time:    1.216s 
+
+$ turbo run test --affected
+ WARNING  no output files found for task @project-air/web#test. Please check your `outputs` key in `turbo.json`

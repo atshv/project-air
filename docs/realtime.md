@@ -126,6 +126,24 @@ participants (server-derived name/colour), and the participant list is cleared o
 leave, close, reconnect/snapshot and board switch. The SDK never persists
 presence.
 
+## Browser session handshake, presence and the L05 status (P6-09, P6-11)
+
+In the browser no token is read by JavaScript: the same-origin session cookie rides the WebSocket
+upgrade and the contract hello `tokenRef` is only the opaque reference the service ignores for cookie
+sessions (the document explicitly reserved `tokenRef`/`x-test-session` for non-browser and gated test
+paths, so the production guard is unchanged and server-side). Presence is server-derived and
+ephemeral: the SDK throttles cursor/selection updates, the sync service validates the payload,
+derives the participant name and `tone-*` colour from the authenticated session, broadcasts only to
+the other clients joined to the same board (a newcomer receives the current participants as
+individual `presence` messages) and never persists or blocks operations; the participant list is
+cleared on leave, close, reconnect and board switch. The L05 status region in the app is the
+projection of the one autosave path: `Saving …` while the 400 ms-debounced save is in flight,
+`Saved` only after the server ack (visible for the 2 s token window), a clickable
+`Not saved – try again` on an error with the input kept, and the offline notice
+("changes are kept and sent when the connection returns") while the queue holds the edit; monotonic
+save sequence numbers mean an older response never overwrites a newer local value, and the offline
+queue flushes on reconnect.
+
 ## Durability, recovery, catch-up and snapshot compaction (P5-06)
 
 **Recovery.** The service reads the latest snapshot and replays the durable

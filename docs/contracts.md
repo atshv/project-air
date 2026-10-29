@@ -1,9 +1,9 @@
-# Contract 0.3.0
+# Contract 0.4.0
 
 The contract is the common language: everything two parts exchange is in
 [`packages/contracts`](../packages/contracts/README.md), the JSON Schema source of truth for board
-content, operations, sync protocol and API resources/errors. Version **0.3.0**; base URI
-`https://project-air.dev/contracts/0.3.0/`, a placeholder until the domain is decided (Q1), changed
+content, operations, sync protocol and API resources/errors. Version **0.4.0**; base URI
+`https://project-air.dev/contracts/0.4.0/`, a placeholder until the domain is decided (Q1), changed
 only with a version bump (ADR-0004). It binds `AD-1`
 (operation inverses), `AD-2` (durable acks), `AD-3` (versioned schemas with fixtures), `AD-4` (one
 note, many placements) and `AD-8` (translated `messageKey`). The engine includes
@@ -18,7 +18,7 @@ All 17 are JSON Schema 2020-12, closed, UUIDv7/ISO-8601, versioned `$id`.
   `schemas/zone.schema.json`, `schemas/block.schema.json`, `schemas/edge.schema.json`,
   `schemas/operation.schema.json` (20 types, one inverse each; ordered non-nesting `group`),
   `schemas/reorder-payload.schema.json` (the payload shared by `reorder` and its inverse) and the
-  root `schemas/board-content.schema.json` (`contractVersion` const `0.3.0`).
+  root `schemas/board-content.schema.json` (`contractVersion` const `0.4.0`).
 - **Sync**: `schemas/sync/sync.schema.json` — one `oneOf` envelope, 12 message types (6
   client→server, 6 server→client) plus reconnect and session sequences.
 - **REST API**: `schemas/api/workspace.schema.json`, `schemas/api/board.schema.json`,

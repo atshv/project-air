@@ -1,6 +1,6 @@
 # Canvas acceptance catalogue
 
-**As of:** 2026-10-25 · **Owner:** lead · binding for every canvas and engine task
+**As of:** 2026-10-29 · **Owner:** lead · binding for every canvas and engine task
 
 This catalogue holds one entry per canvas work order: `L00`–`L20`. It is the list behind the design
 law, [docs/design-rules.md](design-rules.md), and it is what the `engine-core` and `web-app` stage
@@ -15,7 +15,11 @@ orders. The table is the summary, the reference carries the detailed numbers; bo
 that only the reference carries is marked `[reference Cx]`; a value that only the blueprint carries is
 unmarked. Differences between the sources are in **Open points**.
 
-All 21 entries start with status `open`; no entry is `fulfilled` in this task.
+Status history: all 21 entries started `open` when the catalogue was written. The web-app
+stage pass (P6-11, 2026-10-29) marks `L00`, `L04`, `L05`, `L06`, `L09`, `L12` and `L17` `fulfilled`
+with the evidence paths below; `L02` and `L18` stay `open` because their web part is not visible yet
+(the engine evidence is cited in the entry). Engine-only entries keep their `open` status until the
+lead's evidence pass; no entry is marked fulfilled without a recorded path.
 
 ## How to use
 
@@ -125,8 +129,13 @@ and map to `contract` and `backend-core`.
   spacing; all design rule §11 checks pass at 1440×900 and 390×844.
 - **Package:** `apps/web`.
 - **Stage:** `web-app` (blueprint phase 6; P6-02).
-- **Evidence:** `e2e`, `design-check`; before/after screenshots under `reviews/evidence/`.
-- **Status:** `open`.
+- **Evidence:** `e2e` (toolbar groups and zoom, P6-10), `design-check`; screenshots
+  [`P6-11-L00-desktop.png`](../reviews/evidence/P6-11-L00-desktop.png) and
+  [`P6-11-L00-mobile.png`](../reviews/evidence/P6-11-L00-mobile.png); capture record
+  [`P6-11-canvas-capture-20261029T021458Z.json`](../reviews/evidence/P6-11-canvas-capture-20261029T021458Z.json); gate record `P6-11-e2e-20261029T021404Z.json`.
+- **Status:** `fulfilled` — web-app, P6-11 (2026-10-29). Both viewports captured at the ready state:
+  the 48 px bar sits 12 px inside the canvas with 36 px buttons, the 300 ms tooltip shows and hides,
+  all six toolbar buttons are reached by `Tab` with a visible focus ring, `design-check` is green.
 
 ## L01 — Performance basis and proof
 
@@ -180,9 +189,21 @@ and map to `contract` and `backend-core`.
   inner scrollbar in columns or timeline on the sample board (e2e); design rule §11 checks pass.
 - **Package:** `packages/engine`, `apps/web`.
 - **Stage:** `engine-core`, `web-app` (blueprint phases 4 and 6; P4-02, P4-03, P6-02).
-- **Evidence:** `visual`, `e2e`; before/after screenshots for the eight defects under
-  `reviews/evidence/`.
-- **Status:** `open`.
+- **Evidence:** `visual`, `e2e`; engine-core defect evidence
+  [`P4-10-capture-before-20261027T212735Z.json`](../reviews/evidence/P4-10-capture-before-20261027T212735Z.json)
+  and
+  [`P4-10-capture-after-20261027T214803Z.json`](../reviews/evidence/P4-10-capture-after-20261027T214803Z.json),
+  visual references in
+  [`P4-28-visual-final-20261028T164920Z.json`](../reviews/evidence/P4-28-visual-final-20261028T164920Z.json);
+  app-level screenshots
+  [`P6-11-L02-desktop.png`](../reviews/evidence/P6-11-L02-desktop.png) and
+  [`P6-11-L02-mobile.png`](../reviews/evidence/P6-11-L02-mobile.png); capture record
+  [`P6-11-canvas-capture-20261029T021458Z.json`](../reviews/evidence/P6-11-canvas-capture-20261029T021458Z.json).
+- **Status:** `open` — engine-core part proven (P4-10/P4-28, see Evidence). The web-app part is not
+  visible yet: the app projects rectangles only, so card titles/previews, the column/timeline
+  inner-scrollbar checks and the Tab-to-delete-button check cannot be exercised on the product
+  canvas. Remaining gap: pass note titles/previews to the engine and cover the block/column/timeline
+  content types (value/hardening).
 
 ## L03 — Dragging vs editing
 
@@ -224,9 +245,13 @@ and map to `contract` and `backend-core`.
   opening (e2e: bounding box before/after); closing changes nothing (e2e); `Esc` closes the panel.
 - **Package:** `apps/web`.
 - **Stage:** `web-app` (blueprint phase 6; P6-03).
-- **Evidence:** `e2e`; before/after screenshots and the bounding-box record under
-  `reviews/evidence/`.
-- **Status:** `open`.
+- **Evidence:** `e2e` (400 px overlay, unchanged canvas width, Escape); screenshots
+  [`P6-11-L04-desktop.png`](../reviews/evidence/P6-11-L04-desktop.png) and
+  [`P6-11-L04-mobile.png`](../reviews/evidence/P6-11-L04-mobile.png); capture record
+  [`P6-11-canvas-capture-20261029T021458Z.json`](../reviews/evidence/P6-11-canvas-capture-20261029T021458Z.json).
+- **Status:** `fulfilled` — web-app, P6-11 (2026-10-29). Measured at both viewports: the panel is
+  400 px wide with 12 px gaps top/right/bottom inside the canvas, the canvas width is unchanged
+  (1408 px desktop; 358 px mobile, the full canvas at the 390 px viewport), and `Esc` closes it.
 
 ## L05 — Saving with status
 
@@ -250,8 +275,18 @@ and map to `contract` and `backend-core`.
   cursor stays where it was.
 - **Package:** `apps/web`, `packages/sdk`, `services/sync`.
 - **Stage:** `realtime`, `web-app` (blueprint phases 5 and 6; P5-03, P6-04).
-- **Evidence:** `e2e`, `api-tests`; network-error and unit records under `reviews/evidence/`.
-- **Status:** `open`.
+- **Evidence:** `e2e` (Saving -> Saved, offline queue and reconnect; P6-10), unit records for
+  the one autosave path (SDK `packages/sdk/test/realtime.test.mjs`: 400 ms debounce, flush triggers,
+  stale-response guard; web `apps/web/test/realtime.test.mjs`: status mapping) under the `unit` gate
+  [`P6-11-unit`](../reviews/evidence/P6-11-unit-20261029T021702Z.json); screenshots
+  [`P6-11-L05-desktop.png`](../reviews/evidence/P6-11-L05-desktop.png),
+  [`P6-11-L05-mobile.png`](../reviews/evidence/P6-11-L05-mobile.png) and the German offline hint
+  [`P6-11-L05-offline-de-desktop.png`](../reviews/evidence/P6-11-L05-offline-de-desktop.png);
+  capture record [`P6-11-canvas-capture-20261029T021458Z.json`](../reviews/evidence/P6-11-canvas-capture-20261029T021458Z.json).
+- **Status:** `fulfilled` — realtime + web-app, P6-11 (2026-10-29). Last keystroke to `Saved`
+  measured at 418 ms (bound 500 ms), the value and the cursor survive a reload, an offline edit is
+  kept with the German offline hint and converges after reconnect; the stale-response guard is
+  unit-proven.
 
 ## L06 — Empty note
 
@@ -268,8 +303,13 @@ and map to `contract` and `backend-core`.
   (e2e); a reload of an empty note stores no placeholder text.
 - **Package:** `packages/editor`.
 - **Stage:** `web-app` (blueprint phase 6; P6-03).
-- **Evidence:** `e2e`, `language-check`.
-- **Status:** `open`.
+- **Evidence:** `e2e` (placeholder and focus), `language-check`; screenshots
+  [`P6-11-L06-desktop.png`](../reviews/evidence/P6-11-L06-desktop.png) and
+  [`P6-11-L06-mobile.png`](../reviews/evidence/P6-11-L06-mobile.png); capture record
+  [`P6-11-canvas-capture-20261029T021458Z.json`](../reviews/evidence/P6-11-canvas-capture-20261029T021458Z.json).
+- **Status:** `fulfilled` — web-app, P6-11 (2026-10-29). An empty note shows "Start writing …" and
+  has the focused own editor, the first character hides the placeholder and no placeholder is
+  stored; at 390 px the panel is full canvas width.
 
 ## L07 — Snapping
 
@@ -332,8 +372,12 @@ and map to `contract` and `backend-core`.
   shows an error and writes nothing (e2e); `Enter` puts the focus into the editor.
 - **Package:** `apps/web`.
 - **Stage:** `web-app` (blueprint phase 6; P6-03).
-- **Evidence:** `e2e`, `language-check`.
-- **Status:** `open`.
+- **Evidence:** `e2e` (title survives a reload; validation), `language-check`; screenshots
+  [`P6-11-L09-desktop.png`](../reviews/evidence/P6-11-L09-desktop.png) and
+  [`P6-11-L09-mobile.png`](../reviews/evidence/P6-11-L09-mobile.png); capture record
+  [`P6-11-canvas-capture-20261029T021458Z.json`](../reviews/evidence/P6-11-canvas-capture-20261029T021458Z.json).
+- **Status:** `fulfilled` — web-app, P6-11 (2026-10-29). The title is edited in the panel, `Enter`
+  moves the focus into the editor and the title survives a reload; both viewports captured.
 
 ## L10 — Multi-select
 
@@ -392,8 +436,14 @@ and map to `contract` and `backend-core`.
   in a text field have no effect (e2e); the menu is operable by keyboard.
 - **Package:** `packages/engine`, `apps/web`.
 - **Stage:** `engine-core`, `web-app` (blueprint phases 4 and 6; P4-04, P6-02).
-- **Evidence:** `e2e`, `language-check`.
-- **Status:** `open`.
+- **Evidence:** `e2e` (menu items, keyboard duplicate/delete, shortcuts suppressed in fields;
+  P6-10), `language-check`; screenshots
+  [`P6-11-L12-desktop.png`](../reviews/evidence/P6-11-L12-desktop.png) and
+  [`P6-11-L12-mobile.png`](../reviews/evidence/P6-11-L12-mobile.png); capture record
+  [`P6-11-canvas-capture-20261029T021458Z.json`](../reviews/evidence/P6-11-canvas-capture-20261029T021458Z.json).
+- **Status:** `fulfilled` — engine-core + web-app, P6-11 (2026-10-29). The context menu is 200 px
+  wide with five entries, reachable and activatable with `Tab`+`Enter`, and stays inside the 390 px
+  viewport; keyboard duplicate/delete and the field-suppression rule are e2e-proven.
 
 ## L13 — Layers
 
@@ -489,8 +539,13 @@ and map to `contract` and `backend-core`.
 - **Acceptance:** a reload shows the same section (e2e); a new board starts fitted.
 - **Package:** `packages/engine`, `apps/web`.
 - **Stage:** `engine-core`, `web-app` (blueprint phases 4 and 6; P4-01, P6-02).
-- **Evidence:** `e2e`.
-- **Status:** `open`.
+- **Evidence:** `e2e` (reload keeps the section, a new board is fitted); screenshots
+  [`P6-11-L17-desktop.png`](../reviews/evidence/P6-11-L17-desktop.png) and
+  [`P6-11-L17-mobile.png`](../reviews/evidence/P6-11-L17-mobile.png); capture record
+  [`P6-11-canvas-capture-20261029T021458Z.json`](../reviews/evidence/P6-11-canvas-capture-20261029T021458Z.json).
+- **Status:** `fulfilled` — engine-core + web-app, P6-11 (2026-10-29). The zoomed view (1.21) is
+  restored after a reload at both viewports and a new board starts fitted; the stored view is
+  recorded per board and device.
 
 ## L18 — Inline comfort
 
@@ -508,8 +563,17 @@ and map to `contract` and `backend-core`.
   with `Backspace` (e2e).
 - **Package:** `packages/engine` (overlay), `apps/web`.
 - **Stage:** `engine-core`, `web-app` (blueprint phases 4 and 6; P4-08, P6-02).
-- **Evidence:** `e2e`.
-- **Status:** `open`.
+- **Evidence:** `e2e`; engine overlay proof
+  [`P4-23-inline-20261028T071434Z.json`](../reviews/evidence/P4-23-inline-20261028T071434Z.json)
+  (24/24 browser checks: `Enter`, `Tab`/`Shift+Tab`, empty `Backspace`, 24 px colour field) with
+  `P4-23-inline-desktop.png` / `-mobile.png`; app-level editor screenshot
+  [`P6-11-L18-desktop.png`](../reviews/evidence/P6-11-L18-desktop.png) and
+  [`P6-11-L18-mobile.png`](../reviews/evidence/P6-11-L18-mobile.png); capture record
+  [`P6-11-canvas-capture-20261029T021458Z.json`](../reviews/evidence/P6-11-canvas-capture-20261029T021458Z.json).
+- **Status:** `open` — engine overlay part proven (P4-23, see Evidence). The web app has the own
+  editor keyboard path (three keyboard-written lines captured), but checklist/column/table blocks
+  are not creatable in `apps/web` yet, so the two acceptance points stay engine-side. Remaining gap:
+  block creation and the app-side harness for the inline checks (value/hardening).
 
 ## L19 — Canvas feel
 

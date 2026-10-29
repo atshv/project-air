@@ -1,0 +1,306 @@
+{
+  "task": "P6-11",
+  "state": "idle",
+  "attempt": 0,
+  "attempts": [],
+  "events": [
+    {
+      "at": "2026-10-29T01:53:43+00:00",
+      "kind": "gate",
+      "data": {
+        "gate": "e2e",
+        "result": "pass",
+        "record": "reviews/evidence/P6-11-e2e-20261029T015247Z.json"
+      }
+    },
+    {
+      "at": "2026-10-29T01:54:55+00:00",
+      "kind": "gate",
+      "data": {
+        "gate": "e2e",
+        "result": "fail",
+        "record": "reviews/evidence/P6-11-e2e-20261029T015417Z.json"
+      }
+    },
+    {
+      "at": "2026-10-29T01:57:07+00:00",
+      "kind": "gate",
+      "data": {
+        "gate": "e2e",
+        "result": "pass",
+        "record": "reviews/evidence/P6-11-e2e-20261029T015612Z.json"
+      }
+    },
+    {
+      "at": "2026-10-29T01:58:48+00:00",
+      "kind": "gate",
+      "data": {
+        "gate": "e2e",
+        "result": "fail",
+        "record": "reviews/evidence/P6-11-e2e-20261029T015812Z.json"
+      }
+    },
+    {
+      "at": "2026-10-29T02:02:59+00:00",
+      "kind": "gate",
+      "data": {
+        "gate": "e2e",
+        "result": "pass",
+        "record": "reviews/evidence/P6-11-e2e-20261029T020204Z.json"
+      }
+    },
+    {
+      "at": "2026-10-29T02:05:20+00:00",
+      "kind": "gate",
+      "data": {
+        "gate": "e2e",
+        "result": "pass",
+        "record": "reviews/evidence/P6-11-e2e-20261029T020426Z.json"
+      }
+    },
+    {
+      "at": "2026-10-29T02:05:28+00:00",
+      "kind": "gate",
+      "data": {
+        "gate": "boundaries",
+        "result": "pass",
+        "record": "reviews/evidence/P6-11-boundaries-20261029T020527Z.json"
+      }
+    },
+    {
+      "at": "2026-10-29T02:05:29+00:00",
+      "kind": "gate",
+      "data": {
+        "gate": "unit",
+        "result": "pass",
+        "record": "reviews/evidence/P6-11-unit-20261029T020528Z.json"
+      }
+    },
+    {
+      "at": "2026-10-29T02:06:47+00:00",
+      "kind": "gate",
+      "data": {
+        "gate": "e2e",
+        "result": "fail",
+        "record": "reviews/evidence/P6-11-e2e-20261029T020553Z.json"
+      }
+    },
+    {
+      "at": "2026-10-29T02:09:46+00:00",
+      "kind": "gate",
+      "data": {
+        "gate": "e2e",
+        "result": "pass",
+        "record": "reviews/evidence/P6-11-e2e-20261029T020852Z.json"
+      }
+    },
+    {
+      "at": "2026-10-29T02:11:05+00:00",
+      "kind": "gate",
+      "data": {
+        "gate": "e2e",
+        "result": "pass",
+        "record": "reviews/evidence/P6-11-e2e-20261029T021012Z.json"
+      }
+    },
+    {
+      "at": "2026-10-29T02:12:37+00:00",
+      "kind": "gate",
+      "data": {
+        "gate": "e2e",
+        "result": "pass",
+        "record": "reviews/evidence/P6-11-e2e-20261029T021142Z.json"
+      }
+    },
+    {
+      "at": "2026-10-29T02:12:49+00:00",
+      "kind": "gate",
+      "data": {
+        "gate": "design-check",
+        "result": "fail",
+        "record": "reviews/evidence/P6-11-design-check-20261029T021248Z.json"
+      }
+    },
+    {
+      "at": "2026-10-29T02:12:50+00:00",
+      "kind": "gate",
+      "data": {
+        "gate": "language-check",
+        "result": "fail",
+        "record": "reviews/evidence/P6-11-language-check-20261029T021249Z.json"
+      }
+    },
+    {
+      "at": "2026-10-29T02:13:05+00:00",
+      "kind": "gate",
+      "data": {
+        "gate": "board-check",
+        "result": "fail",
+        "record": "reviews/evidence/P6-11-board-check-20261029T021250Z.json"
+      }
+    },
+    {
+      "at": "2026-10-29T02:13:44+00:00",
+      "kind": "gate",
+      "data": {
+        "gate": "design-check",
+        "result": "fail",
+        "record": "reviews/evidence/P6-11-design-check-20261029T021344Z.json"
+      }
+    },
+    {
+      "at": "2026-10-29T02:13:46+00:00",
+      "kind": "gate",
+      "data": {
+        "gate": "language-check",
+        "result": "pass",
+        "record": "reviews/evidence/P6-11-language-check-20261029T021344Z.json"
+      }
+    },
+    {
+      "at": "2026-10-29T02:13:56+00:00",
+      "kind": "gate",
+      "data": {
+        "gate": "design-check",
+        "result": "pass",
+        "record": "reviews/evidence/P6-11-design-check-20261029T021355Z.json"
+      }
+    },
+    {
+      "at": "2026-10-29T02:14:59+00:00",
+      "kind": "gate",
+      "data": {
+        "gate": "e2e",
+        "result": "pass",
+        "record": "reviews/evidence/P6-11-e2e-20261029T021404Z.json"
+      }
+    },
+    {
+      "at": "2026-10-29T02:15:10+00:00",
+      "kind": "gate",
+      "data": {
+        "gate": "design-check",
+        "result": "pass",
+        "record": "reviews/evidence/P6-11-design-check-20261029T021509Z.json"
+      }
+    },
+    {
+      "at": "2026-10-29T02:15:11+00:00",
+      "kind": "gate",
+      "data": {
+        "gate": "language-check",
+        "result": "pass",
+        "record": "reviews/evidence/P6-11-language-check-20261029T021510Z.json"
+      }
+    },
+    {
+      "at": "2026-10-29T02:15:57+00:00",
+      "kind": "gate",
+      "data": {
+        "gate": "board-check",
+        "result": "pass",
+        "record": "reviews/evidence/P6-11-board-check-20261029T021542Z.json"
+      }
+    },
+    {
+      "at": "2026-10-29T02:16:09+00:00",
+      "kind": "gate",
+      "data": {
+        "gate": "boundaries",
+        "result": "pass",
+        "record": "reviews/evidence/P6-11-boundaries-20261029T021608Z.json"
+      }
+    },
+    {
+      "at": "2026-10-29T02:16:10+00:00",
+      "kind": "gate",
+      "data": {
+        "gate": "unit",
+        "result": "pass",
+        "record": "reviews/evidence/P6-11-unit-20261029T021609Z.json"
+      }
+    },
+    {
+      "at": "2026-10-29T02:16:16+00:00",
+      "kind": "gate",
+      "data": {
+        "gate": "design-check",
+        "result": "pass",
+        "record": "reviews/evidence/P6-11-design-check-20261029T021616Z.json"
+      }
+    },
+    {
+      "at": "2026-10-29T02:16:17+00:00",
+      "kind": "gate",
+      "data": {
+        "gate": "language-check",
+        "result": "pass",
+        "record": "reviews/evidence/P6-11-language-check-20261029T021616Z.json"
+      }
+    },
+    {
+      "at": "2026-10-29T02:16:37+00:00",
+      "kind": "gate",
+      "data": {
+        "gate": "board-check",
+        "result": "pass",
+        "record": "reviews/evidence/P6-11-board-check-20261029T021622Z.json"
+      }
+    },
+    {
+      "at": "2026-10-29T02:17:01+00:00",
+      "kind": "gate",
+      "data": {
+        "gate": "design-check",
+        "result": "pass",
+        "record": "reviews/evidence/P6-11-design-check-20261029T021700Z.json"
+      }
+    },
+    {
+      "at": "2026-10-29T02:17:02+00:00",
+      "kind": "gate",
+      "data": {
+        "gate": "language-check",
+        "result": "pass",
+        "record": "reviews/evidence/P6-11-language-check-20261029T021701Z.json"
+      }
+    },
+    {
+      "at": "2026-10-29T02:17:02+00:00",
+      "kind": "gate",
+      "data": {
+        "gate": "boundaries",
+        "result": "pass",
+        "record": "reviews/evidence/P6-11-boundaries-20261029T021702Z.json"
+      }
+    },
+    {
+      "at": "2026-10-29T02:17:04+00:00",
+      "kind": "gate",
+      "data": {
+        "gate": "unit",
+        "result": "pass",
+        "record": "reviews/evidence/P6-11-unit-20261029T021702Z.json"
+      }
+    },
+    {
+      "at": "2026-10-29T02:17:24+00:00",
+      "kind": "gate",
+      "data": {
+        "gate": "board-check",
+        "result": "pass",
+        "record": "reviews/evidence/P6-11-board-check-20261029T021709Z.json"
+      }
+    },
+    {
+      "at": "2026-10-29T02:17:31+00:00",
+      "kind": "gate",
+      "data": {
+        "gate": "language-check",
+        "result": "pass",
+        "record": "reviews/evidence/P6-11-language-check-20261029T021729Z.json"
+      }
+    }
+  ],
+  "updated": "2026-10-29T02:17:31+00:00"
+}

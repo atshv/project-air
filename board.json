@@ -159,7 +159,7 @@
         "design-check",
         "language-check"
       ],
-      "owner_decision": "continue",
+      "owner_decision": "pending",
       "depends_on": [
         "realtime"
       ]
@@ -7219,7 +7219,7 @@
       "satisfies": [
         "D12"
       ],
-      "status": "in_progress",
+      "status": "done",
       "depends_on": [
         "P6-10"
       ],
@@ -7259,11 +7259,18 @@
         "language-check",
         "e2e"
       ],
-      "owner": "lead",
+      "owner": null,
       "branch": "task/P6-11",
-      "worktree": "/private/tmp/air-P6-11",
-      "round": 0,
-      "evidence": [],
+      "worktree": null,
+      "round": 1,
+      "evidence": [
+        "reviews/evidence/P6-11-board-check-20261029T021709Z.json",
+        "reviews/evidence/P6-11-boundaries-20261029T021702Z.json",
+        "reviews/evidence/P6-11-unit-20261029T021702Z.json",
+        "reviews/evidence/P6-11-design-check-20261029T021700Z.json",
+        "reviews/evidence/P6-11-language-check-20261029T021729Z.json",
+        "reviews/evidence/P6-11-e2e-20261029T021404Z.json"
+      ],
       "scope_write_forbidden": [
         "reference/"
       ],
