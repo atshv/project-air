@@ -7443,7 +7443,7 @@
       "round": 0,
       "scope_write": [
         "apps/web/preview/",
-        ".changes/"
+        ".changes/P0-47-connections.md"
       ],
       "scope_read": [
         "ARCHITECTURE.md",
