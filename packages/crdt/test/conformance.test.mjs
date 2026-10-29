@@ -4,15 +4,32 @@
 // snapshot round-trip and op+inverse state equality.
 
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import test from "node:test";
 
 import { createFakeBoardDoc } from "../src/index.ts";
+import { derivePlainText, validateNoteBody } from "../src/note-body.ts";
 import { createYjsBoardDoc } from "../src/yjs-doc.ts";
+import { validate as contractValidate } from "../../contracts/test/support.mjs";
+import { derivePlainText as contractPlainText } from "../../contracts/plaintext.mjs";
 
 const PACKAGE_DIR = new URL("..", import.meta.url).pathname;
 const CONTENT = JSON.parse(readFileSync(join(PACKAGE_DIR, "../contracts/fixtures/board-content/valid.json"), "utf8")).data;
+const NOTE_BODY_SCHEMA = JSON.parse(readFileSync(join(PACKAGE_DIR, "../contracts/schemas/note-body-payload.schema.json"), "utf8"));
+const NOTE_BODY_FIXTURES = join(PACKAGE_DIR, "../contracts/fixtures/note-body");
+
+// Contract 0.4.0 body with a paragraph, an unordered list item carrying an https
+// link mark and a heading: exercises links, lists and text derivation.
+const BODY = {
+  version: "1",
+  blocks: [
+    { type: "paragraph", text: "Hello world.", marks: ["bold", "italic"] },
+    { type: "list", text: "Source", ordered: false, marks: ["link"], href: "https://example.test/source" },
+    { type: "heading", text: "Notes", level: 2 },
+  ],
+};
+const BODY_PLAIN_TEXT = "Hello world.\n- Source\nNotes";
 
 const UUID = (n) => `0192f0d0-7000-7000-8000-${String(n).padStart(12, "0")}`;
 
@@ -138,6 +155,7 @@ function suite(name, create) {
       operation("resizeZone", { zoneId: zone.id, width: zone.width + 16, height: zone.height + 16 }, 6),
       operation("updateNote", { noteId: note.id, changes: { title: "Renamed" } }, 7),
       operation("reorder", { itemId: card.id, z: "zz" }, 8),
+      operation("updateNoteBody", { noteId: note.id, body: BODY }, 9),
     ];
     for (const op of samples) {
       const before = doc.encodeState();
@@ -147,6 +165,135 @@ function suite(name, create) {
       assert.equal(doc.encodeState(), before, `${op.type} plus inverse restores the state`);
     }
     assert.equal(doc.encodeState(), initial);
+  });
+
+  // P6-08: contract 0.4.0 body operations. The body tests are focused rather
+  // than part of the randomized loop so the 10k-round suite keeps its runtime.
+  test(`${name}: updateNoteBody stores the body and derived plainText and snapshots round-trip it`, () => {
+    const doc = create({ content: base });
+    const note = base.notes[0];
+    const before = doc.encodeState();
+    const op = operation("updateNoteBody", { noteId: note.id, body: BODY }, 0x201);
+    doc.apply(op);
+
+    const stored = doc.snapshot().notes.find((entry) => entry.id === note.id);
+    assert.deepEqual(stored.body, BODY, "the structured body is stored as given");
+    assert.equal(stored.plainText, BODY_PLAIN_TEXT, "the derived plainText is stored on the note");
+    assert.equal(stored.plainText, contractPlainText(BODY), "plainText matches the contract derivation");
+    assert.equal(stored.updatedAt, note.updatedAt, "the operation carries no timestamp; updatedAt is preserved");
+
+    const snapshot = doc.snapshot();
+    const restored = create({ content: snapshot });
+    assert.equal(restored.encodeState(), doc.encodeState(), "the snapshot round-trips the body");
+    assert.deepEqual(restored.snapshot(), snapshot);
+
+    doc.apply(bodyInverse(note.id, note.body, op.id));
+    assert.equal(doc.encodeState(), before, "the inverse restores the byte-identical previous note");
+  });
+
+  test(`${name}: a bodyless note stays byte-identical through apply and the empty-body inverse`, () => {
+    const doc = create({ content: base });
+    const note = base.notes[1];
+    assert.equal(note.body, undefined, "the fixture carries one note without a body");
+    const before = doc.encodeState();
+    const op = operation("updateNoteBody", { noteId: note.id, body: BODY }, 0x202);
+    doc.apply(op);
+    assert.equal(doc.snapshot().notes.find((entry) => entry.id === note.id).plainText, BODY_PLAIN_TEXT);
+
+    // The contract treats an absent body as the empty body: the inverse of a
+    // note that never had a body is the empty body, so the note must be
+    // byte-identical again (no body/plainText fields).
+    doc.apply(bodyInverse(note.id, { version: "1", blocks: [] }, op.id));
+    assert.equal(doc.encodeState(), before, "an empty-body inverse restores the bodyless note");
+    assert.equal(doc.snapshot().notes.find((entry) => entry.id === note.id).body, undefined);
+  });
+
+  test(`${name}: an empty body clears a note and its inverse restores the body`, () => {
+    const doc = create({ content: base });
+    const note = base.notes[0];
+    const before = doc.encodeState();
+    const op = operation("updateNoteBody", { noteId: note.id, body: { version: "1", blocks: [] } }, 0x203);
+    doc.apply(op);
+    const cleared = doc.snapshot().notes.find((entry) => entry.id === note.id);
+    assert.equal(cleared.body, undefined, "the empty body canonicalises to no body fields");
+    assert.equal(cleared.plainText, undefined);
+    doc.apply(bodyInverse(note.id, note.body, op.id));
+    assert.equal(doc.encodeState(), before, "the inverse restores the previous body byte-identically");
+  });
+
+  test(`${name}: body rejections fail closed and leave the document unchanged`, () => {
+    const rejects = (operationToApply, pattern) => {
+      const doc = create({ content: base });
+      assert.throws(() => {
+        doc.apply(operationToApply);
+        // The fake adapter is a log: rejection surfaces on the next evaluation.
+        doc.snapshot();
+      }, pattern);
+    };
+    const note = base.notes[0];
+    const invalidBodies = [
+      { version: "1", blocks: [{ type: "image", text: "x" }] },
+      { version: "1", blocks: [{ type: "paragraph", text: "x", marks: ["strike"] }] },
+      { version: "1", blocks: [{ type: "paragraph", text: "x", extra: true }] },
+      { version: "1", blocks: [{ type: "paragraph", text: "x", marks: ["link"] }] },
+      { version: "1", blocks: [{ type: "paragraph", text: "x", marks: ["link"], href: "javascript:alert(1)" }] },
+      { version: "1", blocks: [{ type: "list", text: "x", marks: ["bold", "bold"] }] },
+      { version: "2", blocks: [] },
+      { blocks: [] },
+      { version: "1", blocks: [{ type: "paragraph" }] },
+    ];
+    for (const [index, body] of invalidBodies.entries()) {
+      rejects(operation("updateNoteBody", { noteId: note.id, body }, 0x300 + index), /invalid note body/);
+    }
+    rejects(operation("updateNoteBody", { noteId: UUID(0xdead), body: BODY }, 0x320), /missing note/);
+    rejects({ ...operation("updateNoteBody", { noteId: note.id, body: BODY }, 0x321), type: "futureOperation" }, /unsupported contract operation/);
+  });
+
+  test(`${name}: two replicas converge with body operations`, () => {
+    const secondBody = { version: "1", blocks: [{ type: "paragraph", text: "Second" }] };
+    const operations = [
+      operation("updateNoteBody", { noteId: base.notes[0].id, body: BODY }, 0x401),
+      operation("updateNoteBody", { noteId: base.notes[1].id, body: { version: "1", blocks: [{ type: "heading", text: "Two", level: 1 }] } }, 0x402),
+      operation("updateNoteBody", { noteId: base.notes[0].id, body: secondBody }, 0x403),
+    ];
+    const left = create({ content: base });
+    const right = create({ content: base });
+    left.apply(operations[0]); left.apply(operations[2]); left.apply(operations[1]);
+    right.apply(operations[1]); right.apply(operations[0]); right.apply(operations[2]);
+    left.merge(right);
+    right.merge(left);
+    assert.equal(left.encodeState(), right.encodeState(), "the encoded states are byte-identical");
+    assert.deepEqual(left.snapshot(), right.snapshot());
+    const note = left.snapshot().notes.find((entry) => entry.id === base.notes[0].id);
+    assert.deepEqual(note.body, secondBody);
+    assert.equal(note.plainText, "Second");
+  });
+
+  test(`${name}: body validation agrees with the contract schema and fixtures`, () => {
+    const files = readdirSync(NOTE_BODY_FIXTURES).filter((file) => file.endsWith(".json")).sort();
+    assert.equal(files.length >= 5, true, "the contract carries valid and invalid body fixtures");
+    for (const file of files) {
+      const fixture = JSON.parse(readFileSync(join(NOTE_BODY_FIXTURES, file), "utf8"));
+      const contractAccepts = contractValidate(fixture.data, NOTE_BODY_SCHEMA, NOTE_BODY_SCHEMA);
+      assert.equal(contractAccepts, fixture.valid, `${file}: the fixture states its contract validity`);
+      let accepts = true;
+      try {
+        validateNoteBody(clone(fixture.data));
+      } catch {
+        accepts = false;
+      }
+      assert.equal(accepts, contractAccepts, `${file}: the document core agrees with the contract`);
+      if (contractAccepts) {
+        assert.equal(derivePlainText(clone(fixture.data)), contractPlainText(fixture.data), `${file}: plainText matches the contract derivation`);
+      }
+    }
+    const bodies = [
+      BODY,
+      { version: "1", blocks: [] },
+      { version: "1", blocks: [{ type: "list", text: " One  two ", ordered: true }, { type: "list", text: "Unordered" }, { type: "paragraph", text: "  spaced   text " }] },
+      { version: "1", blocks: [{ type: "heading", text: "", level: 6 }, { type: "paragraph", text: "tail" }] },
+    ];
+    for (const body of bodies) assert.equal(derivePlainText(body), contractPlainText(body), "derived plainText matches the contract module");
   });
 }
 
@@ -182,8 +329,22 @@ function inverseOf(op) {
     const note = base.notes.find((entry) => entry.id === p.noteId);
     return { ...op, type: "updateNote", payload: { noteId: p.noteId, changes: { title: note.title } } };
   }
+  if (op.type === "updateNoteBody") {
+    const note = base.notes.find((entry) => entry.id === p.noteId);
+    return { ...op, type: "updateNoteBody", payload: { noteId: p.noteId, body: clone(note.body ?? { version: "1", blocks: [] }) } };
+  }
   const card = base.cards.find((entry) => entry.id === p.itemId);
   return { ...op, type: "reorder", payload: { itemId: p.itemId, z: card.z } };
+}
+
+/** The inverse of a body operation: the previous body on the same operation id. */
+function bodyInverse(noteId, previousBody, id) {
+  return {
+    id,
+    boardId: base.board.id,
+    type: "updateNoteBody",
+    payload: { noteId, body: clone(previousBody) },
+  };
 }
 
 for (const [name, create] of [

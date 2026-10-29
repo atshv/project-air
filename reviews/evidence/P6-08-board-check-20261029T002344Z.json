@@ -1,0 +1,17 @@
+{
+  "task": "P6-08",
+  "gate": "board-check",
+  "command": "mv node_modules /tmp/p608_nm; trap 'mv /tmp/p608_nm node_modules' EXIT; python3 $POLIER/tools/check.py .",
+  "exit_code": 0,
+  "result": "pass",
+  "slot": null,
+  "exclusive": [],
+  "lock_wait_s": 0.0,
+  "lock_warning": null,
+  "started": "2026-10-29T00:23:44+00:00",
+  "finished": "2026-10-29T00:24:01+00:00",
+  "commit": "4cd5b1fbb557aab610b6aa5cdae8a4dfcc82c82f",
+  "dirty": true,
+  "log": "P6-08-board-check-20261029T002344Z.log",
+  "log_sha256": "9cb0f9038efbf958532f82966ebca2678efae8c624f94d2ee76bcec44552b29b"
+}

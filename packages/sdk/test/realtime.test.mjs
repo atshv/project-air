@@ -9,7 +9,7 @@ import {
   AUTOSAVE_DEBOUNCE_MS, createAutosave, createBoardSyncClient, installFlushTriggers,
 } from "../src/realtime/index.ts";
 
-const content = { contractVersion: "0.3.0", board: { id: "b" }, zones: [], blocks: [], cards: [], notes: [], edges: [] };
+const content = { contractVersion: "0.4.0", board: { id: "b" }, zones: [], blocks: [], cards: [], notes: [], edges: [] };
 
 function fakeDocument() {
   const applied = [];
@@ -83,10 +83,10 @@ test("handshake sends hello first, then joinBoard; welcome/snapshot install the 
   client.start();
   const socket = sockets[0];
   assert.equal(socket.sent[0].type, "hello");
-  assert.equal(socket.sent[0].payload.contractVersion, "0.3.0");
+  assert.equal(socket.sent[0].payload.contractVersion, "0.4.0");
   assert.equal(socket.sent[1].type, "joinBoard");
   assert.equal(client.status(), "connecting");
-  socket.receive({ id: "w", type: "welcome", serverSeq: 1, payload: { contractVersion: "0.3.0", snapshotRef: "board-1:1" } });
+  socket.receive({ id: "w", type: "welcome", serverSeq: 1, payload: { contractVersion: "0.4.0", snapshotRef: "board-1:1" } });
   socket.receive({ id: "s", type: "snapshot", serverSeq: 1, payload: { snapshotRef: "board-1:1", boardContent: content } });
   assert.equal(client.status(), "joined");
   assert.equal(client.serverSeq(), 1);
@@ -97,7 +97,7 @@ test("operation batches are sent with a per-connection seq; acks advance only fo
   const { client, sockets } = clientSetup();
   client.start();
   const socket = sockets[0];
-  socket.receive({ id: "w", type: "welcome", serverSeq: 1, payload: { contractVersion: "0.3.0", snapshotRef: "board-1:1" } });
+  socket.receive({ id: "w", type: "welcome", serverSeq: 1, payload: { contractVersion: "0.4.0", snapshotRef: "board-1:1" } });
   socket.receive({ id: "s", type: "snapshot", serverSeq: 1, payload: { snapshotRef: "board-1:1", boardContent: content } });
   const batchId = client.sendOperations([{ id: "op-1", type: "reorder", payload: { itemId: "x", z: "a" } }]);
   assert.ok(batchId !== null);
@@ -120,7 +120,7 @@ test("offline operations queue in order and flush on join; duplicate remote batc
   assert.equal(client.offlineCount(), 2);
   client.start();
   const socket = sockets[0];
-  socket.receive({ id: "w", type: "welcome", serverSeq: 1, payload: { contractVersion: "0.3.0", snapshotRef: "board-1:1" } });
+  socket.receive({ id: "w", type: "welcome", serverSeq: 1, payload: { contractVersion: "0.4.0", snapshotRef: "board-1:1" } });
   socket.receive({ id: "s", type: "snapshot", serverSeq: 1, payload: { snapshotRef: "board-1:1", boardContent: content } });
   assert.equal(client.offlineCount(), 0);
   const batch = socket.lastByType("operationBatch");
@@ -134,7 +134,7 @@ test("offline operations queue in order and flush on join; duplicate remote batc
 test("a dropped socket reconnects with backoff and resyncs from the last serverSeq", () => {
   const { client, sockets, timers } = clientSetup();
   client.start();
-  sockets[0].receive({ id: "w", type: "welcome", serverSeq: 1, payload: { contractVersion: "0.3.0", snapshotRef: "board-1:1" } });
+  sockets[0].receive({ id: "w", type: "welcome", serverSeq: 1, payload: { contractVersion: "0.4.0", snapshotRef: "board-1:1" } });
   sockets[0].receive({ id: "s", type: "snapshot", serverSeq: 1, payload: { snapshotRef: "board-1:1", boardContent: content } });
   sockets[0].receive({ id: "a", type: "ack", serverSeq: 2, payload: { batchId: "none", opIds: [] } });
   sockets[0].close();
@@ -143,7 +143,7 @@ test("a dropped socket reconnects with backoff and resyncs from the last serverS
   assert.equal(sockets.length, 2, "the reconnect used the first backoff step");
   const reconnect = sockets[1];
   assert.equal(reconnect.sent[0].type, "hello");
-  reconnect.receive({ id: "w2", type: "welcome", serverSeq: 2, payload: { contractVersion: "0.3.0", snapshotRef: "board-1:2" } });
+  reconnect.receive({ id: "w2", type: "welcome", serverSeq: 2, payload: { contractVersion: "0.4.0", snapshotRef: "board-1:2" } });
   const resync = reconnect.lastByType("resyncRequest");
   assert.ok(resync !== undefined, "the reconnect asks for catch-up");
   assert.equal(resync.payload.fromServerSeq, 2, "catch-up starts at the last known durable serverSeq");
@@ -154,7 +154,7 @@ test("a dropped socket reconnects with backoff and resyncs from the last serverS
 test("close is idempotent and leaves the board once", () => {
   const { client, sockets } = clientSetup();
   client.start();
-  sockets[0].receive({ id: "w", type: "welcome", serverSeq: 1, payload: { contractVersion: "0.3.0", snapshotRef: "board-1:1" } });
+  sockets[0].receive({ id: "w", type: "welcome", serverSeq: 1, payload: { contractVersion: "0.4.0", snapshotRef: "board-1:1" } });
   sockets[0].receive({ id: "s", type: "snapshot", serverSeq: 1, payload: { snapshotRef: "board-1:1", boardContent: content } });
   client.close();
   client.close();
@@ -266,18 +266,18 @@ test("outgoing messages validate against sync.schema.json and ids are unique UUI
   };
   const first = clientSetup({ boardId: contractUuid('b2') });
   first.client.start();
-  first.sockets[0].receive({ id: "w", type: "welcome", serverSeq: 1, payload: { contractVersion: "0.3.0", snapshotRef: "board-1:1" } });
+  first.sockets[0].receive({ id: "w", type: "welcome", serverSeq: 1, payload: { contractVersion: "0.4.0", snapshotRef: "board-1:1" } });
   first.sockets[0].receive({ id: "s", type: "snapshot", serverSeq: 1, payload: { snapshotRef: "board-1:1", boardContent: content } });
   first.client.sendOperations([operation]);
   first.client.close();
 
   const second = clientSetup({ boardId: contractUuid('b2') });
   second.client.start();
-  second.sockets[0].receive({ id: "w", type: "welcome", serverSeq: 1, payload: { contractVersion: "0.3.0", snapshotRef: "board-1:1" } });
+  second.sockets[0].receive({ id: "w", type: "welcome", serverSeq: 1, payload: { contractVersion: "0.4.0", snapshotRef: "board-1:1" } });
   second.sockets[0].receive({ id: "s", type: "snapshot", serverSeq: 1, payload: { snapshotRef: "board-1:1", boardContent: content } });
   second.sockets[0].close();
   second.timers.advance(100);
-  second.sockets[1].receive({ id: "w2", type: "welcome", serverSeq: 2, payload: { contractVersion: "0.3.0", snapshotRef: "board-1:2" } });
+  second.sockets[1].receive({ id: "w2", type: "welcome", serverSeq: 2, payload: { contractVersion: "0.4.0", snapshotRef: "board-1:2" } });
   second.sockets[1].receive({ id: "s2", type: "snapshot", serverSeq: 2, payload: { snapshotRef: "board-1:2", boardContent: content } });
   second.client.close();
 
@@ -313,7 +313,7 @@ test("presence updates are throttled/coalesced and remote participants subscribe
   const { client, sockets, timers } = clientSetup();
   client.start();
   const socket = sockets[0];
-  socket.receive({ id: "w", type: "welcome", serverSeq: 1, payload: { contractVersion: "0.3.0", snapshotRef: "board-1:1" } });
+  socket.receive({ id: "w", type: "welcome", serverSeq: 1, payload: { contractVersion: "0.4.0", snapshotRef: "board-1:1" } });
   socket.receive({ id: "s", type: "snapshot", serverSeq: 1, payload: { snapshotRef: "board-1:1", boardContent: content } });
   const seen = [];
   const unsubscribe = client.onPresence((participants) => seen.push(participants.map((participant) => participant.clientId)));
@@ -339,7 +339,7 @@ test("undoOwn applies only the client's own inverse; remote operations are never
   const { client, sockets } = clientSetup();
   client.start();
   const socket = sockets[0];
-  socket.receive({ id: "w", type: "welcome", serverSeq: 1, payload: { contractVersion: "0.3.0", snapshotRef: "board-1:1" } });
+  socket.receive({ id: "w", type: "welcome", serverSeq: 1, payload: { contractVersion: "0.4.0", snapshotRef: "board-1:1" } });
   socket.receive({ id: "s", type: "snapshot", serverSeq: 1, payload: { snapshotRef: "board-1:1", boardContent: content } });
   const own = { id: "0192f0f8-7000-7000-8000-0000000000d1", boardId: "board-1", actorId: "0192f0f8-7000-7000-8000-0000000000d2", createdAt: "2027-01-10T09:30:00.000Z", type: "moveCard", payload: { cardId: "0192f0f8-7000-7000-8000-0000000000d3", x: 16, y: 16 }, inverse: { boardId: "board-1", type: "moveCard", payload: { cardId: "0192f0f8-7000-7000-8000-0000000000d3", x: 0, y: 0 } } };
   client.sendOperations([own]);

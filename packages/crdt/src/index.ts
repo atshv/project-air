@@ -12,6 +12,7 @@ import type {
   OperationInverse,
   Zone,
 } from "../../contracts/generated/types.d.ts";
+import { readUpdateNoteBody } from "./note-body.ts";
 
 export type BoardEntityKind = "card" | "zone" | "block" | "note" | "edge";
 export type BoardOp = Operation | OperationInverse;
@@ -98,6 +99,24 @@ export function applyToStore(store: EntityStore, operation: BoardOp): void {
     case "resizeBlock": change(store, String(payload["blockId"]), { width: payload["width"], height: payload["height"] }); return;
     case "updateBlock": change(store, String(payload["blockId"]), (payload["changes"] as AnyPayload) ?? {}); return;
     case "updateNote": change(store, String(payload["noteId"]), (payload["changes"] as AnyPayload) ?? {}); return;
+    case "updateNoteBody": {
+      // Contract 0.4.0 (AD-4): the note must already exist once in the board
+      // content; a missing note is a rejected operation, never a silent create.
+      // The operation payload carries no timestamp, so `updatedAt` is preserved
+      // (the platform owns server timestamps): that is what makes apply+inverse
+      // restore the previous note byte-identically.
+      const update = readUpdateNoteBody(payload);
+      const note = store.entities.get(keyOf("note", update.noteId));
+      if (note === undefined) throw new Error(`updateNoteBody targets the missing note ${update.noteId}`);
+      if (update.body === null) {
+        delete note["body"];
+        delete note["plainText"];
+      } else {
+        note["body"] = clone(update.body);
+        note["plainText"] = update.plainText;
+      }
+      return;
+    }
     case "reorder": change(store, String(payload["itemId"]), { z: payload["z"] }); return;
     case "group":
       for (const child of (payload["children"] as BoardOp[]) ?? []) applyToStore(store, child);

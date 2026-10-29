@@ -188,7 +188,7 @@ export class PgSyncStore implements SyncStore {
 /** Placeholder root document until the first operation/snapshot arrives (P5-06). */
 function emptyBoardContent(boardId: string): BoardContent {
   return {
-    contractVersion: "0.3.0",
+    contractVersion: "0.4.0",
     board: {
       id: boardId, workspaceId: "", ownerId: "", title: "", visibility: "private", archived: false,
       createdAt: "1970-01-01T00:00:00.000Z", updatedAt: "1970-01-01T00:00:00.000Z",

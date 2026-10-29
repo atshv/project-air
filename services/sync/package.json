@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
-  "description": "Realtime sync service: WebSocket protocol 0.3.0, platform authorization and a durable per-board update log (serverSeq committed before ack).",
+  "description": "Realtime sync service: WebSocket protocol 0.4.0, platform authorization and a durable per-board update log (serverSeq committed before ack).",
   "engines": {
     "node": ">=24.22.1"
   },

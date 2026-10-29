@@ -13,7 +13,7 @@ import pg from "pg";
 
 import { compactBoard } from "../src/compaction.ts";
 import { PgSyncStore } from "../src/store.ts";
-import { createFakeDocuments } from "./restart-fixtures.mjs";
+import { createFakeDocuments, NOTE_ID } from "./restart-fixtures.mjs";
 
 const { Client } = pg;
 const BOARD_ID = "0192f0f7-7000-7000-8000-0000000000b1";
@@ -75,7 +75,7 @@ async function connect(port) {
 
 async function joinBoard(port, clientId = CLIENT_ID) {
   const socket = await connect(port);
-  socket.send({ id: UUID(0x9000 + Math.floor(Math.random() * 1000)), type: "hello", clientId, payload: { tokenRef: "test-token-ref", contractVersion: "0.3.0" } });
+  socket.send({ id: UUID(0x9000 + Math.floor(Math.random() * 1000)), type: "hello", clientId, payload: { tokenRef: "test-token-ref", contractVersion: "0.4.0" } });
   socket.send({ id: UUID(0x9100 + Math.floor(Math.random() * 1000)), type: "joinBoard", clientId, boardId: BOARD_ID, seq: 2, payload: {} });
   const welcome = await socket.waitFor((message) => message.type === "welcome");
   const snapshot = await socket.waitFor((message) => message.type === "snapshot");
@@ -88,12 +88,36 @@ const operation = (index) => ({
   inverse: { boardId: BOARD_ID, type: "reorder", payload: { itemId: UUID(0x4000 + index), z: "b" } },
 });
 
+// P6-08: one contract 0.4.0 note-body operation at the end of the batch list so
+// the body survives the same ack → persist → restart → compaction path.
+const BODY = {
+  version: "1",
+  blocks: [
+    { type: "paragraph", text: "Restart body." },
+    { type: "list", text: "Source", marks: ["link"], href: "https://example.test/source" },
+  ],
+};
+const BODY_PLAIN_TEXT = "Restart body.\n- Source";
+const NOTE = { id: NOTE_ID, workspaceId: UUID(0xa2), title: "Restart note", createdAt: "2027-01-10T09:30:00.000Z", updatedAt: "2027-01-10T09:30:00.000Z" };
+const bodyOperations = [
+  {
+    id: UUID(0x2100), boardId: BOARD_ID, actorId: UUID(0x3000), createdAt: new Date().toISOString(),
+    type: "createNote", payload: { note: NOTE },
+    inverse: { boardId: BOARD_ID, type: "deleteNote", payload: { note: NOTE, cards: [] } },
+  },
+  {
+    id: UUID(0x2101), boardId: BOARD_ID, actorId: UUID(0x3000), createdAt: new Date().toISOString(),
+    type: "updateNoteBody", payload: { noteId: NOTE_ID, body: BODY },
+    inverse: { boardId: BOARD_ID, type: "updateNoteBody", payload: { noteId: NOTE_ID, body: { version: "1", blocks: [] } } },
+  },
+];
+
 test("restart, catch-up and snapshot compaction preserve every acked update", { timeout: 90_000 }, async () => {
   const { syncPort, databaseUrl } = slot();
   const client = new Client({ connectionString: databaseUrl });
   await client.connect();
   const store = new PgSyncStore({ connectionString: databaseUrl });
-  const operationCount = 20;
+  const operationCount = 22;
   const evidencePath = join(new URL("../../..", import.meta.url).pathname, "reviews", "evidence", `P5-06-restart-${new Date().toISOString().replace(/[-:]/g, "").replace(/\.\d+Z$/, "Z")}.json`);
   let child = null;
   try {
@@ -108,7 +132,7 @@ test("restart, catch-up and snapshot compaction preserve every acked update", { 
     const acked = [];
     let seq = 3;
     for (let index = 0; index < operationCount; index += 1) {
-      const op = operation(index);
+      const op = index < operationCount - bodyOperations.length ? operation(index) : bodyOperations[index - (operationCount - bodyOperations.length)];
       first.socket.send({ id: UUID(0x5000 + index), type: "operationBatch", clientId: CLIENT_ID, boardId: BOARD_ID, seq, payload: { batchId: UUID(0x6000 + index), operations: [op] } });
       const ack = await first.socket.waitFor((message) => message.type === "ack" && message.payload?.batchId === UUID(0x6000 + index));
       acked.push({ id: op.id, serverSeq: ack.serverSeq });
@@ -131,6 +155,9 @@ test("restart, catch-up and snapshot compaction preserve every acked update", { 
     assert.equal(second.welcome.serverSeq, operationCount + 1, "serverSeq continues monotonically across the restart");
     const ids = second.snapshot.payload.boardContent.cards.map((card) => card.id).sort();
     assert.deepEqual(ids, acked.map((entry) => entry.id).sort(), "every acked operation is present after the restart (snapshot+replay)");
+    const restartedNote = second.snapshot.payload.boardContent.notes.find((note) => note.id === NOTE_ID);
+    assert.deepEqual(restartedNote.body, BODY, "the updateNoteBody body survives the restart (replayed update)");
+    assert.equal(restartedNote.plainText, BODY_PLAIN_TEXT, "the derived plainText survives the restart");
     const preCompactionSnapshot = second.snapshot.payload.boardContent;
     // Exact catch-up boundaries at the log level: empty, one, large gaps.
     assert.equal((await client.query("SELECT count(*)::int AS count FROM sync_updates WHERE board_id = $1 AND server_seq > $2", [BOARD_ID, operationCount + 1])).rows[0].count, 0, "empty catch-up at the current sequence");
@@ -167,11 +194,15 @@ test("restart, catch-up and snapshot compaction preserve every acked update", { 
     assert.deepEqual(third.snapshot.payload.boardContent, preCompactionSnapshot, "a compacted restart reproduces exactly the uncompacted state");
     const postIds = third.snapshot.payload.boardContent.cards.map((card) => card.id).sort();
     assert.deepEqual(postIds, acked.map((entry) => entry.id).sort(), "no acknowledged update is lost by compaction");
+    const compactedNote = third.snapshot.payload.boardContent.notes.find((note) => note.id === NOTE_ID);
+    assert.deepEqual(compactedNote.body, BODY, "compaction keeps the note body");
+    assert.equal(compactedNote.plainText, BODY_PLAIN_TEXT, "compaction keeps the derived plainText");
     third.socket.ws.close();
 
     writeFileSync(evidencePath, JSON.stringify({
       task: "P5-06", gate: "restart-harness", result: "pass",
       operations: operationCount, ackedServerSeqs: acked.map((entry) => entry.serverSeq),
+      bodyOperation: { type: "updateNoteBody", noteId: NOTE_ID, plainText: BODY_PLAIN_TEXT },
       serverSeqAfterRestart: second.welcome.serverSeq, compaction: compacted,
       catchUp: { emptyAt: operationCount + 1, oneUpdateAfter: operationCount, largeGapRows: large.rowCount },
       shutdown: "sockets closed on SIGTERM; the retryable 1012 close code is covered by the service close path", databaseUrl: "(slot database, not logged)", finishedAt: new Date().toISOString(),

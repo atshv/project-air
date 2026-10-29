@@ -30,7 +30,34 @@
         "result": "pass",
         "record": "reviews/evidence/P0-48-changelog-entry-20261029T001522Z.json"
       }
+    },
+    {
+      "at": "2026-10-29T00:21:39+00:00",
+      "kind": "gate",
+      "data": {
+        "gate": "board-check",
+        "result": "fail",
+        "record": "reviews/evidence/P0-48-board-check-20261029T002123Z.json"
+      }
+    },
+    {
+      "at": "2026-10-29T00:22:48+00:00",
+      "kind": "gate",
+      "data": {
+        "gate": "board-check",
+        "result": "fail",
+        "record": "reviews/evidence/P0-48-board-check-20261029T002230Z.json"
+      }
+    },
+    {
+      "at": "2026-10-29T00:23:14+00:00",
+      "kind": "gate",
+      "data": {
+        "gate": "board-check",
+        "result": "pass",
+        "record": "reviews/evidence/P0-48-board-check-20261029T002254Z.json"
+      }
     }
   ],
-  "updated": "2026-10-29T00:15:23+00:00"
+  "updated": "2026-10-29T00:23:14+00:00"
 }

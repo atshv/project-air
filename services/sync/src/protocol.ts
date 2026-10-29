@@ -1,11 +1,11 @@
-// P5-03: protocol 0.3.0 session over one WebSocket connection.
+// P5-03: protocol 0.4.0 session over one WebSocket connection.
 // hello-first, once-per-connection version negotiation, authorized joinBoard,
 // durable operationBatch (append committed before ack) and catch-up/resync.
 // The authorizer, store and document factory are injected, so tests fake them.
 
 import type { BoardContent } from "./types.ts";
 
-export const SYNC_CONTRACT_VERSION = "0.3.0";
+export const SYNC_CONTRACT_VERSION = "0.4.0";
 
 export interface SessionIdentity {
   readonly userId: string;
@@ -103,7 +103,7 @@ interface SessionState {
   clientId: string;
 }
 
-// Contract 0.3.0 wire error codes (sync.schema.json #/$defs/errorCode).
+// Contract 0.4.0 wire error codes (sync.schema.json #/$defs/errorCode).
 const REJECT_CODES = {
   unauthorized: "AUTH_REQUIRED",
   helloRequired: "VALIDATION",

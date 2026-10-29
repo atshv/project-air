@@ -1,0 +1,51 @@
+{
+  "task": "P5-06",
+  "gate": "restart-harness",
+  "result": "pass",
+  "operations": 22,
+  "ackedServerSeqs": [
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23
+  ],
+  "bodyOperation": {
+    "type": "updateNoteBody",
+    "noteId": "0192f0a4-7000-7000-8000-000000000004",
+    "plainText": "Restart body.\n- Source"
+  },
+  "serverSeqAfterRestart": 23,
+  "compaction": {
+    "boardId": "0192f0f7-7000-7000-8000-0000000000b1",
+    "skipped": false,
+    "updatesBefore": 22,
+    "snapshotSeq": 23,
+    "pruned": 22
+  },
+  "catchUp": {
+    "emptyAt": 23,
+    "oneUpdateAfter": 22,
+    "largeGapRows": 22
+  },
+  "shutdown": "sockets closed on SIGTERM; the retryable 1012 close code is covered by the service close path",
+  "databaseUrl": "(slot database, not logged)",
+  "finishedAt": "2026-10-29T00:24:40.985Z"
+}

@@ -7377,7 +7377,7 @@
       "satisfies": [
         "D12"
       ],
-      "status": "in_progress",
+      "status": "done",
       "depends_on": [
         "P6-06",
         "P6-07"
@@ -7418,11 +7418,16 @@
         "unit",
         "typecheck"
       ],
-      "owner": "lead",
+      "owner": null,
       "branch": "task/P6-08",
-      "worktree": "/private/tmp/air-P6-08",
-      "round": 0,
-      "evidence": [],
+      "worktree": null,
+      "round": 1,
+      "evidence": [
+        "reviews/evidence/P6-08-board-check-20261029T002344Z.json",
+        "reviews/evidence/P6-08-boundaries-20261029T002404Z.json",
+        "reviews/evidence/P6-08-typecheck-20261029T002404Z.json",
+        "reviews/evidence/P6-08-unit-20261029T002432Z.json"
+      ],
       "scope_write_forbidden": [
         "reference/"
       ]

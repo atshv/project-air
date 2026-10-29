@@ -1,0 +1,99 @@
+{
+  "task": "P6-08",
+  "state": "idle",
+  "attempt": 0,
+  "attempts": [],
+  "events": [
+    {
+      "at": "2026-10-29T00:18:12+00:00",
+      "kind": "gate",
+      "data": {
+        "gate": "board-check",
+        "result": "fail",
+        "record": "reviews/evidence/P6-08-board-check-20261029T001756Z.json"
+      }
+    },
+    {
+      "at": "2026-10-29T00:19:13+00:00",
+      "kind": "gate",
+      "data": {
+        "gate": "board-check",
+        "result": "fail",
+        "record": "reviews/evidence/P6-08-board-check-20261029T001855Z.json"
+      }
+    },
+    {
+      "at": "2026-10-29T00:19:47+00:00",
+      "kind": "gate",
+      "data": {
+        "gate": "boundaries",
+        "result": "pass",
+        "record": "reviews/evidence/P6-08-boundaries-20261029T001946Z.json"
+      }
+    },
+    {
+      "at": "2026-10-29T00:19:50+00:00",
+      "kind": "gate",
+      "data": {
+        "gate": "typecheck",
+        "result": "pass",
+        "record": "reviews/evidence/P6-08-typecheck-20261029T001949Z.json"
+      }
+    },
+    {
+      "at": "2026-10-29T00:20:01+00:00",
+      "kind": "gate",
+      "data": {
+        "gate": "unit",
+        "result": "pass",
+        "record": "reviews/evidence/P6-08-unit-20261029T001953Z.json"
+      }
+    },
+    {
+      "at": "2026-10-29T00:24:01+00:00",
+      "kind": "gate",
+      "data": {
+        "gate": "board-check",
+        "result": "pass",
+        "record": "reviews/evidence/P6-08-board-check-20261029T002344Z.json"
+      }
+    },
+    {
+      "at": "2026-10-29T00:24:04+00:00",
+      "kind": "gate",
+      "data": {
+        "gate": "boundaries",
+        "result": "pass",
+        "record": "reviews/evidence/P6-08-boundaries-20261029T002404Z.json"
+      }
+    },
+    {
+      "at": "2026-10-29T00:24:06+00:00",
+      "kind": "gate",
+      "data": {
+        "gate": "typecheck",
+        "result": "pass",
+        "record": "reviews/evidence/P6-08-typecheck-20261029T002404Z.json"
+      }
+    },
+    {
+      "at": "2026-10-29T00:24:11+00:00",
+      "kind": "gate",
+      "data": {
+        "gate": "unit",
+        "result": "pass",
+        "record": "reviews/evidence/P6-08-unit-20261029T002410Z.json"
+      }
+    },
+    {
+      "at": "2026-10-29T00:24:41+00:00",
+      "kind": "gate",
+      "data": {
+        "gate": "unit",
+        "result": "pass",
+        "record": "reviews/evidence/P6-08-unit-20261029T002432Z.json"
+      }
+    }
+  ],
+  "updated": "2026-10-29T00:24:41+00:00"
+}

@@ -18,7 +18,7 @@ const UUID = (tail) => `0192f0f7-7000-7000-8000-${String(tail).padStart(12, "0")
 const BOARD = UUID(0xa1);
 const CARD_A = UUID(0xc1);
 const CARD_B = UUID(0xc2);
-const empty = { contractVersion: "0.3.0", board: { id: BOARD, workspaceId: UUID(0xa2), ownerId: UUID(0xa3), title: "Join replay", visibility: "private", archived: false, createdAt: "2027-01-10T09:00:00.000Z", updatedAt: "2027-01-10T09:00:00.000Z" }, zones: [], blocks: [], cards: [], notes: [], edges: [] };
+const empty = { contractVersion: "0.4.0", board: { id: BOARD, workspaceId: UUID(0xa2), ownerId: UUID(0xa3), title: "Join replay", visibility: "private", archived: false, createdAt: "2027-01-10T09:00:00.000Z", updatedAt: "2027-01-10T09:00:00.000Z" }, zones: [], blocks: [], cards: [], notes: [], edges: [] };
 const card = (id) => ({ id, boardId: BOARD, noteId: UUID(0xd1), x: 0, y: 0, width: 176, height: 80, z: "a", createdAt: "2027-01-10T09:00:00.000Z", updatedAt: "2027-01-10T09:00:00.000Z" });
 const createCard = (id, n) => ({ id: UUID(n), boardId: BOARD, actorId: UUID(0xa3), createdAt: new Date().toISOString(), type: "createCard", payload: { card: card(id) }, inverse: { boardId: BOARD, type: "deleteCard", payload: { card: card(id) } } });
 const moveCard = (cardId, x, n) => ({ id: UUID(n), boardId: BOARD, actorId: UUID(0xa3), createdAt: new Date().toISOString(), type: "moveCard", payload: { cardId, x, y: 0 }, inverse: { boardId: BOARD, type: "moveCard", payload: { cardId, x: 0, y: 0 } } });
@@ -32,7 +32,7 @@ async function connect(url) {
 }
 async function joinBoard(port, clientId) {
   const socket = await connect(`ws://127.0.0.1:${port}`);
-  socket.send({ id: UUID(0x9000), type: "hello", clientId, payload: { tokenRef: "test-token-ref", contractVersion: "0.3.0" } });
+  socket.send({ id: UUID(0x9000), type: "hello", clientId, payload: { tokenRef: "test-token-ref", contractVersion: "0.4.0" } });
   socket.send({ id: UUID(0x9001), type: "joinBoard", clientId, boardId: BOARD, seq: 2, payload: {} });
   const welcome = await socket.waitFor((message) => message.type === "welcome");
   const snapshot = await socket.waitFor((message) => message.type === "snapshot");

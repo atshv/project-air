@@ -7,6 +7,7 @@ import * as Y from "yjs";
 import type { BoardContent } from "../../contracts/generated/types.d.ts";
 import type { BoardDoc, BoardDocOptions, BoardEntityKind, BoardOp, EntityStore } from "./index.ts";
 import { encodeStore, storeSnapshot } from "./index.ts";
+import { readUpdateNoteBody } from "./note-body.ts";
 
 const KINDS: readonly BoardEntityKind[] = ["card", "zone", "block", "note", "edge"];
 const keyOf = (kind: BoardEntityKind, id: string): string => `${kind}:${id}`;
@@ -101,6 +102,24 @@ export class YjsBoardDoc implements BoardDoc {
       case "resizeBlock": this.#change(String(payload["blockId"]), { width: payload["width"], height: payload["height"] }); return;
       case "updateBlock": this.#change(String(payload["blockId"]), (payload["changes"] as AnyPayload) ?? {}); return;
       case "updateNote": this.#change(String(payload["noteId"]), (payload["changes"] as AnyPayload) ?? {}); return;
+      case "updateNoteBody": {
+        // Contract 0.4.0 (AD-4): the note exists once; a missing note rejects the
+        // operation. The body (a nested plain JSON value) and its derived plain
+        // text are atomic map values, so snapshots/updates carry them unchanged.
+        const update = readUpdateNoteBody(payload);
+        const found = this.#find(update.noteId);
+        if (found === null || found.kind !== "note") {
+          throw new Error(`updateNoteBody targets the missing note ${update.noteId}`);
+        }
+        if (update.body === null) {
+          found.map.delete("body");
+          found.map.delete("plainText");
+        } else {
+          found.map.set("body", JSON.parse(JSON.stringify(update.body)) as unknown);
+          found.map.set("plainText", update.plainText);
+        }
+        return;
+      }
       case "reorder": this.#change(String(payload["itemId"]), { z: payload["z"] }); return;
       case "group":
         for (const child of (payload["children"] as BoardOp[]) ?? []) this.#applyOperation(child);

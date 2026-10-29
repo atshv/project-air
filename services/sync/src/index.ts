@@ -20,7 +20,7 @@ const logger = createLogger(config.logLevel);
 const store = new PgSyncStore({ connectionString: config.databaseUrl });
 
 const emptyBoardContent = (): BoardContent => ({
-  contractVersion: "0.3.0",
+  contractVersion: "0.4.0",
   board: {
     id: "00000000-0000-7000-8000-000000000000", workspaceId: "", ownerId: "", title: "",
     visibility: "private", archived: false, createdAt: "1970-01-01T00:00:00.000Z", updatedAt: "1970-01-01T00:00:00.000Z",

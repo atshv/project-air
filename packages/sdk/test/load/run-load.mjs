@@ -28,7 +28,7 @@ const MIN_OPERATIONS = 5_000;
 const P95_LIMIT_MS = 150;
 const PACE_MS = 150;
 const BOARD_ID = "0192f0f9-7000-7000-8000-0000000000b1";
-const EMPTY = { contractVersion: "0.3.0", board: { id: BOARD_ID, workspaceId: "0192f0f9-7000-7000-8000-000000000002", ownerId: "0192f0f9-7000-7000-8000-000000000003", title: "Load board", visibility: "private", archived: false, createdAt: "2027-01-10T09:00:00.000Z", updatedAt: "2027-01-10T09:00:00.000Z" }, zones: [], blocks: [], cards: [], notes: [], edges: [] };
+const EMPTY = { contractVersion: "0.4.0", board: { id: BOARD_ID, workspaceId: "0192f0f9-7000-7000-8000-000000000002", ownerId: "0192f0f9-7000-7000-8000-000000000003", title: "Load board", visibility: "private", archived: false, createdAt: "2027-01-10T09:00:00.000Z", updatedAt: "2027-01-10T09:00:00.000Z" }, zones: [], blocks: [], cards: [], notes: [], edges: [] };
 const uuid = (tail) => `0192f0f9-7000-7000-8000-${String(tail).padStart(12, "0")}`;
 const sleep = (ms) => new Promise((done) => setTimeout(done, ms));
 const hash = (value) => createHash("sha256").update(value).digest("hex");

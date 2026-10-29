@@ -1,0 +1,151 @@
+$ pnpm test --affected --force
+[exit 0]
+
+
+   • turbo 2.11.10
+   • Packages in scope: //, @project-air/crdt, @project-air/sdk, @project-air/sync
+   • Running test in 4 packages
+   • Remote caching disabled, using shared worktree cache
+
+@project-air/crdt:build: cache bypass, force executing 5a2f9f19ca3323c7
+@project-air/sync:build: cache bypass, force executing 18ac27a994ed58e2
+@project-air/sync:build: $ tsc --project tsconfig.json
+@project-air/crdt:build: $ tsc --project tsconfig.build.json
+@project-air/sdk:build: cache bypass, force executing 6b47016731e99ba3
+@project-air/crdt:test: cache bypass, force executing 9f35972aac0f3f36
+@project-air/crdt:test: $ node --test test/*.test.mjs
+@project-air/sdk:build: $ tsc --project tsconfig.json
+@project-air/sync:test: cache bypass, force executing 268a2beac45f75fe
+@project-air/sync:test: $ node --test --test-concurrency=1 test/*.test.mjs
+@project-air/sdk:test: cache bypass, force executing f4dd81e69789faf4
+@project-air/sdk:test: $ node --test test/*.test.mjs
+@project-air/crdt:test: yjs: rounds=10000 elapsedMs=163.9 heapDeltaMb=33.08 stateBytes=2297
+@project-air/sync:test: (node:1815) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.
+@project-air/sync:test: (Use `node --trace-warnings ...` to show where the warning was created)
+@project-air/crdt:test: fake: rounds=10000 elapsedMs=175.0 heapDeltaMb=12.74 stateBytes=2297
+@project-air/crdt:test: (node:1788) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.
+@project-air/crdt:test: (Use `node --trace-warnings ...` to show where the warning was created)
+@project-air/crdt:test: ✔ yjs: 10,000 randomized rounds in different orders converge (202.614375ms)
+@project-air/crdt:test: ✔ yjs: an offline batch merges after reconnect (10.812375ms)
+@project-air/crdt:test: ✔ yjs: the snapshot round-trips into an identical document (2.299708ms)
+@project-air/crdt:test: ✔ yjs: every operation type plus its inverse restores the state (1.701541ms)
+@project-air/crdt:test: ✔ yjs: updateNoteBody stores the body and derived plainText and snapshots round-trip it (0.966041ms)
+@project-air/crdt:test: ✔ yjs: a bodyless note stays byte-identical through apply and the empty-body inverse (0.480042ms)
+@project-air/crdt:test: ✔ yjs: an empty body clears a note and its inverse restores the body (0.253125ms)
+@project-air/crdt:test: ✔ yjs: body rejections fail closed and leave the document unchanged (1.624208ms)
+@project-air/crdt:test: ✔ yjs: two replicas converge with body operations (1.805083ms)
+@project-air/crdt:test: ✔ yjs: body validation agrees with the contract schema and fixtures (3.882959ms)
+@project-air/crdt:test: ✔ fake: 10,000 randomized rounds in different orders converge (273.970333ms)
+@project-air/crdt:test: ✔ fake: an offline batch merges after reconnect (10.090833ms)
+@project-air/crdt:test: ✔ fake: the snapshot round-trips into an identical document (1.597041ms)
+@project-air/crdt:test: ✔ fake: every operation type plus its inverse restores the state (1.383708ms)
+@project-air/crdt:test: ✔ fake: updateNoteBody stores the body and derived plainText and snapshots round-trip it (4.281625ms)
+@project-air/crdt:test: ✔ fake: a bodyless note stays byte-identical through apply and the empty-body inverse (0.394333ms)
+@project-air/crdt:test: ✔ fake: an empty body clears a note and its inverse restores the body (0.162792ms)
+@project-air/crdt:test: ✔ fake: body rejections fail closed and leave the document unchanged (0.928375ms)
+@project-air/crdt:test: ✔ fake: two replicas converge with body operations (0.330167ms)
+@project-air/crdt:test: ✔ fake: body validation agrees with the contract schema and fixtures (1.005833ms)
+@project-air/crdt:test: ℹ tests 20
+@project-air/crdt:test: ℹ suites 0
+@project-air/crdt:test: ℹ pass 20
+@project-air/crdt:test: ℹ fail 0
+@project-air/crdt:test: ℹ cancelled 0
+@project-air/crdt:test: ℹ skipped 0
+@project-air/crdt:test: ℹ todo 0
+@project-air/crdt:test: ℹ duration_ms 833.082083
+@project-air/sdk:test: (node:1831) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.
+@project-air/sdk:test: (Use `node --trace-warnings ...` to show where the warning was created)
+@project-air/sdk:test: ✔ session.get uses GET /v1/session with credentials include (3.751417ms)
+@project-air/sdk:test: ✔ login/registration/recovery/logout hit the auth base with cookie mode and JSON bodies (0.787666ms)
+@project-air/sdk:test: ✔ error envelopes become typed ApiError with code/messageKey/requestId (0.381417ms)
+@project-air/sdk:test: (node:1832) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.
+@project-air/sdk:test: (Use `node --trace-warnings ...` to show where the warning was created)
+@project-air/sdk:test: ✔ the default createDocument is a real CRDT document that applies remote operations (5.284541ms)
+@project-air/sync:test: ✔ live socket integration: join, ack-after-commit, updateNoteBody log/broadcast/catch-up and reconnect (465.649417ms)
+@project-air/sdk:test: (node:1833) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.
+@project-air/sdk:test: (Use `node --trace-warnings ...` to show where the warning was created)
+@project-air/sdk:test: BMSG {"id":"01a1850b-56da-7a48-a49e-75b30e729b2b","type":"presence","clientId":"0192f0fa-7000-7000-8000-0000000000a1","boardId":"0192f0a3-7000-70
+@project-air/sdk:test: BMSG {"id":"01a1850b-56f4-76c3-ac7e-57436c16103f","type":"ack","clientId":"0192f0fa-7000-7000-8000-0000000000b1","boardId":"0192f0a3-7000-7000-80
+@project-air/sync:test: (node:1837) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.
+@project-air/sync:test: (Use `node --trace-warnings ...` to show where the warning was created)
+@project-air/sdk:test: BMSG {"id":"01a1850b-5743-79b2-9be0-fd93fa7eb416","type":"presence","clientId":"0192f0fa-7000-7000-8000-0000000000a1","boardId":"0192f0a3-7000-70
+@project-air/sdk:test: BMSG {"id":"01a1850b-5743-756c-96fc-4190adc85c51","type":"operationBatch","clientId":"0192f0fa-7000-7000-8000-0000000000a1","boardId":"0192f0a3-7
+@project-air/sync:test: ✔ join replay rebuilds the committed state after compaction (real Pg store) (219.119333ms)
+@project-air/sync:test: ✔ a >1 MiB snapshot is delivered to a joining client (37.952792ms)
+@project-air/sdk:test: DEBUG aSeq=3 bSeq=3 updates=1 aOwn=1 aOffline=0 aErr=null aX=123 bX=123
+@project-air/sdk:test: BMSG {"id":"01a1850b-5a80-7609-a0d8-46d139d890cd","type":"operationBatch","clientId":"0192f0fa-7000-7000-8000-0000000000a1","boardId":"0192f0a3-7
+@project-air/sdk:test: stack proof evidence: reviews/evidence/P5-07-stack-20261029T002436Z.json
+@project-air/sdk:test: ✔ offline clients converge over the real stack and undo reverts only the client's own op (1238.917792ms)
+@project-air/sdk:test: (node:1834) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.
+@project-air/sdk:test: (Use `node --trace-warnings ...` to show where the warning was created)
+@project-air/sdk:test: ✔ handshake sends hello first, then joinBoard; welcome/snapshot install the document (23.556416ms)
+@project-air/sdk:test: ✔ operation batches are sent with a per-connection seq; acks advance only forward (1.345417ms)
+@project-air/sdk:test: ✔ offline operations queue in order and flush on join; duplicate remote batches apply once (0.950292ms)
+@project-air/sdk:test: ✔ a dropped socket reconnects with backoff and resyncs from the last serverSeq (0.355583ms)
+@project-air/sdk:test: ✔ close is idempotent and leaves the board once (0.716666ms)
+@project-air/sdk:test: ✔ autosave debounces 400 ms after the last keystroke, saves once and reports saving -> saved (0.337333ms)
+@project-air/sdk:test: ✔ the five flush triggers save immediately and visibility only flushes when hidden (0.246291ms)
+@project-air/sdk:test: ✔ stale autosave responses never overwrite newer values; error -> retry (0.811166ms)
+@project-air/sdk:test: ✔ outgoing messages validate against sync.schema.json and ids are unique UUIDv7 (3.646542ms)
+@project-air/sdk:test: ✔ an injected authenticated clientId is used unchanged and must be a UUIDv7 (0.536667ms)
+@project-air/sdk:test: ✔ presence updates are throttled/coalesced and remote participants subscribe and clear (0.327291ms)
+@project-air/sdk:test: ✔ undoOwn applies only the client's own inverse; remote operations are never recorded (0.40175ms)
+@project-air/sdk:test: (node:1835) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.
+@project-air/sdk:test: (Use `node --trace-warnings ...` to show where the warning was created)
+@project-air/sdk:test: ✔ workspaces.list sends the session and requestId and parses the list envelope (31.352125ms)
+@project-air/sdk:test: ✔ a cookie session is sent as the cookie header (1.648292ms)
+@project-air/sdk:test: ✔ a string session is shorthand for the test session header (1.086ms)
+@project-air/sdk:test: ✔ workspace create/get/update/delete use the contract envelopes (10.948083ms)
+@project-air/sdk:test: ✔ boards list/create/get/update/delete (4.607ms)
+@project-air/sdk:test: ✔ notes list/create/get/update/delete (4.450583ms)
+@project-air/sdk:test: ✔ cards list/create/get/update/delete (5.869208ms)
+@project-air/sdk:test: ✔ pagination nextCursor is passed back as the cursor query (2.644125ms)
+@project-air/sdk:test: ✔ no session maps to a typed AUTH_REQUIRED ApiError (0.64375ms)
+@project-air/sdk:test: ✔ a validation error exposes the field paths (1.248209ms)
+@project-air/sdk:test: ✔ a conflict maps to CONFLICT and unknown ids to NOT_FOUND (0.953208ms)
+@project-air/sdk:test: ✔ an unexpected success envelope becomes an INTERNAL ApiError (0.538ms)
+@project-air/sdk:test: ✔ an invalid baseUrl is rejected by the client (0.111708ms)
+@project-air/sdk:test: ℹ tests 30
+@project-air/sdk:test: ℹ suites 0
+@project-air/sdk:test: ℹ pass 30
+@project-air/sdk:test: ℹ fail 0
+@project-air/sdk:test: ℹ cancelled 0
+@project-air/sdk:test: ℹ skipped 0
+@project-air/sdk:test: ℹ todo 0
+@project-air/sdk:test: ℹ duration_ms 1642.809166
+@project-air/sync:test: ✔ live presence: throttled, identity-derived, isolated, cleaned up and never blocking operations (552.73225ms)
+@project-air/sync:test: ✔ hello is required first and the first message rejection is explicit (1.566667ms)
+@project-air/sync:test: ✔ version and session validation reject before joinBoard (0.948916ms)
+@project-air/sync:test: ✔ the platform authorizer gates joinBoard and welcome/snapshot carry the durable seq (0.433583ms)
+@project-air/sync:test: ✔ operationBatch is persisted before the ack and the ack carries the new seq (0.619917ms)
+@project-air/sync:test: ✔ a failed append produces a reject and never an ack (0.2245ms)
+@project-air/sync:test: ✔ resyncRequest reads from the durable seq and leaveBoard broadcasts presence (0.253959ms)
+@project-air/sync:test: (node:1857) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.
+@project-air/sync:test: (Use `node --trace-warnings ...` to show where the warning was created)
+@project-air/sync:test: ✔ join/resync/compaction replay more than the 500-row page (2691.458666ms)
+@project-air/sync:test: restart harness evidence: /private/tmp/air-P6-08/reviews/evidence/P5-06-restart-20261029T002439Z.json
+@project-air/sync:test: ✔ restart, catch-up and snapshot compaction preserve every acked update (1133.727125ms)
+@project-air/sync:test: ✔ encodeFrame produces a valid 127-length frame for a 1.5 MiB outbound payload (0.957667ms)
+@project-air/sync:test: ✔ the default inbound bound still rejects >1 MiB frames (0.57525ms)
+@project-air/sync:test: ✔ the handshake accept value matches the RFC 6455 vector (1.11975ms)
+@project-air/sync:test: ✔ masked client frames decode and unmasked/reserved frames are rejected (0.377667ms)
+@project-air/sync:test: ✔ fragmentation reassembles and enforces the bounded size (0.308709ms)
+@project-air/sync:test: ✔ ping is answered with pong and close ends the connection (0.413667ms)
+@project-air/sync:test: ✔ an oversized declared frame closes with 1009 before allocating it (0.138375ms)
+@project-air/sync:test: ℹ tests 19
+@project-air/sync:test: ℹ suites 0
+@project-air/sync:test: ℹ pass 19
+@project-air/sync:test: ℹ fail 0
+@project-air/sync:test: ℹ cancelled 0
+@project-air/sync:test: ℹ skipped 0
+@project-air/sync:test: ℹ todo 0
+@project-air/sync:test: ℹ duration_ms 6955.470625
+
+ Tasks:    6 successful, 6 total
+Cached:    0 cached, 6 total
+  Time:    8.119s 
+
+$ turbo run test --affected --force
+ WARNING  no output files found for task @project-air/crdt#test. Please check your `outputs` key in `turbo.json`
+ WARNING  no output files found for task @project-air/sdk#test. Please check your `outputs` key in `turbo.json`
+ WARNING  no output files found for task @project-air/sync#test. Please check your `outputs` key in `turbo.json`
