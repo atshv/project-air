@@ -523,8 +523,12 @@ const std::uint8_t* GlyphBuffer::bytes() const {
 std::size_t GlyphBuffer::byteSize() const { return instances_.size() * sizeof(GlyphInstance); }
 
 Status GlyphBuffer::build(const TextRuns& runs, const GlyphAtlas& atlas, const Camera& camera,
-                          double viewportWidth, double viewportHeight) {
+                          double viewportWidth, double viewportHeight,
+                          std::vector<std::uint32_t>* runGlyphCounts) {
   instances_.clear();
+  if (runGlyphCounts != nullptr) {
+    runGlyphCounts->clear();
+  }
   if (!std::isfinite(viewportWidth) || !std::isfinite(viewportHeight) || viewportWidth <= 0.0 ||
       viewportHeight <= 0.0) {
     return Status::failure("viewport must be positive and finite");
@@ -555,6 +559,7 @@ Status GlyphBuffer::build(const TextRuns& runs, const GlyphAtlas& atlas, const C
     instances_.push_back(instance);
   };
   for (const TextRun& run : runs.runs()) {
+    const std::size_t runStart = instances_.size();
     if (run.flow != TextFlow::line) {
       // Laid out once per atlas generation; zoom and pan only map the result.
       if (run.layoutGeneration != atlas.generation()) {
@@ -564,6 +569,9 @@ Status GlyphBuffer::build(const TextRuns& runs, const GlyphAtlas& atlas, const C
                                          run.layout);
         if (!status) {
           instances_.clear();
+          if (runGlyphCounts != nullptr) {
+            runGlyphCounts->clear();
+          }
           return status;
         }
         run.layoutGeneration = atlas.generation();
@@ -578,6 +586,9 @@ Status GlyphBuffer::build(const TextRuns& runs, const GlyphAtlas& atlas, const C
                   run.y + placement.y + static_cast<double>(glyph->bearingY)});
         pushQuad(*glyph, Bounds{topLeft.x, topLeft.y, static_cast<double>(glyph->cssWidth) * zoom,
                                 static_cast<double>(glyph->cssHeight) * zoom});
+      }
+      if (runGlyphCounts != nullptr) {
+        runGlyphCounts->push_back(static_cast<std::uint32_t>(instances_.size() - runStart));
       }
       continue;
     }
@@ -608,6 +619,9 @@ Status GlyphBuffer::build(const TextRuns& runs, const GlyphAtlas& atlas, const C
       instance.v1 = static_cast<float>(static_cast<double>(glyph->atlasY + glyph->height) *
                                        inverseHeight);
       instances_.push_back(instance);
+    }
+    if (runGlyphCounts != nullptr) {
+      runGlyphCounts->push_back(static_cast<std::uint32_t>(instances_.size() - runStart));
     }
   }
   return Status::success();

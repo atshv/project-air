@@ -366,9 +366,11 @@ class TextPass {
     return true;
   }
 
-  // P4-13: builds the glyph and chrome quads of one frame for the WebGPU
+  // P4-13/P6-15: builds the glyph and chrome quads of one frame for the WebGPU
   // pipelines; the object pass is untouched and the data is the same as the GL
-  // pass (same text core, placements, palette and draw order).
+  // pass (same text core, placements, palette and draw order). Each depth band
+  // carries its own glyph and header-chrome slice so the WebGPU frame can draw
+  // the band's objects, then the band's text, exactly like the GL pass.
   bool webgpuFrame(webgpu::FrameText& out) {
     out = webgpu::FrameText{};
     const detail::FrameView view = detail::frameView();
@@ -376,22 +378,30 @@ class TextPass {
       detail::setLastError("engine_create_webgpu must be called before drawing text");
       return false;
     }
-    if (runs_.runs().empty()) {
-      glyphs_.clear();
-    } else if (!buildGlyphs()) {
+    if (!prepare()) {
       return false;
     }
-    if (!syncBindings(view) || !buildBoundGlyphs(view)) {
-      return false;
+    buildWebgpuGlobalChrome(view);
+    webgpuBands_.assign(bandRanges_.size(), webgpu::FrameTextBand{});
+    for (std::size_t band = 0; band < bandRanges_.size(); ++band) {
+      const BandRange& range = bandRanges_[band];
+      webgpu::FrameTextBand& gpu = webgpuBands_[band];
+      if (range.glyphCount > 0 && range.glyphFirst < boundGlyphs_.size()) {
+        gpu.glyphs = boundGlyphs_.instances().data() + range.glyphFirst;
+        gpu.glyphCount = range.glyphCount;
+      }
+      if (range.chromeCount > 0 && range.chromeFirst < chromeGpu_.size()) {
+        gpu.chrome = chromeGpu_.data() + range.chromeFirst;
+        gpu.chromeCount = range.chromeCount;
+      }
     }
-    buildWebgpuChrome(view);
     out.ok = true;
     out.glyphsA = glyphs_.instances().data();
     out.glyphCountA = glyphs_.instances().size();
-    out.glyphsB = boundGlyphs_.instances().data();
-    out.glyphCountB = boundGlyphs_.instances().size();
-    out.chrome = webgpuChrome_.data();
-    out.chromeCount = webgpuChrome_.size();
+    out.bands = webgpuBands_.data();
+    out.bandCount = webgpuBands_.size();
+    out.globalChrome = webgpuGlobalChrome_.data();
+    out.globalChromeCount = webgpuGlobalChrome_.size();
     out.atlasReady = atlas_.ready();
     out.atlas = atlas_.pixels().data();
     out.atlasWidth = atlas_.width();
@@ -577,47 +587,106 @@ class TextPass {
     return total;
   }
 
-  bool draw() {
+  // P6-15: true when presentation text is bound to objects. The renderer then
+  // splits the object pass into depth bands and calls prepare()/drawBand()/
+  // drawTail() around them; without bindings the legacy single pass keeps the
+  // measured P4-03 cost.
+  bool needsBands() const { return !bindings_.empty(); }
+
+  // Builds the page glyphs, the bound glyphs/chrome of every depth band and the
+  // band slices of the frame. A frame without text or chrome succeeds and draws
+  // nothing. Cheap on a still frame: the binding sync is cached.
+  bool prepare() {
     const detail::FrameView view = detail::frameView();
-    const std::size_t guideCount =
-        view.guides == nullptr ? 0 : std::min(view.guideCount, air::engine::kMaxSnapGuides);
-    // L10 (P4-16): the selection frames and the live band are chrome too, so
-    // they draw even on a page without an atlas.
-    const bool selectionChrome = view.selectionCount > 0 || view.band != nullptr;
-    // L08 (P4-27): the one-second drop highlight is chrome too.
-    const bool highlightChrome = view.highlight != nullptr;
-    // No runs, no bindings, no snap guides, no selection and no drop highlight:
-    // nothing is built, bound or uploaded, so a text-free frame keeps the measured
-    // cost of the object pass alone (the perf scene never drops or selects).
-    if (!selectionChrome && !highlightChrome && guideCount == 0 &&
-        (!atlas_.ready() || (runs_.runs().empty() && bindings_.empty()))) {
-      return true;
+    if (!bindings_.empty() && !syncBindings(view)) {
+      return false;
     }
     if (runs_.runs().empty()) {
       glyphs_.clear();
     } else if (!buildGlyphs()) {
       return false;
     }
-    if (!syncBindings(view) || !buildBoundGlyphs(view)) {
+    if (!bindings_.empty() && !buildBoundGlyphs(view)) {
       return false;
     }
-    if (glyphs_.empty() && boundGlyphs_.empty() && chromeGpu_.empty() && guideCount == 0 &&
-        !selectionChrome && !highlightChrome) {
+    return true;
+  }
+
+  // Legacy path (no bound text): every band slice in order, then the tail. The
+  // renderer calls it after one object draw for the whole board.
+  bool draw() {
+    if (!prepare()) {
+      return false;
+    }
+    for (std::size_t band = 0; band < bandRanges_.size(); ++band) {
+      if (!drawBand(band)) {
+        return false;
+      }
+    }
+    return drawTail();
+  }
+
+  // P6-15: draws one depth band's header chrome and bound glyphs. The renderer
+  // calls it after that band's object instances, before the next band's objects.
+  bool drawBand(std::size_t bandIndex) {
+    if (bandIndex >= bandRanges_.size()) {
+      return true;
+    }
+    const BandRange& band = bandRanges_[bandIndex];
+    if (band.chromeCount == 0 && band.glyphCount == 0) {
+      return true;
+    }
+    const detail::FrameView view = detail::frameView();
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    if (band.chromeCount > 0) {
+      drawChromeSlice(view, band);
+    }
+    if (band.glyphCount > 0) {
+      useGlyphProgram(view);
+      drawGlyphBufferRange(boundGlyphs_, band.glyphFirst, band.glyphCount);
+    }
+    glDisable(GL_BLEND);
+    return true;
+  }
+
+  // Page-owned runs and the presentation chrome that belongs above every object
+  // (snap guides, selection frames/band, zone drop highlight).
+  bool drawTail() {
+    const detail::FrameView view = detail::frameView();
+    const std::size_t guideCount =
+        view.guides == nullptr ? 0 : std::min(view.guideCount, air::engine::kMaxSnapGuides);
+    const bool selectionChrome = view.selectionCount > 0 || view.band != nullptr;
+    const bool highlightChrome = view.highlight != nullptr;
+    if (glyphs_.empty() && guideCount == 0 && !selectionChrome && !highlightChrome) {
       return true;
     }
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    drawChrome(view);
-    drawGlyphBuffers(view);
+    if (!glyphs_.empty()) {
+      useGlyphProgram(view);
+      drawGlyphBuffer(glyphs_);
+    }
+    drawGlobalChrome(view);
     glDisable(GL_BLEND);
     return true;
   }
 
  private:
-  // P4-13: the same chrome quads the GL pass uploads (header band/rule, snap
-  // guides, selection frames/band, zone highlight) in one instance list.
-  void buildWebgpuChrome(const detail::FrameView& view) {
-    webgpuChrome_.clear();
+  // P6-15: one depth band's slice of the bound glyph buffer and the header
+  // chrome instance list.
+  struct BandRange {
+    std::size_t chromeFirst{0};
+    std::size_t chromeCount{0};
+    std::size_t glyphFirst{0};
+    std::size_t glyphCount{0};
+  };
+
+  // P4-13/P6-15: the presentation chrome above every object (snap guides,
+  // selection frames/band, zone highlight) in one WebGPU instance list. The
+  // per-object header chrome travels with its depth band instead.
+  void buildWebgpuGlobalChrome(const detail::FrameView& view) {
+    webgpuGlobalChrome_.clear();
     const auto append = [this](float x, float y, float width, float height, const float* color) {
       ChromeGpuInstance instance;
       instance.x = x;
@@ -628,11 +697,8 @@ class TextPass {
       instance.green = color[1];
       instance.blue = color[2];
       instance.alpha = color[3];
-      webgpuChrome_.push_back(instance);
+      webgpuGlobalChrome_.push_back(instance);
     };
-    for (const ChromeGpuInstance& header : chromeGpu_) {
-      webgpuChrome_.push_back(header);
-    }
     if (view.camera == nullptr) {
       return;
     }
@@ -759,6 +825,95 @@ class TextPass {
     return true;
   }
 
+  // P6-15: the index of the depth band a draw-order rank belongs to. The bands
+  // come from the command buffer and cover exactly the visible objects, so every
+  // bound run of a visible object finds its band. The fallback clamps a rank that
+  // no band covers to the nearest band (defence in depth, never a drop).
+  static std::size_t bandIndexForRank(const detail::FrameView& view, std::uint32_t rank) {
+    if (view.bands != nullptr) {
+      for (std::size_t band = 0; band < view.bandCount; ++band) {
+        if (rank >= view.bands[band].firstRank && rank <= view.bands[band].lastRank) {
+          return band;
+        }
+      }
+    }
+    return view.bandCount == 0 ? 0 : view.bandCount - 1;
+  }
+
+  // P6-15: stable-orders the bound runs and the header chrome by depth band, so
+  // the glyph buffer and the chrome instance list become one contiguous slice per
+  // band. The camera-independent draw order inside a band is preserved.
+  bool orderBindingsByBand(const detail::FrameView& view,
+                           const std::vector<std::uint32_t>& runRanks,
+                           const std::vector<std::uint32_t>& chromeRanks) {
+    const std::size_t runCount = boundRuns_.runs().size();
+    if (runRanks.size() != runCount) {
+      detail::setLastError("binding ranks are out of sync with the runs");
+      return false;
+    }
+    std::vector<std::uint32_t> runBands(runCount, 0);
+    for (std::size_t run = 0; run < runCount; ++run) {
+      runBands[run] = static_cast<std::uint32_t>(bandIndexForRank(view, runRanks[run]));
+    }
+    TextRuns orderedRuns;
+    std::vector<std::uint32_t> orderedRunBands;
+    orderedRunBands.reserve(runCount);
+    for (std::size_t band = 0; band < bandCount_; ++band) {
+      for (std::size_t run = 0; run < runCount; ++run) {
+        if (runBands[run] != band) {
+          continue;
+        }
+        const TextRun& source = boundRuns_.runs()[run];
+        const Status status =
+            orderedRuns.add(source.x, source.y, source.role, source.flow, source.boxWidth,
+                            source.boxHeight, source.codePoints.data(),
+                            static_cast<std::uint32_t>(source.codePoints.size()));
+        if (!status) {
+          detail::setLastError(status.reason);
+          return false;
+        }
+        orderedRunBands.push_back(static_cast<std::uint32_t>(band));
+      }
+    }
+    boundRuns_ = std::move(orderedRuns);
+    runBand_ = std::move(orderedRunBands);
+
+    std::vector<std::uint32_t> chromeBands(chromeRanks.size(), 0);
+    for (std::size_t index = 0; index < chromeRanks.size(); ++index) {
+      chromeBands[index] = static_cast<std::uint32_t>(bandIndexForRank(view, chromeRanks[index]));
+    }
+    std::vector<ChromeInstance> orderedChrome;
+    std::vector<std::uint32_t> orderedChromeBands;
+    orderedChrome.reserve(chrome_.size());
+    orderedChromeBands.reserve(chrome_.size());
+    for (std::size_t band = 0; band < bandCount_; ++band) {
+      for (std::size_t index = 0; index < chrome_.size(); ++index) {
+        if (chromeBands[index] != band) {
+          continue;
+        }
+        orderedChrome.push_back(chrome_[index]);
+        orderedChromeBands.push_back(static_cast<std::uint32_t>(band));
+      }
+    }
+    chrome_ = std::move(orderedChrome);
+    chromeBand_ = std::move(orderedChromeBands);
+    return true;
+  }
+
+  // The header chrome of each band, contiguous in the GPU instance list.
+  void refreshBandChromeRanges() {
+    bandRanges_.assign(bandCount_, BandRange{});
+    std::size_t position = 0;
+    for (std::size_t band = 0; band < bandCount_; ++band) {
+      const std::size_t first = position;
+      while (position < chromeBand_.size() && chromeBand_[position] == band) {
+        ++position;
+      }
+      bandRanges_[band].chromeFirst = first;
+      bandRanges_[band].chromeCount = position - first;
+    }
+  }
+
   // Rebuilds the visible binding runs only when the document, the camera, the
   // viewport or the binding set changed, so a still frame costs nothing and a
   // pan/zoom rebinds exactly once per change.
@@ -768,6 +923,10 @@ class TextPass {
       boundGlyphs_.clear();
       chrome_.clear();
       chromeGpu_.clear();
+      runBand_.clear();
+      chromeBand_.clear();
+      bandRanges_.clear();
+      bandCount_ = 0;
       bindingSyncValid_ = false;
       return true;
     }
@@ -787,22 +946,57 @@ class TextPass {
     if (bindingSyncValid_ && sameKey(key, bindingSyncKey_)) {
       return true;
     }
+    std::vector<std::uint32_t> runRanks;
+    std::vector<std::uint32_t> chromeRanks;
     const Status status = bindings_.bindVisible(
         *view.document, *view.camera, *view.spatial, static_cast<double>(view.cssWidth),
-        static_cast<double>(view.cssHeight), boundRuns_, chrome_);
+        static_cast<double>(view.cssHeight), boundRuns_, chrome_, runRanks, chromeRanks);
     if (!status) {
       detail::setLastError(status.reason);
+      return false;
+    }
+    bandCount_ = view.bandCount;
+    if (!orderBindingsByBand(view, runRanks, chromeRanks)) {
       return false;
     }
     bindingSyncKey_ = key;
     bindingSyncValid_ = true;
     buildChromeInstances();
+    refreshBandChromeRanges();
     return true;
+  }
+
+  // P6-15: the glyph slice of every depth band. Runs are ordered by band, so the
+  // per-run glyph counts accumulated in order give one contiguous range per band.
+  void refreshBandGlyphRanges() {
+    if (bandRanges_.size() != bandCount_) {
+      bandRanges_.assign(bandCount_, BandRange{});
+    }
+    for (BandRange& band : bandRanges_) {
+      band.glyphFirst = 0;
+      band.glyphCount = 0;
+    }
+    std::size_t cursor = 0;
+    const std::size_t runs = std::min(runGlyphCounts_.size(), runBand_.size());
+    for (std::size_t run = 0; run < runs; ++run) {
+      const std::size_t count = runGlyphCounts_[run];
+      const std::size_t band = runBand_[run];
+      if (band < bandRanges_.size() && count > 0) {
+        BandRange& range = bandRanges_[band];
+        if (range.glyphCount == 0) {
+          range.glyphFirst = cursor;
+        }
+        range.glyphCount += count;
+      }
+      cursor += count;
+    }
   }
 
   bool buildBoundGlyphs(const detail::FrameView& view) {
     if (boundRuns_.runs().empty() || !atlas_.ready()) {
       boundGlyphs_.clear();
+      runGlyphCounts_.clear();
+      refreshBandGlyphRanges();
       return true;
     }
     if (view.camera == nullptr) {
@@ -811,11 +1005,12 @@ class TextPass {
     }
     const Status status =
         boundGlyphs_.build(boundRuns_, atlas_, *view.camera, static_cast<double>(view.cssWidth),
-                           static_cast<double>(view.cssHeight));
+                           static_cast<double>(view.cssHeight), &runGlyphCounts_);
     if (!status) {
       detail::setLastError(status.reason);
       return false;
     }
+    refreshBandGlyphRanges();
     return true;
   }
 
@@ -842,14 +1037,10 @@ class TextPass {
     }
   }
 
-  void drawChrome(const detail::FrameView& view) {
-    const std::size_t guideCount =
-        view.guides == nullptr ? 0 : std::min(view.guideCount, air::engine::kMaxSnapGuides);
-    // L10 (P4-16): selected objects are framed with 1 px accent, the live band is
-    // filled with accent-soft and bordered with accent. Both are chrome quads.
-    const bool selectionChrome = view.selectionCount > 0 || view.band != nullptr;
-    const bool highlightChrome = view.highlight != nullptr;
-    if (chromeGpu_.empty() && guideCount == 0 && !selectionChrome && !highlightChrome) {
+  // P6-15: one depth band's header chrome (the faint 40 px band and its border
+  // rule), already resolved to GPU instances and stable-ordered by band.
+  void drawChromeSlice(const detail::FrameView& view, const BandRange& band) {
+    if (band.chromeCount == 0 || band.chromeFirst + band.chromeCount > chromeGpu_.size()) {
       return;
     }
     glUseProgram(chrome_program_);
@@ -857,12 +1048,30 @@ class TextPass {
                 static_cast<GLfloat>(view.cssHeight));
     glBindVertexArray(chrome_vertex_array_);
     glBindBuffer(GL_ARRAY_BUFFER, chrome_instance_buffer_);
-    if (!chromeGpu_.empty()) {
-      glBufferSubData(GL_ARRAY_BUFFER, 0,
-                      static_cast<GLsizeiptr>(chromeGpu_.size() * sizeof(ChromeGpuInstance)),
-                      chromeGpu_.data());
-      glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, static_cast<GLsizei>(chromeGpu_.size()));
+    glBufferSubData(GL_ARRAY_BUFFER, 0,
+                    static_cast<GLsizeiptr>(band.chromeCount * sizeof(ChromeGpuInstance)),
+                    chromeGpu_.data() + band.chromeFirst);
+    glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, static_cast<GLsizei>(band.chromeCount));
+  }
+
+  // P4-15/P4-16/P4-27: snap guides, selection frames/band and the zone drop
+  // highlight are presentation chrome above every object. They never belong to a
+  // depth band and draw in the tail after the last band.
+  void drawGlobalChrome(const detail::FrameView& view) {
+    const std::size_t guideCount =
+        view.guides == nullptr ? 0 : std::min(view.guideCount, air::engine::kMaxSnapGuides);
+    // L10 (P4-16): selected objects are framed with 1 px accent, the live band is
+    // filled with accent-soft and bordered with accent. Both are chrome quads.
+    const bool selectionChrome = view.selectionCount > 0 || view.band != nullptr;
+    const bool highlightChrome = view.highlight != nullptr;
+    if (guideCount == 0 && !selectionChrome && !highlightChrome) {
+      return;
     }
+    glUseProgram(chrome_program_);
+    glUniform2f(chrome_resolution_uniform_, static_cast<GLfloat>(view.cssWidth),
+                static_cast<GLfloat>(view.cssHeight));
+    glBindVertexArray(chrome_vertex_array_);
+    glBindBuffer(GL_ARRAY_BUFFER, chrome_instance_buffer_);
     if (guideCount > 0 && view.camera != nullptr) {
       // L07 (P4-15): the snap lines are chrome, not command-buffer instances.
       // Each guide is one screen-space quad of tokens::border_width thickness in
@@ -1035,10 +1244,7 @@ class TextPass {
     }
   }
 
-  void drawGlyphBuffers(const detail::FrameView& view) {
-    if (glyphs_.empty() && boundGlyphs_.empty()) {
-      return;
-    }
+  void useGlyphProgram(const detail::FrameView& view) {
     const GLfloat uniforms[8] = {static_cast<GLfloat>(view.cssWidth),
                                  static_cast<GLfloat>(view.cssHeight),
                                  0.0F,
@@ -1053,17 +1259,21 @@ class TextPass {
     glBindTexture(GL_TEXTURE_2D, texture_);
     glBindVertexArray(vertex_array_);
     glBindBuffer(GL_ARRAY_BUFFER, instance_buffer_);
-    drawGlyphBuffer(glyphs_);
-    drawGlyphBuffer(boundGlyphs_);
   }
 
   void drawGlyphBuffer(const GlyphBuffer& buffer) {
-    if (buffer.empty()) {
+    drawGlyphBufferRange(buffer, 0, buffer.size());
+  }
+
+  // Draws one contiguous slice of a built glyph buffer (one depth band).
+  void drawGlyphBufferRange(const GlyphBuffer& buffer, std::size_t first, std::size_t count) {
+    if (count == 0 || first + count > buffer.size()) {
       return;
     }
-    glBufferSubData(GL_ARRAY_BUFFER, 0, static_cast<GLsizeiptr>(buffer.byteSize()),
-                    buffer.bytes());
-    glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, static_cast<GLsizei>(buffer.size()));
+    glBufferSubData(GL_ARRAY_BUFFER, 0,
+                    static_cast<GLsizeiptr>(count * sizeof(GlyphInstance)),
+                    buffer.instances().data() + first);
+    glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, static_cast<GLsizei>(count));
   }
 
   bool buildChromeProgram() {
@@ -1140,7 +1350,15 @@ class TextPass {
   GlyphBuffer boundGlyphs_;
   std::vector<ChromeInstance> chrome_;
   std::vector<ChromeGpuInstance> chromeGpu_;
-  std::vector<ChromeGpuInstance> webgpuChrome_;
+  std::vector<ChromeGpuInstance> webgpuGlobalChrome_;
+  std::vector<webgpu::FrameTextBand> webgpuBands_;
+  // P6-15: depth bands of the current frame. `runBand_`/`chromeBand_` follow the
+  // band-ordered runs/chrome; `bandRanges_` slices the built buffers per band.
+  std::vector<std::uint32_t> runBand_;
+  std::vector<std::uint32_t> chromeBand_;
+  std::vector<std::uint32_t> runGlyphCounts_;
+  std::vector<BandRange> bandRanges_;
+  std::size_t bandCount_{0};
   BindingSyncKey bindingSyncKey_{};
   bool bindingSyncValid_{false};
   std::uint64_t bindingsGeneration_{0};
@@ -1176,6 +1394,14 @@ namespace detail {
 bool createTextPass() { return g_text.create(); }
 
 bool drawTextPass() { return g_text.draw(); }
+
+bool textBandsPresent() { return g_text.needsBands(); }
+
+bool prepareTextPass() { return g_text.prepare(); }
+
+bool drawTextBand(std::size_t bandIndex) { return g_text.drawBand(bandIndex); }
+
+bool drawTextTail() { return g_text.drawTail(); }
 
 bool createTextDataOnly() { return g_text.createDataOnly(); }
 

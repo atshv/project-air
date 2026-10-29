@@ -13,21 +13,34 @@
 #include <cstddef>
 #include <cstdint>
 
+#include "engine/render.h"
 #include "engine/text.h"
 
 namespace air::engine::webgpu {
 
+// P6-15: one depth band's glyph and header-chrome slices. The pointers reference
+// the text pass's frame buffers and stay valid until the next frame.
+struct FrameTextBand {
+  const GlyphInstance* glyphs{nullptr};
+  std::size_t glyphCount{0};
+  const void* chrome{nullptr};  // ChromeGpuInstance: rect 4 floats + rgba 4 floats, stride 32
+  std::size_t chromeCount{0};
+};
+
 // P4-13: one frame of the glyph and chrome passes, built by the shared text
-// core and consumed by the WebGPU glyph/chrome pipelines. Pointers reference the
-// text pass's frame buffers and stay valid until the next frame.
+// core and consumed by the WebGPU glyph/chrome pipelines. `glyphsA` are the
+// page-owned runs; `bands` are the per-depth-band bound glyphs/header chrome in
+// draw order; `globalChrome` is the chrome above every object (guides, selection,
+// drop highlight). Pointers reference the text pass's frame buffers and stay
+// valid until the next frame.
 struct FrameText {
   bool ok{false};
   const GlyphInstance* glyphsA{nullptr};
   std::size_t glyphCountA{0};
-  const GlyphInstance* glyphsB{nullptr};
-  std::size_t glyphCountB{0};
-  const void* chrome{nullptr};  // ChromeGpuInstance: rect 4 floats + rgba 4 floats, stride 32
-  std::size_t chromeCount{0};
+  const FrameTextBand* bands{nullptr};
+  std::size_t bandCount{0};
+  const void* globalChrome{nullptr};  // ChromeGpuInstance, stride 32
+  std::size_t globalChromeCount{0};
   const std::uint8_t* atlas{nullptr};
   std::uint32_t atlasWidth{0};
   std::uint32_t atlasHeight{0};
@@ -41,11 +54,15 @@ struct FrameText {
 bool create(const char* canvas_selector, const float palette[6][3], const float clear[3]);
 bool resize(int css_width, int css_height, float device_pixel_ratio);
 
-// Uploads the current command-buffer bytes into the reused instance GPU buffer and
-// issues one instanced draw. `instance_count` records of 24 bytes.
+// Uploads the command-buffer bytes into the reused instance GPU buffer and
+// issues the instanced draws. Without `bands` this is one draw of every instance
+// followed by the text tail, exactly the P4-13 frame. With `bands` the renderer
+// draws each band's instances, then the band's text/chrome, then the next band,
+// and finally the text tail: text can never paint over an object above it.
 bool frame(const void* instance_bytes, std::size_t instance_count, int css_width,
            int css_height, float device_pixel_ratio, double pan_x, double pan_y, double zoom,
-           bool grid_visible, const FrameText* text);
+           bool grid_visible, const DrawBand* bands, std::size_t band_count,
+           const FrameText* text);
 
 // 1 = device and pipeline ready, 0 = asynchronous initialisation still running,
 // -1 = initialisation failed. The create call never blocks the browser main

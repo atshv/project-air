@@ -9,6 +9,7 @@
 #include "engine/render_webgpu.h"
 #include "engine/camera.h"
 #include "engine/doc.h"
+#include "engine/render.h"
 #include "engine/snap.h"
 #include "engine/spatial.h"
 
@@ -39,6 +40,11 @@ struct FrameView {
   // tokens::accent_line for one second after a successful drop. Presentation
   // state only; never an instance of the command buffer.
   const Bounds* highlight{nullptr};
+  // P6-15: the depth bands of the command buffer built for this frame. Their
+  // rank ranges map the bound runs and header chrome onto the object pass, so
+  // the text of a band draws between that band and the next one.
+  const DrawBand* bands{nullptr};
+  std::size_t bandCount{0};
 };
 
 // Implemented in render_gl.cpp.
@@ -55,6 +61,15 @@ bool webgpuTextFrame(webgpu::FrameText& out);
 // inside). Both report failures through setLastError.
 bool createTextPass();
 bool drawTextPass();
+
+// P6-15 depth-ordered text. `textBandsPresent` tells the renderer whether bound
+// text exists, i.e. whether the object pass must be split into depth bands.
+// With bands the renderer calls prepareTextPass() after building the command
+// buffer, then drawTextBand(i) after each band's objects, then drawTextTail().
+bool textBandsPresent();
+bool prepareTextPass();
+bool drawTextBand(std::size_t bandIndex);
+bool drawTextTail();
 
 }  // namespace air::engine::detail
 

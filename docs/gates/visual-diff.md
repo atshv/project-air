@@ -19,7 +19,7 @@ the harness and this catalogue in the same task.
 | --- | --- |
 | Viewports | `desktop` 1440x900 and `mobile` 390x844, device pixel ratio 1 |
 | Viewport emulation | DevTools protocol `Emulation.setDeviceMetricsOverride`; the decoded screenshot size and `window.innerWidth/innerHeight` are asserted against the viewport, never trusted |
-| Scenes | `sample-at-rest`, `sample-zoom-in`, `sample-zoom-out`, `engine-core-at-rest`, `one-card-fit`, `layers-at-rest`, `layers-front`, `text-layout`, `text-titles`, `text-titles-zoom-200` |
+| Scenes | `sample-at-rest`, `sample-zoom-in`, `sample-zoom-out`, `engine-core-at-rest`, `one-card-fit`, `layers-at-rest`, `layers-front`, `text-layout`, `text-titles`, `text-titles-zoom-200`, `overlapping-titles` |
 | `sample` document | `buildSampleScene()` from `packages/test-kit`: 500 cards, 50 zones, 144 blocks = 694 objects, world 9600x5408 px |
 | `engine-core` document | `buildEngineCoreScene()` from `packages/test-kit`: 9,200 cards, 200 zones, 600 blocks = 10,000 objects, world 19,200x10,816 px |
 | `one-card-fit` document | `buildStressScene(1)` from `packages/test-kit`: one card, world 64x22 px; the scene runs the L19 fit action before the capture (P4-07) |
@@ -27,6 +27,7 @@ the harness and this catalogue in the same task.
 | `text-layout` document | `buildStressScene(0)` (empty world) plus the playground's `?text=layout` runs (P4-09): world (272, 112) at zoom 1 — the atlas raster scale; the P4-10 zoom buckets keep this reference byte-identical at 100 % |
 | `text-titles` document | the playground's page-owned titles gallery (`?text=titles`, P4-10): 2 zones, 2 blocks, 4 cards, world 1024x576 px, no test-kit scene; world (512, 288) at zoom 1 — the 100 % atlas raster scale and the committed text reference |
 | `text-titles-zoom-200` document | the same gallery at world (512, 240) at zoom 2: the zoom bucket re-rasterises the atlas at raster scale 2 for the 200 % capture (the pixel-crispness proof) |
+| `overlapping-titles` document | the playground's page-owned overlapping titles gallery (`?text=overlapping`, P6-15): 4 cards, world 1024x576 px, no test-kit scene; world (504, 280) at zoom 1 — the 100 % atlas raster scale. The front card's rectangle fully covers the title and preview boxes of the card behind it, so the depth-ordered text pass is visible in the reference; the two outer cards keep their own readable text |
 | Camera anchor | the centre of the sample board's `zone-0001`, world (648, 664) |
 | `sample-zoom-in` camera | anchor at zoom 0.5, the L19 dot-grid boundary (grid visible at and above 0.5) |
 | `sample-zoom-out` camera | anchor at the engine camera minimum zoom 0.1 |
@@ -55,6 +56,7 @@ the harness and this catalogue in the same task.
 | `text-layout` (P4-09) | `text-layout-desktop-webgl2.png` | `text-layout-mobile-webgl2.png` |
 | `text-titles` (P4-10) | `text-titles-desktop-webgl2.png` | `text-titles-mobile-webgl2.png` |
 | `text-titles-zoom-200` (P4-10) | `text-titles-zoom-200-desktop-webgl2.png` | `text-titles-zoom-200-mobile-webgl2.png` |
+| `overlapping-titles` (P6-15) | `overlapping-titles-desktop-webgl2.png` | `overlapping-titles-mobile-webgl2.png` |
 
 P4-07 re-ran the two `sample-zoom-in` captures through the documented `--update` review path because
 the L19 dot grid is visible at the 0.5 boundary (canvas catalogue L19, "hides below zoom 0.5"). Only
@@ -76,13 +78,15 @@ before it fails. The harness starts and stops its own static server and browser 
 `ports.playground` from `.polier-slot`, copies the built playground, bridge, test-kit bundle and WASM
 into a temporary folder, and removes that folder.
 
-- **States:** the ten named scenes above, each served with `?scene=sample`, `?scene=engine-core` or
-  `?scene=stress&count=1`, the P4-09/P4-10 text scenes with `?text=layout`/`?text=titles` and, for the
+- **States:** the named scenes above, each served with `?scene=sample`, `?scene=engine-core` or
+  `?scene=stress&count=1`, the P4-09/P4-10 text scenes with `?text=layout`/`?text=titles`, the
+  P6-15 `overlapping-titles` scene with `?text=overlapping` and, for the
   zoom states, the deterministic `?view=<worldX>,<worldY>,<zoom>` camera hook. The `one-card-fit`
   scene runs the playground's L19 fit action after the ready hook and asserts that the fit rendered a
-  frame; the page-owned `text-titles` scene declares its expected counts and world explicitly (it is
-  not built by the test-kit). Each scene waits for the engine's ready hook, pauses the scheduler,
-  hides the volatile rendered-frame HUD item and captures the canvas plus the playground chrome.
+  frame; the page-owned `text-titles` and `overlapping-titles` scenes declare their expected counts
+  and world explicitly (they are not built by the test-kit). Each scene waits for the engine's ready
+  hook, pauses the scheduler, hides the volatile rendered-frame HUD item and captures the canvas plus
+  the playground chrome.
 - **Camera determinism:** the at-rest scenes use the page's initial camera. The zoom states use the
   documented read-only view hook, which only calls `setCamera`; the harness asserts the effective
   camera (zoom and pan) against the requested state, so a broken hook is a capture failure, not a
@@ -210,6 +214,17 @@ pixels, worst channel delta 201 (boundary pixels only), 0 interior differing
 pixels. This is not claimed as an exact or pixel-identical cross-backend match.
 
 ### Baseline history
+
+- **2026-10-29 — P6-15 depth-ordered titles: four reviewed images added.** The new page-owned
+  `overlapping-titles` scene (`?text=overlapping`, four titled note cards on world 1024x576, captured
+  at world (504, 280) at zoom 1 — the 100 % atlas raster scale) has a front card whose rectangle
+  fully covers the title and preview boxes of the card behind it, so the depth-ordered text/chrome
+  pass (P6-15) is documented by the images; the two outer cards keep their own readable text as the
+  control. The images were written through the documented reviewed `--update` path for this scene
+  only (`--backend webgl2` and `--backend webgpu`) and reviewed with P6-15; every pre-existing
+  reference image stayed 0-diff in the same task's gate run. The baselines are
+  `overlapping-titles-desktop-webgl2.png`, `overlapping-titles-mobile-webgl2.png`,
+  `overlapping-titles-desktop-webgpu.png` and `overlapping-titles-mobile-webgpu.png`.
 
 - **2026-10-28 — P4-13 WebGPU backend: 28 reviewed images added.** The complete
   scene × viewport set was captured through the WebGPU path (`?backend=webgpu`)

@@ -103,4 +103,9 @@ else()
   add_executable(engine_snap_tests test/engine_snap_test.cpp)
   target_link_libraries(engine_snap_tests PRIVATE air_engine)
   add_test(NAME engine_snap_tests COMMAND engine_snap_tests)
+
+  # P6-15: the depth-band split that orders bound text against the object pass.
+  add_executable(engine_depth_order_tests test/engine_depth_order_test.cpp)
+  target_link_libraries(engine_depth_order_tests PRIVATE air_engine)
+  add_test(NAME engine_depth_order_tests COMMAND engine_depth_order_tests)
 endif()

@@ -1,0 +1,151 @@
+{
+  "task": "P6-15",
+  "state": "running",
+  "attempt": 1,
+  "attempts": [
+    {
+      "n": 1,
+      "started": "2026-10-29T18:15:19+00:00",
+      "ended": null,
+      "result": null,
+      "note": null
+    }
+  ],
+  "events": [
+    {
+      "at": "2026-10-29T18:15:19+00:00",
+      "kind": "start",
+      "data": {
+        "actor": "lead"
+      }
+    },
+    {
+      "at": "2026-10-29T18:15:19+00:00",
+      "kind": "state",
+      "data": {
+        "from": "pending",
+        "to": "in_progress",
+        "actor": "lead"
+      }
+    },
+    {
+      "at": "2026-10-29T18:26:40+00:00",
+      "kind": "state",
+      "data": {
+        "from": "in_progress",
+        "to": "verifying",
+        "actor": "lead"
+      }
+    },
+    {
+      "at": "2026-10-29T18:26:46+00:00",
+      "kind": "gate",
+      "data": {
+        "gate": "wasm-build",
+        "result": "pass",
+        "record": "reviews/evidence/P6-15-wasm-build-20261029T182644Z.json"
+      }
+    },
+    {
+      "at": "2026-10-29T18:26:49+00:00",
+      "kind": "gate",
+      "data": {
+        "gate": "cpp-unit",
+        "result": "pass",
+        "record": "reviews/evidence/P6-15-cpp-unit-20261029T182646Z.json"
+      }
+    },
+    {
+      "at": "2026-10-29T18:26:49+00:00",
+      "kind": "gate",
+      "data": {
+        "gate": "boundaries",
+        "result": "pass",
+        "record": "reviews/evidence/P6-15-boundaries-20261029T182649Z.json"
+      }
+    },
+    {
+      "at": "2026-10-29T18:27:36+00:00",
+      "kind": "gate",
+      "data": {
+        "gate": "visual",
+        "result": "pass",
+        "record": "reviews/evidence/P6-15-visual-20261029T182652Z.json"
+      }
+    },
+    {
+      "at": "2026-10-29T18:30:44+00:00",
+      "kind": "gate",
+      "data": {
+        "gate": "perf",
+        "result": "fail",
+        "record": "reviews/evidence/P6-15-perf-20261029T182739Z.json"
+      }
+    },
+    {
+      "at": "2026-10-29T18:34:09+00:00",
+      "kind": "gate",
+      "data": {
+        "gate": "perf",
+        "result": "fail",
+        "record": "reviews/evidence/P6-15-perf-20261029T183102Z.json"
+      }
+    },
+    {
+      "at": "2026-10-29T18:37:39+00:00",
+      "kind": "gate",
+      "data": {
+        "gate": "perf",
+        "result": "fail",
+        "record": "reviews/evidence/P6-15-perf-20261029T183435Z.json"
+      }
+    },
+    {
+      "at": "2026-10-29T18:38:03+00:00",
+      "kind": "gate",
+      "data": {
+        "gate": "perf",
+        "result": "fail",
+        "record": "reviews/evidence/P6-15-perf-20261029T183802Z.json"
+      }
+    },
+    {
+      "at": "2026-10-29T18:41:13+00:00",
+      "kind": "gate",
+      "data": {
+        "gate": "perf",
+        "result": "fail",
+        "record": "reviews/evidence/P6-15-perf-20261029T183809Z.json"
+      }
+    },
+    {
+      "at": "2026-10-29T18:41:56+00:00",
+      "kind": "gate",
+      "data": {
+        "gate": "perf",
+        "result": "pass",
+        "record": "reviews/evidence/P6-15-perf-20261029T184145Z.json"
+      }
+    },
+    {
+      "at": "2026-10-29T18:42:37+00:00",
+      "kind": "gate",
+      "data": {
+        "gate": "board-check",
+        "result": "pass",
+        "record": "reviews/evidence/P6-15-board-check-20261029T184217Z.json"
+      }
+    },
+    {
+      "at": "2026-10-29T18:43:49+00:00",
+      "kind": "state",
+      "data": {
+        "from": "verifying",
+        "to": "review",
+        "actor": "lead"
+      }
+    }
+  ],
+  "usage": {},
+  "updated": "2026-10-29T18:43:49+00:00"
+}

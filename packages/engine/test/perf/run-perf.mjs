@@ -211,6 +211,8 @@ function copyArtefacts(tempRoot, { includeTestKit = false } = {}) {
     "packages/ui-kit/tokens.css",
     "packages/engine/dist/bridge/engine.js",
     "packages/engine/dist/bridge/backend.js",
+    "packages/engine/dist/bridge/keyboard.js",
+    "packages/engine/dist/bridge/view-persistence.js",
     "packages/engine/dist/bridge/text-atlas.js",
     "packages/engine/dist/bridge/input.js",
     "packages/engine/dist/bridge/overlay.js",
@@ -873,8 +875,34 @@ async function waitForPerfDone(session, send, expectedScene, timeoutMs = PAGE_TI
   } catch {
     state = "";
   }
+  // Diagnostics for a timed-out measurement: the page console tail and the page's
+  // own error element, so an infra failure is actionable instead of a bare null.
+  let pageError = "";
+  try {
+    pageError = String(await evaluate(send, "document.querySelector('#error')?.textContent ?? ''"));
+  } catch {
+    pageError = "";
+  }
+  const consoleTail = session.consoleLines.slice(-8).join(" | ");
+  let pageState = "";
+  try {
+    pageState = String(await evaluate(send, `JSON.stringify({
+      url: document.location.href,
+      readyState: document.readyState,
+      title: document.title,
+      objects: document.querySelector("#hud-objects")?.textContent ?? null,
+      caption: document.querySelector("#scene-caption")?.textContent?.slice(0, 80) ?? null,
+      hasPlayground: typeof globalThis.__enginePlayground
+    })`));
+  } catch (error) {
+    pageState = `evaluate failed: ${String(error)}`;
+  }
   throw new Error(
-    `the page did not finish the ${expectedScene} measurement within ${timeoutMs} ms${state === "" ? "" : `; state ${state.slice(0, 200)}`}`,
+    `the page did not finish the ${expectedScene} measurement within ${timeoutMs} ms` +
+      `${state === "" ? "" : `; state ${state.slice(0, 200)}`}` +
+      `${pageError === "" ? "" : `; page error: ${pageError.slice(0, 200)}`}` +
+      `${consoleTail === "" ? "" : `; console: ${consoleTail.slice(0, 400)}`}` +
+      `${pageState === "" ? "" : `; page: ${pageState.slice(0, 400)}`}`,
   );
 }
 

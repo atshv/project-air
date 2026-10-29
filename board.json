@@ -1525,7 +1525,7 @@
         "reference/"
       ],
       "handoff": [
-        "Closed P0-22: preview masthead shows Version 0.0.1 · unreleased · Last change P0-21.",
+        "Closed P0-22: preview masthead shows Version 0.0.1 \u00b7 unreleased \u00b7 Last change P0-21.",
         "Sources are CHANGELOG.md and the newest .changes entry; README and demo cadence require updating the line with every preview/changelog change.",
         "Screenshot P0-22-demo.png; all three gates pass."
       ]
@@ -1592,7 +1592,7 @@
     {
       "id": "P0-24",
       "title": "Curved edge, visible anchors and zoom controls in the demo",
-      "goal": "The live demo has a smoothly curved connection, clearly visible anchors and working +/−/Alles-anzeigen controls.",
+      "goal": "The live demo has a smoothly curved connection, clearly visible anchors and working +/\u2212/Alles-anzeigen controls.",
       "why": "The owner wants the demo to feel like the intended canvas: curved edge, visible anchors, zoom controls.",
       "satisfies": [
         "D3"
@@ -1645,7 +1645,7 @@
         "reference/"
       ],
       "handoff": [
-        "Closed P0-24: demo edge is a curve along anchor normals, anchors are visible (8 px, --fg/--tone-d), and +/−/fit zoom controls work (CSS glyphs, preview-only).",
+        "Closed P0-24: demo edge is a curve along anchor normals, anchors are visible (8 px, --fg/--tone-d), and +/\u2212/fit zoom controls work (CSS glyphs, preview-only).",
         "Meta line shows P0-24 with date/time; controls keep drag/keyboard correct under zoom and mobile has no overflow.",
         "Product zoom control will use ui-kit icons in the engine stage; this demo stays in sync with every preview change."
       ]
@@ -1706,7 +1706,7 @@
         "reference/"
       ],
       "handoff": [
-        "Closed P0-25: zoom control is one vertical grouped pill (+, −, fit, CSS glyphs) and the four anchors are invisible geometry only.",
+        "Closed P0-25: zoom control is one vertical grouped pill (+, \u2212, fit, CSS glyphs) and the four anchors are invisible geometry only.",
         "Curved --tone-d edge still snaps to the nearest invisible side-midpoint anchor pair; zoom/fit/drag/keyboard/mobile unchanged.",
         "Meta line shows P0-25 with date/time; preview demo remains in sync with every preview change."
       ]
@@ -1938,7 +1938,7 @@
         "reference/"
       ],
       "handoff": [
-        "Closed P1-04: sync protocol as JSON Schema 0.1.0 with 12 message types (6 client→server, 6 server→client), 14 valid/20 invalid fixtures plus reconnect and session sequences; 66 tests green.",
+        "Closed P1-04: sync protocol as JSON Schema 0.1.0 with 12 message types (6 client\u2192server, 6 server\u2192client), 14 valid/20 invalid fixtures plus reconnect and session sequences; 66 tests green.",
         "reject carries the seven P1-05 wire codes; fixtures-gate/ holds the two Polier gate specimens (byte-identical copies, test-enforced); the 77-fixture parity corpus and all existing tests are untouched.",
         "Review pass with 4 minor advisories (hello-first, wrong-order assertion, snapshotRef board/seq, serverSeq 0 bootstrap) to settle before realtime; P1-05 adds the errors.<camelCase> keys."
       ]
@@ -5397,7 +5397,7 @@
         "visual"
       ],
       "handoff": [
-        "Closed P4-31: playground ?text=layout and ?text=titles samples now English (Zürich, Müller, café keep accent coverage); language-check passes repo-wide.",
+        "Closed P4-31: playground ?text=layout and ?text=titles samples now English (Z\u00fcrich, M\u00fcller, caf\u00e9 keep accent coverage); language-check passes repo-wide.",
         "Re-captured and reviewed 12 text-* references (desktop/mobile, WebGL2/WebGPU); visual 56 captures green, other references unchanged; no engine code touched."
       ]
     },
@@ -5405,7 +5405,7 @@
       "id": "P5-01",
       "title": "Sync contract 0.3.0: settle the pre-realtime open points",
       "goal": "Close the four pre-realtime sync open points in a 0.3.0 bump: one documented version-negotiation rule (including the blueprint's per-message version), a fresh-board serverSeq bootstrap of 1 with a from-0 catch-up fixture, an enforced hello-first rule, and validated reconnect ordering plus <boardId>:<serverSeq> snapshotRef; valid and invalid fixtures, regenerated TS/C++ codegen and updated docs.",
-      "why": "docs/contracts.md lists these as 'settle before realtime/SDK'; P5-02…P5-04 depend on the frozen message semantics.",
+      "why": "docs/contracts.md lists these as 'settle before realtime/SDK'; P5-02\u2026P5-04 depend on the frozen message semantics.",
       "satisfies": [
         "D11"
       ],
@@ -6086,7 +6086,7 @@
       "handoff": [
         "Closed P0-36: click selects (accent frame + 8 handles, 8 screen px at any zoom); handles resize cards, notepad, photo, checklist, table against the opposite edge with minimums.",
         "Photo has no bar, resizes freely and takes the zone member width/height with its aspect when docked; member resize keeps the zone corner; last touched object on top.",
-        "Edges behind all objects (owner decision vs design law §8, open question). Gates green; 4 screenshots + log. Next: P0-37 engine chrome in the demo."
+        "Edges behind all objects (owner decision vs design law \u00a78, open question). Gates green; 4 screenshots + log. Next: P0-37 engine chrome in the demo."
       ]
     },
     {
@@ -6154,7 +6154,7 @@
     {
       "id": "P0-38",
       "title": "Layer order: edges below zones",
-      "goal": "Design law §8, the layer tokens (CSS, C++ header, layers.ts), the engine docs and the design-system page all put connection lines (edges) below zones: canvas background 1, edges 2, zones 3.",
+      "goal": "Design law \u00a78, the layer tokens (CSS, C++ header, layers.ts), the engine docs and the design-system page all put connection lines (edges) below zones: canvas background 1, edges 2, zones 3.",
       "why": "Owner decision 2026-10-28 (P0-36, confirmed 'Ja, festhalten'): connection lines run behind every object, zones included; the live demo already deviates, the law must follow.",
       "satisfies": [
         "D3"
@@ -6216,7 +6216,7 @@
         "docs/owner/"
       ],
       "handoff": [
-        "Closed P0-38: design law §8 now edges 2, zones 3 (ADR-0014); tokens.json swapped, tokens.css/tokens.h/layers.ts regenerated; ui-kit token test follows (owner-approved).",
+        "Closed P0-38: design law \u00a78 now edges 2, zones 3 (ADR-0014); tokens.json swapped, tokens.css/tokens.h/layers.ts regenerated; ui-kit token test follows (owner-approved).",
         "Engine draw order unchanged (zones lowest rectangle layer); doc.h comment and docs/engine.md updated; demo edge back on --layer-edges, section 06 reordered, masthead P0-38.",
         "cpp-unit not a gate: red on main since P5-01 (engine.cpp + 2 tests expect contract 0.2.0, generated 0.3.0); scratch build passes all other checks."
       ]
@@ -6344,14 +6344,14 @@
       ],
       "handoff": [
         "Closed P0-39: no square handles; frame edges (8 px band) and corners (16 px) resize, hovered edge lit 2 px, corner 16 px bracket; L14 updated; section 10 specimen redrawn.",
-        "Done checklist entries are --muted without strikethrough (design law §6 row). New section 12 lists all design rules §0-§14 (15 cards, 66 lines, EN/DE).",
+        "Done checklist entries are --muted without strikethrough (design law \u00a76 row). New section 12 lists all design rules \u00a70-\u00a714 (15 cards, 66 lines, EN/DE).",
         "Gates board-check/design-check/changelog-entry green; 10 screenshots + log. Engine P4-17 still draws eight handles: needs an engine task to follow L14."
       ]
     },
     {
       "id": "P0-40",
       "title": "Live demo: two teammates on the board",
-      "goal": "Two simulated teammates, Lena and Jonas, work in the live demo like collaborators on the same board: remote cursors with name labels in their person colours, their selections as 1.5 px frames, idle fading and a presence line, following design law §12.",
+      "goal": "Two simulated teammates, Lena and Jonas, work in the live demo like collaborators on the same board: remote cursors with name labels in their person colours, their selections as 1.5 px frames, idle fading and a presence line, following design law \u00a712.",
       "why": "Owner request 2026-10-28: show two more people as team work in the live demo, as if they were in the same project.",
       "satisfies": [
         "D3"
@@ -6628,7 +6628,7 @@
         "reviews/evidence/P0-44-changelog-entry-20261028T231242Z.json"
       ],
       "handoff": [
-        "Closed P0-44: preview documents the pen and ink colours — pen tile in the toolbar icon gallery (inline 24-grid/1.6 SVG, deviation explained), palette still palette.svg, no fixed ten-icon claim.",
+        "Closed P0-44: preview documents the pen and ink colours \u2014 pen tile in the toolbar icon gallery (inline 24-grid/1.6 SVG, deviation explained), palette still palette.svg, no fixed ten-icon claim.",
         "New 08a Ink and colours section: six token strokes over card/photo in both themes, six translated swatches, pen/palette rest/active/popover states; Layers 6a Ink annotations row, preview only.",
         "README, EN/DE locales, light/dark/mobile screenshots and browser log committed; board-check, design-check and changelog-entry pass; P0-41/42/43 behaviour unchanged (preview.js untouched)."
       ],
@@ -6767,7 +6767,7 @@
       "id": "P6-03",
       "title": "Boards start page: workspaces, board list and creation over the SDK",
       "goal": "The start page lists workspaces and their boards through the SDK, creates a first workspace/board when none exists, creates/renames/deletes boards with confirmation and opens /boards/:id; loading, empty and error states use message files and the SDK is the only data path.",
-      "why": "The e2e flow login → board list → board needs this page, and it proves the SDK platform client in the product.",
+      "why": "The e2e flow login \u2192 board list \u2192 board needs this page, and it proves the SDK platform client in the product.",
       "satisfies": [
         "D12"
       ],
@@ -7080,7 +7080,7 @@
     {
       "id": "P6-09",
       "title": "Realtime UI: live changes, presence and save status (L05)",
-      "goal": "The board page shows live remote changes and presence cursors/selections (colour/name from the server), the L05 save status (Saving … → Saved 2 s → Not saved – retry, clickable), an offline notice that never loses input, reconnect/resync; it wires the authenticated sync connection (the browser session cookie/token handshake with services/sync, with the auth/platform session validation) and uses the authenticated session clientId.",
+      "goal": "The board page shows live remote changes and presence cursors/selections (colour/name from the server), the L05 save status (Saving \u2026 \u2192 Saved 2 s \u2192 Not saved \u2013 retry, clickable), an offline notice that never loses input, reconnect/resync; it wires the authenticated sync connection (the browser session cookie/token handshake with services/sync, with the auth/platform session validation) and uses the authenticated session clientId.",
       "why": "L05 is the remaining realtime web order; the stage exit e2e edits with two users and reloads.",
       "satisfies": [
         "D12"
@@ -7143,7 +7143,7 @@
     {
       "id": "P6-10",
       "title": "e2e suite: main flows and the e2e gate on the slot ports",
-      "goal": "Playwright (Apache-2.0) config and the e2e suite run the app on the slot web ports (4100/4101) with the slot services: login → boards → create board → add/edit note and title → reload persists; two users edit live, go offline/reconnect, both converge; toolbar/zoom/context menu/panel/L17 covered; the e2e gate is documented and exclusive.",
+      "goal": "Playwright (Apache-2.0) config and the e2e suite run the app on the slot web ports (4100/4101) with the slot services: login \u2192 boards \u2192 create board \u2192 add/edit note and title \u2192 reload persists; two users edit live, go offline/reconnect, both converge; toolbar/zoom/context menu/panel/L17 covered; the e2e gate is documented and exclusive.",
       "why": "The stage exit gate e2e and the blueprint P6-06 flow; the suite makes regressions visible.",
       "satisfies": [
         "D12"
@@ -7287,7 +7287,7 @@
     {
       "id": "P0-45",
       "title": "Preview page: project areas, their tasks and purpose",
-      "goal": "The design-system page gets a section '13 — Project areas' that lists every area of Project air (engine, web app, design system, data model, server, database and storage, realtime, tools and quality, operations and release) with its purpose, owner role, folders, connections and its parts with status, in short simple sentences in EN and DE; a page contents list links every numbered section 01-13.",
+      "goal": "The design-system page gets a section '13 \u2014 Project areas' that lists every area of Project air (engine, web app, design system, data model, server, database and storage, realtime, tools and quality, operations and release) with its purpose, owner role, folders, connections and its parts with status, in short simple sentences in EN and DE; a page contents list links every numbered section 01-13.",
       "why": "Owner request 2026-10-29: a clear, well-structured list of the areas, their tasks and what they are for on the preview page, to distribute work later (who does server/auth/db, web app, engine).",
       "satisfies": [
         "D3"
@@ -7349,7 +7349,7 @@
       "id": "P0-46",
       "title": "Preview page: back-to-top arrow",
       "goal": "A quiet floating arrow button at the bottom right of the design-system page appears after scrolling down and takes the reader back to the top of the page (masthead) with one click or key press.",
-      "why": "Owner request 2026-10-29: 'baue auf der preview seite einen pfeilzeiger nach oben um immer zu oberst anfangen zu können' — the page has 13 sections and is long.",
+      "why": "Owner request 2026-10-29: 'baue auf der preview seite einen pfeilzeiger nach oben um immer zu oberst anfangen zu k\u00f6nnen' \u2014 the page has 13 sections and is long.",
       "satisfies": [
         "D3"
       ],
@@ -7409,7 +7409,7 @@
       "id": "P6-08",
       "title": "Contract 0.4.0 operation support in crdt and sync",
       "goal": "packages/crdt applies the 0.4.0 updateNoteBody operation (note body + plainText on the note, inverse restores the previous body) in the document store and Yjs adapter, snapshots/convergence include note bodies and stay byte-identical under inverses, and services/sync accepts, persists, broadcasts and replays updateNoteBody like any other operation with a live-socket test; the editor save path (P6-07) then persists and reloads note bodies end to end.",
-      "why": "P6-06 added the operation and P6-07 emits it, but crdt/sync predate 0.4.0 and reject it — the save path would silently lose note bodies (P6-07 A2 reload half).",
+      "why": "P6-06 added the operation and P6-07 emits it, but crdt/sync predate 0.4.0 and reject it \u2014 the save path would silently lose note bodies (P6-07 A2 reload half).",
       "satisfies": [
         "D12"
       ],
@@ -7793,7 +7793,7 @@
       "satisfies": [
         "D12"
       ],
-      "status": "pending",
+      "status": "review",
       "depends_on": [
         "P6-14"
       ],
@@ -7832,7 +7832,15 @@
       "branch": "task/P6-15",
       "worktree": null,
       "round": 0,
-      "evidence": [],
+      "evidence": [
+        "reviews/evidence/P6-15-wasm-build-20261029T182644Z.json",
+        "reviews/evidence/P6-15-cpp-unit-20261029T182646Z.json",
+        "reviews/evidence/P6-15-boundaries-20261029T182649Z.json",
+        "reviews/evidence/P6-15-visual-20261029T182652Z.json",
+        "reviews/evidence/P6-15-visual-run-20261029T182653Z.json",
+        "reviews/evidence/P6-15-perf-20261029T184145Z.json",
+        "reviews/evidence/P6-15-board-check-20261029T184217Z.json"
+      ],
       "scope_write_forbidden": [
         "reference/"
       ],
@@ -8426,7 +8434,7 @@
       "id": "Q13",
       "question": "German spelling and locale.",
       "status": "answered",
-      "answer": "Always ss, never ß; one German file with locale de-DE; no separate de-CH (owner, 2026-10-25)."
+      "answer": "Always ss, never \u00df; one German file with locale de-DE; no separate de-CH (owner, 2026-10-25)."
     },
     {
       "id": "Q14",

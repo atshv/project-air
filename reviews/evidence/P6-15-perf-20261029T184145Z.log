@@ -1,0 +1,24 @@
+$ node packages/engine/test/perf/run-perf.mjs --scenario engine-core
+[exit 0]
+
+command: node packages/engine/test/perf/run-perf.mjs --scenario engine-core
+started: 2026-10-29T18:41:46.068Z
+serve /var/folders/68/93nwhkp965xd6yk4gqfq7fch0000gn/T/p403-perf-WP5DeV on http://127.0.0.1:4060/apps/engine-playground/
+chrome: /Users/rasulatashev/Library/Caches/ms-playwright/chromium-1248/chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing (source: local Playwright cache default)
+flags: --headless=new --use-angle=metal --enable-gpu --hide-scrollbars --disable-frame-rate-limit --disable-gpu-vsync --no-first-run --no-default-browser-check --disable-background-timer-throttling --disable-renderer-backgrounding --disable-backgrounding-occluded-windows --window-size=1440,900 --no-sandbox
+url: http://127.0.0.1:4060/apps/engine-playground/?perf=engine-core&scene=engine-core&warmup=120&samples=2000
+engine-core: p50 0.100 ms, p95 0.200 ms, p99 0.300 ms, mean 0.067 ms (14992.5 fps), max 2.000 ms, 0 interval(s) > 16.7 ms; 2000 samples in 133.4 ms
+scene: {"objects":10000,"cards":9200,"zones":200,"blocks":600}; renderer: ANGLE (Apple, ANGLE Metal Renderer: Apple M2, Unspecified Version) (identified: true); document loads: 1; unlock: true
+evidence: reviews/evidence/P4-03-perf-engine-core-20261029T184150Z.json
+engine-core result: pass
+L01 final: p50 0.100 ms, p95 0.200 ms, p99 0.200 ms, mean 0.058 ms (17301.0 fps), max 0.800 ms, 0 interval(s) > 16.7 ms; 2000 samples in 115.6 ms
+culling: {"framesChecked":100,"minimumCheckpoints":50,"enoughCheckpoints":true,"mismatches":0,"expectedEqualsCommandBuffer":true,"drawsFewerThanDocument":true,"culledFrames":99,"documentSize":694,"minInstances":24,"maxInstances":694,"method":"brute-force inclusive bounds intersection of every scene object against the camera's visible world bounds, compared with engine.visibleInstanceCount() for each sampled camera","cullingPassed":true}
+basis comparison: p50FrameTimeMs/p95FrameTimeMs/p99FrameTimeMs/meanFrameTimeMs within basis reviews/evidence/P4-03-perf-basis-20261026T063953Z.json + 10 % (resolution floor 0.2 ms); max frame duration is a separate 50 ms-bounded observation
+  p50FrameTimeMs: basis 0.000 ms, current 0.100 ms, limit 0.200 ms
+  p95FrameTimeMs: basis 0.200 ms, current 0.200 ms, limit 0.400 ms
+  p99FrameTimeMs: basis 0.200 ms, current 0.200 ms, limit 0.400 ms
+  meanFrameTimeMs: basis 0.052 ms, current 0.058 ms, limit 0.252 ms
+  maxFrameTimeMs: basis 1.200 ms, current 0.800 ms, limit 1.400 ms (observation, L01 50 ms bound)
+evidence: reviews/evidence/P4-03-perf-final-20261029T184153Z.json
+L01 final result: pass
+finished: 2026-10-29T18:41:53.707Z

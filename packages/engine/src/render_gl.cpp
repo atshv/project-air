@@ -488,16 +488,21 @@ class Renderer {
     if (css_width_ <= 0 || css_height_ <= 0) {
       return fail("engine_resize must be called before engine_render_frame");
     }
+    // P6-15: bound text needs the depth-band split; a frame without bound text
+    // keeps the single measured draw of the P4-03 command buffer.
+    const bool interleave = detail::textBandsPresent();
     const Status status =
         commands_.build(document_, camera_, static_cast<double>(css_width_),
-                        static_cast<double>(css_height_), spatial_);
+                        static_cast<double>(css_height_), spatial_, interleave);
     if (!status) {
       return fail(status.reason);
     }
+    const std::vector<DrawBand>& bands = commands_.bands();
+    const bool banded = interleave && !bands.empty();
     if (backend_ == Backend::webgpu) {
-      // P4-11/P4-13: one instanced draw over the same command-buffer bytes, then
-      // the chrome and glyph passes built by the shared text core (same quads,
-      // palette, placements and draw order as WebGL2).
+      // P4-11/P4-13: the command-buffer bytes and the chrome/glyph passes built by
+      // the shared text core (same quads, palette, placements and draw order as
+      // WebGL2). With bands the two passes interleave per depth band (P6-15).
       webgpu::FrameText text;
       if (!detail::webgpuTextFrame(text)) {
         return fail(g_last_error.c_str());
@@ -505,7 +510,8 @@ class Renderer {
       const bool gridVisible = Camera::gridVisibleAtZoom(camera_.zoom());
       if (!webgpu::frame(commands_.bytes(), commands_.size(), css_width_, css_height_,
                          device_pixel_ratio_, camera_.panX(), camera_.panY(), camera_.zoom(),
-                         gridVisible, &text)) {
+                         gridVisible, banded ? bands.data() : nullptr, banded ? bands.size() : 0,
+                         &text)) {
         return fail(webgpu::lastError());
       }
       return 1;
@@ -554,6 +560,36 @@ class Renderer {
     }
     glBindVertexArray(vertex_array_);
     glBindBuffer(GL_ARRAY_BUFFER, instance_buffer_);
+    if (banded) {
+      // P6-15: draw the band's objects, then the band's header chrome and bound
+      // glyphs, then the next band. The tail draws the page runs and the chrome
+      // that belongs above every object.
+      if (!detail::prepareTextPass()) {
+        return fail(g_last_error.c_str());
+      }
+      for (std::size_t band = 0; band < bands.size(); ++band) {
+        const DrawBand& range = bands[band];
+        // The text pass switches programs, VAOs and buffers, so every band
+        // restores the object-pass state before its instanced draw.
+        glUseProgram(program_);
+        glBindVertexArray(vertex_array_);
+        glBindBuffer(GL_ARRAY_BUFFER, instance_buffer_);
+        glBufferSubData(GL_ARRAY_BUFFER, 0,
+                        static_cast<GLsizeiptr>(range.count * sizeof(Instance)),
+                        commands_.bytes() + range.first * sizeof(Instance));
+        glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, static_cast<GLsizei>(range.count));
+        if (!detail::drawTextBand(band)) {
+          return fail(g_last_error.c_str());
+        }
+      }
+      if (gridVisible) {
+        glDisable(GL_BLEND);
+      }
+      if (!detail::drawTextTail()) {
+        return fail(g_last_error.c_str());
+      }
+      return 1;
+    }
     glBufferSubData(GL_ARRAY_BUFFER, 0, static_cast<GLsizeiptr>(commands_.byteSize()),
                     commands_.bytes());
     glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, static_cast<GLsizei>(commands_.size()));
@@ -761,7 +797,9 @@ class Renderer {
                              selection_.data(),
                              selection_.size(),
                              band_visible_ ? &band_ : nullptr,
-                             highlightBounds()};
+                             highlightBounds(),
+                             commands_.bands().data(),
+                             commands_.bands().size()};
   }
 
  private:

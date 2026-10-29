@@ -1,0 +1,46 @@
+$ cmake -S packages/engine -B packages/engine/build -DCMAKE_BUILD_TYPE=Debug && cmake --build packages/engine/build --parallel && ctest --test-dir packages/engine/build --output-on-failure
+[exit 0]
+
+-- Configuring done (0.1s)
+-- Generating done (0.1s)
+-- Build files have been written to: /Users/rasulatashev/Desktop/KI Projekte/Project air/packages/engine/build
+[  5%] Built target engine_zone_tests
+[ 17%] Built target engine_zone_lifecycle_tests
+[ 17%] Built target engine_zone_layout_tests
+[ 50%] Built target air_engine_objects
+[ 52%] Built target air_engine
+[ 64%] Built target engine_render_webgpu_tests
+[ 64%] Built target engine_render_backend_tests
+[ 73%] Built target engine_binding_tests
+[ 76%] Built target engine_unit_tests
+[ 82%] Built target engine_snap_tests
+[ 88%] Built target engine_text_tests
+[ 94%] Built target engine_depth_order_tests
+[100%] Built target engine_core_tests
+Test project /Users/rasulatashev/Desktop/KI Projekte/Project air/packages/engine/build
+      Start  1: engine_render_backend_tests
+ 1/11 Test  #1: engine_render_backend_tests ......   Passed    0.27 sec
+      Start  2: engine_render_webgpu_tests
+ 2/11 Test  #2: engine_render_webgpu_tests .......   Passed    0.17 sec
+      Start  3: engine_unit_tests
+ 3/11 Test  #3: engine_unit_tests ................   Passed    0.17 sec
+      Start  4: engine_core_tests
+ 4/11 Test  #4: engine_core_tests ................   Passed    0.44 sec
+      Start  5: engine_text_tests
+ 5/11 Test  #5: engine_text_tests ................   Passed    0.33 sec
+      Start  6: engine_binding_tests
+ 6/11 Test  #6: engine_binding_tests .............   Passed    0.21 sec
+      Start  7: engine_zone_lifecycle_tests
+ 7/11 Test  #7: engine_zone_lifecycle_tests ......   Passed    0.01 sec
+      Start  8: engine_zone_layout_tests
+ 8/11 Test  #8: engine_zone_layout_tests .........   Passed    0.00 sec
+      Start  9: engine_zone_tests
+ 9/11 Test  #9: engine_zone_tests ................   Passed    0.00 sec
+      Start 10: engine_snap_tests
+10/11 Test #10: engine_snap_tests ................   Passed    0.16 sec
+      Start 11: engine_depth_order_tests
+11/11 Test #11: engine_depth_order_tests .........   Passed    0.10 sec
+
+100% tests passed out of 11
+
+Total Test time (real) =   1.88 sec

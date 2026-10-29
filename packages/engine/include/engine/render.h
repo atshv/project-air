@@ -37,6 +37,19 @@ struct HitResult {
   ObjectId objectId{kInvalidObjectId};
 };
 
+// P6-15: one depth band of the command buffer. A band is a run of consecutive
+// draw-order objects in which no object's bound text/chrome boxes are covered by
+// a later object of the same band. The renderer draws a band's object instances,
+// then that band's glyph/chrome pass, then the next band, so bound text can never
+// paint over an object that is above it. Bands are formed in document
+// (draw-order) space; the split therefore does not depend on the camera.
+struct DrawBand {
+  std::size_t first{0};        // first instance index in CommandBuffer::instances()
+  std::size_t count{0};        // instance count of the band
+  std::uint32_t firstRank{0};  // draw-order rank of the first instance
+  std::uint32_t lastRank{0};   // draw-order rank of the last instance
+};
+
 // Returns the generated tokens.h colour for a tone; P2-03 parses this string.
 // `toneColor(Tone::neutral)` is a provisional spike mapping to tokens::card; the
 // contract carries no tone, so P2-03 must not treat it as final design.
@@ -66,8 +79,19 @@ class CommandBuffer {
   // order. Fails with a Status when the spatial index is stale or belongs to
   // another document, the viewport is not positive and finite, or a candidate
   // index is out of range (defence in depth); the buffer is then left empty.
+  //
+  // `interleave` (P6-15) additionally splits the instances into depth bands so
+  // the renderer can run the glyph/chrome pass between them. Without it the
+  // command buffer is one band, exactly the P4-03 draw, so a frame without bound
+  // text keeps its measured cost.
   Status build(const Document& document, const Camera& camera, double viewportWidth,
-               double viewportHeight, const SpatialIndex& spatial);
+               double viewportHeight, const SpatialIndex& spatial, bool interleave = false);
+
+  // Depth bands of the last build, in draw order. Without `interleave` this is
+  // empty when nothing is visible and otherwise one band covering every
+  // instance. A band's text/chrome is the bound text of the objects whose
+  // draw-order rank lies in [firstRank, lastRank].
+  const std::vector<DrawBand>& bands() const { return bands_; }
 
   // Hit test on the command-buffer level: maps the screen point through the
   // camera, asks the spatial index for its candidates and returns the topmost
@@ -81,8 +105,22 @@ class CommandBuffer {
                  double viewportWidth, double viewportHeight, Point screenPoint, HitResult& out);
 
  private:
+  // P6-15: recomputes the depth-band plan when the document changed. The plan is
+  // camera-independent: it only looks at which objects' text boxes a later
+  // object covers, so pan/zoom never rebuilds it.
+  Status ensureBandPlan(const Document& document, const SpatialIndex& spatial);
+
   std::vector<Instance> instances_;
   std::vector<std::uint32_t> candidates_;
+  std::vector<DrawBand> bands_;
+  // One entry per live object in draw order: its rank range in the band plan.
+  std::vector<DrawBand> bandPlan_;
+  std::vector<std::uint32_t> bandOfRank_;
+  std::vector<std::uint32_t> bandCandidates_;
+  std::vector<Bounds> bandTextBounds_;
+  std::uint64_t bandDocumentInstance_{0};
+  std::uint32_t bandDocumentVersion_{0};
+  bool bandPlanValid_{false};
 };
 
 }  // namespace air::engine

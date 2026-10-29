@@ -106,6 +106,16 @@ class TextBindings {
                      const SpatialIndex& spatial, double viewportWidth, double viewportHeight,
                      TextRuns& runs, std::vector<ChromeInstance>& chrome) const;
 
+  // P6-15: same binding, also reporting the draw-order rank of the object that
+  // produced each run and each chrome quad, so the glyph pass can sort them into
+  // depth bands. The rank vectors are cleared first and always parallel to the
+  // runs/chrome they accompany.
+  Status bindVisible(const Document& document, const Camera& camera,
+                     const SpatialIndex& spatial, double viewportWidth, double viewportHeight,
+                     TextRuns& runs, std::vector<ChromeInstance>& chrome,
+                     std::vector<std::uint32_t>& runRanks,
+                     std::vector<std::uint32_t>& chromeRanks) const;
+
  private:
   std::unordered_map<ObjectId, ObjectText> entries_;
   std::uint64_t documentInstance_{0};

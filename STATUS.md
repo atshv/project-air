@@ -125,16 +125,13 @@
 
 ## Ready now
 
-- `P6-15` Depth-ordered titles and previews in the engine
-  - P6-14: Import the engine for the app from packages/engine/src/bridge/app.ts (bridge + input, placement, overlay, zone parity/lifecycle, keyboard, view persistence) and the logic layer from src/logic/.
-  - P6-14: Zone rename = gesture zone-rename -> one updateZone; block content = gesture block-content -> one updateBlockContent. Port has rename/setContent; empty content removes the field.
-  - P6-14: Grow blocks with blockContentPreview + fitBlockToContent; docs/engine.md 'Using the engine from an app' lists what the app wires itself.
+- none
 
 ## Orchestration
 
 - Limits: 3 attempts/task, 3 in progress
-- Next wave: `P6-15` (tasks/P6-15.md)
-- Running: none
+- Next wave: none — nothing is ready
+- Running: `P6-15` attempt 1/3
 - Blocked: P0-02, P0-15, P0-16, P0-17 (stage waits); P6-16, P6-17, P6-18, P6-19, P6-20, P6-21, P6-22 (open dependency)
 - Approvals pending: none
 
@@ -257,7 +254,7 @@
 
 ## In progress
 
-- none
+- [ ] `P6-15` Depth-ordered titles and previews in the engine — status: `review` — owner: —
 
 ## Blocked / failed
 
@@ -269,7 +266,6 @@
 - [ ] `P0-15` Release command and tag-based CI release — status: `pending` — owner: —
 - [ ] `P0-16` Dependency updates and Polier update check — status: `pending` — owner: —
 - [ ] `P0-17` RELEASING.md and release 0.0.1 — status: `pending` — owner: —
-- [ ] `P6-15` Depth-ordered titles and previews in the engine — status: `pending` — owner: —
 - [ ] `P6-16` Titles, previews and headers on the web canvas (L02 web part) — status: `pending` — owner: —
 - [ ] `P6-17` Dragging on the web canvas (L03, L07, L16, L20) — status: `pending` — owner: —
 - [ ] `P6-18` Multi-select and resize on the web canvas (L10, L14) — status: `pending` — owner: —

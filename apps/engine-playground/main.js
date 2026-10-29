@@ -53,6 +53,17 @@
 //                                  visual scenes are ?text=titles&view=512,288,1
 //                                  (100 %) and ?text=titles&view=512,240,2
 //                                  (200 %).
+//   ?text=overlapping              P6-15 depth-order demo: the page-owned
+//                                  deterministic gallery (4 titled note cards on
+//                                  a fixed 1024x576 world). The front card's
+//                                  rectangle fully covers the title and preview
+//                                  boxes of the card behind it, while the front
+//                                  card's own title and preview stay on top; the
+//                                  two outer cards stay readable. Off by default,
+//                                  so the scenes, baselines and perf runs stay
+//                                  unchanged; the visual scene is
+//                                  ?text=overlapping&view=504,280,1 (100 %, the
+//                                  atlas raster scale).
 //
 // Interaction (L03/P4-14): every pointer/wheel event goes through the single
 // input layer in packages/engine/src/bridge/input.ts. A press moving less than
@@ -217,6 +228,9 @@ const textLayoutRequested =
   query.get("text") === "layout" && !benchmarkRequested && !perfRequested;
 const titlesRequested =
   query.get("text") === "titles" && !benchmarkRequested && !perfRequested;
+// P6-15: page-owned depth-order demo (a front card over a back card's text).
+const overlappingRequested =
+  query.get("text") === "overlapping" && !benchmarkRequested && !perfRequested;
 // P4-28: deterministic stage showcase (engine-core capabilities, not a gate scene).
 const showcaseRequested =
   query.get("showcase") === "1" && !benchmarkRequested && !perfRequested;
@@ -537,6 +551,91 @@ function buildTitlesGallery() {
   };
 }
 
+// P6-15 depth-order gallery of the `?text=overlapping` scene. Same page-owned
+// pattern as the titles gallery: plain note-card rectangles bind their titles and
+// previews through the engine and no document or operation carries text (AD-4).
+// All four cards sit on the 16 px grid on the same fixed 1024x576 world. The front
+// card (card-0003) is drawn after the back card (card-0002) and its rectangle
+// 368..608 x 208..352 contains the back card's whole title and preview boxes
+// 416..588 x 240..336 (the engine derives them from the 16 px padding, the 21 px
+// title line box and the 28 + 8 px affordance reservation), so the depth-ordered
+// text pass draws the back text below the front rectangle while the front card's
+// own title and preview stay on top. The two outer cards stay unoccluded: their
+// text is the control that the depth order never hides text no front object covers.
+// Deterministic: fixed geometry, no randomness, no time, no animation.
+const OVERLAPPING_WORLD = { width: 1024, height: 576 };
+
+/** Deterministic overlapping titles gallery of the `?text=overlapping` scene. */
+function buildOverlappingGallery() {
+  const objects = [
+    {
+      id: "card-0001",
+      kind: "card",
+      x: 128,
+      y: 224,
+      width: 208,
+      height: 128,
+      tone: "tone-a",
+      layer: "note-cards",
+      title: "Moodboard",
+      preview: "Photos, colours and references for the trip.",
+    },
+    {
+      // The back card: its title and preview boxes are fully covered by card-0003.
+      id: "card-0002",
+      kind: "card",
+      x: 400,
+      y: 224,
+      width: 240,
+      height: 128,
+      tone: "tone-c",
+      layer: "note-cards",
+      title: "Trip to the Walensee with a Z\u00fcrich stopover",
+      preview:
+        "Tent, sleeping bag, mat, stove, water, caf\u00e9 au lait, tea and a warm jacket for the night by the lake.",
+    },
+    {
+      // The front card: drawn after card-0002, covering its title and preview.
+      id: "card-0003",
+      kind: "card",
+      x: 368,
+      y: 208,
+      width: 240,
+      height: 144,
+      tone: "neutral",
+      layer: "note-cards",
+      title: "Packing list",
+      preview:
+        "Meet at the station at nine, walk to the shore, bring a picnic and return past M\u00fcller's farm before the rain.",
+    },
+    {
+      id: "card-0004",
+      kind: "card",
+      x: 672,
+      y: 224,
+      width: 208,
+      height: 128,
+      tone: "tone-e",
+      layer: "note-cards",
+      title: "Caf\u00e9 notes",
+      preview: "Table by the harbour if it rains.",
+    },
+  ];
+  const counts = { zones: 0, blocks: 0, cards: 0 };
+  for (const object of objects) {
+    if (object.kind === "zone") counts.zones += 1;
+    else if (object.kind === "block") counts.blocks += 1;
+    else counts.cards += 1;
+  }
+  return {
+    name: "overlapping",
+    objects,
+    world: OVERLAPPING_WORLD,
+    counts: { ...counts, total: objects.length },
+    camera: { minimumZoom: MINIMUM_ZOOM, maximumZoom: MAXIMUM_ZOOM },
+  };
+}
+
 // The delete affordance is DOM chrome (ADR-0009), never a canvas glyph and never a
 // character: the icon is an inline SVG in the ui-kit icon style (24 grid, stroke
 // 1.6, currentColor, round caps). packages/ui-kit/icons has no delete entry yet;
@@ -759,6 +858,11 @@ function installTitles(engine, loaded) {
 }
 
 async function loadScene() {
+  if (overlappingRequested) {
+    // P6-15: the overlapping gallery is the playground's own deterministic demo
+    // board, so it needs no test-kit bundle and works in a harness copy as well.
+    return buildOverlappingGallery();
+  }
   if (titlesRequested || showcaseRequested) {
     // The titles gallery is the playground's own deterministic demo board; it
     // needs no test-kit bundle, so the scene works in a harness copy as well.
@@ -810,6 +914,9 @@ function sceneCaption(loaded) {
   }
   if (titlesRequested) {
     return `${loaded.counts.total} objects — zone names, card titles cut with an ellipsis and block previews bound to the visible objects; blocks grow to their preview height and the delete affordance appears on hover, focus or selection.`;
+  }
+  if (overlappingRequested) {
+    return `${loaded.counts.total} objects — P6-15 depth-order demo: the front note card fully covers the title and preview of the card behind it while its own title and preview stay on top; the two outer cards stay readable. Deterministic gallery, no board content is written.`;
   }
   if (inlineDemoRequested) {
     return `${loaded.counts.total} objects — L18 inline comfort demo: plain DOM fields anchored to the layers board. Click a field to edit it; Enter inserts a new entry below, Tab/Shift+Tab move through the fields, Backspace removes an empty entry, Esc closes the field. Nothing here writes board content.`;
@@ -3850,7 +3957,7 @@ async function start() {
       onDemand.request();
     }
 
-    if (titlesRequested || showcaseRequested) {
+    if (titlesRequested || showcaseRequested || overlappingRequested) {
       titlesOverlay = installTitles(engine, loaded);
     }
     if (showcaseRequested) {

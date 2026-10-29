@@ -294,6 +294,40 @@ the operation seam keep none, and a reload drops the binding.
   input validation (unknown slot, code point above U+10FFFF, null pointers with a count, empty text).
   `wasm-smoke` checks the pre-create failures of the new C ABI.
 
+### Depth-ordered text (P6-15)
+
+The P4-10 binding drew every bound title, preview and header chrome quad in one glyph/chrome pass
+after the whole object pass, so on an overlapping board a back card's title could paint over a front
+card. P6-15 splits the draw order into **depth bands** so text is always drawn with its band.
+
+- **Band rule.** A band is a maximal run of consecutive objects in document draw order (L13: layer,
+  then fractional z, then insertion order) in which **no later object covers an earlier object's
+  bound text boxes**. The boxes are the same L02 geometry the binding draws: title and preview for
+  cards, the 40 px header band, rule and title for zones (a zone shows only its name, so its content
+  area never splits the band off its members), and band, rule, title and preview for blocks.
+  `CommandBuffer::build(..., interleave=true)` computes the plan once per document version — it is
+  formed in document space and is therefore independent of pan and zoom — and `bands()` reports the
+  visible instance range plus the draw-order rank range of each band. A board whose text is not
+  covered keeps a single band, so the common board still draws one instanced call.
+- **Draw order per band.** The renderer draws a band's object instances, then that band's header
+  chrome and bound glyphs, then the next band's objects, in both backends. The WebGL2 pass re-binds
+  its program, VAO and instance buffer before each band because the glyph pass switches GL state;
+  the WebGPU pass issues one object draw and one text/chrome pass per band (load-op `load` after the
+  first) and preserves the same order by queue submission order. Bound runs and header chrome are
+  stable-ordered by band inside the text pass (`TextBindings::bindVisible` reports the draw-order
+  rank of every run and quad), so one glyph buffer and one chrome instance list still cover the
+  frame; page-owned runs (`?text=layout`) and the chrome above every object (snap guides, selection
+  frames/band, zone highlight) draw in the tail after the last band.
+- **No cost without text.** Bands are only built when presentation text is bound
+  (`detail::textBandsPresent()`); a frame without bindings — the perf scenes, the sample/engine-core
+  visual scenes — keeps exactly the P4-03 single instance draw and the text-free tail cost.
+- **Proof.** `engine_depth_order_tests` (CTest) checks the split: a covering card starts a new band,
+  non-covered cards and zone members keep one band, a card over a zone header splits, the split is
+  camera-independent and deterministic, the legacy build stays one band with byte-identical
+  instances, a document change rebuilds the plan, and a stale spatial index fails closed. The
+  reviewed visual baseline `overlapping-titles` (desktop and mobile, WebGL2 and WebGPU) shows a front
+  card covering the title and preview of the card behind it while its own text stays on top.
+
 ### Zoom bucket and sharp text (P4-10)
 
 P4-08 rebuilt the atlas on a device-pixel-ratio change only, so zooming in upscaled the 100 % atlas
@@ -1169,9 +1203,10 @@ implemented.
   input beyond the inline field comfort rules, title editing (L09 owns it), images, edges and the
   accessibility mirror are not. The input layer is
   DOM-driven: a real e2e for fields inside a block arrives with the editor overlay (P4-23). Text is presentation input: titles and previews are bound to visible
-  objects by the caller (P4-10), but the engine document still stores no note content, and a
-  title/preview that overlaps a higher-layer object is not clipped per pixel (the titles scene and
-  its reference images place the gallery without overlap). The gesture-to-operation seam and the
+  objects by the caller (P4-10), the engine document still stores no note content, and P6-15's
+  depth bands now keep bound text behind any object above its own (the `overlapping-titles`
+  reference shows the covered title and preview disappearing under the front card). The
+  gesture-to-operation seam and the
   undo history core exist behind the TypeScript logic layer (P4-05) and a completed drag now reaches
   them through the input layer; selection state and overlays are not wired yet.
   The initial and restored viewport (L17/P4-22) still uses the pre-L19 plain fit; only the fit action

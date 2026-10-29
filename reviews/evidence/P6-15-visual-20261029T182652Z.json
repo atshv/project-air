@@ -1,0 +1,20 @@
+{
+  "task": "P6-15",
+  "gate": "visual",
+  "command": "node packages/engine/test/visual/run-visual.mjs --task P6-15",
+  "exit_code": 0,
+  "result": "pass",
+  "slot": null,
+  "exclusive": [
+    "perf",
+    "visual"
+  ],
+  "lock_wait_s": 0.0,
+  "lock_warning": null,
+  "started": "2026-10-29T18:26:52+00:00",
+  "finished": "2026-10-29T18:27:36+00:00",
+  "commit": "033af76da0921808e514b9a686b0fc2b8d16c27e",
+  "dirty": true,
+  "log": "P6-15-visual-20261029T182652Z.log",
+  "log_sha256": "042fd0a05aa1bbc4f6db259d3769251dc323c7f8e3f4c85dc4bfcecdf26a8de9"
+}

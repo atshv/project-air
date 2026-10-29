@@ -255,7 +255,7 @@ EM_JS(int, air_webgpu_error_code_js, (), {
 
 EM_JS(int, air_webgpu_frame_js, (const void* bytes, int count, int css_width, int css_height, float dpr,
                                  double pan_x, double pan_y, double zoom, int grid_visible,
-                                 float grid_spacing, float grid_radius, float faint_r, float faint_g, float faint_b, float faint_a), {
+                                 float grid_spacing, float grid_radius, float faint_r, float faint_g, float faint_b, float faint_a, int clear), {
   const state = globalThis.__airWebgpu;
   if (state === undefined || state.status !== 1) return 0;
   const recordCount = Number(count);
@@ -328,7 +328,7 @@ EM_JS(int, air_webgpu_frame_js, (const void* bytes, int count, int css_width, in
     colorAttachments: [{
       view: state.context.getCurrentTexture().createView(),
       clearValue: { r: state.clear[0], g: state.clear[1], b: state.clear[2], a: 1.0 },
-      loadOp: "clear", storeOp: "store",
+      loadOp: Number(clear) !== 0 ? "clear" : "load", storeOp: "store",
     }],
   });
   if (grid_visible !== 0) {
@@ -503,7 +503,7 @@ bool resize(int css_width, int css_height, float device_pixel_ratio) {
 
 bool frame(const void* instance_bytes, std::size_t instance_count, int css_width, int css_height,
            float device_pixel_ratio, double pan_x, double pan_y, double zoom, bool grid_visible,
-           const FrameText* text) {
+           const DrawBand* bands, std::size_t band_count, const FrameText* text) {
   const int status = air_webgpu_status_js();
   if (status != 1) {
     g_error = messageFor(status < 0 ? air_webgpu_error_code_js() : 0);
@@ -518,25 +518,70 @@ bool frame(const void* instance_bytes, std::size_t instance_count, int css_width
     g_error = "generated faint token is not an rgba colour";
     return false;
   }
-  if (air_webgpu_frame_js(instance_bytes, static_cast<int>(instance_count), css_width, css_height,
-                          device_pixel_ratio, pan_x, pan_y, zoom, grid_visible ? 1 : 0,
-                          static_cast<float>(tokens::canvas_grid),
-                          static_cast<float>(tokens::border_width), faint[0], faint[1], faint[2],
-                          faint[3]) == 0) {
-    g_error = messageFor(7);
-    return false;
-  }
-  if (text != nullptr && text->ok &&
-      (text->glyphCountA > 0 || text->glyphCountB > 0 || text->chromeCount > 0)) {
-    if (air_webgpu_post_frame_js(text->glyphsA, static_cast<int>(text->glyphCountA),
-                                 text->glyphsB, static_cast<int>(text->glyphCountB), text->chrome,
-                                 static_cast<int>(text->chromeCount), text->atlas,
-                                 static_cast<int>(text->atlasWidth),
-                                 static_cast<int>(text->atlasHeight), text->atlasReady ? 1 : 0,
-                                 text->tint) == 0) {
+  // P6-15: one draw of a contiguous instance range. `clear` starts a new canvas
+  // frame; later bands load the pixels the earlier passes left.
+  const auto drawObjects = [&](const void* bytes, std::size_t count, bool grid, bool clear) {
+    return air_webgpu_frame_js(bytes, static_cast<int>(count), css_width, css_height,
+                               device_pixel_ratio, pan_x, pan_y, zoom, grid ? 1 : 0,
+                               static_cast<float>(tokens::canvas_grid),
+                               static_cast<float>(tokens::border_width), faint[0], faint[1],
+                               faint[2], faint[3], clear ? 1 : 0) != 0;
+  };
+  // One glyph/chrome pass on top of the objects already in the canvas texture.
+  const auto drawText = [&](const void* glyphs, std::size_t glyphCount, const void* chrome,
+                            std::size_t chromeCount) {
+    if (glyphs == nullptr && chrome == nullptr) {
+      return true;
+    }
+    return air_webgpu_post_frame_js(glyphs, static_cast<int>(glyphCount), nullptr, 0, chrome,
+                                    static_cast<int>(chromeCount), text->atlas,
+                                    static_cast<int>(text->atlasWidth),
+                                    static_cast<int>(text->atlasHeight),
+                                    text->atlasReady ? 1 : 0, text->tint) != 0;
+  };
+  const auto* bytes = static_cast<const std::uint8_t*>(instance_bytes);
+  if (bands != nullptr && band_count > 0) {
+    if (text != nullptr && text->ok && text->bandCount != band_count) {
+      g_error = "WebGPU glyph bands do not match the command-buffer bands";
+      return false;
+    }
+    for (std::size_t band = 0; band < band_count; ++band) {
+      const DrawBand& range = bands[band];
+      if (range.count == 0) {
+        continue;
+      }
+      const bool first = band == 0;
+      if (!drawObjects(bytes + range.first * sizeof(Instance), range.count,
+                       grid_visible && first, first)) {
+        g_error = messageFor(7);
+        return false;
+      }
+      if (text != nullptr && text->ok && band < text->bandCount) {
+        const FrameTextBand& textBand = text->bands[band];
+        if (!drawText(textBand.glyphs, textBand.glyphCount, textBand.chrome,
+                      textBand.chromeCount)) {
+          g_error = messageFor(7);
+          return false;
+        }
+      }
+    }
+    if (text != nullptr && text->ok &&
+        !drawText(text->glyphsA, text->glyphCountA, text->globalChrome,
+                  text->globalChromeCount)) {
       g_error = messageFor(7);
       return false;
     }
+    return true;
+  }
+  if (!drawObjects(instance_bytes, instance_count, grid_visible, true)) {
+    g_error = messageFor(7);
+    return false;
+  }
+  if (text != nullptr && text->ok && text->atlasReady &&
+      !drawText(text->glyphsA, text->glyphCountA, text->globalChrome,
+                text->globalChromeCount)) {
+    g_error = messageFor(7);
+    return false;
   }
   return true;
 }
@@ -575,7 +620,7 @@ bool create(const char*, const float[6][3], const float[3]) {
 bool resize(int, int, float) { return false; }
 
 bool frame(const void*, std::size_t, int, int, float, double, double, double, bool,
-           const FrameText*) {
+           const DrawBand*, std::size_t, const FrameText*) {
   g_error = "WebGPU renderer is only available in the WebAssembly build";
   return false;
 }

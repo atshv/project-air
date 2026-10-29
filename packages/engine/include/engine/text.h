@@ -259,9 +259,12 @@ class GlyphBuffer {
   // Missing code points draw their role's placeholder; quads fully outside the
   // viewport are culled. Without a ready atlas the buffer stays empty and the
   // build succeeds. Fails (buffer empty) for a viewport that is not positive and
-  // finite. Identical input gives byte-identical records.
+  // finite. Identical input gives byte-identical records. P6-15: when
+  // `runGlyphCounts` is not null it receives one entry per run with the number of
+  // quads that run contributed, so a caller can slice the buffer per depth band.
   Status build(const TextRuns& runs, const GlyphAtlas& atlas, const Camera& camera,
-               double viewportWidth, double viewportHeight);
+               double viewportWidth, double viewportHeight,
+               std::vector<std::uint32_t>* runGlyphCounts = nullptr);
 
  private:
   std::vector<GlyphInstance> instances_;

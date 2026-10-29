@@ -207,8 +207,22 @@ Status TextBindings::bindVisible(const Document& document, const Camera& camera,
                                  const SpatialIndex& spatial, double viewportWidth,
                                  double viewportHeight, TextRuns& runs,
                                  std::vector<ChromeInstance>& chrome) const {
+  std::vector<std::uint32_t> runRanks;
+  std::vector<std::uint32_t> chromeRanks;
+  return bindVisible(document, camera, spatial, viewportWidth, viewportHeight, runs, chrome,
+                     runRanks, chromeRanks);
+}
+
+Status TextBindings::bindVisible(const Document& document, const Camera& camera,
+                                 const SpatialIndex& spatial, double viewportWidth,
+                                 double viewportHeight, TextRuns& runs,
+                                 std::vector<ChromeInstance>& chrome,
+                                 std::vector<std::uint32_t>& runRanks,
+                                 std::vector<std::uint32_t>& chromeRanks) const {
   runs.clear();
   chrome.clear();
+  runRanks.clear();
+  chromeRanks.clear();
   if (!std::isfinite(viewportWidth) || !std::isfinite(viewportHeight) || viewportWidth <= 0.0 ||
       viewportHeight <= 0.0) {
     return Status::failure("viewport must be positive and finite");
@@ -229,6 +243,7 @@ Status TextBindings::bindVisible(const Document& document, const Camera& camera,
   if (!queryStatus) {
     return queryStatus;
   }
+  const std::vector<std::uint32_t>& drawRank = document.drawOrderRank();
   const double titleLineHeight = lineHeightOf(kTitleRole);
   const double zoom = camera.zoom();
   std::vector<std::uint32_t> occluders;
@@ -255,6 +270,7 @@ Status TextBindings::bindVisible(const Document& document, const Camera& camera,
     if (rectangle.height * zoom + kGeometryEpsilon < titleLineHeight) {
       continue;
     }
+    const std::uint32_t rank = slot < drawRank.size() ? drawRank[slot] : 0;
     const ObjectTextBoxes boxes = objectTextBoxes(rectangle);
     const ObjectText& text = entry->second;
     if (!text.title.empty()) {
@@ -265,6 +281,7 @@ Status TextBindings::bindVisible(const Document& document, const Camera& camera,
       if (!status) {
         break;  // run/glyph budget of the P4-09 store
       }
+      runRanks.push_back(rank);
     }
     if (!text.preview.empty() && boxes.preview.width > 0.0 && boxes.preview.height > 0.0) {
       const Status status =
@@ -274,11 +291,14 @@ Status TextBindings::bindVisible(const Document& document, const Camera& camera,
       if (!status) {
         break;  // run/glyph budget of the P4-09 store
       }
+      runRanks.push_back(rank);
     }
     if (boxes.header && !headerOccluded(document, spatial, rectangle, boxes.band, occluders)) {
       chrome.push_back(toScreen(boxes.band, camera, kChromeHeaderBand));
+      chromeRanks.push_back(rank);
       if (boxes.rule.height > 0.0) {
         chrome.push_back(toScreen(boxes.rule, camera, kChromeHeaderRule));
+        chromeRanks.push_back(rank);
       }
     }
   }

@@ -277,6 +277,20 @@ const SCENE_DEFINITIONS = [
     expectedWorld: { width: 1024, height: 576 },
     camera: "titles gallery header at world (512, 240) at zoom 2 (200 %, the sharp bucket)",
   },
+  {
+    // P6-15: the page-owned overlapping titles gallery (4 titled cards). The front
+    // card's rectangle fully covers the title and preview boxes of the card behind
+    // it, so the depth-ordered text pass is part of the reference image; the two
+    // outer cards keep their own readable text. Captured at 100 %, the atlas
+    // raster scale of zoom 1.
+    name: "overlapping-titles",
+    scene: "overlapping",
+    view: { worldX: 504, worldY: 280, zoom: 1 },
+    extra: { text: "overlapping" },
+    expectedCounts: { zones: 0, blocks: 0, cards: 4, total: 4 },
+    expectedWorld: { width: 1024, height: 576 },
+    camera: "overlapping titles gallery centred at world (504, 280) at zoom 1 (100 %)",
+  },
 ];
 
 const PAGE_TIMEOUT_MS = 30000;
