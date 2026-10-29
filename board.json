@@ -7157,7 +7157,8 @@
         ".changes/",
         "pnpm-lock.yaml",
         "docs/versions.md",
-        "packages/engine/"
+        "packages/engine/",
+        "packages/sdk/"
       ],
       "scope_read": [
         "ARCHITECTURE.md",
@@ -7172,7 +7173,8 @@
         "services/auth/",
         "services/sync/",
         "tools/dev/",
-        "packages/engine/"
+        "packages/engine/",
+        "packages/sdk/src/auth.ts"
       ],
       "acceptance": [
         "A1",
