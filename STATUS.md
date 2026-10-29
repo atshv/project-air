@@ -60,7 +60,8 @@
 - Owner decision: `pending`
 - Exit gates: `e2e`, `design-check`, `language-check`
 - Exit criteria: Main e2e flows green on a preview environment.; Every canvas work order done with evidence; design-check and language-check green repo-wide.
-- Tasks: P6-01, P6-02, P6-03, P6-04, P6-05, P6-06, P6-07, P6-09, P6-10, P6-11, P0-45, P0-46, P6-08, P0-47
+- Tasks: P6-01, P6-02, P6-03, P6-04, P6-05, P6-06, P6-07, P6-09, P6-10, P6-11, P6-12, P0-45, P0-46, P6-08, P0-47
+- Tasks open: P6-12
 
 ### Stage 8 — `value` Import, export and AI
 
@@ -124,12 +125,12 @@
 
 ## Ready now
 
-- none
+- `P6-12` CI passes on GitHub for the current main
 
 ## Orchestration
 
 - Limits: 3 attempts/task, 3 in progress
-- Next wave: none — nothing is ready
+- Next wave: `P6-12` (tasks/P6-12.md)
 - Running: none
 - Blocked: P0-02, P0-15, P0-16, P0-17 (stage waits)
 - Approvals pending: none
@@ -262,6 +263,7 @@
 - [ ] `P0-15` Release command and tag-based CI release — status: `pending` — owner: —
 - [ ] `P0-16` Dependency updates and Polier update check — status: `pending` — owner: —
 - [ ] `P0-17` RELEASING.md and release 0.0.1 — status: `pending` — owner: —
+- [ ] `P6-12` CI passes on GitHub for the current main — status: `pending` — owner: —
 
 ## Decisions
 

@@ -7279,6 +7279,64 @@
       ]
     },
     {
+      "id": "P6-12",
+      "title": "CI passes on GitHub for the current main",
+      "goal": "The existing CI workflow (.github/workflows/ci.yml) passes on a GitHub pull request against main: lint after build, the database-backed tests on a CI slot with the compose stack, and the code and test-expectation defects the first real run exposed fixed.",
+      "why": "The first GitHub CI run (PR 1, run 40910412721) failed on code already on main; every pull request stays red until CI matches what the local gates prove. Pulled forward from the remote stage by the owner (2026-10-29); branch protection, releases and hosting stay in remote.",
+      "satisfies": [
+        "D6"
+      ],
+      "status": "pending",
+      "depends_on": [
+        "P6-11"
+      ],
+      "complexity": 4,
+      "stage": "web-app",
+      "parallel_group": null,
+      "scope_write": [
+        ".github/workflows/ci.yml",
+        "turbo.json",
+        "packages/crdt/src/yjs-doc.ts",
+        "apps/web/src/",
+        "tools/design-check/test/design-check.test.mjs",
+        "packages/contracts/test/cpp/parity.cpp",
+        "docs/quality.md",
+        "docs/adr/ADR-0003-remote-phase.md",
+        ".changes/",
+        "reviews/evidence/"
+      ],
+      "scope_read": [
+        "ARCHITECTURE.md",
+        "AGENTS.md",
+        "STATUS.md",
+        "docs/module-map.md",
+        "docs/quality.md"
+      ],
+      "acceptance": [
+        "A1",
+        "A2",
+        "A3"
+      ],
+      "gates": [
+        "board-check",
+        "boundaries",
+        "typecheck",
+        "unit",
+        "design-check",
+        "language-check",
+        "ci-local",
+        "changelog-entry"
+      ],
+      "owner": null,
+      "branch": "task/P6-12",
+      "worktree": null,
+      "round": 0,
+      "evidence": [],
+      "scope_write_forbidden": [
+        "reference/"
+      ]
+    },
+    {
       "id": "P0-45",
       "title": "Preview page: project areas, their tasks and purpose",
       "goal": "The design-system page gets a section '13 — Project areas' that lists every area of Project air (engine, web app, design system, data model, server, database and storage, realtime, tools and quality, operations and release) with its purpose, owner role, folders, connections and its parts with status, in short simple sentences in EN and DE; a page contents list links every numbered section 01-13.",
