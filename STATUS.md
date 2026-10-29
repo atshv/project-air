@@ -125,13 +125,13 @@
 
 ## Ready now
 
-- `P6-12` CI passes on GitHub for the current main
+- none
 
 ## Orchestration
 
 - Limits: 3 attempts/task, 3 in progress
-- Next wave: `P6-12` (tasks/P6-12.md)
-- Running: none
+- Next wave: none — nothing is ready
+- Running: `P6-12` attempt 1/3<!-- polier:claims --> — claimed by claude-code<!-- /polier:claims -->
 - Blocked: P0-02, P0-15, P0-16, P0-17 (stage waits)
 - Approvals pending: none
 
@@ -251,7 +251,7 @@
 
 ## In progress
 
-- none
+- [ ] `P6-12` CI passes on GitHub for the current main — status: `in_progress` — owner: —
 
 ## Blocked / failed
 
@@ -263,7 +263,13 @@
 - [ ] `P0-15` Release command and tag-based CI release — status: `pending` — owner: —
 - [ ] `P0-16` Dependency updates and Polier update check — status: `pending` — owner: —
 - [ ] `P0-17` RELEASING.md and release 0.0.1 — status: `pending` — owner: —
-- [ ] `P6-12` CI passes on GitHub for the current main — status: `pending` — owner: —
+
+<!-- polier:claims -->
+## Claims
+
+- `P6-12` in progress by claude-code since 2026-10-29T16:37:39+00:00 — worktree: /home/user/project-air-P6-12 · slot 1
+
+<!-- /polier:claims -->
 
 ## Decisions
 

@@ -1,0 +1,35 @@
+{
+  "task": "P6-12",
+  "state": "running",
+  "attempt": 1,
+  "attempts": [
+    {
+      "n": 1,
+      "started": "2026-10-29T16:37:39+00:00",
+      "ended": null,
+      "result": null,
+      "note": null
+    }
+  ],
+  "events": [
+    {
+      "at": "2026-10-29T16:37:39+00:00",
+      "kind": "start",
+      "data": {
+        "actor": "lead"
+      }
+    },
+    {
+      "at": "2026-10-29T16:37:39+00:00",
+      "kind": "state",
+      "data": {
+        "from": "pending",
+        "to": "in_progress",
+        "actor": "lead",
+        "note": "lead session, owner request 2026-10-29"
+      }
+    }
+  ],
+  "usage": {},
+  "updated": "2026-10-29T16:37:39+00:00"
+}
