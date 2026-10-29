@@ -125,15 +125,13 @@
 
 ## Ready now
 
-- `P0-47` Preview page: connections diagram instead of roles
-  - P0-46: Closed P0-46: round 40 px back-to-top button bottom right (24 px inset, 16 px mobile) on --layer-canvas-chrome; shows after one viewport of scrolling, opacity fade 150 ms.
-  - P0-46: Click/Enter scrolls to top (jump under reduced motion) and focuses #page-top; label toTop.label EN/DE; gates board/design/changelog green; 3 screenshots + log.
+- none
 
 ## Orchestration
 
 - Limits: 3 attempts/task, 3 in progress
-- Next wave: `P0-47` (tasks/P0-47.md)
-- Running: `P6-08` attempt 0/3<!-- polier:claims --> — claimed by dsh<!-- /polier:claims -->
+- Next wave: none — nothing is ready
+- Running: `P6-08` attempt 0/3<!-- polier:claims --> — claimed by dsh<!-- /polier:claims -->; `P0-47` attempt 0/3<!-- polier:claims --> — claimed by dsh<!-- /polier:claims -->
 - Blocked: P0-02, P0-15, P0-16, P0-17 (stage waits); P6-09, P6-10, P6-11 (open dependency)
 - Approvals pending: none
 
@@ -248,6 +246,7 @@
 ## In progress
 
 - [ ] `P6-08` Contract 0.4.0 operation support in crdt and sync — status: `in_progress` — owner: lead
+- [ ] `P0-47` Preview page: connections diagram instead of roles — status: `in_progress` — owner: —
 
 ## Blocked / failed
 
@@ -262,11 +261,11 @@
 - [ ] `P6-09` Realtime UI: live changes, presence and save status (L05) — status: `pending` — owner: —
 - [ ] `P6-10` e2e suite: main flows and the e2e gate on the slot ports — status: `pending` — owner: —
 - [ ] `P6-11` Canvas evidence, repo-wide checks and the web-app stage report — status: `pending` — owner: —
-- [ ] `P0-47` Preview page: connections diagram instead of roles — status: `pending` — owner: —
 
 <!-- polier:claims -->
 ## Claims
 
+- `P0-47` in progress by dsh since 2026-10-29T00:07:27+00:00 — worktree: /Users/rasulatashev/Desktop/KI Projekte/Project air-P0-47 · slot 4
 - `P6-08` in progress by dsh since 2026-10-29T00:06:24+00:00 — worktree: /private/tmp/air-P6-08 · slot 3
 
 <!-- /polier:claims -->
