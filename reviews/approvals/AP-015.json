@@ -1,0 +1,11 @@
+{
+  "id": "AP-015",
+  "action": "new_dependency",
+  "task": "P6-10",
+  "status": "granted",
+  "requested_by": "lead",
+  "requested_at": "2026-10-29T01:40:23+00:00",
+  "approved_by": "owner",
+  "approved_at": "2026-10-29T01:40:23+00:00",
+  "note": "Playwright @playwright/test 1.64.1 (Apache-2.0) for the e2e gate \u2014 approved by the owner in the stage-7 stack decision (React+Vite, own editor, Playwright for e2e). | Owner approved the Playwright dependency earlier in the stage-7 stack choice; this records that grant."
+}
