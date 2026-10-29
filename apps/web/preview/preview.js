@@ -3600,6 +3600,39 @@
     applyColour(toolState.colour, false);
   }
 
+  // Back to top (P0-46): the button shows after one viewport height of
+  // scrolling; activating it scrolls to the top (a jump under reduced motion)
+  // and moves focus to the page heading without changing the URL.
+  function setupToTop() {
+    var button = document.querySelector("[data-to-top]");
+    var heading = document.getElementById("page-top");
+    if (button === null) return;
+    var pending = false;
+
+    function update() {
+      pending = false;
+      var visible = window.scrollY > window.innerHeight;
+      button.classList.toggle("is-visible", visible);
+      if (!visible && document.activeElement === button && heading !== null) {
+        heading.focus({ preventScroll: true });
+      }
+    }
+
+    function schedule() {
+      if (pending) return;
+      pending = true;
+      window.requestAnimationFrame(update);
+    }
+
+    button.addEventListener("click", function () {
+      window.scrollTo({ top: 0, behavior: reducedMotion() ? "auto" : "smooth" });
+      if (heading !== null) heading.focus({ preventScroll: true });
+    });
+    window.addEventListener("scroll", schedule, { passive: true });
+    window.addEventListener("resize", schedule);
+    update();
+  }
+
   function init() {
     var demos = document.querySelectorAll("[data-demo]");
     for (var i = 0; i < demos.length; i += 1) {
@@ -3610,6 +3643,7 @@
     }
     setupLocaleSwitcher();
     setupThemeSwitcher();
+    setupToTop();
     initTheme();
     var stored = readStoredLocale();
     var initial = LOCALE_LANGUAGES.indexOf(stored) === -1 || stored === null ? LOCALE_DEFAULT : stored;

@@ -1,0 +1,18 @@
+# P0-46 preview evidence (2026-10-29)
+# serve: cd "/Users/rasulatashev/Desktop/KI Projekte/Project air-P0-46"; PORT=$(python3 -c "import json; print(json.load(open('.polier-slot'))['ports']['web'])"); python3 -m http.server "$PORT" --bind 127.0.0.1
+# drive: out-of-repo CDP helper (Chrome for Testing 1248, headless, real Input.dispatchMouseEvent / dispatchKeyEvent); 1440x900, 390x844, reduced motion
+# url: http://127.0.0.1:4400/apps/web/preview/index.html
+desktop top: scrollY=0 visible=false opacity=0 visibility=hidden rect=1376,836,40,40 label="Back to top" active=BODY overflow=0
+0.8 viewport down: scrollY=720 visible=false opacity=0 visibility=hidden rect=1376,836,40,40 label="Back to top" active=BODY overflow=0
+bottom: scrollY=15289 visible=true opacity=1 visibility=visible rect=1376,836,40,40 label="Back to top" active=BODY overflow=0
+screenshot P0-46-to-top.png
+150 ms after click (smooth): scrollY=14951 visible=true opacity=1 visibility=visible rect=1376,836,40,40 label="Back to top" active=page-top overflow=0
+after click: scrollY=0 visible=false opacity=0.0751966 visibility=visible rect=1376,836,40,40 label="Back to top" active=page-top overflow=0
+tab at bottom: active=true
+after Enter: scrollY=0 visible=false opacity=0 visibility=hidden rect=1376,836,40,40 label="Back to top" active=page-top overflow=0
+light de: scrollY=15764 visible=true opacity=1 visibility=visible rect=1376,836,40,40 label="Nach oben" active=BUTTON overflow=0 theme=light
+screenshot P0-46-to-top-light-de.png
+mobile bottom: scrollY=31862 visible=true opacity=1 visibility=visible rect=334,788,40,40 label="Back to top" active=BODY overflow=0
+screenshot P0-46-to-top-mobile.png
+reduced motion transition: 0s
+reduced motion 50 ms after click: scrollY=0 visible=false opacity=0 visibility=hidden rect=1376,836,40,40 label="Back to top" active=page-top overflow=0

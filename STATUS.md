@@ -127,14 +127,6 @@
 
 - none
 
-## Orchestration
-
-- Limits: 3 attempts/task, 3 in progress
-- Next wave: none — nothing is ready
-- Running: `P6-07` attempt 0/3; `P0-46` attempt 0/3<!-- polier:claims --> — claimed by dsh<!-- /polier:claims -->
-- Blocked: P0-02, P0-15, P0-16, P0-17 (stage waits); P6-08, P6-09, P6-10 (open dependency)
-- Approvals pending: none
-
 ## Done
 
 - [x] `P0-03` Workspace folders, package READMEs and architectures — status: `done` — owner: —

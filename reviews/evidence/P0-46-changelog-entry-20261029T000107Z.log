@@ -1,0 +1,5 @@
+$ node tools/release/check-changes.mjs --task P0-46 --base main
+[exit 0]
+
+check-changes: task P0-46, base main, 16 changed path(s), 6 code path(s)
+changelog-entry: OK (.changes/P0-46-back-to-top.md)

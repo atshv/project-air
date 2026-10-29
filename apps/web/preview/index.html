@@ -27,15 +27,15 @@
         document.documentElement.setAttribute("data-theme", theme);
       })();
     </script>
-    <link rel="stylesheet" href="../../../packages/ui-kit/tokens.css?v=P0-45" />
-    <link rel="stylesheet" href="preview.css?v=P0-45" />
-    <script src="preview.js?v=P0-45" defer></script>
+    <link rel="stylesheet" href="../../../packages/ui-kit/tokens.css?v=P0-46" />
+    <link rel="stylesheet" href="preview.css?v=P0-46" />
+    <script src="preview.js?v=P0-46" defer></script>
   </head>
   <body>
     <main class="page">
       <header class="masthead">
         <span class="badge" data-i18n="masthead.staticDesignPreview">static design preview</span>
-        <h1 data-i18n="masthead.projectAirDesignSystem">Project air design system</h1>
+        <h1 id="page-top" tabindex="-1" data-i18n="masthead.projectAirDesignSystem">Project air design system</h1>
         <p class="lead" data-i18n="masthead.aStaticDesignPreviewOf">
           A static design preview of the Project air canvas design system: tokens, type,
           motion, layers, icons, component states, the canvas chrome of the engine, the
@@ -46,14 +46,14 @@
         <p class="masthead__version" data-preview-meta>
           <span data-preview-version data-i18n="masthead.version">Version 0.0.1</span>
           <span data-preview-status data-i18n="masthead.unreleased">unreleased</span>
-          <span data-preview-last-change data-i18n="masthead.lastChange">Last change: P0-45 — Preview page: project areas, their tasks and purpose</span>
-          <span data-preview-last-change-time data-i18n="masthead.lastChangeTime">2026-10-29 00:48 (Europe/Zurich)</span>
+          <span data-preview-last-change data-i18n="masthead.lastChange">Last change: P0-46 — Preview page: back-to-top arrow</span>
+          <span data-preview-last-change-time data-i18n="masthead.lastChangeTime">2026-10-29 00:59 (Europe/Zurich)</span>
         </p>
         <div class="masthead__meta">
           <span data-i18n-html="masthead.tokensPackagesUiKitTokens">Tokens: <code>packages/ui-kit/tokens.css</code></span>
           <span data-i18n-html="masthead.iconsPackagesUiKitIcons">Icons: <code>packages/ui-kit/icons/</code></span>
           <span data-i18n-html="masthead.demoPreviewJs">Demo: <code>preview.js</code></span>
-          <span data-i18n="masthead.tasks">Tasks: P0-19, P0-20, P0-21, P0-22, P0-23, P0-24, P0-25, P0-26, P0-27, P0-28, P0-29, P0-30, P0-31, P0-32, P0-33, P0-34, P0-35, P0-36, P0-37, P0-38, P0-39, P0-40, P0-41, P0-42, P0-43, P0-44, P0-45, P1-07</span>
+          <span data-i18n="masthead.tasks">Tasks: P0-19, P0-20, P0-21, P0-22, P0-23, P0-24, P0-25, P0-26, P0-27, P0-28, P0-29, P0-30, P0-31, P0-32, P0-33, P0-34, P0-35, P0-36, P0-37, P0-38, P0-39, P0-40, P0-41, P0-42, P0-43, P0-44, P0-45, P0-46, P1-07</span>
           <div class="masthead__switches">
             <div
               class="preview-locale"
@@ -2270,5 +2270,17 @@
         </p>
       </footer>
     </main>
+    <button
+      class="to-top"
+      type="button"
+      data-to-top
+      data-label="Back to top"
+      aria-label="Back to top"
+      data-i18n-attr="aria-label:toTop.label data-label:toTop.label"
+    >
+      <svg class="to-top__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M12 19V5M5.5 11.5 12 5l6.5 6.5" />
+      </svg>
+    </button>
   </body>
 </html>
