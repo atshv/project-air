@@ -5,7 +5,7 @@ import { api } from "../auth/client.ts";
 import { errorMessageKey, validateLogin, validateRecovery, validateRegistration, type FieldErrors } from "../auth/validation.ts";
 import { Button } from "../components/Button.tsx";
 
-interface AuthPageProps { readonly t: (key: string) => string; readonly onSignedIn: () => void; }
+interface AuthPageProps { readonly t: (key: string) => string; readonly onSignedIn: () => Promise<void>; }
 
 export function LoginPage({ t, onSignedIn }: AuthPageProps) {
   const navigate = useNavigate(); const location = useLocation();
@@ -17,14 +17,14 @@ export function LoginPage({ t, onSignedIn }: AuthPageProps) {
     const found = validateLogin({ email, password }); setErrors(found);
     if (Object.keys(found).length > 0) return;
     setPending(true);
-    try { await api.auth.login(email, password); await onSignedIn(); navigate(next, { replace: true }); }
+    try { await api.auth.login(email, password); await onSignedIn(); void navigate(next, { replace: true }); }
     catch (caught) { setError(t(errorMessageKey(caught))); }
     finally { setPending(false); }
   };
   return (
     <section className="page auth-card">
       <h1 className="page-title">{t("auth.login.title")}</h1>
-      <form className="form" onSubmit={submit} noValidate>
+      <form className="form" onSubmit={(event) => { void submit(event); }} noValidate>
         <label className="field"><span>{t("auth.email")}</span><input className="input" type="email" autoComplete="email" value={email} onChange={(event) => setEmail(event.target.value)} aria-invalid={errors["email"] !== undefined} /></label>
         {errors["email"] === undefined ? null : <p className="field-error">{t(errors["email"])}</p>}
         <label className="field"><span>{t("auth.password")}</span><input className="input" type="password" autoComplete="current-password" value={password} onChange={(event) => setPassword(event.target.value)} aria-invalid={errors["password"] !== undefined} /></label>
@@ -46,14 +46,14 @@ export function RegisterPage({ t, onSignedIn }: AuthPageProps) {
     const found = validateRegistration({ email, displayName, password }); setErrors(found);
     if (Object.keys(found).length > 0) return;
     setPending(true);
-    try { await api.auth.registration({ email, displayName, password }); await onSignedIn(); navigate("/boards", { replace: true }); }
+    try { await api.auth.registration({ email, displayName, password }); await onSignedIn(); void navigate("/boards", { replace: true }); }
     catch (caught) { setError(t(errorMessageKey(caught))); }
     finally { setPending(false); }
   };
   return (
     <section className="page auth-card">
       <h1 className="page-title">{t("auth.register.title")}</h1>
-      <form className="form" onSubmit={submit} noValidate>
+      <form className="form" onSubmit={(event) => { void submit(event); }} noValidate>
         <label className="field"><span>{t("auth.email")}</span><input className="input" type="email" autoComplete="email" value={email} onChange={(event) => setEmail(event.target.value)} /></label>
         {errors["email"] === undefined ? null : <p className="field-error">{t(errors["email"])}</p>}
         <label className="field"><span>{t("auth.displayName")}</span><input className="input" type="text" autoComplete="name" value={displayName} onChange={(event) => setDisplayName(event.target.value)} /></label>
@@ -81,7 +81,7 @@ export function RecoveryPage({ t }: { readonly t: (key: string) => string }) {
     <section className="page auth-card">
       <h1 className="page-title">{t("auth.recovery.title")}</h1>
       {sent ? <p className="muted">{t("auth.recovery.sent")}</p> : (
-        <form className="form" onSubmit={submit} noValidate>
+        <form className="form" onSubmit={(event) => { void submit(event); }} noValidate>
           <p className="muted small">{t("auth.recovery.hint")}</p>
           <label className="field"><span>{t("auth.email")}</span><input className="input" type="email" autoComplete="email" value={email} onChange={(event) => setEmail(event.target.value)} /></label>
           {errors["email"] === undefined ? null : <p className="field-error">{t(errors["email"])}</p>}

@@ -1,0 +1,17 @@
+{
+  "task": "P6-23",
+  "gate": "ci-local",
+  "command": "docker run --rm -v \"$PWD\":/repo -w /repo rhysd/actionlint:latest",
+  "exit_code": 0,
+  "result": "pass",
+  "slot": null,
+  "exclusive": [],
+  "lock_wait_s": 0.0,
+  "lock_warning": null,
+  "started": "2026-10-29T17:16:04+00:00",
+  "finished": "2026-10-29T17:16:04+00:00",
+  "commit": "3c8871ae6f38c022accdf11e78b70b71826e610b",
+  "dirty": true,
+  "log": "P6-23-ci-local-20261029T171604Z.log",
+  "log_sha256": "7b7c97db2210ec8a221a90f3aecf6ae7e1d9ac69fcc90924464fbca6fd535df2"
+}

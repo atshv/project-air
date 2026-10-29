@@ -1,0 +1,17 @@
+{
+  "task": "P6-23",
+  "gate": "unit",
+  "command": "TURBO_FORCE=1 pnpm test",
+  "exit_code": 0,
+  "result": "pass",
+  "slot": null,
+  "exclusive": [],
+  "lock_wait_s": 0.0,
+  "lock_warning": null,
+  "started": "2026-10-29T17:16:24+00:00",
+  "finished": "2026-10-29T17:16:47+00:00",
+  "commit": "3c8871ae6f38c022accdf11e78b70b71826e610b",
+  "dirty": true,
+  "log": "P6-23-unit-20261029T171624Z.log",
+  "log_sha256": "871ae20e3e390abc84c88a107c95dc9536c072cb35e14b22fc97afdc45cbece6"
+}

@@ -199,6 +199,7 @@ test("applies the migrations once and records every version with its checksum", 
       "0003_rls_policies",
       "0004_account_mapping",
       "0005_zone_containers",
+      "0006_sync_log",
     ],
   );
 

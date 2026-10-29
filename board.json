@@ -7285,6 +7285,81 @@
       ]
     },
     {
+      "id": "P6-23",
+      "title": "CI passes on GitHub for the current main",
+      "goal": "The existing CI workflow (.github/workflows/ci.yml) passes on a GitHub pull request against main: lint after build, the database-backed tests on a CI slot with the compose stack, and the code and test-expectation defects the first real run exposed fixed.",
+      "why": "The first GitHub CI run (PR 1, run 40910412721) failed on code already on main; every pull request stays red until CI matches what the local gates prove. Pulled forward from the remote stage by the owner (2026-10-29); branch protection, releases and hosting stay in remote.",
+      "satisfies": [
+        "D6"
+      ],
+      "status": "review",
+      "depends_on": [
+        "P6-11"
+      ],
+      "complexity": 5,
+      "stage": "web-app",
+      "parallel_group": null,
+      "scope_write": [
+        ".github/workflows/ci.yml",
+        "turbo.json",
+        "packages/crdt/src/yjs-doc.ts",
+        "apps/web/src/",
+        "packages/sdk/src/realtime/board-sync-client.ts",
+        "services/auth/src/auth-routes.ts",
+        "services/sync/src/",
+        "packages/engine/src/bridge/input.ts",
+        "services/platform/test/migrations/schema.test.mjs",
+        "tools/design-check/test/design-check.test.mjs",
+        "packages/contracts/test/cpp/parity.cpp",
+        "docs/quality.md",
+        "docs/adr/ADR-0003-remote-phase.md",
+        ".changes/",
+        "reviews/evidence/"
+      ],
+      "scope_read": [
+        "ARCHITECTURE.md",
+        "AGENTS.md",
+        "STATUS.md",
+        "docs/module-map.md",
+        "docs/quality.md"
+      ],
+      "acceptance": [
+        "A1",
+        "A2",
+        "A3"
+      ],
+      "gates": [
+        "board-check",
+        "boundaries",
+        "typecheck",
+        "unit",
+        "design-check",
+        "language-check",
+        "ci-local",
+        "changelog-entry"
+      ],
+      "owner": null,
+      "branch": "task/P6-23",
+      "worktree": null,
+      "round": 0,
+      "evidence": [
+        "reviews/evidence/P6-23-board-check-20261029T171531Z.json",
+        "reviews/evidence/P6-23-boundaries-20261029T171557Z.json",
+        "reviews/evidence/P6-23-changelog-entry-20261029T171654Z.json",
+        "reviews/evidence/P6-23-ci-local-20261029T171604Z.json",
+        "reviews/evidence/P6-23-design-check-20261029T171558Z.json",
+        "reviews/evidence/P6-23-language-check-20261029T171559Z.json",
+        "reviews/evidence/P6-23-typecheck-20261029T171615Z.json",
+        "reviews/evidence/P6-23-unit-20261029T171624Z.json"
+      ],
+      "scope_write_forbidden": [
+        "reference/"
+      ],
+      "handoff": [
+        "Renumbered from P6-12 on 2026-10-29: the stage-7 plan keeps P6-12 for contract 0.5.0; this CI task carries the brief, run record, gate records (P6-23-*) and AP-020."
+      ]
+    },
+    {
       "id": "P0-45",
       "title": "Preview page: project areas, their tasks and purpose",
       "goal": "The design-system page gets a section '13 \u2014 Project areas' that lists every area of Project air (engine, web app, design system, data model, server, database and storage, realtime, tools and quality, operations and release) with its purpose, owner role, folders, connections and its parts with status, in short simple sentences in EN and DE; a page contents list links every numbered section 01-13.",

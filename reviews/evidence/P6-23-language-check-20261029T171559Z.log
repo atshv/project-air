@@ -1,0 +1,4 @@
+$ node tools/language-check/index.mjs .
+[exit 0]
+
+language-check: OK

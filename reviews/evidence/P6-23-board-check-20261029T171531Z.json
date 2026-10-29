@@ -1,0 +1,17 @@
+{
+  "task": "P6-23",
+  "gate": "board-check",
+  "command": "python3 /tmp/claude-0/-home-user-project-air/7c1d53df-8b30-5017-8276-877e10263e98/scratchpad/polier/v1.3.0/tools/check.py .",
+  "exit_code": 0,
+  "result": "pass",
+  "slot": null,
+  "exclusive": [],
+  "lock_wait_s": 0.0,
+  "lock_warning": null,
+  "started": "2026-10-29T17:15:31+00:00",
+  "finished": "2026-10-29T17:15:49+00:00",
+  "commit": "3c8871ae6f38c022accdf11e78b70b71826e610b",
+  "dirty": true,
+  "log": "P6-23-board-check-20261029T171531Z.log",
+  "log_sha256": "dd916e972ae5f4ce316bbd81bd025cec5ff3732da7e934499ed24c496669d80c"
+}
