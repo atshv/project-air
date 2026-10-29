@@ -7578,6 +7578,638 @@
         "docs/owner/"
       ],
       "handoff": []
+    },
+    {
+      "id": "P6-12",
+      "title": "Contract 0.5.0: block content and zone rename",
+      "goal": "The contract gains the content of checklist, columns and table blocks and a zone rename operation: `Block.content` (typed per block type, size-limited), the operations `updateBlockContent` and `updateZone` with their inverses, valid/invalid fixtures, the 0.5.0 bump and regenerated TS/C++.",
+      "why": "Owner decision 2026-10-29: close the stage-7 gaps first so the web app behaves like the live demo before the value stage.",
+      "satisfies": [
+        "D12"
+      ],
+      "status": "pending",
+      "depends_on": [
+        "P6-11"
+      ],
+      "complexity": 5,
+      "stage": "web-app",
+      "parallel_group": null,
+      "scope_write": [
+        "packages/contracts/",
+        "docs/contracts.md",
+        "board.json",
+        ".changes/"
+      ],
+      "scope_read": [
+        "ARCHITECTURE.md",
+        "AGENTS.md",
+        "STATUS.md",
+        "docs/module-map.md",
+        "docs/quality.md",
+        "docs/contracts.md",
+        "packages/contracts/",
+        "docs/canvas-acceptance.md",
+        "apps/web/preview/README.md"
+      ],
+      "acceptance": [
+        "A1",
+        "A2",
+        "A3"
+      ],
+      "gates": [
+        "board-check",
+        "boundaries",
+        "contracts",
+        "codegen",
+        "unit"
+      ],
+      "owner": null,
+      "branch": "task/P6-12",
+      "worktree": null,
+      "round": 0,
+      "evidence": [],
+      "scope_write_forbidden": [
+        "reference/"
+      ]
+    },
+    {
+      "id": "P6-13",
+      "title": "Block content and zone rename in the CRDT, sync and SDK",
+      "goal": "`packages/crdt`, `services/sync` and `packages/sdk` accept contract 0.5.0: `updateBlockContent` and `updateZone` apply to the board document with their inverses, converge between clients, survive a sync restart and are exposed by the SDK board-sync client like every other operation.",
+      "why": "Owner decision 2026-10-29: close the stage-7 gaps first so the web app behaves like the live demo before the value stage.",
+      "satisfies": [
+        "D12"
+      ],
+      "status": "pending",
+      "depends_on": [
+        "P6-12"
+      ],
+      "complexity": 6,
+      "stage": "web-app",
+      "parallel_group": null,
+      "scope_write": [
+        "packages/crdt/",
+        "packages/sdk/",
+        "services/sync/",
+        "docs/realtime.md",
+        ".changes/"
+      ],
+      "scope_read": [
+        "ARCHITECTURE.md",
+        "AGENTS.md",
+        "STATUS.md",
+        "docs/module-map.md",
+        "docs/quality.md",
+        "docs/realtime.md",
+        "docs/contracts.md",
+        "packages/crdt/",
+        "packages/sdk/",
+        "services/sync/"
+      ],
+      "acceptance": [
+        "A1",
+        "A2",
+        "A3"
+      ],
+      "gates": [
+        "board-check",
+        "boundaries",
+        "unit",
+        "typecheck",
+        "crdt-convergence"
+      ],
+      "owner": null,
+      "branch": "task/P6-13",
+      "worktree": null,
+      "round": 0,
+      "evidence": [],
+      "scope_write_forbidden": [
+        "reference/"
+      ],
+      "exclusive": [
+        "crdt-convergence"
+      ]
+    },
+    {
+      "id": "P6-14",
+      "title": "Engine for the app: contract 0.5.0 and the interaction exports",
+      "goal": "The engine accepts contract 0.5.0 (block content for the required height, `updateZone` for renames instead of the delete + create group) and exports the interaction modules the web app needs as a stable, typed public surface, with a short guide on how an app wires them.",
+      "why": "Owner decision 2026-10-29: close the stage-7 gaps first so the web app behaves like the live demo before the value stage.",
+      "satisfies": [
+        "D12"
+      ],
+      "status": "pending",
+      "depends_on": [
+        "P6-12"
+      ],
+      "complexity": 5,
+      "stage": "web-app",
+      "parallel_group": null,
+      "scope_write": [
+        "packages/engine/",
+        "apps/engine-playground/",
+        "docs/engine.md",
+        ".changes/"
+      ],
+      "scope_read": [
+        "ARCHITECTURE.md",
+        "AGENTS.md",
+        "STATUS.md",
+        "docs/module-map.md",
+        "docs/quality.md",
+        "docs/engine.md",
+        "docs/contracts.md",
+        "packages/engine/",
+        "apps/engine-playground/"
+      ],
+      "acceptance": [
+        "A1",
+        "A2",
+        "A3"
+      ],
+      "gates": [
+        "board-check",
+        "boundaries",
+        "wasm-build",
+        "cpp-unit",
+        "typecheck",
+        "unit"
+      ],
+      "owner": null,
+      "branch": "task/P6-14",
+      "worktree": null,
+      "round": 0,
+      "evidence": [],
+      "scope_write_forbidden": [
+        "reference/"
+      ]
+    },
+    {
+      "id": "P6-15",
+      "title": "Depth-ordered titles and previews in the engine",
+      "goal": "Bound titles, previews and header chrome draw in document depth order, so a front object always covers the text of an object behind it, on WebGL2 and WebGPU, without breaking the performance proof.",
+      "why": "Owner decision 2026-10-29: close the stage-7 gaps first so the web app behaves like the live demo before the value stage.",
+      "satisfies": [
+        "D12"
+      ],
+      "status": "pending",
+      "depends_on": [
+        "P6-14"
+      ],
+      "complexity": 5,
+      "stage": "web-app",
+      "parallel_group": null,
+      "scope_write": [
+        "packages/engine/",
+        "docs/engine.md",
+        ".changes/"
+      ],
+      "scope_read": [
+        "ARCHITECTURE.md",
+        "AGENTS.md",
+        "STATUS.md",
+        "docs/module-map.md",
+        "docs/quality.md",
+        "docs/engine.md",
+        "reviews/P4-10.md",
+        "packages/engine/"
+      ],
+      "acceptance": [
+        "A1",
+        "A2",
+        "A3"
+      ],
+      "gates": [
+        "board-check",
+        "boundaries",
+        "wasm-build",
+        "cpp-unit",
+        "visual",
+        "perf"
+      ],
+      "owner": null,
+      "branch": "task/P6-15",
+      "worktree": null,
+      "round": 0,
+      "evidence": [],
+      "scope_write_forbidden": [
+        "reference/"
+      ],
+      "exclusive": [
+        "visual",
+        "perf"
+      ]
+    },
+    {
+      "id": "P6-16",
+      "title": "Titles, previews and headers on the web canvas (L02 web part)",
+      "goal": "The board canvas in `apps/web` shows what the live demo shows at rest: note cards with their title and a clipped body preview, zones and blocks with their 40 px header and title, the quiet delete affordance, and it stays in step with local edits and remote changes. The app stops projecting anonymous rectangles.",
+      "why": "Owner decision 2026-10-29: close the stage-7 gaps first so the web app behaves like the live demo before the value stage.",
+      "satisfies": [
+        "D12"
+      ],
+      "status": "pending",
+      "depends_on": [
+        "P6-13",
+        "P6-15"
+      ],
+      "complexity": 5,
+      "stage": "web-app",
+      "parallel_group": null,
+      "scope_write": [
+        "apps/web/",
+        ".changes/"
+      ],
+      "scope_read": [
+        "ARCHITECTURE.md",
+        "AGENTS.md",
+        "STATUS.md",
+        "docs/module-map.md",
+        "docs/quality.md",
+        "docs/design-rules.md",
+        "docs/canvas-acceptance.md",
+        "docs/engine.md",
+        "docs/web-app.md",
+        "apps/web/",
+        "apps/web/preview/README.md",
+        "packages/ui-kit/"
+      ],
+      "acceptance": [
+        "A1",
+        "A2",
+        "A3"
+      ],
+      "gates": [
+        "board-check",
+        "boundaries",
+        "unit",
+        "typecheck",
+        "design-check",
+        "language-check",
+        "e2e"
+      ],
+      "owner": null,
+      "branch": "task/P6-16",
+      "worktree": null,
+      "round": 0,
+      "evidence": [],
+      "scope_write_forbidden": [
+        "reference/"
+      ],
+      "exclusive": [
+        "e2e"
+      ]
+    },
+    {
+      "id": "P6-17",
+      "title": "Dragging on the web canvas (L03, L07, L16, L20)",
+      "goal": "Objects on the web canvas move with the pointer the way the playground and the live demo do it: drag after the 4 px threshold, snapping with guides, auto-pan near the edge, and new objects placed by the L20 rule, each gesture committing exactly one operation through the SDK on release.",
+      "why": "Owner decision 2026-10-29: close the stage-7 gaps first so the web app behaves like the live demo before the value stage.",
+      "satisfies": [
+        "D12"
+      ],
+      "status": "pending",
+      "depends_on": [
+        "P6-16"
+      ],
+      "complexity": 6,
+      "stage": "web-app",
+      "parallel_group": null,
+      "scope_write": [
+        "apps/web/",
+        ".changes/"
+      ],
+      "scope_read": [
+        "ARCHITECTURE.md",
+        "AGENTS.md",
+        "STATUS.md",
+        "docs/module-map.md",
+        "docs/quality.md",
+        "docs/engine.md",
+        "docs/canvas-acceptance.md",
+        "apps/engine-playground/",
+        "apps/web/",
+        "apps/web/preview/README.md"
+      ],
+      "acceptance": [
+        "A1",
+        "A2",
+        "A3"
+      ],
+      "gates": [
+        "board-check",
+        "boundaries",
+        "unit",
+        "typecheck",
+        "design-check",
+        "language-check",
+        "e2e"
+      ],
+      "owner": null,
+      "branch": "task/P6-17",
+      "worktree": null,
+      "round": 0,
+      "evidence": [],
+      "scope_write_forbidden": [
+        "reference/"
+      ],
+      "exclusive": [
+        "e2e"
+      ]
+    },
+    {
+      "id": "P6-18",
+      "title": "Multi-select and resize on the web canvas (L10, L14)",
+      "goal": "Several objects can be selected by Shift-click and rubber band and moved together, and a selected object can be resized with the engine handles, each as one operation with its inverse, like the playground and the live demo's selection frame.",
+      "why": "Owner decision 2026-10-29: close the stage-7 gaps first so the web app behaves like the live demo before the value stage.",
+      "satisfies": [
+        "D12"
+      ],
+      "status": "pending",
+      "depends_on": [
+        "P6-17"
+      ],
+      "complexity": 5,
+      "stage": "web-app",
+      "parallel_group": null,
+      "scope_write": [
+        "apps/web/",
+        ".changes/"
+      ],
+      "scope_read": [
+        "ARCHITECTURE.md",
+        "AGENTS.md",
+        "STATUS.md",
+        "docs/module-map.md",
+        "docs/quality.md",
+        "docs/engine.md",
+        "docs/canvas-acceptance.md",
+        "apps/engine-playground/",
+        "apps/web/",
+        "apps/web/preview/README.md"
+      ],
+      "acceptance": [
+        "A1",
+        "A2",
+        "A3"
+      ],
+      "gates": [
+        "board-check",
+        "boundaries",
+        "unit",
+        "typecheck",
+        "design-check",
+        "language-check",
+        "e2e"
+      ],
+      "owner": null,
+      "branch": "task/P6-18",
+      "worktree": null,
+      "round": 0,
+      "evidence": [],
+      "scope_write_forbidden": [
+        "reference/"
+      ],
+      "exclusive": [
+        "e2e"
+      ]
+    },
+    {
+      "id": "P6-19",
+      "title": "Zone arrangement and release preview on the web canvas (L08, part 1)",
+      "goal": "Zones in `apps/web` arrange their members like the live demo (stacked or side by side), and dragging shows the release preview: landing slot, room-making, shrinking frame when an item leaves; items can be docked, undocked and reordered, and every settle uses the one calm 300 ms ease-out. Each release commits one operation through the SDK.",
+      "why": "Owner decision 2026-10-29: close the stage-7 gaps first so the web app behaves like the live demo before the value stage.",
+      "satisfies": [
+        "D12"
+      ],
+      "status": "pending",
+      "depends_on": [
+        "P6-18"
+      ],
+      "complexity": 6,
+      "stage": "web-app",
+      "parallel_group": null,
+      "scope_write": [
+        "apps/web/",
+        "reviews/evidence/",
+        ".changes/"
+      ],
+      "scope_read": [
+        "ARCHITECTURE.md",
+        "AGENTS.md",
+        "STATUS.md",
+        "docs/module-map.md",
+        "docs/quality.md",
+        "docs/engine.md",
+        "docs/canvas-acceptance.md",
+        "apps/engine-playground/",
+        "apps/web/",
+        "apps/web/preview/README.md",
+        "docs/adr/ADR-0010-zone-containers.md"
+      ],
+      "acceptance": [
+        "A1",
+        "A2",
+        "A3"
+      ],
+      "gates": [
+        "board-check",
+        "boundaries",
+        "unit",
+        "typecheck",
+        "design-check",
+        "language-check",
+        "e2e"
+      ],
+      "owner": null,
+      "branch": "task/P6-19",
+      "worktree": null,
+      "round": 0,
+      "evidence": [],
+      "scope_write_forbidden": [
+        "reference/"
+      ],
+      "exclusive": [
+        "e2e"
+      ]
+    },
+    {
+      "id": "P6-20",
+      "title": "Zone lifecycle and names on the web canvas (L08, part 2)",
+      "goal": "Zones in `apps/web` live and die like in the live demo: two free objects dropped together form a new zone with the default name, a zone that loses its last member is removed, every zone name can be renamed inline in its 40 px header, the zone tool creates an empty zone, and deleting a zone asks whether to keep or delete its content. All of it is saved and synced.",
+      "why": "Owner decision 2026-10-29: close the stage-7 gaps first so the web app behaves like the live demo before the value stage.",
+      "satisfies": [
+        "D12"
+      ],
+      "status": "pending",
+      "depends_on": [
+        "P6-19"
+      ],
+      "complexity": 6,
+      "stage": "web-app",
+      "parallel_group": null,
+      "scope_write": [
+        "apps/web/",
+        "reviews/evidence/",
+        ".changes/"
+      ],
+      "scope_read": [
+        "ARCHITECTURE.md",
+        "AGENTS.md",
+        "STATUS.md",
+        "docs/module-map.md",
+        "docs/quality.md",
+        "docs/engine.md",
+        "docs/canvas-acceptance.md",
+        "apps/engine-playground/",
+        "apps/web/",
+        "apps/web/preview/README.md",
+        "docs/contracts.md",
+        "docs/adr/ADR-0010-zone-containers.md"
+      ],
+      "acceptance": [
+        "A1",
+        "A2",
+        "A3"
+      ],
+      "gates": [
+        "board-check",
+        "boundaries",
+        "unit",
+        "typecheck",
+        "design-check",
+        "language-check",
+        "e2e"
+      ],
+      "owner": null,
+      "branch": "task/P6-20",
+      "worktree": null,
+      "round": 0,
+      "evidence": [],
+      "scope_write_forbidden": [
+        "reference/"
+      ],
+      "exclusive": [
+        "e2e"
+      ]
+    },
+    {
+      "id": "P6-21",
+      "title": "Blocks on the web canvas with inline comfort (L18, L00 tools)",
+      "goal": "Checklist, columns and table blocks can be created from the toolbar, are drawn with their content, and are filled with the keyboard directly on the canvas (L18: `Enter` new entry, `Tab`/`Shift+Tab` next/previous field, `Backspace` in an empty entry deletes it). Content is stored with `updateBlockContent` through the one L05 save path; the block grows instead of scrolling. The toolbar shows the demo's tool groups with correct icons and labels.",
+      "why": "Owner decision 2026-10-29: close the stage-7 gaps first so the web app behaves like the live demo before the value stage.",
+      "satisfies": [
+        "D12"
+      ],
+      "status": "pending",
+      "depends_on": [
+        "P6-20"
+      ],
+      "complexity": 6,
+      "stage": "web-app",
+      "parallel_group": null,
+      "scope_write": [
+        "apps/web/",
+        ".changes/"
+      ],
+      "scope_read": [
+        "ARCHITECTURE.md",
+        "AGENTS.md",
+        "STATUS.md",
+        "docs/module-map.md",
+        "docs/quality.md",
+        "docs/engine.md",
+        "docs/canvas-acceptance.md",
+        "apps/engine-playground/",
+        "apps/web/",
+        "apps/web/preview/README.md",
+        "docs/contracts.md",
+        "packages/ui-kit/"
+      ],
+      "acceptance": [
+        "A1",
+        "A2",
+        "A3"
+      ],
+      "gates": [
+        "board-check",
+        "boundaries",
+        "unit",
+        "typecheck",
+        "design-check",
+        "language-check",
+        "e2e"
+      ],
+      "owner": null,
+      "branch": "task/P6-21",
+      "worktree": null,
+      "round": 0,
+      "evidence": [],
+      "scope_write_forbidden": [
+        "reference/"
+      ],
+      "exclusive": [
+        "e2e"
+      ]
+    },
+    {
+      "id": "P6-22",
+      "title": "Demo-parity evidence, canvas status and the stage-7 close",
+      "goal": "The web app's parity with the live demo is proven and documented: side-by-side screenshots of app and demo for every shared behaviour, the e2e suite covers the new flows, `docs/canvas-acceptance.md` moves L02, L03, L07, L08, L10, L14, L16, L18 and L20 to `fulfilled` where the web part is proven, and `docs/web-app.md`, HANDOFF and STATUS state what remains, so the owner can close stage 7.",
+      "why": "Owner decision 2026-10-29: close the stage-7 gaps first so the web app behaves like the live demo before the value stage.",
+      "satisfies": [
+        "D12"
+      ],
+      "status": "pending",
+      "depends_on": [
+        "P6-21"
+      ],
+      "complexity": 5,
+      "stage": "web-app",
+      "parallel_group": null,
+      "scope_write": [
+        "apps/web/",
+        "docs/",
+        "reviews/evidence/",
+        "HANDOFF.md",
+        ".changes/"
+      ],
+      "scope_read": [
+        "ARCHITECTURE.md",
+        "AGENTS.md",
+        "STATUS.md",
+        "docs/module-map.md",
+        "docs/quality.md",
+        "docs/canvas-acceptance.md",
+        "docs/web-app.md",
+        "docs/gates/",
+        "apps/web/",
+        "apps/web/preview/",
+        "reviews/evidence/"
+      ],
+      "acceptance": [
+        "A1",
+        "A2",
+        "A3"
+      ],
+      "gates": [
+        "board-check",
+        "boundaries",
+        "design-check",
+        "language-check",
+        "e2e"
+      ],
+      "owner": null,
+      "branch": "task/P6-22",
+      "worktree": null,
+      "round": 0,
+      "evidence": [],
+      "scope_write_forbidden": [
+        "reference/"
+      ],
+      "exclusive": [
+        "e2e"
+      ]
     }
   ],
   "decisions": [

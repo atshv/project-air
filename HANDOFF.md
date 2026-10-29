@@ -54,6 +54,14 @@ Read `AGENTS.md`, `ARCHITECTURE.md`, `STATUS.md`, `docs/module-map.md` and the t
   engine-owned parts cite the engine evidence (P4-10/P4-28/P4-23). Because the stage exit criterion
   says "every canvas work order done with evidence", the **stage owner decision is `pending`** until
   the owner accepts these two documented gaps (with follow-up tasks) or asks to close them first.
+  **Owner decision 2026-10-29: close the gaps first** — the web app must behave like the live demo
+  (`apps/web/preview`) before the value stage. Planned as `P6-12` … `P6-22` (stage `web-app`):
+  contract 0.5.0 block content + `updateZone` (P6-12), CRDT/sync/SDK adoption (P6-13), engine 0.5.0 +
+  interaction exports (P6-14), depth-ordered text (P6-15), web titles/previews L02 (P6-16), dragging
+  L03/L07/L16/L20 (P6-17), multi-select/resize L10/L14 (P6-18), zone arrangement/preview (P6-19),
+  zone lifecycle/names (P6-20), blocks with inline comfort L18 (P6-21), demo-parity evidence and the
+  stage close (P6-22). Not in this set (owned later): images/image window, pen/ink, edges/connect,
+  light theme, palette/timeline content.
   Metrics/report: `docs/web-app.md` (JS 138 kB gzip, engine.wasm 160 kB, 53/53 web unit tests,
   13 e2e tests + 10 capture tests); reviews `reviews/P6-01.md` … `reviews/P6-11.md`.
 - **Stage 6 Realtime:** complete (owner approved 2026-10-28; Q4 = **Yjs (MIT) behind an own
