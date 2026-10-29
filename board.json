@@ -3,7 +3,7 @@
   "project": "project-air",
   "profile": "L",
   "base_branch": "main",
-  "generator_version": "1.0.0",
+  "generator_version": "1.1.0",
   "stage": 6,
   "worktrees": "required",
   "resources": {
@@ -205,7 +205,7 @@
       "goal": "GitHub protection, CI, pinned Polier in CI, tag-based releases, preview/staging/production smoke and update automation, after the local build.",
       "exit_criteria": [
         "main is protected; CI rejects a pull request outside its scope, with raw colours, hard-coded UI text or without a change entry.",
-        "Polier v1.0.0 is pinned in CI; release 0.0.1 and one preview ran end to end from a tag.",
+        "Polier at the board's generator_version is pinned in CI; release 0.0.1 and one preview ran end to end from a tag.",
         "Hosting is chosen (Q3), environments and smoke checks are complete."
       ],
       "exit_gates": [
@@ -7014,7 +7014,7 @@
       "satisfies": [
         "D12"
       ],
-      "status": "in_progress",
+      "status": "done",
       "depends_on": [
         "P6-05",
         "P6-06"
@@ -7055,17 +7055,24 @@
         "design-check",
         "language-check"
       ],
-      "owner": "lead",
+      "owner": null,
       "branch": "task/P6-07",
-      "worktree": "/private/tmp/air-P6-07",
-      "round": 0,
-      "evidence": [],
+      "worktree": null,
+      "round": 1,
+      "evidence": [
+        "reviews/evidence/P6-07-board-check-20261029T000253Z.json",
+        "reviews/evidence/P6-07-boundaries-20261029T000304Z.json",
+        "reviews/evidence/P6-07-unit-20261029T000307Z.json",
+        "reviews/evidence/P6-07-typecheck-20261029T000306Z.json",
+        "reviews/evidence/P6-07-design-check-20261029T000304Z.json",
+        "reviews/evidence/P6-07-language-check-20261029T000304Z.json"
+      ],
       "scope_write_forbidden": [
         "reference/"
       ]
     },
     {
-      "id": "P6-08",
+      "id": "P6-09",
       "title": "Realtime UI: live changes, presence and save status (L05)",
       "goal": "The board page shows live remote changes and presence cursors/selections (colour/name from the server), the L05 save status (Saving … → Saved 2 s → Not saved – retry, clickable), an offline notice that never loses input, reconnect/resync; it wires the authenticated sync connection (the browser session cookie/token handshake with services/sync, with the auth/platform session validation) and uses the authenticated session clientId.",
       "why": "L05 is the remaining realtime web order; the stage exit e2e edits with two users and reloads.",
@@ -7074,7 +7081,7 @@
       ],
       "status": "pending",
       "depends_on": [
-        "P6-07"
+        "P6-08"
       ],
       "complexity": 6,
       "stage": "web-app",
@@ -7112,7 +7119,7 @@
         "language-check"
       ],
       "owner": null,
-      "branch": "task/P6-08",
+      "branch": "task/P6-09",
       "worktree": null,
       "round": 0,
       "evidence": [],
@@ -7121,7 +7128,7 @@
       ]
     },
     {
-      "id": "P6-09",
+      "id": "P6-10",
       "title": "e2e suite: main flows and the e2e gate on the slot ports",
       "goal": "Playwright (Apache-2.0) config and the e2e suite run the app on the slot web ports (4100/4101) with the slot services: login → boards → create board → add/edit note and title → reload persists; two users edit live, go offline/reconnect, both converge; toolbar/zoom/context menu/panel/L17 covered; the e2e gate is documented and exclusive.",
       "why": "The stage exit gate e2e and the blueprint P6-06 flow; the suite makes regressions visible.",
@@ -7130,7 +7137,7 @@
       ],
       "status": "pending",
       "depends_on": [
-        "P6-08"
+        "P6-09"
       ],
       "complexity": 6,
       "stage": "web-app",
@@ -7170,7 +7177,7 @@
         "e2e"
       ],
       "owner": null,
-      "branch": "task/P6-09",
+      "branch": "task/P6-10",
       "worktree": null,
       "round": 0,
       "evidence": [],
@@ -7182,7 +7189,7 @@
       ]
     },
     {
-      "id": "P6-10",
+      "id": "P6-11",
       "title": "Canvas evidence, repo-wide checks and the web-app stage report",
       "goal": "Every remaining web canvas order (L00, L02, L04, L05, L06, L09, L12, L17, L18) has evidence (screenshots and the e2e steps), design-check and language-check are green repo-wide (including the demo/playground texts), a11y/touch basics are checked, and docs/web-app.md is the stage report with exit-criteria status and open points; HANDOFF/STATUS updated.",
       "why": "The stage exit criteria 'every canvas work order done with evidence; design-check and language-check green repo-wide' and the handoff to value/hardening.",
@@ -7191,7 +7198,7 @@
       ],
       "status": "pending",
       "depends_on": [
-        "P6-09"
+        "P6-10"
       ],
       "complexity": 5,
       "stage": "web-app",
@@ -7230,7 +7237,7 @@
         "e2e"
       ],
       "owner": null,
-      "branch": "task/P6-10",
+      "branch": "task/P6-11",
       "worktree": null,
       "round": 0,
       "evidence": [],
@@ -7360,6 +7367,61 @@
       "handoff": [
         "Closed P0-46: round 40 px back-to-top button bottom right (24 px inset, 16 px mobile) on --layer-canvas-chrome; shows after one viewport of scrolling, opacity fade 150 ms.",
         "Click/Enter scrolls to top (jump under reduced motion) and focuses #page-top; label toTop.label EN/DE; gates board/design/changelog green; 3 screenshots + log."
+      ]
+    },
+    {
+      "id": "P6-08",
+      "title": "Contract 0.4.0 operation support in crdt and sync",
+      "goal": "packages/crdt applies the 0.4.0 updateNoteBody operation (note body + plainText on the note, inverse restores the previous body) in the document store and Yjs adapter, snapshots/convergence include note bodies and stay byte-identical under inverses, and services/sync accepts, persists, broadcasts and replays updateNoteBody like any other operation with a live-socket test; the editor save path (P6-07) then persists and reloads note bodies end to end.",
+      "why": "P6-06 added the operation and P6-07 emits it, but crdt/sync predate 0.4.0 and reject it — the save path would silently lose note bodies (P6-07 A2 reload half).",
+      "satisfies": [
+        "D12"
+      ],
+      "status": "pending",
+      "depends_on": [
+        "P6-06",
+        "P6-07"
+      ],
+      "complexity": 5,
+      "stage": "web-app",
+      "parallel_group": null,
+      "scope_write": [
+        "packages/crdt/",
+        "services/sync/",
+        ".changes/"
+      ],
+      "scope_read": [
+        "ARCHITECTURE.md",
+        "AGENTS.md",
+        "STATUS.md",
+        "docs/module-map.md",
+        "docs/quality.md",
+        "docs/contracts.md",
+        "packages/contracts/schemas/note-body-payload.schema.json",
+        "packages/contracts/generated/types.ts",
+        "packages/contracts/plaintext.mjs",
+        "packages/crdt/",
+        "services/sync/",
+        "docs/realtime.md"
+      ],
+      "acceptance": [
+        "A1",
+        "A2",
+        "A3"
+      ],
+      "gates": [
+        "board-check",
+        "boundaries",
+        "unit",
+        "typecheck"
+      ],
+      "owner": null,
+      "branch": "task/P6-08",
+      "worktree": null,
+      "round": 0,
+      "evidence": [],
+      "scope_write_forbidden": [
+        "reference/"
       ]
     }
   ],
