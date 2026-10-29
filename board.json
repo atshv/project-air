@@ -7310,7 +7310,7 @@
       "satisfies": [
         "D3"
       ],
-      "status": "in_progress",
+      "status": "done",
       "depends_on": [
         "P0-45"
       ],
@@ -7347,13 +7347,20 @@
         "changelog-entry"
       ],
       "branch": "task/P0-46",
-      "worktree": "../Project air-P0-46",
-      "evidence": [],
+      "worktree": null,
+      "evidence": [
+        "reviews/evidence/P0-46-board-check-20261029T000057Z.json",
+        "reviews/evidence/P0-46-changelog-entry-20261029T000107Z.json",
+        "reviews/evidence/P0-46-design-check-20261029T000107Z.json"
+      ],
       "scope_write_forbidden": [
         "reference/",
         "docs/owner/"
       ],
-      "handoff": []
+      "handoff": [
+        "Closed P0-46: round 40 px back-to-top button bottom right (24 px inset, 16 px mobile) on --layer-canvas-chrome; shows after one viewport of scrolling, opacity fade 150 ms.",
+        "Click/Enter scrolls to top (jump under reduced motion) and focuses #page-top; label toTop.label EN/DE; gates board/design/changelog green; 3 screenshots + log."
+      ]
     }
   ],
   "decisions": [
