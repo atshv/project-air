@@ -1,0 +1,39 @@
+{
+  "task": "P5-07",
+  "gate": "crdt-convergence",
+  "proof": "stack-offline-undo",
+  "browser": false,
+  "browserLimitation": "two headless Chrome pages were not run; this is the documented Node SDK fallback over the real sync service",
+  "store": "in-memory fake store (no DB rows); real sync service/WS protocol/SDK",
+  "boardId": "0192f0a3-7000-7000-8000-000000000003",
+  "clientA": "0192f0fa-7000-7000-8000-0000000000a1",
+  "clientB": "0192f0fa-7000-7000-8000-0000000000b1",
+  "stateHashesBefore": {
+    "a": "bc95fe3938bd56b5d7496f617589c12badf24a48097b97e40d380ae7bcb4dfd7",
+    "b": "bc95fe3938bd56b5d7496f617589c12badf24a48097b97e40d380ae7bcb4dfd7"
+  },
+  "stateHashesAfterOfflineReconnect": {
+    "a": "9a2f3660f8ac6f35b8b203b5cbb92bc0467febc4fd18aada4e60e4aa541fd4d5",
+    "b": "9a2f3660f8ac6f35b8b203b5cbb92bc0467febc4fd18aada4e60e4aa541fd4d5"
+  },
+  "stateHashesAfterUndo": {
+    "a": "a392fc90fa3c0f13411cca7bb10f43aeefb9f24da84a9b349a46b893fece54ff",
+    "b": "a392fc90fa3c0f13411cca7bb10f43aeefb9f24da84a9b349a46b893fece54ff"
+  },
+  "missedUpdatesWhileOffline": 1,
+  "cardAfterOffline": {
+    "a": 123,
+    "b": 77
+  },
+  "cardAfterUndo": {
+    "a": 0,
+    "b": 77
+  },
+  "undo": {
+    "aUndoReturned": true,
+    "aOwnUndoCount": 1,
+    "bOwnUndoCount": 1
+  },
+  "passed": true,
+  "finishedAt": "2026-10-29T19:41:06.202Z"
+}

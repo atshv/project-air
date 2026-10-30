@@ -1,0 +1,19 @@
+{
+  "task": "P6-19",
+  "state": "idle",
+  "attempt": 0,
+  "attempts": [],
+  "events": [
+    {
+      "at": "2026-10-30T00:02:06+00:00",
+      "kind": "state",
+      "data": {
+        "from": "pending",
+        "to": "claimed",
+        "actor": "dashboard"
+      }
+    }
+  ],
+  "usage": {},
+  "updated": "2026-10-30T00:02:06+00:00"
+}

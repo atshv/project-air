@@ -159,7 +159,7 @@
         "design-check",
         "language-check"
       ],
-      "owner_decision": "pending",
+      "owner_decision": "continue",
       "depends_on": [
         "realtime"
       ]
@@ -7292,7 +7292,7 @@
       "satisfies": [
         "D6"
       ],
-      "status": "review",
+      "status": "in_progress",
       "depends_on": [
         "P6-11"
       ],
@@ -7341,7 +7341,7 @@
       "owner": null,
       "branch": "task/P6-23",
       "worktree": null,
-      "round": 0,
+      "round": 1,
       "evidence": [
         "reviews/evidence/P6-23-board-check-20261029T171531Z.json",
         "reviews/evidence/P6-23-boundaries-20261029T171557Z.json",
@@ -8111,7 +8111,7 @@
       "satisfies": [
         "D12"
       ],
-      "status": "pending",
+      "status": "claimed",
       "depends_on": [
         "P6-18"
       ],

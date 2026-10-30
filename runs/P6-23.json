@@ -1,11 +1,18 @@
 {
   "task": "P6-23",
   "state": "running",
-  "attempt": 1,
+  "attempt": 2,
   "attempts": [
     {
       "n": 1,
       "started": "2026-10-29T16:37:39+00:00",
+      "ended": "2026-10-30T00:04:46+00:00",
+      "result": "fail",
+      "note": "rework"
+    },
+    {
+      "n": 2,
+      "started": "2026-10-30T00:06:06+00:00",
       "ended": null,
       "result": null,
       "note": null
@@ -146,8 +153,52 @@
         "to": "review",
         "actor": "lead"
       }
+    },
+    {
+      "at": "2026-10-30T00:04:19+00:00",
+      "kind": "gate",
+      "data": {
+        "gate": "board-check",
+        "result": "fail",
+        "record": "reviews/evidence/P6-23-board-check-20261030T000419Z.json"
+      }
+    },
+    {
+      "at": "2026-10-30T00:04:46+00:00",
+      "kind": "state",
+      "data": {
+        "from": "review",
+        "to": "rework",
+        "actor": "dashboard",
+        "note": "rework"
+      }
+    },
+    {
+      "at": "2026-10-30T00:04:58+00:00",
+      "kind": "gate",
+      "data": {
+        "gate": "board-check",
+        "result": "fail",
+        "record": "reviews/evidence/P6-23-board-check-20261030T000458Z.json"
+      }
+    },
+    {
+      "at": "2026-10-30T00:06:06+00:00",
+      "kind": "start",
+      "data": {
+        "actor": "dashboard"
+      }
+    },
+    {
+      "at": "2026-10-30T00:06:06+00:00",
+      "kind": "state",
+      "data": {
+        "from": "rework",
+        "to": "in_progress",
+        "actor": "dashboard"
+      }
     }
   ],
   "usage": {},
-  "updated": "2026-10-29T17:17:26+00:00"
+  "updated": "2026-10-30T00:06:06+00:00"
 }

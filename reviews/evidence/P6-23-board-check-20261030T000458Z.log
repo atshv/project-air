@@ -1,0 +1,4 @@
+$ python3 /tmp/claude-0/-home-user-project-air/7c1d53df-8b30-5017-8276-877e10263e98/scratchpad/polier/v1.3.0/tools/check.py .
+[exit 2]
+
+/Library/Developer/CommandLineTools/usr/bin/python3: can't open file '/tmp/claude-0/-home-user-project-air/7c1d53df-8b30-5017-8276-877e10263e98/scratchpad/polier/v1.3.0/tools/check.py': [Errno 2] No such file or directory

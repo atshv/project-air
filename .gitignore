@@ -36,3 +36,7 @@ test-results/
 playwright-report/
 *.log
 !reviews/evidence/*.log
+
+# Local scratch (not project state)
+.board-shots/
+deepseek/
